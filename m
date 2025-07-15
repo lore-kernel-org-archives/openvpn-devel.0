@@ -1,10 +1,16 @@
-Date: Tue, 15 Jul 2025 22:04:42 +0200 (CEST)
-Message-Id: <202507152004.56FK4gpa098265@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250715143750.9719-1-gert@...1296...>
-References: <20250715143750.9719-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: reliable: Review and fix
- gc_arena usage
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 15 Jul 2025 20:05:04 +0000
+In-Reply-To: <gerrit.1752140383000.I8cefa9a406fe90bb3cbe481304782c639691a3a0@...2715...>
+References: <gerrit.1752140383000.I8cefa9a406fe90bb3cbe481304782c639691a3a0@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <fc474c6506558c871e4cec397a9c663c05a8decd-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="hj3jGnqZTZE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: reliable: Review and
+ fix gc_arena usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +19,700 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Stared hard at the code changes (most of them trivial, but one mem leak
-in one branch of reliable_can_get() fixed).  Tested on client/server setups.
+--hj3jGnqZTZE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1083?usp=3Demail )
 
-commit 074bd7451decad407398c59006aa0e24ea1f451c
-Author: Frank Lichtenheld
-Date:   Tue Jul 15 16:37:44 2025 +0200
+The following approvals got outdated and were removed:
+Code-Review+1 by cron2, Code-Review+2 by plaisthos
 
-     reliable: Review and fix gc_arena usage
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-     Message-Id: <20250715143750.9719-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32157.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change subject: reliable: Review and fix gc_arena usage
+......................................................................
 
+reliable: Review and fix gc_arena usage
+
+Check for unused objects (in
+reliable_get_num_output_sequenced_available)
+and missing free (in reliable_can_get).
+
+While looking through the code, modernize
+the loop variable usage.
+
+Change-Id: I8cefa9a406fe90bb3cbe481304782c639691a3a0
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20250715143750.9719-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
+157.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/reliable.c
+1 file changed, 29 insertions(+), 56 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/1083/4
+
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 424d194..5505f56 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -98,8 +98,7 @@
+ static inline bool
+ reliable_ack_packet_id_present(struct reliable_ack *ack, packet_id_type pi=
+d)
+ {
+-    int i;
+-    for (i =3D 0; i < ack->len; ++i)
++    for (int i =3D 0; i < ack->len; ++i)
+     {
+         if (ack->packet_id[i] =3D=3D pid)
+         {
+@@ -312,10 +311,7 @@
+ const char *
+ reliable_ack_print(struct buffer *buf, bool verbose, struct gc_arena *gc)
+ {
+-    int i;
+     uint8_t n_ack;
+-    struct session_id sid_ack;
+-    packet_id_type pid;
+     struct buffer out =3D alloc_buf_gc(256, gc);
+
+     buf_printf(&out, "[");
+@@ -323,8 +319,9 @@
+     {
+         goto done;
+     }
+-    for (i =3D 0; i < n_ack; ++i)
++    for (int i =3D 0; i < n_ack; ++i)
+     {
++        packet_id_type pid;
+         if (!buf_read(buf, &pid, sizeof(pid)))
+         {
+             goto done;
+@@ -334,6 +331,7 @@
+     }
+     if (n_ack)
+     {
++        struct session_id sid_ack;
+         if (!session_id_read(&sid_ack, buf))
+         {
+             goto done;
+@@ -356,14 +354,12 @@
+ void
+ reliable_init(struct reliable *rel, int buf_size, int offset, int array_si=
+ze, bool hold)
+ {
+-    int i;
+-
+     CLEAR(*rel);
+     ASSERT(array_size > 0 && array_size <=3D RELIABLE_CAPACITY);
+     rel->hold =3D hold;
+     rel->size =3D array_size;
+     rel->offset =3D offset;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         e->buf =3D alloc_buf(buf_size);
+@@ -378,8 +374,7 @@
+     {
+         return;
+     }
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         free_buf(&e->buf);
+@@ -391,8 +386,7 @@
+ bool
+ reliable_empty(const struct reliable *rel)
+ {
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
+@@ -407,11 +401,10 @@
+ void
+ reliable_send_purge(struct reliable *rel, const struct reliable_ack *ack)
+ {
+-    int i, j;
+-    for (i =3D 0; i < ack->len; ++i)
++    for (int i =3D 0; i < ack->len; ++i)
+     {
+         packet_id_type pid =3D ack->packet_id[i];
+-        for (j =3D 0; j < rel->size; ++j)
++        for (int j =3D 0; j < rel->size; ++j)
+         {
+             struct reliable_entry *e =3D &rel->array[j];
+             if (e->active && e->packet_id =3D=3D pid)
+@@ -449,10 +442,9 @@
+ reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
+ {
+     struct buffer out =3D alloc_buf_gc(256, gc);
+-    int i;
+
+     buf_printf(&out, "[" packet_id_format "]", (packet_id_print_type)rel->=
+packet_id);
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
+@@ -468,9 +460,7 @@
+ bool
+ reliable_can_get(const struct reliable *rel)
+ {
+-    struct gc_arena gc =3D gc_new();
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (!e->active)
+@@ -478,6 +468,7 @@
+             return true;
+         }
+     }
++    struct gc_arena gc =3D gc_new();
+     dmsg(D_REL_LOW, "ACK no free receive buffer available: %s", reliable_p=
+rint_ids(rel, &gc));
+     gc_free(&gc);
+     return false;
+@@ -488,12 +479,11 @@
+ reliable_not_replay(const struct reliable *rel, packet_id_type id)
+ {
+     struct gc_arena gc =3D gc_new();
+-    int i;
+     if (reliable_pid_min(id, rel->packet_id))
+     {
+         goto bad;
+     }
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active && e->packet_id =3D=3D id)
+@@ -514,19 +504,17 @@
+ bool
+ reliable_wont_break_sequentiality(const struct reliable *rel, packet_id_ty=
+pe id)
+ {
+-    struct gc_arena gc =3D gc_new();
+-
+     const int ret =3D reliable_pid_in_range2(id, rel->packet_id, rel->size=
+);
+
+     if (!ret)
+     {
++        struct gc_arena gc =3D gc_new();
+         dmsg(D_REL_LOW, "ACK " packet_id_format " breaks sequentiality: %s=
+",
+              (packet_id_print_type)id, reliable_print_ids(rel, &gc));
++        gc_free(&gc);
+     }
+
+     dmsg(D_REL_DEBUG, "ACK RWBS rel->size=3D%d rel->packet_id=3D%08x id=3D=
+%08x ret=3D%d", rel->size, rel->packet_id, id, ret);
+-
+-    gc_free(&gc);
+     return ret;
+ }
+
+@@ -534,8 +522,7 @@
+ struct buffer *
+ reliable_get_buf(struct reliable *rel)
+ {
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         if (!e->active)
+@@ -550,7 +537,6 @@
+ int
+ reliable_get_num_output_sequenced_available(struct reliable *rel)
+ {
+-    struct gc_arena gc =3D gc_new();
+     packet_id_type min_id =3D 0;
+     bool min_id_defined =3D false;
+
+@@ -573,7 +559,6 @@
+     {
+         ret -=3D subtract_pid(rel->packet_id, min_id);
+     }
+-    gc_free(&gc);
+     return ret;
+ }
+
+@@ -581,14 +566,12 @@
+ struct buffer *
+ reliable_get_buf_output_sequenced(struct reliable *rel)
+ {
+-    struct gc_arena gc =3D gc_new();
+-    int i;
+     packet_id_type min_id =3D 0;
+     bool min_id_defined =3D false;
+     struct buffer *ret =3D NULL;
+
+     /* find minimum active packet_id */
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
+@@ -607,9 +590,10 @@
+     }
+     else
+     {
++        struct gc_arena gc =3D gc_new();
+         dmsg(D_REL_LOW, "ACK output sequence broken: %s", reliable_print_i=
+ds(rel, &gc));
++        gc_free(&gc);
+     }
+-    gc_free(&gc);
+     return ret;
+ }
+
+@@ -617,8 +601,7 @@
+ struct reliable_entry *
+ reliable_get_entry_sequenced(struct reliable *rel)
+ {
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         if (e->active && e->packet_id =3D=3D rel->packet_id)
+@@ -634,9 +617,8 @@
+ reliable_can_send(const struct reliable *rel)
+ {
+     struct gc_arena gc =3D gc_new();
+-    int i;
+     int n_active =3D 0, n_current =3D 0;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
+@@ -662,11 +644,10 @@
+ struct buffer *
+ reliable_send(struct reliable *rel, int *opcode)
+ {
+-    int i;
+     struct reliable_entry *best =3D NULL;
+     const time_t local_now =3D now;
+
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+
+@@ -701,10 +682,9 @@
+ void
+ reliable_schedule_now(struct reliable *rel)
+ {
+-    int i;
+     dmsg(D_REL_DEBUG, "ACK reliable_schedule_now");
+     rel->hold =3D false;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
+@@ -722,10 +702,9 @@
+ {
+     struct gc_arena gc =3D gc_new();
+     interval_t ret =3D BIG_TIMEOUT;
+-    int i;
+     const time_t local_now =3D now;
+
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
+@@ -758,8 +737,7 @@
+ reliable_mark_active_incoming(struct reliable *rel, struct buffer *buf,
+                               packet_id_type pid, int opcode)
+ {
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         if (buf =3D=3D &e->buf)
+@@ -790,8 +768,7 @@
+ void
+ reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, in=
+t opcode)
+ {
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         if (buf =3D=3D &e->buf)
+@@ -817,8 +794,7 @@
+ void
+ reliable_mark_deleted(struct reliable *rel, struct buffer *buf)
+ {
+-    int i;
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e =3D &rel->array[i];
+         if (buf =3D=3D &e->buf)
+@@ -836,10 +812,8 @@
+ void
+ reliable_ack_debug_print(const struct reliable_ack *ack, char *desc)
+ {
+-    int i;
+-
+     printf("********* struct reliable_ack %s\n", desc);
+-    for (i =3D 0; i < ack->len; ++i)
++    for (int i =3D 0; i < ack->len; ++i)
+     {
+         printf("  %d: " packet_id_format "\n", i, (packet_id_print_type) a=
+ck->packet_id[i]);
+     }
+@@ -848,14 +822,13 @@
+ void
+ reliable_debug_print(const struct reliable *rel, char *desc)
+ {
+-    int i;
+     update_time();
+
+     printf("********* struct reliable %s\n", desc);
+     printf("  initial_timeout=3D%d\n", (int)rel->initial_timeout);
+     printf("  packet_id=3D" packet_id_format "\n", rel->packet_id);
+     printf("  now=3D%" PRIi64 "\n", (int64_t)now);
+-    for (i =3D 0; i < rel->size; ++i)
++    for (int i =3D 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e =3D &rel->array[i];
+         if (e->active)
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1083?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8cefa9a406fe90bb3cbe481304782c639691a3a0
+Gerrit-Change-Number: 1083
+Gerrit-PatchSet: 4
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--hj3jGnqZTZE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1083?usp=3Demail">View Change</a></p><p>The following approvals got outd=
+ated and were removed:
+Code-Review+1 by cron2, Code-Review+2 by plaisthos</p><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">reliable: Review and fix=
+ gc_arena usage<br><br>Check for unused objects (in<br>reliable_get_num_out=
+put_sequenced_available)<br>and missing free (in reliable_can_get).<br><br>=
+While looking through the code, modernize<br>the loop variable usage.<br><b=
+r>Change-Id: I8cefa9a406fe90bb3cbe481304782c639691a3a0<br>Signed-off-by: Fr=
+ank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;arne=
+-openvpn@...1227...&gt;<br>Message-Id: &lt;20250715143750.9719-1-gert@...1711...=
+96...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1357...=
+rge.net/msg32157.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt=
+;<br>---<br>M src/openvpn/reliable.c<br>1 file changed, 29 insertions(+), 5=
+6 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
+fs/changes/83/1083/4</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/src/openvpn/reliable.c b/src/open=
+vpn/reliable.c</span><br><span>index 424d194..5505f56 100644</span><br><spa=
+n>--- a/src/openvpn/reliable.c</span><br><span>+++ b/src/openvpn/reliable.c=
+</span><br><span>@@ -98,8 +98,7 @@</span><br><span> static inline bool</spa=
+n><br><span> reliable_ack_packet_id_present(struct reliable_ack *ack, packe=
+t_id_type pid)</span><br><span> {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    for (i =3D 0; i &lt; ack-&gt;len; ++i)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; ack-&gt;len; ++i)</spa=
+n><br><span>     {</span><br><span>         if (ack-&gt;packet_id[i] =3D=3D=
+ pid)</span><br><span>         {</span><br><span>@@ -312,10 +311,7 @@</span=
+><br><span> const char *</span><br><span> reliable_ack_print(struct buffer =
+*buf, bool verbose, struct gc_arena *gc)</span><br><span> {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>     uint8=
+_t n_ack;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct s=
+ession_id sid_ack;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ packet_id_type pid;</span><br><span>     struct buffer out =3D alloc_buf_g=
+c(256, gc);</span><br><span> </span><br><span>     buf_printf(&amp;out, &qu=
+ot;[&quot;);</span><br><span>@@ -323,8 +319,9 @@</span><br><span>     {</sp=
+an><br><span>         goto done;</span><br><span>     }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; n_ack; ++i)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i =
+&lt; n_ack; ++i)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        packet_id_type pid;</span><br><span>         if=
+ (!buf_read(buf, &amp;pid, sizeof(pid)))</span><br><span>         {</span><=
+br><span>             goto done;</span><br><span>@@ -334,6 +331,7 @@</span>=
+<br><span>     }</span><br><span>     if (n_ack)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct session_=
+id sid_ack;</span><br><span>         if (!session_id_read(&amp;sid_ack, buf=
+))</span><br><span>         {</span><br><span>             goto done;</span=
+><br><span>@@ -356,14 +354,12 @@</span><br><span> void</span><br><span> rel=
+iable_init(struct reliable *rel, int buf_size, int offset, int array_size, =
+bool hold)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span>     CLEAR(*rel);</span><br><span>     ASSERT(array_size &gt;=
+ 0 &amp;&amp; array_size &lt;=3D RELIABLE_CAPACITY);</span><br><span>     r=
+el-&gt;hold =3D hold;</span><br><span>     rel-&gt;size =3D array_size;</sp=
+an><br><span>     rel-&gt;offset =3D offset;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt;=
+ rel-&gt;size; ++i)</span><br><span>     {</span><br><span>         struct =
+reliable_entry *e =3D &amp;rel-&gt;array[i];</span><br><span>         e-&gt=
+;buf =3D alloc_buf(buf_size);</span><br><span>@@ -378,8 +374,7 @@</span><br=
+><span>     {</span><br><span>         return;</span><br><span>     }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; rel-&gt;size;=
+ ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i=
+ =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {</span><br><span>  =
+       struct reliable_entry *e =3D &amp;rel-&gt;array[i];</span><br><span>=
+         free_buf(&amp;e-&gt;buf);</span><br><span>@@ -391,8 +386,7 @@</spa=
+n><br><span> bool</span><br><span> reliable_empty(const struct reliable *re=
+l)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =
+=3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><spa=
+n>     {</span><br><span>         const struct reliable_entry *e =3D &amp;r=
+el-&gt;array[i];</span><br><span>         if (e-&gt;active)</span><br><span=
+>@@ -407,11 +401,10 @@</span><br><span> void</span><br><span> reliable_send=
+_purge(struct reliable *rel, const struct reliable_ack *ack)</span><br><spa=
+n> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i, j;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; =
+ack-&gt;len; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  for (int i =3D 0; i &lt; ack-&gt;len; ++i)</span><br><span>     {</span><=
+br><span>         packet_id_type pid =3D ack-&gt;packet_id[i];</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        for (j =3D 0; j &lt; rel-&=
+gt;size; ++j)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  for (int j =3D 0; j &lt; rel-&gt;size; ++j)</span><br><span>         {</s=
+pan><br><span>             struct reliable_entry *e =3D &amp;rel-&gt;array[=
+j];</span><br><span>             if (e-&gt;active &amp;&amp; e-&gt;packet_i=
+d =3D=3D pid)</span><br><span>@@ -449,10 +442,9 @@</span><br><span> reliabl=
+e_print_ids(const struct reliable *rel, struct gc_arena *gc)</span><br><spa=
+n> {</span><br><span>     struct buffer out =3D alloc_buf_gc(256, gc);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span=
+> </span><br><span>     buf_printf(&amp;out, &quot;[&quot; packet_id_format=
+ &quot;]&quot;, (packet_id_print_type)rel-&gt;packet_id);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; rel-&gt;size; =
+++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =
+=3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {</span><br><span>   =
+      const struct reliable_entry *e =3D &amp;rel-&gt;array[i];</span><br><=
+span>         if (e-&gt;active)</span><br><span>@@ -468,9 +460,7 @@</span><=
+br><span> bool</span><br><span> reliable_can_get(const struct reliable *rel=
+)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)<=
+/span><br><span>     {</span><br><span>         const struct reliable_entry=
+ *e =3D &amp;rel-&gt;array[i];</span><br><span>         if (!e-&gt;active)<=
+/span><br><span>@@ -478,6 +468,7 @@</span><br><span>             return tru=
+e;</span><br><span>         }</span><br><span>     }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</spa=
+n><br><span>     dmsg(D_REL_LOW, &quot;ACK no free receive buffer available=
+: %s&quot;, reliable_print_ids(rel, &amp;gc));</span><br><span>     gc_free=
+(&amp;gc);</span><br><span>     return false;</span><br><span>@@ -488,12 +4=
+79,11 @@</span><br><span> reliable_not_replay(const struct reliable *rel, p=
+acket_id_type id)</span><br><span> {</span><br><span>     struct gc_arena g=
+c =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
+t i;</span><br><span>     if (reliable_pid_min(id, rel-&gt;packet_id))</spa=
+n><br><span>     {</span><br><span>         goto bad;</span><br><span>     =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i =
+&lt; rel-&gt;size; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {<=
+/span><br><span>         const struct reliable_entry *e =3D &amp;rel-&gt;ar=
+ray[i];</span><br><span>         if (e-&gt;active &amp;&amp; e-&gt;packet_i=
+d =3D=3D id)</span><br><span>@@ -514,19 +504,17 @@</span><br><span> bool</s=
+pan><br><span> reliable_wont_break_sequentiality(const struct reliable *rel=
+, packet_id_type id)</span><br><span> {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     const int ret =3D re=
+liable_pid_in_range2(id, rel-&gt;packet_id, rel-&gt;size);</span><br><span>=
+ </span><br><span>     if (!ret)</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc =3D gc_new()=
+;</span><br><span>         dmsg(D_REL_LOW, &quot;ACK &quot; packet_id_forma=
+t &quot; breaks sequentiality: %s&quot;,</span><br><span>              (pac=
+ket_id_print_type)id, reliable_print_ids(rel, &amp;gc));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><s=
+pan>     }</span><br><span> </span><br><span>     dmsg(D_REL_DEBUG, &quot;A=
+CK RWBS rel-&gt;size=3D%d rel-&gt;packet_id=3D%08x id=3D%08x ret=3D%d&quot;=
+, rel-&gt;size, rel-&gt;packet_id, id, ret);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    gc_free(&amp;gc);</span><br><span>     return ret;</span><br><span> }=
+</span><br><span> </span><br><span>@@ -534,8 +522,7 @@</span><br><span> str=
+uct buffer *</span><br><span> reliable_get_buf(struct reliable *rel)</span>=
+<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i =
+&lt; rel-&gt;size; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {<=
+/span><br><span>         struct reliable_entry *e =3D &amp;rel-&gt;array[i]=
+;</span><br><span>         if (!e-&gt;active)</span><br><span>@@ -550,7 +53=
+7,6 @@</span><br><span> int</span><br><span> reliable_get_num_output_sequen=
+ced_available(struct reliable *rel)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span=
+><br><span>     packet_id_type min_id =3D 0;</span><br><span>     bool min_=
+id_defined =3D false;</span><br><span> </span><br><span>@@ -573,7 +559,6 @@=
+</span><br><span>     {</span><br><span>         ret -=3D subtract_pid(rel-=
+&gt;packet_id, min_id);</span><br><span>     }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span>     return =
+ret;</span><br><span> }</span><br><span> </span><br><span>@@ -581,14 +566,1=
+2 @@</span><br><span> struct buffer *</span><br><span> reliable_get_buf_out=
+put_sequenced(struct reliable *rel)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>=
+     packet_id_type min_id =3D 0;</span><br><span>     bool min_id_defined =
+=3D false;</span><br><span>     struct buffer *ret =3D NULL;</span><br><spa=
+n> </span><br><span>     /* find minimum active packet_id */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; rel-&gt;siz=
+e; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int=
+ i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {</span><br><span>=
+         const struct reliable_entry *e =3D &amp;rel-&gt;array[i];</span><b=
+r><span>         if (e-&gt;active)</span><br><span>@@ -607,9 +590,10 @@</sp=
+an><br><span>     }</span><br><span>     else</span><br><span>     {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc=
+ =3D gc_new();</span><br><span>         dmsg(D_REL_LOW, &quot;ACK output se=
+quence broken: %s&quot;, reliable_print_ids(rel, &amp;gc));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br=
+><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_f=
+ree(&amp;gc);</span><br><span>     return ret;</span><br><span> }</span><br=
+><span> </span><br><span>@@ -617,8 +601,7 @@</span><br><span> struct reliab=
+le_entry *</span><br><span> reliable_get_entry_sequenced(struct reliable *r=
+el)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i=
+ =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><sp=
+an>     {</span><br><span>         struct reliable_entry *e =3D &amp;rel-&g=
+t;array[i];</span><br><span>         if (e-&gt;active &amp;&amp; e-&gt;pack=
+et_id =3D=3D rel-&gt;packet_id)</span><br><span>@@ -634,9 +617,8 @@</span><=
+br><span> reliable_can_send(const struct reliable *rel)</span><br><span> {<=
+/span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>     int n_activ=
+e =3D 0, n_current =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)=
+</span><br><span>     {</span><br><span>         const struct reliable_entr=
+y *e =3D &amp;rel-&gt;array[i];</span><br><span>         if (e-&gt;active)<=
+/span><br><span>@@ -662,11 +644,10 @@</span><br><span> struct buffer *</spa=
+n><br><span> reliable_send(struct reliable *rel, int *opcode)</span><br><sp=
+an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span=
+><br><span>     struct reliable_entry *best =3D NULL;</span><br><span>     =
+const time_t local_now =3D now;</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; rel-&gt;size; ++i)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i=
+ &lt; rel-&gt;size; ++i)</span><br><span>     {</span><br><span>         st=
+ruct reliable_entry *e =3D &amp;rel-&gt;array[i];</span><br><span> </span><=
+br><span>@@ -701,10 +682,9 @@</span><br><span> void</span><br><span> reliab=
+le_schedule_now(struct reliable *rel)</span><br><span> {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>     dmsg(D_R=
+EL_DEBUG, &quot;ACK reliable_schedule_now&quot;);</span><br><span>     rel-=
+&gt;hold =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span=
+><br><span>     {</span><br><span>         struct reliable_entry *e =3D &am=
+p;rel-&gt;array[i];</span><br><span>         if (e-&gt;active)</span><br><s=
+pan>@@ -722,10 +702,9 @@</span><br><span> {</span><br><span>     struct gc_=
+arena gc =3D gc_new();</span><br><span>     interval_t ret =3D BIG_TIMEOUT;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br>=
+<span>     const time_t local_now =3D now;</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; rel-&gt;siz=
+e; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int=
+ i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {</span><br><span>=
+         const struct reliable_entry *e =3D &amp;rel-&gt;array[i];</span><b=
+r><span>         if (e-&gt;active)</span><br><span>@@ -758,8 +737,7 @@</spa=
+n><br><span> reliable_mark_active_incoming(struct reliable *rel, struct buf=
+fer *buf,</span><br><span>                               packet_id_type pid=
+, int opcode)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</sp=
+an><br><span>     {</span><br><span>         struct reliable_entry *e =3D &=
+amp;rel-&gt;array[i];</span><br><span>         if (buf =3D=3D &amp;e-&gt;bu=
+f)</span><br><span>@@ -790,8 +768,7 @@</span><br><span> void</span><br><spa=
+n> reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, =
+int opcode)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span=
+><br><span>     {</span><br><span>         struct reliable_entry *e =3D &am=
+p;rel-&gt;array[i];</span><br><span>         if (buf =3D=3D &amp;e-&gt;buf)=
+</span><br><span>@@ -817,8 +794,7 @@</span><br><span> void</span><br><span>=
+ reliable_mark_deleted(struct reliable *rel, struct buffer *buf)</span><br>=
+<span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt;=
+ rel-&gt;size; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span>     {</spa=
+n><br><span>         struct reliable_entry *e =3D &amp;rel-&gt;array[i];</s=
+pan><br><span>         if (buf =3D=3D &amp;e-&gt;buf)</span><br><span>@@ -8=
+36,10 +812,8 @@</span><br><span> void</span><br><span> reliable_ack_debug_p=
+rint(const struct reliable_ack *ack, char *desc)</span><br><span> {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     printf(&quot;*****=
+**** struct reliable_ack %s\n&quot;, desc);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; ack-&gt;len; ++i)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; a=
+ck-&gt;len; ++i)</span><br><span>     {</span><br><span>         printf(&qu=
+ot;  %d: &quot; packet_id_format &quot;\n&quot;, i, (packet_id_print_type) =
+ack-&gt;packet_id[i]);</span><br><span>     }</span><br><span>@@ -848,14 +8=
+22,13 @@</span><br><span> void</span><br><span> reliable_debug_print(const =
+struct reliable *rel, char *desc)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>     update_time=
+();</span><br><span> </span><br><span>     printf(&quot;********* struct re=
+liable %s\n&quot;, desc);</span><br><span>     printf(&quot;  initial_timeo=
+ut=3D%d\n&quot;, (int)rel-&gt;initial_timeout);</span><br><span>     printf=
+(&quot;  packet_id=3D&quot; packet_id_format &quot;\n&quot;, rel-&gt;packet=
+_id);</span><br><span>     printf(&quot;  now=3D%&quot; PRIi64 &quot;\n&quo=
+t;, (int64_t)now);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ for (i =3D 0; i &lt; rel-&gt;size; ++i)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span>=
+<br><span>     {</span><br><span>         const struct reliable_entry *e =
+=3D &amp;rel-&gt;array[i];</span><br><span>         if (e-&gt;active)</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1083?usp=3Demail">change 1083</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1083?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8cefa9a406fe90bb3cbe4813047=
+82c639691a3a0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1083 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--hj3jGnqZTZE=--
 
