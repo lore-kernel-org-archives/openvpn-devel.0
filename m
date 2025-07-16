@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Jul 2025 14:18:08 +0000
+Date: Wed, 16 Jul 2025 14:18:10 +0000
 In-Reply-To: <gerrit.1752669697000.I22af9957b27785514d8c6d58fe4f2100d007fa5c@...2715...>
 References: <gerrit.1752669697000.I22af9957b27785514d8c6d58fe4f2100d007fa5c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <2cfe7e0208e8b5979437f2e72f3a44df2a116ad8-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <2cfe7e0208e8b5979437f2e72f3a44df2a116ad8-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hLmB0nomuU0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="HOFyjQbC+d4="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: README.dco: update
  Linux instructions
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hLmB0nomuU0=
+--HOFyjQbC+d4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- ordex. ( http://gerrit.openvpn.net/c/openvpn/+/1087?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+87?usp=3Demail )
 
 Change subject: README.dco: update Linux instructions
 ......................................................................
@@ -54,7 +49,7 @@ M README.dco.md
 1 file changed, 14 insertions(+), 19 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/1087/4
+
 
 diff --git a/README.dco.md b/README.dco.md
 index 3f7e00c..a93dc94 100644
@@ -134,17 +129,15 @@ Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---hLmB0nomuU0=
+--HOFyjQbC+d4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by ordex.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1087=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1087?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
 pace; white-space: pre-wrap;">README.dco: update Linux instructions<br><br>=
 Update the README.dco file by including instructions related<br>to the new =
 &#39;ovpn&#39; linux kernel module.<br><br>Change-Id: I22af9957b27785514d8c=
@@ -153,78 +146,76 @@ Update the README.dco file by including instructions related<br>to the new =
 -Id: &lt;20250716135430.23484-1-gert@...1296...&gt;<br>URL: https://www.mai=
 l-archive.com/openvpn-devel@lists.sourceforge.net/msg32180.html<br>Signed-o=
 ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M README.dco.md<br>1 =
-file changed, 14 insertions(+), 19 deletions(-)<br><br></pre><pre style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
-rrit.openvpn.net:29418/openvpn refs/changes/87/1087/4</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-README.dco.md b/README.dco.md</span><br><span>index 3f7e00c..a93dc94 100644=
-</span><br><span>--- a/README.dco.md</span><br><span>+++ b/README.dco.md</s=
-pan><br><span>@@ -14,26 +14,22 @@</span><br><span> </span><br><span> Gettin=
-g started (Linux)</span><br><span> -----------------------</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-- Use a recent Linux kernel. Linux 5.4=
-.0 and newer are known to work with</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-  ovpn-dco.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+The new DCO linux kernel module (namely `ovpn`) has been merged upstr=
-eam</span><br><span style=3D"color: hsl(120, 100%, 40%);">+as of linux-6.16=
-. From this kernel version onwards you directly get</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+the DCO module as shipped by your kernel.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+NOTE: the new `ovpn=
-` Linux kernel module is compatible only with OpenVPN</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+2.7 and greater.</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-Get the ovpn-dco module from=
- one these urls and build it:</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+Alternatively, if you run an older kernel or if you want to use a=
- more</span><br><span style=3D"color: hsl(120, 100%, 40%);">+recent DCO mod=
-ule than the one shipped by your kernel, you need to use</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+the ovpn-backports project.</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-* https://gitl=
-ab.com/openvpn/ovpn-dco</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-* https://github.com/OpenVPN/ovpn-dco</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+To learn how to use the ovpn-backports project and buil=
-d your own DCO</span><br><span style=3D"color: hsl(120, 100%, 40%);">+kerne=
-l module, please refer to the README file available at:</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-e.g.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  https://github.com/OpenVPN/ovpn-back=
-ports/blob/main/README.md</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    git clone https://github.com/OpenVPN/ovpn-dco</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    cd ovpn-dco</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    make</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    sudo make install</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-If you want to report bugs please ensure to compile ovpn-dco wit=
-h</span><br><span style=3D"color: hsl(0, 100%, 40%);">-`make DEBUG=3D1` and=
- include any debug message being printed by the</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-kernel (you can view those messages with `dmesg`)=
-.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-Clone and build OpenVPN (or use OpenVPN 2=
-.6+). For example:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+T=
-hen clone and build OpenVPN (or use OpenVPN 2.7+). For example:</span><br><=
-span> </span><br><span>     git clone https://github.com/openvpn/openvpn.gi=
-t</span><br><span>     cd openvpn</span><br><span>@@ -48,8 +44,8 @@</span><=
-br><span> data channel offloading, OpenVPN will automatically disable DCO s=
-upport and</span><br><span> warn the user.</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-Should OpenVPN be configured to use =
-a feature that is not supported by ovpn-dco</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-or should the ovpn-dco kernel module not be available=
- on the system, you will</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+Should OpenVPN be configured to use a feature that is not supported by=
- ovpn</span><br><span style=3D"color: hsl(120, 100%, 40%);">+or should the =
-ovpn kernel module not be available on the system, you will</span><br><span=
-> see a message like</span><br><span> </span><br><span>     Note: Kernel su=
-pport for ovpn-dco missing, disabling data channel offload.</span><br><span=
->@@ -131,4 +127,3 @@</span><br><span> - `--persist-tun` not tested;</span><=
-br><span> - IPv6 mapped IPv4 addresses need Linux 5.4.189+/5.10.110+/5.12+ =
-to work;</span><br><span> - some incompatible options may not properly fall=
-back to non-dco;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- no =
-per client statistics. Only total statistics available on the interface.</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1087?usp=3Demail">change 1087</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1087?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
+file changed, 14 insertions(+), 19 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/README.dco.md b/README.dco.md</span><br><span>index 3f7e00c=
+..a93dc94 100644</span><br><span>--- a/README.dco.md</span><br><span>+++ b/=
+README.dco.md</span><br><span>@@ -14,26 +14,22 @@</span><br><span> </span><=
+br><span> Getting started (Linux)</span><br><span> -----------------------<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Use a recent Linux k=
+ernel. Linux 5.4.0 and newer are known to work with</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  ovpn-dco.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+The new DCO linux kernel module (namely `ovpn`) has=
+ been merged upstream</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+as of linux-6.16. From this kernel version onwards you directly get</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+the DCO module as shipped=
+ by your kernel.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+NOT=
+E: the new `ovpn` Linux kernel module is compatible only with OpenVPN</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+2.7 and greater.</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-Get the ovpn=
+-dco module from one these urls and build it:</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+Alternatively, if you run an older kernel or if y=
+ou want to use a more</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+recent DCO module than the one shipped by your kernel, you need to use</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+the ovpn-backports pro=
+ject.</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-* https://gitlab.com/openvpn/ovpn-dco</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-* https://github.com/OpenVPN/ovpn-dco</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+To learn how to use the ovpn-backports =
+project and build your own DCO</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+kernel module, please refer to the README file available at:</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-e.g.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  https://github.com/O=
+penVPN/ovpn-backports/blob/main/README.md</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    git clone https://github.com/Open=
+VPN/ovpn-dco</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cd ov=
+pn-dco</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    make</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    sudo make install</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-If you want to report bugs please ensure to compi=
+le ovpn-dco with</span><br><span style=3D"color: hsl(0, 100%, 40%);">-`make=
+ DEBUG=3D1` and include any debug message being printed by the</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-kernel (you can view those message=
+s with `dmesg`).</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-Clone and build OpenVPN (o=
+r use OpenVPN 2.6+). For example:</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+Then clone and build OpenVPN (or use OpenVPN 2.7+). For examp=
+le:</span><br><span> </span><br><span>     git clone https://github.com/ope=
+nvpn/openvpn.git</span><br><span>     cd openvpn</span><br><span>@@ -48,8 +=
+44,8 @@</span><br><span> data channel offloading, OpenVPN will automaticall=
+y disable DCO support and</span><br><span> warn the user.</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Should OpenVPN be con=
+figured to use a feature that is not supported by ovpn-dco</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-or should the ovpn-dco kernel module n=
+ot be available on the system, you will</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+Should OpenVPN be configured to use a feature that is n=
+ot supported by ovpn</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++or should the ovpn kernel module not be available on the system, you will<=
+/span><br><span> see a message like</span><br><span> </span><br><span>     =
+Note: Kernel support for ovpn-dco missing, disabling data channel offload.<=
+/span><br><span>@@ -131,4 +127,3 @@</span><br><span> - `--persist-tun` not =
+tested;</span><br><span> - IPv6 mapped IPv4 addresses need Linux 5.4.189+/5=
+.10.110+/5.12+ to work;</span><br><span> - some incompatible options may no=
+t properly fallback to non-dco;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-- no per client statistics. Only total statistics available on th=
+e interface.</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1087?usp=3Demail">change 1087</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1087?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -240,8 +231,8 @@ f2100d007fa5c </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---hLmB0nomuU0=--
+--HOFyjQbC+d4=--
 
