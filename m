@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Jul 2025 16:26:18 +0000
-In-Reply-To: <gerrit.1752674908000.I317be5253d6563906dd3826421dc81f737beba76@...2715...>
-References: <gerrit.1752674908000.I317be5253d6563906dd3826421dc81f737beba76@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5bb2b78f0400a72ae74c4d47d01a9425143e0f09-EmailReplacePatchSet-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed, 16 Jul 2025 18:29:11 +0200
+Message-ID: <20250716162917.13420-1-gert@...1296...>
+In-Reply-To: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
+References: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NQeBAE9KAlI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure.ac: Remove
- use of PKCS11_HELPER_LIBS in mbedTLS checks
+Subject: [Openvpn-devel] [PATCH v3] dco: Add support for float notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,204 +13,309 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---NQeBAE9KAlI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1088?usp=3Demail )
+When a peer changes its UDP endpoint, the DCO module emits a
+notification to userpace. The message is parsed and the relevant
+information are extracted in order to process the floating operation.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+Note that we preserve IPv4-mapped IPv6 addresses in userspace when
+receiving a pure IPv4 address from the module, otherwise openvpn
+wouldn't be able to retrieve the multi_instance using the transport
+address hash table lookup.
 
-
-Change subject: configure.ac: Remove use of PKCS11_HELPER_LIBS in mbedTLS c=
-hecks
-......................................................................
-
-configure.ac: Remove use of PKCS11_HELPER_LIBS in mbedTLS checks
-
-This code was copied over and over since many years,
-since commit 9a3f670248d6f519a399e65a7232e2196b5115db
-("Fixed autoconf script to properly detect missing pkcs11
-with polarssl"). It is unclear what exact purpose it
-served back then but probably it is obsolete. It is
-definitely wrong since it means that you get
-PKCS11_HELPER_LIBS even if you do not specify
---enable-pkcs11.
-
-Change-Id: I317be5253d6563906dd3826421dc81f737beba76
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20250716151857.385959-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-187.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I33e9272b4196c7634db2fb33a75ae4261660867f
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
 ---
-M configure.ac
-1 file changed, 8 insertions(+), 12 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1088/2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1084
+This mail reflects revision 3 of this Change.
 
-diff --git a/configure.ac b/configure.ac
-index 8fc48ba..66cb79b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -798,14 +798,6 @@
- 		;;
- esac
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
--PKG_CHECK_MODULES(
--	[PKCS11_HELPER],
--	[libpkcs11-helper-1 >=3D 1.11],
--	[have_pkcs11_helper=3D"yes"],
--	[]
--)
--
--
- if test "$enable_dco" !=3D "no"; then
- 	enable_dco_arg=3D"$enable_dco"
- 	if test "${enable_iproute2}" =3D "yes"; then
-@@ -1014,13 +1006,12 @@
- 				[mbedtls_ssl_init],
- 				[MBEDTLS_LIBS=3D"-lmbedtls -lmbedx509 -lmbedcrypto"],
- 				[AC_MSG_ERROR([Could not find mbed TLS.])],
--				[${PKCS11_HELPER_LIBS}]
- 			)
- 		fi
- 	fi
-
--	CFLAGS=3D"${MBEDTLS_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}"
--	LIBS=3D"${MBEDTLS_LIBS} ${PKCS11_HELPER_LIBS} ${LIBS}"
-+	CFLAGS=3D"${MBEDTLS_CFLAGS} ${CFLAGS}"
-+	LIBS=3D"${MBEDTLS_LIBS} ${LIBS}"
-
- 	AC_MSG_CHECKING([mbedtls version])
- 	AC_COMPILE_IFELSE(
-@@ -1359,7 +1350,12 @@
-
- AM_CONDITIONAL([HAVE_SOFTHSM2], [false])
- if test "${enable_pkcs11}" =3D "yes"; then
--	test "${have_pkcs11_helper}" !=3D "yes" && AC_MSG_ERROR([PKCS11 enabled b=
-ut libpkcs11-helper is missing])
-+	PKG_CHECK_MODULES(
-+		[PKCS11_HELPER],
-+		[libpkcs11-helper-1 >=3D 1.11],
-+		[have_pkcs11_helper=3D"yes"],
-+		[AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])]
-+	)
- 	OPTIONAL_PKCS11_HELPER_CFLAGS=3D"${PKCS11_HELPER_CFLAGS}"
- 	OPTIONAL_PKCS11_HELPER_LIBS=3D"${PKCS11_HELPER_LIBS}"
- 	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1088?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I317be5253d6563906dd3826421dc81f737beba76
-Gerrit-Change-Number: 1088
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
-
---NQeBAE9KAlI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1088?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">configure.ac: Remove use of PKCS11_HELPER_LIBS i=
-n mbedTLS checks<br><br>This code was copied over and over since many years=
-,<br>since commit 9a3f670248d6f519a399e65a7232e2196b5115db<br>(&quot;Fixed =
-autoconf script to properly detect missing pkcs11<br>with polarssl&quot;). =
-It is unclear what exact purpose it<br>served back then but probably it is =
-obsolete. It is<br>definitely wrong since it means that you get<br>PKCS11_H=
-ELPER_LIBS even if you do not specify<br>--enable-pkcs11.<br><br>Change-Id:=
- I317be5253d6563906dd3826421dc81f737beba76<br>Signed-off-by: Frank Lichtenh=
-eld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...493...=
-1227...&gt;<br>Message-Id: &lt;20250716151857.385959-1-frank@...2641...&gt;=
-<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
-sg32187.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<=
-br>M configure.ac<br>1 file changed, 8 insertions(+), 12 deletions(-)<br><b=
-r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1088/2=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/configure.ac b/configure.ac</span><br><span>index 8fc=
-48ba..66cb79b 100644</span><br><span>--- a/configure.ac</span><br><span>+++=
- b/configure.ac</span><br><span>@@ -798,14 +798,6 @@</span><br><span> 		;;<=
-/span><br><span> esac</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-PKG_CHECK_MODULES(</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-	[PKCS11_HELPER],</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-	[libpkcs11-helper-1 &gt;=3D 1.11],</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-	[have_pkcs11_helper=3D&quot;yes&quot;],</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-	[]</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n> if test &quot;$enable_dco&quot; !=3D &quot;no&quot;; then</span><br><spa=
-n> 	enable_dco_arg=3D&quot;$enable_dco&quot;</span><br><span> 	if test &quo=
-t;${enable_iproute2}&quot; =3D &quot;yes&quot;; then</span><br><span>@@ -10=
-14,13 +1006,12 @@</span><br><span> 				[mbedtls_ssl_init],</span><br><span>=
- 				[MBEDTLS_LIBS=3D&quot;-lmbedtls -lmbedx509 -lmbedcrypto&quot;],</span>=
-<br><span> 				[AC_MSG_ERROR([Could not find mbed TLS.])],</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-				[${PKCS11_HELPER_LIBS}]</span><br>=
-<span> 			)</span><br><span> 		fi</span><br><span> 	fi</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	CFLAGS=3D&quot;${MBEDTL=
-S_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}&quot;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	LIBS=3D&quot;${MBEDTLS_LIBS} ${PKCS11_HELPER_L=
-IBS} ${LIBS}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
-CFLAGS=3D&quot;${MBEDTLS_CFLAGS} ${CFLAGS}&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	LIBS=3D&quot;${MBEDTLS_LIBS} ${LIBS}&quot;</s=
-pan><br><span> </span><br><span> 	AC_MSG_CHECKING([mbedtls version])</span>=
-<br><span> 	AC_COMPILE_IFELSE(</span><br><span>@@ -1359,7 +1350,12 @@</span=
-><br><span> </span><br><span> AM_CONDITIONAL([HAVE_SOFTHSM2], [false])</spa=
-n><br><span> if test &quot;${enable_pkcs11}&quot; =3D &quot;yes&quot;; then=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	test &quot;${have_pk=
-cs11_helper}&quot; !=3D &quot;yes&quot; &amp;&amp; AC_MSG_ERROR([PKCS11 ena=
-bled but libpkcs11-helper is missing])</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+	PKG_CHECK_MODULES(</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+		[PKCS11_HELPER],</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+		[libpkcs11-helper-1 &gt;=3D 1.11],</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+		[have_pkcs11_helper=3D&quot;yes&quot;]=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		[AC_MSG_ERROR([P=
-KCS11 enabled but libpkcs11-helper is missing])]</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	)</span><br><span> 	OPTIONAL_PKCS11_HELPER_CF=
-LAGS=3D&quot;${PKCS11_HELPER_CFLAGS}&quot;</span><br><span> 	OPTIONAL_PKCS1=
-1_HELPER_LIBS=3D&quot;${PKCS11_HELPER_LIBS}&quot;</span><br><span> 	AC_DEFI=
-NE([ENABLE_PKCS11], [1], [Enable PKCS11])</span><br><span></span><br></pre>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1088?usp=
-=3Demail">change 1088</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1088?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I317be5253d6563906dd3826421d=
-c81f737beba76 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1088 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---NQeBAE9KAlI=--
+        
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 22a445a..f04ebfe 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -768,6 +768,44 @@
+     return ret;
+ }
+ 
++static bool
++ovpn_parse_float_addr(struct nlattr **attrs, struct sockaddr *out)
++{
++    if (!attrs[OVPN_A_PEER_REMOTE_PORT])
++    {
++        msg(D_DCO, "ovpn-dco: no remote port in PEER_FLOAT_NTF message");
++        return false;
++    }
++
++    if (attrs[OVPN_A_PEER_REMOTE_IPV4])
++    {
++        struct sockaddr_in *addr4 = (struct sockaddr_in *)out;
++        CLEAR(*addr4);
++        addr4->sin_family = AF_INET;
++        addr4->sin_port = nla_get_u16(attrs[OVPN_A_PEER_REMOTE_PORT]);
++        addr4->sin_addr.s_addr = nla_get_u32(attrs[OVPN_A_PEER_REMOTE_IPV4]);
++        return true;
++    }
++    else if (attrs[OVPN_A_PEER_REMOTE_IPV6]
++             && nla_len(attrs[OVPN_A_PEER_REMOTE_IPV6]) == sizeof(struct in6_addr))
++    {
++        struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)out;
++        CLEAR(*addr6);
++        addr6->sin6_family = AF_INET6;
++        addr6->sin6_port = nla_get_u16(attrs[OVPN_A_PEER_REMOTE_PORT]);
++        memcpy(&addr6->sin6_addr, nla_data(attrs[OVPN_A_PEER_REMOTE_IPV6]),
++               sizeof(addr6->sin6_addr));
++        if (attrs[OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID])
++        {
++            addr6->sin6_scope_id = nla_get_u32(attrs[OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID]);
++        }
++        return true;
++    }
++
++    msg(D_DCO, "ovpn-dco: no valid remote IP address in PEER_FLOAT_NTF message");
++    return false;
++}
++
+ /* This function parses any netlink message sent by ovpn-dco to userspace */
+ static int
+ ovpn_handle_msg(struct nl_msg *msg, void *arg)
+@@ -856,6 +894,45 @@
+             break;
+         }
+ 
++        case OVPN_CMD_PEER_FLOAT_NTF:
++        {
++            if (!attrs[OVPN_A_PEER])
++            {
++                msg(D_DCO, "ovpn-dco: no peer in PEER_FLOAT_NTF message");
++                return NL_STOP;
++            }
++
++            struct nlattr *fp_attrs[OVPN_A_PEER_MAX + 1];
++            if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
++                                 NULL))
++            {
++                msg(D_DCO, "ovpn-dco: can't parse peer in PEER_FLOAT_NTF messsage");
++                return NL_STOP;
++            }
++
++            if (!fp_attrs[OVPN_A_PEER_ID])
++            {
++                msg(D_DCO, "ovpn-dco: no peer-id in PEER_FLOAT_NTF message");
++                return NL_STOP;
++            }
++            uint32_t peerid = nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);
++
++            if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&dco->dco_float_peer_ss))
++            {
++                return NL_STOP;
++            }
++
++            struct gc_arena gc = gc_new();
++            msg(D_DCO_DEBUG,
++                "ovpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, address: %s",
++                ifindex, peerid, print_sockaddr((struct sockaddr *)&dco->dco_float_peer_ss, &gc));
++            dco->dco_message_peer_id = (int)peerid;
++            dco->dco_message_type = OVPN_CMD_PEER_FLOAT_NTF;
++
++            gc_free(&gc);
++            break;
++        }
++
+         case OVPN_CMD_KEY_SWAP_NTF:
+         {
+             if (!attrs[OVPN_A_KEYCONF])
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 4e441ec..676b8cd 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -34,6 +34,7 @@
+ /* Defines to avoid mismatching with other platforms */
+ #define OVPN_CMD_DEL_PEER OVPN_CMD_PEER_DEL_NTF
+ #define OVPN_CMD_SWAP_KEYS OVPN_CMD_KEY_SWAP_NTF
++#define OVPN_CMD_FLOAT_PEER OVPN_CMD_PEER_FLOAT_NTF
+ 
+ typedef enum ovpn_key_slot dco_key_slot_t;
+ typedef enum ovpn_cipher_alg dco_cipher_t;
+@@ -75,6 +76,7 @@
+     int dco_message_peer_id;
+     int dco_message_key_id;
+     int dco_del_peer_reason;
++    struct sockaddr_storage dco_float_peer_ss;
+     uint64_t dco_read_bytes;
+     uint64_t dco_write_bytes;
+ } dco_context_t;
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 2a13658..83db739 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -663,6 +663,7 @@
+         dco->dco_message_peer_id = dco->notif_buf.PeerId;
+         dco->dco_message_type = dco->notif_buf.Cmd;
+         dco->dco_del_peer_reason = dco->notif_buf.DelPeerReason;
++        dco->dco_float_peer_ss = dco->notif_buf.FloatAddress;
+     }
+     else
+     {
+diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
+index 4513f3f..b9d93fa 100644
+--- a/src/openvpn/dco_win.h
++++ b/src/openvpn/dco_win.h
+@@ -52,6 +52,7 @@
+     int dco_message_peer_id;
+     int dco_message_type;
+     int dco_del_peer_reason;
++    struct sockaddr_storage dco_float_peer_ss;
+ 
+     uint64_t dco_read_bytes;
+     uint64_t dco_write_bytes;
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index a4f260a..0b4ceae 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1243,6 +1243,37 @@
+     perf_pop();
+ }
+ 
++void
++extract_dco_float_peer_addr(const uint32_t peer_id,
++                            struct openvpn_sockaddr *out_osaddr,
++                            const struct sockaddr *float_sa)
++{
++    if (float_sa->sa_family == AF_INET)
++    {
++        struct sockaddr_in *float4 = (struct sockaddr_in *)float_sa;
++        /* DCO treats IPv4-mapped IPv6 addresses as pure IPv4. However, we need
++         * to preserve the mapping, otherwise openvpn will not be able to find
++         * the peer by its trasnport address.
++         */
++        if (out_osaddr->addr.sa.sa_family == AF_INET6
++            && IN6_IS_ADDR_V4MAPPED(&out_osaddr->addr.in6.sin6_addr))
++        {
++            memcpy(&out_osaddr->addr.in6.sin6_addr.s6_addr[12],
++                   &float4->sin_addr.s_addr, sizeof(in_addr_t));
++            out_osaddr->addr.in6.sin6_port = float4->sin_port;
++        }
++        else
++        {
++            memcpy(&out_osaddr->addr.in4, float4, sizeof(struct sockaddr_in));
++        }
++    }
++    else
++    {
++        struct sockaddr_in6 *float6 = (struct sockaddr_in6 *)float_sa;
++        memcpy(&out_osaddr->addr.in6, float6, sizeof(struct sockaddr_in6));
++    }
++}
++
+ static void
+ process_incoming_dco(struct context *c)
+ {
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 318691f..4f3d81e 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -196,6 +196,21 @@
+ void process_incoming_link_part2(struct context *c, struct link_socket_info *lsi, const uint8_t *orig_buf);
+ 
+ /**
++ * Transfers \c float_sa data extracted from an incoming DCO
++ * PEER_FLOAT_NTF to \c out_osaddr for later processing.
++ *
++ * @param peer_id - The id of the floating peer.
++ * @param out_osaddr - openvpn_sockaddr struct that will be filled the new
++ *      address data
++ * @param float_sa - The sockaddr struct containing the data received from the
++ *      DCO notification
++ *
++ */
++void
++extract_dco_float_peer_addr(uint32_t peer_id, struct openvpn_sockaddr *out_osaddr,
++                            const struct sockaddr *float_sa);
++
++/**
+  * Write a packet to the external network interface.
+  * @ingroup external_multiplexer
+  *
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index a760e07..5030faa 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3384,6 +3384,16 @@
+         {
+             process_incoming_del_peer(m, mi, dco);
+         }
++#if defined(TARGET_LINUX) || defined(TARGET_WIN32)
++        else if (dco->dco_message_type == OVPN_CMD_FLOAT_PEER)
++        {
++            extract_dco_float_peer_addr(peer_id, &m->top.c2.from.dest,
++                                        (struct sockaddr *)&dco->dco_float_peer_ss);
++            ASSERT(mi->context.c2.link_sockets[0]);
++            multi_process_float(m, mi, mi->context.c2.link_sockets[0]);
++            CLEAR(dco->dco_float_peer_ss);
++        }
++#endif /* if defined(TARGET_LINUX) || defined(TARGET_WIN32) */
+         else if (dco->dco_message_type == OVPN_CMD_SWAP_KEYS)
+         {
+             tls_session_soft_reset(mi->context.c2.tls_multi);
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 40f7519..fe9e847 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -322,7 +322,7 @@
+ /**
+  * Process an incoming DCO message (from kernel space).
+  *
+- * @param m            - The single \c multi_context structur.e
++ * @param m            - The single \c multi_context structure.
+  *
+  * @return
+  *  - True, if the message was received correctly.
+diff --git a/src/openvpn/ovpn_dco_linux.h b/src/openvpn/ovpn_dco_linux.h
+index 680d152..b3c9ff0 100644
+--- a/src/openvpn/ovpn_dco_linux.h
++++ b/src/openvpn/ovpn_dco_linux.h
+@@ -99,6 +99,7 @@
+ 	OVPN_CMD_KEY_SWAP,
+ 	OVPN_CMD_KEY_SWAP_NTF,
+ 	OVPN_CMD_KEY_DEL,
++	OVPN_CMD_PEER_FLOAT_NTF,
+ 
+ 	__OVPN_CMD_MAX,
+ 	OVPN_CMD_MAX = (__OVPN_CMD_MAX - 1)
+diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
+index 865bb38..dd6b7ce 100644
+--- a/src/openvpn/ovpn_dco_win.h
++++ b/src/openvpn/ovpn_dco_win.h
+@@ -149,7 +149,8 @@
+ 
+ typedef enum {
+     OVPN_CMD_DEL_PEER,
+-    OVPN_CMD_SWAP_KEYS
++    OVPN_CMD_SWAP_KEYS,
++    OVPN_CMD_FLOAT_PEER
+ } OVPN_NOTIFY_CMD;
+ 
+ typedef enum {
+@@ -164,6 +165,7 @@
+     OVPN_NOTIFY_CMD Cmd;
+     int PeerId;
+     OVPN_DEL_PEER_REASON DelPeerReason;
++    struct sockaddr_storage FloatAddress;
+ } OVPN_NOTIFY_EVENT, * POVPN_NOTIFY_EVENT;
+ 
+ typedef struct _OVPN_MP_DEL_PEER {
 
