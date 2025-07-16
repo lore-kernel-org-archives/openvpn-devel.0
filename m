@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Jul 2025 21:02:45 +0000
+Date: Wed, 16 Jul 2025 21:02:47 +0000
 In-Reply-To: <gerrit.1752565606000.I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75@...2715...>
 References: <gerrit.1752565606000.I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., sasepp@...2783...
-Message-ID: <88afeed904750262e9a25f160be201526df28c6c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <88afeed904750262e9a25f160be201526df28c6c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cD/hcI9MxAg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="k22Z2v+3twk="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: t_server_null: match
  test numbers with server numbers
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <sasepp@...2783...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mattock <sasepp@...2783...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---cD/hcI9MxAg=
+--k22Z2v+3twk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- mattock. ( http://gerrit.openvpn.net/c/openvpn/+/1086?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+86?usp=3Demail )
 
 Change subject: t_server_null: match test numbers with server numbers
 ......................................................................
@@ -52,7 +48,7 @@ M tests/t_server_null_default.rc
 1 file changed, 42 insertions(+), 42 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/1086/3
+
 
 diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
 index a1c68cd..900f189 100755
@@ -207,184 +203,181 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---cD/hcI9MxAg=
+--k22Z2v+3twk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by mattock.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/10=
-86?usp=3Demail">View Change</a></p><p>The following approvals got outdated =
-and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">t_server_null: match test numbers with server number=
-s<br><br>This makes it obvious which server each test connects to<br><br>Ch=
-ange-Id: I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75<br>Signed-off-by: Samuli=
- Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>Acked-by: Gert Doering &lt;gert=
-@...1296...&gt;<br>Message-Id: &lt;20250716165656.18887-1-gert@...1296...&g=
-t;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net=
-/msg32194.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>--=
--<br>M tests/t_server_null_default.rc<br>1 file changed, 42 insertions(+), =
-42 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
-efs/changes/86/1086/3</pre><pre style=3D"font-family: monospace,monospace; =
-white-space: pre-wrap;"><span>diff --git a/tests/t_server_null_default.rc b=
-/tests/t_server_null_default.rc</span><br><span>index a1c68cd..900f189 1007=
-55</span><br><span>--- a/tests/t_server_null_default.rc</span><br><span>+++=
- b/tests/t_server_null_default.rc</span><br><span>@@ -80,67 +80,67 @@</span=
-><br><span> CLIENT_CIPHER_OPTS=3D&quot;&quot;</span><br><span> CLIENT_CERT_=
-OPTS=3D&quot;--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-aut=
-h ${TA} 1&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-TEST_RUN_LIST=3D&quot;1 1L 2 2L 3 4a 4b 4c 5a 5b 5c&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_RUN_LIST=3D&quot;1a =
-1b 1c 1L 2a 2L 3a 3b 4a 4b 4c&quot;</span><br><span> CLIENT_CONF_BASE=3D&qu=
-ot;${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_C=
-ERT_OPTS}&quot;</span><br><span> CLIENT_CONF_BASE_LWIP=3D&quot;${CLIENT_LWI=
-P_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-TES=
-T_NAME_1=3D&quot;t_server_null_client.sh-openvpn_current_udp&quot;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_1=3D&quot;yes&quot=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_1=3D&quo=
-t;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--CLIENT_CONF_1=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --pr=
-oto udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_N=
-AME_1a=3D&quot;t_server_null_client.sh-openvpn_current_udp&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_1a=3D&quot;yes&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1a=3D=
-&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+CLIENT_CONF_1a=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 u=
-dp --proto udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1b=3D&qu=
-ot;t_server_null_client.sh-openvpn_current_udp_fail&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_1b=3D&quot;no&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1b=3D&quot;${=
-CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+C=
-LIENT_CONF_1b=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --pr=
-oto udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+# --data-cipher list agai=
-nst server with defaults</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+# --cipher ignored</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+TEST_NAME_1c=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc1&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_1c=
-=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+C=
-LIENT_EXEC_1c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+CLIENT_CONF_1c=3D&quot;${CLIENT_CONF_BASE} --remote =
-127.0.0.1 1194 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-=
-CBC:DEFAULT&quot;</span><br><span> </span><br><span> TEST_NAME_1L=3D&quot;t=
-_server_null_client.sh-openvpn_current_udp_lwip&quot;</span><br><span> SHOU=
-LD_PASS_1L=3D&quot;yes&quot;</span><br><span> CLIENT_EXEC_1L=3D&quot;${CLIE=
-NT_EXEC}&quot;</span><br><span> CLIENT_CONF_1L=3D&quot;${CLIENT_CONF_BASE_L=
-WIP} --remote 127.0.0.1 1194 udp --proto udp&quot;</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_2=3D&quot;t_server=
-_null_client.sh-openvpn_current_tcp&quot;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-SHOULD_PASS_2=3D&quot;yes&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_2=3D&quot;${CLIENT_EXEC}&quot;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_2=3D&quot;=
-${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto tcp&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_2a=3D&quot;t_server=
-_null_client.sh-openvpn_current_tcp&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+SHOULD_PASS_2a=3D&quot;yes&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_2a=3D&quot;${CLIENT_EXEC}&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_2a=
-=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto tcp&quot;<=
-/span><br><span> </span><br><span> TEST_NAME_2L=3D&quot;t_server_null_clien=
-t.sh-openvpn_current_tcp_lwip&quot;</span><br><span> SHOULD_PASS_2L=3D&quot=
-;yes&quot;</span><br><span> CLIENT_EXEC_2L=3D&quot;${CLIENT_EXEC}&quot;</sp=
-an><br><span> CLIENT_CONF_2L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.=
-0.0.1 1195 tcp --proto tcp&quot;</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-TEST_NAME_3=3D&quot;t_server_null_client.sh-op=
-envpn_current_udp_fail&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-SHOULD_PASS_3=3D&quot;no&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-CLIENT_EXEC_3=3D&quot;${CLIENT_EXEC}&quot;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_3=3D&quot;${CLIENT_CONF_BA=
-SE} --remote 127.0.0.1 11194 udp --proto udp&quot;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-# --data-cipher list against server with defaults</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-# --cipher ignored</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_4a=3D&quot;t_server_null_client.=
-sh-openvpn_current_udp_dc1&quot;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-SHOULD_PASS_4a=3D&quot;yes&quot;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-CLIENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quot;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_4a=3D&quot;${CLIENT=
-_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp --cipher AES-128-CBC --=
-data-ciphers AES-192-CBC:DEFAULT&quot;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> # specific --data-cipher against server =
-that supports that cipher</span><br><span> # --cipher ignored</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_4b=3D&quot;t_server_null_=
-client.sh-openvpn_current_udp_dc3&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-SHOULD_PASS_4b=3D&quot;yes&quot;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&quot;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_4b=3D&quot;$=
-{CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES-128=
--CBC --data-ciphers AES-192-CBC&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+TEST_NAME_3a=3D&quot;t_server_null_client.sh-openvpn_curr=
-ent_udp_dc3&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SH=
-OULD_PASS_3a=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+CLIENT_EXEC_3a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_3a=3D&quot;${CLIENT_CONF_BAS=
-E} --remote 127.0.0.1 1196 udp --proto udp --cipher AES-128-CBC --data-ciph=
-ers AES-192-CBC&quot;</span><br><span> </span><br><span> # specific --data-=
-cipher against server that doesn&#39;t support that cipher</span><br><span>=
- # --cipher ignored</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TE=
-ST_NAME_4c=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc3_fail&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_3b=3D&q=
-uot;t_server_null_client.sh-openvpn_current_udp_dc3_fail&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_3b=3D&quot;no&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_3b=3D&qu=
-ot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+CLIENT_CONF_3b=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp =
---proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+TEST_NAME_4a=3D&quot;t_server_null_client.sh-ope=
-nvpn_current_multisocket_ipv4_tcp&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+SHOULD_PASS_4a=3D&quot;yes&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_4a=3D=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1086?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">t_server_null: match test numbers with server=
+ numbers<br><br>This makes it obvious which server each test connects to<br=
+><br>Change-Id: I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75<br>Signed-off-by:=
+ Samuli Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>Acked-by: Gert Doering &=
+lt;gert@...1296...&gt;<br>Message-Id: &lt;20250716165656.18887-1-gert@...1711...=
+96...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1357...=
+rge.net/msg32194.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt=
+;<br>---<br>M tests/t_server_null_default.rc<br>1 file changed, 42 insertio=
+ns(+), 42 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_defaul=
+t.rc</span><br><span>index a1c68cd..900f189 100755</span><br><span>--- a/te=
+sts/t_server_null_default.rc</span><br><span>+++ b/tests/t_server_null_defa=
+ult.rc</span><br><span>@@ -80,67 +80,67 @@</span><br><span> CLIENT_CIPHER_O=
+PTS=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=3D&quot;--ca ${CA} --c=
+ert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1&quot;</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=
+=3D&quot;1 1L 2 2L 3 4a 4b 4c 5a 5b 5c&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+TEST_RUN_LIST=3D&quot;1a 1b 1c 1L 2a 2L 3a 3b 4a 4=
+b 4c&quot;</span><br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_NULL_OPTS} ${=
+CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br=
+><span> CLIENT_CONF_BASE_LWIP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPT=
+S} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_1=3D&quot;t_server=
+_null_client.sh-openvpn_current_udp&quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-SHOULD_PASS_1=3D&quot;yes&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_1=3D&quot;${CLIENT_EXEC}&quot;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_1=3D&quot;=
+${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp&quot;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1a=3D&quot;t_server=
+_null_client.sh-openvpn_current_udp&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+SHOULD_PASS_1a=3D&quot;yes&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1a=3D&quot;${CLIENT_EXEC}&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_1a=
+=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1b=3D&quot;t_server_null_clie=
+nt.sh-openvpn_current_udp_fail&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+SHOULD_PASS_1b=3D&quot;no&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+CLIENT_EXEC_1b=3D&quot;${CLIENT_EXEC}&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_1b=3D&quot=
+;${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --proto udp&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+# --data-cipher list against server with defau=
+lts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# --cipher ignor=
+ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1c=3D&q=
+uot;t_server_null_client.sh-openvpn_current_udp_dc1&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_1c=3D&quot;yes&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1c=3D&quot;$=
+{CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+CLIENT_CONF_1c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --pr=
+oto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:DEFAULT&quot;</span=
+><br><span> </span><br><span> TEST_NAME_1L=3D&quot;t_server_null_client.sh-=
+openvpn_current_udp_lwip&quot;</span><br><span> SHOULD_PASS_1L=3D&quot;yes&=
+quot;</span><br><span> CLIENT_EXEC_1L=3D&quot;${CLIENT_EXEC}&quot;</span><b=
+r><span> CLIENT_CONF_1L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1=
+ 1194 udp --proto udp&quot;</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-TEST_NAME_2=3D&quot;t_server_null_client.sh-openvpn=
+_current_tcp&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHO=
+ULD_PASS_2=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-CLIENT_EXEC_2=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-CLIENT_CONF_2=3D&quot;${CLIENT_CONF_BASE} --rem=
+ote 127.0.0.1 1195 tcp --proto tcp&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+TEST_NAME_2a=3D&quot;t_server_null_client.sh-openvpn_c=
+urrent_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHO=
+ULD_PASS_2a=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+CLIENT_EXEC_2a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_2a=3D&quot;${CLIENT_CONF_BASE=
+} --remote 127.0.0.1 1195 tcp --proto tcp&quot;</span><br><span> </span><br=
+><span> TEST_NAME_2L=3D&quot;t_server_null_client.sh-openvpn_current_tcp_lw=
+ip&quot;</span><br><span> SHOULD_PASS_2L=3D&quot;yes&quot;</span><br><span>=
+ CLIENT_EXEC_2L=3D&quot;${CLIENT_EXEC}&quot;</span><br><span> CLIENT_CONF_2=
+L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 tcp --proto tcp&=
+quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-TEST_NAME_3=3D&quot;t_server_null_client.sh-openvpn_current_udp_fail&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_3=3D&quo=
+t;no&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC=
+_3=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-CLIENT_CONF_3=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1119=
+4 udp --proto udp&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# --data-cipher lis=
+t against server with defaults</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-# --cipher ignored</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-TEST_NAME_4a=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc1&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_4a=
+=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLI=
+ENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-CLIENT_CONF_4a=3D&quot;${CLIENT_CONF_BASE} --remote 127.=
+0.0.1 1194 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:=
+DEFAULT&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span> # specific --data-cipher against server that supports that cipher=
+</span><br><span> # --cipher ignored</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-TEST_NAME_4b=3D&quot;t_server_null_client.sh-openvpn_current=
+_udp_dc3&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_=
+PASS_4b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-CLIENT_CONF_4b=3D&quot;${CLIENT_CONF_BASE} --remo=
+te 127.0.0.1 1196 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-1=
+92-CBC&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NA=
+ME_3a=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc3&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_3a=3D&quot;yes&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_3a=
+=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+CLIENT_CONF_3a=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 119=
+6 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC&quot;</sp=
+an><br><span> </span><br><span> # specific --data-cipher against server tha=
+t doesn&#39;t support that cipher</span><br><span> # --cipher ignored</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_4c=3D&quot;t_serv=
+er_null_client.sh-openvpn_current_udp_dc3_fail&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_3b=3D&quot;t_server_null_client=
+.sh-openvpn_current_udp_dc3_fail&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+SHOULD_PASS_3b=3D&quot;no&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_3b=3D&quot;${CLIENT_EXEC}&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_3b=3D&qu=
+ot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES=
+-192-CBC --data-ciphers AES-128-CBC&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+TEST_NAME_4a=3D&quot;t_server_null_client.sh-openvpn_current_multisocket=
+_ipv4_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOU=
+LD_PASS_4a=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+CLIENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_4a=3D&quot;${CLIENT_CONF_BASE=
+} --remote 127.0.0.1 1197 tcp&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TES=
+T_NAME_4b=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_=
+udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PAS=
+S_4b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+CLIENT_CONF_4b=3D&quot;${CLIENT_CONF_BASE} --rem=
+ote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_4c=3D&=
+quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tcp_fail&quot=
+;</span><br><span> SHOULD_PASS_4c=3D&quot;no&quot;</span><br><span> CLIENT_=
+EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-CLIENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.=
+1 1196 udp --proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_5a=3D&quot;t_server_null_client=
+.sh-openvpn_current_multisocket_ipv4_tcp&quot;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-SHOULD_PASS_5a=3D&quot;yes&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_5a=3D&quot;${CLIENT_EXEC}&q=
+uot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_5a=3D=
 &quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+TEST_NAME_4b=3D&quot;t_server_null_client.sh-openvpn_c=
-urrent_multisocket_ipv6_udp&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+SHOULD_PASS_4b=3D&quot;yes&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_4b=3D&quot;$=
-{CLIENT_CONF_BASE} --remote ::1 1197 udp&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+TEST_NAME_4c=3D&quot;t_server_null_client.sh-openvpn_current_multis=
-ocket_ipv6_tcp_fail&quot;</span><br><span> SHOULD_PASS_4c=3D&quot;no&quot;<=
-/span><br><span> CLIENT_EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_4c=3D&quot;${CLIENT_CONF=
-_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES-192-CBC --data-=
-ciphers AES-128-CBC&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_5a=3D&q=
-uot;t_server_null_client.sh-openvpn_current_multisocket_ipv4_tcp&quot;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_5a=3D&quot;yes=
-&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_5a=
-=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-CLIENT_CONF_5a=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 =
-tcp&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_5b=3D&quot;t_server_nul=
-l_client.sh-openvpn_current_multisocket_ipv6_udp&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_5b=3D&quot;yes&quot;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_5b=3D&quot;${CLIENT=
-_EXEC}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CO=
-NF_5b=3D&quot;${CLIENT_CONF_BASE} --remote ::1 1197 udp&quot;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-TEST_NAME_5c=3D&quot;t_server_null_client.sh-openvpn_cur=
-rent_multisocket_ipv6_tcp_fail&quot;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-SHOULD_PASS_5c=3D&quot;no&quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_5c=3D&quot;${CLI=
-ENT_CONF_BASE} --remote ::1 1197 tcp&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+CLIENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote =
-::1 1197 tcp&quot;</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1086?usp=3Demail">change 1086</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1086?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-TEST_NAME_5b=3D&quot;t_server_null_client.sh-openvpn_curre=
+nt_multisocket_ipv6_udp&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-SHOULD_PASS_5b=3D&quot;yes&quot;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-CLIENT_EXEC_5b=3D&quot;${CLIENT_EXEC}&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_5b=3D&quot;${CLIENT_CO=
+NF_BASE} --remote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_N=
+AME_5c=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tcp=
+_fail&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PAS=
+S_5c=3D&quot;no&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-CLIENT_CONF_5c=3D&quot;${CLIENT_CONF_BASE} --remote :=
+:1 1197 tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CL=
+IENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote ::1 1197 tcp&quot;</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1086?usp=3Demail">change 1086</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1086?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -402,8 +395,8 @@ tent=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---cD/hcI9MxAg=--
+--k22Z2v+3twk=--
 
