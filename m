@@ -1,15 +1,15 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Jul 2025 08:00:41 +0000
+Date: Wed, 16 Jul 2025 08:31:39 +0000
 In-Reply-To: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
 References: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
  antonio@...2726...
-Message-ID: <5b4860c385ef47df7d30f5c919b52f57fe2f7485-EmailReviewComments-HTML@...2715...>
+Message-ID: <461c552aabf94987ce2d9142778d3f770b65c1d0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hUEikhck2G0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="8bFBNzR4pv8="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: Add support for
  float notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ralf_lici <ralf@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hUEikhck2G0=
+--8bFBNzR4pv8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -43,18 +43,18 @@ Patch Set 1:
 
 File src/openvpn/multi.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1084/comment/e60039a2_6836322f :
+http://gerrit.openvpn.net/c/openvpn/+/1084/comment/32317b9e_d8a2c183 :
 PS1, Line 3390:             if (extract_dco_float_peer_addr(peer_id, &m->to=
 p.c2.from.dest,
-> This isn=E2=80=99t actually a parsing of the kernel message, but rather a=
- utility function to transpose the  [=E2=80=A6]
-Yeah I would trust the kernel on Windows and add an assert to dco_handle_ov=
-erlapped_success(). I think this would make the logic more simple. I could =
-send you the diff and you could squash it into this patch.
+> Yeah I would trust the kernel on Windows and add an assert to dco_handle_=
+overlapped_success(). [=E2=80=A6]
+after discussion on IRC we decided just to remove this "if" and not to add =
+an assert - we'll get a error later in an improbable cause if dco-win retur=
+ns invalid AF.
 
 
 
---
+--=20
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
@@ -74,7 +74,7 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
 Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Wed, 16 Jul 2025 08:00:41 +0000
+Gerrit-Comment-Date: Wed, 16 Jul 2025 08:31:39 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: ordex <antonio@...2726...>
@@ -82,7 +82,7 @@ Comment-In-Reply-To: ralf_lici <ralf@...2726...>
 Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---hUEikhck2G0=
+--8bFBNzR4pv8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -93,23 +93,22 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul st=
 yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1084/comment/e60039a2_6836322f">Patch Set #1, Line 3390:</a=
+net/c/openvpn/+/1084/comment/32317b9e_d8a2c183">Patch Set #1, Line 3390:</a=
 > <code style=3D"font-family:monospace,monospace">            if (extract_d=
 co_float_peer_addr(peer_id, &amp;m-&gt;top.c2.from.dest,</code></p><p><bloc=
 kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
-x;">This isn=E2=80=99t actually a parsing of the kernel message, but rather=
- a utility function to transpose the  [=E2=80=A6]</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Yeah I would trust the k=
-ernel on Windows and add an assert to dco_handle_overlapped_success(). I th=
-ink this would make the logic more simple. I could send you the diff and yo=
-u could squash it into this patch.</p></li></ul></li></ul><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">change =
-1084</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+x;">Yeah I would trust the kernel on Windows and add an assert to dco_handl=
+e_overlapped_success(). [=E2=80=A6]</blockquote></p><p style=3D"white-space=
+: pre-wrap; word-wrap: break-word;">after discussion on IRC we decided just=
+ to remove this &quot;if&quot; and not to add an assert - we&#39;ll get a e=
+rror later in an improbable cause if dco-win returns invalid AF.</p></li></=
+ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1084?usp=3Demail">change 1084</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -137,7 +136,7 @@ ts.sourceforge.net&gt; </div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 16 Jul 2025 08:00:41=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 16 Jul 2025 08:31:39=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
@@ -150,5 +149,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---hUEikhck2G0=--
+--8bFBNzR4pv8=--
 
