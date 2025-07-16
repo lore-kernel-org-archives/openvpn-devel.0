@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Jul 2025 13:51:22 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 16 Jul 2025 15:54:25 +0200
+Message-ID: <20250716135430.23484-1-gert@...1296...>
 In-Reply-To: <gerrit.1752669697000.I22af9957b27785514d8c6d58fe4f2100d007fa5c@...2715...>
 References: <gerrit.1752669697000.I22af9957b27785514d8c6d58fe4f2100d007fa5c@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <6f08b1b05952d094632197365b05f15262dc8a7e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="eVSX35rpYpU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: README.dco: update
- Linux instructions
+Subject: [Openvpn-devel] [PATCH v3] README.dco: update Linux instructions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,86 +13,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---eVSX35rpYpU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: ordex, plaisthos.
+Update the README.dco file by including instructions related
+to the new 'ovpn' linux kernel module.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/1087?usp=3Demail )
+Change-Id: I22af9957b27785514d8c6d58fe4f2100d007fa5c
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Change subject: README.dco: update Linux instructions
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1087
+This mail reflects revision 3 of this Change.
 
-Patch Set 3: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1087?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I22af9957b27785514d8c6d58fe4f2100d007fa5c
-Gerrit-Change-Number: 1087
-Gerrit-PatchSet: 3
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Wed, 16 Jul 2025 13:51:22 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---eVSX35rpYpU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: ordex, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1087?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1087?usp=3Demail=
-">change 1087</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1087?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I22af9957b27785514d8c6d58fe4=
-f2100d007fa5c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1087 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 16 Jul 2025 13:51:22=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---eVSX35rpYpU=--
+        
+diff --git a/README.dco.md b/README.dco.md
+index 3f7e00c..a93dc94 100644
+--- a/README.dco.md
++++ b/README.dco.md
+@@ -14,26 +14,22 @@
+ 
+ Getting started (Linux)
+ -----------------------
+-- Use a recent Linux kernel. Linux 5.4.0 and newer are known to work with
+-  ovpn-dco.
++The new DCO linux kernel module (namely `ovpn`) has been merged upstream
++as of linux-6.16. From this kernel version onwards you directly get
++the DCO module as shipped by your kernel.
++NOTE: the new `ovpn` Linux kernel module is compatible only with OpenVPN
++2.7 and greater.
+ 
+-Get the ovpn-dco module from one these urls and build it:
++Alternatively, if you run an older kernel or if you want to use a more
++recent DCO module than the one shipped by your kernel, you need to use
++the ovpn-backports project.
+ 
+-* https://gitlab.com/openvpn/ovpn-dco
+-* https://github.com/OpenVPN/ovpn-dco
++To learn how to use the ovpn-backports project and build your own DCO
++kernel module, please refer to the README file available at:
+ 
+-e.g.
++  https://github.com/OpenVPN/ovpn-backports/blob/main/README.md
+ 
+-    git clone https://github.com/OpenVPN/ovpn-dco
+-    cd ovpn-dco
+-    make
+-    sudo make install
+-
+-If you want to report bugs please ensure to compile ovpn-dco with
+-`make DEBUG=1` and include any debug message being printed by the
+-kernel (you can view those messages with `dmesg`).
+-
+-Clone and build OpenVPN (or use OpenVPN 2.6+). For example:
++Then clone and build OpenVPN (or use OpenVPN 2.7+). For example:
+ 
+     git clone https://github.com/openvpn/openvpn.git
+     cd openvpn
+@@ -48,8 +44,8 @@
+ data channel offloading, OpenVPN will automatically disable DCO support and
+ warn the user.
+ 
+-Should OpenVPN be configured to use a feature that is not supported by ovpn-dco
+-or should the ovpn-dco kernel module not be available on the system, you will
++Should OpenVPN be configured to use a feature that is not supported by ovpn
++or should the ovpn kernel module not be available on the system, you will
+ see a message like
+ 
+     Note: Kernel support for ovpn-dco missing, disabling data channel offload.
+@@ -131,4 +127,3 @@
+ - `--persist-tun` not tested;
+ - IPv6 mapped IPv4 addresses need Linux 5.4.189+/5.10.110+/5.12+ to work;
+ - some incompatible options may not properly fallback to non-dco;
+-- no per client statistics. Only total statistics available on the interface.
 
