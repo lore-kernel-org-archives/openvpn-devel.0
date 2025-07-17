@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 16 Jul 2025 21:02:47 +0000
-In-Reply-To: <gerrit.1752565606000.I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75@...2715...>
-References: <gerrit.1752565606000.I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., sasepp@...2783...
-Message-ID: <88afeed904750262e9a25f160be201526df28c6c-HTML@...2715...>
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Thu, 17 Jul 2025 05:25:36 +0000
+In-Reply-To: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
+References: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <246f01203666f1a9076ef80a151e48f28da90592-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="k22Z2v+3twk="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: t_server_null: match
- test numbers with server numbers
+Content-Type: multipart/alternative; boundary="SN3+wJEu5mA="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
+ update_option() function.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,384 +20,822 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <sasepp@...2783...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---k22Z2v+3twk=
+--SN3+wJEu5mA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
-86?usp=3Demail )
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-Change subject: t_server_null: match test numbers with server numbers
+Hello flichtenheld, plaisthos, stipa,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail
+
+to look at the new patch set (#20).
+
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
+
+
+Change subject: PUSH_UPDATE: Added update_option() function.
 ......................................................................
 
-t_server_null: match test numbers with server numbers
+PUSH_UPDATE: Added update_option() function.
 
-This makes it obvious which server each test connects to
+When the function receives an option to update, it first checks whether it =
+has
+already received an option of the same type within the same update message.
+If it has already received it, it simply calls add_option(), otherwise it
+deletes all the values =E2=80=8B=E2=80=8Balready present regarding that opt=
+ion.
 
-Change-Id: I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75
-Signed-off-by: Samuli Sepp=C3=A4nen <sasepp@...2705...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250716165656.18887-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-194.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2
+Signed-off-by: Marco Baffo <marco@...2726...>
 ---
-M tests/t_server_null_default.rc
-1 file changed, 42 insertions(+), 42 deletions(-)
+M src/openvpn/options.c
+1 file changed, 247 insertions(+), 10 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/810/20
 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 22eaa8a..713df52 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5642,6 +5642,13 @@
+     return options->forward_compatible ? M_WARN : msglevel;
+ }
 
-diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
-index a1c68cd..900f189 100755
---- a/tests/t_server_null_default.rc
-+++ b/tests/t_server_null_default.rc
-@@ -80,67 +80,67 @@
- CLIENT_CIPHER_OPTS=3D""
- CLIENT_CERT_OPTS=3D"--ca ${CA} --cert ${CLIENT_CERT} --key ${CLIENT_KEY} -=
--tls-auth ${TA} 1"
-
--TEST_RUN_LIST=3D"1 1L 2 2L 3 4a 4b 4c 5a 5b 5c"
-+TEST_RUN_LIST=3D"1a 1b 1c 1L 2a 2L 3a 3b 4a 4b 4c"
- CLIENT_CONF_BASE=3D"${CLIENT_NULL_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_CIPHE=
-R_OPTS} ${CLIENT_CERT_OPTS}"
- CLIENT_CONF_BASE_LWIP=3D"${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPTS} ${CLIENT_=
-CIPHER_OPTS} ${CLIENT_CERT_OPTS}"
-
--TEST_NAME_1=3D"t_server_null_client.sh-openvpn_current_udp"
--SHOULD_PASS_1=3D"yes"
--CLIENT_EXEC_1=3D"${CLIENT_EXEC}"
--CLIENT_CONF_1=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto u=
-dp"
-+TEST_NAME_1a=3D"t_server_null_client.sh-openvpn_current_udp"
-+SHOULD_PASS_1a=3D"yes"
-+CLIENT_EXEC_1a=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_1a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto =
-udp"
++#define RESET_OPTION_ROUTES(option_ptr, field) \
++    if (option_ptr)                        \
++    {                                      \
++        option_ptr->field =3D NULL;          \
++        option_ptr->flags =3D 0;             \
++    }
 +
-+TEST_NAME_1b=3D"t_server_null_client.sh-openvpn_current_udp_fail"
-+SHOULD_PASS_1b=3D"no"
-+CLIENT_EXEC_1b=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_1b=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --proto=
- udp"
+ /**
+  * @brief Resets options found in the PUSH_UPDATE message that are precede=
+d by the `-` flag.
+  *        This function is used in push-updates to reset specified options.
+@@ -5696,11 +5703,7 @@
+             delete_routes_v4(c->c1.route_list, c->c1.tuntap,
+                              ROUTE_OPTION_FLAGS(&c->options),
+                              es, &c->net_ctx);
+-            if (options->routes)
+-            {
+-                options->routes->routes =3D NULL;
+-                options->routes->flags =3D 0;
+-            }
++            RESET_OPTION_ROUTES(options->routes, routes);
+         }
+     }
+     else if (streq(p[0], "route-ipv6") && !p[1])
+@@ -5711,11 +5714,7 @@
+             delete_routes_v6(c->c1.route_ipv6_list, c->c1.tuntap,
+                              ROUTE_OPTION_FLAGS(&c->options),
+                              es, &c->net_ctx);
+-            if (options->routes_ipv6)
+-            {
+-                options->routes_ipv6->routes_ipv6 =3D NULL;
+-                options->routes_ipv6->flags =3D 0;
+-            }
++            RESET_OPTION_ROUTES(options->routes_ipv6, routes_ipv6);
+         }
+     }
+     else if (streq(p[0], "route-gateway") && !p[1])
+@@ -5834,6 +5833,238 @@
+ err:
+     msg(msglevel, "Error occurred trying to remove %s option", p[0]);
+ }
 +
-+# --data-cipher list against server with defaults
-+# --cipher ignored
-+TEST_NAME_1c=3D"t_server_null_client.sh-openvpn_current_udp_dc1"
-+SHOULD_PASS_1c=3D"yes"
-+CLIENT_EXEC_1c=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_1c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto =
-udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:DEFAULT"
-
- TEST_NAME_1L=3D"t_server_null_client.sh-openvpn_current_udp_lwip"
- SHOULD_PASS_1L=3D"yes"
- CLIENT_EXEC_1L=3D"${CLIENT_EXEC}"
- CLIENT_CONF_1L=3D"${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1194 udp --p=
-roto udp"
-
--TEST_NAME_2=3D"t_server_null_client.sh-openvpn_current_tcp"
--SHOULD_PASS_2=3D"yes"
--CLIENT_EXEC_2=3D"${CLIENT_EXEC}"
--CLIENT_CONF_2=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto t=
-cp"
-+TEST_NAME_2a=3D"t_server_null_client.sh-openvpn_current_tcp"
-+SHOULD_PASS_2a=3D"yes"
-+CLIENT_EXEC_2a=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_2a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1195 tcp --proto =
-tcp"
-
- TEST_NAME_2L=3D"t_server_null_client.sh-openvpn_current_tcp_lwip"
- SHOULD_PASS_2L=3D"yes"
- CLIENT_EXEC_2L=3D"${CLIENT_EXEC}"
- CLIENT_CONF_2L=3D"${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 tcp --p=
-roto tcp"
-
--TEST_NAME_3=3D"t_server_null_client.sh-openvpn_current_udp_fail"
--SHOULD_PASS_3=3D"no"
--CLIENT_EXEC_3=3D"${CLIENT_EXEC}"
--CLIENT_CONF_3=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --proto =
-udp"
--
--# --data-cipher list against server with defaults
--# --cipher ignored
--TEST_NAME_4a=3D"t_server_null_client.sh-openvpn_current_udp_dc1"
--SHOULD_PASS_4a=3D"yes"
--CLIENT_EXEC_4a=3D"${CLIENT_EXEC}"
--CLIENT_CONF_4a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto =
-udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:DEFAULT"
--
- # specific --data-cipher against server that supports that cipher
- # --cipher ignored
--TEST_NAME_4b=3D"t_server_null_client.sh-openvpn_current_udp_dc3"
--SHOULD_PASS_4b=3D"yes"
--CLIENT_EXEC_4b=3D"${CLIENT_EXEC}"
--CLIENT_CONF_4b=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-128-CBC --data-ciphers AES-192-CBC"
-+TEST_NAME_3a=3D"t_server_null_client.sh-openvpn_current_udp_dc3"
-+SHOULD_PASS_3a=3D"yes"
-+CLIENT_EXEC_3a=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_3a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-128-CBC --data-ciphers AES-192-CBC"
-
- # specific --data-cipher against server that doesn't support that cipher
- # --cipher ignored
--TEST_NAME_4c=3D"t_server_null_client.sh-openvpn_current_udp_dc3_fail"
-+TEST_NAME_3b=3D"t_server_null_client.sh-openvpn_current_udp_dc3_fail"
-+SHOULD_PASS_3b=3D"no"
-+CLIENT_EXEC_3b=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_3b=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
++/**
++ * @brief Processes an option to update. It first checks whether it has al=
+ready
++ *        received an option of the same type within the same update messa=
+ge.
++ *        If the option has already been received, it calls add_option().
++ *        Otherwise, it deletes all existing values related to that option=
+ before calling add_option().
++ *
++ * @param c The context structure.
++ * @param options A pointer to the options structure.
++ * @param p An array of strings containing the options and their parameter=
+s.
++ * @param is_inline A boolean indicating if the option is inline.
++ * @param file The file where the function is called.
++ * @param line The line number where the function is called.
++ * @param level The level of the option.
++ * @param msglevel The message level for logging.
++ * @param permission_mask The permission mask used by VERIFY_PERMISSION().
++ * @param option_types_found A pointer to the variable where the flags cor=
+responding to the options found are stored.
++ * @param es The environment set structure.
++ * @param update_options_found A pointer to the variable where the flags c=
+orresponding to the update options found are stored,
++ *                             used to check if an option of the same type=
+ has already been processed by update_option() within the same push-update =
+message.
++ */
++static void
++update_option(struct context *c,
++              struct options *options,
++              char *p[],
++              bool is_inline,
++              const char *file,
++              int line,
++              const int level,
++              const int msglevel,
++              const unsigned int permission_mask,
++              unsigned int *option_types_found,
++              struct env_set *es,
++              unsigned int *update_options_found)
++{
++    const bool pull_mode =3D BOOL_CAST(permission_mask & OPT_P_PULL_MODE);
++    ASSERT(MAX_PARMS >=3D 7);
 +
-+TEST_NAME_4a=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv4_t=
-cp"
-+SHOULD_PASS_4a=3D"yes"
-+CLIENT_EXEC_4a=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_4a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
++    if (streq(p[0], "route") && p[1] && !p[5])
++    {
++        if (!(*update_options_found & OPT_P_U_ROUTE))
++        {
++            VERIFY_PERMISSION(OPT_P_ROUTE);
++            rol_check_alloc(options);
++            if (pull_mode)
++            {
++                if (!ip_or_dns_addr_safe(p[1], options->allow_pull_fqdn) &=
+& !is_special_addr(p[1])) /* FQDN -- may be DNS name */
++                {
++                    msg(msglevel, "route parameter network/IP '%s' must be=
+ a valid address", p[1]);
++                    goto err;
++                }
++                if (p[2] && !ip_addr_dotted_quad_safe(p[2])) /* FQDN -- mu=
+st be IP address */
++                {
++                    msg(msglevel, "route parameter netmask '%s' must be an=
+ IP address", p[2]);
++                    goto err;
++                }
++                if (p[3] && !ip_or_dns_addr_safe(p[3], options->allow_pull=
+_fqdn) && !is_special_addr(p[3])) /* FQDN -- may be DNS name */
++                {
++                    msg(msglevel, "route parameter gateway '%s' must be a =
+valid address", p[3]);
++                    goto err;
++                }
++            }
++            if (c->c1.route_list)
++            {
++                delete_routes_v4(c->c1.route_list, c->c1.tuntap,
++                                 ROUTE_OPTION_FLAGS(&c->options),
++                                 es, &c->net_ctx);
++                RESET_OPTION_ROUTES(options->routes, routes);
++            }
++            *update_options_found |=3D OPT_P_U_ROUTE;
++        }
++    }
++    else if (streq(p[0], "route-ipv6") && p[1] && !p[4])
++    {
++        if (!(*update_options_found & OPT_P_U_ROUTE6))
++        {
++            VERIFY_PERMISSION(OPT_P_ROUTE);
++            rol6_check_alloc(options);
++            if (pull_mode)
++            {
++                if (!ipv6_addr_safe_hexplusbits(p[1]))
++                {
++                    msg(msglevel, "route-ipv6 parameter network/IP '%s' mu=
+st be a valid address", p[1]);
++                    goto err;
++                }
++                if (p[2] && !ipv6_addr_safe(p[2]))
++                {
++                    msg(msglevel, "route-ipv6 parameter gateway '%s' must =
+be a valid address", p[2]);
++                    goto err;
++                }
++                /* p[3] is metric, if present */
++            }
++            if (c->c1.route_ipv6_list)
++            {
++                delete_routes_v6(c->c1.route_ipv6_list, c->c1.tuntap,
++                                 ROUTE_OPTION_FLAGS(&c->options),
++                                 es, &c->net_ctx);
++                RESET_OPTION_ROUTES(options->routes_ipv6, routes_ipv6);
++            }
++            *update_options_found |=3D OPT_P_U_ROUTE6;
++        }
++    }
++    else if (streq(p[0], "redirect-gateway") || streq(p[0], "redirect-priv=
+ate"))
++    {
++        if (!(*update_options_found & OPT_P_U_REDIR_GATEWAY))
++        {
++            VERIFY_PERMISSION(OPT_P_ROUTE);
++            if (options->routes)
++            {
++                options->routes->flags =3D 0;
++            }
++            if (options->routes_ipv6)
++            {
++                options->routes_ipv6->flags =3D 0;
++            }
++            *update_options_found |=3D OPT_P_U_REDIR_GATEWAY;
++        }
++    }
++    else if (streq(p[0], "dns") && p[1])
++    {
++        if (!(*update_options_found & OPT_P_U_DNS))
++        {
++            VERIFY_PERMISSION(OPT_P_DHCPDNS);
++            if (streq(p[1], "server") && p[2] && p[3] && p[4])
++            {
++                long priority;
++                if (!dns_server_priority_parse(&priority, p[2], pull_mode))
++                {
++                    msg(msglevel, "--dns server: invalid priority value '%=
+s'", p[2]);
++                    goto err;
++                }
 +
-+TEST_NAME_4b=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_u=
-dp"
-+SHOULD_PASS_4b=3D"yes"
-+CLIENT_EXEC_4b=3D"${CLIENT_EXEC}"
-+CLIENT_CONF_4b=3D"${CLIENT_CONF_BASE} --remote ::1 1197 udp"
++                struct dns_server server;
++                CLEAR(server);
++                if (streq(p[3], "address") && p[4])
++                {
++                    for (int i =3D 4; p[i]; ++i)
++                    {
++                        if (!dns_server_addr_parse(&server, p[i]))
++                        {
++                            msg(msglevel, "--dns server %ld: malformed add=
+ress or maximum exceeded '%s'", priority, p[i]);
++                            goto err;
++                        }
++                    }
++                }
++                else if (streq(p[3], "dnssec") && !p[5])
++                {
++                    if (!streq(p[4], "yes") && !streq(p[4], "no") && !stre=
+q(p[4], "optional"))
++                    {
++                        msg(msglevel, "--dns server %ld: malformed dnssec =
+value '%s'", priority, p[4]);
++                        goto err;
++                    }
++                }
++                else if (streq(p[3], "transport") && !p[5])
++                {
++                    if (!streq(p[4], "plain") && !streq(p[4], "DoH") && !s=
+treq(p[4], "DoT"))
++                    {
++                        msg(msglevel, "--dns server %ld: malformed transpo=
+rt value '%s'", priority, p[4]);
++                        goto err;
++                    }
++                }
++                else if (!streq(p[3], "resolve-domains")
++                         && !(streq(p[3], "sni") && !p[5]))
++                {
++                    msg(msglevel, "--dns server %ld: unknown option type '=
+%s' or missing or unknown parameter", priority, p[3]);
++                    goto err;
++                }
++            }
++            else if (!(streq(p[1], "search-domains") && p[2]))
++            {
++                msg(msglevel, "--dns: unknown option type '%s' or missing =
+or unknown parameter", p[1]);
++                goto err;
++            }
 +
-+TEST_NAME_4c=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_t=
-cp_fail"
- SHOULD_PASS_4c=3D"no"
- CLIENT_EXEC_4c=3D"${CLIENT_EXEC}"
--CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto =
-udp --cipher AES-192-CBC --data-ciphers AES-128-CBC"
--
--TEST_NAME_5a=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv4_t=
-cp"
--SHOULD_PASS_5a=3D"yes"
--CLIENT_EXEC_5a=3D"${CLIENT_EXEC}"
--CLIENT_CONF_5a=3D"${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp"
--
--TEST_NAME_5b=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_u=
-dp"
--SHOULD_PASS_5b=3D"yes"
--CLIENT_EXEC_5b=3D"${CLIENT_EXEC}"
--CLIENT_CONF_5b=3D"${CLIENT_CONF_BASE} --remote ::1 1197 udp"
--
--TEST_NAME_5c=3D"t_server_null_client.sh-openvpn_current_multisocket_ipv6_t=
-cp_fail"
--SHOULD_PASS_5c=3D"no"
--CLIENT_EXEC_5c=3D"${CLIENT_EXEC}"
--CLIENT_CONF_5c=3D"${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
-+CLIENT_CONF_4c=3D"${CLIENT_CONF_BASE} --remote ::1 1197 tcp"
++            gc_free(&options->dns_options.gc);
++            CLEAR(options->dns_options);
++            *update_options_found |=3D OPT_P_U_DNS;
++        }
++    }
++#if defined(_WIN32) || defined(TARGET_ANDROID)
++    else if (streq(p[0], "dhcp-option") && p[1] && !p[3])
++    {
++        if (!(*update_options_found & OPT_P_U_DHCP))
++        {
++            struct tuntap_options *o =3D &options->tuntap_options;
++            VERIFY_PERMISSION(OPT_P_DHCPDNS);
++
++            o->domain =3D NULL;
++            o->netbios_scope =3D NULL;
++            o->netbios_node_type =3D 0;
++            o->dns6_len =3D 0;
++            CLEAR(o->dns6);
++            o->dns_len =3D 0;
++            CLEAR(o->dns);
++            o->wins_len =3D 0;
++            CLEAR(o->wins);
++            o->ntp_len =3D 0;
++            CLEAR(o->ntp);
++            o->nbdd_len =3D 0;
++            CLEAR(o->nbdd);
++            while (o->domain_search_list_len-- > 0)
++            {
++                o->domain_search_list[o->domain_search_list_len] =3D NULL;
++            }
++            o->disable_nbt =3D 0;
++            o->dhcp_options =3D 0;
++#if defined(TARGET_ANDROID)
++            o->http_proxy_port =3D 0;
++            o->http_proxy =3D NULL;
++#endif
++            *update_options_found |=3D OPT_P_U_DHCP;
++        }
++    }
++#else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
++    else if (streq(p[0], "dhcp-option") && p[1] && !p[3])
++    {
++        if (!(*update_options_found & OPT_P_U_DHCP))
++        {
++            VERIFY_PERMISSION(OPT_P_DHCPDNS);
++            delete_all_dhcp_fo(options, &es->list);
++            *update_options_found |=3D OPT_P_U_DHCP;
++        }
++    }
++#endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
++    add_option(options, p, is_inline, file, line,
++               level, msglevel, permission_mask,
++               option_types_found, es);
++    return;
++err:
++    msg(msglevel, "Error occurred trying to update %s option", p[0]);
++}
++
+ bool
+ apply_push_options(struct context *c,
+                    struct options *options,
+@@ -5847,6 +6078,7 @@
+     int line_num =3D 0;
+     const char *file =3D "[PUSH-OPTIONS]";
+     const int msglevel =3D D_PUSH_ERRORS|M_OPTERR;
++    unsigned int update_options_found =3D 0;
+
+     while (buf_parse(buf, ',', line, sizeof(line)))
+     {
+@@ -5872,6 +6104,11 @@
+                 remove_option(c, options, p, false, file, line_num, msglev=
+el,
+                               permission_mask, option_types_found, es);
+             }
++            else
++            {
++                update_option(c, options, p, false, file, line_num, 0, msg=
+level,
++                              permission_mask, option_types_found, es, &up=
+date_options_found);
++            }
+         }
+     }
+     return true;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1086?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75
-Gerrit-Change-Number: 1086
-Gerrit-PatchSet: 3
-Gerrit-Owner: mattock <sasepp@...2783...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2
+Gerrit-Change-Number: 810
+Gerrit-PatchSet: 20
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-MessageType: newpatchset
 
---k22Z2v+3twk=
+--SN3+wJEu5mA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1086?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">t_server_null: match test numbers with server=
- numbers<br><br>This makes it obvious which server each test connects to<br=
-><br>Change-Id: I49c69144ab6dcf1d26c96c2eafc2346ad4e0ca75<br>Signed-off-by:=
- Samuli Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>Acked-by: Gert Doering &=
-lt;gert@...1296...&gt;<br>Message-Id: &lt;20250716165656.18887-1-gert@...1711...=
-96...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1357...=
-rge.net/msg32194.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt=
-;<br>---<br>M tests/t_server_null_default.rc<br>1 file changed, 42 insertio=
-ns(+), 42 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_defaul=
-t.rc</span><br><span>index a1c68cd..900f189 100755</span><br><span>--- a/te=
-sts/t_server_null_default.rc</span><br><span>+++ b/tests/t_server_null_defa=
-ult.rc</span><br><span>@@ -80,67 +80,67 @@</span><br><span> CLIENT_CIPHER_O=
-PTS=3D&quot;&quot;</span><br><span> CLIENT_CERT_OPTS=3D&quot;--ca ${CA} --c=
-ert ${CLIENT_CERT} --key ${CLIENT_KEY} --tls-auth ${TA} 1&quot;</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_RUN_LIST=
-=3D&quot;1 1L 2 2L 3 4a 4b 4c 5a 5b 5c&quot;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+TEST_RUN_LIST=3D&quot;1a 1b 1c 1L 2a 2L 3a 3b 4a 4=
-b 4c&quot;</span><br><span> CLIENT_CONF_BASE=3D&quot;${CLIENT_NULL_OPTS} ${=
-CLIENT_BASE_OPTS} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br=
-><span> CLIENT_CONF_BASE_LWIP=3D&quot;${CLIENT_LWIP_OPTS} ${CLIENT_BASE_OPT=
-S} ${CLIENT_CIPHER_OPTS} ${CLIENT_CERT_OPTS}&quot;</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_1=3D&quot;t_server=
-_null_client.sh-openvpn_current_udp&quot;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-SHOULD_PASS_1=3D&quot;yes&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_1=3D&quot;${CLIENT_EXEC}&quot;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_1=3D&quot;=
-${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1a=3D&quot;t_server=
-_null_client.sh-openvpn_current_udp&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+SHOULD_PASS_1a=3D&quot;yes&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1a=3D&quot;${CLIENT_EXEC}&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_1a=
-=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --proto udp&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1b=3D&quot;t_server_null_clie=
-nt.sh-openvpn_current_udp_fail&quot;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+SHOULD_PASS_1b=3D&quot;no&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+CLIENT_EXEC_1b=3D&quot;${CLIENT_EXEC}&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_1b=3D&quot=
-;${CLIENT_CONF_BASE} --remote 127.0.0.1 11194 udp --proto udp&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+# --data-cipher list against server with defau=
-lts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# --cipher ignor=
-ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_1c=3D&q=
-uot;t_server_null_client.sh-openvpn_current_udp_dc1&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_1c=3D&quot;yes&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_1c=3D&quot;$=
-{CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-CLIENT_CONF_1c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1194 udp --pr=
-oto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:DEFAULT&quot;</span=
-><br><span> </span><br><span> TEST_NAME_1L=3D&quot;t_server_null_client.sh-=
-openvpn_current_udp_lwip&quot;</span><br><span> SHOULD_PASS_1L=3D&quot;yes&=
-quot;</span><br><span> CLIENT_EXEC_1L=3D&quot;${CLIENT_EXEC}&quot;</span><b=
-r><span> CLIENT_CONF_1L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1=
- 1194 udp --proto udp&quot;</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-TEST_NAME_2=3D&quot;t_server_null_client.sh-openvpn=
-_current_tcp&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHO=
-ULD_PASS_2=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-CLIENT_EXEC_2=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-CLIENT_CONF_2=3D&quot;${CLIENT_CONF_BASE} --rem=
-ote 127.0.0.1 1195 tcp --proto tcp&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+TEST_NAME_2a=3D&quot;t_server_null_client.sh-openvpn_c=
-urrent_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHO=
-ULD_PASS_2a=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+CLIENT_EXEC_2a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_2a=3D&quot;${CLIENT_CONF_BASE=
-} --remote 127.0.0.1 1195 tcp --proto tcp&quot;</span><br><span> </span><br=
-><span> TEST_NAME_2L=3D&quot;t_server_null_client.sh-openvpn_current_tcp_lw=
-ip&quot;</span><br><span> SHOULD_PASS_2L=3D&quot;yes&quot;</span><br><span>=
- CLIENT_EXEC_2L=3D&quot;${CLIENT_EXEC}&quot;</span><br><span> CLIENT_CONF_2=
-L=3D&quot;${CLIENT_CONF_BASE_LWIP} --remote 127.0.0.1 1195 tcp --proto tcp&=
-quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-TEST_NAME_3=3D&quot;t_server_null_client.sh-openvpn_current_udp_fail&quot=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_3=3D&quo=
-t;no&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC=
-_3=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-CLIENT_CONF_3=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1119=
-4 udp --proto udp&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# --data-cipher lis=
-t against server with defaults</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-# --cipher ignored</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-TEST_NAME_4a=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc1&=
-quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PASS_4a=
-=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLI=
-ENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-CLIENT_CONF_4a=3D&quot;${CLIENT_CONF_BASE} --remote 127.=
-0.0.1 1194 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC:=
-DEFAULT&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span> # specific --data-cipher against server that supports that cipher=
-</span><br><span> # --cipher ignored</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-TEST_NAME_4b=3D&quot;t_server_null_client.sh-openvpn_current=
-_udp_dc3&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_=
-PASS_4b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-CLIENT_CONF_4b=3D&quot;${CLIENT_CONF_BASE} --remo=
-te 127.0.0.1 1196 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-1=
-92-CBC&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NA=
-ME_3a=3D&quot;t_server_null_client.sh-openvpn_current_udp_dc3&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PASS_3a=3D&quot;yes&=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_3a=
-=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+CLIENT_CONF_3a=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 119=
-6 udp --proto udp --cipher AES-128-CBC --data-ciphers AES-192-CBC&quot;</sp=
-an><br><span> </span><br><span> # specific --data-cipher against server tha=
-t doesn&#39;t support that cipher</span><br><span> # --cipher ignored</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_4c=3D&quot;t_serv=
-er_null_client.sh-openvpn_current_udp_dc3_fail&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_3b=3D&quot;t_server_null_client=
-.sh-openvpn_current_udp_dc3_fail&quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+SHOULD_PASS_3b=3D&quot;no&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+CLIENT_EXEC_3b=3D&quot;${CLIENT_EXEC}&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_3b=3D&qu=
-ot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1196 udp --proto udp --cipher AES=
--192-CBC --data-ciphers AES-128-CBC&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+TEST_NAME_4a=3D&quot;t_server_null_client.sh-openvpn_current_multisocket=
-_ipv4_tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOU=
-LD_PASS_4a=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+CLIENT_EXEC_4a=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+CLIENT_CONF_4a=3D&quot;${CLIENT_CONF_BASE=
-} --remote 127.0.0.1 1197 tcp&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TES=
-T_NAME_4b=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_=
-udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SHOULD_PAS=
-S_4b=3D&quot;yes&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+CLIENT_EXEC_4b=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+CLIENT_CONF_4b=3D&quot;${CLIENT_CONF_BASE} --rem=
-ote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_NAME_4c=3D&=
-quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tcp_fail&quot=
-;</span><br><span> SHOULD_PASS_4c=3D&quot;no&quot;</span><br><span> CLIENT_=
-EXEC_4c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-CLIENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote 127.0.0.=
-1 1196 udp --proto udp --cipher AES-192-CBC --data-ciphers AES-128-CBC&quot=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-TEST_NAME_5a=3D&quot;t_server_null_client=
-.sh-openvpn_current_multisocket_ipv4_tcp&quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-SHOULD_PASS_5a=3D&quot;yes&quot;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-CLIENT_EXEC_5a=3D&quot;${CLIENT_EXEC}&q=
-uot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_5a=3D=
-&quot;${CLIENT_CONF_BASE} --remote 127.0.0.1 1197 tcp&quot;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-TEST_NAME_5b=3D&quot;t_server_null_client.sh-openvpn_curre=
-nt_multisocket_ipv6_udp&quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-SHOULD_PASS_5b=3D&quot;yes&quot;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-CLIENT_EXEC_5b=3D&quot;${CLIENT_EXEC}&quot;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-CLIENT_CONF_5b=3D&quot;${CLIENT_CO=
-NF_BASE} --remote ::1 1197 udp&quot;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_N=
-AME_5c=3D&quot;t_server_null_client.sh-openvpn_current_multisocket_ipv6_tcp=
-_fail&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SHOULD_PAS=
-S_5c=3D&quot;no&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-CLIENT_EXEC_5c=3D&quot;${CLIENT_EXEC}&quot;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-CLIENT_CONF_5c=3D&quot;${CLIENT_CONF_BASE} --remote :=
-:1 1197 tcp&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CL=
-IENT_CONF_4c=3D&quot;${CLIENT_CONF_BASE} --remote ::1 1197 tcp&quot;</span>=
-<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1086?usp=3Demail">change 1086</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1086?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
+/p>
+<p>mrbff <strong>uploaded patch set #20</strong> to this change.</p><p><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail">View Change</=
+a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is un=
+satisfied now.</p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">PUSH_UPDATE: Added update_option() function.<br><br>When the=
+ function receives an option to update, it first checks whether it has<br>a=
+lready received an option of the same type within the same update message.<=
+br>If it has already received it, it simply calls add_option(), otherwise i=
+t<br>deletes all the values =E2=80=8B=E2=80=8Balready present regarding tha=
+t option.<br><br>Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2<br>Si=
+gned-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/o=
+ptions.c<br>1 file changed, 247 insertions(+), 10 deletions(-)<br><br></pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/810/20</pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><spa=
+n>index 22eaa8a..713df52 100644</span><br><span>--- a/src/openvpn/options.c=
+</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -5642,6 +56=
+42,13 @@</span><br><span>     return options-&gt;forward_compatible ? M_WAR=
+N : msglevel;</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#define RESET_OPTION_ROUTES(option_ptr, fiel=
+d) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (option_=
+ptr)                        \</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {                                      \</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        option_ptr-&gt;field =3D NULL;  =
+        \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        op=
+tion_ptr-&gt;flags =3D 0;             \</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span> /**</span><br><span>  * @brief Resets options found=
+ in the PUSH_UPDATE message that are preceded by the `-` flag.</span><br><s=
+pan>  *        This function is used in push-updates to reset specified opt=
+ions.</span><br><span>@@ -5696,11 +5703,7 @@</span><br><span>             d=
+elete_routes_v4(c-&gt;c1.route_list, c-&gt;c1.tuntap,</span><br><span>     =
+                         ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br>=
+<span>                              es, &amp;c-&gt;net_ctx);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;routes)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt;ro=
+utes-&gt;routes =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                options-&gt;routes-&gt;flags =3D 0;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            RESET_OPTION_ROUTES(options-&gt;rou=
+tes, routes);</span><br><span>         }</span><br><span>     }</span><br><=
+span>     else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; !p[1])</s=
+pan><br><span>@@ -5711,11 +5714,7 @@</span><br><span>             delete_ro=
+utes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</span><br><span>        =
+                      ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br><sp=
+an>                              es, &amp;c-&gt;net_ctx);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;routes_ipv6=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt;=
+routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                options-&gt;routes_ipv6-&gt;flags =3D 0;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            RESET_OPTION_ROUTE=
+S(options-&gt;routes_ipv6, routes_ipv6);</span><br><span>         }</span><=
+br><span>     }</span><br><span>     else if (streq(p[0], &quot;route-gatew=
+ay&quot;) &amp;&amp; !p[1])</span><br><span>@@ -5834,6 +5833,238 @@</span><=
+br><span> err:</span><br><span>     msg(msglevel, &quot;Error occurred tryi=
+ng to remove %s option&quot;, p[0]);</span><br><span> }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * @brief Processes an option to update. It first checks whether it has al=
+ready</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        rece=
+ived an option of the same type within the same update message.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *        If the option has alr=
+eady been received, it calls add_option().</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *        Otherwise, it deletes all existing values =
+related to that option before calling add_option().</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param c The context structure.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param options A pointer to the option=
+s structure.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
+am p An array of strings containing the options and their parameters.</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param is_inline A boo=
+lean indicating if the option is inline.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * @param file The file where the function is called.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param line The l=
+ine number where the function is called.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * @param level The level of the option.</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel The message le=
+vel for logging.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+@param permission_mask The permission mask used by VERIFY_PERMISSION().</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param option_types_=
+found A pointer to the variable where the flags corresponding to the option=
+s found are stored.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * @param es The environment set structure.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * @param update_options_found A pointer to the var=
+iable where the flags corresponding to the update options found are stored,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *                 =
+            used to check if an option of the same type has already been pr=
+ocessed by update_option() within the same push-update message.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+update_option(struct context *c,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              struct options *options,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+              char *p[=
+],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              boo=
+l is_inline,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+       const char *file,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+              int line,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+              const int level,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+              const int msglevel,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              const unsigned int permissi=
+on_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+   unsigned int *option_types_found,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+              struct env_set *es,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+              unsigned int *update_options_f=
+ound)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const bool pull_mode =3D BOO=
+L_CAST(permission_mask &amp; OPT_P_PULL_MODE);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    ASSERT(MAX_PARMS &gt;=3D 7);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (streq(p[0], &quot;route&quot;) &amp;&amp; p[1]=
+ &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*=
+update_options_found &amp; OPT_P_U_ROUTE))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            rol_check_alloc(options);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (pull=
+_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if =
+(!ip_or_dns_addr_safe(p[1], options-&gt;allow_pull_fqdn) &amp;&amp; !is_spe=
+cial_addr(p[1])) /* FQDN -- may be DNS name */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                    msg(msglevel, &quot;route para=
+meter network/IP &#39;%s&#39; must be a valid address&quot;, p[1]);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                    goto er=
+r;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if =
+(p[2] &amp;&amp; !ip_addr_dotted_quad_safe(p[2])) /* FQDN -- must be IP add=
+ress */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+      msg(msglevel, &quot;route parameter netmask &#39;%s&#39; must be an I=
+P address&quot;, p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    goto err;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                if (p[3] &amp;&amp; !ip_or_dns_addr_safe(p[3], =
+options-&gt;allow_pull_fqdn) &amp;&amp; !is_special_addr(p[3])) /* FQDN -- =
+may be DNS name */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                 msg(msglevel, &quot;route parameter gateway &#39;%s&#39; m=
+ust be a valid address&quot;, p[3]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    goto err;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            if (c-&gt;c1.route_list)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                delete_routes_v4(c-&gt;c1.rou=
+te_list, c-&gt;c1.tuntap,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                                 ROUTE_OPTION_FLAGS(&amp;c-&gt;option=
+s),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+                 es, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                RESET_OPTION_ROUTES(options-&gt;route=
+s, routes);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *u=
+pdate_options_found |=3D OPT_P_U_ROUTE;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; p[1] &amp;&amp; !p[=
+4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_options_=
+found &amp; OPT_P_U_ROUTE6))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            rol6_check_alloc(options);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (pull_mode)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                if (!ipv6_addr_s=
+afe_hexplusbits(p[1]))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                    msg(msglevel, &quot;route-ipv6 parameter network/IP &#=
+39;%s&#39; must be a valid address&quot;, p[1]);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                    goto err;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                if (p[2] &amp;&amp; !i=
+pv6_addr_safe(p[2]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                   msg(msglevel, &quot;route-ipv6 parameter gateway &#39;%s=
+&#39; must be a valid address&quot;, p[2]);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                    goto err;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                /* p[3] is metric, if pre=
+sent */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (c-=
+&gt;c1.route_ipv6_list)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              delete_routes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+            ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                 es, &amp=
+;c-&gt;net_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+             RESET_OPTION_ROUTES(options-&gt;routes_ipv6, routes_ipv6);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            *update_options_f=
+ound |=3D OPT_P_U_ROUTE6;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq=
+(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &quot;redirect-private&=
+quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_opti=
+ons_found &amp; OPT_P_U_REDIR_GATEWAY))</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            if (options-&gt;routes)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                options-&gt;rou=
+tes-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       if (options-&gt;routes_ipv6)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                options-&gt;routes_ipv6-&gt;flags =3D 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            *update_options_found =
+|=3D OPT_P_U_REDIR_GATEWAY;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (str=
+eq(p[0], &quot;dns&quot;) &amp;&amp; p[1])</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (!(*update_options_found &amp; OPT_P_U_DNS))</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT_P_DHCP=
+DNS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if=
+ (streq(p[1], &quot;server&quot;) &amp;&amp; p[2] &amp;&amp; p[3] &amp;&amp=
+; p[4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                lo=
+ng priority;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         if (!dns_server_priority_parse(&amp;priority, p[2], pull_mode))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    msg(=
+msglevel, &quot;--dns server: invalid priority value &#39;%s&#39;&quot;, p[=
+2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+     goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                struct dns=
+_server server;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+            CLEAR(server);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                if (streq(p[3], &quot;address&quot;) &amp;&amp; p[4]=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+for (int i =3D 4; p[i]; ++i)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                        if (!dns_server_addr_parse(&amp;server, =
+p[i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+           {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                     msg(msglevel, &quot;--dns server %ld: malformed addres=
+s or maximum exceeded &#39;%s&#39;&quot;, priority, p[i]);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                            goto err=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    else if (streq(p[3], &quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                    if (!streq(p[4=
+], &quot;yes&quot;) &amp;&amp; !streq(p[4], &quot;no&quot;) &amp;&amp; !str=
+eq(p[4], &quot;optional&quot;))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                        msg(msglevel, &quot;--dns server %ld:=
+ malformed dnssec value &#39;%s&#39;&quot;, priority, p[4]);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                        goto err;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                else=
+ if (streq(p[3], &quot;transport&quot;) &amp;&amp; !p[5])</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    if (!streq(p[4], &q=
+uot;plain&quot;) &amp;&amp; !streq(p[4], &quot;DoH&quot;) &amp;&amp; !streq=
+(p[4], &quot;DoT&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                        msg(msglevel, &quot;--dns server %ld: malfor=
+med transport value &#39;%s&#39;&quot;, priority, p[4]);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                        goto err;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                else if =
+(!streq(p[3], &quot;resolve-domains&quot;)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                         &amp;&amp; !(streq(p[3], &q=
+uot;sni&quot;) &amp;&amp; !p[5]))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                    msg(msglevel, &quot;--dns server %ld: unkno=
+wn option type &#39;%s&#39; or missing or unknown parameter&quot;, priority=
+, p[3]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+         goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   else if (!(streq(p[1], &quot;search-domains&quot;) &amp;&amp; p[2]))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel,=
+ &quot;--dns: unknown option type &#39;%s&#39; or missing or unknown parame=
+ter&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            gc_free(&=
+amp;options-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            CLEAR(options-&gt;dns_options);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            *update_options_found |=3D=
+ OPT_P_U_DNS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || defined=
+(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !=
+p[3])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_option=
+s_found &amp; OPT_P_U_DHCP))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           struct tuntap_options *o =3D &amp;options-&gt;tuntap_options;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PER=
+MISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&=
+gt;domain =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            o-&gt;netbios_scope =3D NULL;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            o-&gt;netbios_node_type =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dns6_len =3D=
+ 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEA=
+R(o-&gt;dns6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       o-&gt;dns_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            CLEAR(o-&gt;dns);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            o-&gt;wins_len =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            CLEAR(o-&gt;wins);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;ntp_len =3D =
+0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR=
+(o-&gt;ntp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     o-&gt;nbdd_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            CLEAR(o-&gt;nbdd);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            while (o-&gt;domain_search_list_len-- &gt; 0)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                o-&gt;dom=
+ain_search_list[o-&gt;domain_search_list_len] =3D NULL;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            o-&gt;disable_nbt =3D 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dhcp_optio=
+ns =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
+d(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          o-&gt;http_proxy_port =3D 0;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            o-&gt;http_proxy =3D NULL;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            *update_options_found |=3D OPT_P_U_DHC=
+P;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#else /* if defined(_WIN32) || defined(TA=
+RGET_ANDROID) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !=
+p[3])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_option=
+s_found &amp; OPT_P_U_DHCP))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            delete_all_dhcp_fo(options, &amp;es-&g=
+t;list);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ *update_options_found |=3D OPT_P_U_DHCP;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
+ndif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    add_option(options, p, is_inline, =
+file, line,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+       level, msglevel, permission_mask,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+               option_types_found, es);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    msg(msglevel, &quot;Error occurred trying to update =
+%s option&quot;, p[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an> bool</span><br><span> apply_push_options(struct context *c,</span><br><=
+span>                    struct options *options,</span><br><span>@@ -5847,=
+6 +6078,7 @@</span><br><span>     int line_num =3D 0;</span><br><span>     =
+const char *file =3D &quot;[PUSH-OPTIONS]&quot;;</span><br><span>     const=
+ int msglevel =3D D_PUSH_ERRORS|M_OPTERR;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    unsigned int update_options_found =3D 0;</span><b=
+r><span> </span><br><span>     while (buf_parse(buf, &#39;,&#39;, line, siz=
+eof(line)))</span><br><span>     {</span><br><span>@@ -5872,6 +6104,11 @@</=
+span><br><span>                 remove_option(c, options, p, false, file, l=
+ine_num, msglevel,</span><br><span>                               permissio=
+n_mask, option_types_found, es);</span><br><span>             }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                update_option(c, options=
+, p, false, file, line_num, 0, msglevel,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                              permission_mask, option_=
+types_found, es, &amp;update_options_found);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            }</span><br><span>         }</span><br=
+><span>     }</span><br><span>     return true;</span><br><span></span><br>=
+</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/81=
+0?usp=3Demail">change 810</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I49c69144ab6dcf1d26c96c2eafc=
-2346ad4e0ca75 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1086 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9=
+b3577984ecdc2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 810 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 20 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---k22Z2v+3twk=--
+--SN3+wJEu5mA=--
 
