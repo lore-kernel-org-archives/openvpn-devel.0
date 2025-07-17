@@ -1,17 +1,15 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Thu, 17 Jul 2025 05:25:36 +0000
-In-Reply-To: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
-References: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <246f01203666f1a9076ef80a151e48f28da90592-EmailReplacePatchSet-HTML@...2715...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Thu, 17 Jul 2025 09:17:36 +0000
+References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <951c2d132577baab339a0da4a88dbb866eb0b40c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="SN3+wJEu5mA="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
- update_option() function.
+Content-Type: multipart/alternative; boundary="yUhSpOx7qcw="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: multipeer: introduce
+ asymmetric peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,822 +18,785 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---SN3+wJEu5mA=
+--yUhSpOx7qcw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos, stipa,
+Hello plaisthos, flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail
 
-to look at the new patch set (#20).
-
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+to review the following change.
 
 
-Change subject: PUSH_UPDATE: Added update_option() function.
+Change subject: multipeer: introduce asymmetric peer-id
 ......................................................................
 
-PUSH_UPDATE: Added update_option() function.
+multipeer: introduce asymmetric peer-id
 
-When the function receives an option to update, it first checks whether it =
-has
-already received an option of the same type within the same update message.
-If it has already received it, it simply calls add_option(), otherwise it
-deletes all the values =E2=80=8B=E2=80=8Balready present regarding that opt=
-ion.
+In order to achieve a multipeer functionality, peers now
+use separate IDs for sending (tx_peer_id) and receiving
+(rx_peer_id).
 
-Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2
-Signed-off-by: Marco Baffo <marco@...2726...>
+Each peer announces its own ID through pushing peer-info
+using 'ID=3D7f1' hex format so identification can still
+happen even if IP/port changes.
+
+In P2P mode, peer switch to using the announced IDs after
+mutual exchange.
+In P2MP mode, clients always announce their ID, and servers
+can optionally respond with their own to enable the same
+behavior.
+
+Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 ---
-M src/openvpn/options.c
-1 file changed, 247 insertions(+), 10 deletions(-)
+M src/openvpn/dco.c
+M src/openvpn/init.c
+M src/openvpn/misc.c
+M src/openvpn/multi.c
+M src/openvpn/push.c
+M src/openvpn/ssl.c
+M src/openvpn/ssl_common.h
+M src/openvpn/ssl_ncp.c
+M src/openvpn/ssl_util.c
+M src/openvpn/ssl_util.h
+M tests/unit_tests/openvpn/test_crypto.c
+11 files changed, 65 insertions(+), 27 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/810/20
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 22eaa8a..713df52 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5642,6 +5642,13 @@
-     return options->forward_compatible ? M_WARN : msglevel;
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/1089/1
+
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 98cbb72..3687f4a 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -513,7 +513,7 @@
+         c->c2.tls_multi->dco_peer_id =3D -1;
+     }
+ #endif
+-    int ret =3D dco_new_peer(&c->c1.tuntap->dco, multi->peer_id, sock->sd,=
+ NULL,
++    int ret =3D dco_new_peer(&c->c1.tuntap->dco, multi->rx_peer_id, sock->=
+sd, NULL,
+                            proto_is_dgram(sock->info.proto) ? remoteaddr :=
+ NULL,
+                            NULL, NULL);
+     if (ret < 0)
+@@ -521,7 +521,7 @@
+         return ret;
+     }
+
+-    c->c2.tls_multi->dco_peer_id =3D multi->peer_id;
++    c->c2.tls_multi->dco_peer_id =3D multi->rx_peer_id;
+
+     return 0;
+ }
+@@ -595,7 +595,7 @@
+ {
+     struct context *c =3D &mi->context;
+
+-    int peer_id =3D c->c2.tls_multi->peer_id;
++    int peer_id =3D c->c2.tls_multi->rx_peer_id;
+     struct sockaddr *remoteaddr, *localaddr =3D NULL;
+     struct sockaddr_storage local =3D { 0 };
+     int sd =3D c->c2.link_sockets[0]->sd;
+@@ -667,7 +667,7 @@
+     if (addrtype =3D=3D MR_ADDR_IPV6)
+     {
+ #if defined(_WIN32)
+-        dco_win_add_iroute_ipv6(&c->c1.tuntap->dco, addr->v6.addr, addr->n=
+etbits, c->c2.tls_multi->peer_id);
++        dco_win_add_iroute_ipv6(&c->c1.tuntap->dco, addr->v6.addr, addr->n=
+etbits, c->c2.tls_multi->rx_peer_id);
+ #else
+         net_route_v6_add(&m->top.net_ctx, &addr->v6.addr, addr->netbits,
+                          &mi->context.c2.push_ifconfig_ipv6_local, c->c1.t=
+untap->actual_name, 0,
+@@ -677,7 +677,7 @@
+     else if (addrtype =3D=3D MR_ADDR_IPV4)
+     {
+ #if defined(_WIN32)
+-        dco_win_add_iroute_ipv4(&c->c1.tuntap->dco, addr->v4.addr, addr->n=
+etbits, c->c2.tls_multi->peer_id);
++        dco_win_add_iroute_ipv4(&c->c1.tuntap->dco, addr->v4.addr, addr->n=
+etbits, c->c2.tls_multi->rx_peer_id);
+ #else
+         in_addr_t dest =3D htonl(addr->v4.addr);
+         net_route_v4_add(&m->top.net_ctx, &dest, addr->netbits,
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 77747a2..543eaf9 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2328,7 +2328,7 @@
+
+     if (o->use_peer_id)
+     {
+-        buf_printf(&out, ", peer-id: %d", o->peer_id);
++        buf_printf(&out, ", rx_peer-id: %u, tx_peer-id: %u", c->c2.tls_mul=
+ti->rx_peer_id, c->c2.tls_multi->tx_peer_id);
+     }
+
+ #ifdef USE_COMP
+@@ -2778,7 +2778,7 @@
+     {
+         msg(D_PUSH_DEBUG, "OPTIONS IMPORT: peer-id set");
+         c->c2.tls_multi->use_peer_id =3D true;
+-        c->c2.tls_multi->peer_id =3D c->options.peer_id;
++        c->c2.tls_multi->tx_peer_id =3D c->options.peer_id;
+     }
+
+     /* process (potentially) pushed options */
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 4695700..122ca74 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -777,7 +777,8 @@
+     {
+         chomp(line);
+         if (validate_peer_info_line(line)
+-            && (strncmp(line, "IV_", 3) =3D=3D 0 || strncmp(line, "UV_", 3=
+) =3D=3D 0) )
++            && (strncmp(line, "IV_", 3) =3D=3D 0 || strncmp(line, "UV_", 3=
+) =3D=3D 0
++                || strncmp(line, "ID", 2) =3D=3D 0))
+         {
+             msg(M_INFO, "peer info: %s", line);
+             env_set_add(es, line);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index a760e07..6987dc5 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -479,7 +479,7 @@
+             && check_debug_level(D_DCO_DEBUG)
+             && dco_enabled(&mi->context.options))
+         {
+-            buf_printf(&out, " peer-id=3D%d", mi->context.c2.tls_multi->pe=
+er_id);
++            buf_printf(&out, " rx_peer-id=3D%d", mi->context.c2.tls_multi-=
+>rx_peer_id);
+         }
+         return BSTR(&out);
+     }
+@@ -655,9 +655,9 @@
+         }
+ #endif
+
+-        if (mi->context.c2.tls_multi->peer_id !=3D MAX_PEER_ID)
++        if (mi->context.c2.tls_multi->rx_peer_id !=3D MAX_PEER_ID)
+         {
+-            m->instances[mi->context.c2.tls_multi->peer_id] =3D NULL;
++            m->instances[mi->context.c2.tls_multi->rx_peer_id] =3D NULL;
+         }
+
+         schedule_remove_entry(m->schedule, (struct schedule_entry *) mi);
+@@ -972,7 +972,7 @@
+ #else
+                                   sep,
+ #endif
+-                                  sep, mi->context.c2.tls_multi ? mi->cont=
+ext.c2.tls_multi->peer_id : UINT32_MAX,
++                                  sep, mi->context.c2.tls_multi ? mi->cont=
+ext.c2.tls_multi->rx_peer_id : UINT32_MAX,
+                                   sep, translate_cipher_name_to_openvpn(mi=
+->context.options.ciphername));
+                 }
+                 gc_free(&gc);
+@@ -1813,6 +1813,12 @@
+     {
+         tls_multi->use_peer_id =3D true;
+         o->use_peer_id =3D true;
++        uint32_t peer_id =3D extract_asymmetric_peer_id(peer_info);
++        if (peer_id)
++        {
++            tls_multi->tx_peer_id =3D peer_id;
++            tls_multi->use_asymmetric_peer_id =3D true;
++        }
+     }
+     else if (dco_enabled(o))
+     {
+@@ -3256,7 +3262,7 @@
+     }
+
+     msg(D_MULTI_MEDIUM, "peer %" PRIu32 " (%s) floated from %s to %s",
+-        mi->context.c2.tls_multi->peer_id,
++        mi->context.c2.tls_multi->rx_peer_id,
+         tls_common_name(mi->context.c2.tls_multi, false),
+         mroute_addr_print(&mi->real, &gc),
+         print_link_socket_actual(&m->top.c2.from, &gc));
+@@ -4235,7 +4241,11 @@
+     {
+         if (!m->instances[i])
+         {
+-            mi->context.c2.tls_multi->peer_id =3D i;
++            mi->context.c2.tls_multi->rx_peer_id =3D i;
++            if (!mi->context.c2.tls_multi->use_asymmetric_peer_id)
++            {
++                mi->context.c2.tls_multi->tx_peer_id =3D i;
++            }
+             m->instances[i] =3D mi;
+             break;
+         }
+@@ -4243,7 +4253,7 @@
+
+     /* should not really end up here, since multi_create_instance returns =
+null
+      * if amount of clients exceeds max_clients */
+-    ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
++    ASSERT(mi->context.c2.tls_multi->rx_peer_id < m->max_clients);
  }
 
-+#define RESET_OPTION_ROUTES(option_ptr, field) \
-+    if (option_ptr)                        \
-+    {                                      \
-+        option_ptr->field =3D NULL;          \
-+        option_ptr->flags =3D 0;             \
-+    }
-+
- /**
-  * @brief Resets options found in the PUSH_UPDATE message that are precede=
-d by the `-` flag.
-  *        This function is used in push-updates to reset specified options.
-@@ -5696,11 +5703,7 @@
-             delete_routes_v4(c->c1.route_list, c->c1.tuntap,
-                              ROUTE_OPTION_FLAGS(&c->options),
-                              es, &c->net_ctx);
--            if (options->routes)
--            {
--                options->routes->routes =3D NULL;
--                options->routes->flags =3D 0;
--            }
-+            RESET_OPTION_ROUTES(options->routes, routes);
-         }
+ /*************************************************************************=
+*/
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index ad8fa3d7..073e6b6 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -654,7 +654,7 @@
+     if (tls_multi->use_peer_id)
+     {
+         push_option_fmt(gc, push_list, M_USAGE, "peer-id %d",
+-                        tls_multi->peer_id);
++                        tls_multi->rx_peer_id);
      }
-     else if (streq(p[0], "route-ipv6") && !p[1])
-@@ -5711,11 +5714,7 @@
-             delete_routes_v6(c->c1.route_ipv6_list, c->c1.tuntap,
-                              ROUTE_OPTION_FLAGS(&c->options),
-                              es, &c->net_ctx);
--            if (options->routes_ipv6)
--            {
--                options->routes_ipv6->routes_ipv6 =3D NULL;
--                options->routes_ipv6->flags =3D 0;
--            }
-+            RESET_OPTION_ROUTES(options->routes_ipv6, routes_ipv6);
-         }
-     }
-     else if (streq(p[0], "route-gateway") && !p[1])
-@@ -5834,6 +5833,238 @@
- err:
-     msg(msglevel, "Error occurred trying to remove %s option", p[0]);
+     /*
+      * If server uses --auth-gen-token and we have an auth token
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 9c6616a..edac9aa 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1181,7 +1181,9 @@
+     /* get command line derived options */
+     ret->opt =3D *tls_options;
+     ret->dco_peer_id =3D -1;
+-    ret->peer_id =3D MAX_PEER_ID;
++    ret->use_asymmetric_peer_id =3D false;
++    ret->rx_peer_id =3D MAX_PEER_ID;
++    ret->tx_peer_id =3D MAX_PEER_ID;
+
+     return ret;
  }
-+
-+/**
-+ * @brief Processes an option to update. It first checks whether it has al=
-ready
-+ *        received an option of the same type within the same update messa=
-ge.
-+ *        If the option has already been received, it calls add_option().
-+ *        Otherwise, it deletes all existing values related to that option=
- before calling add_option().
-+ *
-+ * @param c The context structure.
-+ * @param options A pointer to the options structure.
-+ * @param p An array of strings containing the options and their parameter=
-s.
-+ * @param is_inline A boolean indicating if the option is inline.
-+ * @param file The file where the function is called.
-+ * @param line The line number where the function is called.
-+ * @param level The level of the option.
-+ * @param msglevel The message level for logging.
-+ * @param permission_mask The permission mask used by VERIFY_PERMISSION().
-+ * @param option_types_found A pointer to the variable where the flags cor=
-responding to the options found are stored.
-+ * @param es The environment set structure.
-+ * @param update_options_found A pointer to the variable where the flags c=
-orresponding to the update options found are stored,
-+ *                             used to check if an option of the same type=
- has already been processed by update_option() within the same push-update =
-message.
-+ */
-+static void
-+update_option(struct context *c,
-+              struct options *options,
-+              char *p[],
-+              bool is_inline,
-+              const char *file,
-+              int line,
-+              const int level,
-+              const int msglevel,
-+              const unsigned int permission_mask,
-+              unsigned int *option_types_found,
-+              struct env_set *es,
-+              unsigned int *update_options_found)
+@@ -1947,7 +1949,7 @@
+  * @return          true if no error was encountered
+  */
+ static bool
+-push_peer_info(struct buffer *buf, struct tls_session *session)
++push_peer_info(struct buffer *buf, struct tls_session *session, uint32_t p=
+eer_id)
+ {
+     struct gc_arena gc =3D gc_new();
+     bool ret =3D false;
+@@ -2038,6 +2040,7 @@
+         iv_proto |=3D IV_PROTO_DYN_TLS_CRYPT;
+
+         buf_printf(&out, "IV_PROTO=3D%d\n", iv_proto);
++        buf_printf(&out, "ID=3D%x\n", peer_id);
+
+         if (session->opt->push_peer_info_detail > 1)
+         {
+@@ -2221,7 +2224,7 @@
+         }
+     }
+
+-    if (!push_peer_info(buf, session))
++    if (!push_peer_info(buf, session, multi->rx_peer_id))
+     {
+         goto error;
+     }
+@@ -4143,9 +4146,8 @@
+     msg(D_TLS_DEBUG, __func__);
+
+     ASSERT(ks);
+-
+     peer =3D htonl(((P_DATA_V2 << P_OPCODE_SHIFT) | ks->key_id) << 24
+-                 | (multi->peer_id & 0xFFFFFF));
++                 | (multi->tx_peer_id & 0xFFFFFF));
+     ASSERT(buf_write_prepend(buf, &peer, 4));
+ }
+
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index e9e50da..1e2f534 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -689,8 +689,10 @@
+ #define AUTH_TOKEN_VALID_EMPTYUSER (1 << 2)
+
+     /* For P_DATA_V2 */
+-    uint32_t peer_id;
++    uint32_t rx_peer_id;
++    uint32_t tx_peer_id;
+     bool use_peer_id;
++    bool use_asymmetric_peer_id;
+
+     char *remote_ciphername;    /**< cipher specified in peer's config fil=
+e */
+     bool remote_usescomp;       /**< remote announced comp-lzo in OCC stri=
+ng */
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 74d7b43..5e0af03 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -426,7 +426,9 @@
+     if (iv_proto_peer & IV_PROTO_DATA_V2)
+     {
+         multi->use_peer_id =3D true;
+-        multi->peer_id =3D 0x76706e; /* 'v' 'p' 'n' */
++        multi->use_asymmetric_peer_id =3D true;
++        multi->rx_peer_id =3D 0x76706e; /* 'v' 'p' 'n' */
++        multi->tx_peer_id =3D  2033;
+     }
+
+     if (iv_proto_peer & IV_PROTO_CC_EXIT_NOTIFY)
+@@ -469,7 +471,7 @@
+             }
+             else
+             {
+-                multi->peer_id =3D (peerid[0] << 16) + (peerid[1] << 8) + =
+peerid[2];
++                multi->rx_peer_id =3D (peerid[0] << 16) + (peerid[1] << 8)=
+ + peerid[2];
+             }
+
+         }
+@@ -513,10 +515,11 @@
+     }
+
+     msg(D_TLS_DEBUG_LOW, "P2P mode NCP negotiation result: "
+-        "TLS_export=3D%d, DATA_v2=3D%d, peer-id %d, epoch=3D%d, cipher=3D%=
+s",
++        "TLS_export=3D%d, DATA_v2=3D%d, rx-peer-id %d, tx-peer-id %d, epoc=
+h=3D%d, cipher=3D%s",
+         (bool)(session->opt->crypto_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT=
+),
+         multi->use_peer_id,
+-        multi->peer_id,
++        multi->rx_peer_id,
++        multi->tx_peer_id,
+         (bool)(session->opt->crypto_flags & CO_EPOCH_DATA_KEY_FORMAT),
+         common_cipher);
+
+diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
+index d3d7b2c..fde6f7e 100644
+--- a/src/openvpn/ssl_util.c
++++ b/src/openvpn/ssl_util.c
+@@ -74,6 +74,24 @@
+     return 0;
+ }
+
++uint32_t
++extract_asymmetric_peer_id(const char *peer_info)
 +{
-+    const bool pull_mode =3D BOOL_CAST(permission_mask & OPT_P_PULL_MODE);
-+    ASSERT(MAX_PARMS >=3D 7);
-+
-+    if (streq(p[0], "route") && p[1] && !p[5])
++    const char *optstr =3D peer_info ? strstr(peer_info, "ID=3D") : NULL;
++    if (optstr)
 +    {
-+        if (!(*update_options_found & OPT_P_U_ROUTE))
++        uint32_t peer_id =3D 0;
++        int r =3D sscanf(optstr, "ID=3D%x", &peer_id);
 +        {
-+            VERIFY_PERMISSION(OPT_P_ROUTE);
-+            rol_check_alloc(options);
-+            if (pull_mode)
++            if (r =3D=3D 1 && peer_id >=3D 0)
 +            {
-+                if (!ip_or_dns_addr_safe(p[1], options->allow_pull_fqdn) &=
-& !is_special_addr(p[1])) /* FQDN -- may be DNS name */
-+                {
-+                    msg(msglevel, "route parameter network/IP '%s' must be=
- a valid address", p[1]);
-+                    goto err;
-+                }
-+                if (p[2] && !ip_addr_dotted_quad_safe(p[2])) /* FQDN -- mu=
-st be IP address */
-+                {
-+                    msg(msglevel, "route parameter netmask '%s' must be an=
- IP address", p[2]);
-+                    goto err;
-+                }
-+                if (p[3] && !ip_or_dns_addr_safe(p[3], options->allow_pull=
-_fqdn) && !is_special_addr(p[3])) /* FQDN -- may be DNS name */
-+                {
-+                    msg(msglevel, "route parameter gateway '%s' must be a =
-valid address", p[3]);
-+                    goto err;
-+                }
++                return peer_id;
 +            }
-+            if (c->c1.route_list)
-+            {
-+                delete_routes_v4(c->c1.route_list, c->c1.tuntap,
-+                                 ROUTE_OPTION_FLAGS(&c->options),
-+                                 es, &c->net_ctx);
-+                RESET_OPTION_ROUTES(options->routes, routes);
-+            }
-+            *update_options_found |=3D OPT_P_U_ROUTE;
 +        }
 +    }
-+    else if (streq(p[0], "route-ipv6") && p[1] && !p[4])
-+    {
-+        if (!(*update_options_found & OPT_P_U_ROUTE6))
-+        {
-+            VERIFY_PERMISSION(OPT_P_ROUTE);
-+            rol6_check_alloc(options);
-+            if (pull_mode)
-+            {
-+                if (!ipv6_addr_safe_hexplusbits(p[1]))
-+                {
-+                    msg(msglevel, "route-ipv6 parameter network/IP '%s' mu=
-st be a valid address", p[1]);
-+                    goto err;
-+                }
-+                if (p[2] && !ipv6_addr_safe(p[2]))
-+                {
-+                    msg(msglevel, "route-ipv6 parameter gateway '%s' must =
-be a valid address", p[2]);
-+                    goto err;
-+                }
-+                /* p[3] is metric, if present */
-+            }
-+            if (c->c1.route_ipv6_list)
-+            {
-+                delete_routes_v6(c->c1.route_ipv6_list, c->c1.tuntap,
-+                                 ROUTE_OPTION_FLAGS(&c->options),
-+                                 es, &c->net_ctx);
-+                RESET_OPTION_ROUTES(options->routes_ipv6, routes_ipv6);
-+            }
-+            *update_options_found |=3D OPT_P_U_ROUTE6;
-+        }
-+    }
-+    else if (streq(p[0], "redirect-gateway") || streq(p[0], "redirect-priv=
-ate"))
-+    {
-+        if (!(*update_options_found & OPT_P_U_REDIR_GATEWAY))
-+        {
-+            VERIFY_PERMISSION(OPT_P_ROUTE);
-+            if (options->routes)
-+            {
-+                options->routes->flags =3D 0;
-+            }
-+            if (options->routes_ipv6)
-+            {
-+                options->routes_ipv6->flags =3D 0;
-+            }
-+            *update_options_found |=3D OPT_P_U_REDIR_GATEWAY;
-+        }
-+    }
-+    else if (streq(p[0], "dns") && p[1])
-+    {
-+        if (!(*update_options_found & OPT_P_U_DNS))
-+        {
-+            VERIFY_PERMISSION(OPT_P_DHCPDNS);
-+            if (streq(p[1], "server") && p[2] && p[3] && p[4])
-+            {
-+                long priority;
-+                if (!dns_server_priority_parse(&priority, p[2], pull_mode))
-+                {
-+                    msg(msglevel, "--dns server: invalid priority value '%=
-s'", p[2]);
-+                    goto err;
-+                }
-+
-+                struct dns_server server;
-+                CLEAR(server);
-+                if (streq(p[3], "address") && p[4])
-+                {
-+                    for (int i =3D 4; p[i]; ++i)
-+                    {
-+                        if (!dns_server_addr_parse(&server, p[i]))
-+                        {
-+                            msg(msglevel, "--dns server %ld: malformed add=
-ress or maximum exceeded '%s'", priority, p[i]);
-+                            goto err;
-+                        }
-+                    }
-+                }
-+                else if (streq(p[3], "dnssec") && !p[5])
-+                {
-+                    if (!streq(p[4], "yes") && !streq(p[4], "no") && !stre=
-q(p[4], "optional"))
-+                    {
-+                        msg(msglevel, "--dns server %ld: malformed dnssec =
-value '%s'", priority, p[4]);
-+                        goto err;
-+                    }
-+                }
-+                else if (streq(p[3], "transport") && !p[5])
-+                {
-+                    if (!streq(p[4], "plain") && !streq(p[4], "DoH") && !s=
-treq(p[4], "DoT"))
-+                    {
-+                        msg(msglevel, "--dns server %ld: malformed transpo=
-rt value '%s'", priority, p[4]);
-+                        goto err;
-+                    }
-+                }
-+                else if (!streq(p[3], "resolve-domains")
-+                         && !(streq(p[3], "sni") && !p[5]))
-+                {
-+                    msg(msglevel, "--dns server %ld: unknown option type '=
-%s' or missing or unknown parameter", priority, p[3]);
-+                    goto err;
-+                }
-+            }
-+            else if (!(streq(p[1], "search-domains") && p[2]))
-+            {
-+                msg(msglevel, "--dns: unknown option type '%s' or missing =
-or unknown parameter", p[1]);
-+                goto err;
-+            }
-+
-+            gc_free(&options->dns_options.gc);
-+            CLEAR(options->dns_options);
-+            *update_options_found |=3D OPT_P_U_DNS;
-+        }
-+    }
-+#if defined(_WIN32) || defined(TARGET_ANDROID)
-+    else if (streq(p[0], "dhcp-option") && p[1] && !p[3])
-+    {
-+        if (!(*update_options_found & OPT_P_U_DHCP))
-+        {
-+            struct tuntap_options *o =3D &options->tuntap_options;
-+            VERIFY_PERMISSION(OPT_P_DHCPDNS);
-+
-+            o->domain =3D NULL;
-+            o->netbios_scope =3D NULL;
-+            o->netbios_node_type =3D 0;
-+            o->dns6_len =3D 0;
-+            CLEAR(o->dns6);
-+            o->dns_len =3D 0;
-+            CLEAR(o->dns);
-+            o->wins_len =3D 0;
-+            CLEAR(o->wins);
-+            o->ntp_len =3D 0;
-+            CLEAR(o->ntp);
-+            o->nbdd_len =3D 0;
-+            CLEAR(o->nbdd);
-+            while (o->domain_search_list_len-- > 0)
-+            {
-+                o->domain_search_list[o->domain_search_list_len] =3D NULL;
-+            }
-+            o->disable_nbt =3D 0;
-+            o->dhcp_options =3D 0;
-+#if defined(TARGET_ANDROID)
-+            o->http_proxy_port =3D 0;
-+            o->http_proxy =3D NULL;
-+#endif
-+            *update_options_found |=3D OPT_P_U_DHCP;
-+        }
-+    }
-+#else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-+    else if (streq(p[0], "dhcp-option") && p[1] && !p[3])
-+    {
-+        if (!(*update_options_found & OPT_P_U_DHCP))
-+        {
-+            VERIFY_PERMISSION(OPT_P_DHCPDNS);
-+            delete_all_dhcp_fo(options, &es->list);
-+            *update_options_found |=3D OPT_P_U_DHCP;
-+        }
-+    }
-+#endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-+    add_option(options, p, is_inline, file, line,
-+               level, msglevel, permission_mask,
-+               option_types_found, es);
-+    return;
-+err:
-+    msg(msglevel, "Error occurred trying to update %s option", p[0]);
++    return 0;
 +}
 +
- bool
- apply_push_options(struct context *c,
-                    struct options *options,
-@@ -5847,6 +6078,7 @@
-     int line_num =3D 0;
-     const char *file =3D "[PUSH-OPTIONS]";
-     const int msglevel =3D D_PUSH_ERRORS|M_OPTERR;
-+    unsigned int update_options_found =3D 0;
+ const char *
+ options_string_compat_lzo(const char *options, struct gc_arena *gc)
+ {
+diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
+index e50f899..e9c7ef8 100644
+--- a/src/openvpn/ssl_util.h
++++ b/src/openvpn/ssl_util.h
+@@ -55,6 +55,8 @@
+  */
+ unsigned int extract_iv_proto(const char *peer_info);
 
-     while (buf_parse(buf, ',', line, sizeof(line)))
-     {
-@@ -5872,6 +6104,11 @@
-                 remove_option(c, options, p, false, file, line_num, msglev=
-el,
-                               permission_mask, option_types_found, es);
-             }
-+            else
-+            {
-+                update_option(c, options, p, false, file, line_num, 0, msg=
-level,
-+                              permission_mask, option_types_found, es, &up=
-date_options_found);
-+            }
-         }
-     }
-     return true;
++uint32_t extract_asymmetric_peer_id(const char *peer_info);
++
+ /**
+  * Takes a locally produced OCC string for TLS server mode and modifies as
+  * if the option comp-lzo was enabled. This is to send a client in
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index 5b583c7..9d618ca 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -437,7 +437,7 @@
+     o.authname =3D "SHA1";
+     o.ciphername =3D "AES-256-GCM";
+     o.tls_client =3D true;
+-    o.peer_id =3D 77;
++    o.rx_peer_id =3D 77;
+     o.use_peer_id =3D true;
+     init_key_type(&kt, o.ciphername, o.authname, true, false);
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2
-Gerrit-Change-Number: 810
-Gerrit-PatchSet: 20
-Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
+Gerrit-Change-Number: 1089
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---SN3+wJEu5mA=
+--yUhSpOx7qcw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, mrbff, plaisthos. <=
-/p>
-<p>mrbff <strong>uploaded patch set #20</strong> to this change.</p><p><a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail">View Change</=
-a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is un=
-satisfied now.</p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">PUSH_UPDATE: Added update_option() function.<br><br>When the=
- function receives an option to update, it first checks whether it has<br>a=
-lready received an option of the same type within the same update message.<=
-br>If it has already received it, it simply calls add_option(), otherwise i=
-t<br>deletes all the values =E2=80=8B=E2=80=8Balready present regarding tha=
-t option.<br><br>Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2<br>Si=
-gned-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/o=
-ptions.c<br>1 file changed, 247 insertions(+), 10 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/810/20</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><spa=
-n>index 22eaa8a..713df52 100644</span><br><span>--- a/src/openvpn/options.c=
-</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -5642,6 +56=
-42,13 @@</span><br><span>     return options-&gt;forward_compatible ? M_WAR=
-N : msglevel;</span><br><span> }</span><br><span> </span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define RESET_OPTION_ROUTES(option_ptr, fiel=
-d) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (option_=
-ptr)                        \</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    {                                      \</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        option_ptr-&gt;field =3D NULL;  =
-        \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        op=
-tion_ptr-&gt;flags =3D 0;             \</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> /**</span><br><span>  * @brief Resets options found=
- in the PUSH_UPDATE message that are preceded by the `-` flag.</span><br><s=
-pan>  *        This function is used in push-updates to reset specified opt=
-ions.</span><br><span>@@ -5696,11 +5703,7 @@</span><br><span>             d=
-elete_routes_v4(c-&gt;c1.route_list, c-&gt;c1.tuntap,</span><br><span>     =
-                         ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br>=
-<span>                              es, &amp;c-&gt;net_ctx);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;routes)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt;ro=
-utes-&gt;routes =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                options-&gt;routes-&gt;flags =3D 0;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            RESET_OPTION_ROUTES(options-&gt;rou=
-tes, routes);</span><br><span>         }</span><br><span>     }</span><br><=
-span>     else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; !p[1])</s=
-pan><br><span>@@ -5711,11 +5714,7 @@</span><br><span>             delete_ro=
-utes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</span><br><span>        =
-                      ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br><sp=
-an>                              es, &amp;c-&gt;net_ctx);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;routes_ipv6=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt;=
-routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                options-&gt;routes_ipv6-&gt;flags =3D 0;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            RESET_OPTION_ROUTE=
-S(options-&gt;routes_ipv6, routes_ipv6);</span><br><span>         }</span><=
-br><span>     }</span><br><span>     else if (streq(p[0], &quot;route-gatew=
-ay&quot;) &amp;&amp; !p[1])</span><br><span>@@ -5834,6 +5833,238 @@</span><=
-br><span> err:</span><br><span>     msg(msglevel, &quot;Error occurred tryi=
-ng to remove %s option&quot;, p[0]);</span><br><span> }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @brief Processes an option to update. It first checks whether it has al=
-ready</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        rece=
-ived an option of the same type within the same update message.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *        If the option has alr=
-eady been received, it calls add_option().</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *        Otherwise, it deletes all existing values =
-related to that option before calling add_option().</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param c The context structure.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param options A pointer to the option=
-s structure.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am p An array of strings containing the options and their parameters.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param is_inline A boo=
-lean indicating if the option is inline.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param file The file where the function is called.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param line The l=
-ine number where the function is called.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param level The level of the option.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel The message le=
-vel for logging.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param permission_mask The permission mask used by VERIFY_PERMISSION().</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param option_types_=
-found A pointer to the variable where the flags corresponding to the option=
-s found are stored.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param es The environment set structure.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param update_options_found A pointer to the var=
-iable where the flags corresponding to the update options found are stored,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *                 =
-            used to check if an option of the same type has already been pr=
-ocessed by update_option() within the same push-update message.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+update_option(struct context *c,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              struct options *options,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+              char *p[=
-],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              boo=
-l is_inline,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-       const char *file,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+              int line,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+              const int level,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+              const int msglevel,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              const unsigned int permissi=
-on_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-   unsigned int *option_types_found,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+              struct env_set *es,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+              unsigned int *update_options_f=
-ound)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const bool pull_mode =3D BOO=
-L_CAST(permission_mask &amp; OPT_P_PULL_MODE);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    ASSERT(MAX_PARMS &gt;=3D 7);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (streq(p[0], &quot;route&quot;) &amp;&amp; p[1]=
- &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*=
-update_options_found &amp; OPT_P_U_ROUTE))</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            rol_check_alloc(options);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (pull=
-_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if =
-(!ip_or_dns_addr_safe(p[1], options-&gt;allow_pull_fqdn) &amp;&amp; !is_spe=
-cial_addr(p[1])) /* FQDN -- may be DNS name */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                    msg(msglevel, &quot;route para=
-meter network/IP &#39;%s&#39; must be a valid address&quot;, p[1]);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                    goto er=
-r;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if =
-(p[2] &amp;&amp; !ip_addr_dotted_quad_safe(p[2])) /* FQDN -- must be IP add=
-ress */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-      msg(msglevel, &quot;route parameter netmask &#39;%s&#39; must be an I=
-P address&quot;, p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                    goto err;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                if (p[3] &amp;&amp; !ip_or_dns_addr_safe(p[3], =
-options-&gt;allow_pull_fqdn) &amp;&amp; !is_special_addr(p[3])) /* FQDN -- =
-may be DNS name */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                 msg(msglevel, &quot;route parameter gateway &#39;%s&#39; m=
-ust be a valid address&quot;, p[3]);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                    goto err;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            if (c-&gt;c1.route_list)</span><br><span sty=
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">multipeer: introduce asymmetric peer-id<br><br>In order to a=
+chieve a multipeer functionality, peers now<br>use separate IDs for sending=
+ (tx_peer_id) and receiving<br>(rx_peer_id).<br><br>Each peer announces its=
+ own ID through pushing peer-info<br>using &#39;ID=3D7f1&#39; hex format so=
+ identification can still<br>happen even if IP/port changes.<br><br>In P2P =
+mode, peer switch to using the announced IDs after<br>mutual exchange.<br>I=
+n P2MP mode, clients always announce their ID, and servers<br>can optionall=
+y respond with their own to enable the same<br>behavior.<br><br>Change-Id: =
+I0a13ee90b6706acf20eabcee3bab3f2dff639bf9<br>Signed-off-by: Gianmarco De Gr=
+egori &lt;gianmarco@...2726...&gt;<br>---<br>M src/openvpn/dco.c<br>M src/o=
+penvpn/init.c<br>M src/openvpn/misc.c<br>M src/openvpn/multi.c<br>M src/ope=
+nvpn/push.c<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_common.h<br>M src/o=
+penvpn/ssl_ncp.c<br>M src/openvpn/ssl_util.c<br>M src/openvpn/ssl_util.h<br=
+>M tests/unit_tests/openvpn/test_crypto.c<br>11 files changed, 65 insertion=
+s(+), 27 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
+nvpn refs/changes/89/1089/1</pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/src/op=
+envpn/dco.c</span><br><span>index 98cbb72..3687f4a 100644</span><br><span>-=
+-- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><s=
+pan>@@ -513,7 +513,7 @@</span><br><span>         c-&gt;c2.tls_multi-&gt;dco=
+_peer_id =3D -1;</span><br><span>     }</span><br><span> #endif</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D dco_new_peer(&amp=
+;c-&gt;c1.tuntap-&gt;dco, multi-&gt;peer_id, sock-&gt;sd, NULL,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D dco_new_peer(&a=
+mp;c-&gt;c1.tuntap-&gt;dco, multi-&gt;rx_peer_id, sock-&gt;sd, NULL,</span>=
+<br><span>                            proto_is_dgram(sock-&gt;info.proto) ?=
+ remoteaddr : NULL,</span><br><span>                            NULL, NULL)=
+;</span><br><span>     if (ret &lt; 0)</span><br><span>@@ -521,7 +521,7 @@<=
+/span><br><span>         return ret;</span><br><span>     }</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c-&gt;c2.tls_mu=
+lti-&gt;dco_peer_id =3D multi-&gt;peer_id;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    c-&gt;c2.tls_multi-&gt;dco_peer_id =3D multi-&gt=
+;rx_peer_id;</span><br><span> </span><br><span>     return 0;</span><br><sp=
+an> }</span><br><span>@@ -595,7 +595,7 @@</span><br><span> {</span><br><spa=
+n>     struct context *c =3D &amp;mi-&gt;context;</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    int peer_id =3D c-&gt;c2.=
+tls_multi-&gt;peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    int peer_id =3D c-&gt;c2.tls_multi-&gt;rx_peer_id;</span><br><span> =
+    struct sockaddr *remoteaddr, *localaddr =3D NULL;</span><br><span>     =
+struct sockaddr_storage local =3D { 0 };</span><br><span>     int sd =3D c-=
+&gt;c2.link_sockets[0]-&gt;sd;</span><br><span>@@ -667,7 +667,7 @@</span><b=
+r><span>     if (addrtype =3D=3D MR_ADDR_IPV6)</span><br><span>     {</span=
+><br><span> #if defined(_WIN32)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        dco_win_add_iroute_ipv6(&amp;c-&gt;c1.tuntap-&gt;dco, add=
+r-&gt;v6.addr, addr-&gt;netbits, c-&gt;c2.tls_multi-&gt;peer_id);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        dco_win_add_iroute_ip=
+v6(&amp;c-&gt;c1.tuntap-&gt;dco, addr-&gt;v6.addr, addr-&gt;netbits, c-&gt;=
+c2.tls_multi-&gt;rx_peer_id);</span><br><span> #else</span><br><span>      =
+   net_route_v6_add(&amp;m-&gt;top.net_ctx, &amp;addr-&gt;v6.addr, addr-&gt=
+;netbits,</span><br><span>                          &amp;mi-&gt;context.c2.=
+push_ifconfig_ipv6_local, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><sp=
+an>@@ -677,7 +677,7 @@</span><br><span>     else if (addrtype =3D=3D MR_ADD=
+R_IPV4)</span><br><span>     {</span><br><span> #if defined(_WIN32)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_win_add_iroute_ip=
+v4(&amp;c-&gt;c1.tuntap-&gt;dco, addr-&gt;v4.addr, addr-&gt;netbits, c-&gt;=
+c2.tls_multi-&gt;peer_id);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        dco_win_add_iroute_ipv4(&amp;c-&gt;c1.tuntap-&gt;dco, addr-&=
+gt;v4.addr, addr-&gt;netbits, c-&gt;c2.tls_multi-&gt;rx_peer_id);</span><br=
+><span> #else</span><br><span>         in_addr_t dest =3D htonl(addr-&gt;v4=
+.addr);</span><br><span>         net_route_v4_add(&amp;m-&gt;top.net_ctx, &=
+amp;dest, addr-&gt;netbits,</span><br><span>diff --git a/src/openvpn/init.c=
+ b/src/openvpn/init.c</span><br><span>index 77747a2..543eaf9 100644</span><=
+br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c<=
+/span><br><span>@@ -2328,7 +2328,7 @@</span><br><span> </span><br><span>   =
+  if (o-&gt;use_peer_id)</span><br><span>     {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        buf_printf(&amp;out, &quot;, peer-id: %d&=
+quot;, o-&gt;peer_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        buf_printf(&amp;out, &quot;, rx_peer-id: %u, tx_peer-id: %u&quot=
+;, c-&gt;c2.tls_multi-&gt;rx_peer_id, c-&gt;c2.tls_multi-&gt;tx_peer_id);</=
+span><br><span>     }</span><br><span> </span><br><span> #ifdef USE_COMP</s=
+pan><br><span>@@ -2778,7 +2778,7 @@</span><br><span>     {</span><br><span>=
+         msg(D_PUSH_DEBUG, &quot;OPTIONS IMPORT: peer-id set&quot;);</span>=
+<br><span>         c-&gt;c2.tls_multi-&gt;use_peer_id =3D true;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        c-&gt;c2.tls_multi-&gt;pe=
+er_id =3D c-&gt;options.peer_id;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        c-&gt;c2.tls_multi-&gt;tx_peer_id =3D c-&gt;options.pe=
+er_id;</span><br><span>     }</span><br><span> </span><br><span>     /* pro=
+cess (potentially) pushed options */</span><br><span>diff --git a/src/openv=
+pn/misc.c b/src/openvpn/misc.c</span><br><span>index 4695700..122ca74 10064=
+4</span><br><span>--- a/src/openvpn/misc.c</span><br><span>+++ b/src/openvp=
+n/misc.c</span><br><span>@@ -777,7 +777,8 @@</span><br><span>     {</span><=
+br><span>         chomp(line);</span><br><span>         if (validate_peer_i=
+nfo_line(line)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     &amp;&amp; (strncmp(line, &quot;IV_&quot;, 3) =3D=3D 0 || strncmp(line=
+, &quot;UV_&quot;, 3) =3D=3D 0) )</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            &amp;&amp; (strncmp(line, &quot;IV_&quot;, 3) =3D=
+=3D 0 || strncmp(line, &quot;UV_&quot;, 3) =3D=3D 0</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                || strncmp(line, &quot;ID=
+&quot;, 2) =3D=3D 0))</span><br><span>         {</span><br><span>          =
+   msg(M_INFO, &quot;peer info: %s&quot;, line);</span><br><span>          =
+   env_set_add(es, line);</span><br><span>diff --git a/src/openvpn/multi.c =
+b/src/openvpn/multi.c</span><br><span>index a760e07..6987dc5 100644</span><=
+br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.=
+c</span><br><span>@@ -479,7 +479,7 @@</span><br><span>             &amp;&am=
+p; check_debug_level(D_DCO_DEBUG)</span><br><span>             &amp;&amp; d=
+co_enabled(&amp;mi-&gt;context.options))</span><br><span>         {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            buf_printf(&amp;o=
+ut, &quot; peer-id=3D%d&quot;, mi-&gt;context.c2.tls_multi-&gt;peer_id);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            buf_printf=
+(&amp;out, &quot; rx_peer-id=3D%d&quot;, mi-&gt;context.c2.tls_multi-&gt;rx=
+_peer_id);</span><br><span>         }</span><br><span>         return BSTR(=
+&amp;out);</span><br><span>     }</span><br><span>@@ -655,9 +655,9 @@</span=
+><br><span>         }</span><br><span> #endif</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        if (mi-&gt;context.c2.tls=
+_multi-&gt;peer_id !=3D MAX_PEER_ID)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        if (mi-&gt;context.c2.tls_multi-&gt;rx_peer_id !=
+=3D MAX_PEER_ID)</span><br><span>         {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            m-&gt;instances[mi-&gt;context.c2.tls_mul=
+ti-&gt;peer_id] =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            m-&gt;instances[mi-&gt;context.c2.tls_multi-&gt;rx_peer_i=
+d] =3D NULL;</span><br><span>         }</span><br><span> </span><br><span> =
+        schedule_remove_entry(m-&gt;schedule, (struct schedule_entry *) mi)=
+;</span><br><span>@@ -972,7 +972,7 @@</span><br><span> #else</span><br><spa=
+n>                                   sep,</span><br><span> #endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                               =
+   sep, mi-&gt;context.c2.tls_multi ? mi-&gt;context.c2.tls_multi-&gt;peer_=
+id : UINT32_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                               sep, mi-&gt;context.c2.tls_multi ? mi-&gt;co=
+ntext.c2.tls_multi-&gt;rx_peer_id : UINT32_MAX,</span><br><span>           =
+                        sep, translate_cipher_name_to_openvpn(mi-&gt;contex=
+t.options.ciphername));</span><br><span>                 }</span><br><span>=
+                 gc_free(&amp;gc);</span><br><span>@@ -1813,6 +1813,12 @@</=
+span><br><span>     {</span><br><span>         tls_multi-&gt;use_peer_id =
+=3D true;</span><br><span>         o-&gt;use_peer_id =3D true;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        uint32_t peer_id =3D ext=
+ract_asymmetric_peer_id(peer_info);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        if (peer_id)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            tls_multi-&gt;tx_peer_id =3D peer_id;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            tls_multi-&gt;use_asymmetr=
+ic_peer_id =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span>     }</span><br><span>     else if (dco_enabled=
+(o))</span><br><span>     {</span><br><span>@@ -3256,7 +3262,7 @@</span><br=
+><span>     }</span><br><span> </span><br><span>     msg(D_MULTI_MEDIUM, &q=
+uot;peer %&quot; PRIu32 &quot; (%s) floated from %s to %s&quot;,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        mi-&gt;context.c2.tls_mu=
+lti-&gt;peer_id,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     mi-&gt;context.c2.tls_multi-&gt;rx_peer_id,</span><br><span>         t=
+ls_common_name(mi-&gt;context.c2.tls_multi, false),</span><br><span>       =
+  mroute_addr_print(&amp;mi-&gt;real, &amp;gc),</span><br><span>         pr=
+int_link_socket_actual(&amp;m-&gt;top.c2.from, &amp;gc));</span><br><span>@=
+@ -4235,7 +4241,11 @@</span><br><span>     {</span><br><span>         if (!=
+m-&gt;instances[i])</span><br><span>         {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            mi-&gt;context.c2.tls_multi-&gt;peer_i=
+d =3D i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ mi-&gt;context.c2.tls_multi-&gt;rx_peer_id =3D i;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            if (!mi-&gt;context.c2.tls_multi=
+-&gt;use_asymmetric_peer_id)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                mi-&gt;context.c2.tls_multi-&gt;tx_peer_id =3D i;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
+pan>             m-&gt;instances[i] =3D mi;</span><br><span>             br=
+eak;</span><br><span>         }</span><br><span>@@ -4243,7 +4253,7 @@</span=
+><br><span> </span><br><span>     /* should not really end up here, since m=
+ulti_create_instance returns null</span><br><span>      * if amount of clie=
+nts exceeds max_clients */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    ASSERT(mi-&gt;context.c2.tls_multi-&gt;peer_id &lt; m-&gt;max_clie=
+nts);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(mi-=
+&gt;context.c2.tls_multi-&gt;rx_peer_id &lt; m-&gt;max_clients);</span><br>=
+<span> }</span><br><span> </span><br><span> /******************************=
+********************************************/</span><br><span>diff --git a/=
+src/openvpn/push.c b/src/openvpn/push.c</span><br><span>index ad8fa3d7..073=
+e6b6 100644</span><br><span>--- a/src/openvpn/push.c</span><br><span>+++ b/=
+src/openvpn/push.c</span><br><span>@@ -654,7 +654,7 @@</span><br><span>    =
+ if (tls_multi-&gt;use_peer_id)</span><br><span>     {</span><br><span>    =
+     push_option_fmt(gc, push_list, M_USAGE, &quot;peer-id %d&quot;,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                        tls_=
+multi-&gt;peer_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                        tls_multi-&gt;rx_peer_id);</span><br><span>     }</=
+span><br><span>     /*</span><br><span>      * If server uses --auth-gen-to=
+ken and we have an auth token</span><br><span>diff --git a/src/openvpn/ssl.=
+c b/src/openvpn/ssl.c</span><br><span>index 9c6616a..edac9aa 100644</span><=
+br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</s=
+pan><br><span>@@ -1181,7 +1181,9 @@</span><br><span>     /* get command lin=
+e derived options */</span><br><span>     ret-&gt;opt =3D *tls_options;</sp=
+an><br><span>     ret-&gt;dco_peer_id =3D -1;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    ret-&gt;peer_id =3D MAX_PEER_ID;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ret-&gt;use_asymmetric_peer_id=
+ =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret-=
+&gt;rx_peer_id =3D MAX_PEER_ID;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    ret-&gt;tx_peer_id =3D MAX_PEER_ID;</span><br><span> </span=
+><br><span>     return ret;</span><br><span> }</span><br><span>@@ -1947,7 +=
+1949,7 @@</span><br><span>  * @return          true if no error was encount=
+ered</span><br><span>  */</span><br><span> static bool</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-push_peer_info(struct buffer *buf, struct =
+tls_session *session)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+push_peer_info(struct buffer *buf, struct tls_session *session, uint32_t =
+peer_id)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_=
+new();</span><br><span>     bool ret =3D false;</span><br><span>@@ -2038,6 =
++2040,7 @@</span><br><span>         iv_proto |=3D IV_PROTO_DYN_TLS_CRYPT;</=
+span><br><span> </span><br><span>         buf_printf(&amp;out, &quot;IV_PRO=
+TO=3D%d\n&quot;, iv_proto);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        buf_printf(&amp;out, &quot;ID=3D%x\n&quot;, peer_id);</span=
+><br><span> </span><br><span>         if (session-&gt;opt-&gt;push_peer_inf=
+o_detail &gt; 1)</span><br><span>         {</span><br><span>@@ -2221,7 +222=
+4,7 @@</span><br><span>         }</span><br><span>     }</span><br><span> <=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!push_peer_inf=
+o(buf, session))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (!push_peer_info(buf, session, multi-&gt;rx_peer_id))</span><br><span> =
+    {</span><br><span>         goto error;</span><br><span>     }</span><br=
+><span>@@ -4143,9 +4146,8 @@</span><br><span>     msg(D_TLS_DEBUG, __func__=
+);</span><br><span> </span><br><span>     ASSERT(ks);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     peer =3D htonl(((P_DA=
+TA_V2 &lt;&lt; P_OPCODE_SHIFT) | ks-&gt;key_id) &lt;&lt; 24</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                 | (multi-&gt;peer_id=
+ &amp; 0xFFFFFF));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                | (multi-&gt;tx_peer_id &amp; 0xFFFFFF));</span><br><span> =
+    ASSERT(buf_write_prepend(buf, &amp;peer, 4));</span><br><span> }</span>=
+<br><span> </span><br><span>diff --git a/src/openvpn/ssl_common.h b/src/ope=
+nvpn/ssl_common.h</span><br><span>index e9e50da..1e2f534 100644</span><br><=
+span>--- a/src/openvpn/ssl_common.h</span><br><span>+++ b/src/openvpn/ssl_c=
+ommon.h</span><br><span>@@ -689,8 +689,10 @@</span><br><span> #define AUTH_=
+TOKEN_VALID_EMPTYUSER (1 &lt;&lt; 2)</span><br><span> </span><br><span>    =
+ /* For P_DATA_V2 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   uint32_t peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    uint32_t rx_peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    uint32_t tx_peer_id;</span><br><span>     bool use_peer_id;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool use_asymmetric_p=
+eer_id;</span><br><span> </span><br><span>     char *remote_ciphername;    =
+/**&lt; cipher specified in peer&#39;s config file */</span><br><span>     =
+bool remote_usescomp;       /**&lt; remote announced comp-lzo in OCC string=
+ */</span><br><span>diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_nc=
+p.c</span><br><span>index 74d7b43..5e0af03 100644</span><br><span>--- a/src=
+/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.c</span><br><s=
+pan>@@ -426,7 +426,9 @@</span><br><span>     if (iv_proto_peer &amp; IV_PRO=
+TO_DATA_V2)</span><br><span>     {</span><br><span>         multi-&gt;use_p=
+eer_id =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   multi-&gt;peer_id =3D 0x76706e; /* &#39;v&#39; &#39;p&#39; &#39;n&#39; *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        multi-&gt;=
+use_asymmetric_peer_id =3D true;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        multi-&gt;rx_peer_id =3D 0x76706e; /* &#39;v&#39; &#39=
+;p&#39; &#39;n&#39; */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        multi-&gt;tx_peer_id =3D  2033;</span><br><span>     }</span><br=
+><span> </span><br><span>     if (iv_proto_peer &amp; IV_PROTO_CC_EXIT_NOTI=
+FY)</span><br><span>@@ -469,7 +471,7 @@</span><br><span>             }</spa=
+n><br><span>             else</span><br><span>             {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                multi-&gt;peer_id =
+=3D (peerid[0] &lt;&lt; 16) + (peerid[1] &lt;&lt; 8) + peerid[2];</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                multi-&gt;rx_=
+peer_id =3D (peerid[0] &lt;&lt; 16) + (peerid[1] &lt;&lt; 8) + peerid[2];</=
+span><br><span>             }</span><br><span> </span><br><span>         }<=
+/span><br><span>@@ -513,10 +515,11 @@</span><br><span>     }</span><br><spa=
+n> </span><br><span>     msg(D_TLS_DEBUG_LOW, &quot;P2P mode NCP negotiatio=
+n result: &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   &quot;TLS_export=3D%d, DATA_v2=3D%d, peer-id %d, epoch=3D%d, cipher=3D%s=
+&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quo=
+t;TLS_export=3D%d, DATA_v2=3D%d, rx-peer-id %d, tx-peer-id %d, epoch=3D%d, =
+cipher=3D%s&quot;,</span><br><span>         (bool)(session-&gt;opt-&gt;cryp=
+to_flags &amp; CO_USE_TLS_KEY_MATERIAL_EXPORT),</span><br><span>         mu=
+lti-&gt;use_peer_id,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       multi-&gt;peer_id,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        multi-&gt;rx_peer_id,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        multi-&gt;tx_peer_id,</span><br><span>         (boo=
+l)(session-&gt;opt-&gt;crypto_flags &amp; CO_EPOCH_DATA_KEY_FORMAT),</span>=
+<br><span>         common_cipher);</span><br><span> </span><br><span>diff -=
+-git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c</span><br><span>inde=
+x d3d7b2c..fde6f7e 100644</span><br><span>--- a/src/openvpn/ssl_util.c</spa=
+n><br><span>+++ b/src/openvpn/ssl_util.c</span><br><span>@@ -74,6 +74,24 @@=
+</span><br><span>     return 0;</span><br><span> }</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+uint32_t</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+extract_asymmetric_peer_id(const char=
+ *peer_info)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *optstr =
+=3D peer_info ? strstr(peer_info, &quot;ID=3D&quot;) : NULL;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (optstr)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        uint32_t peer_id =3D 0;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        int r =3D sscanf(optstr, &quot;I=
+D=3D%x&quot;, &amp;peer_id);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (r =3D=3D 1 &amp;&amp; peer_id &gt;=3D 0)</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                delete_routes_v4(c-&gt;c1.rou=
-te_list, c-&gt;c1.tuntap,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                                 ROUTE_OPTION_FLAGS(&amp;c-&gt;option=
-s),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-                 es, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                RESET_OPTION_ROUTES(options-&gt;route=
-s, routes);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *u=
-pdate_options_found |=3D OPT_P_U_ROUTE;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; p[1] &amp;&amp; !p[=
-4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_options_=
-found &amp; OPT_P_U_ROUTE6))</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            rol6_check_alloc(options);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            if (pull_mode)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                if (!ipv6_addr_s=
-afe_hexplusbits(p[1]))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                    msg(msglevel, &quot;route-ipv6 parameter network/IP &#=
-39;%s&#39; must be a valid address&quot;, p[1]);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                    goto err;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                if (p[2] &amp;&amp; !i=
-pv6_addr_safe(p[2]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                   msg(msglevel, &quot;route-ipv6 parameter gateway &#39;%s=
-&#39; must be a valid address&quot;, p[2]);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                    goto err;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                /* p[3] is metric, if pre=
-sent */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (c-=
-&gt;c1.route_ipv6_list)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-              delete_routes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-            ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                 es, &amp=
-;c-&gt;net_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             RESET_OPTION_ROUTES(options-&gt;routes_ipv6, routes_ipv6);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            *update_options_f=
-ound |=3D OPT_P_U_ROUTE6;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq=
-(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &quot;redirect-private&=
-quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_opti=
-ons_found &amp; OPT_P_U_REDIR_GATEWAY))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if (options-&gt;routes)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                options-&gt;rou=
-tes-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       if (options-&gt;routes_ipv6)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                options-&gt;routes_ipv6-&gt;flags =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            *update_options_found =
-|=3D OPT_P_U_REDIR_GATEWAY;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (str=
-eq(p[0], &quot;dns&quot;) &amp;&amp; p[1])</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        if (!(*update_options_found &amp; OPT_P_U_DNS))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT_P_DHCP=
-DNS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if=
- (streq(p[1], &quot;server&quot;) &amp;&amp; p[2] &amp;&amp; p[3] &amp;&amp=
-; p[4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                lo=
-ng priority;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         if (!dns_server_priority_parse(&amp;priority, p[2], pull_mode))</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    msg(=
-msglevel, &quot;--dns server: invalid priority value &#39;%s&#39;&quot;, p[=
-2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-     goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                struct dns=
-_server server;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            CLEAR(server);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                if (streq(p[3], &quot;address&quot;) &amp;&amp; p[4]=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-for (int i =3D 4; p[i]; ++i)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                        if (!dns_server_addr_parse(&amp;server, =
-p[i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-           {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                     msg(msglevel, &quot;--dns server %ld: malformed addres=
-s or maximum exceeded &#39;%s&#39;&quot;, priority, p[i]);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                            goto err=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    else if (streq(p[3], &quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                    if (!streq(p[4=
-], &quot;yes&quot;) &amp;&amp; !streq(p[4], &quot;no&quot;) &amp;&amp; !str=
-eq(p[4], &quot;optional&quot;))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                        msg(msglevel, &quot;--dns server %ld:=
- malformed dnssec value &#39;%s&#39;&quot;, priority, p[4]);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                        goto err;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                else=
- if (streq(p[3], &quot;transport&quot;) &amp;&amp; !p[5])</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                    if (!streq(p[4], &q=
-uot;plain&quot;) &amp;&amp; !streq(p[4], &quot;DoH&quot;) &amp;&amp; !streq=
-(p[4], &quot;DoT&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                        msg(msglevel, &quot;--dns server %ld: malfor=
-med transport value &#39;%s&#39;&quot;, priority, p[4]);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                        goto err;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                else if =
-(!streq(p[3], &quot;resolve-domains&quot;)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                         &amp;&amp; !(streq(p[3], &q=
-uot;sni&quot;) &amp;&amp; !p[5]))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    msg(msglevel, &quot;--dns server %ld: unkno=
-wn option type &#39;%s&#39; or missing or unknown parameter&quot;, priority=
-, p[3]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-         goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   else if (!(streq(p[1], &quot;search-domains&quot;) &amp;&amp; p[2]))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel,=
- &quot;--dns: unknown option type &#39;%s&#39; or missing or unknown parame=
-ter&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-              goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            gc_free(&=
-amp;options-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            CLEAR(options-&gt;dns_options);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            *update_options_found |=3D=
- OPT_P_U_DNS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || defined=
-(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !=
-p[3])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_option=
-s_found &amp; OPT_P_U_DHCP))</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           struct tuntap_options *o =3D &amp;options-&gt;tuntap_options;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PER=
-MISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&=
-gt;domain =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            o-&gt;netbios_scope =3D NULL;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            o-&gt;netbios_node_type =3D 0;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dns6_len =3D=
- 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEA=
-R(o-&gt;dns6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       o-&gt;dns_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            CLEAR(o-&gt;dns);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            o-&gt;wins_len =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            CLEAR(o-&gt;wins);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;ntp_len =3D =
-0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR=
-(o-&gt;ntp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     o-&gt;nbdd_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            CLEAR(o-&gt;nbdd);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            while (o-&gt;domain_search_list_len-- &gt; 0)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                o-&gt;dom=
-ain_search_list[o-&gt;domain_search_list_len] =3D NULL;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            o-&gt;disable_nbt =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dhcp_optio=
-ns =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
-d(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          o-&gt;http_proxy_port =3D 0;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            o-&gt;http_proxy =3D NULL;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            *update_options_found |=3D OPT_P_U_DHC=
-P;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#else /* if defined(_WIN32) || defined(TA=
-RGET_ANDROID) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !=
-p[3])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_option=
-s_found &amp; OPT_P_U_DHCP))</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            delete_all_dhcp_fo(options, &amp;es-&g=
-t;list);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- *update_options_found |=3D OPT_P_U_DHCP;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
-ndif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    add_option(options, p, is_inline, =
-file, line,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-       level, msglevel, permission_mask,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+               option_types_found, es);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    msg(msglevel, &quot;Error occurred trying to update =
-%s option&quot;, p[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an> bool</span><br><span> apply_push_options(struct context *c,</span><br><=
-span>                    struct options *options,</span><br><span>@@ -5847,=
-6 +6078,7 @@</span><br><span>     int line_num =3D 0;</span><br><span>     =
-const char *file =3D &quot;[PUSH-OPTIONS]&quot;;</span><br><span>     const=
- int msglevel =3D D_PUSH_ERRORS|M_OPTERR;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    unsigned int update_options_found =3D 0;</span><b=
-r><span> </span><br><span>     while (buf_parse(buf, &#39;,&#39;, line, siz=
-eof(line)))</span><br><span>     {</span><br><span>@@ -5872,6 +6104,11 @@</=
-span><br><span>                 remove_option(c, options, p, false, file, l=
-ine_num, msglevel,</span><br><span>                               permissio=
-n_mask, option_types_found, es);</span><br><span>             }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                update_option(c, options=
-, p, false, file, line_num, 0, msglevel,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                              permission_mask, option_=
-types_found, es, &amp;update_options_found);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            }</span><br><span>         }</span><br=
-><span>     }</span><br><span>     return true;</span><br><span></span><br>=
-</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/81=
-0?usp=3Demail">change 810</a>. To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+color: hsl(120, 100%, 40%);">+                return peer_id;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> const char *</span><br><span> options_string_compat_lzo(const char *o=
+ptions, struct gc_arena *gc)</span><br><span> {</span><br><span>diff --git =
+a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h</span><br><span>index e50=
+f899..e9c7ef8 100644</span><br><span>--- a/src/openvpn/ssl_util.h</span><br=
+><span>+++ b/src/openvpn/ssl_util.h</span><br><span>@@ -55,6 +55,8 @@</span=
+><br><span>  */</span><br><span> unsigned int extract_iv_proto(const char *=
+peer_info);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+uint32_t extract_asymmetric_peer_id(const char *peer_info);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</sp=
+an><br><span>  * Takes a locally produced OCC string for TLS server mode an=
+d modifies as</span><br><span>  * if the option comp-lzo was enabled. This =
+is to send a client in</span><br><span>diff --git a/tests/unit_tests/openvp=
+n/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><span>in=
+dex 5b583c7..9d618ca 100644</span><br><span>--- a/tests/unit_tests/openvpn/=
+test_crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto.c<=
+/span><br><span>@@ -437,7 +437,7 @@</span><br><span>     o.authname =3D &qu=
+ot;SHA1&quot;;</span><br><span>     o.ciphername =3D &quot;AES-256-GCM&quot=
+;;</span><br><span>     o.tls_client =3D true;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    o.peer_id =3D 77;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    o.rx_peer_id =3D 77;</span><br><span>     o.=
+use_peer_id =3D true;</span><br><span>     init_key_type(&amp;kt, o.ciphern=
+ame, o.authname, true, false);</span><br><span> </span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+089?usp=3Demail">change 1089</a>. To unsubscribe, or for help writing mail =
+filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9=
-b3577984ecdc2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 810 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 20 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3ba=
+b3f2dff639bf9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1089 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---SN3+wJEu5mA=--
+--yUhSpOx7qcw=--
 
