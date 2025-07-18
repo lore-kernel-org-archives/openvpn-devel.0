@@ -1,15 +1,15 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Jul 2025 14:41:02 +0000
-References: <gerrit.1752849659000.I217cfb319b85fd75a88f7d4d50c374d28771df28@...2715...>
+Date: Fri, 18 Jul 2025 14:41:03 +0000
+References: <gerrit.1752849659000.I43cd3d564d8c6ad4e41de5a38130d90cb6778395@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6adced6192e0b879944d33220b732ec6a20ef684-HTML@...2715...>
+Message-ID: <814f8b3811918085c1307ed295ade451044eaa0d-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rondNW8chLs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: improve float
- collision logging
+Content-Type: multipart/alternative; boundary="B3A56YgcBMo="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: add flag to print
+ mroute_addr address family
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rondNW8chLs=
+--B3A56YgcBMo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,60 +32,87 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1091?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail
 
 to review the following change.
 
 
-Change subject: improve float collision logging
+Change subject: add flag to print mroute_addr address family
 ......................................................................
 
-improve float collision logging
+add flag to print mroute_addr address family
 
-Extend the log message printed when an instance floats to an address
-already taken by another instance with the same certificate. The updated
-message now includes the instance being closed, the reason it's being
-closed, and the new instance taking over that address.
+Add the MAPF_SHOW_FAMILY flag to prepend the address family to the
+address when printing an mroute_addr object, similar to how it's done in
+print_sockaddr_ex().
 
-Change-Id: I217cfb319b85fd75a88f7d4d50c374d28771df28
+Note that when using this flag with an IPv4-mapped IPv6 address, the
+output will look like: [AF_INET6]a.b.c.d
+
+Change-Id: I43cd3d564d8c6ad4e41de5a38130d90cb6778395
 Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
-M src/openvpn/multi.c
-1 file changed, 5 insertions(+), 1 deletion(-)
+M src/openvpn/mroute.c
+M src/openvpn/mroute.h
+2 files changed, 9 insertions(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/91/1091/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/92/1092/1
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index ead3dd0..4696686 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3263,7 +3263,11 @@
-                 mroute_addr_print(&mi->real, &gc));
-             goto done;
-         }
--        msg(D_MULTI_MEDIUM, "closing instance %s", multi_instance_string(e=
-x_mi, false, &gc));
-+
-+        msg(D_MULTI_LOW, "closing instance %s due to float collision with =
-%s "
-+            "using the same certificate",
-+            multi_instance_string(ex_mi, false, &gc),
-+            multi_instance_string(mi, false, &gc));
-         multi_close_instance(m, ex_mi, false);
-     }
-
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index a617b33..e3b1e9b 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -415,6 +415,10 @@
+                 {
+                     buf_printf(&out, "%s:", proto2ascii(maddr.proto, AF_IN=
+ET, false));
+                 }
++                if (flags & MAPF_SHOW_FAMILY)
++                {
++                    buf_printf(&out, "[AF_INET]");
++                }
+                 buf_printf(&out, "%s", print_in_addr_t(ntohl(maddr.v4.addr=
+),
+                                                        (flags & MAPF_IA_EM=
+PTY_IF_UNDEF) ? IA_EMPTY_IF_UNDEF : 0, gc));
+                 if (maddr.type & MR_WITH_NETBITS)
+@@ -442,6 +446,10 @@
+                 {
+                     buf_printf(&out, "%s:", proto2ascii(maddr.proto, AF_IN=
+ET6, false));
+                 }
++                if (flags & MAPF_SHOW_FAMILY)
++                {
++                    buf_printf(&out, "[AF_INET6]");
++                }
+                 if (IN6_IS_ADDR_V4MAPPED( &maddr.v6.addr ) )
+                 {
+                     buf_printf(&out, "%s", print_in_addr_t(maddr.v4mappedv=
+6.addr,
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index c359fd2..4f9fc03 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -150,6 +150,7 @@
+ #define MAPF_SUBNET            (1<<0)
+ #define MAPF_IA_EMPTY_IF_UNDEF (1<<1)
+ #define MAPF_SHOW_ARP          (1<<2)
++#define MAPF_SHOW_FAMILY       (1<<3)
+ const char *mroute_addr_print_ex(const struct mroute_addr *ma,
+                                  const unsigned int flags,
+                                  struct gc_arena *gc);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1091?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I217cfb319b85fd75a88f7d4d50c374d28771df28
-Gerrit-Change-Number: 1091
+Gerrit-Change-Id: I43cd3d564d8c6ad4e41de5a38130d90cb6778395
+Gerrit-Change-Number: 1092
 Gerrit-PatchSet: 1
 Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -95,54 +122,75 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---rondNW8chLs=
+--B3A56YgcBMo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
 g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1091?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">improve float collision logging<br><br>Extend the log messag=
-e printed when an instance floats to an address<br>already taken by another=
- instance with the same certificate. The updated<br>message now includes th=
-e instance being closed, the reason it&#39;s being<br>closed, and the new i=
-nstance taking over that address.<br><br>Change-Id: I217cfb319b85fd75a88f7d=
-4d50c374d28771df28<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>-=
---<br>M src/openvpn/multi.c<br>1 file changed, 5 insertions(+), 1 deletion(=
--)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/9=
-1/1091/1</pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;"><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</sp=
-an><br><span>index ead3dd0..4696686 100644</span><br><span>--- a/src/openvp=
-n/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -326=
-3,7 +3263,11 @@</span><br><span>                 mroute_addr_print(&amp;mi-=
-&gt;real, &amp;gc));</span><br><span>             goto done;</span><br><spa=
-n>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        m=
-sg(D_MULTI_MEDIUM, &quot;closing instance %s&quot;, multi_instance_string(e=
-x_mi, false, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_M=
-ULTI_LOW, &quot;closing instance %s due to float collision with %s &quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;usi=
-ng the same certificate&quot;,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            multi_instance_string(ex_mi, false, &amp;gc),</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            multi_instance=
-_string(mi, false, &amp;gc));</span><br><span>         multi_close_instance=
-(m, ex_mi, false);</span><br><span>     }</span><br><span> </span><br><span=
-></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1091?usp=3Demail">change 1091</a>. To unsubscribe, or for help wr=
-iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
-ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
-div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
-><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1091?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ce: pre-wrap;">add flag to print mroute_addr address family<br><br>Add the =
+MAPF_SHOW_FAMILY flag to prepend the address family to the<br>address when =
+printing an mroute_addr object, similar to how it&#39;s done in<br>print_so=
+ckaddr_ex().<br><br>Note that when using this flag with an IPv4-mapped IPv6=
+ address, the<br>output will look like: [AF_INET6]a.b.c.d<br><br>Change-Id:=
+ I43cd3d564d8c6ad4e41de5a38130d90cb6778395<br>Signed-off-by: Ralf Lici &lt;=
+ralf@...2726...&gt;<br>---<br>M src/openvpn/mroute.c<br>M src/openvpn/mrout=
+e.h<br>2 files changed, 9 insertions(+), 0 deletions(-)<br><br></pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/92/1092/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/mroute.c b/src/openvpn/mroute.c</span><br><span>index a=
+617b33..e3b1e9b 100644</span><br><span>--- a/src/openvpn/mroute.c</span><br=
+><span>+++ b/src/openvpn/mroute.c</span><br><span>@@ -415,6 +415,10 @@</spa=
+n><br><span>                 {</span><br><span>                     buf_pri=
+ntf(&amp;out, &quot;%s:&quot;, proto2ascii(maddr.proto, AF_INET, false));</=
+span><br><span>                 }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                if (flags &amp; MAPF_SHOW_FAMILY)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                    buf_printf(&a=
+mp;out, &quot;[AF_INET]&quot;);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                }</span><br><span>                 buf_printf(&=
+amp;out, &quot;%s&quot;, print_in_addr_t(ntohl(maddr.v4.addr),</span><br><s=
+pan>                                                        (flags &amp; MA=
+PF_IA_EMPTY_IF_UNDEF) ? IA_EMPTY_IF_UNDEF : 0, gc));</span><br><span>      =
+           if (maddr.type &amp; MR_WITH_NETBITS)</span><br><span>@@ -442,6 =
++446,10 @@</span><br><span>                 {</span><br><span>             =
+        buf_printf(&amp;out, &quot;%s:&quot;, proto2ascii(maddr.proto, AF_I=
+NET6, false));</span><br><span>                 }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                if (flags &amp; MAPF_SHOW_FAM=
+ILY)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+   buf_printf(&amp;out, &quot;[AF_INET6]&quot;);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                }</span><br><span>            =
+     if (IN6_IS_ADDR_V4MAPPED( &amp;maddr.v6.addr ) )</span><br><span>     =
+            {</span><br><span>                     buf_printf(&amp;out, &qu=
+ot;%s&quot;, print_in_addr_t(maddr.v4mappedv6.addr,</span><br><span>diff --=
+git a/src/openvpn/mroute.h b/src/openvpn/mroute.h</span><br><span>index c35=
+9fd2..4f9fc03 100644</span><br><span>--- a/src/openvpn/mroute.h</span><br><=
+span>+++ b/src/openvpn/mroute.h</span><br><span>@@ -150,6 +150,7 @@</span><=
+br><span> #define MAPF_SUBNET            (1&lt;&lt;0)</span><br><span> #def=
+ine MAPF_IA_EMPTY_IF_UNDEF (1&lt;&lt;1)</span><br><span> #define MAPF_SHOW_=
+ARP          (1&lt;&lt;2)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#define MAPF_SHOW_FAMILY       (1&lt;&lt;3)</span><br><span> const ch=
+ar *mroute_addr_print_ex(const struct mroute_addr *ma,</span><br><span>    =
+                              const unsigned int flags,</span><br><span>   =
+                               struct gc_arena *gc);</span><br><span></span=
+><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1092?usp=3Demail">change 1092</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
+/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
+mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I217cfb319b85fd75a88f7d4d50c=
-374d28771df28 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1091 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I43cd3d564d8c6ad4e41de5a3813=
+0d90cb6778395 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1092 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
@@ -159,5 +207,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---rondNW8chLs=--
+--B3A56YgcBMo=--
 
