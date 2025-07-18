@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Jul 2025 15:50:07 +0000
-In-Reply-To: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
-References: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
- lstipakov@...277..., antonio@...2726...
-Message-ID: <2638519945322b9f527539cbd4e28277239729d6-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Fri, 18 Jul 2025 12:57:47 +0000
+References: <gerrit.1752843465000.I0d75efcceb826d06e74abd003d5377468ff9fe3b@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3225cb5d56552d1291bd3d8136b04afcfbef7a27-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="B5DNFmrcPXM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: Add support for
- float notifications
+Content-Type: multipart/alternative; boundary="VRpP16Ft0l8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix broken DHCP
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,754 +18,230 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---B5DNFmrcPXM=
+--VRpP16Ft0l8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
-84?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: dco: Add support for float notifications
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1090?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Fix broken DHCP options
 ......................................................................
 
-dco: Add support for float notifications
+Fix broken DHCP options
 
-When a peer changes its UDP endpoint, the DCO module emits a
-notification to userpace. The message is parsed and the relevant
-information are extracted in order to process the floating operation.
+Commit
 
-Note that we preserve IPv4-mapped IPv6 addresses in userspace when
-receiving a pure IPv4 address from the module, otherwise openvpn
-wouldn't be able to retrieve the multi_instance using the transport
-address hash table lookup.
+  2dfc4f ("dns: deal with --dhcp-options when --dns is active")
 
-It may happen that a netlink notification gets lost, causing us to skip
-a float step. If the peer then floats back to its previous address,
-userspace closes the only valid instance while trying to process the
-float, leading to a segfault. To prevent this, we ignore float attempts
-to an address already taken by a peer with the same peer ID.
+broke support for --dhcp-options. It removed the setting of the
+DHCP_OPTIONS_DHCP_OPTIONAL flag for some DHCP options. This flag is
+required for those options to be applied correctly, as it is used
+when building the DHCP options string that is passed to the TAP driver.
 
-Change-Id: I33e9272b4196c7634db2fb33a75ae4261660867f
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Message-Id: <20250718122230.14008-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-210.html
-Signed-off-by: Gert Doering <gert@...1296...>
+This commit fixes the issue by restoring the setting of this flag.
+
+GitHub: #791
+
+Change-Id: I0d75efcceb826d06e74abd003d5377468ff9fe3b
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
-M src/openvpn/dco_linux.c
-M src/openvpn/dco_linux.h
-M src/openvpn/dco_win.c
-M src/openvpn/dco_win.h
-M src/openvpn/forward.c
-M src/openvpn/forward.h
-M src/openvpn/multi.c
-M src/openvpn/multi.h
-M src/openvpn/ovpn_dco_linux.h
-M src/openvpn/ovpn_dco_win.h
-10 files changed, 159 insertions(+), 2 deletions(-)
+M src/openvpn/options.c
+1 file changed, 13 insertions(+), 0 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/1090/1
 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 22a445a..f04ebfe 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -768,6 +768,44 @@
-     return ret;
- }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 0662b49..4ba9243 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8310,9 +8310,12 @@
+ #endif
+         VERIFY_PERMISSION(OPT_P_DHCPDNS);
 
-+static bool
-+ovpn_parse_float_addr(struct nlattr **attrs, struct sockaddr *out)
-+{
-+    if (!attrs[OVPN_A_PEER_REMOTE_PORT])
-+    {
-+        msg(D_DCO, "ovpn-dco: no remote port in PEER_FLOAT_NTF message");
-+        return false;
-+    }
++        bool dhcp_optional =3D false;
 +
-+    if (attrs[OVPN_A_PEER_REMOTE_IPV4])
-+    {
-+        struct sockaddr_in *addr4 =3D (struct sockaddr_in *)out;
-+        CLEAR(*addr4);
-+        addr4->sin_family =3D AF_INET;
-+        addr4->sin_port =3D nla_get_u16(attrs[OVPN_A_PEER_REMOTE_PORT]);
-+        addr4->sin_addr.s_addr =3D nla_get_u32(attrs[OVPN_A_PEER_REMOTE_IP=
-V4]);
-+        return true;
-+    }
-+    else if (attrs[OVPN_A_PEER_REMOTE_IPV6]
-+             && nla_len(attrs[OVPN_A_PEER_REMOTE_IPV6]) =3D=3D sizeof(stru=
-ct in6_addr))
-+    {
-+        struct sockaddr_in6 *addr6 =3D (struct sockaddr_in6 *)out;
-+        CLEAR(*addr6);
-+        addr6->sin6_family =3D AF_INET6;
-+        addr6->sin6_port =3D nla_get_u16(attrs[OVPN_A_PEER_REMOTE_PORT]);
-+        memcpy(&addr6->sin6_addr, nla_data(attrs[OVPN_A_PEER_REMOTE_IPV6]),
-+               sizeof(addr6->sin6_addr));
-+        if (attrs[OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID])
-+        {
-+            addr6->sin6_scope_id =3D nla_get_u32(attrs[OVPN_A_PEER_REMOTE_=
-IPV6_SCOPE_ID]);
-+        }
-+        return true;
-+    }
-+
-+    msg(D_DCO, "ovpn-dco: no valid remote IP address in PEER_FLOAT_NTF mes=
-sage");
-+    return false;
-+}
-+
- /* This function parses any netlink message sent by ovpn-dco to userspace =
-*/
- static int
- ovpn_handle_msg(struct nl_msg *msg, void *arg)
-@@ -856,6 +894,45 @@
-             break;
-         }
-
-+        case OVPN_CMD_PEER_FLOAT_NTF:
-+        {
-+            if (!attrs[OVPN_A_PEER])
-+            {
-+                msg(D_DCO, "ovpn-dco: no peer in PEER_FLOAT_NTF message");
-+                return NL_STOP;
-+            }
-+
-+            struct nlattr *fp_attrs[OVPN_A_PEER_MAX + 1];
-+            if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_P=
-EER],
-+                                 NULL))
-+            {
-+                msg(D_DCO, "ovpn-dco: can't parse peer in PEER_FLOAT_NTF m=
-esssage");
-+                return NL_STOP;
-+            }
-+
-+            if (!fp_attrs[OVPN_A_PEER_ID])
-+            {
-+                msg(D_DCO, "ovpn-dco: no peer-id in PEER_FLOAT_NTF message=
-");
-+                return NL_STOP;
-+            }
-+            uint32_t peerid =3D nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);
-+
-+            if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&dco->=
-dco_float_peer_ss))
-+            {
-+                return NL_STOP;
-+            }
-+
-+            struct gc_arena gc =3D gc_new();
-+            msg(D_DCO_DEBUG,
-+                "ovpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-=
-id %u, address: %s",
-+                ifindex, peerid, print_sockaddr((struct sockaddr *)&dco->d=
-co_float_peer_ss, &gc));
-+            dco->dco_message_peer_id =3D (int)peerid;
-+            dco->dco_message_type =3D OVPN_CMD_PEER_FLOAT_NTF;
-+
-+            gc_free(&gc);
-+            break;
-+        }
-+
-         case OVPN_CMD_KEY_SWAP_NTF:
+         if ((streq(p[1], "DOMAIN") || streq(p[1], "ADAPTER_DOMAIN_SUFFIX")=
+) && p[2] && !p[3])
          {
-             if (!attrs[OVPN_A_KEYCONF])
-diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
-index 4e441ec..676b8cd 100644
---- a/src/openvpn/dco_linux.h
-+++ b/src/openvpn/dco_linux.h
-@@ -34,6 +34,7 @@
- /* Defines to avoid mismatching with other platforms */
- #define OVPN_CMD_DEL_PEER OVPN_CMD_PEER_DEL_NTF
- #define OVPN_CMD_SWAP_KEYS OVPN_CMD_KEY_SWAP_NTF
-+#define OVPN_CMD_FLOAT_PEER OVPN_CMD_PEER_FLOAT_NTF
-
- typedef enum ovpn_key_slot dco_key_slot_t;
- typedef enum ovpn_cipher_alg dco_cipher_t;
-@@ -75,6 +76,7 @@
-     int dco_message_peer_id;
-     int dco_message_key_id;
-     int dco_del_peer_reason;
-+    struct sockaddr_storage dco_float_peer_ss;
-     uint64_t dco_read_bytes;
-     uint64_t dco_write_bytes;
- } dco_context_t;
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 2a13658..83db739 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -663,6 +663,7 @@
-         dco->dco_message_peer_id =3D dco->notif_buf.PeerId;
-         dco->dco_message_type =3D dco->notif_buf.Cmd;
-         dco->dco_del_peer_reason =3D dco->notif_buf.DelPeerReason;
-+        dco->dco_float_peer_ss =3D dco->notif_buf.FloatAddress;
+             dhcp->domain =3D p[2];
++            dhcp_optional =3D true;
+         }
+         else if (streq(p[1], "DOMAIN-SEARCH") && p[2] && !p[3])
+         {
+@@ -8325,6 +8328,7 @@
+                 msg(msglevel, "--dhcp-option %s: maximum of %d search entr=
+ies can be specified",
+                     p[1], N_SEARCH_LIST_LEN);
+             }
++            dhcp_optional =3D true;
+         }
+         else if ((streq(p[1], "DNS") || streq(p[1], "DNS6")) && p[2] && !p=
+[3]
+                  && (!strstr(p[2], ":") || ipv6_addr_safe(p[2])))
+@@ -8336,6 +8340,7 @@
+             else
+             {
+                 dhcp_option_address_parse("DNS", p[2], dhcp->dns, &dhcp->d=
+ns_len, msglevel);
++                dhcp_optional =3D true;
+             }
+         }
+ #if defined(_WIN32) || defined(TARGET_ANDROID)
+@@ -8359,6 +8364,7 @@
+         else if (streq(p[1], "WINS") && p[2] && !p[3])
+         {
+             dhcp_option_address_parse("WINS", p[2], o->wins, &o->wins_len,=
+ msglevel);
++            o->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
+         }
+         else if (streq(p[1], "NTP") && p[2] && !p[3])
+         {
+@@ -8390,6 +8396,13 @@
+ #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+         setenv_foreign_option(options, (const char **)p, 3, es);
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
++
++        if (dhcp_optional)
++        {
++#if defined(_WIN32) || defined(TARGET_ANDROID)
++            o->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
++#endif
++        }
      }
-     else
-     {
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
-index 4513f3f..b9d93fa 100644
---- a/src/openvpn/dco_win.h
-+++ b/src/openvpn/dco_win.h
-@@ -52,6 +52,7 @@
-     int dco_message_peer_id;
-     int dco_message_type;
-     int dco_del_peer_reason;
-+    struct sockaddr_storage dco_float_peer_ss;
-
-     uint64_t dco_read_bytes;
-     uint64_t dco_write_bytes;
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index a4f260a..dfc6708 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1243,6 +1243,41 @@
-     perf_pop();
- }
-
-+void
-+extract_dco_float_peer_addr(const sa_family_t socket_family,
-+                            struct openvpn_sockaddr *out_osaddr,
-+                            const struct sockaddr *float_sa)
-+{
-+    if (float_sa->sa_family =3D=3D AF_INET)
-+    {
-+        struct sockaddr_in *float4 =3D (struct sockaddr_in *)float_sa;
-+        /* DCO treats IPv4-mapped IPv6 addresses as pure IPv4. However, on=
- a
-+         * dual-stack socket, we need to preserve the mapping otherwise op=
-envpn
-+         * will not be able to find the peer by its transport address.
-+         */
-+        if (socket_family =3D=3D AF_INET6)
-+        {
-+            out_osaddr->addr.in6.sin6_family =3D AF_INET6;
-+            out_osaddr->addr.in6.sin6_port =3D float4->sin_port;
-+
-+            memset(&out_osaddr->addr.in6.sin6_addr.s6_addr, 0, 10);
-+            out_osaddr->addr.in6.sin6_addr.s6_addr[10] =3D 0xff;
-+            out_osaddr->addr.in6.sin6_addr.s6_addr[11] =3D 0xff;
-+            memcpy(&out_osaddr->addr.in6.sin6_addr.s6_addr[12],
-+                   &float4->sin_addr.s_addr, sizeof(in_addr_t));
-+        }
-+        else
-+        {
-+            memcpy(&out_osaddr->addr.in4, float4, sizeof(struct sockaddr_i=
-n));
-+        }
-+    }
-+    else
-+    {
-+        struct sockaddr_in6 *float6 =3D (struct sockaddr_in6 *)float_sa;
-+        memcpy(&out_osaddr->addr.in6, float6, sizeof(struct sockaddr_in6));
-+    }
-+}
-+
- static void
- process_incoming_dco(struct context *c)
- {
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 318691f..2818fd1 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -196,6 +196,21 @@
- void process_incoming_link_part2(struct context *c, struct link_socket_inf=
-o *lsi, const uint8_t *orig_buf);
-
- /**
-+ * Transfers \c float_sa data extracted from an incoming DCO
-+ * PEER_FLOAT_NTF to \c out_osaddr for later processing.
-+ *
-+ * @param socket_family - The address family of the socket
-+ * @param out_osaddr - openvpn_sockaddr struct that will be filled the new
-+ *      address data
-+ * @param float_sa - The sockaddr struct containing the data received from=
- the
-+ *      DCO notification
-+ */
-+void
-+extract_dco_float_peer_addr(sa_family_t socket_family,
-+                            struct openvpn_sockaddr *out_osaddr,
-+                            const struct sockaddr *float_sa);
-+
-+/**
-  * Write a packet to the external network interface.
-  * @ingroup external_multiplexer
-  *
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index a760e07..ead3dd0 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3251,6 +3251,18 @@
-             goto done;
-         }
-
-+        /* It doesn't make sense to let a peer float to the address it alr=
-eady
-+         * has, so we disallow it. This can happen if a DCO netlink notifi=
-cation
-+         * gets lost and we miss a floating step.
-+         */
-+        if (m1->peer_id =3D=3D m2->peer_id)
-+        {
-+            msg(M_WARN, "disallowing peer %" PRIu32 " (%s) from floating t=
-o "
-+                "its own address (%s)",
-+                m1->peer_id, tls_common_name(mi->context.c2.tls_multi, fal=
-se),
-+                mroute_addr_print(&mi->real, &gc));
-+            goto done;
-+        }
-         msg(D_MULTI_MEDIUM, "closing instance %s", multi_instance_string(e=
-x_mi, false, &gc));
-         multi_close_instance(m, ex_mi, false);
-     }
-@@ -3384,6 +3396,17 @@
-         {
-             process_incoming_del_peer(m, mi, dco);
-         }
-+#if defined(TARGET_LINUX) || defined(TARGET_WIN32)
-+        else if (dco->dco_message_type =3D=3D OVPN_CMD_FLOAT_PEER)
-+        {
-+            ASSERT(mi->context.c2.link_sockets[0]);
-+            extract_dco_float_peer_addr(mi->context.c2.link_sockets[0]->in=
-fo.af,
-+                                        &m->top.c2.from.dest,
-+                                        (struct sockaddr *)&dco->dco_float=
-_peer_ss);
-+            multi_process_float(m, mi, mi->context.c2.link_sockets[0]);
-+            CLEAR(dco->dco_float_peer_ss);
-+        }
-+#endif /* if defined(TARGET_LINUX) || defined(TARGET_WIN32) */
-         else if (dco->dco_message_type =3D=3D OVPN_CMD_SWAP_KEYS)
-         {
-             tls_session_soft_reset(mi->context.c2.tls_multi);
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 40f7519..fe9e847 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -322,7 +322,7 @@
- /**
-  * Process an incoming DCO message (from kernel space).
-  *
-- * @param m            - The single \c multi_context structur.e
-+ * @param m            - The single \c multi_context structure.
-  *
-  * @return
-  *  - True, if the message was received correctly.
-diff --git a/src/openvpn/ovpn_dco_linux.h b/src/openvpn/ovpn_dco_linux.h
-index 680d152..b3c9ff0 100644
---- a/src/openvpn/ovpn_dco_linux.h
-+++ b/src/openvpn/ovpn_dco_linux.h
-@@ -99,6 +99,7 @@
- 	OVPN_CMD_KEY_SWAP,
- 	OVPN_CMD_KEY_SWAP_NTF,
- 	OVPN_CMD_KEY_DEL,
-+	OVPN_CMD_PEER_FLOAT_NTF,
-
- 	__OVPN_CMD_MAX,
- 	OVPN_CMD_MAX =3D (__OVPN_CMD_MAX - 1)
-diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
-index 865bb38..dd6b7ce 100644
---- a/src/openvpn/ovpn_dco_win.h
-+++ b/src/openvpn/ovpn_dco_win.h
-@@ -149,7 +149,8 @@
-
- typedef enum {
-     OVPN_CMD_DEL_PEER,
--    OVPN_CMD_SWAP_KEYS
-+    OVPN_CMD_SWAP_KEYS,
-+    OVPN_CMD_FLOAT_PEER
- } OVPN_NOTIFY_CMD;
-=20
- typedef enum {
-@@ -164,6 +165,7 @@
-     OVPN_NOTIFY_CMD Cmd;
-     int PeerId;
-     OVPN_DEL_PEER_REASON DelPeerReason;
-+    struct sockaddr_storage FloatAddress;
- } OVPN_NOTIFY_EVENT, * POVPN_NOTIFY_EVENT;
-
- typedef struct _OVPN_MP_DEL_PEER {
+ #ifdef _WIN32
+     else if (streq(p[0], "show-adapters") && !p[1])
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1090?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I33e9272b4196c7634db2fb33a75ae4261660867f
-Gerrit-Change-Number: 1084
-Gerrit-PatchSet: 7
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I0d75efcceb826d06e74abd003d5377468ff9fe3b
+Gerrit-Change-Number: 1090
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---B5DNFmrcPXM=
+--VRpP16Ft0l8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">dco: Add support for float notifications<br><=
-br>When a peer changes its UDP endpoint, the DCO module emits a<br>notifica=
-tion to userpace. The message is parsed and the relevant<br>information are=
- extracted in order to process the floating operation.<br><br>Note that we =
-preserve IPv4-mapped IPv6 addresses in userspace when<br>receiving a pure I=
-Pv4 address from the module, otherwise openvpn<br>wouldn&#39;t be able to r=
-etrieve the multi_instance using the transport<br>address hash table lookup=
-.<br><br>It may happen that a netlink notification gets lost, causing us to=
- skip<br>a float step. If the peer then floats back to its previous address=
-,<br>userspace closes the only valid instance while trying to process the<b=
-r>float, leading to a segfault. To prevent this, we ignore float attempts<b=
-r>to an address already taken by a peer with the same peer ID.<br><br>Chang=
-e-Id: I33e9272b4196c7634db2fb33a75ae4261660867f<br>Signed-off-by: Ralf Lici=
- &lt;ralf@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<=
-br>Acked-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>Acked-by: Lev =
-Stipakov &lt;lstipakov@...277...&gt;<br>Message-Id: &lt;20250718122230.1400=
-8-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@=
-lists.sourceforge.net/msg32210.html<br>Signed-off-by: Gert Doering &lt;gert=
-@...1296...&gt;<br>---<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dco_li=
-nux.h<br>M src/openvpn/dco_win.c<br>M src/openvpn/dco_win.h<br>M src/openvp=
-n/forward.c<br>M src/openvpn/forward.h<br>M src/openvpn/multi.c<br>M src/op=
-envpn/multi.h<br>M src/openvpn/ovpn_dco_linux.h<br>M src/openvpn/ovpn_dco_w=
-in.h<br>10 files changed, 159 insertions(+), 2 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br=
-><span>index 22a445a..f04ebfe 100644</span><br><span>--- a/src/openvpn/dco_=
-linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -7=
-68,6 +768,44 @@</span><br><span>     return ret;</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bo=
-ol</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_parse_float_=
-addr(struct nlattr **attrs, struct sockaddr *out)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    if (!attrs[OVPN_A_PEER_REMOTE_PORT])</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: no remote port in PE=
-ER_FLOAT_NTF message&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (attrs[OVPN_A_P=
-EER_REMOTE_IPV4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct s=
-ockaddr_in *addr4 =3D (struct sockaddr_in *)out;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        CLEAR(*addr4);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        addr4-&gt;sin_family =3D AF_INET;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        addr4-&gt;s=
-in_port =3D nla_get_u16(attrs[OVPN_A_PEER_REMOTE_PORT]);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        addr4-&gt;sin_addr.s_addr =3D =
-nla_get_u32(attrs[OVPN_A_PEER_REMOTE_IPV4]);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return true;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    else if (attrs[OVPN_A_PEER_REMOTE_IPV6]</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+             &amp;&amp; nla_len(attrs[O=
-VPN_A_PEER_REMOTE_IPV6]) =3D=3D sizeof(struct in6_addr))</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        struct sockaddr_in6 *addr6 =3D (struct socka=
-ddr_in6 *)out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   CLEAR(*addr6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      addr6-&gt;sin6_family =3D AF_INET6;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        addr6-&gt;sin6_port =3D nla_get_u16(attrs[OVP=
-N_A_PEER_REMOTE_PORT]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        memcpy(&amp;addr6-&gt;sin6_addr, nla_data(attrs[OVPN_A_PEER_REM=
-OTE_IPV6]),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-       sizeof(addr6-&gt;sin6_addr));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        if (attrs[OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID])</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            addr6-&gt;sin6_scope_id=
- =3D nla_get_u32(attrs[OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID]);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        return true;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- msg(D_DCO, &quot;ovpn-dco: no valid remote IP address in PEER_FLOAT_NTF me=
-ssage&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* This =
-function parses any netlink message sent by ovpn-dco to userspace */</span>=
-<br><span> static int</span><br><span> ovpn_handle_msg(struct nl_msg *msg, =
-void *arg)</span><br><span>@@ -856,6 +894,45 @@</span><br><span>           =
-  break;</span><br><span>         }</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        case OVPN_CMD_PEER_FLOAT_NTF:</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            if (!attrs[OVPN_A_PEE=
-R])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                msg(D_=
-DCO, &quot;ovpn-dco: no peer in PEER_FLOAT_NTF message&quot;);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                return NL_STOP;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            struct nlattr *fp_attrs[OVPN_A_PE=
-ER_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-           NULL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        msg(D_DCO, &quot;ovpn-dco: can&#39;t parse peer in PEER_FLOAT_NTF m=
-esssage&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!=
-fp_attrs[OVPN_A_PEER_ID])</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                msg(D_DCO, &quot;ovpn-dco: no peer-id in PEER_FLOAT_NTF mes=
-sage&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           uint32_t peerid =3D nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            if (!ovpn_parse_float_addr(fp_at=
-trs, (struct sockaddr *)&amp;dco-&gt;dco_float_peer_ss))</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                return NL_STOP;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            struct gc_arena gc =3D gc_new();</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            msg(D_DCO_DEBUG,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;o=
-vpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, address: %s&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-   ifindex, peerid, print_sockaddr((struct sockaddr *)&amp;dco-&gt;dco_floa=
-t_peer_ss, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            dco-&gt;dco_message_peer_id =3D (int)peerid;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            dco-&gt;dco_message_type=
- =3D OVPN_CMD_PEER_FLOAT_NTF;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span>         case OVPN_CMD_KEY_SWAP_NTF:</span><br><span>         {</spa=
-n><br><span>             if (!attrs[OVPN_A_KEYCONF])</span><br><span>diff -=
--git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h</span><br><span>in=
-dex 4e441ec..676b8cd 100644</span><br><span>--- a/src/openvpn/dco_linux.h</=
-span><br><span>+++ b/src/openvpn/dco_linux.h</span><br><span>@@ -34,6 +34,7=
- @@</span><br><span> /* Defines to avoid mismatching with other platforms *=
-/</span><br><span> #define OVPN_CMD_DEL_PEER OVPN_CMD_PEER_DEL_NTF</span><b=
-r><span> #define OVPN_CMD_SWAP_KEYS OVPN_CMD_KEY_SWAP_NTF</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#define OVPN_CMD_FLOAT_PEER OVPN_CMD_=
-PEER_FLOAT_NTF</span><br><span> </span><br><span> typedef enum ovpn_key_slo=
-t dco_key_slot_t;</span><br><span> typedef enum ovpn_cipher_alg dco_cipher_=
-t;</span><br><span>@@ -75,6 +76,7 @@</span><br><span>     int dco_message_p=
-eer_id;</span><br><span>     int dco_message_key_id;</span><br><span>     i=
-nt dco_del_peer_reason;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    struct sockaddr_storage dco_float_peer_ss;</span><br><span>     uin=
-t64_t dco_read_bytes;</span><br><span>     uint64_t dco_write_bytes;</span>=
-<br><span> } dco_context_t;</span><br><span>diff --git a/src/openvpn/dco_wi=
-n.c b/src/openvpn/dco_win.c</span><br><span>index 2a13658..83db739 100644</=
-span><br><span>--- a/src/openvpn/dco_win.c</span><br><span>+++ b/src/openvp=
-n/dco_win.c</span><br><span>@@ -663,6 +663,7 @@</span><br><span>         dc=
-o-&gt;dco_message_peer_id =3D dco-&gt;notif_buf.PeerId;</span><br><span>   =
-      dco-&gt;dco_message_type =3D dco-&gt;notif_buf.Cmd;</span><br><span> =
-        dco-&gt;dco_del_peer_reason =3D dco-&gt;notif_buf.DelPeerReason;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco-&gt;dco_fl=
-oat_peer_ss =3D dco-&gt;notif_buf.FloatAddress;</span><br><span>     }</spa=
-n><br><span>     else</span><br><span>     {</span><br><span>diff --git a/s=
-rc/openvpn/dco_win.h b/src/openvpn/dco_win.h</span><br><span>index 4513f3f.=
-.b9d93fa 100644</span><br><span>--- a/src/openvpn/dco_win.h</span><br><span=
->+++ b/src/openvpn/dco_win.h</span><br><span>@@ -52,6 +52,7 @@</span><br><s=
-pan>     int dco_message_peer_id;</span><br><span>     int dco_message_type=
-;</span><br><span>     int dco_del_peer_reason;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    struct sockaddr_storage dco_float_peer_ss;<=
-/span><br><span> </span><br><span>     uint64_t dco_read_bytes;</span><br><=
-span>     uint64_t dco_write_bytes;</span><br><span>diff --git a/src/openvp=
-n/forward.c b/src/openvpn/forward.c</span><br><span>index a4f260a..dfc6708 =
-100644</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/sr=
-c/openvpn/forward.c</span><br><span>@@ -1243,6 +1243,41 @@</span><br><span>=
-     perf_pop();</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+extract_dco_float_peer_addr(const sa_family_t socket_fam=
-ily,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-             struct openvpn_sockaddr *out_osaddr,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                            const struct sock=
-addr *float_sa)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (float_sa-&gt;s=
-a_family =3D=3D AF_INET)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s=
-truct sockaddr_in *float4 =3D (struct sockaddr_in *)float_sa;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        /* DCO treats IPv4-mapped=
- IPv6 addresses as pure IPv4. However, on a</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+         * dual-stack socket, we need to preserve t=
-he mapping otherwise openvpn</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+         * will not be able to find the peer by its transport addr=
-ess.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (socket_fami=
-ly =3D=3D AF_INET6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  out_osaddr-&gt;addr.in6.sin6_family =3D AF_INET6;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            out_osaddr-&gt;addr.in6.sin6_=
-port =3D float4-&gt;sin_port;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   memset(&amp;out_osaddr-&gt;addr.in6.sin6_addr.s6_addr, 0, 10);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            out_osaddr-&gt;ad=
-dr.in6.sin6_addr.s6_addr[10] =3D 0xff;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            out_osaddr-&gt;addr.in6.sin6_addr.s6_addr[11=
-] =3D 0xff;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    memcpy(&amp;out_osaddr-&gt;addr.in6.sin6_addr.s6_addr[12],</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                   &amp;float4-&=
-gt;sin_addr.s_addr, sizeof(in_addr_t));</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     memcpy(&amp;out_osaddr-&gt;addr.in4, float4, sizeof(struct sockaddr_in=
-));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        struct sockaddr_in6 *float6 =3D (struct sockaddr_in6 *)fl=
-oat_sa;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        memc=
-py(&amp;out_osaddr-&gt;addr.in6, float6, sizeof(struct sockaddr_in6));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span> static void</span><br><span> process_i=
-ncoming_dco(struct context *c)</span><br><span> {</span><br><span>diff --gi=
-t a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><span>index 318=
-691f..2818fd1 100644</span><br><span>--- a/src/openvpn/forward.h</span><br>=
-<span>+++ b/src/openvpn/forward.h</span><br><span>@@ -196,6 +196,21 @@</spa=
-n><br><span> void process_incoming_link_part2(struct context *c, struct lin=
-k_socket_info *lsi, const uint8_t *orig_buf);</span><br><span> </span><br><=
-span> /**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Transfe=
-rs \c float_sa data extracted from an incoming DCO</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * PEER_FLOAT_NTF to \c out_osaddr for later=
- processing.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param socket_family =
-- The address family of the socket</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * @param out_osaddr - openvpn_sockaddr struct that will be =
-filled the new</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
-   address data</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @=
-param float_sa - The sockaddr struct containing the data received from the<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *      DCO notifica=
-tion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+extract_dco_float_peer_addr(sa_family_t socket=
-_family,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-                 struct openvpn_sockaddr *out_osaddr,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                            const struct =
-sockaddr *float_sa);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><spa=
-n>  * Write a packet to the external network interface.</span><br><span>  *=
- @ingroup external_multiplexer</span><br><span>  *</span><br><span>diff --g=
-it a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index a760e0=
-7..ead3dd0 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span=
->+++ b/src/openvpn/multi.c</span><br><span>@@ -3251,6 +3251,18 @@</span><br=
-><span>             goto done;</span><br><span>         }</span><br><span> =
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* It doesn=
-&#39;t make sense to let a peer float to the address it already</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+         * has, so we disallow =
-it. This can happen if a DCO netlink notification</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+         * gets lost and we miss a floating s=
-tep.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (m1-&gt;peer=
-_id =3D=3D m2-&gt;peer_id)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         msg(M_WARN, &quot;disallowing peer %&quot; PRIu32 &quot; (%s) from=
- floating to &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                &quot;its own address (%s)&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                m1-&gt;peer_id, tls_common_na=
-me(mi-&gt;context.c2.tls_multi, false),</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                mroute_addr_print(&amp;mi-&gt;real, &am=
-p;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-goto done;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span>         msg(D_MULTI_MEDIUM, &quot;closing instance %s&quo=
-t;, multi_instance_string(ex_mi, false, &amp;gc));</span><br><span>        =
- multi_close_instance(m, ex_mi, false);</span><br><span>     }</span><br><s=
-pan>@@ -3384,6 +3396,17 @@</span><br><span>         {</span><br><span>     =
-        process_incoming_del_peer(m, mi, dco);</span><br><span>         }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LI=
-NUX) || defined(TARGET_WIN32)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        else if (dco-&gt;dco_message_type =3D=3D OVPN_CMD_FLOAT_P=
-EER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSERT(mi-&gt=
-;context.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            extract_dco_float_peer_addr(mi-&gt;context.c2.link_so=
-ckets[0]-&gt;info.af,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                                        &amp;m-&gt;top.c2.from.dest,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
-                (struct sockaddr *)&amp;dco-&gt;dco_float_peer_ss);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            multi_process_f=
-loat(m, mi, mi-&gt;context.c2.link_sockets[0]);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            CLEAR(dco-&gt;dco_float_peer_ss);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if defined(TARGET_LIN=
-UX) || defined(TARGET_WIN32) */</span><br><span>         else if (dco-&gt;d=
-co_message_type =3D=3D OVPN_CMD_SWAP_KEYS)</span><br><span>         {</span=
-><br><span>             tls_session_soft_reset(mi-&gt;context.c2.tls_multi)=
-;</span><br><span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</s=
-pan><br><span>index 40f7519..fe9e847 100644</span><br><span>--- a/src/openv=
-pn/multi.h</span><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -32=
-2,7 +322,7 @@</span><br><span> /**</span><br><span>  * Process an incoming =
-DCO message (from kernel space).</span><br><span>  *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * @param m            - The single \c mult=
-i_context structur.e</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @param m            - The single \c multi_context structure.</span><br>=
-<span>  *</span><br><span>  * @return</span><br><span>  *  - True, if the m=
-essage was received correctly.</span><br><span>diff --git a/src/openvpn/ovp=
-n_dco_linux.h b/src/openvpn/ovpn_dco_linux.h</span><br><span>index 680d152.=
-.b3c9ff0 100644</span><br><span>--- a/src/openvpn/ovpn_dco_linux.h</span><b=
-r><span>+++ b/src/openvpn/ovpn_dco_linux.h</span><br><span>@@ -99,6 +99,7 @=
-@</span><br><span> 	OVPN_CMD_KEY_SWAP,</span><br><span> 	OVPN_CMD_KEY_SWAP_=
-NTF,</span><br><span> 	OVPN_CMD_KEY_DEL,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+	OVPN_CMD_PEER_FLOAT_NTF,</span><br><span> </span><br>=
-<span> 	__OVPN_CMD_MAX,</span><br><span> 	OVPN_CMD_MAX =3D (__OVPN_CMD_MAX =
-- 1)</span><br><span>diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/=
-ovpn_dco_win.h</span><br><span>index 865bb38..dd6b7ce 100644</span><br><spa=
-n>--- a/src/openvpn/ovpn_dco_win.h</span><br><span>+++ b/src/openvpn/ovpn_d=
-co_win.h</span><br><span>@@ -149,7 +149,8 @@</span><br><span> </span><br><s=
-pan> typedef enum {</span><br><span>     OVPN_CMD_DEL_PEER,</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    OVPN_CMD_SWAP_KEYS</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    OVPN_CMD_SWAP_KEYS,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_CMD_FLOAT_PEER</span>=
-<br><span> } OVPN_NOTIFY_CMD;</span><br><span> </span><br><span> typedef en=
-um {</span><br><span>@@ -164,6 +165,7 @@</span><br><span>     OVPN_NOTIFY_C=
-MD Cmd;</span><br><span>     int PeerId;</span><br><span>     OVPN_DEL_PEER=
-_REASON DelPeerReason;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    struct sockaddr_storage FloatAddress;</span><br><span> } OVPN_NOTIFY=
-_EVENT, * POVPN_NOTIFY_EVENT;</span><br><span> </span><br><span> typedef st=
-ruct _OVPN_MP_DEL_PEER {</span><br><span></span><br></pre><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">change =
-1084</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1090?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Fix broken DHCP options<br><br>Commit<br><br>  2dfc4f (&quot=
+;dns: deal with --dhcp-options when --dns is active&quot;)<br><br>broke sup=
+port for --dhcp-options. It removed the setting of the<br>DHCP_OPTIONS_DHCP=
+_OPTIONAL flag for some DHCP options. This flag is<br>required for those op=
+tions to be applied correctly, as it is used<br>when building the DHCP opti=
+ons string that is passed to the TAP driver.<br><br>This commit fixes the i=
+ssue by restoring the setting of this flag.<br><br>GitHub: #791<br><br>Chan=
+ge-Id: I0d75efcceb826d06e74abd003d5377468ff9fe3b<br>Signed-off-by: Lev Stip=
+akov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chan=
+ged, 13 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openv=
+pn.net:29418/openvpn refs/changes/90/1090/1</pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
+n/options.c b/src/openvpn/options.c</span><br><span>index 0662b49..4ba9243 =
+100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/sr=
+c/openvpn/options.c</span><br><span>@@ -8310,9 +8310,12 @@</span><br><span>=
+ #endif</span><br><span>         VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        bo=
+ol dhcp_optional =3D false;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span>         if ((streq(p[1], &quot;DOMAIN&quot;) || s=
+treq(p[1], &quot;ADAPTER_DOMAIN_SUFFIX&quot;)) &amp;&amp; p[2] &amp;&amp; !=
+p[3])</span><br><span>         {</span><br><span>             dhcp-&gt;doma=
+in =3D p[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     dhcp_optional =3D true;</span><br><span>         }</span><br><span>   =
+      else if (streq(p[1], &quot;DOMAIN-SEARCH&quot;) &amp;&amp; p[2] &amp;=
+&amp; !p[3])</span><br><span>         {</span><br><span>@@ -8325,6 +8328,7 =
+@@</span><br><span>                 msg(msglevel, &quot;--dhcp-option %s: m=
+aximum of %d search entries can be specified&quot;,</span><br><span>       =
+              p[1], N_SEARCH_LIST_LEN);</span><br><span>             }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            dhcp_optiona=
+l =3D true;</span><br><span>         }</span><br><span>         else if ((s=
+treq(p[1], &quot;DNS&quot;) || streq(p[1], &quot;DNS6&quot;)) &amp;&amp; p[=
+2] &amp;&amp; !p[3]</span><br><span>                  &amp;&amp; (!strstr(p=
+[2], &quot;:&quot;) || ipv6_addr_safe(p[2])))</span><br><span>@@ -8336,6 +8=
+340,7 @@</span><br><span>             else</span><br><span>             {</=
+span><br><span>                 dhcp_option_address_parse(&quot;DNS&quot;, =
+p[2], dhcp-&gt;dns, &amp;dhcp-&gt;dns_len, msglevel);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                dhcp_optional =3D true;</=
+span><br><span>             }</span><br><span>         }</span><br><span> #=
+if defined(_WIN32) || defined(TARGET_ANDROID)</span><br><span>@@ -8359,6 +8=
+364,7 @@</span><br><span>         else if (streq(p[1], &quot;WINS&quot;) &a=
+mp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>         {</span><br><span>=
+             dhcp_option_address_parse(&quot;WINS&quot;, p[2], o-&gt;wins, =
+&amp;o-&gt;wins_len, msglevel);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            o-&gt;dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;=
+</span><br><span>         }</span><br><span>         else if (streq(p[1], &=
+quot;NTP&quot;) &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>         =
+{</span><br><span>@@ -8390,6 +8396,13 @@</span><br><span> #else /* if defin=
+ed(_WIN32) || defined(TARGET_ANDROID) */</span><br><span>         setenv_fo=
+reign_option(options, (const char **)p, 3, es);</span><br><span> #endif /* =
+if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        if (dhcp_optional)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#if defined(_WIN32) || defined(TARGET_ANDROID)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dhcp_options |=3D DHCP_=
+OPTIONS_DHCP_OPTIONAL;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span>     }</span><br><span> #ifdef _WIN32</span><br><span>     =
+else if (streq(p[0], &quot;show-adapters&quot;) &amp;&amp; !p[1])</span><br=
+><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1090?usp=3Demail">change 1090</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1090?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I33e9272b4196c7634db2fb33a75=
-ae4261660867f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1084 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+<div style=3D"display:none"> Gerrit-Change-Id: I0d75efcceb826d06e74abd003d5=
+377468ff9fe3b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1090 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---B5DNFmrcPXM=--
+--VRpP16Ft0l8=--
 
