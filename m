@@ -1,17 +1,12 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Jul 2025 12:22:11 +0000
-In-Reply-To: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
-References: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
- lstipakov@...277..., antonio@...2726...
-Message-ID: <74deddddafc7288383ba35b396fcdf80e7229782-EmailReviewComments-HTML@...2715...>
+Message-ID: <eb1f7bea-988f-4b21-84c1-3dd2c4df81ee@...2181...>
+Date: Fri, 18 Jul 2025 16:07:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zT44dXCuS0c="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: Add support for
- float notifications
+References: <aee74fd22d63489ee9c3256bb3391edc337673bd.1752501854.git.sd@...2891...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <aee74fd22d63489ee9c3256bb3391edc337673bd.1752501854.git.sd@...2891...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn] net: ovpn: use correct array size
+ to parse nested attributes in ovpn_nl_key_swap_doit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,107 +15,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Sabrina Dubroca <sd@...2891...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---zT44dXCuS0c=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 14/07/2025 16:20, Sabrina Dubroca wrote:
+> In ovpn_nl_key_swap_doit, the attributes array used to parse the
+> OVPN_A_KEYCONF uses OVPN_A_PEER_MAX instead of
+> OVPN_A_KEYCONF_MAX. Note that this does not cause any bug, since
+> currently OVPN_A_KEYCONF_MAX < OVPN_A_PEER_MAX.
+> 
+> Fixes: 203e2bf55990 ("ovpn: implement key add/get/del/swap via netlink")
+> Signed-off-by: Sabrina Dubroca <sd@...2891...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos, ralf_=
-lici, stipa.
+Nice catch, thanks a lot!
+As you suggested I fixed the reverse christmas-tree while applying this 
+patch.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1084?usp=3Demail )
+It's now queued for sending to net-next.
 
-Change subject: dco: Add support for float notifications
-......................................................................
+Regards,
 
+-- 
+Antonio Quartulli
 
-Patch Set 6: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I33e9272b4196c7634db2fb33a75ae4261660867f
-Gerrit-Change-Number: 1084
-Gerrit-PatchSet: 6
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Fri, 18 Jul 2025 12:22:11 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---zT44dXCuS0c=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos, r=
-alf_lici, stipa. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail=
-">change 1084</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I33e9272b4196c7634db2fb33a75=
-ae4261660867f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1084 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 18 Jul 2025 12:22:11=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---zT44dXCuS0c=--
 
