@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Jul 2025 19:07:23 +0000
+Date: Fri, 18 Jul 2025 19:07:25 +0000
 In-Reply-To: <gerrit.1751893020000.Iecbbcf32c0059f2b16a05333b3794599060d7d6a@...2715...>
 References: <gerrit.1751893020000.Iecbbcf32c0059f2b16a05333b3794599060d7d6a@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <8ef61666058cb1204cdb6e75bd4ee40b62013f8c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <8ef61666058cb1204cdb6e75bd4ee40b62013f8c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+9O5ircaL9w="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="VDJTc+ZPRZQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Multi-socket: Fix
  assert triggered by stale peer-id reuse
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+9O5ircaL9w=
+--VDJTc+ZPRZQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/1078?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
+78?usp=3Demail )
 
 Change subject: Multi-socket: Fix assert triggered by stale peer-id reuse
 ......................................................................
@@ -69,7 +65,7 @@ M src/openvpn/mudp.c
 1 file changed, 13 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1078/4
+
 
 diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
 index 93e65e0..ee8446a 100644
@@ -130,85 +126,81 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---+9O5ircaL9w=
+--VDJTc+ZPRZQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by its_Giaan.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1078?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Multi-socket: Fix assert triggered by stale peer-id =
-reuse<br><br>Fixed a bug where clients using different transport<br>protoco=
-ls (UDP, TCP) could interfere with each other<br>after a server restart.<br=
->The issue occurred when a client reused a previously<br>assigned peer-id t=
-hat was now associated with a<br>different client using a different transpo=
-rt protocol.<br><br>For example, a UDP client could send packets with a<br>=
-peer-id now assigned to a TCP client, which lacks<br>a valid context-&gt;c2=
-.from which is filled by the<br>recvfrom(), causing an assert to be trigger=
-ed.<br><br>A protocol check has been added to prevent packets<br>from diffe=
-rent protocols from hijacking active<br>connections.<br><br>Github: OpenVPN=
-/openvpn#773<br><br>Change-Id: Iecbbcf32c0059f2b16a05333b3794599060d7d6a<br=
->Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br>Acked-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250718185559.=
-4515-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
-el@lists.sourceforge.net/msg32220.html<br>Signed-off-by: Gert Doering &lt;g=
-ert@...1296...&gt;<br>---<br>M src/openvpn/mudp.c<br>1 file changed, 13 ins=
-ertions(+), 9 deletions(-)<br><br></pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
-8/openvpn refs/changes/78/1078/4</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/mudp.c b/=
-src/openvpn/mudp.c</span><br><span>index 93e65e0..ee8446a 100644</span><br>=
-<span>--- a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</sp=
-an><br><span>@@ -216,16 +216,20 @@</span><br><span> </span><br><span>      =
-       if (!peer_id_disabled &amp;&amp; (peer_id &lt; m-&gt;max_clients) &a=
-mp;&amp; (m-&gt;instances[peer_id]))</span><br><span>             {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-                mi =3D m-&gt;=
-instances[peer_id];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                *floate=
-d =3D !link_socket_actual_match(&amp;mi-&gt;context.c2.from, &amp;m-&gt;top=
-.c2.from);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                if (*floated)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* Flo=
-ating on TCP will never be possible, so ensure we only process</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                 * UDP clients *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if=
- (m-&gt;instances[peer_id]-&gt;context.c2.link_sockets[0]-&gt;info.proto =
-=3D=3D sock-&gt;info.proto)</span><br><span>                 {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                    /* reset prefi=
-x, since here we are not sure peer is the one it claims to be */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                    ungenerate_p=
-refix(mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-         msg(D_MULTI_MEDIUM, &quot;Float requested for peer %&quot; PRIu32 =
-&quot; to %s&quot;, peer_id,</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                        mroute_addr_print(&amp;real, &amp;gc));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mi =
-=3D m-&gt;instances[peer_id];</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                    *floated =3D !link_socket_actual_match(&amp;m=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1078?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Multi-socket: Fix assert triggered by stale p=
+eer-id reuse<br><br>Fixed a bug where clients using different transport<br>=
+protocols (UDP, TCP) could interfere with each other<br>after a server rest=
+art.<br>The issue occurred when a client reused a previously<br>assigned pe=
+er-id that was now associated with a<br>different client using a different =
+transport protocol.<br><br>For example, a UDP client could send packets wit=
+h a<br>peer-id now assigned to a TCP client, which lacks<br>a valid context=
+-&gt;c2.from which is filled by the<br>recvfrom(), causing an assert to be =
+triggered.<br><br>A protocol check has been added to prevent packets<br>fro=
+m different protocols from hijacking active<br>connections.<br><br>Github: =
+OpenVPN/openvpn#773<br><br>Change-Id: Iecbbcf32c0059f2b16a05333b3794599060d=
+7d6a<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...2726...&gt;<br=
+>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250718=
+185559.4515-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/open=
+vpn-devel@lists.sourceforge.net/msg32220.html<br>Signed-off-by: Gert Doerin=
+g &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/mudp.c<br>1 file changed,=
+ 13 insertions(+), 9 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>ind=
+ex 93e65e0..ee8446a 100644</span><br><span>--- a/src/openvpn/mudp.c</span><=
+br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@ -216,16 +216,20 @@</sp=
+an><br><span> </span><br><span>             if (!peer_id_disabled &amp;&amp=
+; (peer_id &lt; m-&gt;max_clients) &amp;&amp; (m-&gt;instances[peer_id]))</=
+span><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                mi =3D m-&gt;instances[peer_id];</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                *floated =3D !link_socket_actual_match(&amp;m=
 i-&gt;context.c2.from, &amp;m-&gt;top.c2.from);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                    if (*floated)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                        /* reset prefix, since her=
-e we are not sure peer is the one it claims to be */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                        ungenerate_prefix=
-(mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-          msg(D_MULTI_MEDIUM, &quot;Float requested for peer %&quot; PRIu32=
- &quot; to %s&quot;, peer_id,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                            mroute_addr_print(&amp;real, &amp;gc)=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-   }</span><br><span>                 }</span><br><span>             }</spa=
-n><br><span>         }</span><br><span></span><br></pre><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1078?usp=3Demail">change 10=
-78</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1078?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                if (*floated)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                /* Floating on TCP will never be possible, s=
+o ensure we only process</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                 * UDP clients */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                if (m-&gt;instances[peer_id]-&gt;context=
+.c2.link_sockets[0]-&gt;info.proto =3D=3D sock-&gt;info.proto)</span><br><s=
+pan>                 {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                    /* reset prefix, since here we are not sure peer is th=
+e one it claims to be */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                    ungenerate_prefix(mi);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                    msg(D_MULTI_MEDIUM, &quot;Float=
+ requested for peer %&quot; PRIu32 &quot; to %s&quot;, peer_id,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                        mroute_ad=
+dr_print(&amp;real, &amp;gc));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                    mi =3D m-&gt;instances[peer_id];</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                    *floated =
+=3D !link_socket_actual_match(&amp;mi-&gt;context.c2.from, &amp;m-&gt;top.c=
+2.from);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                    if (*float=
+ed)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+          /* reset prefix, since here we are not sure peer is the one it cl=
+aims to be */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                  ungenerate_prefix(mi);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                        msg(D_MULTI_MEDIUM, &quot;Floa=
+t requested for peer %&quot; PRIu32 &quot; to %s&quot;, peer_id,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                            mr=
+oute_addr_print(&amp;real, &amp;gc));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                    }</span><br><span>                 }<=
+/span><br><span>             }</span><br><span>         }</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1078?usp=3Demail">change 1078</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1078?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -226,8 +218,8 @@ mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---+9O5ircaL9w=--
+--VDJTc+ZPRZQ=--
 
