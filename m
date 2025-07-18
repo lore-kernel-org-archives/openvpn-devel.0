@@ -1,11 +1,10 @@
+Date: Fri, 18 Jul 2025 21:07:02 +0200 (CEST)
+Message-Id: <202507181907.56IJ72IK022263@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 18 Jul 2025 20:55:53 +0200
-Message-ID: <20250718185559.4515-1-gert@...1296...>
-In-Reply-To: <gerrit.1751893020000.Iecbbcf32c0059f2b16a05333b3794599060d7d6a@...2715...>
-References: <gerrit.1751893020000.Iecbbcf32c0059f2b16a05333b3794599060d7d6a@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Multi-socket: Fix assert triggered by
- stale peer-id reuse
+In-Reply-To: <20250718185559.4515-1-gert@...1296...>
+References: <20250718185559.4515-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Multi-socket: Fix assert
+ triggered by stale peer-id reuse
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,75 +15,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+So, while I could not trigger the original ASSERT() (GH issue #773) I
+was able to trigger "server misbehaviour" (TCP client with peer-id #0
+being kicked out when a leftover UDP client with (old) peer-id #0 sent
+data packets).  With the patch, these are gone.
 
-Fixed a bug where clients using different transport
-protocols (UDP, TCP) could interfere with each other
-after a server restart.
-The issue occurred when a client reused a previously
-assigned peer-id that was now associated with a
-different client using a different transport protocol.
+The explanation makes sense - when checking for float, just do not look
+at TCP instances at all.  Those can not float, might not have all
+data fields filled in, and bring no relevant info for a floating UDP 
+client.  So when seen with "git show -w", it's just one extra if()
+to verify "only compare with UDP instances" (= 'same proto', as this
+function is only called for UDP).
 
-For example, a UDP client could send packets with a
-peer-id now assigned to a TCP client, which lacks
-a valid context->c2.from which is filled by the
-recvfrom(), causing an assert to be triggered.
+Your patch has been applied to the master branch.
 
-A protocol check has been added to prevent packets
-from different protocols from hijacking active
-connections.
+commit fd93e4ad8245e1fd9530a6c1f89cb66c047f3abe
+Author: Gianmarco De Gregori
+Date:   Fri Jul 18 20:55:53 2025 +0200
 
-Github: #773
+     Multi-socket: Fix assert triggered by stale peer-id reuse
 
-Change-Id: Iecbbcf32c0059f2b16a05333b3794599060d7d6a
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250718185559.4515-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32220.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1078
-This mail reflects revision 3 of this Change.
+--
+kind regards,
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Gert Doering
 
-        
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 93e65e0..ee8446a 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -216,16 +216,20 @@
- 
-             if (!peer_id_disabled && (peer_id < m->max_clients) && (m->instances[peer_id]))
-             {
--                mi = m->instances[peer_id];
--
--                *floated = !link_socket_actual_match(&mi->context.c2.from, &m->top.c2.from);
--
--                if (*floated)
-+                /* Floating on TCP will never be possible, so ensure we only process
-+                 * UDP clients */
-+                if (m->instances[peer_id]->context.c2.link_sockets[0]->info.proto == sock->info.proto)
-                 {
--                    /* reset prefix, since here we are not sure peer is the one it claims to be */
--                    ungenerate_prefix(mi);
--                    msg(D_MULTI_MEDIUM, "Float requested for peer %" PRIu32 " to %s", peer_id,
--                        mroute_addr_print(&real, &gc));
-+                    mi = m->instances[peer_id];
-+                    *floated = !link_socket_actual_match(&mi->context.c2.from, &m->top.c2.from);
-+
-+                    if (*floated)
-+                    {
-+                        /* reset prefix, since here we are not sure peer is the one it claims to be */
-+                        ungenerate_prefix(mi);
-+                        msg(D_MULTI_MEDIUM, "Float requested for peer %" PRIu32 " to %s", peer_id,
-+                            mroute_addr_print(&real, &gc));
-+                    }
-                 }
-             }
-         }
 
