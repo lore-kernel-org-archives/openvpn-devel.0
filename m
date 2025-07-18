@@ -1,15 +1,15 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Fri, 18 Jul 2025 12:26:51 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 18 Jul 2025 12:22:11 +0000
 In-Reply-To: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
 References: <gerrit.1752486326000.I33e9272b4196c7634db2fb33a75ae4261660867f@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
- lstipakov@...277..., gert@...1296...
-Message-ID: <da6b6c45813311df622df96d69215ffca1a02213-EmailReviewComments-HTML@...2715...>
+ lstipakov@...277..., antonio@...2726...
+Message-ID: <74deddddafc7288383ba35b396fcdf80e7229782-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3S09k9b9aaQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="zT44dXCuS0c="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: Add support for
  float notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,14 +23,14 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ralf_lici <ralf@...2726...>
 Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3S09k9b9aaQ=
+--zT44dXCuS0c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici, s=
-tipa.
+Attention is currently required from: flichtenheld, ordex, plaisthos, ralf_=
+lici, stipa.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
 nvpn/+/1084?usp=3Demail )
 
 Change subject: dco: Add support for float notifications
@@ -59,19 +59,20 @@ Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
 Gerrit-Attention: ralf_lici <ralf@...2726...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Fri, 18 Jul 2025 12:26:51 +0000
+Gerrit-Comment-Date: Fri, 18 Jul 2025 12:22:11 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---3S09k9b9aaQ=
+--zT44dXCuS0c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
-i, stipa. </p>
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos, r=
+alf_lici, stipa. </p>
 <p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1084?usp=3Demail">V=
@@ -108,16 +109,18 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 18 Jul 2025 12:26:51=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 18 Jul 2025 12:22:11=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---3S09k9b9aaQ=--
+--zT44dXCuS0c=--
 
