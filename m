@@ -1,10 +1,9 @@
+Date: Fri, 18 Jul 2025 21:21:25 +0200 (CEST)
+Message-Id: <202507181921.56IJLP2B022789@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 18 Jul 2025 21:16:56 +0200
-Message-ID: <20250718191702.9451-1-gert@...1296...>
-In-Reply-To: <gerrit.1752849659000.I217cfb319b85fd75a88f7d4d50c374d28771df28@...2715...>
-References: <gerrit.1752849659000.I217cfb319b85fd75a88f7d4d50c374d28771df28@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] improve float collision logging
+In-Reply-To: <20250718191702.9451-1-gert@...1296...>
+References: <20250718191702.9451-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: improve float collision logging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +14,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Ralf Lici <ralf@...2726...>
+Just a small commit but would have saved us a few hours staring at logs
+today - due to a different bug, the floating code would try to "float to
+itself", find "that ip+port is already in use", kill 'that' instance
+(itself), and then crash on "where did my instance go?"...  and we just
+got an ominous "closing instance" with no reason.
 
-Extend the log message printed when an instance floats to an address
-already taken by another instance with the same certificate. The updated
-message now includes the instance being closed, the reason it's being
-closed, and the new instance taking over that address.
+Verified that triggering the (already fixed) bug with the new message
+would produce a nicer and more helpful message.  Good :-)
 
-Change-Id: I217cfb319b85fd75a88f7d4d50c374d28771df28
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 495e02e675a1c64ac902428ac82f6b1bfd35ed25
+Author: Ralf Lici
+Date:   Fri Jul 18 21:16:56 2025 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1091
-This mail reflects revision 1 of this Change.
+     improve float collision logging
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Ralf Lici <ralf@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250718191702.9451-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32226.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index ead3dd0..4696686 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3263,7 +3263,11 @@
-                 mroute_addr_print(&mi->real, &gc));
-             goto done;
-         }
--        msg(D_MULTI_MEDIUM, "closing instance %s", multi_instance_string(ex_mi, false, &gc));
-+
-+        msg(D_MULTI_LOW, "closing instance %s due to float collision with %s "
-+            "using the same certificate",
-+            multi_instance_string(ex_mi, false, &gc),
-+            multi_instance_string(mi, false, &gc));
-         multi_close_instance(m, ex_mi, false);
-     }
- 
+
+--
+kind regards,
+
+Gert Doering
+
 
