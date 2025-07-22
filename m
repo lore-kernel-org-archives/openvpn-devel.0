@@ -1,15 +1,16 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 22 Jul 2025 20:22:25 +0000
-References: <gerrit.1753215725000.I7bbc40b7b66f6e0512cd2cf9791766bcc4970461@...2715...>
+Date: Tue, 22 Jul 2025 20:26:46 +0000
+In-Reply-To: <gerrit.1753215725000.I673a17f8c5dec66cc6c28c1ed44780a7a63927d7@...2715...>
+References: <gerrit.1753215725000.I673a17f8c5dec66cc6c28c1ed44780a7a63927d7@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <528fcbd375f795e7a8243611e8ee0eb899477c3c-HTML@...2715...>
+Message-ID: <fe14d170cdf59a54cee0ac4857412e4969622e09-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kySUSV1ORgM="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco_linux: factor
- out netlink notification code
+Content-Type: multipart/alternative; boundary="hDmhNA0mSnY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: only pass
+ struct context to init function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,752 +22,260 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---kySUSV1ORgM=
+--hDmhNA0mSnY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello flichtenheld, plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1099?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
-Change subject: dco_linux: factor out netlink notification code
+Change subject: dco: only pass struct context to init function
 ......................................................................
 
-dco_linux: factor out netlink notification code
+dco: only pass struct context to init function
 
-ovpn_handle_msg() is soon becoming the main entry point for parsing
-*all* incoming netlink messages. For this reason it is essential
-that this function is kept simple and slim.
+Future DCO code will require accessing the `multi` member of the
+context object.
 
-Move all code parsing netlink multicast notifications to their own
-helpers and then invoke them.
+For this reason a pointer to the context has to be stored in the
+DCO context along with the rest.
 
-This patch does not introduce any functional change.
-It is intended in preparation for extending ovpn_handle_msg() to
-become a genering netlink message parser.
+At this point, rather than making the call to ovpn_dco_init()
+longer with more and more parameters, pass the struct context
+only and let the implementation extract the needed fields.
 
-Change-Id: I7bbc40b7b66f6e0512cd2cf9791766bcc4970461
+Change-Id: I673a17f8c5dec66cc6c28c1ed44780a7a63927d7
 Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
+M src/openvpn/dco.h
+M src/openvpn/dco_freebsd.c
 M src/openvpn/dco_linux.c
-1 file changed, 150 insertions(+), 111 deletions(-)
+M src/openvpn/dco_linux.h
+M src/openvpn/init.c
+5 files changed, 15 insertions(+), 9 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/94/1094/2
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/99/1099/1
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index f38316d..9c5c01a 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -104,12 +104,10 @@
+ /**
+  * Initialize the DCO context
+  *
+- * @param mode      the instance operating mode (P2P or multi-peer)
+- * @param dco       the context to initialize
+- * @param dev_node  device node, used on Windows to specify certain DCO ad=
+apter
++ * @param c         the main instance context
+  * @return          true on success, false otherwise
+  */
+-bool ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node);
++bool ovpn_dco_init(struct context *c);
 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index ec6efaa..0a22879 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -956,6 +956,153 @@
-     return NL_OK;
+ /**
+  * Open/create a DCO interface
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index b8816c6..98d8fb5 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -165,9 +165,9 @@
  }
 
-+static int
-+ovpn_handle_peer_del_ntf(dco_context_t *dco, struct nlattr *attrs[])
-+{
-+    /* we must know which interface this message is referring to in order =
-to
-+     * avoid mixing messages for other instances
-+     */
-+    if (!attrs[OVPN_A_IFINDEX])
-+    {
-+        msg(D_DCO, "ovpn-dco: Received message without ifindex");
-+        return NL_STOP;
-+    }
+ bool
+-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)
++ovpn_dco_init(struct context *c)
+ {
+-    if (open_fd(dco) < 0)
++    if (open_fd(&c->c1.tuntap->dco) < 0)
+     {
+         msg(M_ERR, "Failed to open socket");
+         return false;
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index f04ebfe..c92c196 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -438,9 +438,11 @@
+ }
+
+ bool
+-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)
++ovpn_dco_init(struct context *c)
+ {
+-    switch (mode)
++    dco_context_t *dco =3D &c->c1.tuntap->dco;
 +
-+    if (!attrs[OVPN_A_PEER])
-+    {
-+        msg(D_DCO, "ovpn-dco: no peer in PEER_DEL_NTF message");
-+        return NL_STOP;
-+    }
-+
-+    struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
-+    if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
-+                         NULL))
-+    {
-+        msg(D_DCO, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
-+        return NL_STOP;
-+    }
-+
-+    if (!dp_attrs[OVPN_A_PEER_DEL_REASON])
-+    {
-+        msg(D_DCO, "ovpn-dco: no reason in PEER_DEL_NTF message");
-+        return NL_STOP;
-+    }
-+    if (!dp_attrs[OVPN_A_PEER_ID])
-+    {
-+        msg(D_DCO, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
-+        return NL_STOP;
-+    }
-+
-+    int reason =3D nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);
-+    unsigned int peerid =3D nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);
-+
-+    msg(D_DCO_DEBUG, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, pe=
-er-id %u, reason: %d",
-+        dco->ifindex, peerid, reason);
-+    dco->dco_message_peer_id =3D peerid;
-+    dco->dco_del_peer_reason =3D reason;
-+    dco->dco_message_type =3D OVPN_CMD_PEER_DEL_NTF;
-+
-+    return NL_OK;
-+}
-+
-+static int
-+ovpn_handle_peer_float_ntf(dco_context_t *dco, struct nlattr *attrs[])
-+{
-+    /* we must know which interface this message is referring to in order =
-to
-+     * avoid mixing messages for other instances
-+     */
-+    if (!attrs[OVPN_A_IFINDEX])
-+    {
-+        msg(D_DCO, "ovpn-dco: Received message without ifindex");
-+        return NL_STOP;
-+    }
-+
-+    if (!attrs[OVPN_A_PEER])
-+    {
-+        msg(D_DCO, "ovpn-dco: no peer in PEER_FLOAT_NTF message");
-+        return NL_STOP;
-+    }
-+
-+    struct nlattr *fp_attrs[OVPN_A_PEER_MAX + 1];
-+    if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
-+                         NULL))
-+    {
-+        msg(D_DCO, "ovpn-dco: can't parse peer in PEER_FLOAT_NTF messsage"=
-);
-+        return NL_STOP;
-+    }
-+
-+    if (!fp_attrs[OVPN_A_PEER_ID])
-+    {
-+        msg(D_DCO, "ovpn-dco: no peer-id in PEER_FLOAT_NTF message");
-+        return NL_STOP;
-+    }
-+    uint32_t peerid =3D nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);
-+
-+    if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&dco->dco_floa=
-t_peer_ss))
-+    {
-+        return NL_STOP;
-+    }
-+
-+    struct gc_arena gc =3D gc_new();
-+    msg(D_DCO_DEBUG,
-+        "ovpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, a=
-ddress: %s",
-+        dco->ifindex, peerid, print_sockaddr((struct sockaddr *)&dco->dco_=
-float_peer_ss, &gc));
-+    dco->dco_message_peer_id =3D (int)peerid;
-+    dco->dco_message_type =3D OVPN_CMD_PEER_FLOAT_NTF;
-+
-+    gc_free(&gc);
-+
-+    return NL_OK;
-+}
-+
-+static int
-+ovpn_handle_key_swap_ntf(dco_context_t *dco, struct nlattr *attrs[])
-+{
-+    /* we must know which interface this message is referring to in order =
-to
-+     * avoid mixing messages for other instances
-+     */
-+    if (!attrs[OVPN_A_IFINDEX])
-+    {
-+        msg(D_DCO, "ovpn-dco: Received message without ifindex");
-+        return NL_STOP;
-+    }
-+
-+    if (!attrs[OVPN_A_KEYCONF])
-+    {
-+        msg(D_DCO, "ovpn-dco: no keyconf in KEY_SWAP_NTF message");
-+        return NL_STOP;
-+    }
-+
-+    struct nlattr *dp_attrs[OVPN_A_KEYCONF_MAX + 1];
-+    if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,
-+                         attrs[OVPN_A_KEYCONF], NULL))
-+    {
-+        msg(D_DCO, "ovpn-dco: can't parse keyconf in KEY_SWAP_NTF message"=
-);
-+        return NL_STOP;
-+    }
-+    if (!dp_attrs[OVPN_A_KEYCONF_PEER_ID])
-+    {
-+        msg(D_DCO, "ovpn-dco: no peer-id in KEY_SWAP_NTF message");
-+        return NL_STOP;
-+    }
-+    if (!dp_attrs[OVPN_A_KEYCONF_KEY_ID])
-+    {
-+        msg(D_DCO, "ovpn-dco: no key-id in KEY_SWAP_NTF message");
-+        return NL_STOP;
-+    }
-+
-+    int key_id =3D nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);
-+    unsigned int peer_id =3D nla_get_u32(dp_attrs[OVPN_A_KEYCONF_PEER_ID]);
-+
-+    msg(D_DCO_DEBUG, "ovpn-dco: received CMD_KEY_SWAP_NTF, ifindex: %d, pe=
-er-id %u, key-id: %d",
-+        dco->ifindex, peer_id, key_id);
-+    dco->dco_message_peer_id =3D peer_id;
-+    dco->dco_message_key_id =3D key_id;
-+    dco->dco_message_type =3D OVPN_CMD_KEY_SWAP_NTF;
-+
-+    return NL_OK;
-+}
-+
- /* This function parses any netlink message sent by ovpn-dco to userspace =
-*/
- static int
- ovpn_handle_msg(struct nl_msg *msg, void *arg)
-@@ -979,15 +1126,6 @@
-         return NL_STOP;
++    switch (c->mode)
+     {
+         case CM_TOP:
+             dco->ifmode =3D OVPN_MODE_MP;
+@@ -454,6 +456,10 @@
+             ASSERT(false);
      }
 
--    /* we must know which interface this message is referring to in order =
-to
--     * avoid mixing messages for other instances
--     */
--    if (!attrs[OVPN_A_IFINDEX])
--    {
--        msg(D_DCO, "ovpn-dco: Received message without ifindex");
--        return NL_STOP;
--    }
--
-     uint32_t ifindex =3D nla_get_u32(attrs[OVPN_A_IFINDEX]);
-     if (ifindex !=3D dco->ifindex)
-     {
-@@ -1008,116 +1146,17 @@
-     {
-         case OVPN_CMD_PEER_DEL_NTF:
++    /* store pointer to context as it may be required by message
++     * parsing routines
++     */
++    dco->c =3D c;
+     ovpn_dco_init_netlink(dco);
+     return true;
+ }
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 676b8cd..5e61cf1 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -65,6 +65,8 @@
+     struct nl_cb *nl_cb;
+     int status;
+
++    struct context *c;
++
+     enum ovpn_mode ifmode;
+
+     int ovpn_dco_id;
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 77747a2..aac8a6a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2007,7 +2007,7 @@
+
+         if (dco_enabled(&c->options))
          {
--            if (!attrs[OVPN_A_PEER])
--            {
--                msg(D_DCO, "ovpn-dco: no peer in PEER_DEL_NTF message");
--                return NL_STOP;
--            }
--
--            struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
--            if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_P=
-EER],
--                                 NULL))
--            {
--                msg(D_DCO, "ovpn-dco: can't parse peer in PEER_DEL_NTF mes=
-ssage");
--                return NL_STOP;
--            }
--
--            if (!dp_attrs[OVPN_A_PEER_DEL_REASON])
--            {
--                msg(D_DCO, "ovpn-dco: no reason in PEER_DEL_NTF message");
--                return NL_STOP;
--            }
--            if (!dp_attrs[OVPN_A_PEER_ID])
--            {
--                msg(D_DCO, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
--                return NL_STOP;
--            }
--
--            int reason =3D nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);
--            unsigned int peerid =3D nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);
--
--            msg(D_DCO_DEBUG, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex=
-: %d, peer-id %u, reason: %d",
--                ifindex, peerid, reason);
--            dco->dco_message_peer_id =3D peerid;
--            dco->dco_del_peer_reason =3D reason;
--            dco->dco_message_type =3D OVPN_CMD_PEER_DEL_NTF;
--            break;
-+            return ovpn_handle_peer_del_ntf(dco, attrs);
+-            ovpn_dco_init(c->mode, &c->c1.tuntap->dco, c->options.dev_node=
+);
++            ovpn_dco_init(c);
          }
 
-         case OVPN_CMD_PEER_FLOAT_NTF:
-         {
--            if (!attrs[OVPN_A_PEER])
--            {
--                msg(D_DCO, "ovpn-dco: no peer in PEER_FLOAT_NTF message");
--                return NL_STOP;
--            }
--
--            struct nlattr *fp_attrs[OVPN_A_PEER_MAX + 1];
--            if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_P=
-EER],
--                                 NULL))
--            {
--                msg(D_DCO, "ovpn-dco: can't parse peer in PEER_FLOAT_NTF m=
-esssage");
--                return NL_STOP;
--            }
--
--            if (!fp_attrs[OVPN_A_PEER_ID])
--            {
--                msg(D_DCO, "ovpn-dco: no peer-id in PEER_FLOAT_NTF message=
-");
--                return NL_STOP;
--            }
--            uint32_t peerid =3D nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);
--
--            if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&dco->=
-dco_float_peer_ss))
--            {
--                return NL_STOP;
--            }
--
--            struct gc_arena gc =3D gc_new();
--            msg(D_DCO_DEBUG,
--                "ovpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-=
-id %u, address: %s",
--                ifindex, peerid, print_sockaddr((struct sockaddr *)&dco->d=
-co_float_peer_ss, &gc));
--            dco->dco_message_peer_id =3D (int)peerid;
--            dco->dco_message_type =3D OVPN_CMD_PEER_FLOAT_NTF;
--
--            gc_free(&gc);
--            break;
-+            return ovpn_handle_peer_float_ntf(dco, attrs);
-         }
-
-         case OVPN_CMD_KEY_SWAP_NTF:
-         {
--            if (!attrs[OVPN_A_KEYCONF])
--            {
--                msg(D_DCO, "ovpn-dco: no keyconf in KEY_SWAP_NTF message");
--                return NL_STOP;
--            }
--
--            struct nlattr *dp_attrs[OVPN_A_KEYCONF_MAX + 1];
--            if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,
--                                 attrs[OVPN_A_KEYCONF], NULL))
--            {
--                msg(D_DCO, "ovpn-dco: can't parse keyconf in KEY_SWAP_NTF =
-message");
--                return NL_STOP;
--            }
--            if (!dp_attrs[OVPN_A_KEYCONF_PEER_ID])
--            {
--                msg(D_DCO, "ovpn-dco: no peer-id in KEY_SWAP_NTF message");
--                return NL_STOP;
--            }
--            if (!dp_attrs[OVPN_A_KEYCONF_KEY_ID])
--            {
--                msg(D_DCO, "ovpn-dco: no key-id in KEY_SWAP_NTF message");
--                return NL_STOP;
--            }
--
--            int key_id =3D nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);
--            unsigned int peer_id =3D nla_get_u32(dp_attrs[OVPN_A_KEYCONF_P=
-EER_ID]);
--
--            msg(D_DCO_DEBUG, "ovpn-dco: received CMD_KEY_SWAP_NTF, ifindex=
-: %d, peer-id %u, key-id: %d",
--                ifindex, peer_id, key_id);
--            dco->dco_message_peer_id =3D peer_id;
--            dco->dco_message_key_id =3D key_id;
--            dco->dco_message_type =3D OVPN_CMD_KEY_SWAP_NTF;
--            break;
-+            return ovpn_handle_key_swap_ntf(dco, attrs);
-         }
-
-         default:
+         /* open the tun device */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1099?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7bbc40b7b66f6e0512cd2cf9791766bcc4970461
-Gerrit-Change-Number: 1099
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I673a17f8c5dec66cc6c28c1ed44780a7a63927d7
+Gerrit-Change-Number: 1094
+Gerrit-PatchSet: 2
 Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 
---kySUSV1ORgM=
+--hDmhNA0mSnY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1099?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">dco_linux: factor out netlink notification code<br><br>ovpn_=
-handle_msg() is soon becoming the main entry point for parsing<br>*all* inc=
-oming netlink messages. For this reason it is essential<br>that this functi=
-on is kept simple and slim.<br><br>Move all code parsing netlink multicast =
-notifications to their own<br>helpers and then invoke them.<br><br>This pat=
-ch does not introduce any functional change.<br>It is intended in preparati=
-on for extending ovpn_handle_msg() to<br>become a genering netlink message =
-parser.<br><br>Change-Id: I7bbc40b7b66f6e0512cd2cf9791766bcc4970461<br>Sign=
-ed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/ope=
-nvpn/dco_linux.c<br>1 file changed, 150 insertions(+), 111 deletions(-)<br>=
-<br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/99/1099=
-/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;"><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</=
-span><br><span>index ec6efaa..0a22879 100644</span><br><span>--- a/src/open=
-vpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br><sp=
-an>@@ -956,6 +956,153 @@</span><br><span>     return NL_OK;</span><br><span=
-> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_ha=
-ndle_peer_del_ntf(dco_context_t *dco, struct nlattr *attrs[])</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    /* we must know which interface this message is=
- referring to in order to</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+     * avoid mixing messages for other instances</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (!attrs[OVPN_A_IFINDEX])</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: Received message wi=
-thout ifindex&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!attrs[OVPN_A_PEER]=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dc=
-o: no peer in PEER_DEL_NTF message&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
-ruct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX,=
- attrs[OVPN_A_PEER],</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                         NULL))</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       msg(D_DCO, &quot;ovpn-dco: can&#39;t parse peer in PEER_DEL_NTF mess=
-sage&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (!dp_attrs[OVPN_A_PEER_DEL_RE=
-ASON])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ov=
-pn-dco: no reason in PEER_DEL_NTF message&quot;);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (!dp_attrs[OVPN_A_PEER_ID])</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: no peer-id in PEER_=
-DEL_NTF message&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    int reason =3D nla_ge=
-t_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    unsigned int peerid =3D nla_get_u32(dp_attrs[OVPN_=
-A_PEER_ID]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot=
-;ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d&q=
-uot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco-&g=
-t;ifindex, peerid, reason);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    dco-&gt;dco_message_peer_id =3D peerid;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_del_peer_reason =3D reaso=
-n;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_m=
-essage_type =3D OVPN_CMD_PEER_DEL_NTF;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    return NL_OK;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+<p>ordex <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail">View Change</=
+a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">dco: only pass struct context to init function<br><br>Future DCO code wi=
+ll require accessing the `multi` member of the<br>context object.<br><br>Fo=
+r this reason a pointer to the context has to be stored in the<br>DCO conte=
+xt along with the rest.<br><br>At this point, rather than making the call t=
+o ovpn_dco_init()<br>longer with more and more parameters, pass the struct =
+context<br>only and let the implementation extract the needed fields.<br><b=
+r>Change-Id: I673a17f8c5dec66cc6c28c1ed44780a7a63927d7<br>Signed-off-by: An=
+tonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/openvpn/dco.h<br=
+>M src/openvpn/dco_freebsd.c<br>M src/openvpn/dco_linux.c<br>M src/openvpn/=
+dco_linux.h<br>M src/openvpn/init.c<br>5 files changed, 15 insertions(+), 9=
+ deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
+s/changes/94/1094/2</pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.h b/src/openvpn/dc=
+o.h</span><br><span>index f38316d..9c5c01a 100644</span><br><span>--- a/src=
+/openvpn/dco.h</span><br><span>+++ b/src/openvpn/dco.h</span><br><span>@@ -=
+104,12 +104,10 @@</span><br><span> /**</span><br><span>  * Initialize the D=
+CO context</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * @param mode      the instance operating mode (P2P or multi-peer=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param dco       =
+the context to initialize</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- * @param dev_node  device node, used on Windows to specify certain DCO=
+ adapter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param c=
+         the main instance context</span><br><span>  * @return          tru=
+e on success, false otherwise</span><br><span>  */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-bool ovpn_dco_init(int mode, dco_context_t *dc=
+o, const char *dev_node);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+bool ovpn_dco_init(struct context *c);</span><br><span> </span><br><s=
+pan> /**</span><br><span>  * Open/create a DCO interface</span><br><span>di=
+ff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br>=
+<span>index b8816c6..98d8fb5 100644</span><br><span>--- a/src/openvpn/dco_f=
+reebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@=
+ -165,9 +165,9 @@</span><br><span> }</span><br><span> </span><br><span> boo=
+l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ovpn_dco_init(int mo=
+de, dco_context_t *dco, const char *dev_node)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ovpn_dco_init(struct context *c)</span><br><span>=
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (open_fd(dco=
+) &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (op=
+en_fd(&amp;c-&gt;c1.tuntap-&gt;dco) &lt; 0)</span><br><span>     {</span><b=
+r><span>         msg(M_ERR, &quot;Failed to open socket&quot;);</span><br><=
+span>         return false;</span><br><span>diff --git a/src/openvpn/dco_li=
+nux.c b/src/openvpn/dco_linux.c</span><br><span>index f04ebfe..c92c196 1006=
+44</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>+++ b/src/=
+openvpn/dco_linux.c</span><br><span>@@ -438,9 +438,11 @@</span><br><span> }=
+</span><br><span> </span><br><span> bool</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-ovpn_dco_init(int mode, dco_context_t *dco, const char *=
+dev_node)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_dco_i=
+nit(struct context *c)</span><br><span> {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    switch (mode)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    dco_context_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dco;<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ovpn_handle_peer_float_ntf(dco_context_t *dco, s=
-truct nlattr *attrs[])</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* we must =
-know which interface this message is referring to in order to</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+     * avoid mixing messages for =
-other instances</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!attrs[O=
-VPN_A_IFINDEX])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO,=
- &quot;ovpn-dco: Received message without ifindex&quot;);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (!attrs[OVPN_A_PEER])</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        msg(D_DCO, &quot;ovpn-dco: no peer in PEER_FLOAT_NTF message&qu=
-ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
- NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *fp_attrs[OVPN_A_PEER_M=
-AX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (nla=
-_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                         NULL))</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: c=
-an&#39;t parse peer in PEER_FLOAT_NTF messsage&quot;);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (!fp_attrs[OVPN_A_PEER_ID])</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        msg(D_DCO, &quot;ovpn-dco: no peer-id in PEER_FLOAT_NTF mess=
-age&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t peeri=
-d =3D nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&amp;dco-=
-&gt;dco_float_peer_ss))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;ovpn-dc=
-o: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, address: %s&quot;,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco-&gt;ifi=
-ndex, peerid, print_sockaddr((struct sockaddr *)&amp;dco-&gt;dco_float_peer=
-_ss, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-dco-&gt;dco_message_peer_id =3D (int)peerid;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    dco-&gt;dco_message_type =3D OVPN_CMD_PEER_FLO=
-AT_NTF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    return NL_OK;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_handle_key_swap_=
-ntf(dco_context_t *dco, struct nlattr *attrs[])</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* we must know which interface this message is referring to =
-in order to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * a=
-void mixing messages for other instances</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (!attrs[OVPN_A_IFINDEX])</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        msg(D_DCO, &quot;ovpn-dco: Received message without ifindex&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retu=
-rn NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!attrs[OVPN_A_KEYCONF])</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: no key=
-conf in KEY_SWAP_NTF message&quot;);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        return NL_STOP;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct n=
-lattr *dp_attrs[OVPN_A_KEYCONF_MAX + 1];</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
-      attrs[OVPN_A_KEYCONF], NULL))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        msg(D_DCO, &quot;ovpn-dco: can&#39;t parse keyconf in KEY_SWAP_NT=
-F message&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!dp_=
-attrs[OVPN_A_KEYCONF_PEER_ID])</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     msg(D_DCO, &quot;ovpn-dco: no peer-id in KEY_SWAP_NTF message&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return NL_ST=
-OP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    if (!dp_attrs[OVPN_A_KEYCO=
-NF_KEY_ID])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &qu=
-ot;ovpn-dco: no key-id in KEY_SWAP_NTF message&quot;);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    int key_id =3D nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int peer_id=
- =3D nla_get_u32(dp_attrs[OVPN_A_KEYCONF_PEER_ID]);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;ovpn-dco: received CMD_KEY_SWAP_N=
-TF, ifindex: %d, peer-id %u, key-id: %d&quot;,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        dco-&gt;ifindex, peer_id, key_id);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_message_p=
-eer_id =3D peer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    dco-&gt;dco_message_key_id =3D key_id;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    dco-&gt;dco_message_type =3D OVPN_CMD_KEY_SWAP_N=
-TF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    return NL_OK;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span> /* This function parses any netlink m=
-essage sent by ovpn-dco to userspace */</span><br><span> static int</span><=
-br><span> ovpn_handle_msg(struct nl_msg *msg, void *arg)</span><br><span>@@=
- -979,15 +1126,6 @@</span><br><span>         return NL_STOP;</span><br><spa=
-n>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    /* we must know which interface this message is referring to in or=
-der to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * avoid mi=
-xing messages for other instances</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  if (!attrs[OVPN_A_IFINDEX])</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-msg(D_DCO, &quot;ovpn-dco: Received message without ifindex&quot;);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_STOP;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     uint32_t ifindex =3D =
-nla_get_u32(attrs[OVPN_A_IFINDEX]);</span><br><span>     if (ifindex !=3D d=
-co-&gt;ifindex)</span><br><span>     {</span><br><span>@@ -1008,116 +1146,1=
-7 @@</span><br><span>     {</span><br><span>         case OVPN_CMD_PEER_DEL=
-_NTF:</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            if (!attrs[OVPN_A_PEER])</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no peer in PEE=
-R_DEL_NTF message&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                return NL_STOP;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            str=
-uct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            if (nla_parse_nested(dp_attrs, OVPN_A_PEER=
-_MAX, attrs[OVPN_A_PEER],</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                                 NULL))</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: can&#39;t parse pe=
-er in PEER_DEL_NTF messsage&quot;);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                return NL_STOP;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       if (!dp_attrs[OVPN_A_PEER_DEL_REASON])</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no reason in PEE=
-R_DEL_NTF message&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                return NL_STOP;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            if (!dp_attrs[OVPN_A_PEER_ID])</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no peer-id in=
- PEER_DEL_NTF message&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                return NL_STOP;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- int reason =3D nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            unsigned int peerid =
-=3D nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            msg(D_DCO_DEBUG, &quot;ovpn-dco: received CMD_PEER_DEL_NTF, ifi=
-ndex: %d, peer-id %u, reason: %d&quot;,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                ifindex, peerid, reason);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            dco-&gt;dco_message_peer_=
-id =3D peerid;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     dco-&gt;dco_del_peer_reason =3D reason;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            dco-&gt;dco_message_type =3D OVPN_CMD_PE=
-ER_DEL_NTF;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- return ovpn_handle_peer_del_ntf(dco, attrs);</span><br><span>         }</s=
-pan><br><span> </span><br><span>         case OVPN_CMD_PEER_FLOAT_NTF:</spa=
-n><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            if (!attrs[OVPN_A_PEER])</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                msg(D_DCO, &quot;ovpn-dco: no peer in PEER_FLOAT_NT=
-F message&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-            return NL_STOP;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            struct nlat=
-tr *fp_attrs[OVPN_A_PEER_MAX + 1];</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, at=
-trs[OVPN_A_PEER],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-                             NULL))</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                msg(D_DCO, &quot;ovpn-dco: can&#39;t parse peer in PE=
-ER_FLOAT_NTF messsage&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                return NL_STOP;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- if (!fp_attrs[OVPN_A_PEER_ID])</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                msg(D_DCO, &quot;ovpn-dco: no peer-id in PEER_FLOAT_NTF m=
-essage&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-         return NL_STOP;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       uint32_t peerid =3D nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            if (!ovpn_parse_float_addr(fp_attrs, (st=
-ruct sockaddr *)&amp;dco-&gt;dco_float_peer_ss))</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                return NL_STOP;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            struct gc_arena gc =3D gc_new();</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            msg(D_DCO_DEBUG,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                &quot;ovpn-dco: received CM=
-D_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, address: %s&quot;,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                ifindex, peerid, pr=
-int_sockaddr((struct sockaddr *)&amp;dco-&gt;dco_float_peer_ss, &amp;gc));<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco-&gt;dc=
-o_message_peer_id =3D (int)peerid;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            dco-&gt;dco_message_type =3D OVPN_CMD_PEER_FLOAT_N=
-TF;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            gc_free(&amp;gc);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            return ovpn_handle_p=
-eer_float_ntf(dco, attrs);</span><br><span>         }</span><br><span> </sp=
-an><br><span>         case OVPN_CMD_KEY_SWAP_NTF:</span><br><span>         =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!att=
-rs[OVPN_A_KEYCONF])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-      msg(D_DCO, &quot;ovpn-dco: no keyconf in KEY_SWAP_NTF message&quot;);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                retur=
-n NL_STOP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            struct nlattr *dp_attrs[OVPN=
-_A_KEYCONF_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                                 at=
-trs[OVPN_A_KEYCONF], NULL))</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-              msg(D_DCO, &quot;ovpn-dco: can&#39;t parse keyconf in KEY_SWA=
-P_NTF message&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                return NL_STOP;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            if (!dp_attrs[OVPN_A_KEYCONF_PEER_ID])</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no peer-=
-id in KEY_SWAP_NTF message&quot;);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                return NL_STOP;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            if (!dp_attrs[OVPN_A_KEYCONF_KEY_ID])</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dc=
-o: no key-id in KEY_SWAP_NTF message&quot;);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                return NL_STOP;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            int key_id =3D nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID])=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            unsigned=
- int peer_id =3D nla_get_u32(dp_attrs[OVPN_A_KEYCONF_PEER_ID]);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            msg(D_DCO_DEBUG, &quot;ovpn-dco: received =
-CMD_KEY_SWAP_NTF, ifindex: %d, peer-id %u, key-id: %d&quot;,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                ifindex, peer_id, ke=
-y_id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco=
--&gt;dco_message_peer_id =3D peer_id;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            dco-&gt;dco_message_key_id =3D key_id;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            dco-&gt;dco_messag=
-e_type =3D OVPN_CMD_KEY_SWAP_NTF;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            break;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            return ovpn_handle_key_swap_ntf(dco, attrs);</span><=
-br><span>         }</span><br><span> </span><br><span>         default:</sp=
-an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1099?usp=3Demail">change 1099</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1099?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
+le=3D"color: hsl(120, 100%, 40%);">+    switch (c-&gt;mode)</span><br><span=
+>     {</span><br><span>         case CM_TOP:</span><br><span>             =
+dco-&gt;ifmode =3D OVPN_MODE_MP;</span><br><span>@@ -454,6 +456,10 @@</span=
+><br><span>             ASSERT(false);</span><br><span>     }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* store po=
+inter to context as it may be required by message</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * parsing routines</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    dco-&gt;c =3D c;</span><br><span>     ovpn_dco_in=
+it_netlink(dco);</span><br><span>     return true;</span><br><span> }</span=
+><br><span>diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h</=
+span><br><span>index 676b8cd..5e61cf1 100644</span><br><span>--- a/src/open=
+vpn/dco_linux.h</span><br><span>+++ b/src/openvpn/dco_linux.h</span><br><sp=
+an>@@ -65,6 +65,8 @@</span><br><span>     struct nl_cb *nl_cb;</span><br><s=
+pan>     int status;</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    struct context *c;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span>     enum ovpn_mode ifmode;</span><b=
+r><span> </span><br><span>     int ovpn_dco_id;</span><br><span>diff --git =
+a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index 77747a2..aa=
+c8a6a 100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b=
+/src/openvpn/init.c</span><br><span>@@ -2007,7 +2007,7 @@</span><br><span> =
+</span><br><span>         if (dco_enabled(&amp;c-&gt;options))</span><br><s=
+pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     ovpn_dco_init(c-&gt;mode, &amp;c-&gt;c1.tuntap-&gt;dco, c-&gt;options.=
+dev_node);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   ovpn_dco_init(c);</span><br><span>         }</span><br><span> </span><br=
+><span>         /* open the tun device */</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1094?usp=
+=3Demail">change 1094</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail"/><met=
+a itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7bbc40b7b66f6e0512cd2cf9791=
-766bcc4970461 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1099 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I673a17f8c5dec66cc6c28c1ed44=
+780a7a63927d7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1094 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -779,8 +288,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---kySUSV1ORgM=--
+--hDmhNA0mSnY=--
 
