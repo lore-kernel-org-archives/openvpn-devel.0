@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 22 Jul 2025 14:42:15 +0000
-In-Reply-To: <gerrit.1727273213000.Id99a3ba13c0f1d0bc7e4699fb67ee9dff6221639@...2715...>
-References: <gerrit.1727273213000.Id99a3ba13c0f1d0bc7e4699fb67ee9dff6221639@...2715...>
+Date: Tue, 22 Jul 2025 14:59:07 +0000
+In-Reply-To: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
+References: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <8c2985af1596a7f6c11925e288302fddd5f0589f-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <f53b9687a1206d30d65e328d2963ff504d2966df-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xshEDDjYjrs="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix socketpair
- return status not being checked in port share code
+Content-Type: multipart/alternative; boundary="FNPH4z/9s5k="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check message
+ id/acked ids too when doing sessionid cookie checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,102 +22,97 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xshEDDjYjrs=
+--FNPH4z/9s5k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
 flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/770?usp=3Demail )
+t/c/openvpn/+/1067?usp=3Demail )
 
-Change subject: Fix socketpair return status not being checked in port shar=
-e code
+Change subject: Check message id/acked ids too when doing sessionid cookie =
+checks
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 3: Code-Review-1
 
 (1 comment)
 
-File src/openvpn/ps.c:
+File tests/unit_tests/openvpn/test_pkt.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/770/comment/b573480e_0d81a26d :
-PS1, Line 237:             if (!socketpair(AF_UNIX, SOCK_DGRAM, 0, sd_null))
-> Shouldn't that test for -1?
-Done
+http://gerrit.openvpn.net/c/openvpn/+/1067/comment/69758acd_c7222844 :
+PS3, Line 533:
+Looking at the LeakSanitizer failure and the other test cases I think there=
+ is a `free_tls_pre_decrypt_state(&state);` missing here.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id99a3ba13c0f1d0bc7e4699fb67ee9dff6221639
-Gerrit-Change-Number: 770
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
+Gerrit-Change-Number: 1067
+Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Tue, 22 Jul 2025 14:42:15 +0000
+Gerrit-Comment-Date: Tue, 22 Jul 2025 14:59:07 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---xshEDDjYjrs=
+--FNPH4z/9s5k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ps.c:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/770/comment/b573480e_0d81a26d">Patch Set #1, Line 237:</a> <co=
-de style=3D"font-family:monospace,monospace">            if (!socketpair(AF=
-_UNIX, SOCK_DGRAM, 0, sd_null))</code></p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Shouldn&#39;t that te=
-st for -1?</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/770?usp=3Demail">change 770</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/770?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/t=
+est_pkt.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"marg=
+in: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1067/comment/69758acd_c7222844">Patch S=
+et #3, Line 533:</a> <code style=3D"font-family:monospace,monospace"></code=
+></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Looking at =
+the LeakSanitizer failure and the other test cases I think there is a `free=
+_tls_pre_decrypt_state(&amp;state);` missing here.</p></li></ul></li></ul><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=
+=3Demail">change 1067</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail"/><met=
+a itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id99a3ba13c0f1d0bc7e4699fb67=
-ee9dff6221639 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 770 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6752dcd5aff3e5cea2b43936647=
+9e86751a1c403 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1067 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 22 Jul 2025 14:42:15=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 22 Jul 2025 14:59:07=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---xshEDDjYjrs=--
+--FNPH4z/9s5k=--
 
