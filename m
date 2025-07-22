@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 22 Jul 2025 10:25:08 +0000
+Date: Tue, 22 Jul 2025 10:25:20 +0000
 In-Reply-To: <gerrit.1752061618000.I6122225cc12c4f299a2a48db24bc7379ac6c5921@...2715...>
 References: <gerrit.1752061618000.I6122225cc12c4f299a2a48db24bc7379ac6c5921@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <825754fdb19075424f8b35b587cf8d001e00afcc-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <3f703ce55b3ed2a3c28d552a72a13bb13ad91ce8-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NirO/5UFkbo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="182GWG12eV4="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Dependency
  updates July 2025
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NirO/5UFkbo=
+--182GWG12eV4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1079?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#5).
 
 The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
  now.
@@ -57,7 +57,7 @@ M .github/workflows/build.yaml
 1 file changed, 9 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1079/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1079/5
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
 index d4fdc9d..bd5895b 100644
@@ -140,7 +140,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I6122225cc12c4f299a2a48db24bc7379ac6c5921
 Gerrit-Change-Number: 1079
-Gerrit-PatchSet: 4
+Gerrit-PatchSet: 5
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: uddr <yura.uddr@...277...>
@@ -149,12 +149,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---NirO/5UFkbo=
+--182GWG12eV4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #4</strong> to this change.</p><=
+<p>flichtenheld <strong>uploaded patch set #5</strong> to this change.</p><=
 p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1079?usp=3Demail">View C=
 hange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRul=
 e is unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; wh=
@@ -166,7 +166,7 @@ re(deps): update dependency mbed-tls/mbedtls to v3.6.4<br><br>Change-Id: I6=
  &lt;frank@...2641...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 fil=
 e changed, 9 insertions(+), 9 deletions(-)<br><br></pre><pre style=3D"font-=
 family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
-openvpn.net:29418/openvpn refs/changes/79/1079/4</pre><pre style=3D"font-fa=
+openvpn.net:29418/openvpn refs/changes/79/1079/5</pre><pre style=3D"font-fa=
 mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/.gith=
 ub/workflows/build.yaml b/.github/workflows/build.yaml</span><br><span>inde=
 x d4fdc9d..bd5895b 100644</span><br><span>--- a/.github/workflows/build.yam=
@@ -241,7 +241,7 @@ k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1079?usp=
 <div style=3D"display:none"> Gerrit-Change-Id: I6122225cc12c4f299a2a48db24b=
 c7379ac6c5921 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1079 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -257,5 +257,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---NirO/5UFkbo=--
+--182GWG12eV4=--
 
