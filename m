@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 23 Jul 2025 08:20:06 +0200
-Message-ID: <20250723062012.22781-1-gert@...1296...>
-In-Reply-To: <gerrit.1753215725000.I18df6ef659cab9525dd7847b7dd3950fc1895dd5@...2715...>
-References: <gerrit.1753215725000.I18df6ef659cab9525dd7847b7dd3950fc1895dd5@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 23 Jul 2025 06:30:12 +0000
+In-Reply-To: <gerrit.1753215725000.Ifc442b4426c02de7282d0f69629e8a10b679c589@...2715...>
+References: <gerrit.1753215725000.Ifc442b4426c02de7282d0f69629e8a10b679c589@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <bede003c4d5160d2bbca7cb7e094e33176a60ce1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco_linux: fix case statement by using
- proper error value
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="/gW3RdefVoA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: use
+ M_FATAL instead of M_ERR in netlink error code paths
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +20,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...2726...>
+--/gW3RdefVoA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-A M_ERR constant accidentally slipped in as possible
-netlink error value.
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-Substitute it with the actual code matching the following
-error message.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1096?usp=3Demail )
 
-Change-Id: I18df6ef659cab9525dd7847b7dd3950fc1895dd5
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Change subject: dco_linux: use M_FATAL instead of M_ERR in netlink error co=
+de paths
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1095
-This mail reflects revision 2 of this Change.
+Patch Set 2: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+(1 comment)
 
-        
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index c92c196..58051f5 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -143,7 +143,7 @@
-             msg(M_ERR, "%s: netlink out of memory error", prefix);
-             break;
- 
--        case -M_ERR:
-+        case -NLE_AGAIN:
-             msg(M_WARN, "%s: netlink reports blocking read - aborting wait", prefix);
-             break;
- 
+Patchset:
+
+PS2:
+makes sense
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1096?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifc442b4426c02de7282d0f69629e8a10b679c589
+Gerrit-Change-Number: 1096
+Gerrit-PatchSet: 2
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Wed, 23 Jul 2025 06:30:12 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--/gW3RdefVoA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1096?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1096?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">makes sense</p></li></ul></li></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1096?usp=3Demail"=
+>change 1096</a>. To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1096?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifc442b4426c02de7282d0f69629=
+e8a10b679c589 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1096 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Jul 2025 06:30:12=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--/gW3RdefVoA=--
 
