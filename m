@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 23 Jul 2025 15:32:04 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 23 Jul 2025 17:32:19 +0200
+Message-ID: <20250723153224.13708-1-gert@...1296...>
 In-Reply-To: <gerrit.1753215725000.I7bbc40b7b66f6e0512cd2cf9791766bcc4970461@...2715...>
 References: <gerrit.1753215725000.I7bbc40b7b66f6e0512cd2cf9791766bcc4970461@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <3cc7f5903d3eadc6766c1579b2aad464e9d99b96-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6qeU9tGItY4="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco_linux: factor
- out netlink notification code
+Subject: [Openvpn-devel] [PATCH v4] dco_linux: factor out netlink
+ notification code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,130 +14,350 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---6qeU9tGItY4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+ovpn_handle_msg() is soon becoming the main entry point for parsing
+*all* incoming netlink messages. For this reason it is essential
+that this function is kept simple and slim.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1099?usp=3Demail )
+Move all code parsing netlink multicast notifications to their own
+helpers and then invoke them.
 
-Change subject: dco_linux: factor out netlink notification code
-......................................................................
+This patch does not introduce any functional change.
+It is intended in preparation for extending ovpn_handle_msg() to
+become a genering netlink message parser.
 
+Change-Id: I7bbc40b7b66f6e0512cd2cf9791766bcc4970461
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 4: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(2 comments)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1099
+This mail reflects revision 4 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-PS4:
-stared at the code, compared old/new in two windows (git only halfway helpf=
-ul), tested on linux/dco
-
-
-File src/openvpn/dco_linux.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1099/comment/0db9102d_51fadc5c :
-PS3, Line 991:     uint32_t ifindex =3D nla_get_u32(attrs[OVPN_A_IFINDEX]);
-> also this line and the following check should have been moved together wi=
-th the hunk above
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1099?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7bbc40b7b66f6e0512cd2cf9791766bcc4970461
-Gerrit-Change-Number: 1099
-Gerrit-PatchSet: 4
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Wed, 23 Jul 2025 15:32:04 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Gerrit-MessageType: comment
-
---6qeU9tGItY4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1099?usp=3Demail">V=
-iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1099?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">stared at the code, compared old/new in two=
- windows (git only halfway helpful), tested on linux/dco</p></li></ul></li>=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_linux.c:</p><u=
-l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1099/comment/0db9102d_51fadc5c">Patch Set #3, Line 991:=
-</a> <code style=3D"font-family:monospace,monospace">    uint32_t ifindex =
-=3D nla_get_u32(attrs[OVPN_A_IFINDEX]);</code></p><p><blockquote style=3D"b=
-order-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">also this lin=
-e and the following check should have been moved together with the hunk abo=
-ve</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1099?usp=3Demail">change 1099</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1099?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7bbc40b7b66f6e0512cd2cf9791=
-766bcc4970461 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1099 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Jul 2025 15:32:04=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---6qeU9tGItY4=--
+        
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index ec6efaa..7c639d9 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -956,6 +956,164 @@
+     return NL_OK;
+ }
+ 
++static bool
++ovpn_iface_check(dco_context_t *dco, struct nlattr *attrs[])
++{
++    /* we must know which interface this message is referring to in order to
++     * avoid mixing messages for other instances
++     */
++    if (!attrs[OVPN_A_IFINDEX])
++    {
++        msg(D_DCO, "ovpn-dco: Received message without ifindex");
++        return false;
++    }
++
++    uint32_t ifindex = nla_get_u32(attrs[OVPN_A_IFINDEX]);
++    if (ifindex != dco->ifindex)
++    {
++        msg(D_DCO_DEBUG,
++            "ovpn-dco: ignoring message for foreign ifindex %d", ifindex);
++        return false;
++    }
++
++    return true;
++}
++
++static int
++ovpn_handle_peer_del_ntf(dco_context_t *dco, struct nlattr *attrs[])
++{
++    if (!ovpn_iface_check(dco, attrs))
++    {
++        return NL_STOP;
++    }
++
++    if (!attrs[OVPN_A_PEER])
++    {
++        msg(D_DCO, "ovpn-dco: no peer in PEER_DEL_NTF message");
++        return NL_STOP;
++    }
++
++    struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
++    if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
++                         NULL))
++    {
++        msg(D_DCO, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
++        return NL_STOP;
++    }
++
++    if (!dp_attrs[OVPN_A_PEER_DEL_REASON])
++    {
++        msg(D_DCO, "ovpn-dco: no reason in PEER_DEL_NTF message");
++        return NL_STOP;
++    }
++    if (!dp_attrs[OVPN_A_PEER_ID])
++    {
++        msg(D_DCO, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
++        return NL_STOP;
++    }
++
++    int reason = nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);
++    unsigned int peerid = nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);
++
++    msg(D_DCO_DEBUG, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d",
++        dco->ifindex, peerid, reason);
++    dco->dco_message_peer_id = peerid;
++    dco->dco_del_peer_reason = reason;
++    dco->dco_message_type = OVPN_CMD_PEER_DEL_NTF;
++
++    return NL_OK;
++}
++
++static int
++ovpn_handle_peer_float_ntf(dco_context_t *dco, struct nlattr *attrs[])
++{
++    if (!ovpn_iface_check(dco, attrs))
++    {
++        return NL_STOP;
++    }
++
++    if (!attrs[OVPN_A_PEER])
++    {
++        msg(D_DCO, "ovpn-dco: no peer in PEER_FLOAT_NTF message");
++        return NL_STOP;
++    }
++
++    struct nlattr *fp_attrs[OVPN_A_PEER_MAX + 1];
++    if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
++                         NULL))
++    {
++        msg(D_DCO, "ovpn-dco: can't parse peer in PEER_FLOAT_NTF messsage");
++        return NL_STOP;
++    }
++
++    if (!fp_attrs[OVPN_A_PEER_ID])
++    {
++        msg(D_DCO, "ovpn-dco: no peer-id in PEER_FLOAT_NTF message");
++        return NL_STOP;
++    }
++    uint32_t peerid = nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);
++
++    if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&dco->dco_float_peer_ss))
++    {
++        return NL_STOP;
++    }
++
++    struct gc_arena gc = gc_new();
++    msg(D_DCO_DEBUG,
++        "ovpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, address: %s",
++        dco->ifindex, peerid, print_sockaddr((struct sockaddr *)&dco->dco_float_peer_ss, &gc));
++    dco->dco_message_peer_id = (int)peerid;
++    dco->dco_message_type = OVPN_CMD_PEER_FLOAT_NTF;
++
++    gc_free(&gc);
++
++    return NL_OK;
++}
++
++static int
++ovpn_handle_key_swap_ntf(dco_context_t *dco, struct nlattr *attrs[])
++{
++    if (!ovpn_iface_check(dco, attrs))
++    {
++        return NL_STOP;
++    }
++
++    if (!attrs[OVPN_A_KEYCONF])
++    {
++        msg(D_DCO, "ovpn-dco: no keyconf in KEY_SWAP_NTF message");
++        return NL_STOP;
++    }
++
++    struct nlattr *dp_attrs[OVPN_A_KEYCONF_MAX + 1];
++    if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,
++                         attrs[OVPN_A_KEYCONF], NULL))
++    {
++        msg(D_DCO, "ovpn-dco: can't parse keyconf in KEY_SWAP_NTF message");
++        return NL_STOP;
++    }
++    if (!dp_attrs[OVPN_A_KEYCONF_PEER_ID])
++    {
++        msg(D_DCO, "ovpn-dco: no peer-id in KEY_SWAP_NTF message");
++        return NL_STOP;
++    }
++    if (!dp_attrs[OVPN_A_KEYCONF_KEY_ID])
++    {
++        msg(D_DCO, "ovpn-dco: no key-id in KEY_SWAP_NTF message");
++        return NL_STOP;
++    }
++
++    int key_id = nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);
++    unsigned int peer_id = nla_get_u32(dp_attrs[OVPN_A_KEYCONF_PEER_ID]);
++
++    msg(D_DCO_DEBUG, "ovpn-dco: received CMD_KEY_SWAP_NTF, ifindex: %d, peer-id %u, key-id: %d",
++        dco->ifindex, peer_id, key_id);
++    dco->dco_message_peer_id = peer_id;
++    dco->dco_message_key_id = key_id;
++    dco->dco_message_type = OVPN_CMD_KEY_SWAP_NTF;
++
++    return NL_OK;
++}
++
+ /* This function parses any netlink message sent by ovpn-dco to userspace */
+ static int
+ ovpn_handle_msg(struct nl_msg *msg, void *arg)
+@@ -979,24 +1137,6 @@
+         return NL_STOP;
+     }
+ 
+-    /* we must know which interface this message is referring to in order to
+-     * avoid mixing messages for other instances
+-     */
+-    if (!attrs[OVPN_A_IFINDEX])
+-    {
+-        msg(D_DCO, "ovpn-dco: Received message without ifindex");
+-        return NL_STOP;
+-    }
+-
+-    uint32_t ifindex = nla_get_u32(attrs[OVPN_A_IFINDEX]);
+-    if (ifindex != dco->ifindex)
+-    {
+-        msg(D_DCO_DEBUG,
+-            "ovpn-dco: ignoring message (type=%d) for foreign ifindex %d",
+-            gnlh->cmd, ifindex);
+-        return NL_STOP;
+-    }
+-
+     /* based on the message type, we parse the subobject contained in the
+      * message, that stores the type-specific attributes.
+      *
+@@ -1008,116 +1148,17 @@
+     {
+         case OVPN_CMD_PEER_DEL_NTF:
+         {
+-            if (!attrs[OVPN_A_PEER])
+-            {
+-                msg(D_DCO, "ovpn-dco: no peer in PEER_DEL_NTF message");
+-                return NL_STOP;
+-            }
+-
+-            struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
+-            if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
+-                                 NULL))
+-            {
+-                msg(D_DCO, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
+-                return NL_STOP;
+-            }
+-
+-            if (!dp_attrs[OVPN_A_PEER_DEL_REASON])
+-            {
+-                msg(D_DCO, "ovpn-dco: no reason in PEER_DEL_NTF message");
+-                return NL_STOP;
+-            }
+-            if (!dp_attrs[OVPN_A_PEER_ID])
+-            {
+-                msg(D_DCO, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
+-                return NL_STOP;
+-            }
+-
+-            int reason = nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);
+-            unsigned int peerid = nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);
+-
+-            msg(D_DCO_DEBUG, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d",
+-                ifindex, peerid, reason);
+-            dco->dco_message_peer_id = peerid;
+-            dco->dco_del_peer_reason = reason;
+-            dco->dco_message_type = OVPN_CMD_PEER_DEL_NTF;
+-            break;
++            return ovpn_handle_peer_del_ntf(dco, attrs);
+         }
+ 
+         case OVPN_CMD_PEER_FLOAT_NTF:
+         {
+-            if (!attrs[OVPN_A_PEER])
+-            {
+-                msg(D_DCO, "ovpn-dco: no peer in PEER_FLOAT_NTF message");
+-                return NL_STOP;
+-            }
+-
+-            struct nlattr *fp_attrs[OVPN_A_PEER_MAX + 1];
+-            if (nla_parse_nested(fp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER],
+-                                 NULL))
+-            {
+-                msg(D_DCO, "ovpn-dco: can't parse peer in PEER_FLOAT_NTF messsage");
+-                return NL_STOP;
+-            }
+-
+-            if (!fp_attrs[OVPN_A_PEER_ID])
+-            {
+-                msg(D_DCO, "ovpn-dco: no peer-id in PEER_FLOAT_NTF message");
+-                return NL_STOP;
+-            }
+-            uint32_t peerid = nla_get_u32(fp_attrs[OVPN_A_PEER_ID]);
+-
+-            if (!ovpn_parse_float_addr(fp_attrs, (struct sockaddr *)&dco->dco_float_peer_ss))
+-            {
+-                return NL_STOP;
+-            }
+-
+-            struct gc_arena gc = gc_new();
+-            msg(D_DCO_DEBUG,
+-                "ovpn-dco: received CMD_PEER_FLOAT_NTF, ifindex: %u, peer-id %u, address: %s",
+-                ifindex, peerid, print_sockaddr((struct sockaddr *)&dco->dco_float_peer_ss, &gc));
+-            dco->dco_message_peer_id = (int)peerid;
+-            dco->dco_message_type = OVPN_CMD_PEER_FLOAT_NTF;
+-
+-            gc_free(&gc);
+-            break;
++            return ovpn_handle_peer_float_ntf(dco, attrs);
+         }
+ 
+         case OVPN_CMD_KEY_SWAP_NTF:
+         {
+-            if (!attrs[OVPN_A_KEYCONF])
+-            {
+-                msg(D_DCO, "ovpn-dco: no keyconf in KEY_SWAP_NTF message");
+-                return NL_STOP;
+-            }
+-
+-            struct nlattr *dp_attrs[OVPN_A_KEYCONF_MAX + 1];
+-            if (nla_parse_nested(dp_attrs, OVPN_A_KEYCONF_MAX,
+-                                 attrs[OVPN_A_KEYCONF], NULL))
+-            {
+-                msg(D_DCO, "ovpn-dco: can't parse keyconf in KEY_SWAP_NTF message");
+-                return NL_STOP;
+-            }
+-            if (!dp_attrs[OVPN_A_KEYCONF_PEER_ID])
+-            {
+-                msg(D_DCO, "ovpn-dco: no peer-id in KEY_SWAP_NTF message");
+-                return NL_STOP;
+-            }
+-            if (!dp_attrs[OVPN_A_KEYCONF_KEY_ID])
+-            {
+-                msg(D_DCO, "ovpn-dco: no key-id in KEY_SWAP_NTF message");
+-                return NL_STOP;
+-            }
+-
+-            int key_id = nla_get_u16(dp_attrs[OVPN_A_KEYCONF_KEY_ID]);
+-            unsigned int peer_id = nla_get_u32(dp_attrs[OVPN_A_KEYCONF_PEER_ID]);
+-
+-            msg(D_DCO_DEBUG, "ovpn-dco: received CMD_KEY_SWAP_NTF, ifindex: %d, peer-id %u, key-id: %d",
+-                ifindex, peer_id, key_id);
+-            dco->dco_message_peer_id = peer_id;
+-            dco->dco_message_key_id = key_id;
+-            dco->dco_message_type = OVPN_CMD_KEY_SWAP_NTF;
+-            break;
++            return ovpn_handle_key_swap_ntf(dco, attrs);
+         }
+ 
+         default:
 
