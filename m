@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 23 Jul 2025 08:07:41 +0200
-Message-ID: <20250723060747.19524-1-gert@...1296...>
-In-Reply-To: <gerrit.1753215725000.I94004579aef4a1ccccdbcf8edd7b722e5a611c72@...2715...>
-References: <gerrit.1753215725000.I94004579aef4a1ccccdbcf8edd7b722e5a611c72@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 23 Jul 2025 06:10:11 +0000
+In-Reply-To: <gerrit.1753215725000.Ibf64c681e02ac572d339d4d98e75ceb0cd417c45@...2715...>
+References: <gerrit.1753215725000.Ibf64c681e02ac572d339d4d98e75ceb0cd417c45@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <cd3e03cdc0b4a765b8aea2966a6d320a5fcc3a84-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco_linux: rearrange functions
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="2sJzZY6BTF8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi: store
+ multi_context address inside top instance
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,352 +20,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...2726...>
+--2sJzZY6BTF8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In preparation for the implementation of a generic netlink
-message parser, move all parsing functions above ovpn_handle_msg().
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-The latter is soon going to become a generic message parser which
-will invoke specific handlers, thus they are required to be defined
-earlier in the file.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1093?usp=3Demail )
 
-No functional change is intended.
+Change subject: multi: store multi_context address inside top instance
+......................................................................
 
-This patch is only meant to reduce entropy in the patch which will do
-the real netlink parser change.
 
-Better reviewed with: git show --color-moved
+Patch Set 1: Code-Review+2
 
-Change-Id: I94004579aef4a1ccccdbcf8edd7b722e5a611c72
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1098
-This mail reflects revision 2 of this Change.
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ibf64c681e02ac572d339d4d98e75ceb0cd417c45
+Gerrit-Change-Number: 1093
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Wed, 23 Jul 2025 06:10:11 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--2sJzZY6BTF8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-        
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 13506a1..ec6efaa 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -812,6 +812,150 @@
-     return false;
- }
- 
-+/* libnl < 3.11.0 does not implement nla_get_uint() */
-+static uint64_t
-+ovpn_nla_get_uint(struct nlattr *attr)
-+{
-+    if (nla_len(attr) == sizeof(uint32_t))
-+    {
-+        return nla_get_u32(attr);
-+    }
-+    else
-+    {
-+        return nla_get_u64(attr);
-+    }
-+}
-+
-+static void
-+dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
-+{
-+    if (tb[OVPN_A_PEER_LINK_RX_BYTES])
-+    {
-+        c2->dco_read_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_RX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / dco_read_bytes: " counter_format, __func__,
-+            c2->dco_read_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no link RX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
-+
-+    if (tb[OVPN_A_PEER_LINK_TX_BYTES])
-+    {
-+        c2->dco_write_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_TX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / dco_write_bytes: " counter_format, __func__,
-+            c2->dco_write_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no link TX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
-+
-+    if (tb[OVPN_A_PEER_VPN_RX_BYTES])
-+    {
-+        c2->tun_read_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_RX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / tun_read_bytes: " counter_format, __func__,
-+            c2->tun_read_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no VPN RX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
-+
-+    if (tb[OVPN_A_PEER_VPN_TX_BYTES])
-+    {
-+        c2->tun_write_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_TX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / tun_write_bytes: " counter_format, __func__,
-+            c2->tun_write_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no VPN TX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
-+}
-+
-+static int
-+dco_parse_peer_multi(struct nl_msg *msg, void *arg)
-+{
-+    struct nlattr *tb[OVPN_A_MAX + 1];
-+    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-+
-+    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
-+
-+    nla_parse(tb, OVPN_A_MAX, genlmsg_attrdata(gnlh, 0),
-+              genlmsg_attrlen(gnlh, 0), NULL);
-+
-+    if (!tb[OVPN_A_PEER])
-+    {
-+        return NL_SKIP;
-+    }
-+
-+    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
-+    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);
-+
-+    if (!tb_peer[OVPN_A_PEER_ID])
-+    {
-+        msg(M_WARN, "%s: no peer-id provided in reply", __func__);
-+        return NL_SKIP;
-+    }
-+
-+    struct multi_context *m = arg;
-+    uint32_t peer_id = nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
-+
-+    if (peer_id >= m->max_clients || !m->instances[peer_id])
-+    {
-+        msg(M_WARN, "%s: cannot store DCO stats for peer %u", __func__,
-+            peer_id);
-+        return NL_SKIP;
-+    }
-+
-+    dco_update_peer_stat(&m->instances[peer_id]->context.c2, tb_peer, peer_id);
-+
-+    return NL_OK;
-+}
-+
-+static int
-+dco_parse_peer(struct nl_msg *msg, void *arg)
-+{
-+    struct context *c = arg;
-+    struct nlattr *tb[OVPN_A_MAX + 1];
-+    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-+
-+    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
-+
-+    nla_parse(tb, OVPN_A_MAX, genlmsg_attrdata(gnlh, 0),
-+              genlmsg_attrlen(gnlh, 0), NULL);
-+
-+    if (!tb[OVPN_A_PEER])
-+    {
-+        msg(D_DCO_DEBUG, "%s: malformed reply", __func__);
-+        return NL_SKIP;
-+    }
-+
-+    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
-+    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);
-+
-+    if (!tb_peer[OVPN_A_PEER_ID])
-+    {
-+        msg(M_WARN, "%s: no peer-id provided in reply", __func__);
-+        return NL_SKIP;
-+    }
-+
-+    uint32_t peer_id = nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
-+    if (c->c2.tls_multi->dco_peer_id != peer_id)
-+    {
-+        return NL_SKIP;
-+    }
-+
-+    dco_update_peer_stat(&c->c2, tb_peer, peer_id);
-+
-+    return NL_OK;
-+}
-+
- /* This function parses any netlink message sent by ovpn-dco to userspace */
- static int
- ovpn_handle_msg(struct nl_msg *msg, void *arg)
-@@ -994,112 +1138,6 @@
-     return ovpn_nl_recvmsgs(dco, __func__);
- }
- 
--/* libnl < 3.11.0 does not implement nla_get_uint() */
--static uint64_t
--ovpn_nla_get_uint(struct nlattr *attr)
--{
--    if (nla_len(attr) == sizeof(uint32_t))
--    {
--        return nla_get_u32(attr);
--    }
--    else
--    {
--        return nla_get_u64(attr);
--    }
--}
--
--static void
--dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
--{
--    if (tb[OVPN_A_PEER_LINK_RX_BYTES])
--    {
--        c2->dco_read_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_RX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / dco_read_bytes: " counter_format, __func__,
--            c2->dco_read_bytes);
--    }
--    else
--    {
--        msg(M_WARN, "%s: no link RX bytes provided in reply for peer %u",
--            __func__, id);
--    }
--
--    if (tb[OVPN_A_PEER_LINK_TX_BYTES])
--    {
--        c2->dco_write_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_LINK_TX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / dco_write_bytes: " counter_format, __func__,
--            c2->dco_write_bytes);
--    }
--    else
--    {
--        msg(M_WARN, "%s: no link TX bytes provided in reply for peer %u",
--            __func__, id);
--    }
--
--    if (tb[OVPN_A_PEER_VPN_RX_BYTES])
--    {
--        c2->tun_read_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_RX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / tun_read_bytes: " counter_format, __func__,
--            c2->tun_read_bytes);
--    }
--    else
--    {
--        msg(M_WARN, "%s: no VPN RX bytes provided in reply for peer %u",
--            __func__, id);
--    }
--
--    if (tb[OVPN_A_PEER_VPN_TX_BYTES])
--    {
--        c2->tun_write_bytes = ovpn_nla_get_uint(tb[OVPN_A_PEER_VPN_TX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / tun_write_bytes: " counter_format, __func__,
--            c2->tun_write_bytes);
--    }
--    else
--    {
--        msg(M_WARN, "%s: no VPN TX bytes provided in reply for peer %u",
--            __func__, id);
--    }
--}
--
--int
--dco_parse_peer_multi(struct nl_msg *msg, void *arg)
--{
--    struct nlattr *tb[OVPN_A_MAX + 1];
--    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
--
--    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
--
--    nla_parse(tb, OVPN_A_MAX, genlmsg_attrdata(gnlh, 0),
--              genlmsg_attrlen(gnlh, 0), NULL);
--
--    if (!tb[OVPN_A_PEER])
--    {
--        return NL_SKIP;
--    }
--
--    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
--    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);
--
--    if (!tb_peer[OVPN_A_PEER_ID])
--    {
--        msg(M_WARN, "%s: no peer-id provided in reply", __func__);
--        return NL_SKIP;
--    }
--
--    struct multi_context *m = arg;
--    uint32_t peer_id = nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
--
--    if (peer_id >= m->max_clients || !m->instances[peer_id])
--    {
--        msg(M_WARN, "%s: cannot store DCO stats for peer %u", __func__,
--            peer_id);
--        return NL_SKIP;
--    }
--
--    dco_update_peer_stat(&m->instances[peer_id]->context.c2, tb_peer, peer_id);
--
--    return NL_OK;
--}
--
- int
- dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,
-                          const bool raise_sigusr1_on_err)
-@@ -1124,44 +1162,6 @@
-     return ret;
- }
- 
--static int
--dco_parse_peer(struct nl_msg *msg, void *arg)
--{
--    struct context *c = arg;
--    struct nlattr *tb[OVPN_A_MAX + 1];
--    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
--
--    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
--
--    nla_parse(tb, OVPN_A_MAX, genlmsg_attrdata(gnlh, 0),
--              genlmsg_attrlen(gnlh, 0), NULL);
--
--    if (!tb[OVPN_A_PEER])
--    {
--        msg(D_DCO_DEBUG, "%s: malformed reply", __func__);
--        return NL_SKIP;
--    }
--
--    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
--    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, tb[OVPN_A_PEER], NULL);
--
--    if (!tb_peer[OVPN_A_PEER_ID])
--    {
--        msg(M_WARN, "%s: no peer-id provided in reply", __func__);
--        return NL_SKIP;
--    }
--
--    uint32_t peer_id = nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
--    if (c->c2.tls_multi->dco_peer_id != peer_id)
--    {
--        return NL_SKIP;
--    }
--
--    dco_update_peer_stat(&c->c2, tb_peer, peer_id);
--
--    return NL_OK;
--}
--
- int
- dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
- {
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail=
+">change 1093</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibf64c681e02ac572d339d4d98e7=
+5ceb0cd417c45 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1093 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Jul 2025 06:10:11=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--2sJzZY6BTF8=--
 
