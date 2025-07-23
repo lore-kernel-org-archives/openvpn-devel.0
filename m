@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 23 Jul 2025 13:38:51 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 23 Jul 2025 15:39:11 +0200
+Message-ID: <20250723133918.19431-1-gert@...1296...>
 In-Reply-To: <gerrit.1753215725000.I673a17f8c5dec66cc6c28c1ed44780a7a63927d7@...2715...>
 References: <gerrit.1753215725000.I673a17f8c5dec66cc6c28c1ed44780a7a63927d7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., antonio@...2726...
-Message-ID: <da8b27dba523c9dcd085f511bfc3d663e6d2e99b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WwuMog7MFUk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: only pass
- struct context to init function
+Subject: [Openvpn-devel] [PATCH v4] dco: only pass struct context to init
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,96 +14,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---WwuMog7MFUk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Future DCO code will require accessing the `multi` member of the
+context object.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1094?usp=3Demail )
+For this reason a pointer to the context has to be stored in the
+DCO context along with the rest.
 
-Change subject: dco: only pass struct context to init function
-......................................................................
+At this point, rather than making the call to ovpn_dco_init()
+longer with more and more parameters, pass the struct context
+only and let the implementation extract the needed fields.
 
+Change-Id: I673a17f8c5dec66cc6c28c1ed44780a7a63927d7
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 4: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1094
+This mail reflects revision 4 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I673a17f8c5dec66cc6c28c1ed44780a7a63927d7
-Gerrit-Change-Number: 1094
-Gerrit-PatchSet: 4
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: stipa <lstipakov@...277...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Wed, 23 Jul 2025 13:38:51 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---WwuMog7MFUk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail=
-">change 1094</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1094?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I673a17f8c5dec66cc6c28c1ed44=
-780a7a63927d7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1094 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Jul 2025 13:38:51=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---WwuMog7MFUk=--
+        
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index f38316d..9078417 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -104,12 +104,10 @@
+ /**
+  * Initialize the DCO context
+  *
+- * @param mode      the instance operating mode (P2P or multi-peer)
+- * @param dco       the context to initialize
+- * @param dev_node  device node, used on Windows to specify certain DCO adapter
++ * @param c         the main instance context
+  * @return          true on success, false otherwise
+  */
+-bool ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node);
++bool ovpn_dco_init(struct context *c);
+ 
+ /**
+  * Open/create a DCO interface
+@@ -297,7 +295,7 @@
+ }
+ 
+ static inline bool
+-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)
++ovpn_dco_init(struct context *c)
+ {
+     return true;
+ }
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index b8816c6..98d8fb5 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -165,9 +165,9 @@
+ }
+ 
+ bool
+-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)
++ovpn_dco_init(struct context *c)
+ {
+-    if (open_fd(dco) < 0)
++    if (open_fd(&c->c1.tuntap->dco) < 0)
+     {
+         msg(M_ERR, "Failed to open socket");
+         return false;
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 3652a49..ec6efaa 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -438,9 +438,11 @@
+ }
+ 
+ bool
+-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)
++ovpn_dco_init(struct context *c)
+ {
+-    switch (mode)
++    dco_context_t *dco = &c->c1.tuntap->dco;
++
++    switch (c->mode)
+     {
+         case CM_TOP:
+             dco->ifmode = OVPN_MODE_MP;
+@@ -454,6 +456,10 @@
+             ASSERT(false);
+     }
+ 
++    /* store pointer to context as it may be required by message
++     * parsing routines
++     */
++    dco->c = c;
+     ovpn_dco_init_netlink(dco);
+     return true;
+ }
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 676b8cd..5e61cf1 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -65,6 +65,8 @@
+     struct nl_cb *nl_cb;
+     int status;
+ 
++    struct context *c;
++
+     enum ovpn_mode ifmode;
+ 
+     int ovpn_dco_id;
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 83db739..e5a33a0 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -188,9 +188,11 @@
+  * state. The server socket should be initialized later by dco_mp_start_vpn().
+  */
+ bool
+-ovpn_dco_init(int mode, dco_context_t *dco, const char *dev_node)
++ovpn_dco_init(struct context *c)
+ {
+-    switch (mode)
++    dco_context_t *dco = &c->c1.tuntap->dco;
++
++    switch (c->mode)
+     {
+         case MODE_POINT_TO_POINT:
+             dco->ifmode = DCO_MODE_P2P;
+@@ -198,7 +200,7 @@
+             break;
+ 
+         case MODE_SERVER:
+-            ovpn_dco_init_mp(dco, dev_node);
++            ovpn_dco_init_mp(dco, c->options.dev_node);
+             break;
+ 
+         default:
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 77747a2..aac8a6a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2007,7 +2007,7 @@
+ 
+         if (dco_enabled(&c->options))
+         {
+-            ovpn_dco_init(c->mode, &c->c1.tuntap->dco, c->options.dev_node);
++            ovpn_dco_init(c);
+         }
+ 
+         /* open the tun device */
 
