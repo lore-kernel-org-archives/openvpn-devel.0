@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 23 Jul 2025 06:10:11 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 23 Jul 2025 08:10:25 +0200
+Message-ID: <20250723061034.20240-1-gert@...1296...>
 In-Reply-To: <gerrit.1753215725000.Ibf64c681e02ac572d339d4d98e75ceb0cd417c45@...2715...>
 References: <gerrit.1753215725000.Ibf64c681e02ac572d339d4d98e75ceb0cd417c45@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <cd3e03cdc0b4a765b8aea2966a6d320a5fcc3a84-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2sJzZY6BTF8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi: store
- multi_context address inside top instance
+Subject: [Openvpn-devel] [PATCH v1] multi: store multi_context address
+ inside top instance
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,93 +14,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---2sJzZY6BTF8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Future modifications to DCO require accessing the
+server multi_context object.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1093?usp=3Demail )
+Since it is currently a stack variable that is pointed
+by no one, we'd need to pass it to all kind of functions
+to ensure it can reach the DCO code.
 
-Change subject: multi: store multi_context address inside top instance
-......................................................................
+To make the implementation simpler, it is preferable to
+simply assign its address to a struct context's field.
 
+While at it, make some multi_* functions static as they
+used only inside multi.c, where they are defined.
 
-Patch Set 1: Code-Review+2
+Change-Id: Ibf64c681e02ac572d339d4d98e75ceb0cd417c45
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1093
+This mail reflects revision 1 of this Change.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ibf64c681e02ac572d339d4d98e75ceb0cd417c45
-Gerrit-Change-Number: 1093
-Gerrit-PatchSet: 1
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Wed, 23 Jul 2025 06:10:11 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---2sJzZY6BTF8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail=
-">change 1093</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1093?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibf64c681e02ac572d339d4d98e7=
-5ceb0cd417c45 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1093 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 23 Jul 2025 06:10:11=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---2sJzZY6BTF8=--
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4696686..ec260a2 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -290,9 +290,10 @@
+ /*
+  * Main initialization function, init multi_context object.
+  */
+-void
+-multi_init(struct multi_context *m, struct context *t)
++static void
++multi_init(struct context *t)
+ {
++    struct multi_context *m = t->multi;
+     int dev = DEV_TYPE_UNDEF;
+ 
+     msg(D_MULTI_LOW, "MULTI: multi_init called, r=%d v=%d",
+@@ -706,7 +707,7 @@
+ /*
+  * Called on shutdown or restart.
+  */
+-void
++static void
+ multi_uninit(struct multi_context *m)
+ {
+     if (m->hash)
+@@ -3922,14 +3923,14 @@
+     }
+ }
+ 
+-void
+-multi_top_init(struct multi_context *m, struct context *top)
++static void
++multi_top_init(struct context *top)
+ {
+-    inherit_context_top(&m->top, top);
+-    m->top.c2.buffers = init_context_buffers(&top->c2.frame);
++    inherit_context_top(&top->multi->top, top);
++    top->multi->top.c2.buffers = init_context_buffers(&top->c2.frame);
+ }
+ 
+-void
++static void
+ multi_top_free(struct multi_context *m)
+ {
+     close_context(&m->top, -1, CC_GC_FREE);
+@@ -4324,6 +4325,7 @@
+     struct multi_context multi;
+ 
+     top->mode = CM_TOP;
++    top->multi = &multi;
+     context_clear_2(top);
+ 
+     /* initialize top-tunnel instance */
+@@ -4334,10 +4336,10 @@
+     }
+ 
+     /* initialize global multi_context object */
+-    multi_init(&multi, top);
++    multi_init(top);
+ 
+     /* initialize our cloned top object */
+-    multi_top_init(&multi, top);
++    multi_top_init(top);
+ 
+     /* initialize management interface */
+     init_management_callback_multi(&multi);
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index fe9e847..8b2704c 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -263,14 +263,6 @@
+  * Called by mtcp.c, mudp.c, or other (to be written) protocol drivers
+  */
+ 
+-void multi_init(struct multi_context *m, struct context *t);
+-
+-void multi_uninit(struct multi_context *m);
+-
+-void multi_top_init(struct multi_context *m, struct context *top);
+-
+-void multi_top_free(struct multi_context *m);
+-
+ struct multi_instance *multi_create_instance(struct multi_context *m, const struct mroute_addr *real,
+                                              struct link_socket *sock);
+ 
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 3c8ce39..7d48888 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -491,6 +491,9 @@
+                                  *   CM_P2P, \c CM_TOP, \c CM_TOP_CLONE,
+                                  *   \c CM_CHILD_UDP, and \c CM_CHILD_TCP. */
+ 
++    struct multi_context *multi; /**< Pointer to the main P2MP context.
++                                  *   Non-NULL only when mode == CM_TOP. */
++
+     struct gc_arena gc;         /**< Garbage collection arena for
+                                  *   allocations done in the scope of this
+                                  *   context structure. */
 
