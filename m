@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 24 Jul 2025 12:31:40 +0000
-References: <gerrit.1753360288000.I89820c76e2e099f7acb817c71c8aeb83736ac556@...2715...>
+Date: Thu, 24 Jul 2025 12:31:43 +0000
+References: <gerrit.1753360288000.I1d27cb81d32058e40147e1d6dcd12df7f6cb2b30@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <996aee3a51ca24d5d9bc1aff0d4fc6104f0c0c57-HTML@...2715...>
+Message-ID: <2854996f9dfd1590e1375d52e20724a9b2cad35c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="92eO4JJhcPE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: crypto: Make sure
- crypto flags are treated as unsigned
+Content-Type: multipart/alternative; boundary="D4bHme9u6dg="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Make sure
+ option types are treated as unsigned
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---92eO4JJhcPE=
+--D4bHme9u6dg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,92 +32,118 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1103?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1106?usp=3Demail
 
 to review the following change.
 
 
-Change subject: crypto: Make sure crypto flags are treated as unsigned
+Change subject: options: Make sure option types are treated as unsigned
 ......................................................................
 
-crypto: Make sure crypto flags are treated as unsigned
+options: Make sure option types are treated as unsigned
 
-crypto_options.flags is already unsigned, make sure the
-flags are as well to avoid spurious conversion warnings.
+verify_permissions already expects them to be unsigned,
+make sure they are to avoid spurious conversion warnings.
 
-Change-Id: I89820c76e2e099f7acb817c71c8aeb83736ac556
+Change-Id: I1d27cb81d32058e40147e1d6dcd12df7f6cb2b30
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/crypto.h
-1 file changed, 9 insertions(+), 9 deletions(-)
+M src/openvpn/options.h
+1 file changed, 32 insertions(+), 32 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1103/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/1106/1
 
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 68ad901..345e7ce 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -341,39 +341,39 @@
-      *   keeping state between successive
-      *   OpenVPN process startups. */
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 137e012..4ba8e3d 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -728,38 +728,38 @@
+ /*
+  * Option classes.
+  */
+-#define OPT_P_GENERAL         (1<<0)
+-#define OPT_P_UP              (1<<1)
+-#define OPT_P_ROUTE           (1<<2)
+-#define OPT_P_DHCPDNS         (1<<3)    /* includes ip windows options lik=
+e */
+-#define OPT_P_SCRIPT          (1<<4)
+-#define OPT_P_SETENV          (1<<5)
+-#define OPT_P_SHAPER          (1<<6)
+-#define OPT_P_TIMER           (1<<7)
+-#define OPT_P_PERSIST         (1<<8)
+-#define OPT_P_PERSIST_IP      (1<<9)
+-#define OPT_P_COMP            (1<<10) /* TODO */
+-#define OPT_P_MESSAGES        (1<<11)
+-#define OPT_P_NCP             (1<<12) /**< Negotiable crypto parameters */
+-#define OPT_P_TLS_PARMS       (1<<13) /* TODO */
+-#define OPT_P_MTU             (1<<14) /* TODO */
+-#define OPT_P_NICE            (1<<15)
+-#define OPT_P_PUSH            (1<<16)
+-#define OPT_P_INSTANCE        (1<<17) /**< allowed in ccd, client-connect =
+etc*/
+-#define OPT_P_CONFIG          (1<<18)
+-#define OPT_P_EXPLICIT_NOTIFY (1<<19)
+-#define OPT_P_ECHO            (1<<20)
+-#define OPT_P_INHERIT         (1<<21)
+-#define OPT_P_ROUTE_EXTRAS    (1<<22)
+-#define OPT_P_PULL_MODE       (1<<23)
+-#define OPT_P_PLUGIN          (1<<24)
+-#define OPT_P_SOCKBUF         (1<<25)
+-#define OPT_P_SOCKFLAGS       (1<<26)
+-#define OPT_P_CONNECTION      (1<<27)
+-#define OPT_P_PEER_ID         (1<<28)
+-#define OPT_P_INLINE          (1<<29)
+-#define OPT_P_PUSH_MTU        (1<<30)
+-#define OPT_P_ROUTE_TABLE     (1<<31)
++#define OPT_P_GENERAL         (1u<<0)
++#define OPT_P_UP              (1u<<1)
++#define OPT_P_ROUTE           (1u<<2)
++#define OPT_P_DHCPDNS         (1u<<3)    /* includes ip windows options li=
+ke */
++#define OPT_P_SCRIPT          (1u<<4)
++#define OPT_P_SETENV          (1u<<5)
++#define OPT_P_SHAPER          (1u<<6)
++#define OPT_P_TIMER           (1u<<7)
++#define OPT_P_PERSIST         (1u<<8)
++#define OPT_P_PERSIST_IP      (1u<<9)
++#define OPT_P_COMP            (1u<<10) /* TODO */
++#define OPT_P_MESSAGES        (1u<<11)
++#define OPT_P_NCP             (1u<<12) /**< Negotiable crypto parameters */
++#define OPT_P_TLS_PARMS       (1u<<13) /* TODO */
++#define OPT_P_MTU             (1u<<14) /* TODO */
++#define OPT_P_NICE            (1u<<15)
++#define OPT_P_PUSH            (1u<<16)
++#define OPT_P_INSTANCE        (1u<<17) /**< allowed in ccd, client-connect=
+ etc*/
++#define OPT_P_CONFIG          (1u<<18)
++#define OPT_P_EXPLICIT_NOTIFY (1u<<19)
++#define OPT_P_ECHO            (1u<<20)
++#define OPT_P_INHERIT         (1u<<21)
++#define OPT_P_ROUTE_EXTRAS    (1u<<22)
++#define OPT_P_PULL_MODE       (1u<<23)
++#define OPT_P_PLUGIN          (1u<<24)
++#define OPT_P_SOCKBUF         (1u<<25)
++#define OPT_P_SOCKFLAGS       (1u<<26)
++#define OPT_P_CONNECTION      (1u<<27)
++#define OPT_P_PEER_ID         (1u<<28)
++#define OPT_P_INLINE          (1u<<29)
++#define OPT_P_PUSH_MTU        (1u<<30)
++#define OPT_P_ROUTE_TABLE     (1u<<31)
 
--#define CO_PACKET_ID_LONG_FORM  (1<<0)
-+#define CO_PACKET_ID_LONG_FORM  (1u<<0)
-     /**< Bit-flag indicating whether to use
-     *   OpenVPN's long packet ID format. */
--#define CO_IGNORE_PACKET_ID     (1<<1)
-+#define CO_IGNORE_PACKET_ID     (1u<<1)
-     /**< Bit-flag indicating whether to ignore
-      *   the packet ID of a received packet.
-      *   This flag is used during processing
-      *   of the first packet received from a
-      *   client. */
--#define CO_MUTE_REPLAY_WARNINGS (1<<2)
-+#define CO_MUTE_REPLAY_WARNINGS (1u<<2)
-     /**< Bit-flag indicating not to display
-      *   replay warnings. */
--#define CO_USE_TLS_KEY_MATERIAL_EXPORT  (1<<3)
-+#define CO_USE_TLS_KEY_MATERIAL_EXPORT  (1u<<3)
-     /**< Bit-flag indicating that data channel key derivation
-      * is done using TLS keying material export [RFC5705]
-      */
--#define CO_RESEND_WKC (1<<4)
-+#define CO_RESEND_WKC (1u<<4)
-     /**< Bit-flag indicating that the client is expected to
-      * resend the wrapped client key with the 2nd packet (packet-id 1)
-      * like with the HARD_RESET_CLIENT_V3 packet */
--#define CO_FORCE_TLSCRYPTV2_COOKIE  (1<<5)
-+#define CO_FORCE_TLSCRYPTV2_COOKIE  (1u<<5)
-     /**< Bit-flag indicating that we do not allow clients that do
-      * not support resending the wrapped client key (WKc) with the
-      * third packet of the three-way handshake */
--#define CO_USE_CC_EXIT_NOTIFY       (1<<6)
-+#define CO_USE_CC_EXIT_NOTIFY       (1u<<6)
-     /**< Bit-flag indicating that explicit exit notifies should be
-      * sent via the control channel instead of using an OCC message
-      */
--#define CO_USE_DYNAMIC_TLS_CRYPT   (1<<7)
-+#define CO_USE_DYNAMIC_TLS_CRYPT   (1u<<7)
-     /**< Bit-flag indicating that renegotiations are using tls-crypt
-      *   with a TLS-EKM derived key.
-      */
--#define CO_EPOCH_DATA_KEY_FORMAT  (1<<8)
-+#define CO_EPOCH_DATA_KEY_FORMAT  (1u<<8)
-     /**< Bit-flag indicating the epoch the data format. This format
-      * has the AEAD tag at the end of the packet and is using a longer
-      * 64-bit packet id that is split into a 16 bit epoch and 48 bit
+ #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1103?usp=3Demail
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1106?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I89820c76e2e099f7acb817c71c8aeb83736ac556
-Gerrit-Change-Number: 1103
+Gerrit-Change-Id: I1d27cb81d32058e40147e1d6dcd12df7f6cb2b30
+Gerrit-Change-Number: 1106
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -125,89 +151,130 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---92eO4JJhcPE=
+--D4bHme9u6dg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1103?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1106?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">crypto: Make sure crypto flags are treated as unsigned<br><b=
-r>crypto_options.flags is already unsigned, make sure the<br>flags are as w=
-ell to avoid spurious conversion warnings.<br><br>Change-Id: I89820c76e2e09=
-9f7acb817c71c8aeb83736ac556<br>Signed-off-by: Frank Lichtenheld &lt;frank@...220...=
-..2641...&gt;<br>---<br>M src/openvpn/crypto.h<br>1 file changed, 9 inserti=
-ons(+), 9 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
-envpn refs/changes/03/1103/1</pre><pre style=3D"font-family: monospace,mono=
-space; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto.h b/sr=
-c/openvpn/crypto.h</span><br><span>index 68ad901..345e7ce 100644</span><br>=
-<span>--- a/src/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h=
-</span><br><span>@@ -341,39 +341,39 @@</span><br><span>      *   keeping st=
-ate between successive</span><br><span>      *   OpenVPN process startups. =
-*/</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-define CO_PACKET_ID_LONG_FORM  (1&lt;&lt;0)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define CO_PACKET_ID_LONG_FORM  (1u&lt;&lt;0)</span=
-><br><span>     /**&lt; Bit-flag indicating whether to use</span><br><span>=
-     *   OpenVPN&#39;s long packet ID format. */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#define CO_IGNORE_PACKET_ID     (1&lt;&lt;1)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CO_IGNORE_PACKE=
-T_ID     (1u&lt;&lt;1)</span><br><span>     /**&lt; Bit-flag indicating whe=
-ther to ignore</span><br><span>      *   the packet ID of a received packet=
-.</span><br><span>      *   This flag is used during processing</span><br><=
-span>      *   of the first packet received from a</span><br><span>      * =
-  client. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define C=
-O_MUTE_REPLAY_WARNINGS (1&lt;&lt;2)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#define CO_MUTE_REPLAY_WARNINGS (1u&lt;&lt;2)</span><br><sp=
-an>     /**&lt; Bit-flag indicating not to display</span><br><span>      * =
-  replay warnings. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#define CO_USE_TLS_KEY_MATERIAL_EXPORT  (1&lt;&lt;3)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define CO_USE_TLS_KEY_MATERIAL_EXPORT  (=
-1u&lt;&lt;3)</span><br><span>     /**&lt; Bit-flag indicating that data cha=
-nnel key derivation</span><br><span>      * is done using TLS keying materi=
-al export [RFC5705]</span><br><span>      */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#define CO_RESEND_WKC (1&lt;&lt;4)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#define CO_RESEND_WKC (1u&lt;&lt;4)</=
-span><br><span>     /**&lt; Bit-flag indicating that the client is expected=
- to</span><br><span>      * resend the wrapped client key with the 2nd pack=
-et (packet-id 1)</span><br><span>      * like with the HARD_RESET_CLIENT_V3=
- packet */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define CO_=
-FORCE_TLSCRYPTV2_COOKIE  (1&lt;&lt;5)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#define CO_FORCE_TLSCRYPTV2_COOKIE  (1u&lt;&lt;5)</span><=
-br><span>     /**&lt; Bit-flag indicating that we do not allow clients that=
- do</span><br><span>      * not support resending the wrapped client key (W=
-Kc) with the</span><br><span>      * third packet of the three-way handshak=
-e */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define CO_USE_CC=
-_EXIT_NOTIFY       (1&lt;&lt;6)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#define CO_USE_CC_EXIT_NOTIFY       (1u&lt;&lt;6)</span><br><sp=
-an>     /**&lt; Bit-flag indicating that explicit exit notifies should be</=
-span><br><span>      * sent via the control channel instead of using an OCC=
- message</span><br><span>      */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#define CO_USE_DYNAMIC_TLS_CRYPT   (1&lt;&lt;7)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#define CO_USE_DYNAMIC_TLS_CRYPT   =
-(1u&lt;&lt;7)</span><br><span>     /**&lt; Bit-flag indicating that renegot=
-iations are using tls-crypt</span><br><span>      *   with a TLS-EKM derive=
-d key.</span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#define CO_EPOCH_DATA_KEY_FORMAT  (1&lt;&lt;8)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define CO_EPOCH_DATA_KEY_FORMAT  (1u&=
-lt;&lt;8)</span><br><span>     /**&lt; Bit-flag indicating the epoch the da=
-ta format. This format</span><br><span>      * has the AEAD tag at the end =
-of the packet and is using a longer</span><br><span>      * 64-bit packet i=
-d that is split into a 16 bit epoch and 48 bit</span><br><span></span><br><=
-/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/110=
-3?usp=3Demail">change 1103</a>. To unsubscribe, or for help writing mail fi=
-lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
-p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
- itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
-op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1103?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ce: pre-wrap;">options: Make sure option types are treated as unsigned<br><=
+br>verify_permissions already expects them to be unsigned,<br>make sure the=
+y are to avoid spurious conversion warnings.<br><br>Change-Id: I1d27cb81d32=
+058e40147e1d6dcd12df7f6cb2b30<br>Signed-off-by: Frank Lichtenheld &lt;frank=
+@...2641...&gt;<br>---<br>M src/openvpn/options.h<br>1 file changed, 32 ins=
+ertions(+), 32 deletions(-)<br><br></pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/06/1106/1</pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.=
+h b/src/openvpn/options.h</span><br><span>index 137e012..4ba8e3d 100644</sp=
+an><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/=
+options.h</span><br><span>@@ -728,38 +728,38 @@</span><br><span> /*</span><=
+br><span>  * Option classes.</span><br><span>  */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#define OPT_P_GENERAL         (1&lt;&lt;0)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_UP          =
+    (1&lt;&lt;1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defi=
+ne OPT_P_ROUTE           (1&lt;&lt;2)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#define OPT_P_DHCPDNS         (1&lt;&lt;3)    /* includes i=
+p windows options like */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#define OPT_P_SCRIPT          (1&lt;&lt;4)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#define OPT_P_SETENV          (1&lt;&lt;5)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_SHAPER         =
+ (1&lt;&lt;6)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
+OPT_P_TIMER           (1&lt;&lt;7)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#define OPT_P_PERSIST         (1&lt;&lt;8)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_PERSIST_IP      (1&lt;&lt;9=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_COMP  =
+          (1&lt;&lt;10) /* TODO */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#define OPT_P_MESSAGES        (1&lt;&lt;11)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_NCP             (1&lt;&lt;=
+12) /**&lt; Negotiable crypto parameters */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define OPT_P_TLS_PARMS       (1&lt;&lt;13) /* TODO *=
+/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_MTU   =
+          (1&lt;&lt;14) /* TODO */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#define OPT_P_NICE            (1&lt;&lt;15)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_PUSH            (1&lt;&lt;=
+16)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_INST=
+ANCE        (1&lt;&lt;17) /**&lt; allowed in ccd, client-connect etc*/</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_CONFIG      =
+    (1&lt;&lt;18)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine OPT_P_EXPLICIT_NOTIFY (1&lt;&lt;19)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#define OPT_P_ECHO            (1&lt;&lt;20)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_INHERIT         (1&lt=
+;&lt;21)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P=
+_ROUTE_EXTRAS    (1&lt;&lt;22)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#define OPT_P_PULL_MODE       (1&lt;&lt;23)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_PLUGIN          (1&lt;&lt;24)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_SOCKBUF=
+         (1&lt;&lt;25)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#define OPT_P_SOCKFLAGS       (1&lt;&lt;26)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#define OPT_P_CONNECTION      (1&lt;&lt;27)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_PEER_ID         =
+(1&lt;&lt;28)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
+OPT_P_INLINE          (1&lt;&lt;29)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#define OPT_P_PUSH_MTU        (1&lt;&lt;30)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#define OPT_P_ROUTE_TABLE     (1&lt;&lt=
+;31)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_G=
+ENERAL         (1u&lt;&lt;0)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#define OPT_P_UP              (1u&lt;&lt;1)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_ROUTE           (1u&lt;&lt;=
+2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_DHC=
+PDNS         (1u&lt;&lt;3)    /* includes ip windows options like */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_SCRIPT      =
+    (1u&lt;&lt;4)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine OPT_P_SETENV          (1u&lt;&lt;5)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#define OPT_P_SHAPER          (1u&lt;&lt;6)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_TIMER          =
+ (1u&lt;&lt;7)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
+ne OPT_P_PERSIST         (1u&lt;&lt;8)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#define OPT_P_PERSIST_IP      (1u&lt;&lt;9)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_COMP            (1=
+u&lt;&lt;10) /* TODO */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#define OPT_P_MESSAGES        (1u&lt;&lt;11)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#define OPT_P_NCP             (1u&lt;&lt;12) /=
+**&lt; Negotiable crypto parameters */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#define OPT_P_TLS_PARMS       (1u&lt;&lt;13) /* TODO */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_MTU   =
+          (1u&lt;&lt;14) /* TODO */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#define OPT_P_NICE            (1u&lt;&lt;15)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_PUSH            (1u&=
+lt;&lt;16)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define O=
+PT_P_INSTANCE        (1u&lt;&lt;17) /**&lt; allowed in ccd, client-connect =
+etc*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_=
+CONFIG          (1u&lt;&lt;18)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define OPT_P_EXPLICIT_NOTIFY (1u&lt;&lt;19)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_ECHO            (1u&lt;&l=
+t;20)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_=
+INHERIT         (1u&lt;&lt;21)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define OPT_P_ROUTE_EXTRAS    (1u&lt;&lt;22)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_PULL_MODE       (1u&lt;&l=
+t;23)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_=
+PLUGIN          (1u&lt;&lt;24)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define OPT_P_SOCKBUF         (1u&lt;&lt;25)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_SOCKFLAGS       (1u&lt;&l=
+t;26)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_=
+CONNECTION      (1u&lt;&lt;27)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define OPT_P_PEER_ID         (1u&lt;&lt;28)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_INLINE          (1u&lt;&l=
+t;29)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_=
+PUSH_MTU        (1u&lt;&lt;30)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define OPT_P_ROUTE_TABLE     (1u&lt;&lt;31)</span><br><span> </=
+span><br><span> #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))=
+</span><br><span> </span><br><span></span><br></pre><p>To view, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1106?usp=3Demail">change 1106</=
+a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1106?usp=3Demail"/><meta itemprop=3D"name" con=
+tent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I89820c76e2e099f7acb817c71c8=
-aeb83736ac556 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1103 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1d27cb81d32058e40147e1d6dcd=
+12df7f6cb2b30 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1106 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -220,5 +287,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---92eO4JJhcPE=--
+--D4bHme9u6dg=--
 
