@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 25 Jul 2025 19:41:27 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 25 Jul 2025 21:41:39 +0200
+Message-ID: <20250725194147.17517-1-gert@...1296...>
 In-Reply-To: <gerrit.1752849659000.I43cd3d564d8c6ad4e41de5a38130d90cb6778395@...2715...>
 References: <gerrit.1752849659000.I43cd3d564d8c6ad4e41de5a38130d90cb6778395@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <b4f681b7cb89102ce180af0d392069a629a91549-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lMyX9XEYpB4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: add flag to print
- addresses in a consistent format during float
+Subject: [Openvpn-devel] [PATCH v2] add flag to print addresses in a
+ consistent format during float
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,95 +14,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---lMyX9XEYpB4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+Introduce the MAPF_SHOW_FAMILY flag to prepend the address family to the
+address when printing an mroute_addr object, similar to
+print_sockaddr_ex(). This ensures that when logging a float operation,
+both the old and new addresses are printed in the same format:
+$proto:[$family]$address:$port.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1092?usp=3Demail )
+Note: when using this flag with an IPv4-mapped IPv6 address, the output
+will appear as: [AF_INET6]a.b.c.d
 
-Change subject: add flag to print addresses in a consistent format during f=
-loat
-......................................................................
+Change-Id: I43cd3d564d8c6ad4e41de5a38130d90cb6778395
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1092
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I43cd3d564d8c6ad4e41de5a38130d90cb6778395
-Gerrit-Change-Number: 1092
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Fri, 25 Jul 2025 19:41:27 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---lMyX9XEYpB4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
-i. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail=
-">change 1092</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1092?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I43cd3d564d8c6ad4e41de5a3813=
-0d90cb6778395 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1092 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 25 Jul 2025 19:41:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---lMyX9XEYpB4=--
+        
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index a617b33..e3b1e9b 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -415,6 +415,10 @@
+                 {
+                     buf_printf(&out, "%s:", proto2ascii(maddr.proto, AF_INET, false));
+                 }
++                if (flags & MAPF_SHOW_FAMILY)
++                {
++                    buf_printf(&out, "[AF_INET]");
++                }
+                 buf_printf(&out, "%s", print_in_addr_t(ntohl(maddr.v4.addr),
+                                                        (flags & MAPF_IA_EMPTY_IF_UNDEF) ? IA_EMPTY_IF_UNDEF : 0, gc));
+                 if (maddr.type & MR_WITH_NETBITS)
+@@ -442,6 +446,10 @@
+                 {
+                     buf_printf(&out, "%s:", proto2ascii(maddr.proto, AF_INET6, false));
+                 }
++                if (flags & MAPF_SHOW_FAMILY)
++                {
++                    buf_printf(&out, "[AF_INET6]");
++                }
+                 if (IN6_IS_ADDR_V4MAPPED( &maddr.v6.addr ) )
+                 {
+                     buf_printf(&out, "%s", print_in_addr_t(maddr.v4mappedv6.addr,
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index c359fd2..4f9fc03 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -150,6 +150,7 @@
+ #define MAPF_SUBNET            (1<<0)
+ #define MAPF_IA_EMPTY_IF_UNDEF (1<<1)
+ #define MAPF_SHOW_ARP          (1<<2)
++#define MAPF_SHOW_FAMILY       (1<<3)
+ const char *mroute_addr_print_ex(const struct mroute_addr *ma,
+                                  const unsigned int flags,
+                                  struct gc_arena *gc);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4696686..69ec2da 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3274,8 +3274,8 @@
+     msg(D_MULTI_MEDIUM, "peer %" PRIu32 " (%s) floated from %s to %s",
+         mi->context.c2.tls_multi->peer_id,
+         tls_common_name(mi->context.c2.tls_multi, false),
+-        mroute_addr_print(&mi->real, &gc),
+-        print_link_socket_actual(&m->top.c2.from, &gc));
++        mroute_addr_print_ex(&mi->real, MAPF_SHOW_FAMILY, &gc),
++        mroute_addr_print_ex(&real, MAPF_SHOW_FAMILY, &gc));
+ 
+     /* remove old address from hash table before changing address */
+     ASSERT(hash_remove(m->hash, &mi->real));
 
