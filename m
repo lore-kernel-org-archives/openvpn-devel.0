@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 25 Jul 2025 15:40:08 +0000
+Date: Fri, 25 Jul 2025 15:40:05 +0000
 In-Reply-To: <gerrit.1753437961000.Id61df43bd79fc794a55e107daa0218c8441c2b2c@...2715...>
 References: <gerrit.1753437961000.Id61df43bd79fc794a55e107daa0218c8441c2b2c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <eb83beb2641a0f2caa9e77d652fd50081b085337-HTML@...2715...>
+Message-ID: <eb83beb2641a0f2caa9e77d652fd50081b085337-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w8Z41hf7e3k="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="JwhZSkLWV04="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: plugins: Clean up
  -Wconversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---w8Z41hf7e3k=
+--JwhZSkLWV04=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-11?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1111?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: plugins: Clean up -Wconversion warnings
 ......................................................................
@@ -63,7 +67,7 @@ M src/plugins/down-root/down-root.c
 10 files changed, 42 insertions(+), 54 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/1111/2
 
 diff --git a/sample/sample-plugins/client-connect/sample-client-connect.c b=
 /sample/sample-plugins/client-connect/sample-client-connect.c
@@ -400,7 +404,7 @@ char *envp[])
       * Allocate our context
 @@ -320,7 +318,7 @@
      }
-=20
+
      /* Ignore argv[0], as it contains just the plug-in file name */
 -    for (i =3D 1; i < string_array_len(argv); i++)
 +    for (int i =3D 1; i < string_array_len(argv); i++)
@@ -422,86 +426,89 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---w8Z41hf7e3k=
+--JwhZSkLWV04=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1111?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">plugins: Clean up -Wconversion warnings<br><b=
-r>Most of the are actually the same ones copied to every<br>single plugin.<=
-br><br>Some drive-by fixes of other warnings and some<br>conversion cleanup=
-s that had no warnings because<br>they were suppressed by casts.<br><br>Cha=
-nge-Id: Id61df43bd79fc794a55e107daa0218c8441c2b2c<br>Signed-off-by: Frank L=
-ichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1386...=
-296...&gt;<br>Message-Id: &lt;20250725124415.20645-1-gert@...1296...&gt;<br=
->URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg3=
-2330.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>=
-M sample/sample-plugins/client-connect/sample-client-connect.c<br>M sample/=
-sample-plugins/defer/multi-auth.c<br>M sample/sample-plugins/keying-materia=
-l-exporter-demo/keyingmaterialexporter.c<br>M sample/sample-plugins/log/log=
-.c<br>M sample/sample-plugins/log/log_v3.c<br>M sample/sample-plugins/simpl=
-e/base64.c<br>M sample/sample-plugins/simple/simple.c<br>M src/plugins/auth=
--pam/auth-pam.c<br>M src/plugins/auth-pam/utils.c<br>M src/plugins/down-roo=
-t/down-root.c<br>10 files changed, 42 insertions(+), 54 deletions(-)<br><br=
-></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/sample/sample-plugins/client-connect/sample-client-connect.=
-c b/sample/sample-plugins/client-connect/sample-client-connect.c</span><br>=
-<span>index 18c2c6f..5194270 100644</span><br><span>--- a/sample/sample-plu=
-gins/client-connect/sample-client-connect.c</span><br><span>+++ b/sample/sa=
-mple-plugins/client-connect/sample-client-connect.c</span><br><span>@@ -86,=
-9 +86,8 @@</span><br><span> {</span><br><span>     if (envp)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int i=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int na=
-melen =3D strlen(name);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        for (i =3D 0; envp[i]; ++i)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        const size_t namelen =3D strlen(name);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D 0; envp=
-[i]; ++i)</span><br><span>         {</span><br><span>             if (!strn=
-cmp(envp[i], name, namelen))</span><br><span>             {</span><br><span=
->@@ -309,7 +308,7 @@</span><br><span> </span><br><span>     /* do mighty co=
-mplicated work that will really take time here... */</span><br><span>     p=
-lugin_log(PLOG_NOTE, MODULE, &quot;in async/deferred handler, sleep(%d)&quo=
-t;, seconds);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    slee=
-p(seconds);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    slee=
-p((unsigned int)seconds);</span><br><span> </span><br><span>     /* write c=
-onfig options to openvpn */</span><br><span>     int ret =3D write_cc_optio=
-ns_file(name, envp);</span><br><span>diff --git a/sample/sample-plugins/def=
-er/multi-auth.c b/sample/sample-plugins/defer/multi-auth.c</span><br><span>=
-index 38db07f..c458346 100644</span><br><span>--- a/sample/sample-plugins/d=
-efer/multi-auth.c</span><br><span>+++ b/sample/sample-plugins/defer/multi-a=
-uth.c</span><br><span>@@ -124,9 +124,8 @@</span><br><span> {</span><br><spa=
-n>     if (envp)</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        int i;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        const int namelen =3D strlen(name);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; envp[i]; ++i)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        const size_t namel=
-en =3D strlen(name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        for (int i =3D 0; envp[i]; ++i)</span><br><span>         {</span><=
-br><span>             if (!strncmp(envp[i], name, namelen))</span><br><span=
->             {</span><br><span>@@ -170,7 +169,7 @@</span><br><span> </span=
-><br><span> /* Require a minimum OpenVPN Plugin API */</span><br><span> OPE=
-NVPN_EXPORT int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openvp=
-n_plugin_min_version_required_v1()</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+openvpn_plugin_min_version_required_v1(void)</span><br><span=
-> {</span><br><span>     return OPENVPN_PLUGIN_VERSION_MIN;</span><br><span=
-> }</span><br><span>@@ -349,9 +348,9 @@</span><br><span>      */</span><br>=
-<span> </span><br><span>     /* do mighty complicated work that will really=
- take time here... */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    plog(context, PLOG_NOTE, &quot;in async/deferred handler, usleep(%d)&qu=
-ot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         context-=
-&gt;test_deferred_auth*1000);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    usleep(context-&gt;test_deferred_auth*1000);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    useconds_t wait_time =3D (useconds=
-_t)context-&gt;test_deferred_auth*1000;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    plog(context, PLOG_NOTE, &quot;in async/deferred ha=
-ndler, usleep(%u)&quot;, wait_time);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    usleep(wait_time);</span><br><span> </span><br><span> =
-    /* now signal success state to openvpn */</span><br><span>     int fd =
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1111?usp=3Demail">View Change</a></p><p>The following approvals got outd=
+ated and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">plugins: Clean up -Wconversion warnings<br><br>Most =
+of the are actually the same ones copied to every<br>single plugin.<br><br>=
+Some drive-by fixes of other warnings and some<br>conversion cleanups that =
+had no warnings because<br>they were suppressed by casts.<br><br>Change-Id:=
+ Id61df43bd79fc794a55e107daa0218c8441c2b2c<br>Signed-off-by: Frank Lichtenh=
+eld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&=
+gt;<br>Message-Id: &lt;20250725124415.20645-1-gert@...1296...&gt;<br>URL: h=
+ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32330.ht=
+ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sampl=
+e/sample-plugins/client-connect/sample-client-connect.c<br>M sample/sample-=
+plugins/defer/multi-auth.c<br>M sample/sample-plugins/keying-material-expor=
+ter-demo/keyingmaterialexporter.c<br>M sample/sample-plugins/log/log.c<br>M=
+ sample/sample-plugins/log/log_v3.c<br>M sample/sample-plugins/simple/base6=
+4.c<br>M sample/sample-plugins/simple/simple.c<br>M src/plugins/auth-pam/au=
+th-pam.c<br>M src/plugins/auth-pam/utils.c<br>M src/plugins/down-root/down-=
+root.c<br>10 files changed, 42 insertions(+), 54 deletions(-)<br><br></pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
+ pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/1111/2</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/sample/sample-plugins/client-connect/sample-client-connect.c =
+b/sample/sample-plugins/client-connect/sample-client-connect.c</span><br><s=
+pan>index 18c2c6f..5194270 100644</span><br><span>--- a/sample/sample-plugi=
+ns/client-connect/sample-client-connect.c</span><br><span>+++ b/sample/samp=
+le-plugins/client-connect/sample-client-connect.c</span><br><span>@@ -86,9 =
++86,8 @@</span><br><span> {</span><br><span>     if (envp)</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int name=
+len =3D strlen(name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        for (i =3D 0; envp[i]; ++i)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        const size_t namelen =3D strlen(name);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D 0; envp[i=
+]; ++i)</span><br><span>         {</span><br><span>             if (!strncm=
+p(envp[i], name, namelen))</span><br><span>             {</span><br><span>@=
+@ -309,7 +308,7 @@</span><br><span> </span><br><span>     /* do mighty comp=
+licated work that will really take time here... */</span><br><span>     plu=
+gin_log(PLOG_NOTE, MODULE, &quot;in async/deferred handler, sleep(%d)&quot;=
+, seconds);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sleep(=
+seconds);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sleep(=
+(unsigned int)seconds);</span><br><span> </span><br><span>     /* write con=
+fig options to openvpn */</span><br><span>     int ret =3D write_cc_options=
+_file(name, envp);</span><br><span>diff --git a/sample/sample-plugins/defer=
+/multi-auth.c b/sample/sample-plugins/defer/multi-auth.c</span><br><span>in=
+dex 38db07f..c458346 100644</span><br><span>--- a/sample/sample-plugins/def=
+er/multi-auth.c</span><br><span>+++ b/sample/sample-plugins/defer/multi-aut=
+h.c</span><br><span>@@ -124,9 +124,8 @@</span><br><span> {</span><br><span>=
+     if (envp)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        int i;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        const int namelen =3D strlen(name);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; envp[i]; ++i)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        const size_t namele=
+n =3D strlen(name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        for (int i =3D 0; envp[i]; ++i)</span><br><span>         {</span><b=
+r><span>             if (!strncmp(envp[i], name, namelen))</span><br><span>=
+             {</span><br><span>@@ -170,7 +169,7 @@</span><br><span> </span>=
+<br><span> /* Require a minimum OpenVPN Plugin API */</span><br><span> OPEN=
+VPN_EXPORT int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openvpn=
+_plugin_min_version_required_v1()</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+openvpn_plugin_min_version_required_v1(void)</span><br><span>=
+ {</span><br><span>     return OPENVPN_PLUGIN_VERSION_MIN;</span><br><span>=
+ }</span><br><span>@@ -349,9 +348,9 @@</span><br><span>      */</span><br><=
+span> </span><br><span>     /* do mighty complicated work that will really =
+take time here... */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   plog(context, PLOG_NOTE, &quot;in async/deferred handler, usleep(%d)&quo=
+t;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         context-&=
+gt;test_deferred_auth*1000);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    usleep(context-&gt;test_deferred_auth*1000);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    useconds_t wait_time =3D (useconds_=
+t)context-&gt;test_deferred_auth*1000;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    plog(context, PLOG_NOTE, &quot;in async/deferred han=
+dler, usleep(%u)&quot;, wait_time);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    usleep(wait_time);</span><br><span> </span><br><span>  =
+   /* now signal success state to openvpn */</span><br><span>     int fd =
 =3D open(auth_control_file, O_WRONLY);</span><br><span>diff --git a/sample/=
 sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sam=
 ple/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c</=
@@ -722,8 +729,8 @@ prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1111?usp=3Demail=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---w8Z41hf7e3k=--
+--JwhZSkLWV04=--
 
