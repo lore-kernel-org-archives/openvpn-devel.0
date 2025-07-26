@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Fri, 25 Jul 2025 23:51:02 +0000
-References: <gerrit.1753487460000.Id5e06f0822a3e7e4ad1b6f93caaefdb6a8cfe547@...2715...>
+Date: Sat, 26 Jul 2025 00:01:20 +0000
+References: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8cb692211253898a82e58e579914ce0457d24797-HTML@...2715...>
+Message-ID: <b6d7184cdb352cee6fd0a5eed009d5bd42ded04d-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="z2qB25MTQh4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi: make
- multi_process_float() static
+Content-Type: multipart/alternative; boundary="C8Y9Ndn/T4E="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: drop client
+ prefix after DCO PEER_FLOAT notification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---z2qB25MTQh4=
+--C8Y9Ndn/T4E=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,88 +32,65 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1115?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
 
 to review the following change.
 
 
-Change subject: multi: make multi_process_float() static
+Change subject: dco: drop client prefix after DCO PEER_FLOAT notification
 ......................................................................
 
-multi: make multi_process_float() static
+dco: drop client prefix after DCO PEER_FLOAT notification
 
-multi_process_float() is invoked only within multi.c, which
-is where it is defined.
+multi_process_float() will possibly float a client and
+also generate and set its new prefix.
 
-For this reason we can make it static and drop its declaration
-in multi.h.
+However, after processing the PEER_FLOAT_NTF message, we
+were not clearing the prefix, thus effectivly making
+the generated prefix permanent until the next set_prefix()
+call.
 
-Change-Id: Id5e06f0822a3e7e4ad1b6f93caaefdb6a8cfe547
+Clear the prefix right after calling multi_process_float()
+to avoid printing messages with the wrong prefix.
+
+Github: closes OpenVPN/openvpn#799
+Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
 Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
 M src/openvpn/multi.c
-M src/openvpn/multi.h
-2 files changed, 9 insertions(+), 12 deletions(-)
+1 file changed, 4 insertions(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/15/1115/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1116/1
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index c5691ff..d23aee7 100644
+index d23aee7..32331d7 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -3210,7 +3210,15 @@
-     return ret;
- }
-
--void
-+/**
-+ * Handles peer floating.
-+ *
-+ * If peer is floated to a taken address, either drops packet
-+ * (if peer that owns address has different CN) or disconnects
-+ * existing peer. Updates multi_instance with new address,
-+ * updates hashtables in multi_context.
-+ */
-+static void
- multi_process_float(struct multi_context *m, struct multi_instance *mi,
-                     struct link_socket *sock)
- {
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 8b2704c..eb5bf86 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -270,17 +270,6 @@
-
- bool multi_process_timeout(struct multi_context *m, const unsigned int mpp=
-_flags);
-
--/**
-- * Handles peer floating.
-- *
-- * If peer is floated to a taken address, either drops packet
-- * (if peer that owns address has different CN) or disconnects
-- * existing peer. Updates multi_instance with new address,
-- * updates hashtables in multi_context.
-- */
--void multi_process_float(struct multi_context *m, struct multi_instance *m=
-i,
--                         struct link_socket *sock);
--
- #define MPP_PRE_SELECT             (1<<0)
- #define MPP_CONDITIONAL_PRE_SELECT (1<<1)
- #define MPP_CLOSE_ON_SIGNAL        (1<<2)
+@@ -3417,6 +3417,10 @@
+                                         &m->top.c2.from.dest,
+                                         (struct sockaddr *)&dco->dco_float=
+_peer_ss);
+             multi_process_float(m, mi, mi->context.c2.link_sockets[0]);
++            /* multi_process_float() generated and set a new peer prefix, =
+but we
++             * don't to keep it at this point.
++             */
++            clear_prefix();
+             CLEAR(dco->dco_float_peer_ss);
+         }
+ #endif /* if defined(TARGET_LINUX) || defined(TARGET_WIN32) */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1115?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id5e06f0822a3e7e4ad1b6f93caaefdb6a8cfe547
-Gerrit-Change-Number: 1115
+Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
+Gerrit-Change-Number: 1116
 Gerrit-PatchSet: 1
 Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -123,76 +100,56 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---z2qB25MTQh4=
+--C8Y9Ndn/T4E=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
 his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1115?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">multi: make multi_process_float() static<br><br>multi_proces=
-s_float() is invoked only within multi.c, which<br>is where it is defined.<=
-br><br>For this reason we can make it static and drop its declaration<br>in=
- multi.h.<br><br>Change-Id: Id5e06f0822a3e7e4ad1b6f93caaefdb6a8cfe547<br>Si=
-gned-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/o=
-penvpn/multi.c<br>M src/openvpn/multi.h<br>2 files changed, 9 insertions(+)=
-, 12 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn=
- refs/changes/15/1115/1</pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;"><span>diff --git a/src/openvpn/multi.c b/src/open=
-vpn/multi.c</span><br><span>index c5691ff..d23aee7 100644</span><br><span>-=
--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><b=
-r><span>@@ -3210,7 +3210,15 @@</span><br><span>     return ret;</span><br><=
-span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * Handles peer floating.</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * If peer is floated to a taken addre=
-ss, either drops packet</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * (if peer that owns address has different CN) or disconnects</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * existing peer. Updates mu=
-lti_instance with new address,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * updates hashtables in multi_context.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static void</span><br><span> multi_process_float(struct mult=
-i_context *m, struct multi_instance *mi,</span><br><span>                  =
-   struct link_socket *sock)</span><br><span> {</span><br><span>diff --git =
-a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><span>index 8b2704c..=
-eb5bf86 100644</span><br><span>--- a/src/openvpn/multi.h</span><br><span>++=
-+ b/src/openvpn/multi.h</span><br><span>@@ -270,17 +270,6 @@</span><br><spa=
-n> </span><br><span> bool multi_process_timeout(struct multi_context *m, co=
-nst unsigned int mpp_flags);</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * Handles peer floating.</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * If pe=
-er is floated to a taken address, either drops packet</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * (if peer that owns address has different=
- CN) or disconnects</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
- existing peer. Updates multi_instance with new address,</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">- * updates hashtables in multi_context.<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-void multi_process_float(struct multi_co=
-ntext *m, struct multi_instance *mi,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                         struct link_socket *sock);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #define MPP_=
-PRE_SELECT             (1&lt;&lt;0)</span><br><span> #define MPP_CONDITIONA=
-L_PRE_SELECT (1&lt;&lt;1)</span><br><span> #define MPP_CLOSE_ON_SIGNAL     =
-   (1&lt;&lt;2)</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1115?usp=3Demail">change 1115</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1115?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+ce: pre-wrap;">dco: drop client prefix after DCO PEER_FLOAT notification<br=
+><br>multi_process_float() will possibly float a client and<br>also generat=
+e and set its new prefix.<br><br>However, after processing the PEER_FLOAT_N=
+TF message, we<br>were not clearing the prefix, thus effectivly making<br>t=
+he generated prefix permanent until the next set_prefix()<br>call.<br><br>C=
+lear the prefix right after calling multi_process_float()<br>to avoid print=
+ing messages with the wrong prefix.<br><br>Github: closes OpenVPN/openvpn#7=
+99<br>Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24<br>Signed-off-by=
+: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/openvpn/mult=
+i.c<br>1 file changed, 4 insertions(+), 0 deletions(-)<br><br></pre><pre st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull s=
+sh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1116/1</pre><pre styl=
+e=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff -=
+-git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index d23a=
+ee7..32331d7 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><sp=
+an>+++ b/src/openvpn/multi.c</span><br><span>@@ -3417,6 +3417,10 @@</span><=
+br><span>                                         &amp;m-&gt;top.c2.from.de=
+st,</span><br><span>                                         (struct sockad=
+dr *)&amp;dco-&gt;dco_float_peer_ss);</span><br><span>             multi_pr=
+ocess_float(m, mi, mi-&gt;context.c2.link_sockets[0]);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            /* multi_process_float() gen=
+erated and set a new peer prefix, but we</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+             * don&#39;t to keep it at this point.</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+             */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            clear_prefix();=
+</span><br><span>             CLEAR(dco-&gt;dco_float_peer_ss);</span><br><=
+span>         }</span><br><span> #endif /* if defined(TARGET_LINUX) || defi=
+ned(TARGET_WIN32) */</span><br><span></span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail">change 1116=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id5e06f0822a3e7e4ad1b6f93caa=
-efdb6a8cfe547 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1115 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329=
+a9335d1a36f24 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1116 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
@@ -209,5 +166,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---z2qB25MTQh4=--
+--C8Y9Ndn/T4E=--
 
