@@ -1,17 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 27 Jul 2025 10:45:48 +0000
-In-Reply-To: <gerrit.1753486180000.Icbc70225d53ca678b8c22ed437b424c16e199d66@...2715...>
-References: <gerrit.1753486180000.Icbc70225d53ca678b8c22ed437b424c16e199d66@...2715...>
+Date: Sun, 27 Jul 2025 11:02:31 +0000
+In-Reply-To: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+References: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <d730b9c55bb3e83045b0beaf30d687eab9f2eaf8-HTML@...2715...>
+Message-ID: <56f809cded1d20dfbd5d08a7fa83816df9b9e18d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MNxENDaw0rQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco_linux: clean up
- PEER_GET trigger and parser
+Content-Type: multipart/alternative; boundary="9yG6wN7Ci5w="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: drop client
+ prefix after DCO PEER_FLOAT notification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,725 +22,165 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MNxENDaw0rQ=
+--9yG6wN7Ci5w=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-14?usp=3Demail )
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-Change subject: dco_linux: clean up PEER_GET trigger and parser
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1116?usp=3Demail )
+
+Change subject: dco: drop client prefix after DCO PEER_FLOAT notification
 ......................................................................
 
-dco_linux: clean up PEER_GET trigger and parser
 
-This patch is intended to reduce code duplication and
-cleanup the DCO code around the PEER_GET command.
+Patch Set 2:
 
-Specifically it:
-* unified PEER_GET reply parser for `multi` and
-  `non-multi` case
-* unified PEER_GET request trigger for `multi` and
-  `non-multi` case
-* dropped struct multi_context from the argument list of
-  dco_get_peer_stats_multi()
+(1 comment)
 
-Github: closes OpenVPN/openvpn#800
-Change-Id: Icbc70225d53ca678b8c22ed437b424c16e199d66
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250727102245.24931-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-361.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dco.h
-M src/openvpn/dco_freebsd.c
-M src/openvpn/dco_freebsd.h
-M src/openvpn/dco_linux.c
-M src/openvpn/dco_win.c
-M src/openvpn/multi.c
-6 files changed, 53 insertions(+), 112 deletions(-)
+Patchset:
+
+PS2:
+Here's another one... counter timer triggering while an outgoing TLS renego=
+tiation is in progress
+
+```
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: udp6:[2001:608:0:814::fb00=
+:14]:33827 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384,=
+ peer certificate: 2048 bits RSA, signature: RSA-SHA256, peer temporary key=
+: 253 bits X25519, peer signing digest/type: SHA256 RSASSA-PSS
+Jul 27 12:33:36 ubuntu2004 kernel: [443346.370968] tun1: del peer 1
+Jul 27 12:33:36 ubuntu2004 kernel: [443346.370974] tun1: deleting peer with=
+ id 1, reason 1
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: udp6:[2001:608:0:814::fb00=
+:14]:33827 [freebsd-14-amd64] Peer Connection Initiated with [AF_INET6]2001=
+:608:0:814::fb00:14:33827
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[200=
+1:608:0:814::fb00:14]:33827 peer-id=3D2 dco_get_peer: peer-id -1
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[200=
+1:608:0:814::fb00:14]:33827 peer-id=3D2 ovpn-dco: received netlink message =
+type=3D31 cmd=3D3 flags=3D0x0002
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[200=
+1:608:0:814::fb00:14]:33827 peer-id=3D2 ovpn_handle_peer: parsing message f=
+or peer 0...
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[200=
+1:608:0:814::fb00:14]:33827 peer-id=3D2 dco_update_peer_stat / dco_read_byt=
+es(0): 440
+Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[200=
+1:608:0:814::fb00:14]:33827 peer-id=3D2 dco_update_peer_stat / dco_write_by=
+tes(0): 480
+```
+
+in this case resetting the prefix would mess up prefix logging for the TLS =
+handshake, so it's not the right approach anyway.
+
+Digging through error.c I found something half-forgotten...
+
+```
+    /* set up client prefix */
+    if (flags & M_NOIPREFIX)
+    {
+        prefix =3D NULL;
+    }
+    else
+    {
+        prefix =3D msg_get_prefix();
+    }
+```
+
+so I think the *right* approach is to use `msg(...|M_NOIPREFIX, ...)` for e=
+verything that is not normally related to a particular MI instance - like, =
+most of the DCO events.
+
+Magic
 
 
-
-
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 9078417..2ce0eb1 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -230,11 +230,9 @@
-  * Update traffic statistics for all peers
-  *
-  * @param dco                   DCO device context
-- * @param m                     the server context
-  * @param raise_sigusr1_on_err  whether to raise SIGUSR1 on error
-  **/
--int dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,
--                             const bool raise_sigusr1_on_err);
-+int dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_=
-on_err);
-
- /**
-  * Update traffic statistics for single peer
-@@ -374,8 +372,7 @@
- }
-
- static inline int
--dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,
--                         const bool raise_sigusr1_on_err)
-+dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_on_e=
-rr)
- {
-     return 0;
- }
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 98d8fb5..78ee9a1 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -167,6 +167,8 @@
- bool
- ovpn_dco_init(struct context *c)
- {
-+    c->c1.tuntap->dco.c =3D c;
-+
-     if (open_fd(&c->c1.tuntap->dco) < 0)
-     {
-         msg(M_ERR, "Failed to open socket");
-@@ -713,8 +715,7 @@
- }
-
- int
--dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,
--                         const bool raise_sigusr1_on_err)
-+dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_on_e=
-rr)
- {
-
-     struct ifdrv drv;
-@@ -774,7 +775,7 @@
-         const nvlist_t *peer =3D nvpeers[i];
-         uint32_t peerid =3D nvlist_get_number(peer, "peerid");
-
--        dco_update_peer_stat(m, peerid, nvlist_get_nvlist(peer, "bytes"));
-+        dco_update_peer_stat(dco->c->multi, peerid, nvlist_get_nvlist(peer=
-, "bytes"));
-     }
-
-     nvlist_destroy(nvl);
-diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
-index e1a054e..e926af5 100644
---- a/src/openvpn/dco_freebsd.h
-+++ b/src/openvpn/dco_freebsd.h
-@@ -57,6 +57,8 @@
-     int dco_del_peer_reason;
-     uint64_t dco_read_bytes;
-     uint64_t dco_write_bytes;
-+
-+    struct context *c;
- } dco_context_t;
-
- #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 728fb7e..9ad3d51 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -877,53 +877,8 @@
- }
-
- static int
--ovpn_handle_peer_multi(dco_context_t *dco, struct nlattr *attrs[])
--{
--    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
--
--    /* this function assumes openvpn is running in multipeer mode as
--     * it accesses c->multi
--     */
--    if (dco->ifmode !=3D OVPN_MODE_MP)
--    {
--        msg(M_WARN, "%s: can't parse 'multi-peer' message on P2P instance"=
-, __func__);
--        return NL_SKIP;
--    }
--
--    if (!attrs[OVPN_A_PEER])
--    {
--        return NL_SKIP;
--    }
--
--    struct nlattr *tb_peer[OVPN_A_PEER_MAX + 1];
--    nla_parse_nested(tb_peer, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER], NULL);
--
--    if (!tb_peer[OVPN_A_PEER_ID])
--    {
--        msg(M_WARN, "ovpn-dco: no peer-id provided in (MULTI) PEER_GET rep=
-ly");
--        return NL_SKIP;
--    }
--
--    struct multi_context *m =3D dco->c->multi;
--    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
--
--    if (peer_id >=3D m->max_clients || !m->instances[peer_id])
--    {
--        msg(M_WARN, "%s: cannot store DCO stats for peer %u", __func__,
--            peer_id);
--        return NL_SKIP;
--    }
--
--    dco_update_peer_stat(&m->instances[peer_id]->context.c2, tb_peer, peer=
-_id);
--
--    return NL_OK;
--}
--
--static int
- ovpn_handle_peer(dco_context_t *dco, struct nlattr *attrs[])
- {
--    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
--
-     if (!attrs[OVPN_A_PEER])
-     {
-         msg(D_DCO_DEBUG, "%s: malformed reply", __func__);
-@@ -942,12 +897,25 @@
-     uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
-     struct context_2 *c2;
-
-+    msg(D_DCO_DEBUG, "%s: parsing message for peer %u...", __func__, peer_=
-id);
-+
-     if (dco->ifmode =3D=3D OVPN_MODE_P2P)
-     {
-         c2 =3D &dco->c->c2;
-+        if (c2->tls_multi->dco_peer_id !=3D peer_id)
-+        {
-+            return NL_SKIP;
-+        }
-     }
-     else
-     {
-+        if (peer_id >=3D dco->c->multi->max_clients)
-+        {
-+            msg(M_WARN, "%s: received out of bound peer_id %u (max=3D%u)",=
- __func__, peer_id,
-+                dco->c->multi->max_clients);
-+            return NL_SKIP;
-+        }
-+
-         struct multi_instance *mi =3D dco->c->multi->instances[peer_id];
-         if (!mi)
-         {
-@@ -958,14 +926,6 @@
-         c2 =3D &mi->context.c2;
-     }
-
--    /* at this point this check should never fail for MP mode,
--     * but it's still fully valid for P2P mode
--     */
--    if (c2->tls_multi->dco_peer_id !=3D peer_id)
--    {
--        return NL_SKIP;
--    }
--
-     dco_update_peer_stat(c2, tb_peer, peer_id);
-
-     return NL_OK;
-@@ -1176,17 +1136,7 @@
-     {
-         case OVPN_CMD_PEER_GET:
-         {
--            /* this message is part of a peer list dump, hence triggered
--             * by a MP/server instance
--             */
--            if (nlh->nlmsg_flags & NLM_F_MULTI)
--            {
--                return ovpn_handle_peer_multi(dco, attrs);
--            }
--            else
--            {
--                return ovpn_handle_peer(dco, attrs);
--            }
-+            return ovpn_handle_peer(dco, attrs);
-         }
-
-         case OVPN_CMD_PEER_DEL_NTF:
-@@ -1221,52 +1171,32 @@
-     return ovpn_nl_recvmsgs(dco, __func__);
- }
-
--int
--dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,
--                         const bool raise_sigusr1_on_err)
-+static int
-+dco_get_peer(dco_context_t *dco, int peer_id, const bool raise_sigusr1_on_=
-err)
- {
--    msg(D_DCO_DEBUG, "%s", __func__);
--
--    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET=
-);
--
--    nlmsg_hdr(nl_msg)->nlmsg_flags |=3D NLM_F_DUMP;
--
--    int ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);
--
--    nlmsg_free(nl_msg);
--
--    if (raise_sigusr1_on_err && ret < 0)
--    {
--        msg(M_WARN, "Error retrieving DCO peer stats: the underlying DCO p=
-eer"
--            "may have been deleted from the kernel without notifying "
--            "userspace. Restarting the session");
--        register_signal(m->top.sig, SIGUSR1, "dco peer stats error");
--    }
--    return ret;
--}
--
--int
--dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
--{
--    int peer_id =3D c->c2.tls_multi->dco_peer_id;
--    if (peer_id =3D=3D -1)
-+    /* peer_id =3D=3D -1 means "dump all peers", but this is allowed in MP=
- mode only.
-+     * If it happens in P2P mode it means that the DCO peer was deleted an=
-d we
-+     * can simply bail out
-+     */
-+    if (peer_id =3D=3D -1 && dco->ifmode =3D=3D OVPN_MODE_P2P)
-     {
-         return 0;
-     }
-
-     msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peer_id);
-
--    if (!c->c1.tuntap)
--    {
--        return 0;
--    }
--
--    dco_context_t *dco =3D &c->c1.tuntap->dco;
-     struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET=
-);
-     struct nlattr *attr =3D nla_nest_start(nl_msg, OVPN_A_PEER);
-     int ret =3D -EMSGSIZE;
-
--    NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, peer_id);
-+    if (peer_id !=3D -1)
-+    {
-+        NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, peer_id);
-+    }
-+    else
-+    {
-+        nlmsg_hdr(nl_msg)->nlmsg_flags |=3D NLM_F_DUMP;
-+    }
-     nla_nest_end(nl_msg, attr);
-
-     ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);
-@@ -1279,11 +1209,23 @@
-         msg(M_WARN, "Error retrieving DCO peer stats: the underlying DCO p=
-eer"
-             "may have been deleted from the kernel without notifying "
-             "userspace. Restarting the session");
--        register_signal(c->sig, SIGUSR1, "dco peer stats error");
-+        register_signal(dco->c->sig, SIGUSR1, "dco peer stats error");
-     }
-     return ret;
- }
-
-+int
-+dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
-+{
-+    return dco_get_peer(&c->c1.tuntap->dco, c->c2.tls_multi->dco_peer_id, =
-raise_sigusr1_on_err);
-+}
-+
-+int
-+dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_on_e=
-rr)
-+{
-+    return dco_get_peer(dco, -1, raise_sigusr1_on_err);
-+}
-+
- bool
- dco_available(int msglevel)
- {
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index e5a33a0..995b121 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -715,8 +715,7 @@
- }
-
- int
--dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m,
--                         const bool raise_sigusr1_on_err)
-+dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_on_e=
-rr)
- {
-     /* Not implemented. */
-     return 0;
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 8de5854..c90ed5b 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -551,7 +551,7 @@
- {
-     if (dco_enabled(&m->top.options))
-     {
--        if (dco_get_peer_stats_multi(&m->top.c1.tuntap->dco, m, false) < 0)
-+        if (dco_get_peer_stats_multi(&m->top.c1.tuntap->dco, false) < 0)
-         {
-             return;
-         }
-@@ -862,7 +862,7 @@
-
-         if (dco_enabled(&m->top.options))
-         {
--            if (dco_get_peer_stats_multi(&m->top.c1.tuntap->dco, m, true) =
-< 0)
-+            if (dco_get_peer_stats_multi(&m->top.c1.tuntap->dco, true) < 0)
-             {
-                 return;
-             }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1114?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Icbc70225d53ca678b8c22ed437b424c16e199d66
-Gerrit-Change-Number: 1114
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
+Gerrit-Change-Number: 1116
+Gerrit-PatchSet: 2
 Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Sun, 27 Jul 2025 11:02:31 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---MNxENDaw0rQ=
+--9yG6wN7Ci5w=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1114?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">dco_linux: clean up PEER_GET trigger and pars=
-er<br><br>This patch is intended to reduce code duplication and<br>cleanup =
-the DCO code around the PEER_GET command.<br><br>Specifically it:<br>* unif=
-ied PEER_GET reply parser for `multi` and<br>  `non-multi` case<br>* unifie=
-d PEER_GET request trigger for `multi` and<br>  `non-multi` case<br>* dropp=
-ed struct multi_context from the argument list of<br>  dco_get_peer_stats_m=
-ulti()<br><br>Github: closes OpenVPN/openvpn#800<br>Change-Id: Icbc70225d53=
-ca678b8c22ed437b424c16e199d66<br>Signed-off-by: Antonio Quartulli &lt;anton=
-io@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Mess=
-age-Id: &lt;20250727102245.24931-1-gert@...1296...&gt;<br>URL: https://www.=
-mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32361.html<br>Signe=
-d-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dco.=
-h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/dco_freebsd.h<br>M src/op=
-envpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/multi.c<br>6 =
-files changed, 53 insertions(+), 112 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>index=
- 9078417..2ce0eb1 100644</span><br><span>--- a/src/openvpn/dco.h</span><br>=
-<span>+++ b/src/openvpn/dco.h</span><br><span>@@ -230,11 +230,9 @@</span><b=
-r><span>  * Update traffic statistics for all peers</span><br><span>  *</sp=
-an><br><span>  * @param dco                   DCO device context</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">- * @param m                     =
-the server context</span><br><span>  * @param raise_sigusr1_on_err  whether=
- to raise SIGUSR1 on error</span><br><span>  **/</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-int dco_get_peer_stats_multi(dco_context_t *dco,=
- struct multi_context *m,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                             const bool raise_sigusr1_on_err);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+int dco_get_peer_stats_multi=
-(dco_context_t *dco, const bool raise_sigusr1_on_err);</span><br><span> </s=
-pan><br><span> /**</span><br><span>  * Update traffic statistics for single=
- peer</span><br><span>@@ -374,8 +372,7 @@</span><br><span> }</span><br><spa=
-n> </span><br><span> static inline int</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-dco_get_peer_stats_multi(dco_context_t *dco, struct multi_=
-context *m,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-               const bool raise_sigusr1_on_err)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, co=
-nst bool raise_sigusr1_on_err)</span><br><span> {</span><br><span>     retu=
-rn 0;</span><br><span> }</span><br><span>diff --git a/src/openvpn/dco_freeb=
-sd.c b/src/openvpn/dco_freebsd.c</span><br><span>index 98d8fb5..78ee9a1 100=
-644</span><br><span>--- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/s=
-rc/openvpn/dco_freebsd.c</span><br><span>@@ -167,6 +167,8 @@</span><br><spa=
-n> bool</span><br><span> ovpn_dco_init(struct context *c)</span><br><span> =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c1.tunta=
-p-&gt;dco.c =3D c;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span>     if (open_fd(&amp;c-&gt;c1.tuntap-&gt;dco) &lt; 0)</spa=
-n><br><span>     {</span><br><span>         msg(M_ERR, &quot;Failed to open=
- socket&quot;);</span><br><span>@@ -713,8 +715,7 @@</span><br><span> }</spa=
-n><br><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-dco_get_peer_stats_multi(dco_context_t *dco, struct multi_cont=
-ext *m,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-           const bool raise_sigusr1_on_err)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+dco_get_peer_stats_multi(dco_context_t *dco, const =
-bool raise_sigusr1_on_err)</span><br><span> {</span><br><span> </span><br><=
-span>     struct ifdrv drv;</span><br><span>@@ -774,7 +775,7 @@</span><br><=
-span>         const nvlist_t *peer =3D nvpeers[i];</span><br><span>        =
- uint32_t peerid =3D nvlist_get_number(peer, &quot;peerid&quot;);</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_u=
-pdate_peer_stat(m, peerid, nvlist_get_nvlist(peer, &quot;bytes&quot;));</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco_update_peer=
-_stat(dco-&gt;c-&gt;multi, peerid, nvlist_get_nvlist(peer, &quot;bytes&quot=
-;));</span><br><span>     }</span><br><span> </span><br><span>     nvlist_d=
-estroy(nvl);</span><br><span>diff --git a/src/openvpn/dco_freebsd.h b/src/o=
-penvpn/dco_freebsd.h</span><br><span>index e1a054e..e926af5 100644</span><b=
-r><span>--- a/src/openvpn/dco_freebsd.h</span><br><span>+++ b/src/openvpn/d=
-co_freebsd.h</span><br><span>@@ -57,6 +57,8 @@</span><br><span>     int dco=
-_del_peer_reason;</span><br><span>     uint64_t dco_read_bytes;</span><br><=
-span>     uint64_t dco_write_bytes;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- struct context *c;</span><br><span> } dco_context_t;</span><br><span> </sp=
-an><br><span> #endif /* defined(ENABLE_DCO) &amp;&amp; defined(TARGET_FREEB=
-SD) */</span><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/d=
-co_linux.c</span><br><span>index 728fb7e..9ad3d51 100644</span><br><span>--=
-- a/src/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</=
-span><br><span>@@ -877,53 +877,8 @@</span><br><span> }</span><br><span> </s=
-pan><br><span> static int</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-ovpn_handle_peer_multi(dco_context_t *dco, struct nlattr *attrs[])</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: parsing message=
-...&quot;, __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* this function =
-assumes openvpn is running in multipeer mode as</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-     * it accesses c-&gt;multi</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    if (dco-&gt;ifmode !=3D OVPN_MODE_MP)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;%s: can&#39;t parse &#39=
-;multi-peer&#39; message on P2P instance&quot;, __func__);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    if (!attrs[OVPN_A_PEER])</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- return NL_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *tb_peer[OVPN_A_PEER_MAX=
- + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nla_parse_n=
-ested(tb_peer, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER], NULL);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    if (!tb_peer[OVPN_A_PEER_ID])</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        msg(M_WARN, &quot;ovpn-dco: no peer-id provided in (MUL=
-TI) PEER_GET reply&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        return NL_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    struct multi_context *m =
-=3D dco-&gt;c-&gt;multi;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_A_PEER_ID]);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    if (peer_id &gt;=3D m-&gt;max_clients || !m-&gt;=
-instances[peer_id])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN=
-, &quot;%s: cannot store DCO stats for peer %u&quot;, __func__,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            peer_id);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    dco_update_peer_stat(&amp;m-&gt;instances[peer_id]-&gt;context.c=
-2, tb_peer, peer_id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return NL_OK;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-static int</span><br><span> ovpn_handle_peer(dco_context_t *dco,=
- struct nlattr *attrs[])</span><br><span> {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: parsing message...&quo=
-t;, __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span>     if (!attrs[OVPN_A_PEER])</span><br><span>     {</span><br><s=
-pan>         msg(D_DCO_DEBUG, &quot;%s: malformed reply&quot;, __func__);</=
-span><br><span>@@ -942,12 +897,25 @@</span><br><span>     uint32_t peer_id =
-=3D nla_get_u32(tb_peer[OVPN_A_PEER_ID]);</span><br><span>     struct conte=
-xt_2 *c2;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    msg(D_DCO_DEBUG, &quot;%s: parsing message for peer %u...&quot;=
-, __func__, peer_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span>     if (dco-&gt;ifmode =3D=3D OVPN_MODE_P2P)</span><br>=
-<span>     {</span><br><span>         c2 =3D &amp;dco-&gt;c-&gt;c2;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        if (c2-&gt;tls_mult=
-i-&gt;dco_peer_id !=3D peer_id)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            return NL_SKIP;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        }</span><br><span>     }</span><br><span>     else</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     if (peer_id &gt;=3D dco-&gt;c-&gt;multi-&gt;max_clients)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;%s: receive=
-d out of bound peer_id %u (max=3D%u)&quot;, __func__, peer_id,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                dco-&gt;c-&gt;mu=
-lti-&gt;max_clients);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            return NL_SKIP;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span>         struct multi_instance *mi =3D dco-&gt;c-&gt;multi=
--&gt;instances[peer_id];</span><br><span>         if (!mi)</span><br><span>=
-         {</span><br><span>@@ -958,14 +926,6 @@</span><br><span>         c2=
- =3D &amp;mi-&gt;context.c2;</span><br><span>     }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* at this point this c=
-heck should never fail for MP mode,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-     * but it&#39;s still fully valid for P2P mode</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    if (c2-&gt;tls_multi-&gt;dco_peer_id !=3D =
-peer_id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     dco_update_peer_stat(=
-c2, tb_peer, peer_id);</span><br><span> </span><br><span>     return NL_OK;=
-</span><br><span>@@ -1176,17 +1136,7 @@</span><br><span>     {</span><br><s=
-pan>         case OVPN_CMD_PEER_GET:</span><br><span>         {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            /* this message is pa=
-rt of a peer list dump, hence triggered</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-             * by a MP/server instance</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-             */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            if (nlh-&gt;nlmsg_flags &amp; NLM_=
-F_MULTI)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                retur=
-n ovpn_handle_peer_multi(dco, attrs);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            else</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-           return ovpn_handle_peer(dco, attrs);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            return ovpn_handle_peer(dco, attrs);</span>=
-<br><span>         }</span><br><span> </span><br><span>         case OVPN_C=
-MD_PEER_DEL_NTF:</span><br><span>@@ -1221,52 +1171,32 @@</span><br><span>  =
-   return ovpn_nl_recvmsgs(dco, __func__);</span><br><span> }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco_contex=
-t_t *dco, struct multi_context *m,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                         const bool raise_sigusr1_on_err)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer(dco_context_t *dco, =
-int peer_id, const bool raise_sigusr1_on_err)</span><br><span> {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s&qu=
-ot;, __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nl_msg *nl_msg =
-=3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    nlmsg_hdr(nl_msg)-&gt;nlmsg_flags |=3D NLM_F_DUMP;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    int ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    nlmsg_free(nl_msg);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    if (raise_sigusr1_on_err &amp;&amp; ret &lt; 0)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;Error retrieving DCO=
- peer stats: the underlying DCO peer&quot;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            &quot;may have been deleted from the kerne=
-l without notifying &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            &quot;userspace. Restarting the session&quot;);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        register_signal(m-&gt;to=
-p.sig, SIGUSR1, &quot;dco peer stats error&quot;);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-dco_get_peer_stats(struct context *c, const bool rai=
-se_sigusr1_on_err)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int peer_id =3D c-&=
-gt;c2.tls_multi-&gt;dco_peer_id;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (peer_id =3D=3D -1)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* peer_id =3D=3D -1 means &quot;dump all peers&quot;=
-, but this is allowed in MP mode only.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+     * If it happens in P2P mode it means that the DCO p=
-eer was deleted and we</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+     * can simply bail out</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (peer_id =3D=3D -1 &amp;&amp; dco-&gt;ifmode =3D=3D OVPN_MODE_P2P)</sp=
-an><br><span>     {</span><br><span>         return 0;</span><br><span>    =
- }</span><br><span> </span><br><span>     msg(D_DCO_DEBUG, &quot;%s: peer-i=
-d %d&quot;, __func__, peer_id);</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    if (!c-&gt;c1.tuntap)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_context_t *dco =
-=3D &amp;c-&gt;c1.tuntap-&gt;dco;</span><br><span>     struct nl_msg *nl_ms=
-g =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET);</span><br><span>     s=
-truct nlattr *attr =3D nla_nest_start(nl_msg, OVPN_A_PEER);</span><br><span=
->     int ret =3D -EMSGSIZE;</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, peer_id);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (peer_id !=3D=
- -1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        NLA_PUT_U32(nl_msg, O=
-VPN_A_PEER_ID, peer_id);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        nlmsg_hdr(nl_msg)-&gt;nlms=
-g_flags |=3D NLM_F_DUMP;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span>     nla_nest_end(nl_msg, attr);</span><br><span=
-> </span><br><span>     ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</s=
-pan><br><span>@@ -1279,11 +1209,23 @@</span><br><span>         msg(M_WARN, =
-&quot;Error retrieving DCO peer stats: the underlying DCO peer&quot;</span>=
-<br><span>             &quot;may have been deleted from the kernel without =
-notifying &quot;</span><br><span>             &quot;userspace. Restarting t=
-he session&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     register_signal(c-&gt;sig, SIGUSR1, &quot;dco peer stats error&quot;);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        register_si=
-gnal(dco-&gt;c-&gt;sig, SIGUSR1, &quot;dco peer stats error&quot;);</span><=
-br><span>     }</span><br><span>     return ret;</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats(struct=
- context *c, const bool raise_sigusr1_on_err)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return dco_get_peer(&amp;c-&gt;c1.tuntap-&gt;dco, c-&gt;c2.tls_=
-multi-&gt;dco_peer_id, raise_sigusr1_on_err);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats_multi(dc=
-o_context_t *dco, const bool raise_sigusr1_on_err)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    return dco_get_peer(dco, -1, raise_sigusr1_on_err);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span> dco_=
-available(int msglevel)</span><br><span> {</span><br><span>diff --git a/src=
-/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>index e5a33a0..9=
-95b121 100644</span><br><span>--- a/src/openvpn/dco_win.c</span><br><span>+=
-++ b/src/openvpn/dco_win.c</span><br><span>@@ -715,8 +715,7 @@</span><br><s=
-pan> }</span><br><span> </span><br><span> int</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-dco_get_peer_stats_multi(dco_context_t *dco, struct=
- multi_context *m,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-                      const bool raise_sigusr1_on_err)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+dco_get_peer_stats_multi(dco_context_t *=
-dco, const bool raise_sigusr1_on_err)</span><br><span> {</span><br><span>  =
-   /* Not implemented. */</span><br><span>     return 0;</span><br><span>di=
-ff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index =
-8de5854..c90ed5b 100644</span><br><span>--- a/src/openvpn/multi.c</span><br=
-><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -551,7 +551,7 @@</span>=
-<br><span> {</span><br><span>     if (dco_enabled(&amp;m-&gt;top.options))<=
-/span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        if (dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m, =
-false) &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   if (dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, false) &l=
-t; 0)</span><br><span>         {</span><br><span>             return;</span=
-><br><span>         }</span><br><span>@@ -862,7 +862,7 @@</span><br><span> =
-</span><br><span>         if (dco_enabled(&amp;m-&gt;top.options))</span><b=
-r><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-         if (dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, m, =
-true) &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      if (dco_get_peer_stats_multi(&amp;m-&gt;top.c1.tuntap-&gt;dco, true) =
-&lt; 0)</span><br><span>             {</span><br><span>                 ret=
-urn;</span><br><span>             }</span><br><span></span><br></pre><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1114?usp=3Dema=
-il">change 1114</a>. To unsubscribe, or for help writing mail filters, visi=
-t <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div item=
-scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1114?usp=3Demail"/><meta it=
-emprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1116?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">Here&#39;s another one... counter timer triggeri=
+ng while an outgoing TLS renegotiation is in progress</p><p style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">```<br>Jul 27 12:33:36 ubuntu2004 =
+tun-udp-p2mp[298589]: udp6:[2001:608:0:814::fb00:14]:33827 Control Channel:=
+ TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 2048 bit=
+s RSA, signature: RSA-SHA256, peer temporary key: 253 bits X25519, peer sig=
+ning digest/type: SHA256 RSASSA-PSS<br>Jul 27 12:33:36 ubuntu2004 kernel: [=
+443346.370968] tun1: del peer 1<br>Jul 27 12:33:36 ubuntu2004 kernel: [4433=
+46.370974] tun1: deleting peer with id 1, reason 1<br>Jul 27 12:33:36 ubunt=
+u2004 tun-udp-p2mp[298589]: udp6:[2001:608:0:814::fb00:14]:33827 [freebsd-1=
+4-amd64] Peer Connection Initiated with [AF_INET6]2001:608:0:814::fb00:14:3=
+3827<br>Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/u=
+dp6:[2001:608:0:814::fb00:14]:33827 peer-id=3D2 dco_get_peer: peer-id -1<br=
+>Jul 27 12:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[20=
+01:608:0:814::fb00:14]:33827 peer-id=3D2 ovpn-dco: received netlink message=
+ type=3D31 cmd=3D3 flags=3D0x0002<br>Jul 27 12:33:36 ubuntu2004 tun-udp-p2m=
+p[298589]: freebsd-14-amd64/udp6:[2001:608:0:814::fb00:14]:33827 peer-id=3D=
+2 ovpn_handle_peer: parsing message for peer 0...<br>Jul 27 12:33:36 ubuntu=
+2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[2001:608:0:814::fb00:14]:=
+33827 peer-id=3D2 dco_update_peer_stat / dco_read_bytes(0): 440<br>Jul 27 1=
+2:33:36 ubuntu2004 tun-udp-p2mp[298589]: freebsd-14-amd64/udp6:[2001:608:0:=
+814::fb00:14]:33827 peer-id=3D2 dco_update_peer_stat / dco_write_bytes(0): =
+480<br>```</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">in=
+ this case resetting the prefix would mess up prefix logging for the TLS ha=
+ndshake, so it&#39;s not the right approach anyway.</p><p style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">Digging through error.c I found some=
+thing half-forgotten...</p><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">```<br>    /* set up client prefix */<br>    if (fl=
+ags &amp; M_NOIPREFIX)<br>    {<br>        prefix =3D NULL;<br>    }<br>   =
+ else<br>    {<br>        prefix =3D msg_get_prefix();<br>    }<br>```</pre=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">so I think the =
+*right* approach is to use `msg(...|M_NOIPREFIX, ...)` for everything that =
+is not normally related to a particular MI instance - like, most of the DCO=
+ events.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Magi=
+c</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1116?usp=3Demail">change 1116</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/1116?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icbc70225d53ca678b8c22ed437b=
-424c16e199d66 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1114 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329=
+a9335d1a36f24 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1116 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -751,8 +191,18 @@ emprop=3D"name" content=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 27 Jul 2025 11:02:31=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---MNxENDaw0rQ=--
+--9yG6wN7Ci5w=--
 
