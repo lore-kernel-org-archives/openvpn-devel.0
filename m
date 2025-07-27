@@ -1,17 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 27 Jul 2025 12:21:09 +0000
-In-Reply-To: <gerrit.1732124549000.I507180d7397b6959844a30908010132bc3411067@...2715...>
-References: <gerrit.1732124549000.I507180d7397b6959844a30908010132bc3411067@...2715...>
+Date: Sun, 27 Jul 2025 12:22:09 +0000
+In-Reply-To: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
+References: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <b69df51dc62c22563533f0a2bf039efe3c7df14d-EmailReviewComments-HTML@...2715...>
+Message-ID: <25088f577cbf8554154a4961457ba9f3ad2a2205-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iUdDdpvwyL8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="jLpwPGYQQeM="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
- remove_option() and do_update().
+ update_option() function.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,16 +23,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: mrbff <marco@...2726...>
 Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iUdDdpvwyL8=
+--jLpwPGYQQeM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, mrbff, plaisthos, stipa.
 
 cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/809?usp=3Demail )
+nvpn/+/810?usp=3Demail )
 
-Change subject: PUSH_UPDATE: Added remove_option() and do_update().
+Change subject: PUSH_UPDATE: Added update_option() function.
 ......................................................................
 
 
@@ -40,14 +40,14 @@ Patch Set 22: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I507180d7397b6959844a30908010132bc3411067
-Gerrit-Change-Number: 809
+Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2
+Gerrit-Change-Number: 810
 Gerrit-PatchSet: 22
 Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
@@ -59,12 +59,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mrbff <marco@...2726...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Sun, 27 Jul 2025 12:21:09 +0000
+Gerrit-Comment-Date: Sun, 27 Jul 2025 12:22:09 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---iUdDdpvwyL8=
+--jLpwPGYQQeM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -72,21 +72,21 @@ Content-Transfer-Encoding: quoted-printable
 tipa. </p>
 <p>Patch set 22:<span style=3D"border-radius: 3px; display: inline-block; m=
 argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail">V=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail"=
->change 809</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail"=
+>change 810</a>. To unsubscribe, or for help writing mail filters, visit <a=
  href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
 e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
 tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I507180d7397b6959844a3090801=
-0132bc3411067 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 809 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9=
+b3577984ecdc2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 810 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 22 </div>
 <div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
 /div>
@@ -108,12 +108,12 @@ ts.sourceforge.net&gt; </div>
 t; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 27 Jul 2025 12:21:09=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 27 Jul 2025 12:22:09=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---iUdDdpvwyL8=--
+--jLpwPGYQQeM=--
 
