@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 28 Jul 2025 10:42:49 +0200
-Message-ID: <20250728084255.1824-1-gert@...1296...>
-In-Reply-To: <gerrit.1753690218000.I6977d23b5289eba5db436608e0500216e0e689ec@...2715...>
-References: <gerrit.1753690218000.I6977d23b5289eba5db436608e0500216e0e689ec@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 28 Jul 2025 10:04:10 +0000
+In-Reply-To: <gerrit.1753449319000.Ic0035d52e0ea123398318870d2f4d21af927a602@...2715...>
+References: <gerrit.1753449319000.Ic0035d52e0ea123398318870d2f4d21af927a602@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, ralf@...2726...
+Message-ID: <939ce5e56bb679f89a1b0dffeac47e88ac54f5f0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] mudp.c, multi.c,
- multi_io.c: get rid of "all three DCO platforms" #ifdefs
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="KiKItLLKiNQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: management: resync
+ timer on bytecount interval change
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,118 +19,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-With commit b66b80b2a all three platforms with DCO support have DCO float
-notifications now, so the #ifdef inside multi_process_incoming_dco() is
-no longer needed.
+--KiKItLLKiNQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Also, the whole notification block (process_incoming_del_peer() and
-multi_process_incoming_dco()) was surrounded by an
+Attention is currently required from: plaisthos.
 
-  #ifdef ENABLE_DCO "and all 3 platforms"
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1113?usp=3Demail )
 
-which is also not making sense anymore (if we add a fourth DCO platform,
-we need to aim for having "all notifications from day 1", at least having
-the stubs and defines).
+Change subject: management: resync timer on bytecount interval change
+......................................................................
 
-Last not least, the event stuff in mudp.c and multi_io.c had grown the
-same construct - and we'll need events for any future DCO platform, too.
 
-So, fix those #ifdef as well, while at it.
+Patch Set 2: -Code-Review
 
-Change-Id: I6977d23b5289eba5db436608e0500216e0e689ec
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1117
-This mail reflects revision 3 of this Change.
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic0035d52e0ea123398318870d2f4d21af927a602
+Gerrit-Change-Number: 1113
+Gerrit-PatchSet: 2
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Mon, 28 Jul 2025 10:04:10 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
+--KiKItLLKiNQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-        
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index ee8446a..118c954 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -412,8 +412,7 @@
-         multi_process_file_closed(m, mpp_flags);
-     }
- #endif
--#if defined(ENABLE_DCO) \
--    && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
-+#if defined(ENABLE_DCO)
-     else if (status & DCO_READ)
-     {
-         if (!IS_SIG(&m->top))
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 49f5320..b2d2b6c 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3337,8 +3337,7 @@
- }
- #endif
- 
--#if defined(ENABLE_DCO) \
--    && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
-+#if defined(ENABLE_DCO)
- static void
- process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
-                           dco_context_t *dco)
-@@ -3409,7 +3408,6 @@
-         {
-             process_incoming_del_peer(m, mi, dco);
-         }
--#if defined(TARGET_LINUX) || defined(TARGET_WIN32) || defined(TARGET_FREEBSD)
-         else if (dco->dco_message_type == OVPN_CMD_FLOAT_PEER)
-         {
-             ASSERT(mi->context.c2.link_sockets[0]);
-@@ -3419,7 +3417,6 @@
-             multi_process_float(m, mi, mi->context.c2.link_sockets[0]);
-             CLEAR(dco->dco_float_peer_ss);
-         }
--#endif /* if defined(TARGET_LINUX) || defined(TARGET_WIN32) */
-         else if (dco->dco_message_type == OVPN_CMD_SWAP_KEYS)
-         {
-             tls_session_soft_reset(mi->context.c2.tls_multi);
-@@ -3452,7 +3449,7 @@
-     dco->dco_write_bytes = 0;
-     return ret > 0;
- }
--#endif /* if defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-+#endif /* if defined(ENABLE_DCO) */
- 
- /*
-  * Process packets in the TCP/UDP socket -> TUN/TAP interface direction,
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index 4854f4b..102ee2f 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -191,8 +191,7 @@
-     }
- 
-     tun_set(m->top.c1.tuntap, m->multi_io->es, EVENT_READ, MULTI_IO_TUN, persistent);
--#if defined(ENABLE_DCO) \
--    && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
-+#if defined(ENABLE_DCO)
-     dco_event_set(&m->top.c1.tuntap->dco, m->multi_io->es, MULTI_IO_DCO);
- #endif
- 
-@@ -526,8 +525,7 @@
-                     multi_io_action(m, mi, TA_INITIAL, false);
-                 }
-             }
--#if defined(ENABLE_DCO) \
--            && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(TARGET_WIN32))
-+#if defined(ENABLE_DCO)
-             /* incoming data on DCO? */
-             else if (e->arg == MULTI_IO_DCO)
-             {
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail">View C=
+hange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail">cha=
+nge 1113</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic0035d52e0ea123398318870d2f=
+4d21af927a602 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1113 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 28 Jul 2025 10:04:10=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--KiKItLLKiNQ=--
 
