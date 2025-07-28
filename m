@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 27 Jul 2025 12:22:09 +0000
-In-Reply-To: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
-References: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <25088f577cbf8554154a4961457ba9f3ad2a2205-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jLpwPGYQQeM="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
- update_option() function.
+Date: Mon, 28 Jul 2025 10:04:59 +0200 (CEST)
+Message-Id: <202507280804.56S84xjX041635@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250723083816.71604-2-kprovost@...2661...>
+References: <20250723083816.71604-2-kprovost@...2661...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: support float
+ notifications on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,100 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Kristof Provost <kp@...1376...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---jLpwPGYQQeM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Thanks.  Tested, works (and I already got chided for my lack of faith).
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos, stipa.
+Uncrustify complained about whitespace conventions, so I've adjusted those
+(whitespace-only, no code changes), and the patch did not apply "as is"
+because Antonio changed a bit in dco_freebsd.h in the mean time so one
+line of diff context was different - trivial fix.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/810?usp=3Demail )
-
-Change subject: PUSH_UPDATE: Added update_option() function.
-......................................................................
+I tested this with the kernel patch in https://reviews.freebsd.org/D51468,
+on top of a 14.2-RELEASE-p4 kernel - v4/v4 float on an udp4 socket, v4/v4
+and v6/v6 float on an udp6 dual-stack socket.
 
 
-Patch Set 22: Code-Review+2
+Running an "old binary" on top of a "very new kernel" has a bit of risk -
+if a client floats, userland will see an "Unknown kernel notification 2"
+and kill the instance
+
+  SIGTERM[soft,ovpn-dco: unknown reason] received, client-instance exiting
+
+this is somewhat unavoidable as userland depends on having the kernel
+constant available.  So, for the sake of the archives - if you upgrade
+your FreeBSD and an OpenVPN server kills clients on float, upgrade your
+userland (old server + old kernel would not support float at all, and
+clients will just time out).
+
+
+Your patch has been applied to the master branch.
+
+commit b66b80b2ab73bb422826911b675798e6b789ef03
+Author: Kristof Provost
+Date:   Wed Jul 23 10:36:49 2025 +0200
+
+     dco: support float notifications on FreeBSD
+
+     Signed-off-by: Kristof Provost <kprovost@...2661...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250723083816.71604-2-kprovost@...2661...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32282.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2
-Gerrit-Change-Number: 810
-Gerrit-PatchSet: 22
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Sun, 27 Jul 2025 12:22:09 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gert Doering
 
---jLpwPGYQQeM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, mrbff, plaisthos, s=
-tipa. </p>
-<p>Patch set 22:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail"=
->change 810</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia45c99e6df7b3ad24020c10b8a9=
-b3577984ecdc2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 810 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 22 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 27 Jul 2025 12:22:09=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---jLpwPGYQQeM=--
 
