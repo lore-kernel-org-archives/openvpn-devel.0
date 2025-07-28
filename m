@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 28 Jul 2025 12:55:55 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 28 Jul 2025 14:56:41 +0200
+Message-ID: <20250728125647.26992-1-gert@...1296...>
 In-Reply-To: <gerrit.1753438913000.I7efc77f63734501dfa8a8f5bed17b1a1b4e9e201@...2715...>
 References: <gerrit.1753438913000.I7efc77f63734501dfa8a8f5bed17b1a1b4e9e201@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5374298e0bee43a4f0936a845a4cc893afd14984-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="huschVhr9Zk="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Simplify
- function setenv_foreign_option
+Subject: [Openvpn-devel] [PATCH v2] options: Simplify function
+ setenv_foreign_option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,159 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---huschVhr9Zk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+This was relatively complex for the actual usage.
+Looked at the code because of -Wconversion warnings
+related to the len argument. So this should also be
+gone.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1112?usp=3Demail )
+Change-Id: I7efc77f63734501dfa8a8f5bed17b1a1b4e9e201
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: options: Simplify function setenv_foreign_option
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1112
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1112?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7efc77f63734501dfa8a8f5bed17b1a1b4e9e201
-Gerrit-Change-Number: 1112
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 28 Jul 2025 12:55:55 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---huschVhr9Zk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1112?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1112?usp=3Demail=
-">change 1112</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1112?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7efc77f63734501dfa8a8f5bed1=
-7b1a1b4e9e201 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1112 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 28 Jul 2025 12:55:55=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---huschVhr9Zk=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 70b5799..8757581 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1067,41 +1067,32 @@
+ 
+ #ifndef _WIN32
+ static void
+-setenv_foreign_option(struct options *o, const char *argv[], int len, struct env_set *es)
++setenv_foreign_option(struct options *o, const char *option, const char *value, struct env_set *es)
+ {
+-    if (len > 0)
+-    {
+-        struct gc_arena gc = gc_new();
+-        struct buffer name = alloc_buf_gc(OPTION_PARM_SIZE, &gc);
+-        struct buffer value = alloc_buf_gc(OPTION_PARM_SIZE, &gc);
+-        int i;
+-        bool first = true;
+-        bool good = true;
++    struct gc_arena gc = gc_new();
++    struct buffer env_name = alloc_buf_gc(OPTION_PARM_SIZE, &gc);
++    struct buffer env_value = alloc_buf_gc(OPTION_PARM_SIZE, &gc);
++    bool good = true;
+ 
+-        good &= buf_printf(&name, "foreign_option_%d", o->foreign_option_index + 1);
+-        ++o->foreign_option_index;
+-        for (i = 0; i < len; ++i)
+-        {
+-            if (argv[i])
+-            {
+-                if (!first)
+-                {
+-                    good &= buf_printf(&value, " ");
+-                }
+-                good &= buf_printf(&value, "%s", argv[i]);
+-                first = false;
+-            }
+-        }
+-        if (good)
+-        {
+-            setenv_str(es, BSTR(&name), BSTR(&value));
+-        }
+-        else
+-        {
+-            msg(M_WARN, "foreign_option: name/value overflow");
+-        }
+-        gc_free(&gc);
++    good &= buf_printf(&env_name, "foreign_option_%d", o->foreign_option_index + 1);
++    if (value)
++    {
++        good &= buf_printf(&env_value, "dhcp-option %s %s", option, value);
+     }
++    else
++    {
++        good &= buf_printf(&env_value, "dhcp-option %s", option);
++    }
++    if (good)
++    {
++        setenv_str(es, BSTR(&env_name), BSTR(&env_value));
++        ++o->foreign_option_index;
++    }
++    else
++    {
++        msg(M_WARN, "foreign_option: name/value overflow");
++    }
++    gc_free(&gc);
+ }
+ #endif /* ifndef _WIN32 */
+ 
+@@ -3678,15 +3669,10 @@
+     else if (o->up_script && !dns_updown_user_set(dns) && !dns_updown_forced(dns))
+     {
+         /* Set foreign option env vars from --dns config */
+-        const char *p[] = { "dhcp-option", NULL, NULL };
+-        size_t p_len = sizeof(p) / sizeof(p[0]);
+-
+-        p[1] = "DOMAIN";
+         const struct dns_domain *d = dns->search_domains;
+         while (d)
+         {
+-            p[2] = d->name;
+-            setenv_foreign_option(o, (const char **)p, p_len, es);
++            setenv_foreign_option(o, "DOMAIN", d->name, es);
+             d = d->next;
+         }
+ 
+@@ -3713,17 +3699,19 @@
+             {
+                 for (int i = 0; i < s->addr_count; ++i)
+                 {
++                    const char *option;
++                    const char *value;
+                     if (s->addr[i].family == AF_INET)
+                     {
+-                        p[1] = "DNS";
+-                        p[2] = print_in_addr_t(s->addr[i].in.a4.s_addr, IA_NET_ORDER, &gc);
++                        option = "DNS";
++                        value = print_in_addr_t(s->addr[i].in.a4.s_addr, IA_NET_ORDER, &gc);
+                     }
+                     else
+                     {
+-                        p[1] = "DNS6";
+-                        p[2] = print_in6_addr(s->addr[i].in.a6, 0, &gc);
++                        option = "DNS6";
++                        value = print_in6_addr(s->addr[i].in.a6, 0, &gc);
+                     }
+-                    setenv_foreign_option(o, (const char **)p, p_len, es);
++                    setenv_foreign_option(o, option, value, es);
+                 }
+                 break;
+             }
+@@ -8388,7 +8376,7 @@
+             goto err;
+         }
+ #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+-        setenv_foreign_option(options, (const char **)p, 3, es);
++        setenv_foreign_option(options, p[1], p[2], es);
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+     }
+ #ifdef _WIN32
+@@ -8530,7 +8518,7 @@
+     else if (streq(p[0], "dhcp-option") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_DHCPDNS);
+-        setenv_foreign_option(options, (const char **)p, 3, es);
++        setenv_foreign_option(options, p[1], p[2], es);
+     }
+     else if (streq(p[0], "route-method") && p[1] && !p[2])
+     {
 
