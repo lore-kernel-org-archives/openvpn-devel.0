@@ -1,10 +1,15 @@
-Date: Mon, 28 Jul 2025 10:04:59 +0200 (CEST)
-Message-Id: <202507280804.56S84xjX041635@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250723083816.71604-2-kprovost@...2661...>
-References: <20250723083816.71604-2-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: support float
- notifications on FreeBSD
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 28 Jul 2025 08:10:20 +0000
+References: <gerrit.1753690218000.I6977d23b5289eba5db436608e0500216e0e689ec@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c4dd8421d59837fe9d06bc5c8443a34e225905b3-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="HDD0hRGBf78="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: multi.c get rid of
+ #ifdef surrounding DCO float notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +18,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Thanks.  Tested, works (and I already got chided for my lack of faith).
+--HDD0hRGBf78=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Uncrustify complained about whitespace conventions, so I've adjusted those
-(whitespace-only, no code changes), and the patch did not apply "as is"
-because Antonio changed a bit in dco_freebsd.h in the mean time so one
-line of diff context was different - trivial fix.
+Attention is currently required from: flichtenheld, plaisthos.
 
-I tested this with the kernel patch in https://reviews.freebsd.org/D51468,
-on top of a 14.2-RELEASE-p4 kernel - v4/v4 float on an udp4 socket, v4/v4
-and v6/v6 float on an udp6 dual-stack socket.
+Hello plaisthos, flichtenheld,
 
+I'd like you to do a code review.
+Please visit
 
-Running an "old binary" on top of a "very new kernel" has a bit of risk -
-if a client floats, userland will see an "Unknown kernel notification 2"
-and kill the instance
+    http://gerrit.openvpn.net/c/openvpn/+/1117?usp=3Demail
 
-  SIGTERM[soft,ovpn-dco: unknown reason] received, client-instance exiting
-
-this is somewhat unavoidable as userland depends on having the kernel
-constant available.  So, for the sake of the archives - if you upgrade
-your FreeBSD and an OpenVPN server kills clients on float, upgrade your
-userland (old server + old kernel would not support float at all, and
-clients will just time out).
+to review the following change.
 
 
-Your patch has been applied to the master branch.
+Change subject: multi.c get rid of #ifdef surrounding DCO float notificatio=
+ns
+......................................................................
 
-commit b66b80b2ab73bb422826911b675798e6b789ef03
-Author: Kristof Provost
-Date:   Wed Jul 23 10:36:49 2025 +0200
+multi.c get rid of #ifdef surrounding DCO float notifications
 
-     dco: support float notifications on FreeBSD
+With commit b66b80b2a all three platforms with DCO support have DCO float
+notifications now, so the #ifdef inside multi_process_incoming_dco() is
+no longer needed.
 
-     Signed-off-by: Kristof Provost <kprovost@...2661...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250723083816.71604-2-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32282.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I6977d23b5289eba5db436608e0500216e0e689ec
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/multi.c
+1 file changed, 0 insertions(+), 2 deletions(-)
 
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17/1117/1
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 49f5320..3a25a70 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3409,7 +3409,6 @@
+         {
+             process_incoming_del_peer(m, mi, dco);
+         }
+-#if defined(TARGET_LINUX) || defined(TARGET_WIN32) || defined(TARGET_FREEB=
+SD)
+         else if (dco->dco_message_type =3D=3D OVPN_CMD_FLOAT_PEER)
+         {
+             ASSERT(mi->context.c2.link_sockets[0]);
+@@ -3419,7 +3418,6 @@
+             multi_process_float(m, mi, mi->context.c2.link_sockets[0]);
+             CLEAR(dco->dco_float_peer_ss);
+         }
+-#endif /* if defined(TARGET_LINUX) || defined(TARGET_WIN32) */
+         else if (dco->dco_message_type =3D=3D OVPN_CMD_SWAP_KEYS)
+         {
+             tls_session_soft_reset(mi->context.c2.tls_multi);
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1117?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I6977d23b5289eba5db436608e0500216e0e689ec
+Gerrit-Change-Number: 1117
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
+--HDD0hRGBf78=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1117?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">multi.c get rid of #ifdef surrounding DCO float notification=
+s<br><br>With commit b66b80b2a all three platforms with DCO support have DC=
+O float<br>notifications now, so the #ifdef inside multi_process_incoming_d=
+co() is<br>no longer needed.<br><br>Change-Id: I6977d23b5289eba5db436608e05=
+00216e0e689ec<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
+<br>M src/openvpn/multi.c<br>1 file changed, 0 insertions(+), 2 deletions(-=
+)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17=
+/1117/1</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;"><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</spa=
+n><br><span>index 49f5320..3a25a70 100644</span><br><span>--- a/src/openvpn=
+/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -3409=
+,7 +3409,6 @@</span><br><span>         {</span><br><span>             proce=
+ss_incoming_del_peer(m, mi, dco);</span><br><span>         }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX) || defined=
+(TARGET_WIN32) || defined(TARGET_FREEBSD)</span><br><span>         else if =
+(dco-&gt;dco_message_type =3D=3D OVPN_CMD_FLOAT_PEER)</span><br><span>     =
+    {</span><br><span>             ASSERT(mi-&gt;context.c2.link_sockets[0]=
+);</span><br><span>@@ -3419,7 +3418,6 @@</span><br><span>             multi=
+_process_float(m, mi, mi-&gt;context.c2.link_sockets[0]);</span><br><span> =
+            CLEAR(dco-&gt;dco_float_peer_ss);</span><br><span>         }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* if defined(TAR=
+GET_LINUX) || defined(TARGET_WIN32) */</span><br><span>         else if (dc=
+o-&gt;dco_message_type =3D=3D OVPN_CMD_SWAP_KEYS)</span><br><span>         =
+{</span><br><span>             tls_session_soft_reset(mi-&gt;context.c2.tls=
+_multi);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1117?usp=3Demail">change 1117</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1117?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6977d23b5289eba5db436608e05=
+00216e0e689ec </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1117 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--HDD0hRGBf78=--
 
