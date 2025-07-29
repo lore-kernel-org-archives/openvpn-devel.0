@@ -1,10 +1,17 @@
-Date: Tue, 29 Jul 2025 12:31:30 +0200 (CEST)
-Message-Id: <202507291031.56TAVUTH095440@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250729093907.37849-1-kprovost@...2661...>
-References: <20250729093907.37849-1-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-freebsd: always enable
- float notification support
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 29 Jul 2025 10:35:43 +0000
+In-Reply-To: <gerrit.1732124549000.I6ecd4cb47571cc8c20e46de8595c742aeec6064a@...2715...>
+References: <gerrit.1732124549000.I6ecd4cb47571cc8c20e46de8595c742aeec6064a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <6eae54b617e489663e6385074cece99b3689bc71-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="4oFEiZHcIPE="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Allow
+ OpenVPN in client mode to receive and handle PUSH ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +20,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: mrbff <marco@...2726...>
+Cc: flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-That's an easy one :-) - taking out configure stuff and #ifdefs, always
-welcome.  Tested on "stock FreeBSD 13.5" which has no if_ovpn, and
-"stock FreeBSD 14.2" which has if_ovpn but not the float stuff.
+--4oFEiZHcIPE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+Attention is currently required from: flichtenheld, mrbff, stipa.
 
-commit 796ad2c55951635382e48ea5b71d13bbb83ebfb1
-Author: Kristof Provost
-Date:   Tue Jul 29 11:39:07 2025 +0200
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/808?usp=3Demail )
 
-     dco-freebsd: always enable float notification support
+Change subject: PUSH_UPDATE: Allow OpenVPN in client mode to receive and ha=
+ndle PUSH UPDATE control messages to allow options updating at runtime.
+......................................................................
 
-     Signed-off-by: Kristof Provost <kprovost@...2661...>
-     Message-Id: <20250729093907.37849-1-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32402.html
-     Acked-by: Gert Doering <gert@...1296...>
-     Signed-off-by: Gert Doering <gert@...1296...>
+
+Patch Set 22: Code-Review+2
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I6ecd4cb47571cc8c20e46de8595c742aeec6064a
+Gerrit-Change-Number: 808
+Gerrit-PatchSet: 22
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Tue, 29 Jul 2025 10:35:43 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
+--4oFEiZHcIPE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, mrbff, stipa. </p>
+<p>Patch set 22:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail"=
+>change 808</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
+e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/808?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6ecd4cb47571cc8c20e46de8595=
+c742aeec6064a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 808 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 22 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 29 Jul 2025 10:35:43=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--4oFEiZHcIPE=--
 
