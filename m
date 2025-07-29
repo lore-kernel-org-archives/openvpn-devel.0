@@ -1,10 +1,9 @@
-Date: Tue, 29 Jul 2025 16:56:54 +0200 (CEST)
-Message-Id: <202507291456.56TEusYD004215@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250729093857.37832-1-kprovost@...2661...>
-References: <20250729093857.37832-1-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-freebsd: pass address scope
- to the kernel
+From: Terrance <sourceforge@...2900...>
+Date: Tue, 29 Jul 2025 19:00:05 +0100
+Message-ID: <20250729180014.11550-2-sourceforge@...2900...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Update systemd service name param to match
+ command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +12,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-I have tested that this does not break on kernels that do not have scope
-support (as discussed on the list).  Good :-) - float notifications also
-still work fine (unsurprisingly).
+From: Terrance <git@...2900...>
 
-Need to setup a testbed with client and server on the same LAN, and
-then test DCO with link-local addresses, scope, and floating...
+The service name displays `%I` which invokes systemd's path mangling
+(notably, converting `-` to `/`), suggesting you need to provide an
+encoded parameter (via e.g. `systemd-escape`), but the start command
+itself uses `%i` which doesn't do the conversion.
 
-Your patch has been applied to the master branch.
+This updates the service name to match the start command.
+---
+Additional discussion: https://github.com/OpenVPN/openvpn/pull/802
 
-commit b5e0032bf09afa928d9728051599a5e738ff4d10
-Author: Kristof Provost
-Date:   Tue Jul 29 11:38:57 2025 +0200
+ distro/systemd/openvpn-client@...2221... | 2 +-
+ distro/systemd/openvpn-server@...2221... | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-     dco-freebsd: pass address scope to the kernel
-
-     Signed-off-by: Kristof Provost <kprovost@...2661...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250729093857.37832-1-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32401.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
+diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/open=
+vpn-client@...2221...
+index ae62e8c7..c32bb333 100644
+--- a/distro/systemd/openvpn-client@...2221...
++++ b/distro/systemd/openvpn-client@...2221...
+@@ -1,4 +1,4 @@
+ [Unit]
+-Description=3DOpenVPN tunnel for %I
++Description=3DOpenVPN tunnel for %i
+ After=3Dnetwork-online.target
+ Wants=3Dnetwork-online.target
+diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/open=
+vpn-server@...2221...
+index 5123e072..547f5f54 100644
+--- a/distro/systemd/openvpn-server@...2221...
++++ b/distro/systemd/openvpn-server@...2221...
+@@ -1,4 +1,4 @@
+ [Unit]
+-Description=3DOpenVPN service for %I
++Description=3DOpenVPN service for %i
+ After=3Dnetwork-online.target
+ Wants=3Dnetwork-online.target
 --
-kind regards,
-
-Gert Doering
-
+2.50.1
 
