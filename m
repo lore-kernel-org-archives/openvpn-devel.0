@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 29 Jul 2025 14:52:56 +0000
+Date: Tue, 29 Jul 2025 14:52:54 +0000
 In-Reply-To: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
 References: <gerrit.1732124549000.Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <355db39c172799570a83cbfd93df78434b3be4b2-HTML@...2715...>
+Message-ID: <355db39c172799570a83cbfd93df78434b3be4b2-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JbNPcc07iyY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="JNbdgxjPTdo="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
  update_option() function.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JbNPcc07iyY=
+--JNbdgxjPTdo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/81=
-0?usp=3Demail )
+cron2 has uploaded a new patch set (#24) to the change originally created b=
+y mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/810?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: PUSH_UPDATE: Added update_option() function.
 ......................................................................
@@ -53,7 +57,7 @@ M src/openvpn/options.c
 1 file changed, 331 insertions(+), 124 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/810/24
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 469360d..b7328d7 100644
@@ -655,654 +659,658 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---JbNPcc07iyY=
+--JNbdgxjPTdo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/810?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">PUSH_UPDATE: Added update_option() function.<b=
-r><br>When the function receives an option to update, it first checks wheth=
-er it has<br>already received an option of the same type within the same up=
-date message.<br>If it has already received it, it simply calls add_option(=
-), otherwise it<br>deletes all the values already present for that option f=
-irst.<br><br>Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2<br>Signed=
--off-by: Marco Baffo &lt;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt=
-;gert@...1296...&gt;<br>Message-Id: &lt;20250729104110.27704-1-gert@...1726...=
-...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1483...=
-e.net/msg32408.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<=
-br>---<br>M src/openvpn/options.c<br>1 file changed, 331 insertions(+), 124=
- deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
-an>index 469360d..b7328d7 100644</span><br><span>--- a/src/openvpn/options.=
-c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -5360,6 +5=
-360,20 @@</span><br><span>               struct env_set *es);</span><br><sp=
-an> </span><br><span> static void</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+update_option(struct context *c,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+              struct options *options,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+              char *p[],</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+              bool is_in=
-line,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-const char *file,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-            int line,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+              const int level,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+              const int msglevel,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+              const unsigned int permission_mask=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              unsi=
-gned int *option_types_found,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+              struct env_set *es,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+              unsigned int *update_options_found);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span> read_confi=
-g_file(struct options *options,</span><br><span>                  const cha=
-r *file,</span><br><span>                  int level,</span><br><span>@@ -5=
-545,6 +5559,7 @@</span><br><span>     int line_num =3D 0;</span><br><span> =
-    const char *file =3D &quot;[PUSH-OPTIONS]&quot;;</span><br><span>     c=
-onst int msglevel =3D D_PUSH_ERRORS|M_OPTERR;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    unsigned int update_options_found =3D 0;</spa=
-n><br><span> </span><br><span>     while (buf_parse(buf, &#39;,&#39;, line,=
- sizeof(line)))</span><br><span>     {</span><br><span>@@ -5590,6 +5605,11 =
-@@</span><br><span>                 remove_option(c, options, p, false, fil=
-e, line_num, msglevel,</span><br><span>                               permi=
-ssion_mask, option_types_found, es);</span><br><span>             }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                update_option(c, opt=
-ions, p, false, file, line_num, 0, msglevel,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                              permission_mask, opt=
-ion_types_found, es, &amp;update_options_found);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            }</span><br><span>         }</span=
-><br><span>     }</span><br><span>     return true;</span><br><span>@@ -572=
-8,6 +5748,13 @@</span><br><span>     return options-&gt;forward_compatible =
-? M_WARN : msglevel;</span><br><span> }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#define RESET_OPTION_ROUTES(option_pt=
-r, field) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-option_ptr)                        \</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    {                                      \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        option_ptr-&gt;field =3D =
-NULL;          \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     option_ptr-&gt;flags =3D 0;             \</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span> /**</span><br><span>  * @brief Resets option=
-s found in the PUSH_UPDATE message that are preceded by the `-` flag.</span=
-><br><span>  *        This function is used in push-updates to reset specif=
-ied options.</span><br><span>@@ -5782,11 +5809,7 @@</span><br><span>       =
-      delete_routes_v4(c-&gt;c1.route_list, c-&gt;c1.tuntap,</span><br><spa=
-n>                              ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</sp=
-an><br><span>                              es, &amp;c-&gt;net_ctx);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;r=
-outes)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                options=
--&gt;routes-&gt;routes =3D NULL;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                options-&gt;routes-&gt;flags =3D 0;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            RESET_OPTION_ROUTES(options-=
-&gt;routes, routes);</span><br><span>         }</span><br><span>     }</spa=
-n><br><span>     else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; !p=
-[1])</span><br><span>@@ -5797,11 +5820,7 @@</span><br><span>             de=
-lete_routes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</span><br><span> =
-                             ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span>=
-<br><span>                              es, &amp;c-&gt;net_ctx);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            if (options-&gt;rout=
-es_ipv6)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                optio=
-ns-&gt;routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                options-&gt;routes_ipv6-&gt;flags =
-=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            RESET_OPT=
-ION_ROUTES(options-&gt;routes_ipv6, routes_ipv6);</span><br><span>         =
-}</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;ro=
-ute-gateway&quot;) &amp;&amp; !p[1])</span><br><span>@@ -5921,6 +5940,303 @=
-@</span><br><span>     msg(msglevel, &quot;Error occurred trying to remove =
-%s option&quot;, p[0]);</span><br><span> }</span><br><span> </span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+check_route_option(struct options *options, char *p[], const =
-int msglevel, bool pull_mode)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rol_=
+<p>cron2 <strong>uploaded patch set #24</strong> to the change originally c=
+reated by mrbff.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/810=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">PUSH_UPDATE: Added update_option() function.<br><br>=
+When the function receives an option to update, it first checks whether it =
+has<br>already received an option of the same type within the same update m=
+essage.<br>If it has already received it, it simply calls add_option(), oth=
+erwise it<br>deletes all the values already present for that option first.<=
+br><br>Change-Id: Ia45c99e6df7b3ad24020c10b8a9b3577984ecdc2<br>Signed-off-b=
+y: Marco Baffo &lt;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@=
+...1296...&gt;<br>Message-Id: &lt;20250729104110.27704-1-gert@...1296...&gt=
+;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
+msg32408.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
+<br>M src/openvpn/options.c<br>1 file changed, 331 insertions(+), 124 delet=
+ions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
+ges/10/810/24</pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/opti=
+ons.c</span><br><span>index 469360d..b7328d7 100644</span><br><span>--- a/s=
+rc/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br>=
+<span>@@ -5360,6 +5360,20 @@</span><br><span>               struct env_set =
+*es);</span><br><span> </span><br><span> static void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+update_option(struct context *c,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+              struct options=
+ *options,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+     char *p[],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+          bool is_inline,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+              const char *file,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+              int line,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+              const int level,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              const int msglevel,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+              const unsigne=
+d int permission_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+              unsigned int *option_types_found,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+              struct env_set *es,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+              unsigned int *up=
+date_options_found);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span>=
+<br><span> read_config_file(struct options *options,</span><br><span>      =
+            const char *file,</span><br><span>                  int level,<=
+/span><br><span>@@ -5545,6 +5559,7 @@</span><br><span>     int line_num =3D=
+ 0;</span><br><span>     const char *file =3D &quot;[PUSH-OPTIONS]&quot;;</=
+span><br><span>     const int msglevel =3D D_PUSH_ERRORS|M_OPTERR;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int update_opti=
+ons_found =3D 0;</span><br><span> </span><br><span>     while (buf_parse(bu=
+f, &#39;,&#39;, line, sizeof(line)))</span><br><span>     {</span><br><span=
+>@@ -5590,6 +5605,11 @@</span><br><span>                 remove_option(c, o=
+ptions, p, false, file, line_num, msglevel,</span><br><span>               =
+                permission_mask, option_types_found, es);</span><br><span> =
+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+ update_option(c, options, p, false, file, line_num, 0, msglevel,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+ permission_mask, option_types_found, es, &amp;update_options_found);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><=
+span>         }</span><br><span>     }</span><br><span>     return true;</s=
+pan><br><span>@@ -5728,6 +5748,13 @@</span><br><span>     return options-&g=
+t;forward_compatible ? M_WARN : msglevel;</span><br><span> }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RESET_OP=
+TION_ROUTES(option_ptr, field) \</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (option_ptr)                        \</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {                                =
+      \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opti=
+on_ptr-&gt;field =3D NULL;          \</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        option_ptr-&gt;flags =3D 0;             \</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  *=
+ @brief Resets options found in the PUSH_UPDATE message that are preceded b=
+y the `-` flag.</span><br><span>  *        This function is used in push-up=
+dates to reset specified options.</span><br><span>@@ -5782,11 +5809,7 @@</s=
+pan><br><span>             delete_routes_v4(c-&gt;c1.route_list, c-&gt;c1.t=
+untap,</span><br><span>                              ROUTE_OPTION_FLAGS(&am=
+p;c-&gt;options),</span><br><span>                              es, &amp;c-=
+&gt;net_ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    if (options-&gt;routes)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              options-&gt;routes-&gt;routes =3D NULL;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                options-&gt;routes-&gt;flag=
+s =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            RESET_O=
+PTION_ROUTES(options-&gt;routes, routes);</span><br><span>         }</span>=
+<br><span>     }</span><br><span>     else if (streq(p[0], &quot;route-ipv6=
+&quot;) &amp;&amp; !p[1])</span><br><span>@@ -5797,11 +5820,7 @@</span><br>=
+<span>             delete_routes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tunt=
+ap,</span><br><span>                              ROUTE_OPTION_FLAGS(&amp;c=
+-&gt;options),</span><br><span>                              es, &amp;c-&gt=
+;net_ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ if (options-&gt;routes_ipv6)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                options-&gt;routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt;rou=
+tes_ipv6-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          RESET_OPTION_ROUTES(options-&gt;routes_ipv6, routes_ipv6);</span>=
+<br><span>         }</span><br><span>     }</span><br><span>     else if (s=
+treq(p[0], &quot;route-gateway&quot;) &amp;&amp; !p[1])</span><br><span>@@ =
+-5921,6 +5940,303 @@</span><br><span>     msg(msglevel, &quot;Error occurre=
+d trying to remove %s option&quot;, p[0]);</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+check_route_option(struct options *option=
+s, char *p[], const int msglevel, bool pull_mode)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    rol_check_alloc(options);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (pull_mode)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        if (!ip_or_dns_addr_safe(p[1], options-&gt;allow_pull_fqdn) =
+&amp;&amp; !is_special_addr(p[1])) /* FQDN -- may be DNS name */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;route pa=
+rameter network/IP &#39;%s&#39; must be a valid address&quot;, p[1]);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            return false;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (p[2] &amp;&amp; !=
+ip_addr_dotted_quad_safe(p[2])) /* FQDN -- must be IP address */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;route pa=
+rameter netmask &#39;%s&#39; must be an IP address&quot;, p[2]);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            return false;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        if (p[3] &amp;&amp; !ip_or=
+_dns_addr_safe(p[3], options-&gt;allow_pull_fqdn) &amp;&amp; !is_special_ad=
+dr(p[3])) /* FQDN -- may be DNS name */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            msg(msglevel, &quot;route parameter gateway &#39;%s&#=
+39; must be a valid address&quot;, p[3]);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            return false;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+check_route6_option(struct options *options, char *p[], const i=
+nt msglevel, bool pull_mode)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rol6_=
 check_alloc(options);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
 >+    if (pull_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
 +    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!=
-ip_or_dns_addr_safe(p[1], options-&gt;allow_pull_fqdn) &amp;&amp; !is_speci=
-al_addr(p[1])) /* FQDN -- may be DNS name */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            msg(msglevel, &quot;route parameter network/IP &=
-#39;%s&#39; must be a valid address&quot;, p[1]);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            return false;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (p[2] &amp;&amp; !ip_addr_dotted_quad_=
-safe(p[2])) /* FQDN -- must be IP address */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            msg(msglevel, &quot;route parameter netmask &#39=
-;%s&#39; must be an IP address&quot;, p[2]);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            return false;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        if (p[3] &amp;&amp; !ip_or_dns_addr_safe(p[3],=
- options-&gt;allow_pull_fqdn) &amp;&amp; !is_special_addr(p[3])) /* FQDN --=
- may be DNS name */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ipv6_addr_safe_hexplusbits(p[1]))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            msg(msglevel, &quot;route-ipv6 parameter network/IP &#39;%s=
+&#39; must be a valid address&quot;, p[1]);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            return false;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        if (p[2] &amp;&amp; !ipv6_addr_safe(p[2]))</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;ro=
+ute-ipv6 parameter gateway &#39;%s&#39; must be a valid address&quot;, p[2]=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retur=
+n false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* p[3] is me=
+tric, if present */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return tru=
+e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+check_dns_option(struct options *options, char *p[], const int=
+ msglevel, bool pull_mode)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (str=
+eq(p[1], &quot;search-domains&quot;) &amp;&amp; p[2])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        dns_domain_list_append(&amp;options-&gt;dns_opt=
+ions.search_domains, &amp;p[2], &amp;options-&gt;dns_options.gc);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[1], &quot;server&quo=
+t;) &amp;&amp; p[2] &amp;&amp; p[3] &amp;&amp; p[4])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        long priority;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        if (!dns_server_priority_parse(&amp;priority=
+, p[2], pull_mode))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  msg(msglevel, &quot;route parameter gateway &#39;%s&#39; must be a valid =
-address&quot;, p[3]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            return false;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_ro=
-ute6_option(struct options *options, char *p[], const int msglevel, bool pu=
-ll_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    rol6_check_alloc(options)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (pull_mode)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        if (!ipv6_addr_safe_hexpl=
-usbits(p[1]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(=
-msglevel, &quot;route-ipv6 parameter network/IP &#39;%s&#39; must be a vali=
-d address&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            return false;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        if (p[2] &amp;&amp; !ipv6_addr_safe(p[2]))</span><br><span style=3D=
+  msg(msglevel, &quot;--dns server: invalid priority value &#39;%s&#39;&quo=
+t;, p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        struct dns_server *serve=
+r =3D dns_server_get(&amp;options-&gt;dns_options.servers, priority, &amp;o=
+ptions-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
+(streq(p[3], &quot;address&quot;) &amp;&amp; p[4])</span><br><span style=3D=
 "color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            msg(msglevel, &quot;route-ipv6 parameter g=
-ateway &#39;%s&#39; must be a valid address&quot;, p[2]);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* p[3] is metric, if present */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_d=
-ns_option(struct options *options, char *p[], const int msglevel, bool pull=
-_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (streq(p[1], &quot;searc=
-h-domains&quot;) &amp;&amp; p[2])</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        dns_domain_list_append(&amp;options-&gt;dns_options.search_domains,=
- &amp;p[2], &amp;options-&gt;dns_options.gc);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    else if (streq(p[1], &quot;server&quot;) &amp;&amp; p[2] &a=
-mp;&amp; p[3] &amp;&amp; p[4])</span><br><span style=3D"color: hsl(120, 100=
+l(120, 100%, 40%);">+            for (int i =3D 4; p[i]; ++i)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                if (!dns_server_addr_pa=
+rse(server, p[i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                 msg(msglevel, &quot;--dns server %ld: malformed address or=
+ maximum exceeded &#39;%s&#39;&quot;, priority, p[i]);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                    return false;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        else if (streq(p[3], &quot;resolve-d=
+omains&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            dns=
+_domain_list_append(&amp;server-&gt;domains, &amp;p[4], &amp;options-&gt;dn=
+s_options.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else if=
+ (streq(p[3], &quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            if (streq(p[4], &quot;yes&quot;))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                server-&gt;dnss=
+ec =3D DNS_SECURITY_YES;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           else if (streq(p[4], &quot;no&quot;))</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                server-&gt;dnssec =3D DNS_SECURITY_N=
+O;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            else if (st=
+req(p[4], &quot;optional&quot;))</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                server-&gt;dnssec =3D DNS_SECURITY_OPTIONAL;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--dns=
+ server %ld: malformed dnssec value &#39;%s&#39;&quot;, priority, p[4]);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                return=
+ false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        else if (streq(p[3],=
+ &quot;transport&quot;) &amp;&amp; !p[5])</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            if (streq(p[4], &quot;plain&quot;))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                server-&gt;transport =3D =
+DNS_TRANSPORT_PLAIN;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       else if (streq(p[4], &quot;DoH&quot;))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                server-&gt;transport =3D DNS_TRANSPORT_=
+HTTPS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            else if=
+ (streq(p[4], &quot;DoT&quot;))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                server-&gt;transport =3D DNS_TRANSPORT_TLS;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--dns se=
+rver %ld: malformed transport value &#39;%s&#39;&quot;, priority, p[4]);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                return=
+ false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        else if (streq(p[3],=
+ &quot;sni&quot;) &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            server-&gt;sni =3D p[4];</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        msg(msglevel, &quot;--dns server %ld: unknown option type &#39;%s&#=
+39; or missing or unknown parameter&quot;, priority, p[3]);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100=
 %, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     long priority;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        if (!dns_server_priority_parse(&amp;priority, p[2], pull_mode))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;-=
--dns server: invalid priority value &#39;%s&#39;&quot;, p[2]);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            return false;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        struct dns_server *server =3D dns_server_get(&a=
-mp;options-&gt;dns_options.servers, priority, &amp;options-&gt;dns_options.=
-gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (streq(p[3], &quot;addr=
-ess&quot;) &amp;&amp; p[4])</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          for (int i =3D 4; p[i]; ++i)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                if (!dns_server_addr_parse(server, p[i]))</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                    msg(ms=
-glevel, &quot;--dns server %ld: malformed address or maximum exceeded &#39;=
-%s&#39;&quot;, priority, p[i]);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    return false;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        else if (streq(p[3], &quot;resolve-domains&quot;))</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            dns_domain_list_append(&am=
-p;server-&gt;domains, &amp;p[4], &amp;options-&gt;dns_options.gc);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        else if (streq(p[3], &quot;dns=
-sec&quot;) &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           if (streq(p[4], &quot;yes&quot;))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                server-&gt;dnssec =3D DNS_SECURITY_YES;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            else if (streq=
-(p[4], &quot;no&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-              server-&gt;dnssec =3D DNS_SECURITY_NO;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            else if (streq(p[4], &quot;optional=
-&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                s=
-erver-&gt;dnssec =3D DNS_SECURITY_OPTIONAL;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            else</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                msg(msglevel, &quot;--dns server %ld: malformed dn=
-ssec value &#39;%s&#39;&quot;, priority, p[4]);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                return false;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        else if (streq(p[3], &quot;transport&quot;)=
- &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- if (streq(p[4], &quot;plain&quot;))</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                server-&gt;transport =3D DNS_TRANSPORT_PLAIN;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            else if (streq(p=
-[4], &quot;DoH&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             server-&gt;transport =3D DNS_TRANSPORT_HTTPS;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            else if (streq(p[4], &quot;Do=
-T&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-server-&gt;transport =3D DNS_TRANSPORT_TLS;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            else</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                msg(msglevel, &quot;--dns server %ld: malformed tr=
-ansport value &#39;%s&#39;&quot;, priority, p[4]);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                return false;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        else if (streq(p[3], &quot;sni&quot;) &amp=
-;&amp; !p[5])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            serv=
-er-&gt;sni =3D p[4];</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        e=
-lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, =
-&quot;--dns server %ld: unknown option type &#39;%s&#39; or missing or unkn=
-own parameter&quot;, priority, p[3]);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            return false;</span><br><span style=3D"color:=
+     msg(msglevel, &quot;--dns: unknown option type &#39;%s&#39; or missing=
+ or unknown parameter&quot;, p[1]);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @brief Processes an option to update. It first ch=
+ecks whether it has already</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *        received an option of the same type within the same updat=
+e message.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
+ If the option has already been received, it calls add_option().</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *        Otherwise, it delete=
+s all existing values related to that option before calling add_option().</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * @param c The context structure.</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param options A poi=
+nter to the options structure.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * @param p An array of strings containing the options and their=
+ parameters.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
+am is_inline A boolean indicating if the option is inline.</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * @param file The file where the fu=
+nction is called.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @param line The line number where the function is called.</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * @param level The level of the opt=
+ion.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param msgle=
+vel The message level for logging.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * @param permission_mask The permission mask used by VERIFY=
+_PERMISSION().</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
+aram option_types_found A pointer to the variable where the flags correspon=
+ding to the options found are stored.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * @param es The environment set structure.</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * @param update_options_found A =
+pointer to the variable where the flags corresponding to the update options=
+ found are stored,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*                             used to check if an option of the same type h=
+as already been processed by update_option() within the same push-update me=
+ssage.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+update_option(struct context *c,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+              struct opt=
+ions *options,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+         char *p[],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+              bool is_inline,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+              const char *file,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+              int line,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+              const int level,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+              const int msglevel,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+              const unsi=
+gned int permission_mask,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+              unsigned int *option_types_found,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              struct env_set *es,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+              unsigned int =
+*update_options_found)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const bool =
+pull_mode =3D BOOL_CAST(permission_mask &amp; OPT_P_PULL_MODE);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(MAX_PARMS &gt;=3D 7)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (streq(p[0], &quot;route&quot;=
+) &amp;&amp; p[1] &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        if (!(*update_options_found &amp; OPT_P_U_ROUTE))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!chec=
+k_route_option(options, p, msglevel, pull_mode))</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                goto err;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            if (c-&gt;c1.route_list)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                delete_routes_v4(c-&gt;c1=
+.route_list, c-&gt;c1.tuntap,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                                 ROUTE_OPTION_FLAGS(&amp;c-&gt;op=
+tions),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                     es, &amp;c-&gt;net_ctx);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                RESET_OPTION_ROUTES(options-&gt;r=
+outes, routes);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  *update_options_found |=3D OPT_P_U_ROUTE;</span><br><span style=3D"color:=
  hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &qu=
-ot;--dns: unknown option type &#39;%s&#39; or missing or unknown parameter&=
-quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @brief Processes an option to update. It first checks whether it has al=
-ready</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        rece=
-ived an option of the same type within the same update message.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *        If the option has alr=
-eady been received, it calls add_option().</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *        Otherwise, it deletes all existing values =
-related to that option before calling add_option().</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param c The context structure.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param options A pointer to the option=
-s structure.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am p An array of strings containing the options and their parameters.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param is_inline A boo=
-lean indicating if the option is inline.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param file The file where the function is called.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param line The l=
-ine number where the function is called.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param level The level of the option.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel The message le=
-vel for logging.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param permission_mask The permission mask used by VERIFY_PERMISSION().</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param option_types_=
-found A pointer to the variable where the flags corresponding to the option=
-s found are stored.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param es The environment set structure.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param update_options_found A pointer to the var=
-iable where the flags corresponding to the update options found are stored,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *                 =
-            used to check if an option of the same type has already been pr=
-ocessed by update_option() within the same push-update message.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+update_option(struct context *c,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              struct options *options,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+              char *p[=
-],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              boo=
-l is_inline,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-       const char *file,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+              int line,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+              const int level,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+              const int msglevel,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              const unsigned int permissi=
-on_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-   unsigned int *option_types_found,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+              struct env_set *es,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+              unsigned int *update_options_f=
-ound)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const bool pull_mode =3D BOO=
-L_CAST(permission_mask &amp; OPT_P_PULL_MODE);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    ASSERT(MAX_PARMS &gt;=3D 7);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (streq(p[0], &quot;route&quot;) &amp;&amp; p[1]=
- &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*=
-update_options_found &amp; OPT_P_U_ROUTE))</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            if (!check_route_option(op=
-tions, p, msglevel, pull_mode))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                goto err;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            if (c-&gt;c1.route_list)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                delete_routes_v4(c-&gt;c1.route_list, c-&g=
-t;c1.tuntap,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-                          ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                             =
-    es, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                RESET_OPTION_ROUTES(options-&gt;routes, routes);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            *update_options=
-_found |=3D OPT_P_U_ROUTE;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (stre=
-q(p[0], &quot;route-ipv6&quot;) &amp;&amp; p[1] &amp;&amp; !p[4])</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_options_found &amp;=
- OPT_P_U_ROUTE6))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            if (!check_route6_option(options, p, msglevel, pull=
-_mode))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                go=
-to err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (c-=
-&gt;c1.route_ipv6_list)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-              delete_routes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-            ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                 es, &amp=
-;c-&gt;net_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             RESET_OPTION_ROUTES(options-&gt;routes_ipv6, routes_ipv6);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            *update_options_f=
-ound |=3D OPT_P_U_ROUTE6;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq=
-(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &quot;redirect-private&=
-quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+    else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; p[1] &amp;&amp;=
+ !p[4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_opti=
-ons_found &amp; OPT_P_U_REDIR_GATEWAY))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if (options-&gt;routes)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                options-&gt;rou=
-tes-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       if (options-&gt;routes_ipv6)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                options-&gt;routes_ipv6-&gt;flags =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            *update_options_found =
-|=3D OPT_P_U_REDIR_GATEWAY;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (str=
-eq(p[0], &quot;dns&quot;) &amp;&amp; p[1])</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        if (!(*update_options_found &amp; OPT_P_U_DNS))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT_P_DHCP=
-DNS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if=
- (!check_dns_option(options, p, msglevel, pull_mode))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                goto err;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            gc_free(&amp;options-&gt;dns_option=
-s.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            C=
-LEAR(options-&gt;dns_options);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            *update_options_found |=3D OPT_P_U_DNS;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#if defined(_WIN32) || defined(TARGET_ANDROID)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &qu=
-ot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        if (!(*update_options_found &amp; OPT_P_U_DHC=
-P))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            struct tuntap_=
-options *o =3D &amp;options-&gt;tuntap_options;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT_P_DHCPDNS);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            o-&gt;domain =3D NULL;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;netbios=
-_scope =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         o-&gt;netbios_node_type =3D 0;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            o-&gt;dns6_len =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            CLEAR(o-&gt;dns6);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dns_len =3D =
-0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR=
-(o-&gt;dns);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     o-&gt;wins_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            CLEAR(o-&gt;wins);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            o-&gt;ntp_len =3D 0;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            CLEAR(o-&gt;ntp);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;nbdd_len =3D 0;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR(o-=
-&gt;nbdd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   while (o-&gt;domain_search_list_len-- &gt; 0)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                o-&gt;domain_search_list[o-&gt;domai=
-n_search_list_len] =3D NULL;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            o-&gt;disable_nbt =3D 0;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            o-&gt;dhcp_options =3D 0;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_ANDROID)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;http_proxy_=
-port =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    o-&gt;http_proxy =3D NULL;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          *update_options_found |=3D OPT_P_U_DHCP;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#else /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot=
-;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        if (!(*update_options_found &amp; OPT_P_U_DHCP)=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PERMISSIO=
-N(OPT_P_DHCPDNS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          delete_all_dhcp_fo(options, &amp;es-&gt;list);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            *update_options_found |=3D=
- OPT_P_U_DHCP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if defined(_WIN32) =
-|| defined(TARGET_ANDROID) */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    add_option(options, p, is_inline, file, line,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+               level, msglevel, per=
-mission_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-         option_types_found, es);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    return;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+err:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(m=
-sglevel, &quot;Error occurred trying to update %s option&quot;, p[0]);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><=
-span> set_user_script(struct options *options,</span><br><span>            =
-     const char **script,</span><br><span>@@ -7284,45 +7600,18 @@</span><br=
-><span>     else if (streq(p[0], &quot;route&quot;) &amp;&amp; p[1] &amp;&a=
-mp; !p[5])</span><br><span>     {</span><br><span>         VERIFY_PERMISSIO=
-N(OPT_P_ROUTE);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  rol_check_alloc(options);</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (pull_mode)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        if (!check_route_option(options, p, msglevel, pull_mode))<=
-/span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            if (!ip_or_dns_addr_safe(p[1], options-&gt;allow_pull_fqdn=
-) &amp;&amp; !is_special_addr(p[1])) /* FQDN -- may be DNS name */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                msg(msglevel, &quot;ro=
-ute parameter network/IP &#39;%s&#39; must be a valid address&quot;, p[1]);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                goto =
-err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (p[2] &amp=
-;&amp; !ip_addr_dotted_quad_safe(p[2])) /* FQDN -- must be IP address */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                msg(msglevel, &q=
-uot;route parameter netmask &#39;%s&#39; must be an IP address&quot;, p[2])=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                goto=
- err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (p[3] &am=
-p;&amp; !ip_or_dns_addr_safe(p[3], options-&gt;allow_pull_fqdn) &amp;&amp; =
-!is_special_addr(p[3])) /* FQDN -- may be DNS name */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                msg(msglevel, &quot;route parameter=
- gateway &#39;%s&#39; must be a valid address&quot;, p[3]);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                goto err;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            /* p[4] is metric, if specifi=
-ed */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            go=
-to err;</span><br><span>         }</span><br><span>         add_route_to_op=
-tion_list(options-&gt;routes, p[1], p[2], p[3], p[4], options-&gt;route_def=
-ault_table_id);</span><br><span>     }</span><br><span>     else if (streq(=
-p[0], &quot;route-ipv6&quot;) &amp;&amp; p[1] &amp;&amp; !p[4])</span><br><=
-span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_ROUTE);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        rol6_check_alloc(opt=
-ions);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (pul=
-l_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
-!check_route6_option(options, p, msglevel, pull_mode))</span><br><span>    =
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if =
-(!ipv6_addr_safe_hexplusbits(p[1]))</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                msg(msglevel, &quot;route-ipv6 parameter network/IP &=
-#39;%s&#39; must be a valid address&quot;, p[1]);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                goto err;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            if (p[2] &amp;&amp; !ipv6_addr_safe(p[2=
-]))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(msglev=
-el, &quot;route-ipv6 parameter gateway &#39;%s&#39; must be a valid address=
-&quot;, p[2]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-         goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- /* p[3] is metric, if specified */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            goto err;</span><br><span>         }</span><br>=
-<span>         add_route_ipv6_to_option_list(options-&gt;routes_ipv6, p[1],=
- p[2], p[3], options-&gt;route_default_table_id);</span><br><span>     }</s=
-pan><br><span>@@ -8410,90 +8699,8 @@</span><br><span>     else if (streq(p[=
-0], &quot;dns&quot;) &amp;&amp; p[1])</span><br><span>     {</span><br><spa=
-n>         VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        if (streq(p[1], &quot;search-domains&quot;) &amp;&amp; p[2])</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!check_dns_o=
-ption(options, p, msglevel, pull_mode))</span><br><span>         {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            dns_domain_list_ap=
-pend(&amp;options-&gt;dns_options.search_domains, &amp;p[2], &amp;options-&=
-gt;dns_options.gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else i=
-f (streq(p[1], &quot;server&quot;) &amp;&amp; p[2] &amp;&amp; p[3] &amp;&am=
-p; p[4])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            long priority=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!dns=
-_server_priority_parse(&amp;priority, p[2], pull_mode))</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                msg(msglevel, &quot;--dns server:=
- invalid priority value &#39;%s&#39;&quot;, p[2]);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                goto err;</span><br><span styl=
+ons_found &amp; OPT_P_U_ROUTE6))</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            if (!check_route6_option(options, p,=
+ msglevel, pull_mode))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+             goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         if (c-&gt;c1.route_ipv6_list)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                delete_routes_v6(c-&gt;c1.route_ipv6_list, c-&=
+gt;c1.tuntap,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                           ROUTE_OPTION_FLAGS(&amp;c-&gt;options),</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+     es, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                RESET_OPTION_ROUTES(options-&gt;routes_ipv6, rout=
+es_ipv6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *upd=
+ate_options_found |=3D OPT_P_U_ROUTE6;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
+lse if (streq(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &quot;redi=
+rect-private&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!=
+(*update_options_found &amp; OPT_P_U_REDIR_GATEWAY))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT_P_ROUTE);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            if (options-&gt=
+;routes)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                o=
+ptions-&gt;routes-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            if (options-&gt;routes_ipv6)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                options-&gt;routes_ipv6-&gt;flags =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *update=
+_options_found |=3D OPT_P_U_REDIR_GATEWAY;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   else if (streq(p[0], &quot;dns&quot;) &amp;&amp; p[1])</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        if (!(*update_options_found &amp; OPT_P_U_D=
+NS))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PERMIS=
+SION(OPT_P_DHCPDNS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            if (!check_dns_option(options, p, msglevel, pull_mode))</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                goto err;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            gc_free(&amp;options=
+-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            CLEAR(options-&gt;dns_options);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            *update_options_found |=3D OPT_P_U_DN=
+S;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || defined(TARGET_AND=
+ROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (s=
+treq(p[0], &quot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_options_found &am=
+p; OPT_P_U_DHCP))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+struct tuntap_options *o =3D &amp;options-&gt;tuntap_options;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            VERIFY_PERMISSION(OPT=
+_P_DHCPDNS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;domain =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  o-&gt;netbios_scope =3D NULL;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            o-&gt;netbios_node_type =3D 0;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dns6_len =3D 0;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR(o-&gt;dn=
+s6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&=
+gt;dns_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          CLEAR(o-&gt;dns);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            o-&gt;wins_len =3D 0;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            CLEAR(o-&gt;wins);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            o-&gt;ntp_len =3D 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            CLEAR(o-&gt;ntp)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;=
+nbdd_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        CLEAR(o-&gt;nbdd);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            while (o-&gt;domain_search_list_len-- &gt; 0)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                o-&gt;domain_search_=
+list[o-&gt;domain_search_list_len] =3D NULL;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            o-&gt;disable_nbt =3D 0;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            o-&gt;dhcp_options =3D 0;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_AN=
+DROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o=
+-&gt;http_proxy_port =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            o-&gt;http_proxy =3D NULL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            *update_options_found |=3D OPT_P_U_DHCP;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#else /* if defined(_WIN32) || defined(TARGET_ANDROI=
+D) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (s=
+treq(p[0], &quot;dhcp-option&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        if (!(*update_options_found &am=
+p; OPT_P_U_DHCP))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            delete_all_dhcp_fo(options, &amp;es-&gt;list);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            *update_op=
+tions_found |=3D OPT_P_U_DHCP;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if =
+defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    add_option(options, p, is_inline, file, line,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               leve=
+l, msglevel, permission_mask,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+               option_types_found, es);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    return;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+err:</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    msg(msglevel, &quot;Error occurred trying to update %s option&qu=
+ot;, p[0]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static v=
+oid</span><br><span> set_user_script(struct options *options,</span><br><sp=
+an>                 const char **script,</span><br><span>@@ -7284,45 +7600,=
+18 @@</span><br><span>     else if (streq(p[0], &quot;route&quot;) &amp;&am=
+p; p[1] &amp;&amp; !p[5])</span><br><span>     {</span><br><span>         V=
+ERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        rol_check_alloc(options);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        if (pull_mode)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        if (!check_route_option(options, p, msgleve=
+l, pull_mode))</span><br><span>         {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            if (!ip_or_dns_addr_safe(p[1], options-&gt;=
+allow_pull_fqdn) &amp;&amp; !is_special_addr(p[1])) /* FQDN -- may be DNS n=
+ame */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(msg=
+level, &quot;route parameter network/IP &#39;%s&#39; must be a valid addres=
+s&quot;, p[1]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+          goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  if (p[2] &amp;&amp; !ip_addr_dotted_quad_safe(p[2])) /* FQDN -- must be I=
+P address */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                m=
+sg(msglevel, &quot;route parameter netmask &#39;%s&#39; must be an IP addre=
+ss&quot;, p[2]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   if (p[3] &amp;&amp; !ip_or_dns_addr_safe(p[3], options-&gt;allow_pull_fq=
+dn) &amp;&amp; !is_special_addr(p[3])) /* FQDN -- may be DNS name */</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                msg(msglevel, &quot;=
+route parameter gateway &#39;%s&#39; must be a valid address&quot;, p[3]);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                goto e=
+rr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* p[4] is met=
+ric, if specified */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            goto err;</span><br><span>         }</span><br><span>         =
+add_route_to_option_list(options-&gt;routes, p[1], p[2], p[3], p[4], option=
+s-&gt;route_default_table_id);</span><br><span>     }</span><br><span>     =
+else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; p[1] &amp;&amp; !p[=
+4])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P=
+_ROUTE);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        rol6_=
+check_alloc(options);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        if (pull_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        if (!check_route6_option(options, p, msglevel, pull_mode))</span=
+><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            if (!ipv6_addr_safe_hexplusbits(p[1]))</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                msg(msglevel, &quot;route-ipv6 paramet=
+er network/IP &#39;%s&#39; must be a valid address&quot;, p[1]);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                goto err;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            if (p[2] &amp;&amp; !ipv=
+6_addr_safe(p[2]))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+     msg(msglevel, &quot;route-ipv6 parameter gateway &#39;%s&#39; must be =
+a valid address&quot;, p[2]);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                goto err;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            /* p[3] is metric, if specified */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            goto err;</span><br><span>      =
+   }</span><br><span>         add_route_ipv6_to_option_list(options-&gt;rou=
+tes_ipv6, p[1], p[2], p[3], options-&gt;route_default_table_id);</span><br>=
+<span>     }</span><br><span>@@ -8410,90 +8699,8 @@</span><br><span>     el=
+se if (streq(p[0], &quot;dns&quot;) &amp;&amp; p[1])</span><br><span>     {=
+</span><br><span>         VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        if (streq(p[1], &quot;search-domains&quot;) &amp;&=
+amp; p[2])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
+f (!check_dns_option(options, p, msglevel, pull_mode))</span><br><span>    =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dns=
+_domain_list_append(&amp;options-&gt;dns_options.search_domains, &amp;p[2],=
+ &amp;options-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        else if (streq(p[1], &quot;server&quot;) &amp;&amp; p[2] &amp;&amp=
+; p[3] &amp;&amp; p[4])</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  long priority;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       if (!dns_server_priority_parse(&amp;priority, p[2], pull_mode))</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                msg(msglevel, &quo=
+t;--dns server: invalid priority value &#39;%s&#39;&quot;, p[2]);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                goto err;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            struct dns_server *server =3D dns_server_get=
+(&amp;options-&gt;dns_options.servers, priority, &amp;options-&gt;dns_optio=
+ns.gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            if (streq(p[3], &quot;a=
+ddress&quot;) &amp;&amp; p[4])</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                for (int i =3D 4; p[i]; ++i)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                    if (!dns_server_addr_parse(server, =
+p[i]))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+         msg(msglevel, &quot;--dns server %ld: malformed address or maximum=
+ exceeded &#39;%s&#39;&quot;, priority, p[i]);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                        goto err;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                    }</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span styl=
 e=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            struct dns_server *server =3D dns_server_get(&amp;options-&=
-gt;dns_options.servers, priority, &amp;options-&gt;dns_options.gc);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            if (streq(p[3], &quot;address&quot;) &=
-amp;&amp; p[4])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  for (int i =3D 4; p[i]; ++i)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                    if (!dns_server_addr_parse(server, p[i]))</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                    {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                        msg(ms=
-glevel, &quot;--dns server %ld: malformed address or maximum exceeded &#39;=
-%s&#39;&quot;, priority, p[i]);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                        goto err;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                    }</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            else if (streq(p[3], &quot;resolve-domains&quot;))</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                dns_domain_list_=
-append(&amp;server-&gt;domains, &amp;p[4], &amp;options-&gt;dns_options.gc)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            else if (streq(p=
-[3], &quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                if (streq(p[4], &quot;yes&quot;))</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                    server-&gt;dnssec =
-=3D DNS_SECURITY_YES;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+or: hsl(0, 100%, 40%);">-            else if (streq(p[3], &quot;resolve-dom=
+ains&quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                d=
+ns_domain_list_append(&amp;server-&gt;domains, &amp;p[4], &amp;options-&gt;=
+dns_options.gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            e=
+lse if (streq(p[3], &quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                if (streq(p[4], &quot;yes&quot;=
+))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    ser=
+ver-&gt;dnssec =3D DNS_SECURITY_YES;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                else if (streq(p[4], &quot;no&quot;))</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                    server-&gt;dnsse=
+c =3D DNS_SECURITY_NO;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             else if (streq(p[4], &quot;optional&quot;))</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                    server-&gt;dnssec =3D D=
+NS_SECURITY_OPTIONAL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
                 }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-            else if (streq(p[4], &quot;no&quot;))</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                    server-&gt;dnssec =3D DNS_SECUR=
-ITY_NO;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                el=
-se if (streq(p[4], &quot;optional&quot;))</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                    server-&gt;dnssec =3D DNS_SECURITY_OPTI=
-ONAL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                else=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    msg(m=
-sglevel, &quot;--dns server %ld: malformed dnssec value &#39;%s&#39;&quot;,=
- priority, p[4]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-                goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    else if (streq(p[3], &quot;transport&quot;) &amp;&amp; !p[5])</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                if (streq(p[4], &quot;p=
-lain&quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-       server-&gt;transport =3D DNS_TRANSPORT_PLAIN;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                else if (streq(p[4], &quot;DoH&=
-quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-  server-&gt;transport =3D DNS_TRANSPORT_HTTPS;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                else if (streq(p[4], &quot;DoT&quot;)=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    serv=
-er-&gt;transport =3D DNS_TRANSPORT_TLS;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                else</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                    msg(msglevel, &quot;--dns server %ld: malforme=
-d transport value &#39;%s&#39;&quot;, priority, p[4]);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                    goto err;</span><br><s=
+            else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+           msg(msglevel, &quot;--dns server %ld: malformed dnssec value &#3=
+9;%s&#39;&quot;, priority, p[4]);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                    goto err;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            else if (streq(p[3], &quot;transport&quot;) &amp;&amp; =
+!p[5])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (str=
+eq(p[4], &quot;plain&quot;))</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                    server-&gt;transport =3D DNS_TRANSPORT_PLAIN;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                else if (streq(p=
+[4], &quot;DoH&quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                 server-&gt;transport =3D DNS_TRANSPORT_HTTPS;</span><br><s=
 pan style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            else if (streq(p[3], &quot;sni&quo=
-t;) &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-        server-&gt;sni =3D p[4];</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-      msg(msglevel, &quot;--dns server %ld: unknown option type &#39;%s&#39=
-; or missing or unknown parameter&quot;, priority, p[3]);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                goto err;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           msg(msglevel, &quot;--dns: unknown option type &#39;%s&#39; or m=
-issing or unknown parameter&quot;, p[1]);</span><br><span>             goto=
- err;</span><br><span>         }</span><br><span>     }</span><br><span></s=
-pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/810?usp=3Demail">change 810</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/810?usp=3De=
-mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+style=3D"color: hsl(0, 100%, 40%);">-                else if (streq(p[4], &=
+quot;DoT&quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+           server-&gt;transport =3D DNS_TRANSPORT_TLS;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                else</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                    msg(msglevel, &quot;--dns serve=
+r %ld: malformed transport value &#39;%s&#39;&quot;, priority, p[4]);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                    goto er=
+r;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            else if (streq(p[3]=
+, &quot;sni&quot;) &amp;&amp; !p[5])</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                server-&gt;sni =3D p[4];</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            else</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                msg(msglevel, &quot;--dns server %ld: unknown option t=
+ype &#39;%s&#39; or missing or unknown parameter&quot;, priority, p[3]);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                goto err=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            msg(msglevel, &quot;--dns: unknown option type &#=
+39;%s&#39; or missing or unknown parameter&quot;, p[1]);</span><br><span>  =
+           goto err;</span><br><span>         }</span><br><span>     }</spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/810?usp=3Demail">change 810</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/810?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -1322,8 +1330,8 @@ b3577984ecdc2 </div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---JbNPcc07iyY=--
+--JNbdgxjPTdo=--
 
