@@ -1,16 +1,11 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Tue, 29 Jul 2025 13:30:50 +0200
-Message-ID: <CBE17A18-1AAB-4891-88DA-14852A628D24@...2661...>
-In-Reply-To: <aIireKdz0MHz2Iio@...1296...>
-References: <20250729093857.37832-1-kprovost@...2661...>
- <E5429ADC-B338-4BC3-BA6B-F1D23B103D32@...2661...>
- <aIireKdz0MHz2Iio@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="=_MailMate_0351E54B-0C07-43E9-AB3F-9A27BB03E041_="
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Openvpn-devel] [PATCH 1/2] dco-freebsd: pass address scope to
- the kernel
+Date: Tue, 29 Jul 2025 14:23:32 +0200 (CEST)
+Message-Id: <202507291223.56TCNWwR098804@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250729104045.27582-1-gert@...1296...>
+References: <20250729104045.27582-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: PUSH_UPDATE: Allow OpenVPN in
+ client mode to receive and handle PUSH UPDATE control messages to allow
+ options updating at runtime.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,64 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---=_MailMate_0351E54B-0C07-43E9-AB3F-9A27BB03E041_=
-Content-Type: text/plain; charset="utf-8"; format="flowed"; markup="markdown"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+To: Marco Baffo <marco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 29 Jul 2025, at 13:07, Gert Doering wrote:
-> On Tue, Jul 29, 2025 at 12:55:29PM +0200, Kristof Provost via 
-> Openvpn-devel wrote:
->> This requires kernel side support: 
->> [https://reviews.freebsd.org/D51596](https://reviews.freebsd.org/D51596)
->
-> I did not yet test it, but I assume that including scope-id in the
-> message to an older kernel will not break anything for non-LLA peers?
->
-Correct. That’s why we’re using nvlists in the ioctl path. We can 
-add fields without confusing either kernel or userspace. They’ll just 
-be ignored.
+So, this has been quite a journey... (and thanks, Marco, for keeping your
+patience).  Lev has tested and +2'ed v11, which was then lost in the
+"rebase / avoid conflict" for v12.  Up to v20, only reviews, and then I
+asked for lots of stylistic / code organizational changes which then
+brought this up to v22...
 
-—
-Kristof
---=_MailMate_0351E54B-0C07-43E9-AB3F-9A27BB03E041_=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I have stared a lot at the code, and I have run the full "normal client
+and server side test" bed on it.  I have not actually tested incoming
+PUSH_UPDATE messages, so at this point I have good faith that this does
+what it is supposed to do - and I'm pretty sure that it does not break
+anything.  Lev has given 808+809+810 another test run on the "modified
+community server" (thanks!), and Corp QA has been asked to test against
+OpenVPN Inc commercial server infrastructure (so we'll hear if it does
+not work).
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/xhtml; charset=3Dutf-8">
-</head>
-<body><div style=3D"font-family: sans-serif;"><div class=3D"markdown" style=
-=3D"white-space: normal;">
-<p dir=3D"auto">On 29 Jul 2025, at 13:07, Gert Doering wrote:</p>
-<blockquote style=3D"margin: 0 0 5px; padding-left: 5px; border-left: 2px s=
-olid #136BCE; color: #136BCE;">
-<p dir=3D"auto">On Tue, Jul 29, 2025 at 12:55:29PM +0200, Kristof Provost v=
-ia Openvpn-devel wrote:</p>
-<blockquote style=3D"margin: 0 0 5px; padding-left: 5px; border-left: 2px s=
-olid #136BCE; border-left-color: #4B89CF; color: #4B89CF;">
-<p dir=3D"auto">This requires kernel side support: <a href=3D"https://revie=
-ws.freebsd.org/D51596">https://reviews.freebsd.org/D51596</a></p>
-</blockquote>
-<p dir=3D"auto">I did not yet test it, but I assume that including scope-id=
- in the<br>
-message to an older kernel will not break anything for non-LLA peers?</p>
-</blockquote>
-<p dir=3D"auto">Correct. That=E2=80=99s why we=E2=80=99re using nvlists in =
-the ioctl path. We can add fields without confusing either kernel or usersp=
-ace. They=E2=80=99ll just be ignored.</p>
-<p dir=3D"auto">=E2=80=94<br>
-Kristof</p>
+(Staring again, I *did* find one thing we should fix, namely the 
+amount of options passed to apply_push_options() now, but this can
+be done in a new patch)
 
-</div>
-</div>
-</body>
 
-</html>
+My plan for future testing is to integrate this into the t_client/t_server
+testbeds, setting up one instance that will do PUSH_UPDATE to send over
+the routes that are needed for ping success - but this needs #869 and
+quite a bit of new "drive management interface" infrastructure to get
+done.  Soon.  *cough*.
 
---=_MailMate_0351E54B-0C07-43E9-AB3F-9A27BB03E041_=--
+Your patch has been applied to the master branch.
+
+commit 80b62545881cbe39e813c85c23984e62aaa76860
+Author: Marco Baffo
+Date:   Tue Jul 29 12:40:39 2025 +0200
+
+     PUSH_UPDATE: Allow OpenVPN in client mode to receive and handle PUSH UPDATE control messages to allow options updating at runtime.
+
+     Signed-off-by: Marco Baffo <marco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250729104045.27582-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32406.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
