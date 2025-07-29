@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 29 Jul 2025 13:34:35 +0000
+Date: Tue, 29 Jul 2025 13:34:37 +0000
 In-Reply-To: <gerrit.1732124549000.I507180d7397b6959844a30908010132bc3411067@...2715...>
 References: <gerrit.1732124549000.I507180d7397b6959844a30908010132bc3411067@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <4f23b4e64e5c4a334f10fa25770009e1f8e04a4c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <4f23b4e64e5c4a334f10fa25770009e1f8e04a4c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7VtJQsrYWBc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="VqP1cWTrP1g="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: Added
  remove_option() and do_update().
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7VtJQsrYWBc=
+--VqP1cWTrP1g=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#24) to the change originally created b=
-y mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/80=
+9?usp=3Demail )
 
 Change subject: PUSH_UPDATE: Added remove_option() and do_update().
 ......................................................................
@@ -63,7 +59,7 @@ M src/openvpn/route.h
 7 files changed, 350 insertions(+), 11 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/09/809/24
+
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
 index ba1dda4..3254cc6 100644
@@ -608,560 +604,557 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---7VtJQsrYWBc=
+--VqP1cWTrP1g=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #24</strong> to the change originally c=
-reated by mrbff.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/809=
-?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
-d were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">PUSH_UPDATE: Added remove_option() and do_update().<=
-br><br>* Added remove_option() function and some utility functions to remov=
-e options at<br>  runtime following the push-update logic.<br>* Added do_up=
-date() function to close and reopen the tun and apply option updates.<br><b=
-r>Change-Id: I507180d7397b6959844a30908010132bc3411067<br>Signed-off-by: Ma=
-rco Baffo &lt;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>Message-Id: &lt;20250729104056.27634-1-gert@...1296...&gt;<br>=
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-407.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M=
- src/openvpn/init.c<br>M src/openvpn/init.h<br>M src/openvpn/multi.c<br>M s=
-rc/openvpn/options.c<br>M src/openvpn/push.c<br>M src/openvpn/route.c<br>M =
-src/openvpn/route.h<br>7 files changed, 350 insertions(+), 11 deletions(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/09/8=
-09/24</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;"><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><b=
-r><span>index ba1dda4..3254cc6 100644</span><br><span>--- a/src/openvpn/ini=
-t.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -2470,7 +24=
-70,7 @@</span><br><span> </span><br><span>         if (pulled_options)</spa=
-n><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            if (!do_deferred_options(c, option_types_found))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            if (!do_deferred_opti=
-ons(c, option_types_found, false))</span><br><span>             {</span><br=
-><span>                 msg(D_PUSH_ERRORS, &quot;ERROR: Failed to apply pus=
-h options&quot;);</span><br><span>                 return false;</span><br>=
-<span>@@ -2594,6 +2594,55 @@</span><br><span>     return true;</span><br><s=
-pan> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_update(=
-struct context *c, unsigned int option_types_found)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    /* Not necessary since to receive the update the openvp=
-n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * instance mu=
-st be up and running but just in case</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (!c-&gt;c2.do_up_ran)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    bool tt_dco_win =3D tuntap=
-_is_dco_win(c-&gt;c1.tuntap);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (tt_dco_win)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    msg(M_NONFATAL, &quot;dco-win doesn&#39;t yet support reopening TUN dev=
-ice&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (!do_deferred_options(c, option_=
-types_found, true))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_=
-PUSH_ERRORS, &quot;ERROR: Failed to apply push options&quot;);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    do_close_tun(c, true);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    management_sleep(1);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    int error_flags =3D 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    c-&gt;c2.did_open_tun =3D do_open_tun(c, &amp;error_flags);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    update_time();<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.did_open_tun)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* if --route-delay was specified=
-, start timer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     if ((route_order(c-&gt;c1.tuntap) =3D=3D ROUTE_AFTER_TUN) &amp;&amp; c=
--&gt;options.route_delay_defined)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            event_timeout_init(&amp;c-&gt;c2.route_wakeup, c-&gt;option=
-s.route_delay, now);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            event_timeout_init(&amp;c-&gt;c2.route_wakeup_expire, c-&gt;op=
-tions.route_delay + c-&gt;options.route_delay_window, now);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            tun_standby_init(c-&gt;=
-c1.tuntap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        initialization_sequence_compl=
-eted(c, error_flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(c-&gt;c1.pulled_optio=
-ns_digest_save);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * =
-These are the option categories which will be accepted by pull.</span><br><=
-span>  */</span><br><span>@@ -2672,11 +2721,8 @@</span><br><span>     retur=
-n true;</span><br><span> }</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- * Handle non-tun-related pulled options.</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- */</span><br><span> bool</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-do_deferred_options(struct context *c, const un=
-signed int found)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+do=
-_deferred_options(struct context *c, const unsigned int found, const bool i=
-s_update)</span><br><span> {</span><br><span>     if (found &amp; OPT_P_MES=
-SAGES)</span><br><span>     {</span><br><span>@@ -2784,7 +2830,10 @@</span>=
-<br><span>     /* process (potentially) pushed options */</span><br><span> =
-    if (c-&gt;options.pull)</span><br><span>     {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        if (!check_pull_client_ncp(c, found))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* On PUSH_U=
-PDATE, NCP related flags are never updated, and so the code</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+         * would assume &quot;no ci=
-pher pushed =3D NCP failed&quot; - so, don&#39;t call it on</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+         * updates */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        if (!is_update &amp;&amp;=
- !check_pull_client_ncp(c, found))</span><br><span>         {</span><br><sp=
-an>             return false;</span><br><span>         }</span><br><span>di=
-ff --git a/src/openvpn/init.h b/src/openvpn/init.h</span><br><span>index 5c=
-6b9c1..25078a6 100644</span><br><span>--- a/src/openvpn/init.h</span><br><s=
-pan>+++ b/src/openvpn/init.h</span><br><span>@@ -86,13 +86,29 @@</span><br>=
-<span>            bool pulled_options,</span><br><span>            unsigned=
- int option_types_found);</span><br><span> </span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @brief A simplified version of the do_up() function. This functi=
-on is called</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
-   after receiving a successful PUSH_UPDATE message. It closes and reopens<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        the TUN de=
-vice to apply the updated options.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- @param c The context structure.</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param option_types_found The options found in the PUSH_UPD=
-ATE message.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @ret=
-urn true on success.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @return false on error.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool do_=
-update(struct context *c, unsigned int option_types_found);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> unsigned int pull=
-_permission_mask(const struct context *c);</span><br><span> </span><br><spa=
-n> const char *format_common_name(struct context *c, struct gc_arena *gc);<=
-/span><br><span> </span><br><span> void reset_coarse_timers(struct context =
-*c);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--bool do_deferred_options(struct context *c, const unsigned int found);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * Handle non-tun-related pulled options=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Set `is_update`=
- param to true to skip NCP check.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bo=
-ol do_deferred_options(struct context *c, const unsigned int found, const b=
-ool is_update);</span><br><span> </span><br><span> void inherit_context_chi=
-ld(struct context *dest,</span><br><span>                            const =
-struct context *src,</span><br><span>diff --git a/src/openvpn/multi.c b/src=
-/openvpn/multi.c</span><br><span>index b2d2b6c..68b4da6 100644</span><br><s=
-pan>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</sp=
-an><br><span>@@ -2424,7 +2424,7 @@</span><br><span>     /*</span><br><span>=
-      * Process sourced options.</span><br><span>      */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    do_deferred_options(&amp;mi-&gt;con=
-text, option_types_found);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    do_deferred_options(&amp;mi-&gt;context, option_types_found, fal=
-se);</span><br><span> </span><br><span>     /*</span><br><span>      * make=
- sure we got ifconfig settings from somewhere</span><br><span>diff --git a/=
-src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index eb53a60=
-..469360d 100644</span><br><span>--- a/src/openvpn/options.c</span><br><spa=
-n>+++ b/src/openvpn/options.c</span><br><span>@@ -1077,6 +1077,40 @@</span>=
-<br><span>     }</span><br><span>     gc_free(&amp;gc);</span><br><span> }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+delete_all_dhcp_fo(struct options *o, struct en=
-v_item **list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct env_item *cu=
-rrent, *prev;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(list);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    for (current =3D *list, prev =3D NULL; cur=
-rent !=3D NULL; current =3D current-&gt;next)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        char *tmp_value =3D NULL;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (!strncmp(current-&gt;string, &quot;fo=
-reign_option_&quot;, sizeof(&quot;foreign_option_&quot;)-1))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            tmp_value =3D strchr(current-&gt=
-;string, &#39;=3D&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            if (tmp_value &amp;&amp; ++tmp_value)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                if (!strncmp(tmp_value, &quot;=
-dhcp-option &quot;, sizeof(&quot;dhcp-option &quot;)-1))</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                    if (prev)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                        prev=
--&gt;next =3D current-&gt;next;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                    else</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                        *list =3D current-&gt;next;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-o-&gt;foreign_option_index--;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-prev =3D current;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* ifndef=
- _WIN32 */</span><br><span> </span><br><span> static in_addr_t</span><br><s=
-pan>@@ -3082,7 +3116,7 @@</span><br><span>         opt-&gt;routes-&gt;flags=
- |=3D RG_DEF1;</span><br><span>     }</span><br><span> }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif /* ifdef _WIN32 */</span><br><span> </span><br=
-><span> /*</span><br><span>  * Save/Restore certain option defaults before =
---pull is applied.</span><br><span>@@ -5314,6 +5348,18 @@</span><br><span> =
-           struct env_set *es);</span><br><span> </span><br><span> static v=
-oid</span><br><span style=3D"color: hsl(120, 100%, 40%);">+remove_option(st=
-ruct context *c,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-           struct options *options,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+              char *p[],</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+              bool is_inline,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+              const char *file,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+              int line,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+              const int msgl=
-evel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-const unsigned int permission_mask,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+              unsigned int *option_types_found,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+              struct env_set *e=
-s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span> read_c=
-onfig_file(struct options *options,</span><br><span>                  const=
- char *file,</span><br><span>                  int level,</span><br><span>@=
-@ -5539,6 +5585,11 @@</span><br><span>                 add_option(options, =
-p, false, file, line_num, 0, msglevel,</span><br><span>                    =
-        permission_mask, option_types_found, es);</span><br><span>         =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            el=
-se if (push_update_option_flags &amp; PUSH_OPT_TO_REMOVE)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                remove_option(c, options,=
- p, false, file, line_num, msglevel,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                              permission_mask, option_type=
-s_found, es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      }</span><br><span>         }</span><br><span>     }</span><br><span> =
-    return true;</span><br><span>@@ -5677,6 +5728,199 @@</span><br><span>  =
-   return options-&gt;forward_compatible ? M_WARN : msglevel;</span><br><sp=
-an> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Re=
-sets options found in the PUSH_UPDATE message that are preceded by the `-` =
-flag.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        This=
- function is used in push-updates to reset specified options.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *        The number of parameter=
-s `p` must always be 1. If the permission is verified,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ *        all related options are erased=
- or reset to their default values.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *        Upon successful permission verification (by VERIFY=
-_PERMISSION()),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
-      `option_types_found` is filled with the flag corresponding to the opt=
-ion.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * @param c The context structur=
-e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param options=
- A pointer to the options structure.</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param p An array of strings containing the options and=
- their parameters.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* @param is_inline A boolean indicating if the option is inline.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param file The file where =
-the function is called.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @param line The line number where the function is called.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel The message=
- level.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param pe=
-rmission_mask The permission mask used by VERIFY_PERMISSION().</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * @param option_types_found A p=
-ointer to the variable where the flags corresponding to the options found a=
-re stored.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- es The environment set structure.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+remove_op=
-tion(struct context *c,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+              struct options *options,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+              char *p[],</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+              bool is_inline,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+              const char *file,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+              int line,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+              const i=
-nt msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-       const unsigned int permission_mask,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+              unsigned int *option_types_found,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+              struct env=
-_set *es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    int msglevel_fc =3D msgl=
-evel_forward_compatible(options, msglevel);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (streq(p[0], &quot;ifconfig&quot;) &amp;&amp; !p[1])</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_UP);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ifconfi=
-g_local =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      options-&gt;ifconfig_remote_netmask =3D NULL;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    else if (streq(p[0], &quot;ifconfig-ipv6&quot;) &am=
-p;&amp; !p[1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERM=
-ISSION(OPT_P_UP);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      options-&gt;ifconfig_ipv6_local =3D NULL;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        options-&gt;ifconfig_ipv6_netbits =3D 0=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&g=
-t;ifconfig_ipv6_remote =3D NULL;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   else if (streq(p[0], &quot;route&quot;) &amp;&amp; !p[1])</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c1.route_l=
-ist)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            delete_routes=
-_v4(c-&gt;c1.route_list, c-&gt;c1.tuntap,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                             ROUTE_OPTION_FLAGS(&amp;=
-c-&gt;options),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                         es, &amp;c-&gt;net_ctx);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            if (options-&gt;routes)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                options-&gt;routes-=
-&gt;routes =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                options-&gt;routes-&gt;flags =3D 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    else if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; !p[1])</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;=
-c1.route_ipv6_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  delete_routes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                             ROUT=
-E_OPTION_FLAGS(&amp;c-&gt;options),</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                             es, &amp;c-&gt;net_ctx);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (options-&=
-gt;routes_ipv6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      options-&gt;routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                options-&gt;routes_ipv6=
--&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;r=
-oute-gateway&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        options-&gt;route_gateway_via_dhcp =
-=3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
-ptions-&gt;route_default_gateway =3D NULL;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    else if (streq(p[0], &quot;route-metric&quot;) &amp;&amp; !p[1=
-])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P=
-_ROUTE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opt=
-ions-&gt;route_default_metric =3D 0;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    else if (streq(p[0], &quot;push-continuation&quot;) &amp;&amp; !p[1]=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_=
-PULL_MODE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-options-&gt;push_continuation =3D 0;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    else if ((streq(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &=
-quot;redirect-private&quot;)) &amp;&amp; !p[1])</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (options-&gt;routes)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            options-&gt;routes-&gt;flag=
-s =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (options-&=
-gt;routes_ipv6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            op=
-tions-&gt;routes_ipv6-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-lse if (streq(p[0], &quot;dns&quot;) &amp;&amp; !p[1])</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;options-&gt=
-;dns_options.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      CLEAR(options-&gt;dns_options);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    else if (streq(p[0], &quot;topology&quot;) &amp;&amp; !p[1])</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_UP);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;top=
-ology =3D TOP_UNDEF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        helper_setdefault_topology(options);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    else if (streq(p[0], &quot;tun-mtu&quot;) &amp;&amp; !p[1])=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_P=
-USH_MTU|OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        options-&gt;ce.tun_mtu =3D TUN_MTU_DEFAULT;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ce.tun_mtu_defin=
-ed =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  options-&gt;ce.occ_mtu =3D 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  else if (streq(p[0], &quot;block-ipv6&quot;) &amp;&amp; !p[1])</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;bloc=
-k_ipv6 =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN=
-32) || defined(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; !p[=
-1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        struct tuntap_options =
-*o =3D &amp;options-&gt;tuntap_options;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        o-&gt;domain =3D NULL;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        o-&gt;netbios_scope =3D NULL;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;netbios_n=
-ode_type =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    o-&gt;dns6_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        memset(o-&gt;dns6, 0, sizeof(o-&gt;dns6));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        o-&gt;dns_len =3D 0;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        memset(o-&gt;dns, 0, =
-sizeof(o-&gt;dns));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        o-&gt;wins_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        memset(o-&gt;wins, 0, sizeof(o-&gt;wins));</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;ntp_len =3D 0;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        memset(o-&gt;ntp,=
- 0, sizeof(o-&gt;ntp));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        o-&gt;nbdd_len =3D 0;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        memset(o-&gt;nbdd, 0, sizeof(o-&gt;nbdd));</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        while (o-&gt;domain_se=
-arch_list_len-- &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/809?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">PUSH_UPDATE: Added remove_option() and do_upda=
+te().<br><br>* Added remove_option() function and some utility functions to=
+ remove options at<br>  runtime following the push-update logic.<br>* Added=
+ do_update() function to close and reopen the tun and apply option updates.=
+<br><br>Change-Id: I507180d7397b6959844a30908010132bc3411067<br>Signed-off-=
+by: Marco Baffo &lt;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert=
+@...1296...&gt;<br>Message-Id: &lt;20250729104056.27634-1-gert@...1296...&g=
+t;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net=
+/msg32407.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>--=
+-<br>M src/openvpn/init.c<br>M src/openvpn/init.h<br>M src/openvpn/multi.c<=
+br>M src/openvpn/options.c<br>M src/openvpn/push.c<br>M src/openvpn/route.c=
+<br>M src/openvpn/route.h<br>7 files changed, 350 insertions(+), 11 deletio=
+ns(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>ind=
+ex ba1dda4..3254cc6 100644</span><br><span>--- a/src/openvpn/init.c</span><=
+br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -2470,7 +2470,7 @@</sp=
+an><br><span> </span><br><span>         if (pulled_options)</span><br><span=
+>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  if (!do_deferred_options(c, option_types_found))</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            if (!do_deferred_options(c, opti=
+on_types_found, false))</span><br><span>             {</span><br><span>    =
+             msg(D_PUSH_ERRORS, &quot;ERROR: Failed to apply push options&q=
+uot;);</span><br><span>                 return false;</span><br><span>@@ -2=
+594,6 +2594,55 @@</span><br><span>     return true;</span><br><span> }</spa=
+n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_update(struct cont=
+ext *c, unsigned int option_types_found)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* Not necessary since to receive the update the openvpn</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+     * instance must be up and =
+running but just in case</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(!c-&gt;c2.do_up_ran)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retu=
+rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    bool tt_dco_win =3D tuntap_is_dco_win=
+(c-&gt;c1.tuntap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (tt_dco_win)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_N=
+ONFATAL, &quot;dco-win doesn&#39;t yet support reopening TUN device&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fals=
+e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (!do_deferred_options(c, option_types_found=
+, true))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_PUSH_ERRORS=
+, &quot;ERROR: Failed to apply push options&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    do_close_tun(c, true);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    manag=
+ement_sleep(1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+int error_flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    c-&gt;c2.did_open_tun =3D do_open_tun(c, &amp;error_flags);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    update_time();</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (c-&gt;c2.did_open_tun)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        /* if --route-delay was specified, start ti=
+mer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if ((=
+route_order(c-&gt;c1.tuntap) =3D=3D ROUTE_AFTER_TUN) &amp;&amp; c-&gt;optio=
+ns.route_delay_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
 ;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      o-&gt;domain_search_list[o-&gt;domain_search_list_len] =3D NULL;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;disable_nbt =3D 0;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;dhcp_op=
-tions =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if def=
-ined(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        o-&gt;http_proxy_port =3D 0;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        o-&gt;http_proxy =3D NULL;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;bloc=
-k-outside-dns&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        options-&gt;block_outside_dns =3D false;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#else /* ifdef _WIN32 */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &qu=
-ot;dhcp-option&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        delete_all_dhcp_fo(options, &amp;es-&gt=
-;list);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        int i;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        int msglevel_unknown =3D msglevel_fc;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* Check if an option is in --ign=
-ore-unknown-option and</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+         * set warning level to non fatal */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        for (i =3D 0; options-&gt;ignore_unknow=
-n_option &amp;&amp; options-&gt;ignore_unknown_option[i]; i++)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if (streq(p[0], options-&gt;i=
-gnore_unknown_option[i]))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                msglevel_unknown =3D M_WARN;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                break;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        msg(msglevel_unknown, &quot;Unrecognized option or miss=
-ing or extra parameter(s) in %s:%d: -%s (%s)&quot;, file, line, p[0], PACKA=
-GE_VERSION);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;Error occurred tryin=
-g to remove %s option&quot;, p[0]);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> static void</span><br><span> set_user_script(struct options=
- *options,</span><br><span>                 const char **script,</span><br>=
-<span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>=
-index 858b821..22082a9 100644</span><br><span>--- a/src/openvpn/push.c</spa=
-n><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -542,6 +542,11 @@</=
-span><br><span>                 {</span><br><span>                     msg(=
-M_WARN, &quot;No updatable options found in incoming PUSH_UPDATE message&qu=
-ot;);</span><br><span>                 }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                else if (!do_update(c, option_types_fo=
-und))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-    msg(D_PUSH_ERRORS, &quot;Failed to update options&quot;);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                    goto error;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</sp=
-an><br><span>             }</span><br><span>         }</span><br><span>    =
-     event_timeout_clear(&amp;c-&gt;c2.push_request_interval);</span><br><s=
-pan>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>=
-index 156262a..89ebaee 100644</span><br><span>--- a/src/openvpn/route.c</sp=
-an><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -1265,7 +1265,16 =
-@@</span><br><span>               const struct tuntap *tt, unsigned int fla=
-gs,</span><br><span>               const struct env_set *es, openvpn_net_ct=
-x_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (rl &amp;&amp; rl-&gt;iflags &amp; RL_ROUTES_ADDED)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    delete_routes_v4(rl, tt, =
-flags, es, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- delete_routes_v6(rl6, tt, flags, es, ctx);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+delete_routes_v4(struct rout=
-e_list *rl, const struct tuntap *tt,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                 unsigned int flags, const struct env_set =
-*es,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-  openvpn_net_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (rl &=
-amp;&amp; (rl-&gt;iflags &amp; RL_ROUTES_ADDED))</span><br><span>     {</sp=
-an><br><span>         struct route_ipv4 *r;</span><br><span>         for (r=
- =3D rl-&gt;routes; r; r =3D r-&gt;next)</span><br><span>@@ -1281,8 +1290,1=
-4 @@</span><br><span>     {</span><br><span>         clear_route_list(rl);<=
-/span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    if (rl6 &amp;&amp; (rl6-&gt;iflags &amp; RL_ROUTES_ADDED) )</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+delete_routes_v6(struct route_ipv6_list *rl6,=
- const struct tuntap *tt,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                 unsigned int flags, const struct env_set *es,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                 openvpn_n=
-et_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (rl6 &amp;&amp; =
-(rl6-&gt;iflags &amp; RL_ROUTES_ADDED))</span><br><span>     {</span><br><s=
-pan>         struct route_ipv6 *r6;</span><br><span>         for (r6 =3D rl=
-6-&gt;routes_ipv6; r6; r6 =3D r6-&gt;next)</span><br><span>diff --git a/src=
-/openvpn/route.h b/src/openvpn/route.h</span><br><span>index 237375c..b89ec=
-9f 100644</span><br><span>--- a/src/openvpn/route.h</span><br><span>+++ b/s=
-rc/openvpn/route.h</span><br><span>@@ -335,6 +335,16 @@</span><br><span>   =
-                 const struct env_set *es,</span><br><span>                =
-    openvpn_net_ctx_t *ctx);</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+delete_routes_v4(struct route_list *rl, const struct tuntap *tt=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 u=
-nsigned int flags, const struct env_set *es,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                 openvpn_net_ctx_t *ctx);</span><b=
+      event_timeout_init(&amp;c-&gt;c2.route_wakeup, c-&gt;options.route_de=
+lay, now);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   event_timeout_init(&amp;c-&gt;c2.route_wakeup_expire, c-&gt;options.rout=
+e_delay + c-&gt;options.route_delay_window, now);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            tun_standby_init(c-&gt;c1.tuntap)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+delete_routes_v6(struct route_ipv6_list *rl6, const struct tun=
-tap *tt,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-      unsigned int flags, const struct env_set *es,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                 openvpn_net_ctx_t *ctx);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> v=
-oid setenv_routes(struct env_set *es, const struct route_list *rl);</span><=
-br><span> </span><br><span> void setenv_routes_ipv6(struct env_set *es, con=
-st struct route_ipv6_list *rl6);</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail">=
-change 809</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+lor: hsl(120, 100%, 40%);">+        initialization_sequence_completed(c, er=
+ror_flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    CLEAR(c-&gt;c1.pulled_options_digest_=
+save);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * These are th=
+e option categories which will be accepted by pull.</span><br><span>  */</s=
+pan><br><span>@@ -2672,11 +2721,8 @@</span><br><span>     return true;</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Handl=
+e non-tun-related pulled options.</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">- */</span><br><span> bool</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-do_deferred_options(struct context *c, const unsigned int f=
+ound)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_deferred_op=
+tions(struct context *c, const unsigned int found, const bool is_update)</s=
+pan><br><span> {</span><br><span>     if (found &amp; OPT_P_MESSAGES)</span=
+><br><span>     {</span><br><span>@@ -2784,7 +2830,10 @@</span><br><span>  =
+   /* process (potentially) pushed options */</span><br><span>     if (c-&g=
+t;options.pull)</span><br><span>     {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        if (!check_pull_client_ncp(c, found))</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        /* On PUSH_UPDATE, NCP r=
+elated flags are never updated, and so the code</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+         * would assume &quot;no cipher pushed =
+=3D NCP failed&quot; - so, don&#39;t call it on</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+         * updates */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        if (!is_update &amp;&amp; !check_pull=
+_client_ncp(c, found))</span><br><span>         {</span><br><span>         =
+    return false;</span><br><span>         }</span><br><span>diff --git a/s=
+rc/openvpn/init.h b/src/openvpn/init.h</span><br><span>index 5c6b9c1..25078=
+a6 100644</span><br><span>--- a/src/openvpn/init.h</span><br><span>+++ b/sr=
+c/openvpn/init.h</span><br><span>@@ -86,13 +86,29 @@</span><br><span>      =
+      bool pulled_options,</span><br><span>            unsigned int option_=
+types_found);</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @=
+brief A simplified version of the do_up() function. This function is called=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        after rec=
+eiving a successful PUSH_UPDATE message. It closes and reopens</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *        the TUN device to appl=
+y the updated options.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param c Th=
+e context structure.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * @param option_types_found The options found in the PUSH_UPDATE message.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return true on =
+success.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return =
+false on error.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool do_update(struc=
+t context *c, unsigned int option_types_found);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span> unsigned int pull_permission_=
+mask(const struct context *c);</span><br><span> </span><br><span> const cha=
+r *format_common_name(struct context *c, struct gc_arena *gc);</span><br><s=
+pan> </span><br><span> void reset_coarse_timers(struct context *c);</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool do_def=
+erred_options(struct context *c, const unsigned int found);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * Handle non-tun-related pulled options.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * Set `is_update` param to tr=
+ue to skip NCP check.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool do_deferr=
+ed_options(struct context *c, const unsigned int found, const bool is_updat=
+e);</span><br><span> </span><br><span> void inherit_context_child(struct co=
+ntext *dest,</span><br><span>                            const struct conte=
+xt *src,</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/mul=
+ti.c</span><br><span>index b2d2b6c..68b4da6 100644</span><br><span>--- a/sr=
+c/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span=
+>@@ -2424,7 +2424,7 @@</span><br><span>     /*</span><br><span>      * Proc=
+ess sourced options.</span><br><span>      */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    do_deferred_options(&amp;mi-&gt;context, option=
+_types_found);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    d=
+o_deferred_options(&amp;mi-&gt;context, option_types_found, false);</span><=
+br><span> </span><br><span>     /*</span><br><span>      * make sure we got=
+ ifconfig settings from somewhere</span><br><span>diff --git a/src/openvpn/=
+options.c b/src/openvpn/options.c</span><br><span>index eb53a60..469360d 10=
+0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
+openvpn/options.c</span><br><span>@@ -1077,6 +1077,40 @@</span><br><span>  =
+   }</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+delete_all_dhcp_fo(struct options *o, struct env_item **lis=
+t)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    struct env_item *current, *prev=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    ASSERT(list);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    for (current =3D *list, prev =3D NULL; current !=3D NU=
+LL; current =3D current-&gt;next)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        char *tmp_value =3D NULL;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        if (!strncmp(current-&gt;string, &quot;foreign_option=
+_&quot;, sizeof(&quot;foreign_option_&quot;)-1))</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            tmp_value =3D strchr(current-&gt;string, &#3=
+9;=3D&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     if (tmp_value &amp;&amp; ++tmp_value)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                if (!strncmp(tmp_value, &quot;dhcp-option =
+&quot;, sizeof(&quot;dhcp-option &quot;)-1))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                    if (prev)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                        prev-&gt;next =
+=3D current-&gt;next;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    else</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                        *list =3D current-&gt;next;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                    o-&gt;fore=
+ign_option_index--;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        prev =3D c=
+urrent;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* ifndef _WIN32 */=
+</span><br><span> </span><br><span> static in_addr_t</span><br><span>@@ -30=
+82,7 +3116,7 @@</span><br><span>         opt-&gt;routes-&gt;flags |=3D RG_D=
+EF1;</span><br><span>     }</span><br><span> }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif /* ifdef _WIN32 */</span><br><span> </span><br><span> /*=
+</span><br><span>  * Save/Restore certain option defaults before --pull is =
+applied.</span><br><span>@@ -5314,6 +5348,18 @@</span><br><span>           =
+ struct env_set *es);</span><br><span> </span><br><span> static void</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+remove_option(struct conte=
+xt *c,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+ struct options *options,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+              char *p[],</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+              bool is_inline,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+              const char *file,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              int line,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+              const int msglevel,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+              const uns=
+igned int permission_mask,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+              unsigned int *option_types_found,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+              struct env_set *es);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+static void</span><br><span> read_config_fil=
+e(struct options *options,</span><br><span>                  const char *fi=
+le,</span><br><span>                  int level,</span><br><span>@@ -5539,6=
+ +5585,11 @@</span><br><span>                 add_option(options, p, false,=
+ file, line_num, 0, msglevel,</span><br><span>                            p=
+ermission_mask, option_types_found, es);</span><br><span>             }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            else if (pu=
+sh_update_option_flags &amp; PUSH_OPT_TO_REMOVE)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                remove_option(c, options, p, false, =
+file, line_num, msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                              permission_mask, option_types_found, es=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</sp=
+an><br><span>         }</span><br><span>     }</span><br><span>     return =
+true;</span><br><span>@@ -5677,6 +5728,199 @@</span><br><span>     return o=
+ptions-&gt;forward_compatible ? M_WARN : msglevel;</span><br><span> }</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Resets option=
+s found in the PUSH_UPDATE message that are preceded by the `-` flag.</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        This function i=
+s used in push-updates to reset specified options.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *        The number of parameters `p` must =
+always be 1. If the permission is verified,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *        all related options are erased or reset t=
+o their default values.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *        Upon successful permission verification (by VERIFY_PERMISSION=
+()),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        `opti=
+on_types_found` is filled with the flag corresponding to the option.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param c The context structure.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param options A pointe=
+r to the options structure.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * @param p An array of strings containing the options and their pa=
+rameters.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
+is_inline A boolean indicating if the option is inline.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @param file The file where the funct=
+ion is called.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
+aram line The line number where the function is called.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel The message level.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param permission_=
+mask The permission mask used by VERIFY_PERMISSION().</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param option_types_found A pointer to=
+ the variable where the flags corresponding to the options found are stored=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param es The e=
+nvironment set structure.</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static voi=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+remove_option(stru=
+ct context *c,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+         struct options *options,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+              char *p[],</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+              bool is_inline,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+              const char *file,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+              int line,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+              const int msglev=
+el,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              co=
+nst unsigned int permission_mask,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+              unsigned int *option_types_found,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+              struct env_set *es)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    int msglevel_fc =3D msglevel_forw=
+ard_compatible(options, msglevel);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (streq(p[0], &quot;ifconfig&quot;) &amp;&amp; !p[1])</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_UP);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ifconfig_local =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        op=
+tions-&gt;ifconfig_remote_netmask =3D NULL;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    else if (streq(p[0], &quot;ifconfig-ipv6&quot;) &amp;&amp; !p=
+[1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT=
+_P_UP);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        opti=
+ons-&gt;ifconfig_ipv6_local =3D NULL;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        options-&gt;ifconfig_ipv6_netbits =3D 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ifconfig=
+_ipv6_remote =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if=
+ (streq(p[0], &quot;route&quot;) &amp;&amp; !p[1])</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c1.route_list)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            delete_routes_v4(c-&gt;=
+c1.route_list, c-&gt;c1.tuntap,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                             ROUTE_OPTION_FLAGS(&amp;c-&gt;opti=
+ons),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+               es, &amp;c-&gt;net_ctx);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            if (options-&gt;routes)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                options-&gt;routes-&gt;routes=
+ =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       options-&gt;routes-&gt;flags =3D 0;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    els=
+e if (streq(p[0], &quot;route-ipv6&quot;) &amp;&amp; !p[1])</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c1.route_ip=
+v6_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            delete_ro=
+utes_v6(c-&gt;c1.route_ipv6_list, c-&gt;c1.tuntap,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                             ROUTE_OPTION_FL=
+AGS(&amp;c-&gt;options),</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                             es, &amp;c-&gt;net_ctx);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            if (options-&gt;routes_i=
+pv6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                optio=
+ns-&gt;routes_ipv6-&gt;routes_ipv6 =3D NULL;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                options-&gt;routes_ipv6-&gt;flags =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;route-gate=
+way&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   VERIFY_PERMISSION(OPT_P_ROUTE_EXTRAS);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        options-&gt;route_gateway_via_dhcp =3D false;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt=
+;route_default_gateway =3D NULL;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   else if (streq(p[0], &quot;route-metric&quot;) &amp;&amp; !p[1])</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;r=
+oute_default_metric =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    els=
+e if (streq(p[0], &quot;push-continuation&quot;) &amp;&amp; !p[1])</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_PULL_MODE=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&=
+gt;push_continuation =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
+se if ((streq(p[0], &quot;redirect-gateway&quot;) || streq(p[0], &quot;redi=
+rect-private&quot;)) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        if (options-&gt;routes)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            options-&gt;routes-&gt;flags =3D 0;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (options-&gt;routes=
+_ipv6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            options-&gt=
+;routes_ipv6-&gt;flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (s=
+treq(p[0], &quot;dns&quot;) &amp;&amp; !p[1])</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;options-&gt;dns_opti=
+ons.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CLE=
+AR(options-&gt;dns_options);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
+lse if (streq(p[0], &quot;topology&quot;) &amp;&amp; !p[1])</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_UP);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;topology =3D=
+ TOP_UNDEF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+helper_setdefault_topology(options);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    else if (streq(p[0], &quot;tun-mtu&quot;) &amp;&amp; !p[1])</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_PUSH_MTU|=
+OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       options-&gt;ce.tun_mtu =3D TUN_MTU_DEFAULT;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        options-&gt;ce.tun_mtu_defined =3D f=
+alse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        option=
+s-&gt;ce.occ_mtu =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else i=
+f (streq(p[0], &quot;block-ipv6&quot;) &amp;&amp; !p[1])</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_ROUTE);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;block_ipv6 =
+=3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || =
+defined(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    else if (streq(p[0], &quot;dhcp-option&quot;) &amp;&amp; !p[1])</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        struct tuntap_options *o =3D =
+&amp;options-&gt;tuntap_options;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        o-&gt;domain =3D NULL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        o-&gt;netbios_scope =3D NULL;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;netbios_node_typ=
+e =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&=
+gt;dns6_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       memset(o-&gt;dns6, 0, sizeof(o-&gt;dns6));</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        o-&gt;dns_len =3D 0;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        memset(o-&gt;dns, 0, sizeof(=
+o-&gt;dns));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ o-&gt;wins_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        memset(o-&gt;wins, 0, sizeof(o-&gt;wins));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        o-&gt;ntp_len =3D 0;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        memset(o-&gt;ntp, 0, siz=
+eof(o-&gt;ntp));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     o-&gt;nbdd_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        memset(o-&gt;nbdd, 0, sizeof(o-&gt;nbdd));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        while (o-&gt;domain_search_li=
+st_len-- &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o=
+-&gt;domain_search_list[o-&gt;domain_search_list_len] =3D NULL;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        o-&gt;disable_nbt =3D 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;dhcp_options =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(T=
+ARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   o-&gt;http_proxy_port =3D 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        o-&gt;http_proxy =3D NULL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;block-outs=
+ide-dns&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        options-&gt;block_outside_dns =3D false;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#else /* ifdef _WIN32 */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;dhc=
+p-option&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        VERIFY_PERMISSION(OPT_P_DHCPDNS);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        delete_all_dhcp_fo(options, &amp;es-&gt;list)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        int i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        int msglevel_unknown =3D msglevel_fc;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        /* Check if an option is in --ignore-unkn=
+own-option and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+    * set warning level to non fatal */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        for (i =3D 0; options-&gt;ignore_unknown_option=
+ &amp;&amp; options-&gt;ignore_unknown_option[i]; i++)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            if (streq(p[0], options-&gt;ignore_unk=
+nown_option[i]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       msglevel_unknown =3D M_WARN;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                break;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        msg(msglevel_unknown, &quot;Unrecognized option or missing or ex=
+tra parameter(s) in %s:%d: -%s (%s)&quot;, file, line, p[0], PACKAGE_VERSIO=
+N);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    msg(msglevel, &quot;Error occurred trying to remo=
+ve %s option&quot;, p[0]);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span> static void</span><br><span> set_user_script(struct options *options=
+,</span><br><span>                 const char **script,</span><br><span>dif=
+f --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>index 858=
+b821..22082a9 100644</span><br><span>--- a/src/openvpn/push.c</span><br><sp=
+an>+++ b/src/openvpn/push.c</span><br><span>@@ -542,6 +542,11 @@</span><br>=
+<span>                 {</span><br><span>                     msg(M_WARN, &=
+quot;No updatable options found in incoming PUSH_UPDATE message&quot;);</sp=
+an><br><span>                 }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                else if (!do_update(c, option_types_found))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                    msg(D=
+_PUSH_ERRORS, &quot;Failed to update options&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    goto error;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><=
+span>             }</span><br><span>         }</span><br><span>         eve=
+nt_timeout_clear(&amp;c-&gt;c2.push_request_interval);</span><br><span>diff=
+ --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 15=
+6262a..89ebaee 100644</span><br><span>--- a/src/openvpn/route.c</span><br><=
+span>+++ b/src/openvpn/route.c</span><br><span>@@ -1265,7 +1265,16 @@</span=
+><br><span>               const struct tuntap *tt, unsigned int flags,</spa=
+n><br><span>               const struct env_set *es, openvpn_net_ctx_t *ctx=
+)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   if (rl &amp;&amp; rl-&gt;iflags &amp; RL_ROUTES_ADDED)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    delete_routes_v4(rl, tt, flags, e=
+s, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    delete_=
+routes_v6(rl6, tt, flags, es, ctx);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+delete_routes_v4(struct route_list *=
+rl, const struct tuntap *tt,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                 unsigned int flags, const struct env_set *es,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                 openvp=
+n_net_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (rl &amp;&amp=
+; (rl-&gt;iflags &amp; RL_ROUTES_ADDED))</span><br><span>     {</span><br><=
+span>         struct route_ipv4 *r;</span><br><span>         for (r =3D rl-=
+&gt;routes; r; r =3D r-&gt;next)</span><br><span>@@ -1281,8 +1290,14 @@</sp=
+an><br><span>     {</span><br><span>         clear_route_list(rl);</span><b=
+r><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(rl6 &amp;&amp; (rl6-&gt;iflags &amp; RL_ROUTES_ADDED) )</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+delete_routes_v6(struct route_ipv6_list *rl6, const s=
+truct tuntap *tt,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+               unsigned int flags, const struct env_set *es,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                 openvpn_net_ctx_t=
+ *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    if (rl6 &amp;&amp; (rl6-&gt=
+;iflags &amp; RL_ROUTES_ADDED))</span><br><span>     {</span><br><span>    =
+     struct route_ipv6 *r6;</span><br><span>         for (r6 =3D rl6-&gt;ro=
+utes_ipv6; r6; r6 =3D r6-&gt;next)</span><br><span>diff --git a/src/openvpn=
+/route.h b/src/openvpn/route.h</span><br><span>index 237375c..b89ec9f 10064=
+4</span><br><span>--- a/src/openvpn/route.h</span><br><span>+++ b/src/openv=
+pn/route.h</span><br><span>@@ -335,6 +335,16 @@</span><br><span>           =
+         const struct env_set *es,</span><br><span>                    open=
+vpn_net_ctx_t *ctx);</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+delete_routes_v4(struct route_list *rl, const struct tuntap *tt,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                 unsigned =
+int flags, const struct env_set *es,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                 openvpn_net_ctx_t *ctx);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+delete_routes_v6(struct route_ipv6_list *rl6, const struct tuntap *tt,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 un=
+signed int flags, const struct env_set *es,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                 openvpn_net_ctx_t *ctx);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void setenv=
+_routes(struct env_set *es, const struct route_list *rl);</span><br><span> =
+</span><br><span> void setenv_routes_ipv6(struct env_set *es, const struct =
+route_ipv6_list *rl6);</span><br><span></span><br></pre><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail">change 809=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/809?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -1181,8 +1174,8 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---7VtJQsrYWBc=--
+--VqP1cWTrP1g=--
 
