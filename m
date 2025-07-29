@@ -1,9 +1,9 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Tue, 29 Jul 2025 11:38:57 +0200
-Message-ID: <20250729093857.37832-1-kprovost@...2661...>
+Date: Tue, 29 Jul 2025 11:39:07 +0200
+Message-ID: <20250729093907.37849-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] dco-freebsd: pass address scope to the
- kernel
+Subject: [Openvpn-devel] [PATCH 2/2] dco-freebsd: always enable float
+ notification support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,38 +18,71 @@ To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 From: Kristof Provost <kp@...1376...>
 
-To support link-local (IPv6) addresses we must pass the scope to the kernel as
-well. We should also extract it from the kernel notification for float events.
+If the kernel doesn't support it we'll simply never get the notification. In
+other words, there's no downside to always enabling this, so let's do that.
 
 Signed-off-by: Kristof Provost <kprovost@...2661...>
 ---
- src/openvpn/dco_freebsd.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ configure.ac              | 9 ---------
+ src/openvpn/dco_freebsd.c | 4 ----
+ 2 files changed, 13 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index 50697b8e..66cb79b1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -848,15 +848,6 @@ if test "$enable_dco" != "no"; then
+ 				else
+ 					AC_MSG_ERROR([DCO support can't be enabled])
+ 				fi
+-			else
+-				AC_CHECK_DECLS(
+-					[OVPN_NOTIF_FLOAT],
+-					[AC_DEFINE([ENABLE_DCO_FLOAT_FREEBSD], [1], [We have DCO float notifications on FreeBSD])],
+-					,
+-					[[
+-						#include <net/if_ovpn.h>
+-					]]
+-				)
+ 			fi
+ 			;;
+ 		*-mingw*)
 diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 8add41af..306ecd31 100644
+index 306ecd31..488665fc 100644
 --- a/src/openvpn/dco_freebsd.c
 +++ b/src/openvpn/dco_freebsd.c
-@@ -62,6 +62,7 @@ sockaddr_to_nvlist(const struct sockaddr *sa)
-             const struct sockaddr_in6 *in6 = (const struct sockaddr_in6 *)sa;
-             nvlist_add_binary(nvl, "address", &in6->sin6_addr, sizeof(in6->sin6_addr));
-             nvlist_add_number(nvl, "port", in6->sin6_port);
-+            nvlist_add_number(nvl, "scopeid", in6->sin6_scope_id);
+@@ -73,7 +73,6 @@ sockaddr_to_nvlist(const struct sockaddr *sa)
+     return (nvl);
+ }
+ 
+-#ifdef ENABLE_DCO_FLOAT_FREEBSD
+ static bool
+ nvlist_to_sockaddr(const nvlist_t *nvl, struct sockaddr_storage *ss)
+ {
+@@ -133,7 +132,6 @@ nvlist_to_sockaddr(const nvlist_t *nvl, struct sockaddr_storage *ss)
+ 
+     return (true);
+ }
+-#endif /* ifdef ENABLE_DCO_FLOAT_FREEBSD */
+ 
+ int
+ dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
+@@ -636,7 +634,6 @@ dco_do_read(dco_context_t *dco)
+             dco->dco_message_type = OVPN_CMD_SWAP_KEYS;
+             break;
+ 
+-#ifdef ENABLE_DCO_FLOAT_FREEBSD
+         case OVPN_NOTIF_FLOAT: {
+             const nvlist_t *address;
+ 
+@@ -655,7 +652,6 @@ dco_do_read(dco_context_t *dco)
+             dco->dco_message_type = OVPN_CMD_FLOAT_PEER;
              break;
          }
+-#endif
  
-@@ -118,6 +119,11 @@ nvlist_to_sockaddr(const nvlist_t *nvl, struct sockaddr_storage *ss)
-             assert(len == sizeof(in6->sin6_addr));
-             memcpy(&in6->sin6_addr, data, sizeof(in6->sin6_addr));
-             in6->sin6_port = nvlist_get_number(nvl, "port");
-+
-+            if (nvlist_exists_number(nvl, "scopeid"))
-+            {
-+                in6->sin6_scope_id = nvlist_get_number(nvl, "scopeid");
-+            }
-             break;
-         }
- 
+         default:
+             msg(M_WARN, "Unknown kernel notification %d", type);
 -- 
 2.50.1
 
