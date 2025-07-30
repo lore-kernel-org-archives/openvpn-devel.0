@@ -1,9 +1,11 @@
-From: Terrance <sourceforge@...2900...>
-Date: Tue, 29 Jul 2025 19:00:05 +0100
-Message-ID: <20250729180014.11550-2-sourceforge@...2900...>
+Date: Wed, 30 Jul 2025 11:30:40 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <aInmQC2YTsMbCunU@...2685...>
+References: <20250729180014.11550-2-sourceforge@...2900...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Update systemd service name param to match
- command
+In-Reply-To: <20250729180014.11550-2-sourceforge@...2900...>
+Subject: Re: [Openvpn-devel] [PATCH] Update systemd service name param to
+ match command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,47 +14,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Terrance <sourceforge@...2900...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Terrance <git@...2900...>
+On Tue, Jul 29, 2025 at 07:00:05PM +0100, Terrance via Openvpn-devel wrote:
+> From: Terrance <git@...2900...>
+> 
+> The service name displays `%I` which invokes systemd's path mangling
+> (notably, converting `-` to `/`), suggesting you need to provide an
+> encoded parameter (via e.g. `systemd-escape`), but the start command
+> itself uses `%i` which doesn't do the conversion.
+> 
+> This updates the service name to match the start command.
 
-The service name displays `%I` which invokes systemd's path mangling
-(notably, converting `-` to `/`), suggesting you need to provide an
-encoded parameter (via e.g. `systemd-escape`), but the start command
-itself uses `%i` which doesn't do the conversion.
+Change makes sense to me. I haven't specifically tested it but it only
+changes the description so I don't see how it could break anything.
 
-This updates the service name to match the start command.
----
-Additional discussion: https://github.com/OpenVPN/openvpn/pull/802
+Acked-by: Frank Lichtenheld <frank@...2641...>
 
- distro/systemd/openvpn-client@...2221... | 2 +-
- distro/systemd/openvpn-server@...2221... | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/open=
-vpn-client@...2221...
-index ae62e8c7..c32bb333 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -1,4 +1,4 @@
- [Unit]
--Description=3DOpenVPN tunnel for %I
-+Description=3DOpenVPN tunnel for %i
- After=3Dnetwork-online.target
- Wants=3Dnetwork-online.target
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/open=
-vpn-server@...2221...
-index 5123e072..547f5f54 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -1,4 +1,4 @@
- [Unit]
--Description=3DOpenVPN service for %I
-+Description=3DOpenVPN service for %i
- After=3Dnetwork-online.target
- Wants=3Dnetwork-online.target
---
-2.50.1
+Regards,
+-- 
+  Frank Lichtenheld
 
