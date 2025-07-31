@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 31 Jul 2025 15:43:43 +0000
+Date: Thu, 31 Jul 2025 15:43:41 +0000
 In-Reply-To: <gerrit.1753974592000.I37ca672f05e9d77ec586fa28dadc6dc752e574fb@...2715...>
 References: <gerrit.1753974592000.I37ca672f05e9d77ec586fa28dadc6dc752e574fb@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <55fdfc7564e443c5c391544b5c77fdcb8586f755-HTML@...2715...>
+Message-ID: <55fdfc7564e443c5c391544b5c77fdcb8586f755-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fCjkoCUVBTs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Omj5rdTwiAg="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix wrong byte
  order of --dns server
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fCjkoCUVBTs=
+--Omj5rdTwiAg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-25?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Fix wrong byte order of --dns server
 ......................................................................
@@ -56,7 +60,7 @@ M src/openvpn/options.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/1125/2
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 3ceada0..ff9addd 100644
@@ -89,46 +93,50 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---fCjkoCUVBTs=
+--Omj5rdTwiAg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1125?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Fix wrong byte order of --dns server<br><br>W=
-e already fixed it in commit 82fd89a04f, but<br>the fix got lost in 2dfc4f8=
-.<br><br>tuntap_options require host byte order, and we store<br>dns server=
-s in struct dns_server in network byte order,<br>what we got from getaddrin=
-fo().<br><br>Fix (again) by converting to the host byte order.<br><br>Chang=
-e-Id: I37ca672f05e9d77ec586fa28dadc6dc752e574fb<br>Signed-off-by: Lev Stipa=
-kov &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;=
-<br>Message-Id: &lt;20250731152912.21826-1-gert@...1296...&gt;<br>URL: http=
-s://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32460.html<=
-br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
-vpn/options.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
-an>index 3ceada0..ff9addd 100644</span><br><span>--- a/src/openvpn/options.=
-c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -3573,7 +3=
-573,7 @@</span><br><span>             {</span><br><span>                 if=
- (s-&gt;addr[i].family =3D=3D AF_INET &amp;&amp; tt-&gt;dns_len + 1 &lt; N_=
-DHCP_ADDR)</span><br><span>                 {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                    tt-&gt;dns[tt-&gt;dns_len++] =
-=3D s-&gt;addr[i].in.a4.s_addr;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    tt-&gt;dns[tt-&gt;dns_len++] =3D ntohl(s-&g=
-t;addr[i].in.a4.s_addr);</span><br><span>                 }</span><br><span=
->                 else if (tt-&gt;dns6_len + 1 &lt; N_DHCP_ADDR)</span><br>=
-<span>                 {</span><br><span></span><br></pre><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail">change =
-1125</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1125=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Fix wrong byte order of --dns server<br><br>We alrea=
+dy fixed it in commit 82fd89a04f, but<br>the fix got lost in 2dfc4f8.<br><b=
+r>tuntap_options require host byte order, and we store<br>dns servers in st=
+ruct dns_server in network byte order,<br>what we got from getaddrinfo().<b=
+r><br>Fix (again) by converting to the host byte order.<br><br>Change-Id: I=
+37ca672f05e9d77ec586fa28dadc6dc752e574fb<br>Signed-off-by: Lev Stipakov &lt=
+;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Mes=
+sage-Id: &lt;20250731152912.21826-1-gert@...1296...&gt;<br>URL: https://www=
+.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32460.html<br>Sign=
+ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/opt=
+ions.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/1125/2</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index=
+ 3ceada0..ff9addd 100644</span><br><span>--- a/src/openvpn/options.c</span>=
+<br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -3573,7 +3573,7 @@=
+</span><br><span>             {</span><br><span>                 if (s-&gt;=
+addr[i].family =3D=3D AF_INET &amp;&amp; tt-&gt;dns_len + 1 &lt; N_DHCP_ADD=
+R)</span><br><span>                 {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                    tt-&gt;dns[tt-&gt;dns_len++] =3D s-&gt;=
+addr[i].in.a4.s_addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                    tt-&gt;dns[tt-&gt;dns_len++] =3D ntohl(s-&gt;addr[i].=
+in.a4.s_addr);</span><br><span>                 }</span><br><span>         =
+        else if (tt-&gt;dns6_len + 1 &lt; N_DHCP_ADDR)</span><br><span>    =
+             {</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail">change 1125</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1125?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -146,8 +154,8 @@ c6dc752e574fb </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---fCjkoCUVBTs=--
+--Omj5rdTwiAg=--
 
