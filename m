@@ -1,15 +1,14 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 31 Jul 2025 12:07:39 +0000
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 31 Jul 2025 12:19:15 +0000
 In-Reply-To: <gerrit.1753959374000.Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787@...2715...>
 References: <gerrit.1753959374000.Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <86fce696fb8c01f7e0b77454db30af16bc9e9e52-EmailReviewComments-HTML@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <081d973d4c70fb608f1bcb381398322f58e37d39-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xJGL5uyh+FA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Kl7UUdscERE="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix DNS options
  duplication on PUSH_UPDATE
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,55 +19,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xJGL5uyh+FA=
+--Kl7UUdscERE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1121?usp=3Demail )
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1121?usp=3Demail
+
+to look at the new patch set (#3).
+
 
 Change subject: Fix DNS options duplication on PUSH_UPDATE
 ......................................................................
 
+Fix DNS options duplication on PUSH_UPDATE
 
-Patch Set 2:
+Commit
 
-(4 comments)
+    2dfc4f ("dns: deal with --dhcp-options when --dns is active")
 
-Commit Message:
+has removed reset of tuntap DNS options. Due to that, incoming --dns
+options are added to existing ones instead of overwriting them.
 
-http://gerrit.openvpn.net/c/openvpn/+/1121/comment/cc9f9b67_aace83f8 :
-PS2, Line 18: were added to existing once instead of overwriting them.
-*existing ones
+It has also added a new storage for --dhcp-option. The push-update
+code didn't clear it and as a result, incoming --dhcp-option options
+were added to existing ones instead of overwriting them.
 
+Fixed by:
 
-http://gerrit.openvpn.net/c/openvpn/+/1121/comment/6f40d257_3c5dd855 :
-PS2, Line 22:  - reseting tuntap DNS options (regression from abovementione=
-d commit)
-*resetting
+ - resetting tuntap DNS options (regression from abovementioned commit)
+ - clearing dhcp options storage in push-update code
 
+GitHub: fixes OpenVPN/openvpn#804
 
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1121/comment/769a02c7_b70d0065 :
-PS2, Line 3548:     if (s)
-s will never be NULL here, in that case we'd branched to /* Copy --dhcp-opt=
-ions to tuntap_options */ above already
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1121/comment/c0668a3d_ef605be7 :
-PS2, Line 6227:
-This code should instead store the DNS related things in `options->dns_opti=
-ons.from_dhcp`. Using `tuntap_options` directly is not how it is done any l=
-onger. Instead "values" of whatever origin are copied to `tuntap_options` d=
-uring the postprocess stage if needed.
+Change-Id: Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/options.c
+1 file changed, 11 insertions(+), 0 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1121/3
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3753810..3ceada0 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3527,7 +3527,13 @@
+ #endif /* if defined(_WIN32) */
+
+     /* Copy --dns options to tuntap_options */
++
+     const struct dns_domain *d =3D dns->search_domains;
++    if (d)
++    {
++        tt->domain_search_list_len =3D 0;
++    }
++
+     while (d && tt->domain_search_list_len + 1 < N_SEARCH_LIST_LEN)
+     {
+         tt->domain_search_list[tt->domain_search_list_len++] =3D d->name;
+@@ -3538,6 +3544,9 @@
+         msg(M_WARN, "WARNING: couldn't copy all --dns search-domains to TU=
+N/TAP");
+     }
+
++    tt->dns_len =3D 0;
++    tt->dns6_len =3D 0;
++
+     const struct dns_server *s =3D dns->servers;
+     while (s)
+     {
+@@ -6212,6 +6221,8 @@
+             }
+             o->disable_nbt =3D 0;
+             o->dhcp_options =3D 0;
++
++            CLEAR(options->dns_options.from_dhcp);
+ #if defined(TARGET_ANDROID)
+             o->http_proxy_port =3D 0;
+             o->http_proxy =3D NULL;
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1121?usp=3Demail
@@ -79,7 +117,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787
 Gerrit-Change-Number: 1121
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -88,61 +126,75 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 31 Jul 2025 12:07:39 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---xJGL5uyh+FA=
+--Kl7UUdscERE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
 /p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1121?usp=3Demail">View =
-Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1121/comment/cc9f9b67_aace83f8">Patch Set #2, Line 18:</a> <code sty=
-le=3D"font-family:monospace,monospace">were added to existing once instead =
-of overwriting them.</code></p><p style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">*existing ones</p></li><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1121/comment/6f40d257_3c5dd855">Patch Set #2, Line 22:</a> =
-<code style=3D"font-family:monospace,monospace"> - reseting tuntap DNS opti=
-ons (regression from abovementioned commit)</code></p><p style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">*resetting</p></li></ul></li><li styl=
-e=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul style=3D=
-"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1121/comment/769a02c7_b70d0065">Patch Set #2, Line 3548:</a> <cod=
-e style=3D"font-family:monospace,monospace">    if (s)</code></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">s will never be NULL her=
-e, in that case we&#39;d branched to /* Copy --dhcp-options to tuntap_optio=
-ns */ above already</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
-p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/1121/comment/c0668a3d_ef605be7">Patch Set #2, Line 6227:</a> <code st=
-yle=3D"font-family:monospace,monospace"></code></p><p style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">This code should instead store the DNS r=
-elated things in `options-&gt;dns_options.from_dhcp`. Using `tuntap_options=
-` directly is not how it is done any longer. Instead &quot;values&quot; of =
-whatever origin are copied to `tuntap_options` during the postprocess stage=
- if needed.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1121?usp=3Demail">change 1121</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1121?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<p>stipa <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1121?usp=3Demail">View Change</=
+a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;">Fix DNS options duplication on PUSH_UPDATE<br><br>Commit<br><br>    2dfc=
+4f (&quot;dns: deal with --dhcp-options when --dns is active&quot;)<br><br>=
+has removed reset of tuntap DNS options. Due to that, incoming --dns<br>opt=
+ions are added to existing ones instead of overwriting them.<br><br>It has =
+also added a new storage for --dhcp-option. The push-update<br>code didn&#3=
+9;t clear it and as a result, incoming --dhcp-option options<br>were added =
+to existing ones instead of overwriting them.<br><br>Fixed by:<br><br> - re=
+setting tuntap DNS options (regression from abovementioned commit)<br> - cl=
+earing dhcp options storage in push-update code<br><br>GitHub: fixes OpenVP=
+N/openvpn#804<br><br>Change-Id: Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787<b=
+r>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn=
+/options.c<br>1 file changed, 11 insertions(+), 0 deletions(-)<br><br></pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1121/3</pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><spa=
+n>index 3753810..3ceada0 100644</span><br><span>--- a/src/openvpn/options.c=
+</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -3527,7 +35=
+27,13 @@</span><br><span> #endif /* if defined(_WIN32) */</span><br><span> =
+</span><br><span>     /* Copy --dns options to tuntap_options */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     const st=
+ruct dns_domain *d =3D dns-&gt;search_domains;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (d)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        tt-&gt;domain_search_list_len =3D 0;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span>     while (d &amp;&amp; tt-&gt;domain_sear=
+ch_list_len + 1 &lt; N_SEARCH_LIST_LEN)</span><br><span>     {</span><br><s=
+pan>         tt-&gt;domain_search_list[tt-&gt;domain_search_list_len++] =3D=
+ d-&gt;name;</span><br><span>@@ -3538,6 +3544,9 @@</span><br><span>        =
+ msg(M_WARN, &quot;WARNING: couldn&#39;t copy all --dns search-domains to T=
+UN/TAP&quot;);</span><br><span>     }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    tt-&gt;dns_len =3D 0;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    tt-&gt;dns6_len =3D 0;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     cons=
+t struct dns_server *s =3D dns-&gt;servers;</span><br><span>     while (s)<=
+/span><br><span>     {</span><br><span>@@ -6212,6 +6221,8 @@</span><br><spa=
+n>             }</span><br><span>             o-&gt;disable_nbt =3D 0;</spa=
+n><br><span>             o-&gt;dhcp_options =3D 0;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            CLEAR(options-&gt;dns_options.from_dhcp);</span><br=
+><span> #if defined(TARGET_ANDROID)</span><br><span>             o-&gt;http=
+_proxy_port =3D 0;</span><br><span>             o-&gt;http_proxy =3D NULL;<=
+/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1121?usp=3Demail">change 1121</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
+EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
+org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1121?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ife4d8fc5f8e2183e61226d66a76=
 bbaa02c06f787 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1121 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -158,12 +210,8 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 31 Jul 2025 12:07:39=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---xJGL5uyh+FA=--
+--Kl7UUdscERE=--
 
