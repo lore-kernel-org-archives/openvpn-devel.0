@@ -1,11 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 31 Jul 2025 14:24:05 +0200
-Message-ID: <20250731122410.12200-1-gert@...1296...>
-In-Reply-To: <gerrit.1753959374000.Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787@...2715...>
-References: <gerrit.1753959374000.Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787@...2715...>
+Date: Thu, 31 Jul 2025 14:25:31 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <aItguw1MYN+mq+15@...2685...>
+References: <20250729180014.11550-2-sourceforge@...2900...>
+ <13e422be-28c8-4d4e-b21f-8baa757a6761@...2669...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Fix DNS options duplication on
- PUSH_UPDATE
+In-Reply-To: <13e422be-28c8-4d4e-b21f-8baa757a6761@...2669...>
+Subject: Re: [Openvpn-devel] [PATCH] Update systemd service name param to
+ match command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,80 +15,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Timo Rothenpieler <timo@...2669...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+On Wed, Jul 30, 2025 at 02:16:43PM +0200, Timo Rothenpieler wrote:
+> On 29/07/2025 20:00, Terrance via Openvpn-devel wrote:
+> > From: Terrance <git@...2900...>
+> > 
+> > The service name displays `%I` which invokes systemd's path mangling
+> > (notably, converting `-` to `/`), suggesting you need to provide an
+> > encoded parameter (via e.g. `systemd-escape`), but the start command
+> > itself uses `%i` which doesn't do the conversion.
+> > 
+> > This updates the service name to match the start command.
+> 
+> This makes me wonder if it isn't the one passed to the start command that's
+> actually not what it was intended to be.
+> 
+> Cause using %I there would enable to put configs in subdirs. With %i that's
+> impossible, since it can't contain slashes.
 
-Commit
+Yes, I agree. I think %I would have been better to use exactly for the reason
+you mention. But I think it is too late now. If we would switch to %I now it
+would break existing configs.
 
-    2dfc4f ("dns: deal with --dhcp-options when --dns is active")
-
-has removed reset of tuntap DNS options. Due to that, incoming --dns
-options are added to existing ones instead of overwriting them.
-
-It has also added a new storage for --dhcp-option. The push-update
-code didn't clear it and as a result, incoming --dhcp-option options
-were added to existing ones instead of overwriting them.
-
-Fixed by:
-
- - resetting tuntap DNS options (regression from abovementioned commit)
- - clearing dhcp options storage in push-update code
-
-GitHub: fixes OpenVPN/openvpn#804
-
-Change-Id: Ife4d8fc5f8e2183e61226d66a76bbaa02c06f787
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Heiko Hund <heiko@...515...>
----
-
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1121
-This mail reflects revision 3 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Heiko Hund <heiko@...515...>
-
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3753810..3ceada0 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3527,7 +3527,13 @@
- #endif /* if defined(_WIN32) */
- 
-     /* Copy --dns options to tuntap_options */
-+
-     const struct dns_domain *d = dns->search_domains;
-+    if (d)
-+    {
-+        tt->domain_search_list_len = 0;
-+    }
-+
-     while (d && tt->domain_search_list_len + 1 < N_SEARCH_LIST_LEN)
-     {
-         tt->domain_search_list[tt->domain_search_list_len++] = d->name;
-@@ -3538,6 +3544,9 @@
-         msg(M_WARN, "WARNING: couldn't copy all --dns search-domains to TUN/TAP");
-     }
- 
-+    tt->dns_len = 0;
-+    tt->dns6_len = 0;
-+
-     const struct dns_server *s = dns->servers;
-     while (s)
-     {
-@@ -6212,6 +6221,8 @@
-             }
-             o->disable_nbt = 0;
-             o->dhcp_options = 0;
-+
-+            CLEAR(options->dns_options.from_dhcp);
- #if defined(TARGET_ANDROID)
-             o->http_proxy_port = 0;
-             o->http_proxy = NULL;
+Regards,
+-- 
+  Frank Lichtenheld
 
