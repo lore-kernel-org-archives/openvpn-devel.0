@@ -1,10 +1,17 @@
-Date: Thu, 31 Jul 2025 12:55:29 +0200 (CEST)
-Message-Id: <202507311055.56VAtTa5086394@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250731104833.23305-1-gert@...1296...>
-References: <20250731104833.23305-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix --dns options for TAP
- adapter
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 31 Jul 2025 10:55:39 +0000
+In-Reply-To: <gerrit.1753953375000.Id95cd14095a03afb3140a03ae96e9f5679e4fe89@...2715...>
+References: <gerrit.1753953375000.Id95cd14095a03afb3140a03ae96e9f5679e4fe89@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <cb36a94298e18ae1ca0315a8b47dbad16e65b527-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="LvrTKqIWca0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix --dns options
+ for TAP adapter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +20,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-I have stared at the code, and together with the findings from the
-previous commit (040e0d1c) this very much looks like the right fix.
+--LvrTKqIWca0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I haven't tested it myself, just let the BBs compile-test on all
-platforms (especially win32 <-> android, given the #ifdefs in the
-neighbourhood)
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1120?usp=3Demail )
 
-Your patch has been applied to the master branch.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-commit 264fe91660fb1a7a426161a9a042ed3f9bd0a7a6
-Author: Lev Stipakov
-Date:   Thu Jul 31 12:48:27 2025 +0200
 
-     Fix --dns options for TAP adapter
+Change subject: Fix --dns options for TAP adapter
+......................................................................
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20250731104833.23305-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32436.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Fix --dns options for TAP adapter
 
+Commit
+
+    2dfc4f ("dns: deal with --dhcp-options when --dns is active")
+
+has accidentally removed setting of the DHCP_OPTIONS_DHCP_OPTIONAL
+flag when copying --dns options. This flag is required to apply options
+via DHCP string, which we do for TAP adapter. As a result, --dns options
+stopped working for TAP.
+
+Fix by setting this flag when copying --dns options to tuntap_options.
+
+Change-Id: Id95cd14095a03afb3140a03ae96e9f5679e4fe89
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20250731104833.23305-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
+436.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/options.c
+1 file changed, 1 insertion(+), 0 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/20/1120/3
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 53be6f5..3753810 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3579,6 +3579,7 @@
+             {
+                 msg(M_WARN, "WARNING: couldn't copy all --dns server addre=
+sses to TUN/TAP");
+             }
++            tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
+             return;
+         }
+     }
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1120?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Id95cd14095a03afb3140a03ae96e9f5679e4fe89
+Gerrit-Change-Number: 1120
+Gerrit-PatchSet: 3
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--LvrTKqIWca0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1120=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Fix --dns options for TAP adapter<br><br>Commit<br><=
+br>    2dfc4f (&quot;dns: deal with --dhcp-options when --dns is active&quo=
+t;)<br><br>has accidentally removed setting of the DHCP_OPTIONS_DHCP_OPTION=
+AL<br>flag when copying --dns options. This flag is required to apply optio=
+ns<br>via DHCP string, which we do for TAP adapter. As a result, --dns opti=
+ons<br>stopped working for TAP.<br><br>Fix by setting this flag when copyin=
+g --dns options to tuntap_options.<br><br>Change-Id: Id95cd14095a03afb3140a=
+03ae96e9f5679e4fe89<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br=
+>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250731=
+104833.23305-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/ope=
+nvpn-devel@lists.sourceforge.net/msg32436.html<br>Signed-off-by: Gert Doeri=
+ng &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chan=
+ged, 1 insertion(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
+.net:29418/openvpn refs/changes/20/1120/3</pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
+options.c b/src/openvpn/options.c</span><br><span>index 53be6f5..3753810 10=
+0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
+openvpn/options.c</span><br><span>@@ -3579,6 +3579,7 @@</span><br><span>   =
+          {</span><br><span>                 msg(M_WARN, &quot;WARNING: cou=
+ldn&#39;t copy all --dns server addresses to TUN/TAP&quot;);</span><br><spa=
+n>             }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         tt-&gt;dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;</span><br><sp=
+an>             return;</span><br><span>         }</span><br><span>     }</=
+span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1120?usp=3Demail">change 1120</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1120?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
+/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id95cd14095a03afb3140a03ae96=
+e9f5679e4fe89 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1120 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--LvrTKqIWca0=--
 
