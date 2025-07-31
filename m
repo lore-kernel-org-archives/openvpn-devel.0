@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 31 Jul 2025 15:28:42 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 31 Jul 2025 17:29:06 +0200
+Message-ID: <20250731152912.21826-1-gert@...1296...>
 In-Reply-To: <gerrit.1753974592000.I37ca672f05e9d77ec586fa28dadc6dc752e574fb@...2715...>
 References: <gerrit.1753974592000.I37ca672f05e9d77ec586fa28dadc6dc752e574fb@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <0cda443ab374a884e532691dac8373c890ac2a1d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="X7jTBsqLQLg="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix wrong byte
- order of --dns server
+Subject: [Openvpn-devel] [PATCH v1] Fix wrong byte order of --dns server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,94 +13,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---X7jTBsqLQLg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+We already fixed it in commit 82fd89a04f, but
+the fix got lost in 2dfc4f8.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1125?usp=3Demail )
+tuntap_options require host byte order, and we store
+dns servers in struct dns_server in network byte order,
+what we got from getaddrinfo().
 
-Change subject: Fix wrong byte order of --dns server
-......................................................................
+Fix (again) by converting to the host byte order.
 
+Change-Id: I37ca672f05e9d77ec586fa28dadc6dc752e574fb
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Patch Set 1: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1125
+This mail reflects revision 1 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I37ca672f05e9d77ec586fa28dadc6dc752e574fb
-Gerrit-Change-Number: 1125
-Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 31 Jul 2025 15:28:42 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---X7jTBsqLQLg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail=
-">change 1125</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1125?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I37ca672f05e9d77ec586fa28dad=
-c6dc752e574fb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1125 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 31 Jul 2025 15:28:42=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---X7jTBsqLQLg=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3ceada0..ff9addd 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3573,7 +3573,7 @@
+             {
+                 if (s->addr[i].family == AF_INET && tt->dns_len + 1 < N_DHCP_ADDR)
+                 {
+-                    tt->dns[tt->dns_len++] = s->addr[i].in.a4.s_addr;
++                    tt->dns[tt->dns_len++] = ntohl(s->addr[i].in.a4.s_addr);
+                 }
+                 else if (tt->dns6_len + 1 < N_DHCP_ADDR)
+                 {
 
