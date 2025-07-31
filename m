@@ -1,10 +1,10 @@
+Date: Thu, 31 Jul 2025 17:43:35 +0200 (CEST)
+Message-Id: <202507311543.56VFhZeI095247@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Thu, 31 Jul 2025 17:29:06 +0200
-Message-ID: <20250731152912.21826-1-gert@...1296...>
-In-Reply-To: <gerrit.1753974592000.I37ca672f05e9d77ec586fa28dadc6dc752e574fb@...2715...>
-References: <gerrit.1753974592000.I37ca672f05e9d77ec586fa28dadc6dc752e574fb@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Fix wrong byte order of --dns server
+In-Reply-To: <20250731152912.21826-1-gert@...1296...>
+References: <20250731152912.21826-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix wrong byte order of --dns
+ server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Yeah, git rebase accident in the "offending" patch (patch was written,
+bug was fixed in the "to-be-moved" code, git rebase adjusted the "old"
+side, but had no way to fix this for the "new" side and nobody noticed).
 
-We already fixed it in commit 82fd89a04f, but
-the fix got lost in 2dfc4f8.
+Let's try to get better DNS coverage into the automated Windows test rig.
 
-tuntap_options require host byte order, and we store
-dns servers in struct dns_server in network byte order,
-what we got from getaddrinfo().
+As for the test, just stared at the code and did a windows compile test -
+as Lev wrote, we have fixed this bug before (doubly annoying).
 
-Fix (again) by converting to the host byte order.
+Your patch has been applied to the master branch.
 
-Change-Id: I37ca672f05e9d77ec586fa28dadc6dc752e574fb
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
----
+commit 63fed92c96c23e061a64683cab431db1269e3f73
+Author: Lev Stipakov
+Date:   Thu Jul 31 17:29:06 2025 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Fix wrong byte order of --dns server
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1125
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250731152912.21826-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32460.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3ceada0..ff9addd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3573,7 +3573,7 @@
-             {
-                 if (s->addr[i].family == AF_INET && tt->dns_len + 1 < N_DHCP_ADDR)
-                 {
--                    tt->dns[tt->dns_len++] = s->addr[i].in.a4.s_addr;
-+                    tt->dns[tt->dns_len++] = ntohl(s->addr[i].in.a4.s_addr);
-                 }
-                 else if (tt->dns6_len + 1 < N_DHCP_ADDR)
-                 {
+--
+kind regards,
+
+Gert Doering
+
 
