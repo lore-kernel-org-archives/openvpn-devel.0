@@ -1,16 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Fri, 1 Aug 2025 10:49:48 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri,  1 Aug 2025 15:03:02 +0200
+Message-Id: <20250801130302.372311-1-frank@...2641...>
 In-Reply-To: <gerrit.1753960651000.I41c5dfc7489352a9534ff6b1585a5a81e0623ab1@...2715...>
 References: <gerrit.1753960651000.I41c5dfc7489352a9534ff6b1585a5a81e0623ab1@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., ralf@...2726...
-Message-ID: <85d7a6cd22ddce7ef650176338758e2509ae94e7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ojsPZoy6ooI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco linux:
- avoid redefining ovpn enums (2.6)
+Subject: [Openvpn-devel] [PATCH v2] dco linux: avoid redefining ovpn enums
+ (2.6)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +14,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...2726...>
 
---ojsPZoy6ooI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Starting with Linux kernel version 6.16, a couple of ovpn-related enum
+definitions were introduced in the `include/uapi/linux/if_link.h`
+header. Redefining them in openvpn when they are already present in the
+system headers can lead to conflicts or build issues.
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+This commit ensures that enum redefinitions are avoided by conditionally
+using the existing definitions from the system header when available.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1122?usp=3Demail )
+This is the port to release/2.6 based on commit
+1d3c2b67a73a0aa011c13e62f876d24e49d41df0.
 
-Change subject: dco linux: avoid redefining ovpn enums (2.6)
-......................................................................
+Change-Id: I41c5dfc7489352a9534ff6b1585a5a81e0623ab1
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.6.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1122
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I41c5dfc7489352a9534ff6b1585a5a81e0623ab1
-Gerrit-Change-Number: 1122
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: ralf_lici <ralf@...2726...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Fri, 01 Aug 2025 10:49:48 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---ojsPZoy6ooI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
-i. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail=
-">change 1122</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I41c5dfc7489352a9534ff6b1585=
-a5a81e0623ab1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1122 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ralf_lici &lt;ralf@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Aug 2025 10:49:48=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---ojsPZoy6ooI=--
+        
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 511519a..5179912 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -26,11 +26,13 @@
+ 
+ #include "event.h"
+ 
+-#include "ovpn_dco_linux.h"
+-
+ #include <netlink/socket.h>
+ #include <netlink/netlink.h>
+ 
++/* include last since we need to behave differently if the kernel headers
++ * are from 6.16+ */
++#include "ovpn_dco_linux.h"
++
+ typedef enum ovpn_key_slot dco_key_slot_t;
+ typedef enum ovpn_cipher_alg dco_cipher_t;
+ 
+diff --git a/src/openvpn/ovpn_dco_linux.h b/src/openvpn/ovpn_dco_linux.h
+index 73e19b5..34abc6a 100644
+--- a/src/openvpn/ovpn_dco_linux.h
++++ b/src/openvpn/ovpn_dco_linux.h
+@@ -237,14 +237,17 @@
+ 	OVPN_PACKET_ATTR_MAX = __OVPN_PACKET_ATTR_AFTER_LAST - 1,
+ };
+ 
++#ifndef IFLA_OVPN_MAX
++
+ enum ovpn_ifla_attrs {
+ 	IFLA_OVPN_UNSPEC = 0,
+ 	IFLA_OVPN_MODE,
+ 
+-	__IFLA_OVPN_AFTER_LAST,
+-	IFLA_OVPN_MAX = __IFLA_OVPN_AFTER_LAST - 1,
++	__IFLA_OVPN_MAX,
+ };
+ 
++#define IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)
++
+ enum ovpn_mode {
+ 	__OVPN_MODE_FIRST = 0,
+ 	OVPN_MODE_P2P = __OVPN_MODE_FIRST,
+@@ -253,4 +256,6 @@
+ 	__OVPN_MODE_AFTER_LAST,
+ };
+ 
++#endif /* ifndef IFLA_OVPN_MAX */
++
+ #endif /* _UAPI_LINUX_OVPN_DCO_H_ */
 
