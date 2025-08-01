@@ -1,15 +1,8 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 1 Aug 2025 09:33:43 +0000
-References: <gerrit.1754040821000.Ib2f30fe69cb676e347e4d59cd2db68db7568ba5b@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7280c018eeedd18b6c5fc10c23177dcd5e09cf1b-HTML@...2715...>
+Date: Fri, 1 Aug 2025 11:38:10 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <aIyLApOWnJuPjRuX@...2685...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YDXGsIwPHb8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Log setting DNS via
- NRPT
+Subject: [Openvpn-devel] OpenVPN 2.7_alpha3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,143 +11,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
---YDXGsIwPHb8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The OpenVPN community project team is proud to release OpenVPN 2.7_alpha3.
+This is the third Alpha release for the feature release 2.7.0.
+As the Alpha name implies this is an early release build, it is not intended
+for production use.
 
-Attention is currently required from: flichtenheld, plaisthos.
+Feature changes since 2.7_alpha2:
 
-Hello plaisthos, flichtenheld,
+* --dns-updown script for macOS
+* Client-side support for PUSH_UPDATE handling
+* Support for floating TLS clients when DCO is active
+  (requires latest versions of DCO drivers)
+* Use of user-defined routing tables on Linux
+* PQE support for WolfSSL
 
-I'd like you to do a code review.
-Please visit
+Important bug fixes since 2.7_alpha2:
 
-    http://gerrit.openvpn.net/c/openvpn/+/1126?usp=3Demail
+* Fix issue in handling DCO messages on Linux that could lead to
+  various problems due to unhandled messages
+* Fix issues with DHCP on Windows with tap driver
 
-to review the following change.
+Highlights of 2.7 include:
+* Multi-socket support for servers -- Handle multiple addresses/ports/protocols
+within one server
+* Improved Client support for DNS options
+  * Client implementations for Linux/BSD, included with the default install
+  * New client implementation for Windows, adding support for features like split
+DNS and DNSSEC
+* Architectural improvements on Windows
+  * The block-local flag is now enforced with WFP filters
+  * Windows network adapters are now generated on demand
+  * Windows automatic service now runs as an unprivileged user
+  * Support for server mode in win-dco driver
+    Note: Support for the wintun driver has been removed. win-dco is now the
+    default, tap-windows6 is the fallback solution for use-cases not covered by win-dco.
+* Improved data channel
+  * Enforcement of AES-GCM usage limit
+  * Epoch data keys and packet format
+* Support for new upstream DCO Linux kernel module
+  This release supports the new ovpn DCO Linux kernel module which will be
+available in future upstream Linux kernel releases. Backports of the new module
+to current kernels are available via the ovpn-backports project.
+* Client-side support for new PUSH_UPDATE control-channel message
+  This allows servers to send updates to options like routing and DNS config without
+  triggering a reconnect.
+* TLS 1.3 support with bleeding-edge mbedTLS versions
 
+More details can be found in the Changes document:
 
-Change subject: Log setting DNS via NRPT
-......................................................................
+<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
 
-Log setting DNS via NRPT
+Source code and Windows installers can be downloaded from our download page:
 
-Unlike other ways of setting DNS, we don't log anything
-when we use NRPT. Since dco-win/--dns is the recommended
-configuration and it uses NRPT to set DNS, let's log it.
+<https://community.openvpn.net/Downloads>
 
-Change-Id: Ib2f30fe69cb676e347e4d59cd2db68db7568ba5b
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M src/openvpn/dns.c
-1 file changed, 5 insertions(+), 0 deletions(-)
+Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the various
+official Community repositories:
 
+<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/1126/1
-
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index ea3d91b..e079cd0 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -461,6 +461,11 @@
-     make_domain_list("dns search domains", search_domains, false,
-                      nrpt.search_domains, sizeof(nrpt.search_domains));
-
-+    msg(D_LOW, "%s NRPT DNS%s%s on '%s' (if_index =3D %d) using service",
-+        (add ? "Setting" : "Deleting"), nrpt.resolve_domains[0] !=3D 0 ? "=
-, resolve domains" : "",
-+        nrpt.search_domains[0] !=3D 0 ? ", search domains" : "",
-+        nrpt.iface.name, nrpt.iface.index);
-+
-     send_msg_iservice(o->msg_channel, &nrpt, sizeof(nrpt), &ack, "DNS");
- }
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1126?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib2f30fe69cb676e347e4d59cd2db68db7568ba5b
-Gerrit-Change-Number: 1126
-Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
-
---YDXGsIwPHb8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1126?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">Log setting DNS via NRPT<br><br>Unlike other ways of setting=
- DNS, we don&#39;t log anything<br>when we use NRPT. Since dco-win/--dns is=
- the recommended<br>configuration and it uses NRPT to set DNS, let&#39;s lo=
-g it.<br><br>Change-Id: Ib2f30fe69cb676e347e4d59cd2db68db7568ba5b<br>Signed=
--off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/dns.c<b=
-r>1 file changed, 5 insertions(+), 0 deletions(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/26/1126/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index ea3d91b..=
-e079cd0 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>+++ =
-b/src/openvpn/dns.c</span><br><span>@@ -461,6 +461,11 @@</span><br><span>  =
-   make_domain_list(&quot;dns search domains&quot;, search_domains, false,<=
-/span><br><span>                      nrpt.search_domains, sizeof(nrpt.sear=
-ch_domains));</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    msg(D_LOW, &quot;%s NRPT DNS%s%s on &#39;%s&#39; (if_index =
-=3D %d) using service&quot;,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        (add ? &quot;Setting&quot; : &quot;Deleting&quot;), nrpt.r=
-esolve_domains[0] !=3D 0 ? &quot;, resolve domains&quot; : &quot;&quot;,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        nrpt.search_do=
-mains[0] !=3D 0 ? &quot;, search domains&quot; : &quot;&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        nrpt.iface.name, nrpt.if=
-ace.index);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span>     send_msg_iservice(o-&gt;msg_channel, &amp;nrpt, sizeof(nrpt),=
- &amp;ack, &quot;DNS&quot;);</span><br><span> }</span><br><span> </span><br=
-><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1126?usp=3Demail">change 1126</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1126?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib2f30fe69cb676e347e4d59cd2d=
-b68db7568ba5b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1126 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-
-
---YDXGsIwPHb8=--
+Regards,
+-- 
+  Frank Lichtenheld
 
