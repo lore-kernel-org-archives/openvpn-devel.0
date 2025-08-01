@@ -1,8 +1,16 @@
-Date: Fri, 1 Aug 2025 11:38:10 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <aIyLApOWnJuPjRuX@...2685...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Fri, 1 Aug 2025 10:49:48 +0000
+In-Reply-To: <gerrit.1753960651000.I41c5dfc7489352a9534ff6b1585a5a81e0623ab1@...2715...>
+References: <gerrit.1753960651000.I41c5dfc7489352a9534ff6b1585a5a81e0623ab1@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., ralf@...2726...
+Message-ID: <85d7a6cd22ddce7ef650176338758e2509ae94e7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.7_alpha3 released
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ojsPZoy6ooI="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco linux:
+ avoid redefining ovpn enums (2.6)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,71 +19,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The OpenVPN community project team is proud to release OpenVPN 2.7_alpha3.
-This is the third Alpha release for the feature release 2.7.0.
-As the Alpha name implies this is an early release build, it is not intended
-for production use.
+--ojsPZoy6ooI=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Feature changes since 2.7_alpha2:
+Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
 
-* --dns-updown script for macOS
-* Client-side support for PUSH_UPDATE handling
-* Support for floating TLS clients when DCO is active
-  (requires latest versions of DCO drivers)
-* Use of user-defined routing tables on Linux
-* PQE support for WolfSSL
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1122?usp=3Demail )
 
-Important bug fixes since 2.7_alpha2:
+Change subject: dco linux: avoid redefining ovpn enums (2.6)
+......................................................................
 
-* Fix issue in handling DCO messages on Linux that could lead to
-  various problems due to unhandled messages
-* Fix issues with DHCP on Windows with tap driver
 
-Highlights of 2.7 include:
-* Multi-socket support for servers -- Handle multiple addresses/ports/protocols
-within one server
-* Improved Client support for DNS options
-  * Client implementations for Linux/BSD, included with the default install
-  * New client implementation for Windows, adding support for features like split
-DNS and DNSSEC
-* Architectural improvements on Windows
-  * The block-local flag is now enforced with WFP filters
-  * Windows network adapters are now generated on demand
-  * Windows automatic service now runs as an unprivileged user
-  * Support for server mode in win-dco driver
-    Note: Support for the wintun driver has been removed. win-dco is now the
-    default, tap-windows6 is the fallback solution for use-cases not covered by win-dco.
-* Improved data channel
-  * Enforcement of AES-GCM usage limit
-  * Epoch data keys and packet format
-* Support for new upstream DCO Linux kernel module
-  This release supports the new ovpn DCO Linux kernel module which will be
-available in future upstream Linux kernel releases. Backports of the new module
-to current kernels are available via the ovpn-backports project.
-* Client-side support for new PUSH_UPDATE control-channel message
-  This allows servers to send updates to options like routing and DNS config without
-  triggering a reconnect.
-* TLS 1.3 support with bleeding-edge mbedTLS versions
+Patch Set 2: Code-Review+2
 
-More details can be found in the Changes document:
 
-<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Source code and Windows installers can be downloaded from our download page:
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I41c5dfc7489352a9534ff6b1585a5a81e0623ab1
+Gerrit-Change-Number: 1122
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: ralf_lici <ralf@...2726...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Fri, 01 Aug 2025 10:49:48 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-<https://community.openvpn.net/Downloads>
+--ojsPZoy6ooI=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the various
-official Community repositories:
+<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
+i. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail=
+">change 1122</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1122?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I41c5dfc7489352a9534ff6b1585=
+a5a81e0623ab1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1122 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ralf_lici &lt;ralf@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Aug 2025 10:49:48=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
-Regards,
--- 
-  Frank Lichtenheld
+
+--ojsPZoy6ooI=--
 
