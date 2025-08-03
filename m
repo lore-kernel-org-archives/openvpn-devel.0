@@ -1,10 +1,16 @@
-Date: Fri, 1 Aug 2025 15:30:54 +0200 (CEST)
-Message-Id: <202508011330.571DUsOE033270@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250801130302.372311-1-frank@...2641...>
-References: <20250801130302.372311-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco linux: avoid redefining
- ovpn enums (2.6)
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 3 Aug 2025 14:39:18 +0000
+In-Reply-To: <gerrit.1753966620000.Idfe5c615d1109a1038207c1c1b0e0de4da3279f5@...2715...>
+References: <gerrit.1753966620000.Idfe5c615d1109a1038207c1c1b0e0de4da3279f5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <26ea785818a792d04a29b29d14f0215d30b167e0-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="RPfOJxEKz6w="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Update text of GPL
+ to latest version from FSF
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-As the commit message says, this is a backport of the master commit
-1d3c2b67a73a with a slight change in the header inclusion order (needed
-for the 2.6 code base).  Antonio has ACKed it, the BBs confirm it does not
-break anything.
+--RPfOJxEKz6w=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the release/2.6 branch.
+Attention is currently required from: flichtenheld, plaisthos.
 
-commit 1fbbe91d292fb925f5af73b512d7d1c83abfe714
-Author: Frank Lichtenheld
-Date:   Fri Aug 1 15:03:02 2025 +0200
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1123?usp=3Demail )
 
-     dco linux: avoid redefining ovpn enums (2.6)
+Change subject: Update text of GPL to latest version from FSF
+......................................................................
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Antonio Quartulli <antonio@...2726...>
-     Message-Id: <20250801130302.372311-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32470.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+
+Patch Set 2: Code-Review+2
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1123?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Idfe5c615d1109a1038207c1c1b0e0de4da3279f5
+Gerrit-Change-Number: 1123
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 03 Aug 2025 14:39:18 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
+--RPfOJxEKz6w=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1123?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1123?usp=3Demail=
+">change 1123</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1123?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idfe5c615d1109a1038207c1c1b0=
+e0de4da3279f5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1123 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 03 Aug 2025 14:39:18=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--RPfOJxEKz6w=--
 
