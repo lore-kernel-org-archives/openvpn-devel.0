@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Aug 2025 09:34:52 +0000
+Date: Mon, 4 Aug 2025 09:34:51 +0000
 In-Reply-To: <gerrit.1751017165000.I03195c21807cdef0a2f903f424982ec29a555103@...2715...>
 References: <gerrit.1751017165000.I03195c21807cdef0a2f903f424982ec29a555103@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <9cabba7d662d711e03c1954bc4a8b8e6e4d991ee-HTML@...2715...>
+Message-ID: <9cabba7d662d711e03c1954bc4a8b8e6e4d991ee-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zHZTVoUEXdA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="JckIZDPL1UE="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Update
  git-pre-commit-uncrustify.sh to handle clang-format
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zHZTVoUEXdA=
+--JckIZDPL1UE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/10=
-70?usp=3Demail )
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1070?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Update git-pre-commit-uncrustify.sh to handle clang-format
 ......................................................................
@@ -49,7 +53,7 @@ R dev-tools/git-pre-commit-format.sh
 1 file changed, 32 insertions(+), 14 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/1070/4
 
 diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-com=
 mit-format.sh
@@ -163,127 +167,130 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---zHZTVoUEXdA=
+--JckIZDPL1UE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1070?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Update git-pre-commit-uncrustify.sh to handle=
- clang-format<br><br>Rename it as well, since it is not specific to<br>uncr=
-ustify anymore.<br><br>Change-Id: I03195c21807cdef0a2f903f424982ec29a555103=
-<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: =
-Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250804092739.1641=
-0-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@=
-lists.sourceforge.net/msg32497.html<br>Signed-off-by: Gert Doering &lt;gert=
-@...1296...&gt;<br>---<br>R dev-tools/git-pre-commit-format.sh<br>1 file ch=
-anged, 32 insertions(+), 14 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-=
-commit-format.sh</span><br><span>similarity index 81%</span><br><span>renam=
-e from dev-tools/git-pre-commit-uncrustify.sh</span><br><span>rename to dev=
--tools/git-pre-commit-format.sh</span><br><span>index 9851c21..6e1ac71 1007=
-55</span><br><span>--- a/dev-tools/git-pre-commit-uncrustify.sh</span><br><=
-span>+++ b/dev-tools/git-pre-commit-format.sh</span><br><span>@@ -2,6 +2,7 =
-@@</span><br><span> </span><br><span> # Copyright (c) 2015, David Martin</s=
-pan><br><span> #               2022, Heiko Hund</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#               2025, Frank Lichtenheld</span><=
-br><span> # All rights reserved.</span><br><span> #</span><br><span> # Redi=
-stribution and use in source and binary forms, with or without</span><br><s=
-pan>@@ -26,10 +27,12 @@</span><br><span> # OF THIS SOFTWARE, EVEN IF ADVISE=
-D OF THE POSSIBILITY OF SUCH DAMAGE.</span><br><span> </span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# git pre-commit hook th=
-at runs an Uncrustify stylecheck.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+# git pre-commit hook that runs a stylecheck.</span><br><span=
-> # Features:</span><br><span> #  - abort commit when commit does not compl=
-y with the style guidelines</span><br><span> #  - create a patch of the pro=
-posed style changes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#  - use clang-format or uncrustify depending on presence of .clang-format<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#    config file</sp=
-an><br><span> #</span><br><span> # More info on Uncrustify: http://uncrusti=
-fy.sourceforge.net/</span><br><span> </span><br><span>@@ -77,27 +80,42 @@</=
-span><br><span>     against=3D4b825dc642cb6eb9a060e54bf8d69288fbee4904</spa=
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1070?usp=3Demail">View Change</a></p><p>The following approvals got outd=
+ated and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Update git-pre-commit-uncrustify.sh to handle clang-=
+format<br><br>Rename it as well, since it is not specific to<br>uncrustify =
+anymore.<br><br>Change-Id: I03195c21807cdef0a2f903f424982ec29a555103<br>Sig=
+ned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Do=
+ering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250804092739.16410-1-ger=
+t@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1096...=
+ourceforge.net/msg32497.html<br>Signed-off-by: Gert Doering &lt;gert@...1826...=
+6...&gt;<br>---<br>R dev-tools/git-pre-commit-format.sh<br>1 file changed, =
+32 insertions(+), 14 deletions(-)<br><br></pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.n=
+et:29418/openvpn refs/changes/70/1070/4</pre><pre style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;"><span>diff --git a/dev-tools/git-=
+pre-commit-uncrustify.sh b/dev-tools/git-pre-commit-format.sh</span><br><sp=
+an>similarity index 81%</span><br><span>rename from dev-tools/git-pre-commi=
+t-uncrustify.sh</span><br><span>rename to dev-tools/git-pre-commit-format.s=
+h</span><br><span>index 9851c21..6e1ac71 100755</span><br><span>--- a/dev-t=
+ools/git-pre-commit-uncrustify.sh</span><br><span>+++ b/dev-tools/git-pre-c=
+ommit-format.sh</span><br><span>@@ -2,6 +2,7 @@</span><br><span> </span><br=
+><span> # Copyright (c) 2015, David Martin</span><br><span> #              =
+ 2022, Heiko Hund</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
+              2025, Frank Lichtenheld</span><br><span> # All rights reserve=
+d.</span><br><span> #</span><br><span> # Redistribution and use in source a=
+nd binary forms, with or without</span><br><span>@@ -26,10 +27,12 @@</span>=
+<br><span> # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH D=
+AMAGE.</span><br><span> </span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-# git pre-commit hook that runs an Uncrustify styleche=
+ck.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# git pre-commit=
+ hook that runs a stylecheck.</span><br><span> # Features:</span><br><span>=
+ #  - abort commit when commit does not comply with the style guidelines</s=
+pan><br><span> #  - create a patch of the proposed style changes</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#  - use clang-format or uncru=
+stify depending on presence of .clang-format</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#    config file</span><br><span> #</span><br><spa=
+n> # More info on Uncrustify: http://uncrustify.sourceforge.net/</span><br>=
+<span> </span><br><span>@@ -77,27 +80,42 @@</span><br><span>     against=3D=
+4b825dc642cb6eb9a060e54bf8d69288fbee4904</span><br><span> fi</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-UNCRUSTIFY=3D$(com=
+mand -v uncrustify)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-UN=
+CRUST_CONFIG=3D&quot;$(git rev-parse --show-toplevel)/dev-tools/uncrustify.=
+conf&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TOPDIR=3D=
+&quot;$(git rev-parse --show-toplevel)&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+if [ -e &quot;${TOPDIR}/.clang-format&quot; ]; the=
+n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    TOOL=3Dclang-f=
+ormat</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    TOOL_BIN=
+=3D$(command -v clang-format)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    TOOL_CMD=3D&quot;$TOOL_BIN&quot;</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-# make sure the config file and =
+executable are correctly set</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-if [ ! -f &quot;$UNCRUST_CONFIG&quot; ] ; then</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    printf &quot;Error: uncrustify config f=
+ile not found.\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    printf &quot;Expected to find it at $UNCRUST_CONFIG.\n&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    printf &quot;Aborting commi=
+t.\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit 1<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # Allow to use i=
+n parallel with pre-commit</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if [ $(basename &quot;$0&quot;) =3D &quot;pre-commit.legacy&quot=
+; ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       ech=
+o &quot;Skipping clang-format check in favor of pre-commit&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+       exit 0</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+else</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    TOOL=3Duncrustify</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    TOOL_BIN=3D$(command -v uncrustify)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    UNCRUST_CONFIG=3D&quot;${TOPDIR}/dev-=
+tools/uncrustify.conf&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    TOOL_CMD=3D&quot;$TOOL_BIN -q -l C -c $UNCRUST_CONFIG&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    # make sure the config file is correc=
+tly set</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ ! -=
+f &quot;$UNCRUST_CONFIG&quot; ] ; then</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        printf &quot;Error: uncrustify config file not f=
+ound.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  printf &quot;Expected to find it at $UNCRUST_CONFIG.\n&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        printf &quot;Aborting co=
+mmit.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  exit 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</spa=
 n><br><span> fi</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-UNCRUSTIFY=3D$(command -v uncrustify)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-UNCRUST_CONFIG=3D&quot;$(git rev-parse --show-t=
-oplevel)/dev-tools/uncrustify.conf&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+TOPDIR=3D&quot;$(git rev-parse --show-toplevel)&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+if [ -e &quot;${TOPD=
-IR}/.clang-format&quot; ]; then</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    TOOL=3Dclang-format</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    TOOL_BIN=3D$(command -v clang-format)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    TOOL_CMD=3D&quot;$TOOL_BIN&quot;<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-# ma=
-ke sure the config file and executable are correctly set</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-if [ ! -f &quot;$UNCRUST_CONFIG&quot; ] =
-; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    printf &quo=
-t;Error: uncrustify config file not found.\n&quot;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    printf &quot;Expected to find it at $UNCRU=
-ST_CONFIG.\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- printf &quot;Aborting commit.\n&quot;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    exit 1</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    # Allow to use in parallel with pre-commit</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if [ $(basename &quot;$0&quot;) =3D =
-&quot;pre-commit.legacy&quot; ]; then</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+       echo &quot;Skipping clang-format check in favor of=
- pre-commit&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-     exit 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+else</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    TOOL=3Duncrustify</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    TOOL_BIN=3D$(command -v uncrus=
-tify)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    UNCRUST_CO=
-NFIG=3D&quot;${TOPDIR}/dev-tools/uncrustify.conf&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    TOOL_CMD=3D&quot;$TOOL_BIN -q -l C -=
-c $UNCRUST_CONFIG&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # make sure=
- the config file is correctly set</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if [ ! -f &quot;$UNCRUST_CONFIG&quot; ] ; then</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        printf &quot;Error: un=
-crustify config file not found.\n&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        printf &quot;Expected to find it at $UNCRUST_CO=
-NFIG.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  printf &quot;Aborting commit.\n&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        exit 1</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    fi</span><br><span> fi</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-if [ -z &quot;$UNCRUSTIFY&quot; ] ; t=
-hen</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    printf &quot;E=
-rror: uncrustify executable not found.\n&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+if [ -z &quot;$TOOL_BIN&quot; ] ; then</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    printf &quot;Error: $TOOL=
- executable not found.\n&quot;</span><br><span>     printf &quot;Is it inst=
-alled and in your \$PATH?\n&quot;</span><br><span>     printf &quot;Abortin=
-g commit.\n&quot;</span><br><span>     exit 1</span><br><span> fi</span><br=
-><span> </span><br><span> # create a filename to store our generated patch<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-patch=3D$(mktemp /tmp/=
-ovpn-fmt-XXXXXX)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tmpou=
-t=3D$(mktemp /tmp/uncrustify-XXXXXX)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+patch=3D$(mktemp /tmp/ovpn-fmt-patch-XXXXXX)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+tmpout=3D$(mktemp /tmp/ovpn-fmt-t=
-mp-XXXXXX)</span><br><span> </span><br><span> # create one patch containing=
- all changes to the files</span><br><span> # sed to remove quotes around th=
-e filename, if inserted by the system</span><br><span>@@ -131,7 +149,7 @@</=
-span><br><span>     #    +++ $tmpout timestamp</span><br><span>     # to bo=
-th lines working on the same file and having a a/ and b/ prefix.</span><br>=
-<span>     # Else it can not be applied with &#39;git apply&#39;.</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    git show &quot;:$file&quot;=
- | &quot;$UNCRUSTIFY&quot; -q -l C -c &quot;$UNCRUST_CONFIG&quot; -o &quot;=
-$tmpout&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gi=
-t show &quot;:$file&quot; | $TOOL_CMD &gt; &quot;$tmpout&quot;</span><br><s=
-pan>     git show &quot;:$file&quot; | diff -u -- - &quot;$tmpout&quot; | \=
-</span><br><span>         sed -e &quot;1s|--- -|--- \&quot;b/$file_escaped_=
-target\&quot;|&quot; -e &quot;2s|+++ $tmpout|+++ \&quot;a/$file_escaped_tar=
-get\&quot;|&quot; &gt;&gt; &quot;$patch&quot;</span><br><span> done</span><=
-br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/1070?usp=3Demail">change 1070</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1070?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+0%, 40%);">-if [ -z &quot;$UNCRUSTIFY&quot; ] ; then</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    printf &quot;Error: uncrustify executab=
+le not found.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+if [ -z &quot;$TOOL_BIN&quot; ] ; then</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    printf &quot;Error: $TOOL executable not found.\n&=
+quot;</span><br><span>     printf &quot;Is it installed and in your \$PATH?=
+\n&quot;</span><br><span>     printf &quot;Aborting commit.\n&quot;</span><=
+br><span>     exit 1</span><br><span> fi</span><br><span> </span><br><span>=
+ # create a filename to store our generated patch</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-patch=3D$(mktemp /tmp/ovpn-fmt-XXXXXX)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-tmpout=3D$(mktemp /tmp/uncrust=
+ify-XXXXXX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+patch=3D=
+$(mktemp /tmp/ovpn-fmt-patch-XXXXXX)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+tmpout=3D$(mktemp /tmp/ovpn-fmt-tmp-XXXXXX)</span><br><spa=
+n> </span><br><span> # create one patch containing all changes to the files=
+</span><br><span> # sed to remove quotes around the filename, if inserted b=
+y the system</span><br><span>@@ -131,7 +149,7 @@</span><br><span>     #    =
++++ $tmpout timestamp</span><br><span>     # to both lines working on the s=
+ame file and having a a/ and b/ prefix.</span><br><span>     # Else it can =
+not be applied with &#39;git apply&#39;.</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    git show &quot;:$file&quot; | &quot;$UNCRUSTIFY&quot=
+; -q -l C -c &quot;$UNCRUST_CONFIG&quot; -o &quot;$tmpout&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    git show &quot;:$file&quot;=
+ | $TOOL_CMD &gt; &quot;$tmpout&quot;</span><br><span>     git show &quot;:=
+$file&quot; | diff -u -- - &quot;$tmpout&quot; | \</span><br><span>        =
+ sed -e &quot;1s|--- -|--- \&quot;b/$file_escaped_target\&quot;|&quot; -e &=
+quot;2s|+++ $tmpout|+++ \&quot;a/$file_escaped_target\&quot;|&quot; &gt;&gt=
+; &quot;$patch&quot;</span><br><span> done</span><br><span></span><br></pre=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1070?us=
+p=3Demail">change 1070</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1070?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -299,8 +306,8 @@ v></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---zHZTVoUEXdA=--
+--JckIZDPL1UE=--
 
