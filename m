@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Aug 2025 19:57:28 +0000
-In-Reply-To: <gerrit.1754309056000.I3046f4b09a4700001a1d9dcce802990dfa701b52@...2715...>
-References: <gerrit.1754309056000.I3046f4b09a4700001a1d9dcce802990dfa701b52@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Tue, 5 Aug 2025 07:56:28 +0000
+In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
+References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a3da31e4541f3e14aed5073ae5bdbb9193a12d33-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <fb2a91f5448bca36d7a956fd0c96c3bd455c7e57-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VMih2Ci2c6I="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix build error
- with clang-cl on latest Windows SDK
+Content-Type: multipart/alternative; boundary="bHABOEz2lFE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: multipeer: introduce
+ asymmetric peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,168 +19,189 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VMih2Ci2c6I=
+--bHABOEz2lFE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1127?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+its_Giaan has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1089?usp=3Demail )
 
-
-Change subject: Fix build error with clang-cl on latest Windows SDK
+Change subject: multipeer: introduce asymmetric peer-id
 ......................................................................
 
-Fix build error with clang-cl on latest Windows SDK
 
-Found when testing windows-2025 runner in GHA.
-So switch to that to make sure the error is fixed.
+Patch Set 2:
 
-Change-Id: I3046f4b09a4700001a1d9dcce802990dfa701b52
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250804195054.21729-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-513
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M .github/workflows/build.yaml
-M src/openvpn/syshead.h
-2 files changed, 3 insertions(+), 3 deletions(-)
+(5 comments)
+
+File src/openvpn/multi.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1089/comment/d20f4c46_6ddf1dff :
+PS2, Line 1816:         uint32_t peer_id =3D extract_asymmetric_peer_id(pee=
+r_info);
+> I am somehow missing the client side/p2p that does the same and also call=
+s extract_asymmetric_peer_i [=E2=80=A6]
+Acknowledged
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/1127/2
+File src/openvpn/push.c:
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index b2bfd21..f7883c7 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -116,7 +116,7 @@
-         arch: [x86, x64]
-         test: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, pac=
-ket_id, pkt, provider, ssl, tls_crypt, user_pass]
+http://gerrit.openvpn.net/c/openvpn/+/1089/comment/dfe60a3c_ec0e72ed :
+PS2, Line 657:                         tls_multi->rx_peer_id);
+> This will instruct the client to use that peer-id on both send/receive. [=
+=E2=80=A6]
+ok but what about the mapping? we're using the current peer-id assigned by =
+the server as index to keep track of the instances, should we implement a d=
+ifferent kind of mapping? Of curse on server side I will prepend to the buf=
+fer the tx_peer_id (if supported) along with the opcode but yeah the client=
+ will keep prepending the old one.
 
--    runs-on: windows-latest
-+    runs-on: windows-2025
-     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
-     steps:
-       - name: Checkout OpenVPN
-@@ -264,7 +264,7 @@
-       env:
-         BUILD_CONFIGURATION: Release
 
--      runs-on: windows-latest
-+      runs-on: windows-2025
-       steps:
-       - uses: actions/checkout@...2844... # v4.2.2
-       - uses: lukka/get-cmake@...2897... # v4.0.3
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 524923b..26a553b 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -44,7 +44,7 @@
- #define srandom  srand
- #endif
+File src/openvpn/ssl.c:
 
--#ifdef _MSC_VER /* Visual Studio */
-+#if defined(_MSC_VER) && !defined(__clang__) /* Microsoft compiler */
- #define __func__ __FUNCTION__
- #define __attribute__(x)
- #endif
+http://gerrit.openvpn.net/c/openvpn/+/1089/comment/7a3b0954_5bc84265 :
+PS2, Line 2043:         buf_printf(&out, "ID=3D%x\n", peer_id);
+> This need to be guarded by the actual DCO capability. [=E2=80=A6]
+Acknowledged
+
+
+File src/openvpn/ssl_ncp.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1089/comment/1f01bfff_92f0595e :
+PS2, Line 431:         multi->tx_peer_id =3D  2033;
+> Why the hardcoded 2033 here? Shouldn't be also  0x76706e; /* 'v' 'p' 'n' =
+*/ ?
+yeah that was just for testing purposes, will fix this.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/1089/comment/32efaf15_5871df14 :
+PS2, Line 474:                 multi->rx_peer_id =3D (peerid[0] << 16) + (p=
+eerid[1] << 8) + peerid[2];
+> Shouldn't there be code here
+So you're saying we should keep the peer_id field and also the rx_peer_id a=
+nd tx_peer_id but use them only if supported?
+
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1127?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3046f4b09a4700001a1d9dcce802990dfa701b52
-Gerrit-Change-Number: 1127
+Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
+Gerrit-Change-Number: 1089
 Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 05 Aug 2025 07:56:28 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: comment
 
---VMih2Ci2c6I=
+--bHABOEz2lFE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1127?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Fix build error with clang-cl on latest Windows SDK<=
-br><br>Found when testing windows-2025 runner in GHA.<br>So switch to that =
-to make sure the error is fixed.<br><br>Change-Id: I3046f4b09a4700001a1d9dc=
-ce802990dfa701b52<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
-gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20=
-250804195054.21729-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.c=
-om/openvpn-devel@lists.sourceforge.net/msg32513<br>Signed-off-by: Gert Doer=
-ing &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/build.yaml<br>M s=
-rc/openvpn/syshead.h<br>2 files changed, 3 insertions(+), 3 deletions(-)<br=
-><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/112=
-7/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/.github/workflows/build.yaml b/.github/workflows/b=
-uild.yaml</span><br><span>index b2bfd21..f7883c7 100644</span><br><span>---=
- a/.github/workflows/build.yaml</span><br><span>+++ b/.github/workflows/bui=
-ld.yaml</span><br><span>@@ -116,7 +116,7 @@</span><br><span>         arch: =
-[x86, x64]</span><br><span>         test: [argv, auth_token, buffer, crypto=
-api, crypto, misc, ncp, packet_id, pkt, provider, ssl, tls_crypt, user_pass=
-]</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  runs-on: windows-latest</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    runs-on: windows-2025</span><br><span>     name: &quot;mingw unit=
-test ${{ matrix.test }} - ${{ matrix.arch }} - OSSL&quot;</span><br><span> =
-    steps:</span><br><span>       - name: Checkout OpenVPN</span><br><span>=
-@@ -264,7 +264,7 @@</span><br><span>       env:</span><br><span>         BU=
-ILD_CONFIGURATION: Release</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-      runs-on: windows-latest</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      runs-on: windows-2025</span><br><sp=
-an>       steps:</span><br><span>       - uses: actions/checkout@...2844...=
- # v4.2.2</span><br><span>       - uses: lukka/get-cmake@...2897... # v4.0.=
-3</span><br><span>diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.=
-h</span><br><span>index 524923b..26a553b 100644</span><br><span>--- a/src/o=
-penvpn/syshead.h</span><br><span>+++ b/src/openvpn/syshead.h</span><br><spa=
-n>@@ -44,7 +44,7 @@</span><br><span> #define srandom  srand</span><br><span=
-> #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#ifdef _MSC_VER /* Visual Studio */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#if defined(_MSC_VER) &amp;&amp; !defined(__clang__) /=
-* Microsoft compiler */</span><br><span> #define __func__ __FUNCTION__</spa=
-n><br><span> #define __attribute__(x)</span><br><span> #endif</span><br><sp=
-an></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1127?usp=3Demail">change 1127</a>. To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">=
-settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
-><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
-n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/112=
-7?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">View =
+Change</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1089/comment/d20f4c46_6ddf1dff">Patch Set #2, Line 1816:</=
+a> <code style=3D"font-family:monospace,monospace">        uint32_t peer_id=
+ =3D extract_asymmetric_peer_id(peer_info);</code></p><p><blockquote style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I am som=
+ehow missing the client side/p2p that does the same and also calls extract_=
+asymmetric_peer_i [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">Acknowledged</p></li></ul></li><li style=3D"m=
+argin: 0; padding: 0;"><p>File src/openvpn/push.c:</p><ul style=3D"list-sty=
+le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
+le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1089/comment/dfe60a3c_ec0e72ed">Patch Set #2, Line 657:</a> <code style=3D=
+"font-family:monospace,monospace">                        tls_multi-&gt;rx_=
+peer_id);</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; ma=
+rgin: 10px 0; padding: 0 10px;">This will instruct the client to use that p=
+eer-id on both send/receive. [=E2=80=A6]</blockquote></p><p style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">ok but what about the mapping? we&=
+#39;re using the current peer-id assigned by the server as index to keep tr=
+ack of the instances, should we implement a different kind of mapping? Of c=
+urse on server side I will prepend to the buffer the tx_peer_id (if support=
+ed) along with the opcode but yeah the client will keep prepending the old =
+one.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/ope=
+nvpn/ssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1089/comment/7a3b0954_5bc84265">Patch =
+Set #2, Line 2043:</a> <code style=3D"font-family:monospace,monospace">    =
+    buf_printf(&amp;out, &quot;ID=3D%x\n&quot;, peer_id);</code></p><p><blo=
+ckquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10=
+px;">This need to be guarded by the actual DCO capability. [=E2=80=A6]</blo=
+ckquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Ackn=
+owledged</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src=
+/openvpn/ssl_ncp.c:</p><ul style=3D"list-style: none; padding: 0;"><li styl=
+e=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1089/comment/1f01bfff_92f0595e=
+">Patch Set #2, Line 431:</a> <code style=3D"font-family:monospace,monospac=
+e">        multi-&gt;tx_peer_id =3D  2033;</code></p><p><blockquote style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Why the =
+hardcoded 2033 here? Shouldn&#39;t be also  0x76706e; /* &#39;v&#39; &#39;p=
+&#39; &#39;n&#39; */ ?</blockquote></p><p style=3D"white-space: pre-wrap; w=
+ord-wrap: break-word;">yeah that was just for testing purposes, will fix th=
+is.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
+n-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089/comme=
+nt/32efaf15_5871df14">Patch Set #2, Line 474:</a> <code style=3D"font-famil=
+y:monospace,monospace">                multi-&gt;rx_peer_id =3D (peerid[0] =
+&lt;&lt; 16) + (peerid[1] &lt;&lt; 8) + peerid[2];</code></p><p><blockquote=
+ style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Sh=
+ouldn&#39;t there be code here</blockquote></p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">So you&#39;re saying we should keep the peer=
+_id field and also the rx_peer_id and tx_peer_id but use them only if suppo=
+rted?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1089?usp=3Demail">change 1089</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
+lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
+ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1089?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
+/div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3046f4b09a4700001a1d9dcce80=
-2990dfa701b52 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1127 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3ba=
+b3f2dff639bf9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1089 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 05 Aug 2025 07:56:28=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---VMih2Ci2c6I=--
+--bHABOEz2lFE=--
 
