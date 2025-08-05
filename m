@@ -1,11 +1,10 @@
+Date: Tue, 5 Aug 2025 17:08:34 +0200 (CEST)
+Message-Id: <202508051508.575F8YcY063295@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue,  5 Aug 2025 17:04:57 +0200
-Message-ID: <20250805150503.11391-1-gert@...1296...>
-In-Reply-To: <gerrit.1754396906000.I729ee240e107a629ada5fab6b2ed2399e864cbd0@...2715...>
-References: <gerrit.1754396906000.I729ee240e107a629ada5fab6b2ed2399e864cbd0@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Add clang-format reformat commit to
- .git-blame-ignore-revs
+In-Reply-To: <20250805150503.11391-1-gert@...1296...>
+References: <20250805150503.11391-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add clang-format reformat
+ commit to .git-blame-ignore-revs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,36 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Not much to test here, except point "git blame" at your favourite piece
+of source code, and see the original commits, not the "everything changed
+by clang-format" changes :-) - it's actually not *that* bad this time,
+compared to the first Great Reformat, but still, quite distracting.
 
-Change-Id: I729ee240e107a629ada5fab6b2ed2399e864cbd0
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 2cc23415889f5d1b1a6d1837332e8c64eeacbb31
+Author: Frank Lichtenheld
+Date:   Tue Aug 5 17:04:57 2025 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1130
-This mail reflects revision 2 of this Change.
+     Add clang-format reformat commit to .git-blame-ignore-revs
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250805150503.11391-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32528.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/.git-blame-ignore-revs b/.git-blame-ignore-revs
-index 1fafaac..290e4c3 100644
---- a/.git-blame-ignore-revs
-+++ b/.git-blame-ignore-revs
-@@ -48,3 +48,8 @@
- 
- # Reformat for sp_after_comma=add
- e51d9a73693ee742b36e19fb1718e5e27167831d
-+
-+# The Great Reformatting of 2025, switching to clang-format
-+3cca3367e6e0ffeccb8e39cb2c739d1dcb086701
-+# Switching to ColumnLimit 0 for clang-format
-+21f7d6e1ad65b1f7db673bc98764dc7325858e0b
+
+--
+kind regards,
+
+Gert Doering
+
 
