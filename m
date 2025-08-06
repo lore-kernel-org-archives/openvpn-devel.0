@@ -1,11 +1,10 @@
-Content-Type: multipart/alternative;
- boundary="------------PUVBhYn39HIlO03ZpFSGm0jw"
-Message-ID: <5ef9e1e3-12c4-49e9-83f3-78e271fb479b@...2722...>
-Date: Wed, 6 Aug 2025 22:25:14 +0700
-MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Date: Wed, 6 Aug 2025 20:05:38 +0200 (CEST)
+Message-Id: <202508061805.576I5c6F010629@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250806144238.11332-1-gert@...1296...>
+References: <20250806144238.11332-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: buffer: remove unused function
+ buf_write_alloc_prepend
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,105 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------PUVBhYn39HIlO03ZpFSGm0jw
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+"Remove unused function" is easy to review :-) - out it goes.  BB and
+"git grep" confirm.
 
-Meeting summary for 6 August 2025:
+Your patch has been applied to the master branch.
 
-  *
+commit 028846f0f73db0e598a8fcdb3d5578bb5920046c
+Author: Frank Lichtenheld
+Date:   Wed Aug 6 16:42:31 2025 +0200
 
-    *Updated: Release 2.7*
-    A 2.7 alpha3 release went out last week.
-    This includes a fix for a couple of rare crashes on Windows DCO
-    driver. This was backported to the installer for 2.6.14.
-    Another further small fix (driver fix for recursive routing issue)
-    will be included in 2.6.14 Windows installer version i004 later today.
-    The FreeBSD patch for float is now in review.
-    The tentative plan for release is now:
-    August 20: beta1
-    September 3: release candidate 1
-    September 17: stable release
-    These are some known remaining tasks:
-    Epoch data keys for Linux DCO and Windows DCO - can be done in a
-    minor release after 2.7.0.
-    Small fix to check message id/acked ids too when doing sessionid
-    cookie checks - should go into 2.7.0.
-    PUSH_UPDATE review and server-side support - cron2 wants to discuss
-    changes.
-    mi prefix handling, int/uint fixes, and the new 'real route' gateway
-    handling
+     buffer: remove unused function buf_write_alloc_prepend
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250806144238.11332-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32565.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Kind regards,
-Johan Draaisma
 
---------------PUVBhYn39HIlO03ZpFSGm0jw
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+--
+kind regards,
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 6 August 2025:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.7</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          A 2.7 alpha3 release went out last week.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          This includes a fix for a couple of rare crashes on Windows
-          DCO driver. This was backported to the installer for 2.6.14.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Another further small fix (driver fix for recursive routing
-          issue) will be included in 2.6.14 Windows installer version
-          i004 later today.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The FreeBSD patch for float is now in review.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The tentative plan for release is now:<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          August 20: beta1<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          September 3: release candidate 1<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          September 17: stable release<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          These are some known remaining tasks:<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Epoch data keys for Linux DCO and Windows DCO - can be done in
-          a minor release after 2.7.0.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Small fix to check message id/acked ids too when doing
-          sessionid cookie checks - should go into 2.7.0.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          PUSH_UPDATE review and server-side support - cron2 wants to
-          discuss changes.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          mi prefix handling, int/uint fixes, and the new 'real route'
-          gateway handling</p>
-      </li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+Gert Doering
 
---------------PUVBhYn39HIlO03ZpFSGm0jw--
 
