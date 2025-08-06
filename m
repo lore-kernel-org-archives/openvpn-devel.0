@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 6 Aug 2025 14:29:39 +0000
-References: <gerrit.1754490554000.I71981e39932cafe3fd68b475fdb81a8f20a3a547@...2715...>
+Date: Wed, 6 Aug 2025 14:29:40 +0000
+References: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <eab9f3ae7befdc4ce2247dbd79eae3bcc81526b3-HTML@...2715...>
+Message-ID: <4605f25556aa62763de399152467685e25bef84e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nKlbdWb12/I="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: buffer: remove
- unused function buf_write_alloc_prepend
+Content-Type: multipart/alternative; boundary="ZWdk9R/YCRU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: openvpn_PRF: Change
+ API to use size_t for lenghts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nKlbdWb12/I=
+--ZWdk9R/YCRU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,53 +32,220 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1134?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1135?usp=3Demail
 
 to review the following change.
 
 
-Change subject: buffer: remove unused function buf_write_alloc_prepend
+Change subject: openvpn_PRF: Change API to use size_t for lenghts
 ......................................................................
 
-buffer: remove unused function buf_write_alloc_prepend
+openvpn_PRF: Change API to use size_t for lenghts
 
-Change-Id: I71981e39932cafe3fd68b475fdb81a8f20a3a547
+Basically all users already wanted that anyway. And most
+of the library functions also take size_t nowadays.
+
+Change-Id: Ic88cd6e143bc48cab3c9ebb7c7007513803bd199
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/buffer.h
-1 file changed, 0 insertions(+), 6 deletions(-)
+M src/openvpn/crypto.c
+M src/openvpn/crypto_backend.h
+M src/openvpn/crypto_mbedtls.c
+M src/openvpn/crypto_openssl.c
+M src/openvpn/ssl.c
+M tests/unit_tests/openvpn/test_crypto.c
+6 files changed, 22 insertions(+), 22 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/34/1134/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1135/1
 
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 8d6bb64..6f15115 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -644,12 +644,6 @@
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 1fa08fd..e128bb8 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1903,8 +1903,8 @@
+     uint8_t out[8];
+     uint8_t expected_out[] =3D { 'q', 'D', '\xfe', '%', '@', 's', 'u', '\x=
+95' };
+
+-    int ret =3D ssl_tls1_PRF((uint8_t *)seed, (int)strlen(seed), (uint8_t =
+*)secret,
+-                           (int)strlen(secret), out, sizeof(out));
++    int ret =3D ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *)sec=
+ret,
++                           strlen(secret), out, sizeof(out));
+
+     return (ret && memcmp(out, expected_out, sizeof(out)) =3D=3D 0);
+ }
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 59418f6..b74cb7f 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -716,7 +716,7 @@
+  *
+  * @return              true if successful, false on any error
+  */
+-bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret=
+, int secret_len,
+-                  uint8_t *output, int output_len);
++bool ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *sec=
+ret, size_t secret_len,
++                  uint8_t *output, size_t output_len);
+
+ #endif /* CRYPTO_BACKEND_H_ */
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 86317dd..87a2d12 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -983,8 +983,8 @@
+  * from recent versions, so we use our own implementation if necessary. */
+ #if defined(HAVE_MBEDTLS_SSL_TLS_PRF) && defined(MBEDTLS_SSL_TLS_PRF_TLS1)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int=
+ secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, =
+size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     return mbed_ok(mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret, s=
+ecret_len, "", seed,
+                                        seed_len, output, output_len));
+@@ -1002,8 +1002,8 @@
+  * @param olen          Length of the output buffer
+  */
+ static void
+-tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, int sec_le=
+n, const uint8_t *seed,
+-            int seed_len, uint8_t *out, int olen)
++tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t sec=
+_len, const uint8_t *seed,
++            size_t seed_len, uint8_t *out, size_t olen)
+ {
+     struct gc_arena gc =3D gc_new();
+     uint8_t A1[MAX_HMAC_KEY_LENGTH];
+@@ -1089,8 +1089,8 @@
+  * (2) The pre-master secret is generated by the client.
+  */
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int =
+slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, s=
+ize_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     struct gc_arena gc =3D gc_new();
+     const md_kt_t *md5 =3D md_get("MD5");
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 2351bfd..dfc2627 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1341,8 +1341,8 @@
+ }
+ #if (OPENSSL_VERSION_NUMBER >=3D 0x30000000L) && !defined(LIBRESSL_VERSION=
+_NUMBER)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int=
+ secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, =
+size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     bool ret =3D true;
+     EVP_KDF_CTX *kctx =3D NULL;
+@@ -1368,9 +1368,9 @@
+     params[0] =3D
+         OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, SN_md5_sha=
+1, strlen(SN_md5_sha1));
+     params[1] =3D OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET,=
+ (uint8_t *)secret,
+-                                                  (size_t)secret_len);
++                                                  secret_len);
+     params[2] =3D
+-        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)=
+seed, (size_t)seed_len);
++        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)=
+seed, seed_len);
+     params[3] =3D OSSL_PARAM_construct_end();
+
+     if (EVP_KDF_derive(kctx, output, output_len, params) <=3D 0)
+@@ -1392,15 +1392,15 @@
+ }
+ #elif defined(OPENSSL_IS_AWSLC)
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int =
+slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, s=
+ize_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen, label, label_le=
+n, NULL, 0, NULL, 0);
+ }
+ #elif !defined(LIBRESSL_VERSION_NUMBER) && !defined(ENABLE_CRYPTO_WOLFSSL)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int=
+ secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, =
+size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     EVP_PKEY_CTX *pctx =3D EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
+     if (!pctx)
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 84ef4fb..17065aa 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1294,10 +1294,10 @@
  }
 
- static inline uint8_t *
--buf_write_alloc_prepend(struct buffer *buf, int size, bool prepend)
--{
--    return prepend ? buf_prepend(buf, size) : buf_write_alloc(buf, size);
--}
--
--static inline uint8_t *
- buf_read_alloc(struct buffer *buf, int size)
+ static bool
+-openvpn_PRF(const uint8_t *secret, int secret_len, const char *label, cons=
+t uint8_t *client_seed,
+-            int client_seed_len, const uint8_t *server_seed, int server_se=
+ed_len,
++openvpn_PRF(const uint8_t *secret, size_t secret_len, const char *label, c=
+onst uint8_t *client_seed,
++            size_t client_seed_len, const uint8_t *server_seed, size_t ser=
+ver_seed_len,
+             const struct session_id *client_sid, const struct session_id *=
+server_sid,
+-            uint8_t *output, int output_len)
++            uint8_t *output, size_t output_len)
  {
-     uint8_t *ret;
+     /* concatenate seed components */
+
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index de8f9fe..77834e8 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -161,7 +161,7 @@
+
+
+     uint8_t out[32];
+-    bool ret =3D ssl_tls1_PRF(seed, (int)seed_len, secret, (int)secret_len=
+, out, sizeof(out));
++    bool ret =3D ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, siz=
+eof(out));
+
+ #if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSSL)
+     /* No TLS1 PRF support in these libraries */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1134?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1135?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I71981e39932cafe3fd68b475fdb81a8f20a3a547
-Gerrit-Change-Number: 1134
+Gerrit-Change-Id: Ic88cd6e143bc48cab3c9ebb7c7007513803bd199
+Gerrit-Change-Number: 1135
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -86,47 +253,179 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---nKlbdWb12/I=
+--ZWdk9R/YCRU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1134?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1135?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">buffer: remove unused function buf_write_alloc_prepend<br><b=
-r>Change-Id: I71981e39932cafe3fd68b475fdb81a8f20a3a547<br>Signed-off-by: Fr=
-ank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/buffer.h<b=
-r>1 file changed, 0 insertions(+), 6 deletions(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/34/1134/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/buffer.h b/src/openvpn/buffer.h</span><br><span>index 8d6=
-bb64..6f15115 100644</span><br><span>--- a/src/openvpn/buffer.h</span><br><=
-span>+++ b/src/openvpn/buffer.h</span><br><span>@@ -644,12 +644,6 @@</span>=
-<br><span> }</span><br><span> </span><br><span> static inline uint8_t *</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-buf_write_alloc_prepend(s=
-truct buffer *buf, int size, bool prepend)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    return prepend ? buf_prepend(buf, size) : buf_write_alloc(buf, size);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-static inline uint8_t *</span><br><span> buf_read_alloc(struct =
-buffer *buf, int size)</span><br><span> {</span><br><span>     uint8_t *ret=
-;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1134?usp=3Demail">change 1134</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1134?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+ce: pre-wrap;">openvpn_PRF: Change API to use size_t for lenghts<br><br>Bas=
+ically all users already wanted that anyway. And most<br>of the library fun=
+ctions also take size_t nowadays.<br><br>Change-Id: Ic88cd6e143bc48cab3c9eb=
+b7c7007513803bd199<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...=
+&gt;<br>---<br>M src/openvpn/crypto.c<br>M src/openvpn/crypto_backend.h<br>=
+M src/openvpn/crypto_mbedtls.c<br>M src/openvpn/crypto_openssl.c<br>M src/o=
+penvpn/ssl.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>6 files changed=
+, 22 insertions(+), 22 deletions(-)<br><br></pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
+.net:29418/openvpn refs/changes/35/1135/1</pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
+crypto.c b/src/openvpn/crypto.c</span><br><span>index 1fa08fd..e128bb8 1006=
+44</span><br><span>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/ope=
+nvpn/crypto.c</span><br><span>@@ -1903,8 +1903,8 @@</span><br><span>     ui=
+nt8_t out[8];</span><br><span>     uint8_t expected_out[] =3D { &#39;q&#39;=
+, &#39;D&#39;, &#39;\xfe&#39;, &#39;%&#39;, &#39;@&#39;, &#39;s&#39;, &#39;=
+u&#39;, &#39;\x95&#39; };</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    int ret =3D ssl_tls1_PRF((uint8_t *)seed, (int)st=
+rlen(seed), (uint8_t *)secret,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                           (int)strlen(secret), out, sizeof(out));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D ssl=
+_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *)secret,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                           strlen(s=
+ecret), out, sizeof(out));</span><br><span> </span><br><span>     return (r=
+et &amp;&amp; memcmp(out, expected_out, sizeof(out)) =3D=3D 0);</span><br><=
+span> }</span><br><span>diff --git a/src/openvpn/crypto_backend.h b/src/ope=
+nvpn/crypto_backend.h</span><br><span>index 59418f6..b74cb7f 100644</span><=
+br><span>--- a/src/openvpn/crypto_backend.h</span><br><span>+++ b/src/openv=
+pn/crypto_backend.h</span><br><span>@@ -716,7 +716,7 @@</span><br><span>  *=
+</span><br><span>  * @return              true if successful, false on any =
+error</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *se=
+cret, int secret_len,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                  uint8_t *output, int output_len);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+bool ssl_tls1_PRF(const uint8_t *seed, si=
+ze_t seed_len, const uint8_t *secret, size_t secret_len,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                  uint8_t *output, siz=
+e_t output_len);</span><br><span> </span><br><span> #endif /* CRYPTO_BACKEN=
+D_H_ */</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c b/src/ope=
+nvpn/crypto_mbedtls.c</span><br><span>index 86317dd..87a2d12 100644</span><=
+br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/openv=
+pn/crypto_mbedtls.c</span><br><span>@@ -983,8 +983,8 @@</span><br><span>  *=
+ from recent versions, so we use our own implementation if necessary. */</s=
+pan><br><span> #if defined(HAVE_MBEDTLS_SSL_TLS_PRF) &amp;&amp; defined(MBE=
+DTLS_SSL_TLS_PRF_TLS1)</span><br><span> bool</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-ssl_tls1_PRF(const uint8_t *seed, int seed_len, cons=
+t uint8_t *secret, int secret_len,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-             uint8_t *output, int output_len)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8_t *seed, si=
+ze_t seed_len, const uint8_t *secret, size_t secret_len,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+             uint8_t *output, size_t o=
+utput_len)</span><br><span> {</span><br><span>     return mbed_ok(mbedtls_s=
+sl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret, secret_len, &quot;&quot;, seed=
+,</span><br><span>                                        seed_len, output,=
+ output_len));</span><br><span>@@ -1002,8 +1002,8 @@</span><br><span>  * @p=
+aram olen          Length of the output buffer</span><br><span>  */</span><=
+br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, int sec_len=
+, const uint8_t *seed,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            int seed_len, uint8_t *out, int olen)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+tls1_P_hash(const mbedtls_md_info_t *md_kt, =
+const uint8_t *sec, size_t sec_len, const uint8_t *seed,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            size_t seed_len, uint8_t *=
+out, size_t olen)</span><br><span> {</span><br><span>     struct gc_arena g=
+c =3D gc_new();</span><br><span>     uint8_t A1[MAX_HMAC_KEY_LENGTH];</span=
+><br><span>@@ -1089,8 +1089,8 @@</span><br><span>  * (2) The pre-master sec=
+ret is generated by the client.</span><br><span>  */</span><br><span> bool<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-ssl_tls1_PRF(const uin=
+t8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-             int olen)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const ui=
+nt8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *o=
+ut1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             si=
+ze_t olen)</span><br><span> {</span><br><span>     struct gc_arena gc =3D g=
+c_new();</span><br><span>     const md_kt_t *md5 =3D md_get(&quot;MD5&quot;=
+);</span><br><span>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/=
+crypto_openssl.c</span><br><span>index 2351bfd..dfc2627 100644</span><br><s=
+pan>--- a/src/openvpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/cr=
+ypto_openssl.c</span><br><span>@@ -1341,8 +1341,8 @@</span><br><span> }</sp=
+an><br><span> #if (OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L) &amp;&amp; !=
+defined(LIBRESSL_VERSION_NUMBER)</span><br><span> bool</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-ssl_tls1_PRF(const uint8_t *seed, int seed=
+_len, const uint8_t *secret, int secret_len,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-             uint8_t *output, int output_len)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8_t=
+ *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+             uint8_t *output=
+, size_t output_len)</span><br><span> {</span><br><span>     bool ret =3D t=
+rue;</span><br><span>     EVP_KDF_CTX *kctx =3D NULL;</span><br><span>@@ -1=
+368,9 +1368,9 @@</span><br><span>     params[0] =3D</span><br><span>       =
+  OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, SN_md5_sha1, strl=
+en(SN_md5_sha1));</span><br><span>     params[1] =3D OSSL_PARAM_construct_o=
+ctet_string(OSSL_KDF_PARAM_SECRET, (uint8_t *)secret,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                           =
+       (size_t)secret_len);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                                                  secret_len);</spa=
+n><br><span>     params[2] =3D</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (ui=
+nt8_t *)seed, (size_t)seed_len);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED,=
+ (uint8_t *)seed, seed_len);</span><br><span>     params[3] =3D OSSL_PARAM_=
+construct_end();</span><br><span> </span><br><span>     if (EVP_KDF_derive(=
+kctx, output, output_len, params) &lt;=3D 0)</span><br><span>@@ -1392,15 +1=
+392,15 @@</span><br><span> }</span><br><span> #elif defined(OPENSSL_IS_AWSL=
+C)</span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, in=
+t slen, uint8_t *out1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-             int olen)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec=
+, size_t slen, uint8_t *out1,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+             size_t olen)</span><br><span> {</span><br><span>    =
+ CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen, label, label_len, N=
+ULL, 0, NULL, 0);</span><br><span> }</span><br><span> #elif !defined(LIBRES=
+SL_VERSION_NUMBER) &amp;&amp; !defined(ENABLE_CRYPTO_WOLFSSL)</span><br><sp=
+an> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ssl_tls1_PRF(=
+const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-             uint8_t *o=
+utput, int output_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret=
+, size_t secret_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++             uint8_t *output, size_t output_len)</span><br><span> {</span>=
+<br><span>     EVP_PKEY_CTX *pctx =3D EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF=
+, NULL);</span><br><span>     if (!pctx)</span><br><span>diff --git a/src/o=
+penvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 84ef4fb..17065aa 100=
+644</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openv=
+pn/ssl.c</span><br><span>@@ -1294,10 +1294,10 @@</span><br><span> }</span><=
+br><span> </span><br><span> static bool</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-openvpn_PRF(const uint8_t *secret, int secret_len, const =
+char *label, const uint8_t *client_seed,</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            int client_seed_len, const uint8_t *server_s=
+eed, int server_seed_len,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+openvpn_PRF(const uint8_t *secret, size_t secret_len, const char *lab=
+el, const uint8_t *client_seed,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            size_t client_seed_len, const uint8_t *server_seed,=
+ size_t server_seed_len,</span><br><span>             const struct session_=
+id *client_sid, const struct session_id *server_sid,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            uint8_t *output, int output_len=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            uint8_=
+t *output, size_t output_len)</span><br><span> {</span><br><span>     /* co=
+ncatenate seed components */</span><br><span> </span><br><span>diff --git a=
+/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_cry=
+pto.c</span><br><span>index de8f9fe..77834e8 100644</span><br><span>--- a/t=
+ests/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_test=
+s/openvpn/test_crypto.c</span><br><span>@@ -161,7 +161,7 @@</span><br><span=
+> </span><br><span> </span><br><span>     uint8_t out[32];</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D ssl_tls1_PRF(seed, (i=
+nt)seed_len, secret, (int)secret_len, out, sizeof(out));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D ssl_tls1_PRF(seed, se=
+ed_len, secret, secret_len, out, sizeof(out));</span><br><span> </span><br>=
+<span> #if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSS=
+L)</span><br><span>     /* No TLS1 PRF support in these libraries */</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1135?usp=3Demail">change 1135</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1135?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I71981e39932cafe3fd68b475fdb=
-81a8f20a3a547 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1134 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic88cd6e143bc48cab3c9ebb7c70=
+07513803bd199 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1135 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -139,5 +438,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---nKlbdWb12/I=--
+--ZWdk9R/YCRU=--
 
