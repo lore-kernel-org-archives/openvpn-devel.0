@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 7 Aug 2025 15:53:29 +0000
-In-Reply-To: <gerrit.1754579268000.Ice8c7ff4d8118a9e6465a4724207a355138360b8@...2715...>
-References: <gerrit.1754579268000.Ice8c7ff4d8118a9e6465a4724207a355138360b8@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <809d7961e7471110745016662780b2773d51502d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z9K9Qf3OdGY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_client.sh: Do not
- wait 3 seconds for OpenVPN to come up
+References: <CAOh3LPMvAFtZ7rdBVYZ2raErtNM2=F-r1WQv9+YZE+6SxRfM8Q.ref@...278...>
+ <CAOh3LPMvAFtZ7rdBVYZ2raErtNM2=F-r1WQv9+YZE+6SxRfM8Q@...278...>
+ <aJQ9IkQIdH6sFNvt@...1296...>
+ <CAOh3LPPhraQGp+N2RPPkJ01D64JGpU8ZeT6-Rqkh8fo8M=83zQ@...278...>
+ <aJTGPksgtlTnN4XL@...1296...>
+In-Reply-To: <aJTGPksgtlTnN4XL@...1296...>
+From: Jon Chiappetta <root@...2904...>
+Date: Thu, 7 Aug 2025 12:10:04 -0400
+Message-ID: <CAOh3LPNJmBLKd-TRuwzWZ1pxRgiy5Bb88XCtZgsF9N3_5dXShw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000599108063bc8b1bb"
+Subject: Re: [Openvpn-devel] Bulk mode - Feature request - Patch diff
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,151 +18,142 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Z9K9Qf3OdGY=
+--000000000000599108063bc8b1bb
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Oh right, you were correct, I installed the missing libtool package and the
+autoreconf command now worked as well as the configure and make commands,
+thanks! I could try testing this bulk mode change out on the newer code
+base as well. I was trying to think of ways to simulate a client
+reconnection scenario to see if everything like the options and data and
+buffers being reset would recover and resume properly as well. :)
 
-Hello plaisthos,
+root@...2048...:tmp/openvpn-fork-bulk# ./src/openvpn/openvpn --help
+OpenVPN 2.7_alpha3 aarch64-unknown-linux-gnu [SSL (OpenSSL)] [EPOLL]
+[MH/PKTINFO] [AEAD] [DCO]
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1139?usp=3Demail
-
-to look at the new patch set (#2).
-
-
-Change subject: t_client.sh: Do not wait 3 seconds for OpenVPN to come up
-......................................................................
-
-t_client.sh: Do not wait 3 seconds for OpenVPN to come up
-
-On most machines 1 second should be quite enough. Given
-that we run currently 23 tests on most t_client runs, this
-makes over 40 seconds difference. Not nothing.
-
-We keep the existing 30s maximum wait-time since sometimes
-we want to do tests with intentionally slow servers.
-
-Change-Id: Ice8c7ff4d8118a9e6465a4724207a355138360b8
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M tests/t_client.sh.in
-1 file changed, 3 insertions(+), 3 deletions(-)
+General Options:
+--config file   : Read configuration options from file.
+--help          : Show options.
+--version       : Show copyright and version information.
+...
+--mtu-test      : Empirically measure and report MTU.
+--bulk-mode     : Use bulk TUN/TCP reads/writes.
+....
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/1139/2
 
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index 7a271b6..a49de40 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -377,13 +377,13 @@
-     $RUN_SUDO "${openvpn}" $openvpn_conf >>$LOGDIR/$SUF:openvpn.log &
-     sudopid=3D$!
+On Thu, Aug 7, 2025 at 11:29=E2=80=AFAM Gert Doering <gert@...1296...> wrot=
+e:
 
--    # Check if OpenVPN has initialized before continuing.  It will check e=
-very 3rd second up
-+    # Check if OpenVPN has initialized before continuing.  It will check e=
-very second up
-     # to $ovpn_init_check times.
--    ovpn_init_check=3D10
-+    ovpn_init_check=3D30
-     ovpn_init_success=3D0
-     while [ $ovpn_init_check -gt 0 ];
-     do
--       sleep 3  # Wait for OpenVPN to initialize and have had time to writ=
-e the pid file
-+       sleep 1  # Wait for OpenVPN to initialize and have had time to writ=
-e the pid file
-        grep "Initialization Sequence Completed" $LOGDIR/$SUF:openvpn.log >=
-/dev/null
-        if [ $? -eq 0 ]; then
-            ovpn_init_check=3D0
+> Hi,
+>
+> On Thu, Aug 07, 2025 at 10:29:43AM -0400, Jon Chiappetta wrote:
+> > Oh nice, thanks, I didn't know about that command as I have never ran it
+> > myself before. I'll try to work through these errors and figure out how
+> to
+> > solve them:
+> >
+> > root@...2048...:tmp/openvpn-fork-bulk# autoreconf -vif
+> > autoreconf: export WARNINGS=3D
+> > autoreconf: Entering directory '.'
+> > autoreconf: configure.ac: not using Gettext
+> > autoreconf: running: aclocal --force -I m4
+> > autoreconf: configure.ac: tracing
+> > autoreconf: configure.ac: not using Libtool
+>
+> I think that means "you need to install the "libtool" package".
+>
+> (Frank - is there a way to make autoconf handle this in a smarter way?  In
+> theory, libtool is optional, but our configure stuff fails later on if
+> it's not found - ran across this in my fedora-42 experiments as well)
+>
+> gert
+>
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1139?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ice8c7ff4d8118a9e6465a4724207a355138360b8
-Gerrit-Change-Number: 1139
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
-
---Z9K9Qf3OdGY=
+--000000000000599108063bc8b1bb
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1139?usp=3Demail">View C=
-hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">t_client.sh: Do not wait 3 seconds for OpenVPN to come up<br><br>=
-On most machines 1 second should be quite enough. Given<br>that we run curr=
-ently 23 tests on most t_client runs, this<br>makes over 40 seconds differe=
-nce. Not nothing.<br><br>We keep the existing 30s maximum wait-time since s=
-ometimes<br>we want to do tests with intentionally slow servers.<br><br>Cha=
-nge-Id: Ice8c7ff4d8118a9e6465a4724207a355138360b8<br>Signed-off-by: Frank L=
-ichtenheld &lt;frank@...2641...&gt;<br>---<br>M tests/t_client.sh.in<br>1 f=
-ile changed, 3 insertions(+), 3 deletions(-)<br><br></pre><pre style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
-t.openvpn.net:29418/openvpn refs/changes/39/1139/2</pre><pre style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/tes=
-ts/t_client.sh.in b/tests/t_client.sh.in</span><br><span>index 7a271b6..a49=
-de40 100755</span><br><span>--- a/tests/t_client.sh.in</span><br><span>+++ =
-b/tests/t_client.sh.in</span><br><span>@@ -377,13 +377,13 @@</span><br><spa=
-n>     $RUN_SUDO &quot;${openvpn}&quot; $openvpn_conf &gt;&gt;$LOGDIR/$SUF:=
-openvpn.log &amp;</span><br><span>     sudopid=3D$!</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    # Check if OpenVPN has =
-initialized before continuing.  It will check every 3rd second up</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    # Check if OpenVPN has in=
-itialized before continuing.  It will check every second up</span><br><span=
->     # to $ovpn_init_check times.</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    ovpn_init_check=3D10</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ovpn_init_check=3D30</span><br><span>     ovpn_init_s=
-uccess=3D0</span><br><span>     while [ $ovpn_init_check -gt 0 ];</span><br=
-><span>     do</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-sleep 3  # Wait for OpenVPN to initialize and have had time to write the pi=
-d file</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       sleep =
-1  # Wait for OpenVPN to initialize and have had time to write the pid file=
-</span><br><span>        grep &quot;Initialization Sequence Completed&quot;=
- $LOGDIR/$SUF:openvpn.log &gt;/dev/null</span><br><span>        if [ $? -eq=
- 0 ]; then</span><br><span>            ovpn_init_check=3D0</span><br><span>=
-</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1139?usp=3Demail">change 1139</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1139?u=
-sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<div dir=3D"ltr">Oh right, you were correct, I installed the missing libtoo=
+l package and the autoreconf command now worked as well as the configure an=
+d make commands, thanks! I could try testing this bulk mode change out on t=
+he newer code base as well. I was trying to think of ways to simulate a cli=
+ent reconnection scenario to see if everything like the options and data an=
+d buffers being reset would recover and resume properly as well. :)=C2=A0<d=
+iv><br></div><div>root@...2048...:tmp/openvpn-fork-bulk# ./src/openvpn/open=
+vpn --help<br>OpenVPN 2.7_alpha3 aarch64-unknown-linux-gnu [SSL (OpenSSL)] =
+[EPOLL] [MH/PKTINFO] [AEAD] [DCO]<br><div><br></div><div>General Options:<b=
+r>--config file =C2=A0 : Read configuration options from file.<br>--help =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0: Show options.<br>--version =C2=A0 =C2=
+=A0 =C2=A0 : Show copyright and version information.<br></div><div>...</div=
+><div>--mtu-test =C2=A0 =C2=A0 =C2=A0: Empirically measure and report MTU.<=
+br>--bulk-mode =C2=A0 =C2=A0 : Use bulk TUN/TCP reads/writes.<br></div><div=
+>....</div><div><br></div><div><br></div></div></div><br><div class=3D"gmai=
+l_quote gmail_quote_container"><div dir=3D"ltr" class=3D"gmail_attr">On Thu=
+, Aug 7, 2025 at 11:29=E2=80=AFAM Gert Doering &lt;<a href=3D"mailto:gert@...220...=
+..1296...">gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gma=
+il_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-le=
+ft-style:solid;border-left-color:rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Thu, Aug 07, 2025 at 10:29:43AM -0400, Jon Chiappetta wrote:<br>
+&gt; Oh nice, thanks, I didn&#39;t know about that command as I have never =
+ran it<br>
+&gt; myself before. I&#39;ll try to work through these errors and figure ou=
+t how to<br>
+&gt; solve them:<br>
+&gt; <br>
+&gt; root@...2048...:tmp/openvpn-fork-bulk# autoreconf -vif<br>
+&gt; autoreconf: export WARNINGS=3D<br>
+&gt; autoreconf: Entering directory &#39;.&#39;<br>
+&gt; autoreconf: <a href=3D"http://configure.ac" rel=3D"noreferrer" target=
+=3D"_blank">configure.ac</a>: not using Gettext<br>
+&gt; autoreconf: running: aclocal --force -I m4<br>
+&gt; autoreconf: <a href=3D"http://configure.ac" rel=3D"noreferrer" target=
+=3D"_blank">configure.ac</a>: tracing<br>
+&gt; autoreconf: <a href=3D"http://configure.ac" rel=3D"noreferrer" target=
+=3D"_blank">configure.ac</a>: not using Libtool<br>
+<br>
+I think that means &quot;you need to install the &quot;libtool&quot; packag=
+e&quot;.<br>
+<br>
+(Frank - is there a way to make autoconf handle this in a smarter way?=C2=
+=A0 In<br>
+theory, libtool is optional, but our configure stuff fails later on if<br>
+it&#39;s not found - ran across this in my fedora-42 experiments as well)<b=
+r>
+<br>
+gert<br>
+<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
+</blockquote></div>
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ice8c7ff4d8118a9e6465a472420=
-7a355138360b8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1139 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---Z9K9Qf3OdGY=--
+--000000000000599108063bc8b1bb--
 
