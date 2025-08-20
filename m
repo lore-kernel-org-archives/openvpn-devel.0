@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 20 Aug 2025 15:36:34 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 20 Aug 2025 17:42:23 +0200
+Message-ID: <20250820154234.31656-1-gert@...1296...>
 In-Reply-To: <gerrit.1755702161000.If66438662bd862a195b2a69c4fa45f63838982b7@...2715...>
 References: <gerrit.1755702161000.If66438662bd862a195b2a69c4fa45f63838982b7@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., gert@...1296...
-Message-ID: <5726b113d917629aeae7f650c66a5755dab7e15b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="flj9U/47NyQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove use of 'dh
- dh2048.pem' from sample configs, remove 'dh2048.pem...
+Subject: [Openvpn-devel] [PATCH v2] Remove use of 'dh dh2048.pem' from
+ sample configs, remove 'dh2048.pem' file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---flj9U/47NyQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Since commit bd9aa06feb41 (Jan 2015) OpenVPN has allowed to use
+'--dh none' to disable traditional Diffie Hellman, since more secure
+ECDH algorithms are available that do not use explicit DH parameters.
 
-Attention is currently required from: cron2, flichtenheld.
+If configured with a suffiently high securelevel (3+), or if running in
+FIPS mode, OpenSSL 3.5 will refuse 2048 bit DH files, making our tests
+fail.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1145?usp=3Demail )
+Thus, remove all the DH2048 stuff from our sample configs.
 
-Change subject: Remove use of 'dh dh2048.pem' from sample configs, remove '=
-dh2048.pem' file
-......................................................................
+Github: triggered by OpenVPN/openvpn#819
 
+Change-Id: If66438662bd862a195b2a69c4fa45f63838982b7
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Patch Set 2: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1145
+This mail reflects revision 2 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If66438662bd862a195b2a69c4fa45f63838982b7
-Gerrit-Change-Number: 1145
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 20 Aug 2025 15:36:34 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---flj9U/47NyQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, flichtenheld. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail=
-">change 1145</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If66438662bd862a195b2a69c4fa=
-45f63838982b7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1145 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 20 Aug 2025 15:36:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---flj9U/47NyQ=--
+        
+diff --git a/sample/sample-config-files/loopback-server b/sample/sample-config-files/loopback-server
+index 58daeb56..1980218 100644
+--- a/sample/sample-config-files/loopback-server
++++ b/sample/sample-config-files/loopback-server
+@@ -17,7 +17,7 @@
+ verb 3
+ reneg-sec 10
+ tls-server
+-dh sample-keys/dh2048.pem
++dh none
+ ca sample-keys/ca.crt
+ key sample-keys/server.key
+ cert sample-keys/server.crt
+diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-files/server.conf
+index f6d9e65..8943c34 100644
+--- a/sample/sample-config-files/server.conf
++++ b/sample/sample-config-files/server.conf
+@@ -87,11 +87,6 @@
+ cert server.crt
+ key server.key  # This file should be kept secret
+ 
+-# Diffie hellman parameters.
+-# Generate your own with:
+-#   openssl dhparam -out dh2048.pem 2048
+-dh dh2048.pem
+-
+ # Allow to connect to really old OpenVPN versions
+ # without AEAD support (OpenVPN 2.3.x or older)
+ # This adds AES-256-CBC as fallback cipher and
+@@ -306,4 +301,4 @@
+ 
+ # Notify the client that when the server restarts so it
+ # can automatically reconnect.
+-explicit-exit-notify 1
+\ No newline at end of file
++explicit-exit-notify 1
+diff --git a/sample/sample-keys/dh2048.pem b/sample/sample-keys/dh2048.pem
+deleted file mode 100644
+index d393581..0000000
+--- a/sample/sample-keys/dh2048.pem
++++ /dev/null
+@@ -1,8 +0,0 @@
+------BEGIN DH PARAMETERS-----
+-MIIBCAKCAQEAgGOVdT2c3GUITi1pF9u+yo72PRBW7I7SnNIsHmXCRYibpyPMGxKM
+-ROK6rduMllC0CjiXQZhMfqCg+GIca9xxBPKtTnwtKWD3eH5wgs24kw86mODITjJk
+-6lTNM8it2HY4UuIQoFCqCdt5f5Gwgh2nwU5+dy731md6pmw9x9jUEXoyh67CeZfb
+-C45x5ttzjpSBvYe5ZIiUypYKumYhdiZhk0RLefEtlUYF9oXrUExDqfYDpSO/1/X3
+-oHC0O0EV3Lh1boZTG7+FjcvMYLIKYUDTmxHpII6/OAHhprg7U9ui1i7GyQRv1lze
+-QV3FGO4UwLntnv352iYy91b0ls2mwD+zTwIBAg==
+------END DH PARAMETERS-----
+diff --git a/sample/sample-plugins/keying-material-exporter-demo/server.ovpn b/sample/sample-plugins/keying-material-exporter-demo/server.ovpn
+index 5c670b1..1aabcb9 100644
+--- a/sample/sample-plugins/keying-material-exporter-demo/server.ovpn
++++ b/sample/sample-plugins/keying-material-exporter-demo/server.ovpn
+@@ -8,7 +8,7 @@
+ ca     ../../sample-keys/ca.crt
+ cert   ../../sample-keys/server.crt
+ key    ../../sample-keys/server.key
+-dh     ../../sample-keys/dh2048.pem
++dh     none
+ 
+ server 10.8.0.0 255.255.255.0
+ port 1194
 
