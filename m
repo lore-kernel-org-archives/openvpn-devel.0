@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 21 Aug 2025 12:13:18 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 21 Aug 2025 14:14:34 +0200
+Message-ID: <20250821121442.30679-1-gert@...1296...>
 In-Reply-To: <gerrit.1755776561000.I13ad2b7da6b008bc692b1f08f502fc3fc57e7206@...2715...>
 References: <gerrit.1755776561000.I13ad2b7da6b008bc692b1f08f502fc3fc57e7206@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., sasepp@...2783..., gert@...1296...
-Message-ID: <4f0f72aa1cc21ea56dbbfec7adc6fe0f4cf93f0c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="oXLRr88YQ0Q="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add sample FFDH
- parameters file and use that in t_server_null tests
+Subject: [Openvpn-devel] [PATCH v2] Add sample FFDH parameters file and use
+ that in t_server_null tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,91 +14,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mattock <sasepp@...2783...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---oXLRr88YQ0Q=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Samuli Seppänen <sasepp@...2705...>
 
-Attention is currently required from: cron2, flichtenheld, mattock.
+Change-Id: I13ad2b7da6b008bc692b1f08f502fc3fc57e7206
+Signed-off-by: Samuli Seppänen <sasepp@...2705...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1147?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Add sample FFDH parameters file and use that in t_server_nu=
-ll tests
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1147
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-Patch Set 2: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1147?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I13ad2b7da6b008bc692b1f08f502fc3fc57e7206
-Gerrit-Change-Number: 1147
-Gerrit-PatchSet: 2
-Gerrit-Owner: mattock <sasepp@...2783...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mattock <sasepp@...2783...>
-Gerrit-Comment-Date: Thu, 21 Aug 2025 12:13:18 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---oXLRr88YQ0Q=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, flichtenheld, mattock. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1147?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1147?usp=3Demail=
-">change 1147</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1147?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I13ad2b7da6b008bc692b1f08f50=
-2fc3fc57e7206 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1147 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mattock &lt;sasepp@...2867...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 21 Aug 2025 12:13:18=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---oXLRr88YQ0Q=--
+        
+diff --git a/sample/sample-keys/ffdhe2048.pem b/sample/sample-keys/ffdhe2048.pem
+new file mode 100644
+index 0000000..9b182b7
+--- /dev/null
++++ b/sample/sample-keys/ffdhe2048.pem
+@@ -0,0 +1,8 @@
++-----BEGIN DH PARAMETERS-----
++MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
+++8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
++87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
++YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
++7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
++ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
++-----END DH PARAMETERS-----
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index 900f189..798cfd0 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -13,7 +13,7 @@
+ top_builddir="${top_builddir:-..}"
+ sample_keys="${srcdir}/../sample/sample-keys"
+ 
+-DH="${sample_keys}/dh2048.pem"
++DH="${sample_keys}/ffdhe2048.pem"
+ CA="${sample_keys}/ca.crt"
+ CLIENT_CERT="${sample_keys}/client.crt"
+ CLIENT_KEY="${sample_keys}/client.key"
 
