@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 20 Aug 2025 21:13:11 +0000
-In-Reply-To: <gerrit.1755702161000.If66438662bd862a195b2a69c4fa45f63838982b7@...2715...>
-References: <gerrit.1755702161000.If66438662bd862a195b2a69c4fa45f63838982b7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+From: "mattock (Code Review)" <gerrit@...515...>
+Date: Thu, 21 Aug 2025 06:39:28 +0000
+References: <gerrit.1755758366000.I27a7519ab3ae629d3dc634ad3e9e2120e524e669@...2715...>
+Reply-To: sasepp@...2783..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e431de9d76afb2a3162005afb6f340ec905fb1f0-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c3571fcd591143f67ac0341759f0ca1bf181968e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rYDFNqnGC48="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove use of 'dh
- dh2048.pem' from sample configs, remove 'dh2048.pem...
+Content-Type: multipart/alternative; boundary="5CY71Xn4J8M="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null:
+ remove the --dh parameter altogether
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,268 +21,166 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rYDFNqnGC48=
+--5CY71Xn4J8M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello flichtenheld, plaisthos,
+Attention is currently required from: flichtenheld, plaisthos.
 
-I'd like you to reexamine a change. Please visit
+Hello plaisthos, flichtenheld,
 
-    http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail
+I'd like you to do a code review.
+Please visit
 
-to look at the new patch set (#4).
+    http://gerrit.openvpn.net/c/openvpn/+/1146?usp=3Demail
 
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+to review the following change.
 
 
-Change subject: Remove use of 'dh dh2048.pem' from sample configs, remove '=
-dh2048.pem' file
+Change subject: t_server_null: remove the --dh parameter altogether
 ......................................................................
 
-Remove use of 'dh dh2048.pem' from sample configs, remove 'dh2048.pem' file
+t_server_null: remove the --dh parameter altogether
 
-Since commit bd9aa06feb41 (Jan 2015) OpenVPN has allowed to use
-'--dh none' to disable traditional Diffie Hellman, since more secure
-ECDH algorithms are available that do not use explicit DH parameters.
-
-If configured with a suffiently high securelevel (3+), or if running in
-FIPS mode, OpenSSL 3.5 will refuse 2048 bit DH files, making our tests
-fail.
-
-Thus, remove all the DH2048 stuff from our sample configs.
-
-Github: triggered by OpenVPN/openvpn#819
-
-Change-Id: If66438662bd862a195b2a69c4fa45f63838982b7
-Signed-off-by: Gert Doering <gert@...1296...>
-Message-Id: <20250820175459.11227-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-632.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I27a7519ab3ae629d3dc634ad3e9e2120e524e669
+Signed-off-by: Samuli Sepp=C3=A4nen <sasepp@...2705...>
 ---
-M doc/tests/authentication-plugins.md
-M sample/sample-config-files/loopback-server
-M sample/sample-config-files/server.conf
-D sample/sample-keys/dh2048.pem
-M sample/sample-plugins/keying-material-exporter-demo/server.ovpn
-5 files changed, 4 insertions(+), 17 deletions(-)
+M tests/t_server_null_default.rc
+1 file changed, 2 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/1145/4
 
-diff --git a/doc/tests/authentication-plugins.md b/doc/tests/authentication=
--plugins.md
-index b47c544..45fa381 100644
---- a/doc/tests/authentication-plugins.md
-+++ b/doc/tests/authentication-plugins.md
-@@ -36,7 +36,7 @@
-       verb 4
-       dev tun
-       server 10.8.0.0 255.255.255.0
--      dh sample/sample-keys/dh2048.pem
-+      dh none
-       ca sample/sample-keys/ca.crt
-       cert sample/sample-keys/server.crt
-       key sample/sample-keys/server.key
-diff --git a/sample/sample-config-files/loopback-server b/sample/sample-con=
-fig-files/loopback-server
-index 58daeb56..1980218 100644
---- a/sample/sample-config-files/loopback-server
-+++ b/sample/sample-config-files/loopback-server
-@@ -17,7 +17,7 @@
- verb 3
- reneg-sec 10
- tls-server
--dh sample-keys/dh2048.pem
-+dh none
- ca sample-keys/ca.crt
- key sample-keys/server.key
- cert sample-keys/server.crt
-diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-=
-files/server.conf
-index f6d9e65..8943c34 100644
---- a/sample/sample-config-files/server.conf
-+++ b/sample/sample-config-files/server.conf
-@@ -87,11 +87,6 @@
- cert server.crt
- key server.key  # This file should be kept secret
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1146/1
 
--# Diffie hellman parameters.
--# Generate your own with:
--#   openssl dhparam -out dh2048.pem 2048
--dh dh2048.pem
--
- # Allow to connect to really old OpenVPN versions
- # without AEAD support (OpenVPN 2.3.x or older)
- # This adds AES-256-CBC as fallback cipher and
-@@ -306,4 +301,4 @@
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.rc
+index 900f189..51c21c9 100755
+--- a/tests/t_server_null_default.rc
++++ b/tests/t_server_null_default.rc
+@@ -13,7 +13,6 @@
+ top_builddir=3D"${top_builddir:-..}"
+ sample_keys=3D"${srcdir}/../sample/sample-keys"
 
- # Notify the client that when the server restarts so it
- # can automatically reconnect.
--explicit-exit-notify 1
-\ No newline at end of file
-+explicit-exit-notify 1
-diff --git a/sample/sample-keys/dh2048.pem b/sample/sample-keys/dh2048.pem
-deleted file mode 100644
-index d393581..0000000
---- a/sample/sample-keys/dh2048.pem
-+++ /dev/null
-@@ -1,8 +0,0 @@
-------BEGIN DH PARAMETERS-----
--MIIBCAKCAQEAgGOVdT2c3GUITi1pF9u+yo72PRBW7I7SnNIsHmXCRYibpyPMGxKM
--ROK6rduMllC0CjiXQZhMfqCg+GIca9xxBPKtTnwtKWD3eH5wgs24kw86mODITjJk
--6lTNM8it2HY4UuIQoFCqCdt5f5Gwgh2nwU5+dy731md6pmw9x9jUEXoyh67CeZfb
--C45x5ttzjpSBvYe5ZIiUypYKumYhdiZhk0RLefEtlUYF9oXrUExDqfYDpSO/1/X3
--oHC0O0EV3Lh1boZTG7+FjcvMYLIKYUDTmxHpII6/OAHhprg7U9ui1i7GyQRv1lze
--QV3FGO4UwLntnv352iYy91b0ls2mwD+zTwIBAg=3D=3D
-------END DH PARAMETERS-----
-diff --git a/sample/sample-plugins/keying-material-exporter-demo/server.ovp=
-n b/sample/sample-plugins/keying-material-exporter-demo/server.ovpn
-index 5c670b1..1aabcb9 100644
---- a/sample/sample-plugins/keying-material-exporter-demo/server.ovpn
-+++ b/sample/sample-plugins/keying-material-exporter-demo/server.ovpn
-@@ -8,7 +8,7 @@
- ca     ../../sample-keys/ca.crt
- cert   ../../sample-keys/server.crt
- key    ../../sample-keys/server.key
--dh     ../../sample-keys/dh2048.pem
-+dh     none
+-DH=3D"${sample_keys}/dh2048.pem"
+ CA=3D"${sample_keys}/ca.crt"
+ CLIENT_CERT=3D"${sample_keys}/client.crt"
+ CLIENT_KEY=3D"${sample_keys}/client.key"
+@@ -57,13 +56,13 @@
+ SERVER_SERVER_2=3D"--server 10.29.42.0 255.255.255.0"
+ SERVER_MGMT_PORT_2=3D"11195"
+ SERVER_EXEC_2=3D"${SERVER_EXEC}"
+-SERVER_CONF_2=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --pro=
+to tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2} --dh ${DH}"
++SERVER_CONF_2=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --pro=
+to tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}"
 
- server 10.8.0.0 255.255.255.0
- port 1194
+ SERVER_NAME_3=3D"t_server_null_server-1196_udp"
+ SERVER_SERVER_3=3D"--server 10.29.43.0 255.255.255.0"
+ SERVER_MGMT_PORT_3=3D"11196"
+ SERVER_EXEC_3=3D"${SERVER_EXEC}"
+-SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
+to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --dh none --cipher AES-=
+192-CBC --data-ciphers DEFAULT:AES-192-CBC"
++SERVER_CONF_3=3D"${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --pro=
+to udp --management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --=
+data-ciphers DEFAULT:AES-192-CBC"
+
+ SERVER_NAME_4=3D"t_server_null_server-1197_multisocket_ipv4_ipv6"
+ SERVER_SERVER_4=3D"--server 10.29.44.0 255.255.255.0"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1146?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If66438662bd862a195b2a69c4fa45f63838982b7
-Gerrit-Change-Number: 1145
-Gerrit-PatchSet: 4
-Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Change-Id: I27a7519ab3ae629d3dc634ad3e9e2120e524e669
+Gerrit-Change-Number: 1146
+Gerrit-PatchSet: 1
+Gerrit-Owner: mattock <sasepp@...2783...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---rYDFNqnGC48=
+--5CY71Xn4J8M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1145?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Remove use of &#39;dh dh2048.pem&#39; from sampl=
-e configs, remove &#39;dh2048.pem&#39; file<br><br>Since commit bd9aa06feb4=
-1 (Jan 2015) OpenVPN has allowed to use<br>&#39;--dh none&#39; to disable t=
-raditional Diffie Hellman, since more secure<br>ECDH algorithms are availab=
-le that do not use explicit DH parameters.<br><br>If configured with a suff=
-iently high securelevel (3+), or if running in<br>FIPS mode, OpenSSL 3.5 wi=
-ll refuse 2048 bit DH files, making our tests<br>fail.<br><br>Thus, remove =
-all the DH2048 stuff from our sample configs.<br><br>Github: triggered by O=
-penVPN/openvpn#819<br><br>Change-Id: If66438662bd862a195b2a69c4fa45f6383898=
-2b7<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &=
-lt;20250820175459.11227-1-gert@...1296...&gt;<br>URL: https://www.mail-arch=
-ive.com/openvpn-devel@lists.sourceforge.net/msg32632.html<br>Signed-off-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>---<br>M doc/tests/authentication-=
-plugins.md<br>M sample/sample-config-files/loopback-server<br>M sample/samp=
-le-config-files/server.conf<br>D sample/sample-keys/dh2048.pem<br>M sample/=
-sample-plugins/keying-material-exporter-demo/server.ovpn<br>5 files changed=
-, 4 insertions(+), 17 deletions(-)<br><br></pre><pre style=3D"font-family: =
-monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.=
-net:29418/openvpn refs/changes/45/1145/4</pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/tests/aut=
-hentication-plugins.md b/doc/tests/authentication-plugins.md</span><br><spa=
-n>index b47c544..45fa381 100644</span><br><span>--- a/doc/tests/authenticat=
-ion-plugins.md</span><br><span>+++ b/doc/tests/authentication-plugins.md</s=
-pan><br><span>@@ -36,7 +36,7 @@</span><br><span>       verb 4</span><br><sp=
-an>       dev tun</span><br><span>       server 10.8.0.0 255.255.255.0</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-      dh sample/sample-key=
-s/dh2048.pem</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      d=
-h none</span><br><span>       ca sample/sample-keys/ca.crt</span><br><span>=
-       cert sample/sample-keys/server.crt</span><br><span>       key sample=
-/sample-keys/server.key</span><br><span>diff --git a/sample/sample-config-f=
-iles/loopback-server b/sample/sample-config-files/loopback-server</span><br=
-><span>index 58daeb56..1980218 100644</span><br><span>--- a/sample/sample-c=
-onfig-files/loopback-server</span><br><span>+++ b/sample/sample-config-file=
-s/loopback-server</span><br><span>@@ -17,7 +17,7 @@</span><br><span> verb 3=
-</span><br><span> reneg-sec 10</span><br><span> tls-server</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-dh sample-keys/dh2048.pem</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+dh none</span><br><span> ca samp=
-le-keys/ca.crt</span><br><span> key sample-keys/server.key</span><br><span>=
- cert sample-keys/server.crt</span><br><span>diff --git a/sample/sample-con=
-fig-files/server.conf b/sample/sample-config-files/server.conf</span><br><s=
-pan>index f6d9e65..8943c34 100644</span><br><span>--- a/sample/sample-confi=
-g-files/server.conf</span><br><span>+++ b/sample/sample-config-files/server=
-.conf</span><br><span>@@ -87,11 +87,6 @@</span><br><span> cert server.crt</=
-span><br><span> key server.key  # This file should be kept secret</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Diffie hell=
-man parameters.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Gene=
-rate your own with:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# =
-  openssl dhparam -out dh2048.pem 2048</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-dh dh2048.pem</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span> # Allow to connect to really old OpenVPN version=
-s</span><br><span> # without AEAD support (OpenVPN 2.3.x or older)</span><b=
-r><span> # This adds AES-256-CBC as fallback cipher and</span><br><span>@@ =
--306,4 +301,4 @@</span><br><span> </span><br><span> # Notify the client tha=
-t when the server restarts so it</span><br><span> # can automatically recon=
-nect.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-explicit-exit-no=
-tify 1</span><br><span>\ No newline at end of file</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+explicit-exit-notify 1</span><br><span>diff =
---git a/sample/sample-keys/dh2048.pem b/sample/sample-keys/dh2048.pem</span=
-><br><span>deleted file mode 100644</span><br><span>index d393581..0000000<=
-/span><br><span>--- a/sample/sample-keys/dh2048.pem</span><br><span>+++ /de=
-v/null</span><br><span>@@ -1,8 +0,0 @@</span><br><span>------BEGIN DH PARAM=
-ETERS-----</span><br><span style=3D"color: hsl(0, 100%, 40%);">-MIIBCAKCAQE=
-AgGOVdT2c3GUITi1pF9u+yo72PRBW7I7SnNIsHmXCRYibpyPMGxKM</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-ROK6rduMllC0CjiXQZhMfqCg+GIca9xxBPKtTnwtKWD=
-3eH5wgs24kw86mODITjJk</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-6lTNM8it2HY4UuIQoFCqCdt5f5Gwgh2nwU5+dy731md6pmw9x9jUEXoyh67CeZfb</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-C45x5ttzjpSBvYe5ZIiUypYKumYhdiZh=
-k0RLefEtlUYF9oXrUExDqfYDpSO/1/X3</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-oHC0O0EV3Lh1boZTG7+FjcvMYLIKYUDTmxHpII6/OAHhprg7U9ui1i7GyQRv1lze=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-QV3FGO4UwLntnv352iYy9=
-1b0ls2mwD+zTwIBAg=3D=3D</span><br><span>------END DH PARAMETERS-----</span>=
-<br><span>diff --git a/sample/sample-plugins/keying-material-exporter-demo/=
-server.ovpn b/sample/sample-plugins/keying-material-exporter-demo/server.ov=
-pn</span><br><span>index 5c670b1..1aabcb9 100644</span><br><span>--- a/samp=
-le/sample-plugins/keying-material-exporter-demo/server.ovpn</span><br><span=
->+++ b/sample/sample-plugins/keying-material-exporter-demo/server.ovpn</spa=
-n><br><span>@@ -8,7 +8,7 @@</span><br><span> ca     ../../sample-keys/ca.cr=
-t</span><br><span> cert   ../../sample-keys/server.crt</span><br><span> key=
-    ../../sample-keys/server.key</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-dh     ../../sample-keys/dh2048.pem</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+dh     none</span><br><span> </span><br><span> s=
-erver 10.8.0.0 255.255.255.0</span><br><span> port 1194</span><br><span></s=
-pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/1145?usp=3Demail">change 1145</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1145?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>mattock would like plaisthos and flichtenheld to <strong>review</strong>=
+ this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1146?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">t_server_null: remove the --dh parameter altogether<br><br>C=
+hange-Id: I27a7519ab3ae629d3dc634ad3e9e2120e524e669<br>Signed-off-by: Samul=
+i Sepp=C3=A4nen &lt;sasepp@...2705...&gt;<br>---<br>M tests/t_server_null_d=
+efault.rc<br>1 file changed, 2 insertions(+), 3 deletions(-)<br><br></pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
+pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1146/1</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.r=
+c</span><br><span>index 900f189..51c21c9 100755</span><br><span>--- a/tests=
+/t_server_null_default.rc</span><br><span>+++ b/tests/t_server_null_default=
+.rc</span><br><span>@@ -13,7 +13,6 @@</span><br><span> top_builddir=3D&quot=
+;${top_builddir:-..}&quot;</span><br><span> sample_keys=3D&quot;${srcdir}/.=
+./sample/sample-keys&quot;</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-DH=3D&quot;${sample_keys}/dh2048.pem&quot;</span><br=
+><span> CA=3D&quot;${sample_keys}/ca.crt&quot;</span><br><span> CLIENT_CERT=
+=3D&quot;${sample_keys}/client.crt&quot;</span><br><span> CLIENT_KEY=3D&quo=
+t;${sample_keys}/client.key&quot;</span><br><span>@@ -57,13 +56,13 @@</span=
+><br><span> SERVER_SERVER_2=3D&quot;--server 10.29.42.0 255.255.255.0&quot;=
+</span><br><span> SERVER_MGMT_PORT_2=3D&quot;11195&quot;</span><br><span> S=
+ERVER_EXEC_2=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-SERVER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERV=
+ER_2} --lport 1195 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}=
+ --dh ${DH}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SE=
+RVER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --p=
+roto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2}&quot;</span><br><span=
+> </span><br><span> SERVER_NAME_3=3D&quot;t_server_null_server-1196_udp&quo=
+t;</span><br><span> SERVER_SERVER_3=3D&quot;--server 10.29.43.0 255.255.255=
+.0&quot;</span><br><span> SERVER_MGMT_PORT_3=3D&quot;11196&quot;</span><br>=
+<span> SERVER_EXEC_3=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-SERVER_CONF_3=3D&quot;${SERVER_CONF_BASE} ${SER=
+VER_SERVER_3} --lport 1196 --proto udp --management 127.0.0.1 ${SERVER_MGMT=
+_PORT_3} --dh none --cipher AES-192-CBC --data-ciphers DEFAULT:AES-192-CBC&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_3=
+=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_3} --lport 1196 --proto udp --=
+management 127.0.0.1 ${SERVER_MGMT_PORT_3} --cipher AES-192-CBC --data-ciph=
+ers DEFAULT:AES-192-CBC&quot;</span><br><span> </span><br><span> SERVER_NAM=
+E_4=3D&quot;t_server_null_server-1197_multisocket_ipv4_ipv6&quot;</span><br=
+><span> SERVER_SERVER_4=3D&quot;--server 10.29.44.0 255.255.255.0&quot;</sp=
+an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1146?usp=3Demail">change 1146</a>. To unsubscribe, or=
+ for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
+settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1146?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If66438662bd862a195b2a69c4fa=
-45f63838982b7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1145 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Change-Id: I27a7519ab3ae629d3dc634ad3e9=
+e2120e524e669 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1146 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: mattock &lt;sasepp@...2783...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---rYDFNqnGC48=--
+--5CY71Xn4J8M=--
 
