@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Aug 2025 15:51:58 +0000
-References: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
+Date: Fri, 22 Aug 2025 15:51:59 +0000
+References: <gerrit.1755877911000.I5e240c35cd4236e1d845195e4634fd5008f61814@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <df7669549c7162c5c15b444c7d0988cbeecfb070-HTML@...2715...>
+Message-ID: <7b58f3a5058bdb42ddf052cdf2671dce5478e874-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="asuawYDXI5o="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Review use
- of positive_atoi vs atoi_constrained
+Content-Type: multipart/alternative; boundary="ZlkOefkJ1mA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Clean up
+ documentation for --tun-mtu-max
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---asuawYDXI5o=
+--ZlkOefkJ1mA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,170 +32,143 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail
 
 to review the following change.
 
 
-Change subject: options: Review use of positive_atoi vs atoi_constrained
+Change subject: Clean up documentation for --tun-mtu-max
 ......................................................................
 
-options: Review use of positive_atoi vs atoi_constrained
+Clean up documentation for --tun-mtu-max
 
-Replace where it is useful.
+There was some confusion about how the option
+was called...
 
-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
+Change-Id: I5e240c35cd4236e1d845195e4634fd5008f61814
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M doc/man-sections/vpn-network-options.rst
+M src/openvpn/init.c
+M src/openvpn/mtu.h
 M src/openvpn/options.c
-1 file changed, 21 insertions(+), 31 deletions(-)
+M src/openvpn/push.c
+5 files changed, 13 insertions(+), 6 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1153/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/52/1152/1
 
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vp=
+n-network-options.rst
+index 4a64e8d..2a06ef6 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -587,7 +587,7 @@
+   packets larger than ``tun-mtu`` (e.g. Linux and FreeBSD) but other platf=
+orms
+   (like macOS) limit received packets to the same size as the MTU.
+
+---tun-max-mtu maxmtu
++--tun-mtu-max maxmtu
+   This configures the maximum MTU size that a server can push to ``maxmtu`=
+`,
+   by configuring the internal buffers to allow at least this packet size.
+   The default for ``maxmtu`` is 1600. Currently, only increasing beyond 16=
+00
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 5583274..9dd3b96 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2916,7 +2916,7 @@
+
+     /* We always allow at least 1600 MTU packets to be received in our buf=
+fer
+      * space to allow server to push "baby giant" MTU sizes */
+-    frame->tun_max_mtu =3D max_int(1600, frame->tun_max_mtu);
++    frame->tun_max_mtu =3D max_int(TUN_MTU_MAX_MIN, frame->tun_max_mtu);
+
+     size_t payload_size =3D frame->tun_max_mtu;
+=20
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index 925ef0b..c092461 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -69,6 +69,11 @@
+ #define TUN_MTU_DEFAULT 1500
+
+ /*
++ * Minimum maximum MTU
++ */
++#define TUN_MTU_MAX_MIN 1600
++
++/*
+  * MTU Defaults for TAP devices
+  */
+ #define TAP_MTU_EXTRA_DEFAULT 32
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 8edf261..7c685e2 100644
+index e9584a8..0b16c5a 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -7007,21 +7007,15 @@
-     else if (streq(p[0], "tun-mtu-max") && p[1] && !p[2])
+@@ -297,6 +297,7 @@
+     "--tun-mtu-extra n : Assume that tun/tap device might return as many\n"
+     "                  as n bytes more than the tun-mtu size on read\n"
+     "                  (default TUN=3D0 TAP=3D%d).\n"
++    "--tun-mtu-max n : Maximum pushable MTU (default and minimum=3D%d).\n"
+     "--link-mtu n    : Take the TCP/UDP device MTU to be n and derive the =
+tun MTU\n"
+     "                  from it.\n"
+     "--mtu-disc type : Should we do Path MTU discovery on TCP/UDP channel?=
+\n"
+@@ -4844,8 +4845,9 @@
+
+     fprintf(fp, usage_message, title_string, o.ce.connect_retry_seconds,
+             o.ce.connect_retry_seconds_max, o.ce.local_port, o.ce.remote_p=
+ort, TUN_MTU_DEFAULT,
+-            TAP_MTU_EXTRA_DEFAULT, o.verbosity, o.authname, o.replay_windo=
+w, o.replay_time,
+-            o.tls_timeout, o.renegotiate_seconds, o.handshake_window, o.tr=
+ansition_window);
++            TAP_MTU_EXTRA_DEFAULT, TUN_MTU_MAX_MIN, o.verbosity, o.authnam=
+e, o.replay_window,
++            o.replay_time, o.tls_timeout, o.renegotiate_seconds, o.handsha=
+ke_window,
++            o.transition_window);
+     fflush(fp);
+
+ #endif                                       /* ENABLE_SMALL */
+@@ -7011,7 +7013,7 @@
+             options->ce.occ_mtu =3D 0;
+         }
+     }
+-    else if (streq(p[0], "tun-mtu-max") && p[1] && !p[3])
++    else if (streq(p[0], "tun-mtu-max") && p[1] && !p[2])
      {
          VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        int max_mtu =3D positive_atoi(p[1], msglevel);
--        if (max_mtu < 68 || max_mtu > 65536)
--        {
--            msg(msglevel, "--tun-mtu-max value '%s' is invalid", p[1]);
--        }
--        else
--        {
--            options->ce.tun_mtu_max =3D max_mtu;
--        }
-+        atoi_constrained(p[1], &options->ce.tun_mtu_max, p[0], TUN_MTU_MAX=
-_MIN, 65536, msglevel);
-     }
-     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        options->ce.tun_mtu_extra =3D positive_atoi(p[1], msglevel);
--        options->ce.tun_mtu_extra_defined =3D true;
-+        if (atoi_constrained(p[1], &options->ce.tun_mtu_extra, p[0], 0, 65=
-536, msglevel))
-+        {
-+            options->ce.tun_mtu_extra_defined =3D true;
-+        }
-     }
-     else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
-     {
-@@ -7053,11 +7047,8 @@
-     else if (streq(p[0], "fragment") && p[1] && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        options->ce.fragment =3D positive_atoi(p[1], msglevel);
--
--        if (options->ce.fragment < 68)
-+        if (!atoi_constrained(p[1], &options->ce.fragment, p[0], 68, 0, ms=
-glevel))
+         int max_mtu =3D positive_atoi(p[1], msglevel);
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 889b268..4f6adfc 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -721,7 +721,7 @@
          {
--            msg(msglevel, "--fragment needs to be at least 68");
-             goto err;
+             msg(M_WARN,
+                 "Warning: reported maximum MTU from client (%d) is lower "
+-                "than MTU used on the server (%d). Add tun-max-mtu %d "
++                "than MTU used on the server (%d). Add tun-mtu-max %d "
+                 "to client configuration.",
+                 client_max_mtu, o->ce.tun_mtu, o->ce.tun_mtu);
          }
-
-@@ -7723,12 +7714,14 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
-         if (p[1])
-         {
--            int mssfix =3D positive_atoi(p[1], msglevel);
--            /* can be 0, but otherwise it needs to be high enough so we can
--             * substract room for headers. */
--            if (mssfix !=3D 0 && (mssfix < TLS_CHANNEL_MTU_MIN || mssfix >=
- UINT16_MAX))
-+            int mssfix;
-+            if (!atoi_constrained(p[1], &mssfix, p[0], 0, UINT16_MAX, msgl=
-evel))
-             {
--                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
-+                goto err;
-+            }
-+            if (mssfix !=3D 0 && mssfix < TLS_CHANNEL_MTU_MIN)
-+            {
-+                msg(msglevel, "mssfix needs to be >=3D %d, not %d", TLS_CH=
-ANNEL_MTU_MIN, mssfix);
-                 goto err;
-             }
-=20
-@@ -7981,7 +7974,7 @@
-     else if (streq(p[0], "max-routes-per-client") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_INHERIT);
--        options->max_routes_per_client =3D max_int(positive_atoi(p[1], msg=
-level), 1);
-+        atoi_constrained(p[1], &options->max_routes_per_client, p[0], 1, 0=
-, msglevel);
-     }
-     else if (streq(p[0], "client-cert-not-required") && !p[1])
-     {
-@@ -9795,8 +9788,6 @@
-     }
-     else if (streq(p[0], "keying-material-exporter") && p[1] && p[2])
-     {
--        int ekm_length =3D positive_atoi(p[2], msglevel);
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-
-         if (strncmp(p[1], "EXPORTER", 8))
-@@ -9810,14 +9801,14 @@
-             msg(msglevel,
-                 "Keying material exporter label must not be '" EXPORT_KEY_=
-DATA_LABEL "'.");
-         }
--        if (ekm_length < 16 || ekm_length > 4095)
-+
-+        if (!atoi_constrained(p[2], &options->keying_material_exporter_len=
-gth,
-+                              p[0], 16, 4095, msglevel))
-         {
--            msg(msglevel, "Invalid keying material exporter length");
-             goto err;
-         }
-
-         options->keying_material_exporter_label =3D p[1];
--        options->keying_material_exporter_length =3D ekm_length;
-     }
-     else if (streq(p[0], "allow-recursive-routing") && !p[1])
-     {
-@@ -9852,15 +9843,14 @@
-     }
-     else if (streq(p[0], "vlan-pvid") && p[1] && !p[2])
-     {
-+        int vlan_pvid;
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_INSTANCE);
--        options->vlan_pvid =3D positive_atoi(p[1], msglevel);
--        if (options->vlan_pvid < OPENVPN_8021Q_MIN_VID
--            || options->vlan_pvid > OPENVPN_8021Q_MAX_VID)
-+        if (!atoi_constrained(p[1], &vlan_pvid, p[0],
-+                              OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID=
-, msglevel))
-         {
--            msg(msglevel, "the parameter of --vlan-pvid parameters must be=
- >=3D %u and <=3D %u",
--                OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID);
-             goto err;
-         }
-+        options->vlan_pvid =3D (uint16_t)vlan_pvid;
-     }
-     else
-     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
-Gerrit-Change-Number: 1153
+Gerrit-Change-Id: I5e240c35cd4236e1d845195e4634fd5008f61814
+Gerrit-Change-Number: 1152
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -203,153 +176,116 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---asuawYDXI5o=
+--ZlkOefkJ1mA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">options: Review use of positive_atoi vs atoi_constrained<br>=
-<br>Replace where it is useful.<br><br>Change-Id: Id440917f433aab1a7db608ba=
-04fa95ba47c2ddde<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&g=
-t;<br>---<br>M src/openvpn/options.c<br>1 file changed, 21 insertions(+), 3=
-1 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
-fs/changes/53/1153/1</pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openv=
-pn/options.c</span><br><span>index 8edf261..7c685e2 100644</span><br><span>=
---- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</sp=
-an><br><span>@@ -7007,21 +7007,15 @@</span><br><span>     else if (streq(p[=
-0], &quot;tun-mtu-max&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><s=
-pan>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CON=
-NECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int =
-max_mtu =3D positive_atoi(p[1], msglevel);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        if (max_mtu &lt; 68 || max_mtu &gt; 65536)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;--tun=
--mtu-max value &#39;%s&#39; is invalid&quot;, p[1]);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           options-&gt;ce.tun_mtu_max =3D max_mtu;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        atoi_constrained(p[1], &amp;options-&gt;ce.tun_m=
-tu_max, p[0], TUN_MTU_MAX_MIN, 65536, msglevel);</span><br><span>     }</sp=
-an><br><span>     else if (streq(p[0], &quot;tun-mtu-extra&quot;) &amp;&amp=
-; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VE=
-RIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu_extra =3D positive_=
-atoi(p[1], msglevel);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        options-&gt;ce.tun_mtu_extra_defined =3D true;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (atoi_constrained(p[1], &amp;=
-options-&gt;ce.tun_mtu_extra, p[0], 0, 65536, msglevel))</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            options-&gt;ce.tun_mtu_extra_defined=
- =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;max=
--packet-size&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     =
-{</span><br><span>@@ -7053,11 +7047,8 @@</span><br><span>     else if (stre=
-q(p[0], &quot;fragment&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><=
-span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CO=
-NNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        opt=
-ions-&gt;ce.fragment =3D positive_atoi(p[1], msglevel);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        if (options-&gt;ce.fragment &lt; 68)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], &=
-amp;options-&gt;ce.fragment, p[0], 68, 0, msglevel))</span><br><span>      =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(m=
-sglevel, &quot;--fragment needs to be at least 68&quot;);</span><br><span> =
-            goto err;</span><br><span>         }</span><br><span> </span><b=
-r><span>@@ -7723,12 +7714,14 @@</span><br><span>         VERIFY_PERMISSION(=
-OPT_P_GENERAL | OPT_P_CONNECTION);</span><br><span>         if (p[1])</span=
-><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            int mssfix =3D positive_atoi(p[1], msglevel);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            /* can be 0, but otherwise =
-it needs to be high enough so we can</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-             * substract room for headers. */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            if (mssfix !=3D 0 &amp;&=
-amp; (mssfix &lt; TLS_CHANNEL_MTU_MIN || mssfix &gt; UINT16_MAX))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            int mssfix;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!atoi_con=
-strained(p[1], &amp;mssfix, p[0], 0, UINT16_MAX, msglevel))</span><br><span=
->             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-          msg(msglevel, &quot;--mssfix value &#39;%s&#39; is invalid&quot;,=
- p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-if (mssfix !=3D 0 &amp;&amp; mssfix &lt; TLS_CHANNEL_MTU_MIN)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;mss=
-fix needs to be &gt;=3D %d, not %d&quot;, TLS_CHANNEL_MTU_MIN, mssfix);</sp=
-an><br><span>                 goto err;</span><br><span>             }</spa=
-n><br><span> </span><br><span>@@ -7981,7 +7974,7 @@</span><br><span>     el=
-se if (streq(p[0], &quot;max-routes-per-client&quot;) &amp;&amp; p[1] &amp;=
-&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PERMISS=
-ION(OPT_P_INHERIT);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      options-&gt;max_routes_per_client =3D max_int(positive_atoi(p[1], msg=
-level), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-atoi_constrained(p[1], &amp;options-&gt;max_routes_per_client, p[0], 1, 0, =
-msglevel);</span><br><span>     }</span><br><span>     else if (streq(p[0],=
- &quot;client-cert-not-required&quot;) &amp;&amp; !p[1])</span><br><span>  =
-   {</span><br><span>@@ -9795,8 +9788,6 @@</span><br><span>     }</span><br=
-><span>     else if (streq(p[0], &quot;keying-material-exporter&quot;) &amp=
-;&amp; p[1] &amp;&amp; p[2])</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int ekm_length =3D positive_atoi(p[=
-2], msglevel);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span> </spa=
-n><br><span>         if (strncmp(p[1], &quot;EXPORTER&quot;, 8))</span><br>=
-<span>@@ -9810,14 +9801,14 @@</span><br><span>             msg(msglevel,</s=
-pan><br><span>                 &quot;Keying material exporter label must no=
-t be &#39;&quot; EXPORT_KEY_DATA_LABEL &quot;&#39;.&quot;);</span><br><span=
->         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if=
- (ekm_length &lt; 16 || ekm_length &gt; 4095)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        if (!atoi_constrained(p[2], &amp;options-&gt;keying_material=
-_exporter_length,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                            p[0], 16, 4095, msglevel))</span><br><span>    =
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg=
-(msglevel, &quot;Invalid keying material exporter length&quot;);</span><br>=
-<span>             goto err;</span><br><span>         }</span><br><span> </=
-span><br><span>         options-&gt;keying_material_exporter_label =3D p[1]=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;=
-keying_material_exporter_length =3D ekm_length;</span><br><span>     }</spa=
-n><br><span>     else if (streq(p[0], &quot;allow-recursive-routing&quot;) =
-&amp;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -9852,15 +9843,=
-14 @@</span><br><span>     }</span><br><span>     else if (streq(p[0], &quo=
-t;vlan-pvid&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int vlan_pv=
-id;</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_INSTAN=
-CE);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&=
-gt;vlan_pvid =3D positive_atoi(p[1], msglevel);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        if (options-&gt;vlan_pvid &lt; OPENVPN_80=
-21Q_MIN_VID</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  || options-&gt;vlan_pvid &gt; OPENVPN_8021Q_MAX_VID)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], &amp=
-;vlan_pvid, p[0],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                            OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID, m=
-sglevel))</span><br><span>         {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            msg(msglevel, &quot;the parameter of --vlan-pvid=
- parameters must be &gt;=3D %u and &lt;=3D %u&quot;,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                OPENVPN_8021Q_MIN_VID, OPEN=
-VPN_8021Q_MAX_VID);</span><br><span>             goto err;</span><br><span>=
-         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o=
-ptions-&gt;vlan_pvid =3D (uint16_t)vlan_pvid;</span><br><span>     }</span>=
-<br><span>     else</span><br><span>     {</span><br><span></span><br></pre=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?us=
-p=3Demail">change 1153</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
-iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ce: pre-wrap;">Clean up documentation for --tun-mtu-max<br><br>There was so=
+me confusion about how the option<br>was called...<br><br>Change-Id: I5e240=
+c35cd4236e1d845195e4634fd5008f61814<br>Signed-off-by: Frank Lichtenheld &lt=
+;frank@...2641...&gt;<br>---<br>M doc/man-sections/vpn-network-options.rst<=
+br>M src/openvpn/init.c<br>M src/openvpn/mtu.h<br>M src/openvpn/options.c<b=
+r>M src/openvpn/push.c<br>5 files changed, 13 insertions(+), 6 deletions(-)=
+<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/52/=
+1152/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/doc/man-sections/vpn-network-options.rst b/doc/=
+man-sections/vpn-network-options.rst</span><br><span>index 4a64e8d..2a06ef6=
+ 100644</span><br><span>--- a/doc/man-sections/vpn-network-options.rst</spa=
+n><br><span>+++ b/doc/man-sections/vpn-network-options.rst</span><br><span>=
+@@ -587,7 +587,7 @@</span><br><span>   packets larger than ``tun-mtu`` (e.g=
+. Linux and FreeBSD) but other platforms</span><br><span>   (like macOS) li=
+mit received packets to the same size as the MTU.</span><br><span> </span><=
+br><span>---tun-max-mtu maxmtu</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+--tun-mtu-max maxmtu</span><br><span>   This configures the maxi=
+mum MTU size that a server can push to ``maxmtu``,</span><br><span>   by co=
+nfiguring the internal buffers to allow at least this packet size.</span><b=
+r><span>   The default for ``maxmtu`` is 1600. Currently, only increasing b=
+eyond 1600</span><br><span>diff --git a/src/openvpn/init.c b/src/openvpn/in=
+it.c</span><br><span>index 5583274..9dd3b96 100644</span><br><span>--- a/sr=
+c/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@=
+@ -2916,7 +2916,7 @@</span><br><span> </span><br><span>     /* We always al=
+low at least 1600 MTU packets to be received in our buffer</span><br><span>=
+      * space to allow server to push &quot;baby giant&quot; MTU sizes */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    frame-&gt;tun_max_m=
+tu =3D max_int(1600, frame-&gt;tun_max_mtu);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    frame-&gt;tun_max_mtu =3D max_int(TUN_MTU_MAX_=
+MIN, frame-&gt;tun_max_mtu);</span><br><span> </span><br><span>     size_t =
+payload_size =3D frame-&gt;tun_max_mtu;</span><br><span> </span><br><span>d=
+iff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h</span><br><span>index 925=
+ef0b..c092461 100644</span><br><span>--- a/src/openvpn/mtu.h</span><br><spa=
+n>+++ b/src/openvpn/mtu.h</span><br><span>@@ -69,6 +69,11 @@</span><br><spa=
+n> #define TUN_MTU_DEFAULT 1500</span><br><span> </span><br><span> /*</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Minimum maximum MTU</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#define TUN_MTU_MAX_MIN 1600</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+/*</span><br><span>  * MTU Defaults for TAP devi=
+ces</span><br><span>  */</span><br><span> #define TAP_MTU_EXTRA_DEFAULT 32<=
+/span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c<=
+/span><br><span>index e9584a8..0b16c5a 100644</span><br><span>--- a/src/ope=
+nvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>=
+@@ -297,6 +297,7 @@</span><br><span>     &quot;--tun-mtu-extra n : Assume t=
+hat tun/tap device might return as many\n&quot;</span><br><span>     &quot;=
+                  as n bytes more than the tun-mtu size on read\n&quot;</sp=
+an><br><span>     &quot;                  (default TUN=3D0 TAP=3D%d).\n&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--tun-m=
+tu-max n : Maximum pushable MTU (default and minimum=3D%d).\n&quot;</span><=
+br><span>     &quot;--link-mtu n    : Take the TCP/UDP device MTU to be n a=
+nd derive the tun MTU\n&quot;</span><br><span>     &quot;                  =
+from it.\n&quot;</span><br><span>     &quot;--mtu-disc type : Should we do =
+Path MTU discovery on TCP/UDP channel?\n&quot;</span><br><span>@@ -4844,8 +=
+4845,9 @@</span><br><span> </span><br><span>     fprintf(fp, usage_message,=
+ title_string, o.ce.connect_retry_seconds,</span><br><span>             o.c=
+e.connect_retry_seconds_max, o.ce.local_port, o.ce.remote_port, TUN_MTU_DEF=
+AULT,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            TAP_=
+MTU_EXTRA_DEFAULT, o.verbosity, o.authname, o.replay_window, o.replay_time,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            o.tls_tim=
+eout, o.renegotiate_seconds, o.handshake_window, o.transition_window);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            TAP_MTU_EXTR=
+A_DEFAULT, TUN_MTU_MAX_MIN, o.verbosity, o.authname, o.replay_window,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            o.replay_time=
+, o.tls_timeout, o.renegotiate_seconds, o.handshake_window,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            o.transition_window);</=
+span><br><span>     fflush(fp);</span><br><span> </span><br><span> #endif  =
+                                     /* ENABLE_SMALL */</span><br><span>@@ =
+-7011,7 +7013,7 @@</span><br><span>             options-&gt;ce.occ_mtu =3D =
+0;</span><br><span>         }</span><br><span>     }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    else if (streq(p[0], &quot;tun-mtu-max&=
+quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    else if (streq(p[0], &quot;tun-mtu-max&quot;) &amp=
+;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>      =
+   VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);</span><br><span>       =
+  int max_mtu =3D positive_atoi(p[1], msglevel);</span><br><span>diff --git=
+ a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>index 889b268..4=
+f6adfc 100644</span><br><span>--- a/src/openvpn/push.c</span><br><span>+++ =
+b/src/openvpn/push.c</span><br><span>@@ -721,7 +721,7 @@</span><br><span>  =
+       {</span><br><span>             msg(M_WARN,</span><br><span>         =
+        &quot;Warning: reported maximum MTU from client (%d) is lower &quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                &quo=
+t;than MTU used on the server (%d). Add tun-max-mtu %d &quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                &quot;than MTU us=
+ed on the server (%d). Add tun-mtu-max %d &quot;</span><br><span>          =
+       &quot;to client configuration.&quot;,</span><br><span>              =
+   client_max_mtu, o-&gt;ce.tun_mtu, o-&gt;ce.tun_mtu);</span><br><span>   =
+      }</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail">change 1152</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1152?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id440917f433aab1a7db608ba04f=
-a95ba47c2ddde </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1153 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5e240c35cd4236e1d845195e463=
+4fd5008f61814 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1152 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -362,5 +298,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---asuawYDXI5o=--
+--ZlkOefkJ1mA=--
 
