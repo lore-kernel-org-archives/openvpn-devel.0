@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Aug 2025 20:56:15 +0000
+Date: Fri, 22 Aug 2025 20:56:17 +0000
 In-Reply-To: <gerrit.1755870317000.Ibec7ffb9085503f72e79514776042bc310384f13@...2715...>
 References: <gerrit.1755870317000.Ibec7ffb9085503f72e79514776042bc310384f13@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5a388d6bdd39433a8e37c4040a1421170bfe4084-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5a388d6bdd39433a8e37c4040a1421170bfe4084-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="09gOtoMn698="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="rEVUQjPyguY="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: options: Fix
  --hash-size virtual argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---09gOtoMn698=
+--rEVUQjPyguY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1149?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
+49?usp=3Demail )
 
 Change subject: options: Fix --hash-size virtual argument
 ......................................................................
@@ -54,7 +50,7 @@ M src/openvpn/options.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/1149/2
+
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
 index 5f9971c..e9584a8 100644
@@ -84,47 +80,43 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---09gOtoMn698=
+--rEVUQjPyguY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1149?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">options: Fix --hash-size virtual argument<br><br>Pre=
-viously we ignored the second argument to --hash-size.<br>This bug is older=
- than the openvpn git repository, but<br>clearly this is not an option ofte=
-n used (or at all).<br><br>Change-Id: Ibec7ffb9085503f72e79514776042bc31038=
-4f13<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250822205223.=
-3492-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
-el@lists.sourceforge.net/msg32658.html<br>Signed-off-by: Gert Doering &lt;g=
-ert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>1 file changed, 1 i=
-nsertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
-8/openvpn refs/changes/49/1149/2</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c=
- b/src/openvpn/options.c</span><br><span>index 5f9971c..e9584a8 100644</spa=
-n><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/o=
-ptions.c</span><br><span>@@ -7951,7 +7951,7 @@</span><br><span>            =
- goto err;</span><br><span>         }</span><br><span>         options-&gt;=
-real_hash_size =3D real;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        options-&gt;virtual_hash_size =3D real;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        options-&gt;virtual_hash_size =3D vi=
-rtual;</span><br><span>     }</span><br><span>     else if (streq(p[0], &qu=
-ot;connect-freq&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</s=
-pan><br><span>     {</span><br><span></span><br></pre><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/1149?usp=3Demail">change 1149=
-</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1149?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1149?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">options: Fix --hash-size virtual argument<br>=
+<br>Previously we ignored the second argument to --hash-size.<br>This bug i=
+s older than the openvpn git repository, but<br>clearly this is not an opti=
+on often used (or at all).<br><br>Change-Id: Ibec7ffb9085503f72e79514776042=
+bc310384f13<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br=
+>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250822=
+205223.3492-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/open=
+vpn-devel@lists.sourceforge.net/msg32658.html<br>Signed-off-by: Gert Doerin=
+g &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chang=
+ed, 1 insertion(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index 5f9971c..e9584a8 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -7951,7 +7=
+951,7 @@</span><br><span>             goto err;</span><br><span>         }<=
+/span><br><span>         options-&gt;real_hash_size =3D real;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;virtual_hash_si=
+ze =3D real;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ options-&gt;virtual_hash_size =3D virtual;</span><br><span>     }</span><b=
+r><span>     else if (streq(p[0], &quot;connect-freq&quot;) &amp;&amp; p[1]=
+ &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>     {</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1149?usp=3Demail">change 1149</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1149?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -140,8 +132,8 @@ content=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---09gOtoMn698=--
+--rEVUQjPyguY=--
 
