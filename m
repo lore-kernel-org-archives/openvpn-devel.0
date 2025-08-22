@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Aug 2025 20:56:17 +0000
-In-Reply-To: <gerrit.1755870317000.Ibec7ffb9085503f72e79514776042bc310384f13@...2715...>
-References: <gerrit.1755870317000.Ibec7ffb9085503f72e79514776042bc310384f13@...2715...>
+Date: Fri, 22 Aug 2025 20:57:53 +0000
+In-Reply-To: <gerrit.1755877911000.I5e240c35cd4236e1d845195e4634fd5008f61814@...2715...>
+References: <gerrit.1755877911000.I5e240c35cd4236e1d845195e4634fd5008f61814@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5a388d6bdd39433a8e37c4040a1421170bfe4084-HTML@...2715...>
+Message-ID: <c04e0fd8dae8457bdc4183d92fe9f8077f42de5c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rEVUQjPyguY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: options: Fix
- --hash-size virtual argument
+Content-Type: multipart/alternative; boundary="jEz3EGDTcU8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Clean up
+ documentation for --tun-mtu-max
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,108 +22,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rEVUQjPyguY=
+--jEz3EGDTcU8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-49?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: options: Fix --hash-size virtual argument
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1152?usp=3Demail )
+
+Change subject: Clean up documentation for --tun-mtu-max
 ......................................................................
 
-options: Fix --hash-size virtual argument
 
-Previously we ignored the second argument to --hash-size.
-This bug is older than the openvpn git repository, but
-clearly this is not an option often used (or at all).
+Patch Set 1: Code-Review+2
 
-Change-Id: Ibec7ffb9085503f72e79514776042bc310384f13
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20250822205223.3492-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-658.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/options.c
-1 file changed, 1 insertion(+), 1 deletion(-)
-
-
-
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5f9971c..e9584a8 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7951,7 +7951,7 @@
-             goto err;
-         }
-         options->real_hash_size =3D real;
--        options->virtual_hash_size =3D real;
-+        options->virtual_hash_size =3D virtual;
-     }
-     else if (streq(p[0], "connect-freq") && p[1] && p[2] && !p[3])
-     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1149?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ibec7ffb9085503f72e79514776042bc310384f13
-Gerrit-Change-Number: 1149
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I5e240c35cd4236e1d845195e4634fd5008f61814
+Gerrit-Change-Number: 1152
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 22 Aug 2025 20:57:53 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---rEVUQjPyguY=
+--jEz3EGDTcU8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1149?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">options: Fix --hash-size virtual argument<br>=
-<br>Previously we ignored the second argument to --hash-size.<br>This bug i=
-s older than the openvpn git repository, but<br>clearly this is not an opti=
-on often used (or at all).<br><br>Change-Id: Ibec7ffb9085503f72e79514776042=
-bc310384f13<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br=
->Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20250822=
-205223.3492-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/open=
-vpn-devel@lists.sourceforge.net/msg32658.html<br>Signed-off-by: Gert Doerin=
-g &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chang=
-ed, 1 insertion(+), 1 deletion(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
-an>index 5f9971c..e9584a8 100644</span><br><span>--- a/src/openvpn/options.=
-c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -7951,7 +7=
-951,7 @@</span><br><span>             goto err;</span><br><span>         }<=
-/span><br><span>         options-&gt;real_hash_size =3D real;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;virtual_hash_si=
-ze =3D real;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- options-&gt;virtual_hash_size =3D virtual;</span><br><span>     }</span><b=
-r><span>     else if (streq(p[0], &quot;connect-freq&quot;) &amp;&amp; p[1]=
- &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>     {</span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1149?usp=3Demail">change 1149</a>. To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
-ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
-v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
-link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1149?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail=
+">change 1152</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1152?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibec7ffb9085503f72e795147760=
-42bc310384f13 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1149 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5e240c35cd4236e1d845195e463=
+4fd5008f61814 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1152 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -132,8 +90,16 @@ p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 22 Aug 2025 20:57:53=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---rEVUQjPyguY=--
+--jEz3EGDTcU8=--
 
