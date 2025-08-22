@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Aug 2025 16:25:13 +0000
-In-Reply-To: <gerrit.1755870317000.Ibc7526d59c1de17a0f9d8ed88f75c6f070ab11e7@...2715...>
-References: <gerrit.1755870317000.Ibc7526d59c1de17a0f9d8ed88f75c6f070ab11e7@...2715...>
+Date: Fri, 22 Aug 2025 16:25:18 +0000
+References: <gerrit.1755879913000.Ic9ac18f730e6035126ccf1cf19799548e5fd9316@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <70dc5ad7f6749332672733e25abdce86f2ad8e8b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <3496710a52e7f8d913ff7dcd1b82a1cc2f8f9a79-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DyRxDb68gGI="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Introduce
- atoi_constrained and review usages of atoi_warn
+Content-Type: multipart/alternative; boundary="RAmZZTaxNIE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: Move < 0
+ check for keepalive settings earlier
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DyRxDb68gGI=
+--RAmZZTaxNIE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,1134 +29,160 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1150?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail
 
-to look at the new patch set (#3).
+to review the following change.
 
 
-Change subject: options: Introduce atoi_constrained and review usages of at=
-oi_warn
+Change subject: options: Move < 0 check for keepalive settings earlier
 ......................................................................
 
-options: Introduce atoi_constrained and review usages of atoi_warn
+options: Move < 0 check for keepalive settings earlier
 
-This is a more powerful version of atoi_warn that can
-- check minimum and maximum values
-- report error seperately from parsed value
+Use the atoi_constrained function.
 
-This can be used to simplify a lot of option parsing.
-
-Change-Id: Ibc7526d59c1de17a0f9d8ed88f75c6f070ab11e7
+Change-Id: Ic9ac18f730e6035126ccf1cf19799548e5fd9316
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpn/helper.c
 M src/openvpn/options.c
-M src/openvpn/options_util.c
-M src/openvpn/options_util.h
-M tests/unit_tests/openvpn/test_misc.c
-4 files changed, 140 insertions(+), 107 deletions(-)
+2 files changed, 3 insertions(+), 7 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/1150/3
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/55/1155/1
+
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index b2ecb1e..b262e8d 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -552,14 +552,10 @@
+         /*
+          * Sanity checks.
+          */
+-        if (o->keepalive_ping <=3D 0 || o->keepalive_timeout <=3D 0)
+-        {
+-            msg(M_USAGE, "--keepalive parameters must be > 0");
+-        }
+         if (o->keepalive_ping * 2 > o->keepalive_timeout)
+         {
+             msg(M_USAGE,
+-                "the second parameter to --keepalive (restart timeout=3D%d=
+) must be at least twice the value of the first parameter (ping interval=3D=
+%d).  A ratio of 1:5 or 1:6 would be even better.  Recommended setting is -=
+-keepalive 10 60.",
++                "The second parameter to --keepalive (restart timeout=3D%d=
+) must be at least twice the value of the first parameter (ping interval=3D=
+%d).  A ratio of 1:5 or 1:6 would be even better.  Recommended setting is -=
+-keepalive 10 60.",
+                 o->keepalive_timeout, o->keepalive_ping);
+         }
+         if (o->ping_send_timeout || o->ping_rec_timeout)
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0b16c5a..36ab628 100644
+index 87c0895..97bf957 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -6407,16 +6407,11 @@
-     }
-     else if (streq(p[0], "management-log-cache") && p[1] && !p[2])
-     {
--        int cache;
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        cache =3D atoi_warn(p[1], msglevel);
--        if (cache < 1)
-+        if (!atoi_constrained(p[1], &options->management_log_history_cache=
-, p[0], 1, 0, msglevel))
-         {
--            msg(msglevel, "--management-log-cache parameter is out of rang=
-e");
-             goto err;
-         }
--        options->management_log_history_cache =3D cache;
-     }
- #endif /* ifdef ENABLE_MANAGEMENT */
- #ifdef ENABLE_PLUGIN
-@@ -6965,16 +6960,11 @@
-     }
-     else if (streq(p[0], "status-version") && p[1] && !p[2])
-     {
--        int version;
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        version =3D atoi_warn(p[1], msglevel);
--        if (version < 1 || version > 3)
-+        if (!atoi_constrained(p[1], &options->status_file_version, p[0], 1=
-, 3, msglevel))
-         {
--            msg(msglevel, "--status-version must be 1 to 3");
-             goto err;
-         }
--        options->status_file_version =3D version;
-     }
-     else if (streq(p[0], "remap-usr1") && p[1] && !p[2])
-     {
-@@ -7147,16 +7137,11 @@
-     }
-     else if (streq(p[0], "shaper") && p[1] && !p[2])
-     {
--        int shaper;
--
-         VERIFY_PERMISSION(OPT_P_SHAPER);
--        shaper =3D atoi_warn(p[1], msglevel);
--        if (shaper < SHAPER_MIN || shaper > SHAPER_MAX)
-+        if (!atoi_constrained(p[1], &options->shaper, p[0], SHAPER_MIN, SH=
-APER_MAX, msglevel))
-         {
--            msg(msglevel, "Bad shaper value, must be between %d and %d", S=
-HAPER_MIN, SHAPER_MAX);
-             goto err;
-         }
--        options->shaper =3D shaper;
-     }
-     else if (streq(p[0], "port") && p[1] && !p[2])
-     {
-@@ -7725,7 +7710,11 @@
-     else if (streq(p[0], "script-security") && p[1] && !p[2])
+@@ -7362,8 +7362,8 @@
+     else if (streq(p[0], "keepalive") && p[1] && p[2] && !p[3])
      {
          VERIFY_PERMISSION(OPT_P_GENERAL);
--        script_security_set(atoi_warn(p[1], msglevel));
-+        int security;
-+        if (atoi_constrained(p[1], &security, p[0], SSEC_NONE, SSEC_PW_ENV=
-, msglevel))
-+        {
-+            script_security_set(security);
-+        }
+-        options->keepalive_ping =3D atoi_warn(p[1], msglevel);
+-        options->keepalive_timeout =3D atoi_warn(p[2], msglevel);
++        atoi_constrained(p[1], &options->keepalive_ping, "keepalive ping",=
+ 0, 0, msglevel);
++        atoi_constrained(p[2], &options->keepalive_timeout, "keepalive tim=
+eout", 0, 0, msglevel);
      }
-     else if (streq(p[0], "mssfix") && !p[3])
+     else if (streq(p[0], "ping") && p[1] && !p[2])
      {
-@@ -7945,11 +7934,9 @@
-         int real, virtual;
-
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        real =3D atoi_warn(p[1], msglevel);
--        virtual =3D atoi_warn(p[2], msglevel);
--        if (real < 1 || virtual < 1)
-+        if (!atoi_constrained(p[1], &real, "hash-size real", 1, 0, msgleve=
-l)
-+            || !atoi_constrained(p[2], &virtual, "hash-size virtual", 1, 0=
-, msglevel))
-         {
--            msg(msglevel, "--hash-size sizes must be >=3D 1 (preferably a =
-power of 2)");
-             goto err;
-         }
-         options->real_hash_size =3D real;
-@@ -7960,11 +7947,9 @@
-         int cf_max, cf_per;
-
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        cf_max =3D atoi_warn(p[1], msglevel);
--        cf_per =3D atoi_warn(p[2], msglevel);
--        if (cf_max < 0 || cf_per < 0)
-+        if (!atoi_constrained(p[1], &cf_max, "connect-freq n", 1, 0, msgle=
-vel)
-+            || !atoi_constrained(p[2], &cf_per, "connect-freq seconds", 1,=
- 0, msglevel))
-         {
--            msg(msglevel, "--connect-freq parms must be > 0");
-             goto err;
-         }
-         options->cf_max =3D cf_max;
-@@ -7972,15 +7957,12 @@
-     }
-     else if (streq(p[0], "connect-freq-initial") && p[1] && p[2] && !p[3])
-     {
--        long cf_max, cf_per;
-+        int cf_max, cf_per;
-
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        char *e1, *e2;
--        cf_max =3D strtol(p[1], &e1, 10);
--        cf_per =3D strtol(p[2], &e2, 10);
--        if (cf_max < 0 || cf_per < 0 || *e1 !=3D '\0' || *e2 !=3D '\0')
-+        if (!atoi_constrained(p[1], &cf_max, "connect-freq-initial n", 1, =
-0, msglevel)
-+            || !atoi_constrained(p[2], &cf_per, "connect-freq-initial seco=
-nds", 1, 0, msglevel))
-         {
--            msg(msglevel, "--connect-freq-initial parameters must be integ=
-ers and >=3D 0");
-             goto err;
-         }
-         options->cf_initial_max =3D cf_max;
-@@ -7988,21 +7970,11 @@
-     }
-     else if (streq(p[0], "max-clients") && p[1] && !p[2])
-     {
--        int max_clients;
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        max_clients =3D atoi_warn(p[1], msglevel);
--        if (max_clients < 0)
-+        if (!atoi_constrained(p[1], &options->max_clients, p[0], 1, MAX_PE=
-ER_ID, msglevel))
-         {
--            msg(msglevel, "--max-clients must be at least 1");
-             goto err;
-         }
--        if (max_clients >=3D MAX_PEER_ID) /* max peer-id value */
--        {
--            msg(msglevel, "--max-clients must be less than %d", MAX_PEER_I=
-D);
--            goto err;
--        }
--        options->max_clients =3D max_clients;
-     }
-     else if (streq(p[0], "max-routes-per-client") && p[1] && !p[2])
-     {
-@@ -8174,27 +8146,13 @@
-     }
-     else if (streq(p[0], "bcast-buffers") && p[1] && !p[2])
-     {
--        int n_bcast_buf;
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        n_bcast_buf =3D atoi_warn(p[1], msglevel);
--        if (n_bcast_buf < 1)
--        {
--            msg(msglevel, "--bcast-buffers parameter must be > 0");
--        }
--        options->n_bcast_buf =3D n_bcast_buf;
-+        atoi_constrained(p[1], &options->n_bcast_buf, p[0], 1, 0, msglevel=
-);
-     }
-     else if (streq(p[0], "tcp-queue-limit") && p[1] && !p[2])
-     {
--        int tcp_queue_limit;
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        tcp_queue_limit =3D atoi_warn(p[1], msglevel);
--        if (tcp_queue_limit < 1)
--        {
--            msg(msglevel, "--tcp-queue-limit parameter must be > 0");
--        }
--        options->tcp_queue_limit =3D tcp_queue_limit;
-+        atoi_constrained(p[1], &options->tcp_queue_limit, p[0], 1, 0, msgl=
-evel);
-     }
- #if PORT_SHARE
-     else if (streq(p[0], "port-share") && p[1] && p[2] && !p[4])
-@@ -8340,21 +8298,24 @@
-         int ageing_time, check_interval;
-
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        ageing_time =3D atoi_warn(p[1], msglevel);
-+        if (!atoi_constrained(p[1], &ageing_time, "stale-routes-check age"=
-, 1, 0, msglevel))
-+        {
-+            goto err;
-+        }
-+
-         if (p[2])
-         {
--            check_interval =3D atoi_warn(p[2], msglevel);
-+            if (!atoi_constrained(p[2], &check_interval,
-+                                  "stale-routes-check interval", 1, 0, msg=
-level))
-+            {
-+                goto err;
-+            }
-         }
-         else
-         {
-             check_interval =3D ageing_time;
-         }
-
--        if (ageing_time < 1 || check_interval < 1)
--        {
--            msg(msglevel, "--stale-routes-check aging time and check inter=
-val must be >=3D 1");
--            goto err;
--        }
-         options->stale_routes_ageing_time =3D ageing_time;
-         options->stale_routes_check_interval =3D check_interval;
-     }
-@@ -8372,7 +8333,7 @@
-     else if (streq(p[0], "push-continuation") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_PULL_MODE);
--        options->push_continuation =3D atoi_warn(p[1], msglevel);
-+        atoi_constrained(p[1], &options->push_continuation, p[0], 0, 2, ms=
-glevel);
-     }
-     else if (streq(p[0], "auth-user-pass") && !p[2])
-     {
-@@ -8491,33 +8452,22 @@
-             {
-                 if (!streq(p[2], "default"))
-                 {
--                    int offset =3D atoi_warn(p[2], msglevel);
-+                    int offset;
-
--                    if (!(offset > -256 && offset < 256))
-+                    if (!atoi_constrained(p[2], &offset, "ip-win32 offset"=
-, -256, 256, msglevel))
-                     {
--                        msg(msglevel,
--                            "--ip-win32 dynamic [offset] [lease-time]: off=
-set (%d) must be > -256 and < 256",
--                            offset);
-                         goto err;
-                     }
--
-                     to->dhcp_masq_custom_offset =3D true;
-                     to->dhcp_masq_offset =3D offset;
-                 }
-
-                 if (p[3])
-                 {
--                    const int min_lease =3D 30;
--                    int lease_time;
--                    lease_time =3D atoi_warn(p[3], msglevel);
--                    if (lease_time < min_lease)
-+                    if (!atoi_constrained(p[3], &to->dhcp_lease_time, "ip-=
-win32 lease time", 30, 0, msglevel))
-                     {
--                        msg(msglevel,
--                            "--ip-win32 dynamic [offset] [lease-time]: lea=
-se time parameter (%d) must be at least %d seconds",
--                            lease_time, min_lease);
-                         goto err;
-                     }
--                    to->dhcp_lease_time =3D lease_time;
-                 }
-             }
-         }
-@@ -8615,8 +8565,7 @@
-         }
-         else if (streq(p[1], "NBT") && p[2] && !p[3])
-         {
--            int t;
--            t =3D atoi_warn(p[2], msglevel);
-+            int t =3D atoi_warn(p[2], msglevel);
-             if (!(t =3D=3D 1 || t =3D=3D 2 || t =3D=3D 4 || t =3D=3D 8))
-             {
-                 msg(msglevel, "--dhcp-option NBT: parameter (%d) must be 1=
-, 2, 4, or 8", t);
-@@ -8690,15 +8639,11 @@
-     }
-     else if (streq(p[0], "tap-sleep") && p[1] && !p[2])
-     {
--        int s;
-         VERIFY_PERMISSION(OPT_P_DHCPDNS);
--        s =3D atoi_warn(p[1], msglevel);
--        if (s < 0 || s >=3D 256)
-+        if (!atoi_constrained(p[1], &options->tuntap_options.tap_sleep, p[=
-0], 0, 255, msglevel))
-         {
--            msg(msglevel, "--tap-sleep parameter must be between 0 and 255=
-");
-             goto err;
-         }
--        options->tuntap_options.tap_sleep =3D s;
-     }
-     else if (streq(p[0], "dhcp-renew") && !p[1])
-     {
-@@ -9138,30 +9083,19 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         if (p[1])
-         {
--            int replay_window;
--
--            replay_window =3D atoi_warn(p[1], msglevel);
--            if (!(MIN_SEQ_BACKTRACK <=3D replay_window && replay_window <=
-=3D MAX_SEQ_BACKTRACK))
-+            if (!atoi_constrained(p[1], &options->replay_window, "replay-w=
-indow windows size",
-+                                  MIN_SEQ_BACKTRACK, MAX_SEQ_BACKTRACK, ms=
-glevel))
-             {
--                msg(msglevel, "replay-window window size parameter (%d) mu=
-st be between %d and %d",
--                    replay_window, MIN_SEQ_BACKTRACK, MAX_SEQ_BACKTRACK);
-                 goto err;
-             }
--            options->replay_window =3D replay_window;
-
-             if (p[2])
-             {
--                int replay_time;
--
--                replay_time =3D atoi_warn(p[2], msglevel);
--                if (!(MIN_TIME_BACKTRACK <=3D replay_time && replay_time <=
-=3D MAX_TIME_BACKTRACK))
-+                if (!atoi_constrained(p[2], &options->replay_time, "replay=
--window time window",
-+                                      MIN_TIME_BACKTRACK, MAX_TIME_BACKTRA=
-CK, msglevel))
-                 {
--                    msg(msglevel,
--                        "replay-window time window parameter (%d) must be =
-between %d and %d",
--                        replay_time, MIN_TIME_BACKTRACK, MAX_TIME_BACKTRAC=
-K);
-                     goto err;
-                 }
--                options->replay_time =3D replay_time;
-             }
-         }
-         else
-@@ -9757,7 +9691,7 @@
-         else if (!p[2])
-         {
-             char *endp =3D NULL;
--            int i =3D strtol(provider, &endp, 10);
-+            long i =3D strtol(provider, &endp, 10);
-
-             if (*endp =3D=3D 0)
-             {
-@@ -9828,7 +9762,7 @@
-     else if (streq(p[0], "pkcs11-pin-cache") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        options->pkcs11_pin_cache_period =3D atoi_warn(p[1], msglevel);
-+        options->pkcs11_pin_cache_period =3D positive_atoi(p[1], msglevel);
-     }
-     else if (streq(p[0], "pkcs11-id") && p[1] && !p[2])
-     {
-diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
-index c3938a7..c1f7c74 100644
---- a/src/openvpn/options_util.c
-+++ b/src/openvpn/options_util.c
-@@ -146,6 +146,41 @@
-     return (int)i;
- }
-
-+bool
-+atoi_constrained(const char *str, int *value, const char *name, int min, i=
-nt max, int msglevel)
-+{
-+    if (!max)
-+    {
-+        max =3D INT_MAX;
-+    }
-+    ASSERT(min < max);
-+
-+    char *endptr;
-+    long long i =3D strtoll(str, &endptr, 10);
-+    if (i < INT_MIN || *endptr !=3D '\0' || i > INT_MAX)
-+    {
-+        msg(msglevel, "%s: Cannot parse '%s' as integer", name, str);
-+        return false;
-+    }
-+    if (i < min || i > max)
-+    {
-+        if (max =3D=3D INT_MAX) /* nicer message for common case */
-+        {
-+            msg(msglevel, "%s: Must be an integer >=3D %d, not %lld",
-+                name, min, i);
-+        }
-+        else
-+        {
-+            msg(msglevel, "%s: Must be an integer between %d and %d, not %=
-lld",
-+                name, min, max, i);
-+        }
-+        return false;
-+    }
-+
-+    *value =3D i;
-+    return true;
-+}
-+
- static const char *updatable_options[] =3D { "block-ipv6", "block-outside-=
-dns",
-                                            "dhcp-option", "dns",
-                                            "ifconfig", "ifconfig-ipv6",
-diff --git a/src/openvpn/options_util.h b/src/openvpn/options_util.h
-index 6f81b1e..d5ae8b9 100644
---- a/src/openvpn/options_util.h
-+++ b/src/openvpn/options_util.h
-@@ -41,11 +41,24 @@
-
- /**
-  * Converts a str to an integer if the string can be represented as an
-- * integer number. Otherwise print a warning with msglevel and return 0
-+ * integer number. Otherwise print a warning with \p msglevel and return 0
-  */
- int atoi_warn(const char *str, int msglevel);
-
- /**
-+ * Converts a str to an integer if the string can be represented as an
-+ * integer number and is between \p min and \p max.
-+ * If \p max is 0, \p INT_MAX is used instead.
-+ * The integer is stored in \p value.
-+ * On error, print a warning with \p msglevel using \p name. \p value is
-+ * not changed on error.
-+ *
-+ * @return \c true if the integer has been parsed and stored in value, \c =
-false otherwise
-+ */
-+bool atoi_constrained(const char *str, int *value, const char *name, int m=
-in, int max,
-+                      int msglevel);
-+
-+/**
-  * Filter an option line by all pull filters.
-  *
-  * If a match is found, the line is modified depending on
-diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
-n/test_misc.c
-index 1857922..80a5dee 100644
---- a/tests/unit_tests/openvpn/test_misc.c
-+++ b/tests/unit_tests/openvpn/test_misc.c
-@@ -351,6 +351,14 @@
-     assert_int_equal(atoi_warn("0", msglevel), 0);
-     assert_int_equal(atoi_warn("-1194", msglevel), -1194);
-
-+    int parameter =3D 0;
-+    assert_true(atoi_constrained("1234", &parameter, "test", 0, 0, msgleve=
-l));
-+    assert_int_equal(parameter, 1234);
-+    assert_true(atoi_constrained("0", &parameter, "test", -1, 0, msglevel)=
-);
-+    assert_int_equal(parameter, 0);
-+    assert_true(atoi_constrained("-1194", &parameter, "test", INT_MIN, INT=
-_MAX, msglevel));
-+    assert_int_equal(parameter, -1194);
-+
-     CLEAR(mock_msg_buf);
-     assert_int_equal(positive_atoi("-1234", msglevel), 0);
-     assert_string_equal(mock_msg_buf, "Cannot parse argument '-1234' as no=
-n-negative integer");
-@@ -365,6 +373,12 @@
-     assert_string_equal(mock_msg_buf, "Cannot parse argument '2147483653' =
-as integer");
-
-     CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("2147483653", &parameter, "test", 0, 0, =
-msglevel));
-+    assert_string_equal(mock_msg_buf, "test: Cannot parse '2147483653' as =
-integer");
-+    assert_int_equal(parameter, -42);
-+
-+    CLEAR(mock_msg_buf);
-     assert_int_equal(positive_atoi("foo77", msglevel), 0);
-     assert_string_equal(mock_msg_buf, "Cannot parse argument 'foo77' as no=
-n-negative integer");
-
-@@ -373,6 +387,18 @@
-     assert_string_equal(mock_msg_buf, "Cannot parse argument '77foo' as no=
-n-negative integer");
-
-     CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("foo77", &parameter, "test", 0, 0, msgle=
-vel));
-+    assert_string_equal(mock_msg_buf, "test: Cannot parse 'foo77' as integ=
-er");
-+    assert_int_equal(parameter, -42);
-+
-+    CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("77foo", &parameter, "test", 0, 0, msgle=
-vel));
-+    assert_string_equal(mock_msg_buf, "test: Cannot parse '77foo' as integ=
-er");
-+    assert_int_equal(parameter, -42);
-+
-+    CLEAR(mock_msg_buf);
-     assert_int_equal(atoi_warn("foo77", msglevel), 0);
-     assert_string_equal(mock_msg_buf, "Cannot parse argument 'foo77' as in=
-teger");
-
-@@ -380,6 +406,31 @@
-     assert_int_equal(atoi_warn("77foo", msglevel), 0);
-     assert_string_equal(mock_msg_buf, "Cannot parse argument '77foo' as in=
-teger");
-
-+    /* special tests for _constrained */
-+    CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("77", &parameter, "test", 0, 76, msgleve=
-l));
-+    assert_string_equal(mock_msg_buf, "test: Must be an integer between 0 =
-and 76, not 77");
-+    assert_int_equal(parameter, -42);
-+
-+    CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("-77", &parameter, "test", -76, 76, msgl=
-evel));
-+    assert_string_equal(mock_msg_buf, "test: Must be an integer between -7=
-6 and 76, not -77");
-+    assert_int_equal(parameter, -42);
-+
-+    CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("-77", &parameter, "test", 0, 0, msgleve=
-l));
-+    assert_string_equal(mock_msg_buf, "test: Must be an integer >=3D 0, no=
-t -77");
-+    assert_int_equal(parameter, -42);
-+
-+    CLEAR(mock_msg_buf);
-+    parameter =3D -42;
-+    assert_false(atoi_constrained("0", &parameter, "test", 1, 0, msglevel)=
-);
-+    assert_string_equal(mock_msg_buf, "test: Must be an integer >=3D 1, no=
-t 0");
-+    assert_int_equal(parameter, -42);
-+
-     mock_set_debug_level(saved_log_level);
- }
-
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1150?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ibc7526d59c1de17a0f9d8ed88f75c6f070ab11e7
-Gerrit-Change-Number: 1150
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: Ic9ac18f730e6035126ccf1cf19799548e5fd9316
+Gerrit-Change-Number: 1155
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---DyRxDb68gGI=
+--RAmZZTaxNIE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1150?usp=3Demail">View C=
-hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">options: Introduce atoi_constrained and review usages of atoi_war=
-n<br><br>This is a more powerful version of atoi_warn that can<br>- check m=
-inimum and maximum values<br>- report error seperately from parsed value<br=
-><br>This can be used to simplify a lot of option parsing.<br><br>Change-Id=
-: Ibc7526d59c1de17a0f9d8ed88f75c6f070ab11e7<br>Signed-off-by: Frank Lichten=
-held &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>M src/op=
-envpn/options_util.c<br>M src/openvpn/options_util.h<br>M tests/unit_tests/=
-openvpn/test_misc.c<br>4 files changed, 140 insertions(+), 107 deletions(-)=
-<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/=
-1150/3</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</=
-span><br><span>index 0b16c5a..36ab628 100644</span><br><span>--- a/src/open=
-vpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@=
-@ -6407,16 +6407,11 @@</span><br><span>     }</span><br><span>     else if =
-(streq(p[0], &quot;management-log-cache&quot;) &amp;&amp; p[1] &amp;&amp; !=
-p[2])</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        int cache;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        cache =3D atoi_warn(p[1],=
- msglevel);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if=
- (cache &lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    if (!atoi_constrained(p[1], &amp;options-&gt;management_log_history_cac=
-he, p[0], 1, 0, msglevel))</span><br><span>         {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;--managemen=
-t-log-cache parameter is out of range&quot;);</span><br><span>             =
-goto err;</span><br><span>         }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        options-&gt;management_log_history_cache =3D cache;<=
-/span><br><span>     }</span><br><span> #endif /* ifdef ENABLE_MANAGEMENT *=
-/</span><br><span> #ifdef ENABLE_PLUGIN</span><br><span>@@ -6965,16 +6960,1=
-1 @@</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot=
-;status-version&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>  =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int versi=
-on;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
-        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        version =3D atoi_warn(p[1], msglevel);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        if (version &lt; 1 || =
-version &gt; 3)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    if (!atoi_constrained(p[1], &amp;options-&gt;status_file_version, p[0],=
- 1, 3, msglevel))</span><br><span>         {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;--status-version mus=
-t be 1 to 3&quot;);</span><br><span>             goto err;</span><br><span>=
-         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        opt=
-ions-&gt;status_file_version =3D version;</span><br><span>     }</span><br>=
-<span>     else if (streq(p[0], &quot;remap-usr1&quot;) &amp;&amp; p[1] &am=
-p;&amp; !p[2])</span><br><span>     {</span><br><span>@@ -7147,16 +7137,11 =
-@@</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;s=
-haper&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        int shaper;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         VER=
-IFY_PERMISSION(OPT_P_SHAPER);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        shaper =3D atoi_warn(p[1], msglevel);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (shaper &lt; SHAPER_MIN || shape=
-r &gt; SHAPER_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (!atoi_constrained(p[1], &amp;options-&gt;shaper, p[0], SHAPER_MI=
-N, SHAPER_MAX, msglevel))</span><br><span>         {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;Bad shaper =
-value, must be between %d and %d&quot;, SHAPER_MIN, SHAPER_MAX);</span><br>=
-<span>             goto err;</span><br><span>         }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        options-&gt;shaper =3D shaper;</s=
-pan><br><span>     }</span><br><span>     else if (streq(p[0], &quot;port&q=
-uot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><s=
-pan>@@ -7725,7 +7710,11 @@</span><br><span>     else if (streq(p[0], &quot;=
-script-security&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>  =
-   {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        script_security_set(atoi_=
-warn(p[1], msglevel));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        int security;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        if (atoi_constrained(p[1], &amp;security, p[0], SSEC_NONE, SSE=
-C_PW_ENV, msglevel))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   script_security_set(security);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        }</span><br><span>     }</span><br><span>     else if=
- (streq(p[0], &quot;mssfix&quot;) &amp;&amp; !p[3])</span><br><span>     {<=
-/span><br><span>@@ -7945,11 +7934,9 @@</span><br><span>         int real, v=
-irtual;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_=
-GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        real=
- =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        virtual =3D atoi_warn(p[2], msglevel);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        if (real &lt; 1 || virtual &lt; =
-1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!atoi=
-_constrained(p[1], &amp;real, &quot;hash-size real&quot;, 1, 0, msglevel)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            || !atoi_=
-constrained(p[2], &amp;virtual, &quot;hash-size virtual&quot;, 1, 0, msglev=
-el))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            msg(msglevel, &quot;--hash-size sizes must be &gt;=3D=
- 1 (preferably a power of 2)&quot;);</span><br><span>             goto err;=
-</span><br><span>         }</span><br><span>         options-&gt;real_hash_=
-size =3D real;</span><br><span>@@ -7960,11 +7947,9 @@</span><br><span>     =
-    int cf_max, cf_per;</span><br><span> </span><br><span>         VERIFY_P=
-ERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        cf_max =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        cf_per =3D atoi_warn(p[2], msglevel);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (cf_max &lt;=
- 0 || cf_per &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        if (!atoi_constrained(p[1], &amp;cf_max, &quot;connect-freq n&quot=
-;, 1, 0, msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           || !atoi_constrained(p[2], &amp;cf_per, &quot;connect-freq secon=
-ds&quot;, 1, 0, msglevel))</span><br><span>         {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;--connect-f=
-req parms must be &gt; 0&quot;);</span><br><span>             goto err;</sp=
-an><br><span>         }</span><br><span>         options-&gt;cf_max =3D cf_=
-max;</span><br><span>@@ -7972,15 +7957,12 @@</span><br><span>     }</span><=
-br><span>     else if (streq(p[0], &quot;connect-freq-initial&quot;) &amp;&=
-amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        long cf_max, cf_per;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int cf_max, c=
-f_per;</span><br><span> </span><br><span>         VERIFY_PERMISSION(OPT_P_G=
-ENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        char =
-*e1, *e2;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cf_m=
-ax =3D strtol(p[1], &amp;e1, 10);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        cf_per =3D strtol(p[2], &amp;e2, 10);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        if (cf_max &lt; 0 || cf_per &lt=
-; 0 || *e1 !=3D &#39;\0&#39; || *e2 !=3D &#39;\0&#39;)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], &amp=
-;cf_max, &quot;connect-freq-initial n&quot;, 1, 0, msglevel)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            || !atoi_constrained(p=
-[2], &amp;cf_per, &quot;connect-freq-initial seconds&quot;, 1, 0, msglevel)=
-)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            msg(msglevel, &quot;--connect-freq-initial parameters mu=
-st be integers and &gt;=3D 0&quot;);</span><br><span>             goto err;=
-</span><br><span>         }</span><br><span>         options-&gt;cf_initial=
-_max =3D cf_max;</span><br><span>@@ -7988,21 +7970,11 @@</span><br><span>  =
-   }</span><br><span>     else if (streq(p[0], &quot;max-clients&quot;) &am=
-p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int max_clients;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         VERIFY_PERMISS=
-ION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      max_clients =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        if (max_clients &lt; 0)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], =
-&amp;options-&gt;max_clients, p[0], 1, MAX_PEER_ID, msglevel))</span><br><s=
-pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     msg(msglevel, &quot;--max-clients must be at least 1&quot;);</span><br=
-><span>             goto err;</span><br><span>         }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        if (max_clients &gt;=3D MAX_PEER=
-_ID) /* max peer-id value */</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       msg(msglevel, &quot;--max-clients must be less than %d&quot;, MAX_PE=
-ER_ID);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            go=
-to err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;max_cl=
-ients =3D max_clients;</span><br><span>     }</span><br><span>     else if =
-(streq(p[0], &quot;max-routes-per-client&quot;) &amp;&amp; p[1] &amp;&amp; =
-!p[2])</span><br><span>     {</span><br><span>@@ -8174,27 +8146,13 @@</span=
-><br><span>     }</span><br><span>     else if (streq(p[0], &quot;bcast-buf=
-fers&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        int n_bcast_buf;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>        =
- VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        n_bcast_buf =3D atoi_warn(p[1], msglevel);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        if (n_bcast_buf &lt; 1)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;--b=
-cast-buffers parameter must be &gt; 0&quot;);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        options-&gt;n_bcast_buf =3D n_bcast_buf;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        atoi_constrained(p[1], &am=
-p;options-&gt;n_bcast_buf, p[0], 1, 0, msglevel);</span><br><span>     }</s=
-pan><br><span>     else if (streq(p[0], &quot;tcp-queue-limit&quot;) &amp;&=
-amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        int tcp_queue_limit;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         VERIFY_PERMIS=
-SION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       tcp_queue_limit =3D atoi_warn(p[1], msglevel);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (tcp_queue_limit &lt; 1)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;--tcp-que=
-ue-limit parameter must be &gt; 0&quot;);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        options-&gt;tcp_queue_limit =3D tcp_queue_limit;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        atoi_constrained(p[1],=
- &amp;options-&gt;tcp_queue_limit, p[0], 1, 0, msglevel);</span><br><span> =
-    }</span><br><span> #if PORT_SHARE</span><br><span>     else if (streq(p=
-[0], &quot;port-share&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[=
-4])</span><br><span>@@ -8340,21 +8298,24 @@</span><br><span>         int ag=
-eing_time, check_interval;</span><br><span> </span><br><span>         VERIF=
-Y_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        ageing_time =3D atoi_warn(p[1], msglevel);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], &=
-amp;ageing_time, &quot;stale-routes-check age&quot;, 1, 0, msglevel))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            goto err;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         if (p[2])</span=
-><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            check_interval =3D atoi_warn(p[2], msglevel);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            if (!atoi_constrained(p[2=
-], &amp;check_interval,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                                  &quot;stale-routes-check interval&quo=
-t;, 1, 0, msglevel))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            }</span><br><span>         }</span><br><span>         else</sp=
-an><br><span>         {</span><br><span>             check_interval =3D age=
-ing_time;</span><br><span>         }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        if (ageing_time &lt; 1 || check_in=
-terval &lt; 1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(msg=
-level, &quot;--stale-routes-check aging time and check interval must be &gt=
-;=3D 1&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     goto err;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- }</span><br><span>         options-&gt;stale_routes_ageing_time =3D ageing=
-_time;</span><br><span>         options-&gt;stale_routes_check_interval =3D=
- check_interval;</span><br><span>     }</span><br><span>@@ -8372,7 +8333,7 =
-@@</span><br><span>     else if (streq(p[0], &quot;push-continuation&quot;)=
- &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span> =
-        VERIFY_PERMISSION(OPT_P_PULL_MODE);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        options-&gt;push_continuation =3D atoi_warn(p=
-[1], msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    atoi_constrained(p[1], &amp;options-&gt;push_continuation, p[0], 0, 2, =
-msglevel);</span><br><span>     }</span><br><span>     else if (streq(p[0],=
- &quot;auth-user-pass&quot;) &amp;&amp; !p[2])</span><br><span>     {</span=
-><br><span>@@ -8491,33 +8452,22 @@</span><br><span>             {</span><br=
-><span>                 if (!streq(p[2], &quot;default&quot;))</span><br><s=
-pan>                 {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                    int offset =3D atoi_warn(p[2], msglevel);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                    int offset;<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-                if (!(offset &gt; -256 &amp;&amp; offset &lt; 256))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                    if (!at=
-oi_constrained(p[2], &amp;offset, &quot;ip-win32 offset&quot;, -256, 256, m=
-sglevel))</span><br><span>                     {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                        msg(msglevel,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                            &quo=
-t;--ip-win32 dynamic [offset] [lease-time]: offset (%d) must be &gt; -256 a=
-nd &lt; 256&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-                         offset);</span><br><span>                         =
-goto err;</span><br><span>                     }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span>                     to-&gt;dhc=
-p_masq_custom_offset =3D true;</span><br><span>                     to-&gt;=
-dhcp_masq_offset =3D offset;</span><br><span>                 }</span><br><=
-span> </span><br><span>                 if (p[3])</span><br><span>         =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-        const int min_lease =3D 30;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                    int lease_time;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                    lease_time =3D atoi_warn(p[=
-3], msglevel);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-             if (lease_time &lt; min_lease)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                    if (!atoi_constrained(p[3], &am=
-p;to-&gt;dhcp_lease_time, &quot;ip-win32 lease time&quot;, 30, 0, msglevel)=
-)</span><br><span>                     {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                        msg(msglevel,</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                            &quot;--ip-w=
-in32 dynamic [offset] [lease-time]: lease time parameter (%d) must be at le=
-ast %d seconds&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                            lease_time, min_lease);</span><br><span>       =
-                  goto err;</span><br><span>                     }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                    to-&gt;dhc=
-p_lease_time =3D lease_time;</span><br><span>                 }</span><br><=
-span>             }</span><br><span>         }</span><br><span>@@ -8615,8 +=
-8565,7 @@</span><br><span>         }</span><br><span>         else if (stre=
-q(p[1], &quot;NBT&quot;) &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>=
-         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- int t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            t =
-=3D atoi_warn(p[2], msglevel);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            int t =3D atoi_warn(p[2], msglevel);</span><br><span=
->             if (!(t =3D=3D 1 || t =3D=3D 2 || t =3D=3D 4 || t =3D=3D 8))<=
-/span><br><span>             {</span><br><span>                 msg(msgleve=
-l, &quot;--dhcp-option NBT: parameter (%d) must be 1, 2, 4, or 8&quot;, t);=
-</span><br><span>@@ -8690,15 +8639,11 @@</span><br><span>     }</span><br><=
-span>     else if (streq(p[0], &quot;tap-sleep&quot;) &amp;&amp; p[1] &amp;=
-&amp; !p[2])</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        int s;</span><br><span>         VERIFY_PERMISSION(OPT=
-_P_DHCPDNS);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        s=
- =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        if (s &lt; 0 || s &gt;=3D 256)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], &amp;optio=
-ns-&gt;tuntap_options.tap_sleep, p[0], 0, 255, msglevel))</span><br><span> =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-msg(msglevel, &quot;--tap-sleep parameter must be between 0 and 255&quot;);=
-</span><br><span>             goto err;</span><br><span>         }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;tuntap_opt=
-ions.tap_sleep =3D s;</span><br><span>     }</span><br><span>     else if (=
-streq(p[0], &quot;dhcp-renew&quot;) &amp;&amp; !p[1])</span><br><span>     =
-{</span><br><span>@@ -9138,30 +9083,19 @@</span><br><span>         VERIFY_P=
-ERMISSION(OPT_P_GENERAL);</span><br><span>         if (p[1])</span><br><spa=
-n>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   int replay_window;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            replay_wi=
-ndow =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            if (!(MIN_SEQ_BACKTRACK &lt;=3D replay_window &am=
-p;&amp; replay_window &lt;=3D MAX_SEQ_BACKTRACK))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            if (!atoi_constrained(p[1], &amp;=
-options-&gt;replay_window, &quot;replay-window windows size&quot;,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-      MIN_SEQ_BACKTRACK, MAX_SEQ_BACKTRACK, msglevel))</span><br><span>    =
-         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-     msg(msglevel, &quot;replay-window window size parameter (%d) must be b=
-etween %d and %d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                    replay_window, MIN_SEQ_BACKTRACK, MAX_SEQ_BACKTRACK);=
-</span><br><span>                 goto err;</span><br><span>             }<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            options-&g=
-t;replay_window =3D replay_window;</span><br><span> </span><br><span>      =
-       if (p[2])</span><br><span>             {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                int replay_time;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                replay_time =3D atoi_warn(p[2], msglevel);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (!(=
-MIN_TIME_BACKTRACK &lt;=3D replay_time &amp;&amp; replay_time &lt;=3D MAX_T=
-IME_BACKTRACK))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            if (!atoi_constrained(p[2], &amp;options-&gt;replay_time, &quot=
-;replay-window time window&quot;,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                                      MIN_TIME_BACKTRACK, MAX=
-_TIME_BACKTRACK, msglevel))</span><br><span>                 {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                    msg(msglevel,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
-  &quot;replay-window time window parameter (%d) must be between %d and %d&=
-quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-         replay_time, MIN_TIME_BACKTRACK, MAX_TIME_BACKTRACK);</span><br><s=
-pan>                     goto err;</span><br><span>                 }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                options-&gt=
-;replay_time =3D replay_time;</span><br><span>             }</span><br><spa=
-n>         }</span><br><span>         else</span><br><span>@@ -9757,7 +9691=
-,7 @@</span><br><span>         else if (!p[2])</span><br><span>         {</=
-span><br><span>             char *endp =3D NULL;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            int i =3D strtol(provider, &amp;endp=
-, 10);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            l=
-ong i =3D strtol(provider, &amp;endp, 10);</span><br><span> </span><br><spa=
-n>             if (*endp =3D=3D 0)</span><br><span>             {</span><br=
-><span>@@ -9828,7 +9762,7 @@</span><br><span>     else if (streq(p[0], &quo=
-t;pkcs11-pin-cache&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span=
->     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;pkcs11_pin=
-_cache_period =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        options-&gt;pkcs11_pin_cache_period =3D po=
-sitive_atoi(p[1], msglevel);</span><br><span>     }</span><br><span>     el=
-se if (streq(p[0], &quot;pkcs11-id&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])=
-</span><br><span>     {</span><br><span>diff --git a/src/openvpn/options_ut=
-il.c b/src/openvpn/options_util.c</span><br><span>index c3938a7..c1f7c74 10=
-0644</span><br><span>--- a/src/openvpn/options_util.c</span><br><span>+++ b=
-/src/openvpn/options_util.c</span><br><span>@@ -146,6 +146,41 @@</span><br>=
-<span>     return (int)i;</span><br><span> }</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+atoi_constrained(const char *str, int *value, c=
-onst char *name, int min, int max, int msglevel)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (!max)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
-ax =3D INT_MAX;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(min &lt=
-; max);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    char *endptr;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    long long i =3D strtoll(str, =
-&amp;endptr, 10);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (i &lt; INT_MIN || *endptr !=3D &#39;\0&#39; || i &gt; INT_MAX)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;%s: Cannot p=
-arse &#39;%s&#39; as integer&quot;, name, str);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (i &lt; min || i &gt; max)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        if (max =3D=3D INT_MAX) /* nicer message for common=
- case */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msgle=
-vel, &quot;%s: Must be an integer &gt;=3D %d, not %lld&quot;,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                name, min, i);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;%s: Must be an in=
-teger between %d and %d, not %lld&quot;,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                name, min, max, i);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-*value =3D i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static co=
-nst char *updatable_options[] =3D { &quot;block-ipv6&quot;, &quot;block-out=
-side-dns&quot;,</span><br><span>                                           =
- &quot;dhcp-option&quot;, &quot;dns&quot;,</span><br><span>                =
-                            &quot;ifconfig&quot;, &quot;ifconfig-ipv6&quot;=
-,</span><br><span>diff --git a/src/openvpn/options_util.h b/src/openvpn/opt=
-ions_util.h</span><br><span>index 6f81b1e..d5ae8b9 100644</span><br><span>-=
--- a/src/openvpn/options_util.h</span><br><span>+++ b/src/openvpn/options_u=
-til.h</span><br><span>@@ -41,11 +41,24 @@</span><br><span> </span><br><span=
-> /**</span><br><span>  * Converts a str to an integer if the string can be=
- represented as an</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-integer number. Otherwise print a warning with msglevel and return 0</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * integer number. Otherwi=
-se print a warning with \p msglevel and return 0</span><br><span>  */</span=
-><br><span> int atoi_warn(const char *str, int msglevel);</span><br><span> =
-</span><br><span> /**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * Converts a str to an integer if the string can be represented as an</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * integer number and =
-is between \p min and \p max.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * If \p max is 0, \p INT_MAX is used instead.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * The integer is stored in \p value.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * On error, print a=
- warning with \p msglevel using \p name. \p value is</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * not changed on error.</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * @return \c true if the integer has been parsed and=
- stored in value, \c false otherwise</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+bool atoi_constrained(const char *str, int *value, const char *name, int m=
-in, int max,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-               int msglevel);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span=
-><br><span>  * Filter an option line by all pull filters.</span><br><span> =
- *</span><br><span>  * If a match is found, the line is modified depending =
-on</span><br><span>diff --git a/tests/unit_tests/openvpn/test_misc.c b/test=
-s/unit_tests/openvpn/test_misc.c</span><br><span>index 1857922..80a5dee 100=
-644</span><br><span>--- a/tests/unit_tests/openvpn/test_misc.c</span><br><s=
-pan>+++ b/tests/unit_tests/openvpn/test_misc.c</span><br><span>@@ -351,6 +3=
-51,14 @@</span><br><span>     assert_int_equal(atoi_warn(&quot;0&quot;, msg=
-level), 0);</span><br><span>     assert_int_equal(atoi_warn(&quot;-1194&quo=
-t;, msglevel), -1194);</span><br><span> </span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    int parameter =3D 0;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    assert_true(atoi_constrained(&quot;1234&quot;=
-, &amp;parameter, &quot;test&quot;, 0, 0, msglevel));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(parameter, 1234);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(atoi_c=
-onstrained(&quot;0&quot;, &amp;parameter, &quot;test&quot;, -1, 0, msglevel=
-));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_e=
-qual(parameter, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    assert_true(atoi_constrained(&quot;-1194&quot;, &amp;parameter, &quot;t=
-est&quot;, INT_MIN, INT_MAX, msglevel));</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    assert_int_equal(parameter, -1194);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     CLEAR(mock_m=
-sg_buf);</span><br><span>     assert_int_equal(positive_atoi(&quot;-1234&qu=
-ot;, msglevel), 0);</span><br><span>     assert_string_equal(mock_msg_buf, =
-&quot;Cannot parse argument &#39;-1234&#39; as non-negative integer&quot;);=
-</span><br><span>@@ -365,6 +373,12 @@</span><br><span>     assert_string_eq=
-ual(mock_msg_buf, &quot;Cannot parse argument &#39;2147483653&#39; as integ=
-er&quot;);</span><br><span> </span><br><span>     CLEAR(mock_msg_buf);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    parameter =3D -42;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(atoi=
-_constrained(&quot;2147483653&quot;, &amp;parameter, &quot;test&quot;, 0, 0=
-, msglevel));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
-sert_string_equal(mock_msg_buf, &quot;test: Cannot parse &#39;2147483653&#3=
-9; as integer&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_int_equal(parameter, -42);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    CLEAR(mock_msg_buf);</span><br><span>     assert_int_equal(positive_at=
-oi(&quot;foo77&quot;, msglevel), 0);</span><br><span>     assert_string_equ=
-al(mock_msg_buf, &quot;Cannot parse argument &#39;foo77&#39; as non-negativ=
-e integer&quot;);</span><br><span> </span><br><span>@@ -373,6 +387,18 @@</s=
-pan><br><span>     assert_string_equal(mock_msg_buf, &quot;Cannot parse arg=
-ument &#39;77foo&#39; as non-negative integer&quot;);</span><br><span> </sp=
-an><br><span>     CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    parameter =3D -42;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_false(atoi_constrained(&quot;foo77&quot;, =
-&amp;parameter, &quot;test&quot;, 0, 0, msglevel));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &qu=
-ot;test: Cannot parse &#39;foo77&#39; as integer&quot;);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(parameter, -42);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    parameter =3D -42;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(atoi_constrain=
-ed(&quot;77foo&quot;, &amp;parameter, &quot;test&quot;, 0, 0, msglevel));</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equ=
-al(mock_msg_buf, &quot;test: Cannot parse &#39;77foo&#39; as integer&quot;)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equ=
-al(parameter, -42);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_=
-buf);</span><br><span>     assert_int_equal(atoi_warn(&quot;foo77&quot;, ms=
-glevel), 0);</span><br><span>     assert_string_equal(mock_msg_buf, &quot;C=
-annot parse argument &#39;foo77&#39; as integer&quot;);</span><br><span> </=
-span><br><span>@@ -380,6 +406,31 @@</span><br><span>     assert_int_equal(a=
-toi_warn(&quot;77foo&quot;, msglevel), 0);</span><br><span>     assert_stri=
-ng_equal(mock_msg_buf, &quot;Cannot parse argument &#39;77foo&#39; as integ=
-er&quot;);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* special tests for _constrained */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    parameter =3D -42;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    assert_false(atoi_constrained(&qu=
-ot;77&quot;, &amp;parameter, &quot;test&quot;, 0, 76, msglevel));</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_=
-msg_buf, &quot;test: Must be an integer between 0 and 76, not 77&quot;);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(p=
-arameter, -42);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_msg_buf)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    parameter =3D =
--42;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_fals=
-e(atoi_constrained(&quot;-77&quot;, &amp;parameter, &quot;test&quot;, -76, =
-76, msglevel));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-assert_string_equal(mock_msg_buf, &quot;test: Must be an integer between -7=
-6 and 76, not -77&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    assert_int_equal(parameter, -42);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    parameter =3D -42;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    assert_false(atoi_constrained(&quot;-77&quot;, &amp;parame=
-ter, &quot;test&quot;, 0, 0, msglevel));</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &quot;test: Must=
- be an integer &gt;=3D 0, not -77&quot;);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_int_equal(parameter, -42);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    CLEAR(mock_msg_buf);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    parameter =3D -42;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    assert_false(atoi_constrained(&quot;0&quot=
-;, &amp;parameter, &quot;test&quot;, 1, 0, msglevel));</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_msg_buf, &q=
-uot;test: Must be an integer &gt;=3D 1, not 0&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(parameter, -42);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     m=
-ock_set_debug_level(saved_log_level);</span><br><span> }</span><br><span> <=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1150?usp=3Demail">change 1150</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
-EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
-org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1150?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
-"/></div></div>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">options: Move &lt; 0 check for keepalive settings earlier<br=
+><br>Use the atoi_constrained function.<br><br>Change-Id: Ic9ac18f730e60351=
+26ccf1cf19799548e5fd9316<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1665...=
+641...&gt;<br>---<br>M src/openvpn/helper.c<br>M src/openvpn/options.c<br>2=
+ files changed, 3 insertions(+), 7 deletions(-)<br><br></pre><pre style=3D"=
+font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
+rrit.openvpn.net:29418/openvpn refs/changes/55/1155/1</pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
+src/openvpn/helper.c b/src/openvpn/helper.c</span><br><span>index b2ecb1e..=
+b262e8d 100644</span><br><span>--- a/src/openvpn/helper.c</span><br><span>+=
+++ b/src/openvpn/helper.c</span><br><span>@@ -552,14 +552,10 @@</span><br><=
+span>         /*</span><br><span>          * Sanity checks.</span><br><span=
+>          */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+if (o-&gt;keepalive_ping &lt;=3D 0 || o-&gt;keepalive_timeout &lt;=3D 0)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;--kee=
+palive parameters must be &gt; 0&quot;);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        }</span><br><span>         if (o-&gt;keepalive_p=
+ing * 2 &gt; o-&gt;keepalive_timeout)</span><br><span>         {</span><br>=
+<span>             msg(M_USAGE,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                &quot;the second parameter to --keepalive (restar=
+t timeout=3D%d) must be at least twice the value of the first parameter (pi=
+ng interval=3D%d).  A ratio of 1:5 or 1:6 would be even better.  Recommende=
+d setting is --keepalive 10 60.&quot;,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                &quot;The second parameter to --keepaliv=
+e (restart timeout=3D%d) must be at least twice the value of the first para=
+meter (ping interval=3D%d).  A ratio of 1:5 or 1:6 would be even better.  R=
+ecommended setting is --keepalive 10 60.&quot;,</span><br><span>           =
+      o-&gt;keepalive_timeout, o-&gt;keepalive_ping);</span><br><span>     =
+    }</span><br><span>         if (o-&gt;ping_send_timeout || o-&gt;ping_re=
+c_timeout)</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn=
+/options.c</span><br><span>index 87c0895..97bf957 100644</span><br><span>--=
+- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span=
+><br><span>@@ -7362,8 +7362,8 @@</span><br><span>     else if (streq(p[0], =
+&quot;keepalive&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</s=
+pan><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENER=
+AL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&=
+gt;keepalive_ping =3D atoi_warn(p[1], msglevel);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        options-&gt;keepalive_timeout =3D atoi_w=
+arn(p[2], msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        atoi_constrained(p[1], &amp;options-&gt;keepalive_ping, &quot;keep=
+alive ping&quot;, 0, 0, msglevel);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        atoi_constrained(p[2], &amp;options-&gt;keepalive_ti=
+meout, &quot;keepalive timeout&quot;, 0, 0, msglevel);</span><br><span>    =
+ }</span><br><span>     else if (streq(p[0], &quot;ping&quot;) &amp;&amp; p=
+[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span></span><br></p=
+re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1155?=
+usp=3Demail">change 1155</a>. To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
+<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
+temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibc7526d59c1de17a0f9d8ed88f7=
-5c6f070ab11e7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1150 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic9ac18f730e6035126ccf1cf197=
+99548e5fd9316 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1155 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -1166,8 +191,8 @@ openvpn/+/1150?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---DyRxDb68gGI=--
+--RAmZZTaxNIE=--
 
