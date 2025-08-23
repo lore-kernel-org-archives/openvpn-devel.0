@@ -1,17 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 23 Aug 2025 16:01:55 +0000
-In-Reply-To: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
-References: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
+Date: Sat, 23 Aug 2025 20:16:13 +0000
+References: <gerrit.1755980171000.I1e623b4a836f7216750867243299c7e4d0bd32d0@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <5c374002a1dfb9b99a32f5715d21121d05d7912a-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f4c8b9f13b0f71a8d23e17e9ea8b245277129e35-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Ybz5/l3qKkY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check message
- id/acked ids too when doing sessionid cookie checks
+Content-Type: multipart/alternative; boundary="en2ySXKUMq0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Introduce env
+ variables to communicate desired gateway redirection to...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,739 +18,253 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, MaxF <max@...2606...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Ybz5/l3qKkY=
+--en2ySXKUMq0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#7) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by MaxF
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1156?usp=3Demail
+
+to review the following change.
 
 
-Change subject: Check message id/acked ids too when doing sessionid cookie =
-checks
+Change subject: Introduce env variables to communicate desired gateway redi=
+rection to NM.
 ......................................................................
 
-Check message id/acked ids too when doing sessionid cookie checks
+Introduce env variables to communicate desired gateway redirection to NM.
 
-This fixes that control packets on a floating client can trigger
-creating a new session in special circumstances:
+When run under Network Manager control, OpenVPN is not allowed to
+control routing.  Instead, NM uses the OpenVPN-set environment variables
+("route_network_1" etc) to set up routes as requested.  This method never
+worked properly for "redirect-gateway", as the information was not made
+available in environment variables.
 
-To trigger this circumstance a connection needs to
+Introduce new env vars:
 
-- starts on IP A
-- successfully floats to IP B by data packet
-- then has a control packet from IP A before any
-  data packet can trigger the float back to IP A
+ route_redirect_gateway_ipv4
+ route_redirect_gateway_ipv6
 
-and all of this needs to happen in the 60s time
-that hmac cookie is valid in the default
-configuration.
+to communicate desired state:
 
-In this scenario we would trigger a new connection as the HMAC
-session id would be valid.
+ <not set> =3D no gateway redirection desired
+ 1 =3D "redirect-gateway for that protocol in question"
+ 2 =3D "include block-local to redirect the local LAN as well"
 
-This patch adds checking also of the message-id and acked ids to
-discern packet from the initial three-way handshake where these
-ids are 0 or 1 from any later packet.
+We intentionally do not expose all the IPv4 flags ("local", "def1", ...)
+as this is really internal OpenVPN historical cruft.
 
-This will now trigger (at verb 4 or higher) a messaged like:
-
-   Packet (P_ACK_V1) with invalid or missing SID
-
-instead.
-
-Also remove a few duplicated free_tls_pre_decrypt_state in test_ssl.
-
-Reported-By: Walter Doekes <walter.openvpn@...2889...>
-Tested-By: Walter Doekes <walter.openvpn@...2889...>
-
-Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: MaxF <max@...2606...>
-Message-Id: <20250819212214.16218-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-626.html
+Change-Id: I1e623b4a836f7216750867243299c7e4d0bd32d0
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/mudp.c
-M src/openvpn/ssl_pkt.c
-M src/openvpn/ssl_pkt.h
-M tests/unit_tests/openvpn/test_pkt.c
-4 files changed, 129 insertions(+), 24 deletions(-)
+M doc/man-sections/script-options.rst
+M src/openvpn/options.c
+2 files changed, 22 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/1067/7
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 7259a4b..31134be 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -151,7 +151,8 @@
-          * need to contain the peer id */
-         struct gc_arena gc =3D gc_new();
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/1156/1
 
--        bool ret =3D check_session_id_hmac(state, from, hmac, handwindow);
-+        bool pkt_is_ack =3D (verdict =3D=3D VERDICT_VALID_ACK_V1);
-+        bool ret =3D check_session_hmac_and_pkt_id(state, from, hmac, hand=
-window, pkt_is_ack);
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
+options.rst
+index bd5ecd4..670cd33 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -874,6 +874,14 @@
+     translations will be recorded rather than their names as denoted on the
+     command line or configuration file.
 
-         const char *peer =3D print_link_socket_actual(&m->top.c2.from, &gc=
-);
-         uint8_t pkt_firstbyte =3D *BPTR(&m->top.c2.buf);
-@@ -159,7 +160,8 @@
-
-         if (!ret)
++:code:`route_redirect_gateway_ipv4`
++
++:code:`route_redirect_gateway_ipv6`
++    Set to `1` if the corresponding default gateway should be redirected
++    into the tunnel, and to `2` if also the local LAN segment should be
++    blocked (`block-local`).  Not set otherwise.  Set prior to **--up** sc=
+ript
++    execution.
++
+ :code:`script_context`
+     Set to "init" or "restart" prior to up/down script execution. For more
+     information, see documentation for ``--up``.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 0b16c5a..648d526 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5720,6 +5720,8 @@
          {
--            msg(D_MULTI_MEDIUM, "Packet (%s) with invalid or missing SID f=
-rom %s",
-+            msg(D_MULTI_MEDIUM, "Packet (%s) with invalid or missing SID f=
-rom"
-+                                " %s or wrong packet id",
-                 packet_opcode_name(op), peer);
+             options->routes_ipv6->flags =3D 0;
          }
-         else
-diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-index b901f87..6ec05a7 100644
---- a/src/openvpn/ssl_pkt.c
-+++ b/src/openvpn/ssl_pkt.c
-@@ -496,8 +496,11 @@
- }
-=20
- bool
--check_session_id_hmac(struct tls_pre_decrypt_state *state, const struct op=
-envpn_sockaddr *from,
--                      hmac_ctx_t *hmac, int handwindow)
-+check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state,
-+                              const struct openvpn_sockaddr *from,
-+                              hmac_ctx_t *hmac,
-+                              int handwindow,
-+                              bool pkt_is_ack)
- {
-     if (!from)
-     {
-@@ -512,6 +515,36 @@
-         return false;
++        env_set_del(es, "route_redirect_gateway_ipv4");
++        env_set_del(es, "route_redirect_gateway_ipv6");
      }
-
-+    /* Check if the packet ID of the packet or ACKED packet  is <=3D 1 */
-+    for (int i =3D 0; i < ack.len; i++)
-+    {
-+        /* This packet ACKs a packet that has a higher packet id than the
-+         * ones expected in the three-way handshake, consider it as invalid
-+         * for the session */
-+        if (ack.packet_id[i] > 1)
-+        {
-+            return false;
-+        }
-+    }
-+
-+    if (!pkt_is_ack)
-+    {
-+        packet_id_type message_id;
-+        /* Extract the packet ID from the packet */
-+        if (!reliable_ack_read_packet_id(&buf, &message_id))
-+        {
-+            return false;
-+        }
-+
-+        /* similar check. Anything larger than 1 is not considered part of=
- the
-+         * three-way handshake */
-+        if (message_id > 1)
-+        {
-+            return false;
-+        }
-+    }
-+
-+
-     /* check adjacent timestamps too */
-     for (int offset =3D -2; offset <=3D 1; offset++)
+     else if (streq(p[0], "dns") && !p[1])
      {
-diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-index 8fe4880..96cdd68 100644
---- a/src/openvpn/ssl_pkt.h
-+++ b/src/openvpn/ssl_pkt.h
-@@ -178,14 +178,20 @@
- /**
-  * Checks if a control packet has a correct HMAC server session id
-  *
-+ * This will also consider packets that have a packet id higher
-+ * than 1 or ack packets higher than 1 to be invalid as they are
-+ * not part of the initial three way handshake of OpenVPN and should
-+ * not create a new connection.
-+ *
-  * @param state         session information
-  * @param from          link_socket from the client
-  * @param hmac          the hmac context to use for the calculation
-  * @param handwindow    the quantisation of the current time
-+ * @param pkt_is_ack    the packet being checked is a P_ACK_V1
-  * @return              the expected server session id
-  */
--bool check_session_id_hmac(struct tls_pre_decrypt_state *state, const stru=
-ct openvpn_sockaddr *from,
--                           hmac_ctx_t *hmac, int handwindow);
-+bool check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state, co=
-nst struct openvpn_sockaddr *from,
-+                                   hmac_ctx_t *hmac, int handwindow, bool =
-pkt_is_ack);
-
- /*
-  * Write a control channel authentication record.
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn=
-/test_pkt.c
-index 65b31e7..5122766 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -139,6 +139,27 @@
-                                               0xc8, 0x01, 0x00, 0x00, 0x00=
-, 0x00, 0xdd, 0x85,
-                                               0xdb, 0x53, 0x56, 0x23, 0xb0=
-, 0x2e };
-
-+/* no tls-auth, P_ACK_V1, acks 0,1, and 2 */
-+const uint8_t client_ack_123_none_random_id[] =3D {
-+    0x28,
-+    0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8,
-+    0x03,
-+    0x00, 0x00, 0x00, 0x00,
-+    0x00, 0x00, 0x00, 0x01,
-+    0x00, 0x00, 0x00, 0x02,
-+    0xdd, 0x85, 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e
-+};
-+
-+/* no tls-auth, P_CONTROL_V1, acks 0, msg-id 2 */
-+const uint8_t client_control_none_random_id[] =3D {
-+    0x20,
-+    0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8,
-+    0x01,
-+    0x00, 0x00, 0x00, 0x00,
-+    0x02
-+};
-+
-+
- struct tls_auth_standalone
- init_tas_auth(int key_direction)
- {
-@@ -256,12 +277,10 @@
-     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-     free_tls_pre_decrypt_state(&state);
-
--    free_tls_pre_decrypt_state(&state);
-     /* The pre decrypt function should not modify the buffer, so calling it
-      * again should have the same result */
-     verdict =3D tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
--    free_tls_pre_decrypt_state(&state);
-
-     /* and buf memory should be equal */
-     assert_memory_equal(BPTR(&buf), client_reset_v2_tls_auth, sizeof(clien=
-t_reset_v2_tls_auth));
-@@ -279,7 +298,6 @@
-     assert_int_equal(verdict, VERDICT_INVALID);
-     free_tls_pre_decrypt_state(&state);
-
--    free_tls_pre_decrypt_state(&state);
-     /* Wrong key direction gives a wrong hmac key and should not validate =
-*/
-     free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
-     free_tas(&tas);
-@@ -319,15 +337,12 @@
-     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-     free_tls_pre_decrypt_state(&state);
-
--    free_tls_pre_decrypt_state(&state);
-     buf_reset_len(&buf);
-     buf_write(&buf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_none=
-));
-     verdict =3D tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-     free_tls_pre_decrypt_state(&state);
-
--    free_tls_pre_decrypt_state(&state);
--
-     /* This is not a reset packet and should trigger the other response */
-     buf_reset_len(&buf);
-     buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_au=
-th_randomid));
-@@ -405,7 +420,7 @@
-     assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
-
-     /* This is a valid packet but containing a random id instead of an HMA=
-C id*/
--    bool valid =3D check_session_id_hmac(&state, &from.dest, hmac, 30);
-+    bool valid =3D check_session_hmac_and_pkt_id(&state, &from.dest, hmac,=
- 30, false);
-     assert_false(valid);
-
-     free_tls_pre_decrypt_state(&state);
-@@ -436,7 +451,7 @@
-     verdict =3D tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-     assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
-
--    bool valid =3D check_session_id_hmac(&state, &from.dest, hmac, 30);
-+    bool valid =3D check_session_hmac_and_pkt_id(&state, &from.dest, hmac,=
- 30, true);
-     assert_true(valid);
-
-     free_tls_pre_decrypt_state(&state);
-@@ -445,6 +460,51 @@
-     hmac_ctx_free(hmac);
- }
-
-+static void
-+test_verify_hmac_none_out_of_range_ack(void **ut_state)
-+{
-+    hmac_ctx_t *hmac =3D session_id_hmac_init();
-+
-+    struct link_socket_actual from =3D { 0 };
-+    from.dest.addr.sa.sa_family =3D AF_INET;
-+
-+    struct tls_auth_standalone tas =3D { 0 };
-+    struct tls_pre_decrypt_state state =3D { 0 };
-+
-+    struct buffer buf =3D alloc_buf(1024);
-+    enum first_packet_verdict verdict;
-+
-+    tas.tls_wrap.mode =3D TLS_WRAP_NONE;
-+
-+    buf_reset_len(&buf);
-+    buf_write(&buf, client_ack_123_none_random_id, sizeof(client_ack_123_n=
-one_random_id));
-+
-+
-+    verdict =3D tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-+    assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
-+
-+    /* should fail because it acks 2 */
-+    bool valid =3D check_session_hmac_and_pkt_id(&state, &from.dest, hmac,=
- 30, true);
-+    assert_false(valid);
-+    free_tls_pre_decrypt_state(&state);
-+
-+    /* Try test with the control with a too high message id now */
-+    buf_reset_len(&buf);
-+    buf_write(&buf, client_control_none_random_id, sizeof(client_control_n=
-one_random_id));
-+
-+    verdict =3D tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-+    assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
-+
-+    /* should fail because it has message id 2 */
-+    valid =3D check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, =
-true);
-+    assert_false(valid);
-+
-+    free_tls_pre_decrypt_state(&state);
-+    free_buf(&buf);
-+    hmac_ctx_cleanup(hmac);
-+    hmac_ctx_free(hmac);
-+}
-+
- static hmac_ctx_t *
- init_static_hmac(void)
- {
-@@ -634,16 +694,20 @@
- main(void)
- {
-     openvpn_unit_test_setup();
--    const struct CMUnitTest tests[] =3D { cmocka_unit_test(test_tls_decryp=
-t_lite_none),
--                                        cmocka_unit_test(test_tls_decrypt_=
-lite_auth),
--                                        cmocka_unit_test(test_tls_decrypt_=
-lite_crypt),
--                                        cmocka_unit_test(test_parse_ack),
--                                        cmocka_unit_test(test_calc_session=
-_id_hmac_static),
--                                        cmocka_unit_test(test_verify_hmac_=
-none),
--                                        cmocka_unit_test(test_verify_hmac_=
-tls_auth),
--                                        cmocka_unit_test(test_generate_res=
-et_packet_plain),
--                                        cmocka_unit_test(test_generate_res=
-et_packet_tls_auth),
--                                        cmocka_unit_test(test_extract_cont=
-rol_message) };
-+
-+    const struct CMUnitTest tests[] =3D {
-+        cmocka_unit_test(test_tls_decrypt_lite_none),
-+        cmocka_unit_test(test_tls_decrypt_lite_auth),
-+        cmocka_unit_test(test_tls_decrypt_lite_crypt),
-+        cmocka_unit_test(test_parse_ack),
-+        cmocka_unit_test(test_calc_session_id_hmac_static),
-+        cmocka_unit_test(test_verify_hmac_none),
-+        cmocka_unit_test(test_verify_hmac_tls_auth),
-+        cmocka_unit_test(test_verify_hmac_none_out_of_range_ack),
-+        cmocka_unit_test(test_generate_reset_packet_plain),
-+        cmocka_unit_test(test_generate_reset_packet_tls_auth),
-+        cmocka_unit_test(test_extract_control_message)
-+    };
-
- #if defined(ENABLE_CRYPTO_OPENSSL)
-     OpenSSL_add_all_algorithms();
+@@ -6039,6 +6041,8 @@
+             {
+                 options->routes_ipv6->flags =3D 0;
+             }
++            env_set_del(es, "route_redirect_gateway_ipv4");
++            env_set_del(es, "route_redirect_gateway_ipv6");
+             *update_options_found |=3D OPT_P_U_REDIR_GATEWAY;
+         }
+     }
+@@ -7661,6 +7665,16 @@
+                 goto err;
+             }
+         }
++        if (options->routes->flags & RG_REROUTE_GW)
++        {
++            setenv_int(es, "route_redirect_gateway_ipv4",
++                       options->routes->flags & RG_BLOCK_LOCAL ? 2 : 1);
++        }
++        if (options->routes_ipv6 && (options->routes_ipv6->flags & RG_RERO=
+UTE_GW))
++        {
++            setenv_int(es, "route_redirect_gateway_ipv6",
++                       options->routes->flags & RG_BLOCK_LOCAL ? 2 : 1);
++        }
+ #ifdef _WIN32
+         /* we need this here to handle pushed --redirect-gateway */
+         remap_redirect_gateway_flags(options);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1156?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
-Gerrit-Change-Number: 1067
-Gerrit-PatchSet: 7
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Change-Id: I1e623b4a836f7216750867243299c7e4d0bd32d0
+Gerrit-Change-Number: 1156
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---Ybz5/l3qKkY=
+--en2ySXKUMq0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #7</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1067?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
-d and were removed:
-Code-Review+2 by MaxF</p><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">Check message id/acked ids too when doing sessionid c=
-ookie checks<br><br>This fixes that control packets on a floating client ca=
-n trigger<br>creating a new session in special circumstances:<br><br>To tri=
-gger this circumstance a connection needs to<br><br>- starts on IP A<br>- s=
-uccessfully floats to IP B by data packet<br>- then has a control packet fr=
-om IP A before any<br>  data packet can trigger the float back to IP A<br><=
-br>and all of this needs to happen in the 60s time<br>that hmac cookie is v=
-alid in the default<br>configuration.<br><br>In this scenario we would trig=
-ger a new connection as the HMAC<br>session id would be valid.<br><br>This =
-patch adds checking also of the message-id and acked ids to<br>discern pack=
-et from the initial three-way handshake where these<br>ids are 0 or 1 from =
-any later packet.<br><br>This will now trigger (at verb 4 or higher) a mess=
-aged like:<br><br>   Packet (P_ACK_V1) with invalid or missing SID<br><br>i=
-nstead.<br><br>Also remove a few duplicated free_tls_pre_decrypt_state in t=
-est_ssl.<br><br>Reported-By: Walter Doekes &lt;walter.openvpn@...2889...&gt=
-;<br>Tested-By: Walter Doekes &lt;walter.openvpn@...2889...&gt;<br><br>Chan=
-ge-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403<br>Signed-off-by: Arne Sch=
-wabe &lt;arne@...1227...&gt;<br>Acked-by: MaxF &lt;max@...2606...&gt;<br>Me=
-ssage-Id: &lt;20250819212214.16218-1-gert@...1296...&gt;<br>URL: https://ww=
-w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32626.html<br>Sig=
-ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/mu=
-dp.c<br>M src/openvpn/ssl_pkt.c<br>M src/openvpn/ssl_pkt.h<br>M tests/unit_=
-tests/openvpn/test_pkt.c<br>4 files changed, 129 insertions(+), 24 deletion=
-s(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/67/1067/7</pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;"><span>diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</sp=
-an><br><span>index 7259a4b..31134be 100644</span><br><span>--- a/src/openvp=
-n/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@ -151,7=
- +151,8 @@</span><br><span>          * need to contain the peer id */</span=
-><br><span>         struct gc_arena gc =3D gc_new();</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        bool ret =3D check=
-_session_id_hmac(state, from, hmac, handwindow);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        bool pkt_is_ack =3D (verdict =3D=3D VE=
-RDICT_VALID_ACK_V1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        bool ret =3D check_session_hmac_and_pkt_id(state, from, hmac, hand=
-window, pkt_is_ack);</span><br><span> </span><br><span>         const char =
-*peer =3D print_link_socket_actual(&amp;m-&gt;top.c2.from, &amp;gc);</span>=
-<br><span>         uint8_t pkt_firstbyte =3D *BPTR(&amp;m-&gt;top.c2.buf);<=
-/span><br><span>@@ -159,7 +160,8 @@</span><br><span> </span><br><span>     =
-    if (!ret)</span><br><span>         {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            msg(D_MULTI_MEDIUM, &quot;Packet (%s) with i=
-nvalid or missing SID from %s&quot;,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            msg(D_MULTI_MEDIUM, &quot;Packet (%s) with inv=
-alid or missing SID from&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                                &quot; %s or wrong packet id&quo=
-t;,</span><br><span>                 packet_opcode_name(op), peer);</span><=
-br><span>         }</span><br><span>         else</span><br><span>diff --gi=
-t a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c</span><br><span>index b90=
-1f87..6ec05a7 100644</span><br><span>--- a/src/openvpn/ssl_pkt.c</span><br>=
-<span>+++ b/src/openvpn/ssl_pkt.c</span><br><span>@@ -496,8 +496,11 @@</spa=
-n><br><span> }</span><br><span> </span><br><span> bool</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-check_session_id_hmac(struct tls_pre_decry=
-pt_state *state, const struct openvpn_sockaddr *from,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                      hmac_ctx_t *hmac, int=
- handwindow)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_s=
-ession_hmac_and_pkt_id(struct tls_pre_decrypt_state *state,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                              const=
- struct openvpn_sockaddr *from,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                              hmac_ctx_t *hmac,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                              int h=
-andwindow,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                     bool pkt_is_ack)</span><br><span> {</span><br><span>  =
-   if (!from)</span><br><span>     {</span><br><span>@@ -512,6 +515,36 @@</=
-span><br><span>         return false;</span><br><span>     }</span><br><spa=
-n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Check if =
-the packet ID of the packet or ACKED packet  is &lt;=3D 1 */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; ack.l=
-en; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* This packet AC=
-Ks a packet that has a higher packet id than the</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+         * ones expected in the three-way hand=
-shake, consider it as invalid</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+         * for the session */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        if (ack.packet_id[i] &gt; 1)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!=
-pkt_is_ack)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        packet_id_type=
- message_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- /* Extract the packet ID from the packet */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        if (!reliable_ack_read_packet_id(&amp;buf,=
- &amp;message_id))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        /* similar check. Anything=
- larger than 1 is not considered part of the</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+         * three-way handshake */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if (message_id &gt; 1)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span>     /* check adjacent timestamps too */</span><br><spa=
-n>     for (int offset =3D -2; offset &lt;=3D 1; offset++)</span><br><span>=
-     {</span><br><span>diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl=
-_pkt.h</span><br><span>index 8fe4880..96cdd68 100644</span><br><span>--- a/=
-src/openvpn/ssl_pkt.h</span><br><span>+++ b/src/openvpn/ssl_pkt.h</span><br=
-><span>@@ -178,14 +178,20 @@</span><br><span> /**</span><br><span>  * Check=
-s if a control packet has a correct HMAC server session id</span><br><span>=
-  *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This will als=
-o consider packets that have a packet id higher</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * than 1 or ack packets higher than 1 to be in=
-valid as they are</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- not part of the initial three way handshake of OpenVPN and should</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * not create a new connecti=
-on.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
-an>  * @param state         session information</span><br><span>  * @param =
-from          link_socket from the client</span><br><span>  * @param hmac  =
-        the hmac context to use for the calculation</span><br><span>  * @pa=
-ram handwindow    the quantisation of the current time</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * @param pkt_is_ack    the packet being=
- checked is a P_ACK_V1</span><br><span>  * @return              the expecte=
-d server session id</span><br><span>  */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-bool check_session_id_hmac(struct tls_pre_decrypt_state =
-*state, const struct openvpn_sockaddr *from,</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                           hmac_ctx_t *hmac, int han=
-dwindow);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool check=
-_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state, const struct =
-openvpn_sockaddr *from,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                                   hmac_ctx_t *hmac, int handwindow, bo=
-ol pkt_is_ack);</span><br><span> </span><br><span> /*</span><br><span>  * W=
-rite a control channel authentication record.</span><br><span>diff --git a/=
-tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c</=
-span><br><span>index 65b31e7..5122766 100644</span><br><span>--- a/tests/un=
-it_tests/openvpn/test_pkt.c</span><br><span>+++ b/tests/unit_tests/openvpn/=
-test_pkt.c</span><br><span>@@ -139,6 +139,27 @@</span><br><span>           =
-                                    0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0xd=
-d, 0x85,</span><br><span>                                               0xd=
-b, 0x53, 0x56, 0x23, 0xb0, 0x2e };</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* no tls-auth, P_ACK_V1, acks 0,1, and 2=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const uint8_t cl=
-ient_ack_123_none_random_id[] =3D {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    0x28,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    0x03,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    0x00, 0x00, 0x00, 0x00,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    0x00, 0x00, 0x00, 0x01,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    0x00, 0x00, 0x00, 0x02,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xdd, 0x85, 0xdb, 0=
-x53, 0x56, 0x23, 0xb0, 0x2e</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* no tls-auth, P_CONTROL_V1=
-, acks 0, msg-id 2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+const uint8_t client_control_none_random_id[] =3D {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    0x20,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x01,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    0x00, 0x00, 0x00, 0x00,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x02</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span> struct tls_auth_standalone</span><br><span> init_t=
-as_auth(int key_direction)</span><br><span> {</span><br><span>@@ -256,12 +2=
-77,10 @@</span><br><span>     assert_int_equal(verdict, VERDICT_VALID_RESET=
-_V2);</span><br><span>     free_tls_pre_decrypt_state(&amp;state);</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free_tls=
-_pre_decrypt_state(&amp;state);</span><br><span>     /* The pre decrypt fun=
-ction should not modify the buffer, so calling it</span><br><span>      * a=
-gain should have the same result */</span><br><span>     verdict =3D tls_pr=
-e_decrypt_lite(&amp;tas, &amp;state, &amp;from, &amp;buf);</span><br><span>=
-     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    free_tls_pre_decrypt_state(&amp;state=
-);</span><br><span> </span><br><span>     /* and buf memory should be equal=
- */</span><br><span>     assert_memory_equal(BPTR(&amp;buf), client_reset_v=
-2_tls_auth, sizeof(client_reset_v2_tls_auth));</span><br><span>@@ -279,7 +2=
-98,6 @@</span><br><span>     assert_int_equal(verdict, VERDICT_INVALID);</s=
-pan><br><span>     free_tls_pre_decrypt_state(&amp;state);</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free_tls_pre_dec=
-rypt_state(&amp;state);</span><br><span>     /* Wrong key direction gives a=
- wrong hmac key and should not validate */</span><br><span>     free_key_ct=
-x_bi(&amp;tas.tls_wrap.opt.key_ctx_bi);</span><br><span>     free_tas(&amp;=
-tas);</span><br><span>@@ -319,15 +337,12 @@</span><br><span>     assert_int=
-_equal(verdict, VERDICT_VALID_RESET_V2);</span><br><span>     free_tls_pre_=
-decrypt_state(&amp;state);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    free_tls_pre_decrypt_state(&amp;state);</span><b=
-r><span>     buf_reset_len(&amp;buf);</span><br><span>     buf_write(&amp;b=
-uf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_none));</span><br><sp=
-an>     verdict =3D tls_pre_decrypt_lite(&amp;tas, &amp;state, &amp;from, &=
-amp;buf);</span><br><span>     assert_int_equal(verdict, VERDICT_VALID_RESE=
-T_V2);</span><br><span>     free_tls_pre_decrypt_state(&amp;state);</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free_tl=
-s_pre_decrypt_state(&amp;state);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span>     /* This is not a reset packet and should t=
-rigger the other response */</span><br><span>     buf_reset_len(&amp;buf);<=
-/span><br><span>     buf_write(&amp;buf, client_ack_tls_auth_randomid, size=
-of(client_ack_tls_auth_randomid));</span><br><span>@@ -405,7 +420,7 @@</spa=
-n><br><span>     assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);</span=
-><br><span> </span><br><span>     /* This is a valid packet but containing =
-a random id instead of an HMAC id*/</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    bool valid =3D check_session_id_hmac(&amp;state, &amp;fro=
-m.dest, hmac, 30);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   bool valid =3D check_session_hmac_and_pkt_id(&amp;state, &amp;from.dest,=
- hmac, 30, false);</span><br><span>     assert_false(valid);</span><br><spa=
-n> </span><br><span>     free_tls_pre_decrypt_state(&amp;state);</span><br>=
-<span>@@ -436,7 +451,7 @@</span><br><span>     verdict =3D tls_pre_decrypt_=
-lite(&amp;tas, &amp;state, &amp;from, &amp;buf);</span><br><span>     asser=
-t_int_equal(verdict, VERDICT_VALID_ACK_V1);</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    bool valid =3D check_session_id=
-_hmac(&amp;state, &amp;from.dest, hmac, 30);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    bool valid =3D check_session_hmac_and_pkt_id(&=
-amp;state, &amp;from.dest, hmac, 30, true);</span><br><span>     assert_tru=
-e(valid);</span><br><span> </span><br><span>     free_tls_pre_decrypt_state=
-(&amp;state);</span><br><span>@@ -445,6 +460,51 @@</span><br><span>     hma=
-c_ctx_free(hmac);</span><br><span> }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+test_verify_hmac_none_out_of_range_ack(void **ut=
-_state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_t *hmac =3D sessi=
-on_id_hmac_init();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct link_sock=
-et_actual from =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    from.dest.addr.sa.sa_family =3D AF_INET;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    struct tls_auth_standalone tas =3D { 0 };</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    struct tls_pre_decrypt_state stat=
-e =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D =
-alloc_buf(1024);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- enum first_packet_verdict verdict;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- tas.tls_wrap.mode =3D TLS_WRAP_NONE;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   buf_reset_len(&amp;buf);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    buf_write(&amp;buf, client_ack_123_none_random_id, sizeof(clien=
-t_ack_123_none_random_id));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    verdict =3D tls_pre_decryp=
-t_lite(&amp;tas, &amp;state, &amp;from, &amp;buf);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    assert_int_equal(verdict, VERDICT_VALID_=
-ACK_V1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* should fail because it =
-acks 2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool v=
-alid =3D check_session_hmac_and_pkt_id(&amp;state, &amp;from.dest, hmac, 30=
-, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-false(valid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fr=
-ee_tls_pre_decrypt_state(&amp;state);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* Try test with the control with a too high message id now */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    buf_reset_len(&amp;buf);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;b=
-uf, client_control_none_random_id, sizeof(client_control_none_random_id));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    verdict =3D tls_pre_decrypt_lite(&a=
-mp;tas, &amp;state, &amp;from, &amp;buf);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_int_equal(verdict, VERDICT_VALID_CONTROL_V=
-1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* should fail because it has m=
-essage id 2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    v=
-alid =3D check_session_hmac_and_pkt_id(&amp;state, &amp;from.dest, hmac, 30=
-, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-false(valid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    free_tls_pre_decrypt_=
-state(&amp;state);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   free_buf(&amp;buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    hmac_ctx_cleanup(hmac);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    hmac_ctx_free(hmac);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> static hmac_ctx_t *</span><br><span> init_static_hmac(void)=
-</span><br><span> {</span><br><span>@@ -634,16 +694,20 @@</span><br><span> =
-main(void)</span><br><span> {</span><br><span>     openvpn_unit_test_setup(=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const struct CM=
-UnitTest tests[] =3D { cmocka_unit_test(test_tls_decrypt_lite_none),</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                            =
-            cmocka_unit_test(test_tls_decrypt_lite_auth),</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                                       =
- cmocka_unit_test(test_tls_decrypt_lite_crypt),</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                                        cmocka_un=
-it_test(test_parse_ack),</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                                        cmocka_unit_test(test_calc_sessi=
-on_id_hmac_static),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-                                      cmocka_unit_test(test_verify_hmac_non=
-e),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-                      cmocka_unit_test(test_verify_hmac_tls_auth),</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                              =
-          cmocka_unit_test(test_generate_reset_packet_plain),</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                                   =
-     cmocka_unit_test(test_generate_reset_packet_tls_auth),</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                                     =
-   cmocka_unit_test(test_extract_control_message) };</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    const struct CMUnitTest tests[] =3D {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_tls_decr=
-ypt_lite_none),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    cmocka_unit_test(test_tls_decrypt_lite_auth),</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_tls_decrypt_lit=
-e_crypt),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cm=
-ocka_unit_test(test_parse_ack),</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        cmocka_unit_test(test_calc_session_id_hmac_static),</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_tes=
-t(test_verify_hmac_none),</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        cmocka_unit_test(test_verify_hmac_tls_auth),</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_verify=
-_hmac_none_out_of_range_ack),</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        cmocka_unit_test(test_generate_reset_packet_plain),</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(=
-test_generate_reset_packet_tls_auth),</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        cmocka_unit_test(test_extract_control_message)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><span=
-> </span><br><span> #if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span>    =
- OpenSSL_add_all_algorithms();</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail">c=
-hange 1067</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1156?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Introduce env variables to communicate desired gateway redir=
+ection to NM.<br><br>When run under Network Manager control, OpenVPN is not=
+ allowed to<br>control routing.  Instead, NM uses the OpenVPN-set environme=
+nt variables<br>(&quot;route_network_1&quot; etc) to set up routes as reque=
+sted.  This method never<br>worked properly for &quot;redirect-gateway&quot=
+;, as the information was not made<br>available in environment variables.<b=
+r><br>Introduce new env vars:<br><br> route_redirect_gateway_ipv4<br> route=
+_redirect_gateway_ipv6<br><br>to communicate desired state:<br><br> &lt;not=
+ set&gt; =3D no gateway redirection desired<br> 1 =3D &quot;redirect-gatewa=
+y for that protocol in question&quot;<br> 2 =3D &quot;include block-local t=
+o redirect the local LAN as well&quot;<br><br>We intentionally do not expos=
+e all the IPv4 flags (&quot;local&quot;, &quot;def1&quot;, ...)<br>as this =
+is really internal OpenVPN historical cruft.<br><br>Change-Id: I1e623b4a836=
+f7216750867243299c7e4d0bd32d0<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>---<br>M doc/man-sections/script-options.rst<br>M src/openvpn/=
+options.c<br>2 files changed, 22 insertions(+), 0 deletions(-)<br><br></pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/1156/1</pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/scrip=
+t-options.rst</span><br><span>index bd5ecd4..670cd33 100644</span><br><span=
+>--- a/doc/man-sections/script-options.rst</span><br><span>+++ b/doc/man-se=
+ctions/script-options.rst</span><br><span>@@ -874,6 +874,14 @@</span><br><s=
+pan>     translations will be recorded rather than their names as denoted o=
+n the</span><br><span>     command line or configuration file.</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+:code:`route_r=
+edirect_gateway_ipv4`</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+:code:`route_redi=
+rect_gateway_ipv6`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   Set to `1` if the corresponding default gateway should be redirected</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    into the tunnel, an=
+d to `2` if also the local LAN segment should be</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    blocked (`block-local`).  Not set otherwis=
+e.  Set prior to **--up** script</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    execution.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span> :code:`script_context`</span><br><span>     Set t=
+o &quot;init&quot; or &quot;restart&quot; prior to up/down script execution=
+. For more</span><br><span>     information, see documentation for ``--up``=
+.</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.=
+c</span><br><span>index 0b16c5a..648d526 100644</span><br><span>--- a/src/o=
+penvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><spa=
+n>@@ -5720,6 +5720,8 @@</span><br><span>         {</span><br><span>        =
+     options-&gt;routes_ipv6-&gt;flags =3D 0;</span><br><span>         }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        env_set_del(es=
+, &quot;route_redirect_gateway_ipv4&quot;);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        env_set_del(es, &quot;route_redirect_gatewa=
+y_ipv6&quot;);</span><br><span>     }</span><br><span>     else if (streq(p=
+[0], &quot;dns&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><br><s=
+pan>@@ -6039,6 +6041,8 @@</span><br><span>             {</span><br><span>  =
+               options-&gt;routes_ipv6-&gt;flags =3D 0;</span><br><span>   =
+          }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    env_set_del(es, &quot;route_redirect_gateway_ipv4&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            env_set_del(es, &quot=
+;route_redirect_gateway_ipv6&quot;);</span><br><span>             *update_o=
+ptions_found |=3D OPT_P_U_REDIR_GATEWAY;</span><br><span>         }</span><=
+br><span>     }</span><br><span>@@ -7661,6 +7665,16 @@</span><br><span>    =
+             goto err;</span><br><span>             }</span><br><span>     =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (op=
+tions-&gt;routes-&gt;flags &amp; RG_REROUTE_GW)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            setenv_int(es, &quot;route_redirect_gateway_i=
+pv4&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+              options-&gt;routes-&gt;flags &amp; RG_BLOCK_LOCAL ? 2 : 1);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (options-&gt;routes_=
+ipv6 &amp;&amp; (options-&gt;routes_ipv6-&gt;flags &amp; RG_REROUTE_GW))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            setenv_int(es, &quot=
+;route_redirect_gateway_ipv6&quot;,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                       options-&gt;routes-&gt;flags &amp; R=
+G_BLOCK_LOCAL ? 2 : 1);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span> #ifdef _WIN32</span><br><span>         /* we=
+ need this here to handle pushed --redirect-gateway */</span><br><span>    =
+     remap_redirect_gateway_flags(options);</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1156?u=
+sp=3Demail">change 1156</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1156?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6752dcd5aff3e5cea2b43936647=
-9e86751a1c403 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1067 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1e623b4a836f721675086724329=
+9c7e4d0bd32d0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1156 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---Ybz5/l3qKkY=--
+--en2ySXKUMq0=--
 
