@@ -1,13 +1,17 @@
-Message-ID: <6c94bf74-594c-4e20-958e-057a80518e53@...2889...>
-Date: Sat, 23 Aug 2025 23:28:35 +0200
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Mon, 25 Aug 2025 10:42:39 +0000
+In-Reply-To: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
+References: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277..., gert@...1296...
+Message-ID: <4fa48336578a6ad490a9d3d06d478aa3c1bacc52-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
- <5c374002a1dfb9b99a32f5715d21121d05d7912a-HTML@...2715...>
-Content-Language: en-US, sv-SE, nl
-From: Walter Doekes <walter.openvpn@...2889...>
-In-Reply-To: <5c374002a1dfb9b99a32f5715d21121d05d7912a-HTML@...2715...>
-Subject: Re: [Openvpn-devel] [M] Change in openvpn[master]: Check message
- id/acked ids too when doing sessionid cookie checks
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="FoNgG+RCKos="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE message
+ sender: enabling the server to send PUSH_UPDATE c...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,377 +20,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Thanks!
+--FoNgG+RCKos=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Can we get this backported to 2.6 as well?
+Attention is currently required from: cron2, flichtenheld, plaisthos, stipa.
 
-Walter
+mrbff has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/869?usp=3Demail )
 
-On 23-08-2025 18:01, cron2 (Code Review) wrote:
-> cron2 *submitted* this change.
-> 
-> View Change <http://gerrit.openvpn.net/c/openvpn/+/1067?usp=email>
-> 
-> Check message id/acked ids too when doing sessionid cookie checks
-> 
-> This fixes that control packets on a floating client can trigger
-> creating a new session in special circumstances:
-> 
-> To trigger this circumstance a connection needs to
-> 
-> - starts on IP A
-> - successfully floats to IP B by data packet
-> - then has a control packet from IP A before any
->    data packet can trigger the float back to IP A
-> 
-> and all of this needs to happen in the 60s time
-> that hmac cookie is valid in the default
-> configuration.
-> 
-> In this scenario we would trigger a new connection as the HMAC
-> session id would be valid.
-> 
-> This patch adds checking also of the message-id and acked ids to
-> discern packet from the initial three-way handshake where these
-> ids are 0 or 1 from any later packet.
-> 
-> This will now trigger (at verb 4 or higher) a messaged like:
-> 
->     Packet (P_ACK_V1) with invalid or missing SID
-> 
-> instead.
-> 
-> Also remove a few duplicated free_tls_pre_decrypt_state in test_ssl.
-> 
-> Reported-By: Walter Doekes <walter.openvpn@...2889...>
-> Tested-By: Walter Doekes <walter.openvpn@...2889...>
-> 
-> Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> Acked-by: MaxF <max@...2606...>
-> Message-Id: <20250819212214.16218-1-gert@...1296...>
-> URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32626.html
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
-> M src/openvpn/mudp.c
-> M src/openvpn/ssl_pkt.c
-> M src/openvpn/ssl_pkt.h
-> M tests/unit_tests/openvpn/test_pkt.c
-> 4 files changed, 129 insertions(+), 24 deletions(-)
-> 
-> diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-> index 7259a4b..31134be 100644
-> --- a/src/openvpn/mudp.c
-> +++ b/src/openvpn/mudp.c
-> @@ -151,7 +151,8 @@
-> * need to contain the peer id */
-> struct gc_arena gc = gc_new();
-> 
-> - bool ret = check_session_id_hmac(state, from, hmac, handwindow);
-> + bool pkt_is_ack = (verdict == VERDICT_VALID_ACK_V1);
-> + bool ret = check_session_hmac_and_pkt_id(state, from, hmac, 
-> handwindow, pkt_is_ack);
-> 
-> const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
-> uint8_t pkt_firstbyte = *BPTR(&m->top.c2.buf);
-> @@ -159,7 +160,8 @@
-> 
-> if (!ret)
-> {
-> - msg(D_MULTI_MEDIUM, "Packet (%s) with invalid or missing SID from %s",
-> + msg(D_MULTI_MEDIUM, "Packet (%s) with invalid or missing SID from"
-> + " %s or wrong packet id",
-> packet_opcode_name(op), peer);
-> }
-> else
-> diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-> index b901f87..6ec05a7 100644
-> --- a/src/openvpn/ssl_pkt.c
-> +++ b/src/openvpn/ssl_pkt.c
-> @@ -496,8 +496,11 @@
-> }
-> 
-> bool
-> -check_session_id_hmac(struct tls_pre_decrypt_state *state, const struct 
-> openvpn_sockaddr *from,
-> - hmac_ctx_t *hmac, int handwindow)
-> +check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state,
-> + const struct openvpn_sockaddr *from,
-> + hmac_ctx_t *hmac,
-> + int handwindow,
-> + bool pkt_is_ack)
-> {
-> if (!from)
-> {
-> @@ -512,6 +515,36 @@
-> return false;
-> }
-> 
-> + /* Check if the packet ID of the packet or ACKED packet is <= 1 */
-> + for (int i = 0; i < ack.len; i++)
-> + {
-> + /* This packet ACKs a packet that has a higher packet id than the
-> + * ones expected in the three-way handshake, consider it as invalid
-> + * for the session */
-> + if (ack.packet_id[i] > 1)
-> + {
-> + return false;
-> + }
-> + }
-> +
-> + if (!pkt_is_ack)
-> + {
-> + packet_id_type message_id;
-> + /* Extract the packet ID from the packet */
-> + if (!reliable_ack_read_packet_id(&buf, &message_id))
-> + {
-> + return false;
-> + }
-> +
-> + /* similar check. Anything larger than 1 is not considered part of the
-> + * three-way handshake */
-> + if (message_id > 1)
-> + {
-> + return false;
-> + }
-> + }
-> +
-> +
-> /* check adjacent timestamps too */
-> for (int offset = -2; offset <= 1; offset++)
-> {
-> diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-> index 8fe4880..96cdd68 100644
-> --- a/src/openvpn/ssl_pkt.h
-> +++ b/src/openvpn/ssl_pkt.h
-> @@ -178,14 +178,20 @@
-> /**
-> * Checks if a control packet has a correct HMAC server session id
-> *
-> + * This will also consider packets that have a packet id higher
-> + * than 1 or ack packets higher than 1 to be invalid as they are
-> + * not part of the initial three way handshake of OpenVPN and should
-> + * not create a new connection.
-> + *
-> * @param state session information
-> * @param from link_socket from the client
-> * @param hmac the hmac context to use for the calculation
-> * @param handwindow the quantisation of the current time
-> + * @param pkt_is_ack the packet being checked is a P_ACK_V1
-> * @return the expected server session id
-> */
-> -bool check_session_id_hmac(struct tls_pre_decrypt_state *state, const 
-> struct openvpn_sockaddr *from,
-> - hmac_ctx_t *hmac, int handwindow);
-> +bool check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state, 
-> const struct openvpn_sockaddr *from,
-> + hmac_ctx_t *hmac, int handwindow, bool pkt_is_ack);
-> 
-> /*
-> * Write a control channel authentication record.
-> diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/ 
-> openvpn/test_pkt.c
-> index 65b31e7..5122766 100644
-> --- a/tests/unit_tests/openvpn/test_pkt.c
-> +++ b/tests/unit_tests/openvpn/test_pkt.c
-> @@ -139,6 +139,27 @@
-> 0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0xdd, 0x85,
-> 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e };
-> 
-> +/* no tls-auth, P_ACK_V1, acks 0,1, and 2 */
-> +const uint8_t client_ack_123_none_random_id[] = {
-> + 0x28,
-> + 0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8,
-> + 0x03,
-> + 0x00, 0x00, 0x00, 0x00,
-> + 0x00, 0x00, 0x00, 0x01,
-> + 0x00, 0x00, 0x00, 0x02,
-> + 0xdd, 0x85, 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e
-> +};
-> +
-> +/* no tls-auth, P_CONTROL_V1, acks 0, msg-id 2 */
-> +const uint8_t client_control_none_random_id[] = {
-> + 0x20,
-> + 0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8,
-> + 0x01,
-> + 0x00, 0x00, 0x00, 0x00,
-> + 0x02
-> +};
-> +
-> +
-> struct tls_auth_standalone
-> init_tas_auth(int key_direction)
-> {
-> @@ -256,12 +277,10 @@
-> assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-> free_tls_pre_decrypt_state(&state);
-> 
-> - free_tls_pre_decrypt_state(&state);
-> /* The pre decrypt function should not modify the buffer, so calling it
-> * again should have the same result */
-> verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-> assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-> - free_tls_pre_decrypt_state(&state);
-> 
-> /* and buf memory should be equal */
-> assert_memory_equal(BPTR(&buf), client_reset_v2_tls_auth, 
-> sizeof(client_reset_v2_tls_auth));
-> @@ -279,7 +298,6 @@
-> assert_int_equal(verdict, VERDICT_INVALID);
-> free_tls_pre_decrypt_state(&state);
-> 
-> - free_tls_pre_decrypt_state(&state);
-> /* Wrong key direction gives a wrong hmac key and should not validate */
-> free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
-> free_tas(&tas);
-> @@ -319,15 +337,12 @@
-> assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-> free_tls_pre_decrypt_state(&state);
-> 
-> - free_tls_pre_decrypt_state(&state);
-> buf_reset_len(&buf);
-> buf_write(&buf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_none));
-> verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-> assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-> free_tls_pre_decrypt_state(&state);
-> 
-> - free_tls_pre_decrypt_state(&state);
-> -
-> /* This is not a reset packet and should trigger the other response */
-> buf_reset_len(&buf);
-> buf_write(&buf, client_ack_tls_auth_randomid, 
-> sizeof(client_ack_tls_auth_randomid));
-> @@ -405,7 +420,7 @@
-> assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
-> 
-> /* This is a valid packet but containing a random id instead of an HMAC id*/
-> - bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
-> + bool valid = check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 
-> 30, false);
-> assert_false(valid);
-> 
-> free_tls_pre_decrypt_state(&state);
-> @@ -436,7 +451,7 @@
-> verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-> assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
-> 
-> - bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
-> + bool valid = check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 
-> 30, true);
-> assert_true(valid);
-> 
-> free_tls_pre_decrypt_state(&state);
-> @@ -445,6 +460,51 @@
-> hmac_ctx_free(hmac);
-> }
-> 
-> +static void
-> +test_verify_hmac_none_out_of_range_ack(void **ut_state)
-> +{
-> + hmac_ctx_t *hmac = session_id_hmac_init();
-> +
-> + struct link_socket_actual from = { 0 };
-> + from.dest.addr.sa.sa_family = AF_INET;
-> +
-> + struct tls_auth_standalone tas = { 0 };
-> + struct tls_pre_decrypt_state state = { 0 };
-> +
-> + struct buffer buf = alloc_buf(1024);
-> + enum first_packet_verdict verdict;
-> +
-> + tas.tls_wrap.mode = TLS_WRAP_NONE;
-> +
-> + buf_reset_len(&buf);
-> + buf_write(&buf, client_ack_123_none_random_id, 
-> sizeof(client_ack_123_none_random_id));
-> +
-> +
-> + verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-> + assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
-> +
-> + /* should fail because it acks 2 */
-> + bool valid = check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 
-> 30, true);
-> + assert_false(valid);
-> + free_tls_pre_decrypt_state(&state);
-> +
-> + /* Try test with the control with a too high message id now */
-> + buf_reset_len(&buf);
-> + buf_write(&buf, client_control_none_random_id, 
-> sizeof(client_control_none_random_id));
-> +
-> + verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-> + assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
-> +
-> + /* should fail because it has message id 2 */
-> + valid = check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true);
-> + assert_false(valid);
-> +
-> + free_tls_pre_decrypt_state(&state);
-> + free_buf(&buf);
-> + hmac_ctx_cleanup(hmac);
-> + hmac_ctx_free(hmac);
-> +}
-> +
-> static hmac_ctx_t *
-> init_static_hmac(void)
-> {
-> @@ -634,16 +694,20 @@
-> main(void)
-> {
-> openvpn_unit_test_setup();
-> - const struct CMUnitTest tests[] = 
-> { cmocka_unit_test(test_tls_decrypt_lite_none),
-> - cmocka_unit_test(test_tls_decrypt_lite_auth),
-> - cmocka_unit_test(test_tls_decrypt_lite_crypt),
-> - cmocka_unit_test(test_parse_ack),
-> - cmocka_unit_test(test_calc_session_id_hmac_static),
-> - cmocka_unit_test(test_verify_hmac_none),
-> - cmocka_unit_test(test_verify_hmac_tls_auth),
-> - cmocka_unit_test(test_generate_reset_packet_plain),
-> - cmocka_unit_test(test_generate_reset_packet_tls_auth),
-> - cmocka_unit_test(test_extract_control_message) };
-> +
-> + const struct CMUnitTest tests[] = {
-> + cmocka_unit_test(test_tls_decrypt_lite_none),
-> + cmocka_unit_test(test_tls_decrypt_lite_auth),
-> + cmocka_unit_test(test_tls_decrypt_lite_crypt),
-> + cmocka_unit_test(test_parse_ack),
-> + cmocka_unit_test(test_calc_session_id_hmac_static),
-> + cmocka_unit_test(test_verify_hmac_none),
-> + cmocka_unit_test(test_verify_hmac_tls_auth),
-> + cmocka_unit_test(test_verify_hmac_none_out_of_range_ack),
-> + cmocka_unit_test(test_generate_reset_packet_plain),
-> + cmocka_unit_test(test_generate_reset_packet_tls_auth),
-> + cmocka_unit_test(test_extract_control_message)
-> + };
-> 
-> #if defined(ENABLE_CRYPTO_OPENSSL)
-> OpenSSL_add_all_algorithms();
-> 
-> To view, visit change 1067 <http://gerrit.openvpn.net/c/openvpn/+/1067? 
-> usp=email>. To unsubscribe, or for help writing mail filters, visit 
-> settings <http://gerrit.openvpn.net/settings>.
-> 
-> Gerrit-Project: openvpn
-> Gerrit-Branch: master
-> Gerrit-Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
-> Gerrit-Change-Number: 1067
-> Gerrit-PatchSet: 7
-> Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-> Gerrit-Reviewer: MaxF <max@...2606...>
-> Gerrit-Reviewer: flichtenheld <frank@...2641...>
-> Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-> Gerrit-MessageType: merged
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Change subject: PUSH_UPDATE message sender: enabling the server to send PUS=
+H_UPDATE control messages
+......................................................................
 
+
+Patch Set 24:
+
+(1 comment)
+
+Patchset:
+
+PS23:
+> Well, "3 things that need fixing", that is :-)
+About the first point, i fixed the restarting in the server but the "sendin=
+g a wrong message and considering it a `SUCCESS`" was like this by design. =
+The checks for valid options in the server are made just to update the ifco=
+nfig if necessary but they are not part of the 'core' logic of sending the =
+message. Of course i could make this checks and just after validating the o=
+ptions deciding if sending the message or not but maybe it should be discus=
+sed i think
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
+Gerrit-Change-Number: 869
+Gerrit-PatchSet: 24
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 25 Aug 2025 10:42:39 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-MessageType: comment
+
+--FoNgG+RCKos=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos, s=
+tipa. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
+69?tab=3Dcomments">Patch Set #23:</a> </p><p><blockquote style=3D"border-le=
+ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Well, &quot;3 things =
+that need fixing&quot;, that is :-)</blockquote></p><p style=3D"white-space=
+: pre-wrap; word-wrap: break-word;">About the first point, i fixed the rest=
+arting in the server but the &quot;sending a wrong message and considering =
+it a `SUCCESS`&quot; was like this by design. The checks for valid options =
+in the server are made just to update the ifconfig if necessary but they ar=
+e not part of the &#39;core&#39; logic of sending the message. Of course i =
+could make this checks and just after validating the options deciding if se=
+nding the message or not but maybe it should be discussed i think</p></li><=
+/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/869?usp=3Demail">change 869</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d=
+1a323ed8df3fc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 869 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 24 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 25 Aug 2025 10:42:39=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--FoNgG+RCKos=--
 
