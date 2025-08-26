@@ -1,17 +1,16 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Mon, 25 Aug 2025 10:42:39 +0000
-In-Reply-To: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
-References: <gerrit.1737029493000.Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., gert@...1296...
-Message-ID: <4fa48336578a6ad490a9d3d06d478aa3c1bacc52-EmailReviewComments-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 26 Aug 2025 11:59:57 +0000
+In-Reply-To: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
+References: <gerrit.1750855087000.I6752dcd5aff3e5cea2b439366479e86751a1c403@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., max@...2606..., gert@...1296...
+Message-ID: <99c8e0da13b34693834e0784c665907f009b87aa-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FoNgG+RCKos="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE message
- sender: enabling the server to send PUSH_UPDATE c...
+Content-Type: multipart/alternative; boundary="JXiClLQCFpg="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check message
+ id/acked ids too when doing sessionid cookie checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,129 +19,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---FoNgG+RCKos=
+--JXiClLQCFpg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos, stipa.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1067?usp=3Demail )
 
-mrbff has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/869?usp=3Demail )
-
-Change subject: PUSH_UPDATE message sender: enabling the server to send PUS=
-H_UPDATE control messages
+Change subject: Check message id/acked ids too when doing sessionid cookie =
+checks
 ......................................................................
 
 
-Patch Set 24:
+Patch Set 7:
 
 (1 comment)
 
-Patchset:
+File src/openvpn/mudp.c:
 
-PS23:
-> Well, "3 things that need fixing", that is :-)
-About the first point, i fixed the restarting in the server but the "sendin=
-g a wrong message and considering it a `SUCCESS`" was like this by design. =
-The checks for valid options in the server are made just to update the ifco=
-nfig if necessary but they are not part of the 'core' logic of sending the =
-message. Of course i could make this checks and just after validating the o=
-ptions deciding if sending the message or not but maybe it should be discus=
-sed i think
+http://gerrit.openvpn.net/c/openvpn/+/1067/comment/3a04bad5_1d964253 :
+PS5, Line 163:             msg(D_MULTI_MEDIUM, "Packet (%s) with invalid or=
+ missing SID from %s",
+             :                 packet_opcode_name(op), peer);
+> This debug message may now be incorrect. The packet might have a valid SI=
+D, but a wrong packet ID.
+Acknowledged
 
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d1a323ed8df3fc
-Gerrit-Change-Number: 869
-Gerrit-PatchSet: 24
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I6752dcd5aff3e5cea2b439366479e86751a1c403
+Gerrit-Change-Number: 1067
+Gerrit-PatchSet: 7
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 25 Aug 2025 10:42:39 +0000
+Gerrit-Comment-Date: Tue, 26 Aug 2025 11:59:57 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
+Comment-In-Reply-To: MaxF <max@...2606...>
 Gerrit-MessageType: comment
 
---FoNgG+RCKos=
+--JXiClLQCFpg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos, s=
-tipa. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/8=
-69?tab=3Dcomments">Patch Set #23:</a> </p><p><blockquote style=3D"border-le=
-ft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Well, &quot;3 things =
-that need fixing&quot;, that is :-)</blockquote></p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">About the first point, i fixed the rest=
-arting in the server but the &quot;sending a wrong message and considering =
-it a `SUCCESS`&quot; was like this by design. The checks for valid options =
-in the server are made just to update the ifconfig if necessary but they ar=
-e not part of the &#39;core&#39; logic of sending the message. Of course i =
-could make this checks and just after validating the options deciding if se=
-nding the message or not but maybe it should be discussed i think</p></li><=
-/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/869?usp=3Demail">change 869</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/869?usp=3De=
-mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1067?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mudp.c:</p><ul sty=
+le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
+ 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1067/comment/3a04bad5_1d964253">Patch Set #5, Line 163:</a> =
+</p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pa=
+dding: 0 10px;"><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">            msg(D_MULTI_MEDIUM, &quot;Packet (%s) with invalid=
+ or missing SID from %s&quot;,<br>                packet_opcode_name(op), p=
+eer);<br></pre></blockquote></p><p><blockquote style=3D"border-left: 1px so=
+lid #aaa; margin: 10px 0; padding: 0 10px;">This debug message may now be i=
+ncorrect. The packet might have a valid SID, but a wrong packet ID.</blockq=
+uote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowl=
+edged</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1067?usp=3Demail">change 1067</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
+lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
+ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1067?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
+/div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie82bcc7a8e583de9156b185d71d=
-1a323ed8df3fc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 869 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 24 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+<div style=3D"display:none"> Gerrit-Change-Id: I6752dcd5aff3e5cea2b43936647=
+9e86751a1c403 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1067 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 25 Aug 2025 10:42:39=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 26 Aug 2025 11:59:57=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
+t; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---FoNgG+RCKos=--
+--JXiClLQCFpg=--
 
