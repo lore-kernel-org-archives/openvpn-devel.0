@@ -1,16 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 27 Aug 2025 11:50:58 +0000
-In-Reply-To: <gerrit.1756295422000.I7bc7de284fdbfd4be26a907ecd5c21c075bc5ac4@...2715...>
-References: <gerrit.1756295422000.I7bc7de284fdbfd4be26a907ecd5c21c075bc5ac4@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7079c1125f8d579441467bfb892af440e9b02555-EmailReplacePatchSet-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------wo0hG20VMFotkyPI0b1AxMJi"
+Message-ID: <aa06cd4f-f6d1-491d-9c93-e79cafda0562@...2722...>
+Date: Wed, 27 Aug 2025 19:53:41 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hj0dEWPIRq0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Don't call bytecount
- client logic in server mode
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,224 +14,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---hj0dEWPIRq0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------wo0hG20VMFotkyPI0b1AxMJi
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Meeting summary for 27 August 2025:
 
-Hello flichtenheld, plaisthos,
+  *
 
-I'd like you to reexamine a change. Please visit
+    *Updated: Release 2.7*
+    DCO for Windows multipeer statistics driver part is done - userspace
+    part is waiting review.
+    The FreeBSD patch for float was merged, should show up in 14.4 probably.
+    Planned release date for 2.7 beta1 updated to September 4th. These
+    are some known remaining tasks:
+    lev is working on broken "bytecount" functionality when using
+    Windows DCO in server mode.
+    Epoch data keys for Linux DCO and Windows DCO can be done in a minor
+    release after 2.7.0.
+    However ralf_lici is already looking into adding it into the Linux
+    DCO right now.
+    PUSH_UPDATE review and server-side support - cron2 wants to discuss
+    changes.
+    mi prefix handling, int/uint fixes, and the new 'real route' gateway
+    handling.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1157?usp=3Demail
+  *
 
-to look at the new patch set (#2).
+    *New: wolfSSL license changed from gplv2 to gplv3*
+    The release notes of wolfSSL indicate the license changed to GPLv3.
+    This basically makes wolfSSL incompatible in regards to licensing
+    with OpenVPN.
+    plaisthos will open an issue with them to either remove OpenVPN
+    support or give a solution to remain licensing compatible.
+    maxf has reached out to wolfSSL about this, and will wait a bit
+    before adding a warning to README.wolfssl about this licensing
+    incompatibility.
 
+  *
 
-Change subject: Don't call bytecount client logic in server mode
-......................................................................
+    *Updated: t_server and t_client testing framework*
+    mattock reports progress on building automated testing environment
+    for really old OpenVPN versions.
+    This covers tests for versions going back to 2.2.
 
-Don't call bytecount client logic in server mode
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Calling this in server mode is wrong because:
+Kind regards,
+Johan Draaisma
 
- - we only output those counters via management interface
- (>BYTECOUNT:) in client mode, so in server mode this is no-op
+--------------wo0hG20VMFotkyPI0b1AxMJi
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
- - the timer callback to fetch DCO stats is triggerer
- independenty for each peer. It is a waste of resources in server mode
- where we could fetch stats for all peers with the single ioctl.
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 27 August 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          DCO for Windows multipeer statistics driver part is done -
+          userspace part is waiting review.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The FreeBSD patch for float was merged, should show up in 14.4
+          probably.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Planned release date for 2.7 beta1 updated to September 4th.
+          These are some known remaining tasks:<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          lev is working on broken "bytecount" functionality when using
+          Windows DCO in server mode.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Epoch data keys for Linux DCO and Windows DCO can be done in a
+          minor release after 2.7.0.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          However ralf_lici is already looking into adding it into the
+          Linux DCO right now.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          PUSH_UPDATE review and server-side support - cron2 wants to
+          discuss changes.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          mi prefix handling, int/uint fixes, and the new 'real route'
+          gateway handling.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
+            wolfSSL license changed from gplv2 to gplv3</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The release notes of wolfSSL indicate the license changed to
+          GPLv3.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          This basically makes wolfSSL incompatible in regards to
+          licensing with OpenVPN.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          plaisthos will open an issue with them to either remove
+          OpenVPN support or give a solution to remain licensing
+          compatible.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          maxf has reached out to wolfSSL about this, and will wait a
+          bit before adding a warning to README.wolfssl about this
+          licensing incompatibility.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            t_server and t_client testing framework</strong><span> </span><br>
+          mattock reports progress on building automated testing
+          environment for really old OpenVPN versions.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          This covers tests for versions going back to 2.2.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-Change-Id: I7bc7de284fdbfd4be26a907ecd5c21c075bc5ac4
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M src/openvpn/forward.c
-M src/openvpn/manage.c
-M src/openvpn/manage.h
-3 files changed, 5 insertions(+), 8 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/1157/2
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 75ca9d5..e8bdf35 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -818,7 +818,7 @@
- #ifdef ENABLE_MANAGEMENT
-     if (management)
-     {
--        management_check_bytecount(c, management, &c->c2.timeval);
-+        management_check_bytecount_client(c, management, &c->c2.timeval);
-     }
- #endif /* ENABLE_MANAGEMENT */
- }
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index aed04f5..f057fb2 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -4065,9 +4065,9 @@
- }
-
- void
--management_check_bytecount(struct context *c, struct management *man, stru=
-ct timeval *timeval)
-+management_check_bytecount_client(struct context *c, struct management *ma=
-n, struct timeval *timeval)
- {
--    if (event_timeout_trigger(&man->connection.bytecount_update_interval, =
-timeval, ETT_DEFAULT))
-+    if (!(man->persist.callback.flags & MCF_SERVER) && event_timeout_trigg=
-er(&man->connection.bytecount_update_interval, timeval, ETT_DEFAULT))
-     {
-         counter_type dco_read_bytes =3D 0;
-         counter_type dco_write_bytes =3D 0;
-@@ -4083,10 +4083,7 @@
-             dco_write_bytes =3D c->c2.dco_write_bytes;
-         }
-
--        if (!(man->persist.callback.flags & MCF_SERVER))
--        {
--            man_bytecount_output_client(man, dco_read_bytes, dco_write_byt=
-es);
--        }
-+        man_bytecount_output_client(man, dco_read_bytes, dco_write_bytes);
-     }
- }
-
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 083caf5..038691f 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -492,7 +492,7 @@
-  * These functions drive the bytecount in/out counters.
-  */
-
--void management_check_bytecount(struct context *c, struct management *man,=
- struct timeval *timeval);
-+void management_check_bytecount_client(struct context *c, struct managemen=
-t *man, struct timeval *timeval);
-
- static inline void
- management_bytes_client(struct management *man, const int size_in, const i=
-nt size_out)
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1157?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7bc7de284fdbfd4be26a907ecd5c21c075bc5ac4
-Gerrit-Change-Number: 1157
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
-
---hj0dEWPIRq0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1157?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">Don&#39;t call bytecount client logic in server mode<br><br>Calling this=
- in server mode is wrong because:<br><br> - we only output those counters v=
-ia management interface<br> (&gt;BYTECOUNT:) in client mode, so in server m=
-ode this is no-op<br><br> - the timer callback to fetch DCO stats is trigge=
-rer<br> independenty for each peer. It is a waste of resources in server mo=
-de<br> where we could fetch stats for all peers with the single ioctl.<br><=
-br>Change-Id: I7bc7de284fdbfd4be26a907ecd5c21c075bc5ac4<br>Signed-off-by: L=
-ev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/forward.c<br>M sr=
-c/openvpn/manage.c<br>M src/openvpn/manage.h<br>3 files changed, 5 insertio=
-ns(+), 8 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
-nvpn refs/changes/57/1157/2</pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/forward.c b/sr=
-c/openvpn/forward.c</span><br><span>index 75ca9d5..e8bdf35 100644</span><br=
-><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forwar=
-d.c</span><br><span>@@ -818,7 +818,7 @@</span><br><span> #ifdef ENABLE_MANA=
-GEMENT</span><br><span>     if (management)</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        management_check_bytec=
-ount(c, management, &amp;c-&gt;c2.timeval);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        management_check_bytecount_client(c, manage=
-ment, &amp;c-&gt;c2.timeval);</span><br><span>     }</span><br><span> #endi=
-f /* ENABLE_MANAGEMENT */</span><br><span> }</span><br><span>diff --git a/s=
-rc/openvpn/manage.c b/src/openvpn/manage.c</span><br><span>index aed04f5..f=
-057fb2 100644</span><br><span>--- a/src/openvpn/manage.c</span><br><span>++=
-+ b/src/openvpn/manage.c</span><br><span>@@ -4065,9 +4065,9 @@</span><br><s=
-pan> }</span><br><span> </span><br><span> void</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-management_check_bytecount(struct context *c, stru=
-ct management *man, struct timeval *timeval)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+management_check_bytecount_client(struct context *=
-c, struct management *man, struct timeval *timeval)</span><br><span> {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (event_timeout_trig=
-ger(&amp;man-&gt;connection.bytecount_update_interval, timeval, ETT_DEFAULT=
-))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!(man-&gt=
-;persist.callback.flags &amp; MCF_SERVER) &amp;&amp; event_timeout_trigger(=
-&amp;man-&gt;connection.bytecount_update_interval, timeval, ETT_DEFAULT))</=
-span><br><span>     {</span><br><span>         counter_type dco_read_bytes =
-=3D 0;</span><br><span>         counter_type dco_write_bytes =3D 0;</span><=
-br><span>@@ -4083,10 +4083,7 @@</span><br><span>             dco_write_byte=
-s =3D c-&gt;c2.dco_write_bytes;</span><br><span>         }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!(man-&g=
-t;persist.callback.flags &amp; MCF_SERVER))</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            man_bytecount_output_client(man, dco_read_bytes, dco_=
-write_bytes);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        man_byteco=
-unt_output_client(man, dco_read_bytes, dco_write_bytes);</span><br><span>  =
-   }</span><br><span> }</span><br><span> </span><br><span>diff --git a/src/=
-openvpn/manage.h b/src/openvpn/manage.h</span><br><span>index 083caf5..0386=
-91f 100644</span><br><span>--- a/src/openvpn/manage.h</span><br><span>+++ b=
-/src/openvpn/manage.h</span><br><span>@@ -492,7 +492,7 @@</span><br><span> =
- * These functions drive the bytecount in/out counters.</span><br><span>  *=
-/</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-vo=
-id management_check_bytecount(struct context *c, struct management *man, st=
-ruct timeval *timeval);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+void management_check_bytecount_client(struct context *c, struct manage=
-ment *man, struct timeval *timeval);</span><br><span> </span><br><span> sta=
-tic inline void</span><br><span> management_bytes_client(struct management =
-*man, const int size_in, const int size_out)</span><br><span></span><br></p=
-re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1157?=
-usp=3Demail">change 1157</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1157?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7bc7de284fdbfd4be26a907ecd5=
-c21c075bc5ac4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1157 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---hj0dEWPIRq0=--
+--------------wo0hG20VMFotkyPI0b1AxMJi--
 
