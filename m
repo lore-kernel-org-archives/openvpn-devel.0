@@ -1,10 +1,16 @@
-Date: Wed, 27 Aug 2025 21:00:04 +0200 (CEST)
-Message-Id: <202508271900.57RJ04wg015052@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250826183902.21252-1-gert@...1296...>
-References: <20250826183902.21252-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: route: Make sure various route
- flags are treated as unsigned
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 27 Aug 2025 19:00:12 +0000
+In-Reply-To: <gerrit.1753360288000.Ib7f78abbcd52c00a32afdea36ef635681ac8e127@...2715...>
+References: <gerrit.1753360288000.Ib7f78abbcd52c00a32afdea36ef635681ac8e127@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5af193483956386acc914019d3fac99face9d6e2-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="CtUXc/2sZkw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: Make sure
+ various route flags are treated as unsigned
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +19,195 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-One more that is fairly straightforward :-) - with small values, well
-below any interesting sign extensions.  BB says everthing still works!
+--CtUXc/2sZkw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
+09?usp=3Demail )
 
-commit 3671c420f60004d694ce4970cf333db79a4aed29
-Author: Frank Lichtenheld
-Date:   Tue Aug 26 20:38:41 2025 +0200
+Change subject: route: Make sure various route flags are treated as unsigned
+......................................................................
 
-     route: Make sure various route flags are treated as unsigned
+route: Make sure various route flags are treated as unsigned
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-     Message-Id: <20250826183902.21252-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32684.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+The variables that hold them are already unsigned, make sure
+the flags are as well to avoid spurious conversion warnings.
 
+Change-Id: Ib7f78abbcd52c00a32afdea36ef635681ac8e127
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20250826183902.21252-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
+684.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/route.h
+1 file changed, 14 insertions(+), 14 deletions(-)
+
+
+
+
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index ea8b767..9b6a47e 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -83,14 +83,14 @@
+ };
+
+ /* redirect-gateway flags */
+-#define RG_ENABLE      (1 << 0)
+-#define RG_LOCAL       (1 << 1)
+-#define RG_DEF1        (1 << 2)
+-#define RG_BYPASS_DHCP (1 << 3)
+-#define RG_BYPASS_DNS  (1 << 4)
+-#define RG_REROUTE_GW  (1 << 5)
+-#define RG_AUTO_LOCAL  (1 << 6)
+-#define RG_BLOCK_LOCAL (1 << 7)
++#define RG_ENABLE      (1u << 0)
++#define RG_LOCAL       (1u << 1)
++#define RG_DEF1        (1u << 2)
++#define RG_BYPASS_DHCP (1u << 3)
++#define RG_BYPASS_DNS  (1u << 4)
++#define RG_REROUTE_GW  (1u << 5)
++#define RG_AUTO_LOCAL  (1u << 6)
++#define RG_BLOCK_LOCAL (1u << 7)
+
+ struct route_option_list
+ {
+@@ -117,9 +117,9 @@
+
+ struct route_ipv4
+ {
+-#define RT_DEFINED        (1 << 0)
+-#define RT_ADDED          (1 << 1)
+-#define RT_METRIC_DEFINED (1 << 2)
++#define RT_DEFINED        (1u << 0)
++#define RT_ADDED          (1u << 1)
++#define RT_METRIC_DEFINED (1u << 2)
+     struct route_ipv4 *next;
+     unsigned int flags;
+     const struct route_option *option;
+@@ -227,9 +227,9 @@
+
+ struct route_list
+ {
+-#define RL_DID_REDIRECT_DEFAULT_GATEWAY (1 << 0)
+-#define RL_DID_LOCAL                    (1 << 1)
+-#define RL_ROUTES_ADDED                 (1 << 2)
++#define RL_DID_REDIRECT_DEFAULT_GATEWAY (1u << 0)
++#define RL_DID_LOCAL                    (1u << 1)
++#define RL_ROUTES_ADDED                 (1u << 2)
+     unsigned int iflags;
+
+     struct route_special_addr spec;
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1109?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib7f78abbcd52c00a32afdea36ef635681ac8e127
+Gerrit-Change-Number: 1109
+Gerrit-PatchSet: 10
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: merged
 
+--CtUXc/2sZkw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1109?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">route: Make sure various route flags are trea=
+ted as unsigned<br><br>The variables that hold them are already unsigned, m=
+ake sure<br>the flags are as well to avoid spurious conversion warnings.<br=
+><br>Change-Id: Ib7f78abbcd52c00a32afdea36ef635681ac8e127<br>Signed-off-by:=
+ Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;a=
+rne-openvpn@...1227...&gt;<br>Message-Id: &lt;20250826183902.21252-1-gert@...220...=
+..1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1439...=
+ceforge.net/msg32684.html<br>Signed-off-by: Gert Doering &lt;gert@...2132...=
+.&gt;<br>---<br>M src/openvpn/route.h<br>1 file changed, 14 insertions(+), =
+14 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/route.h b/src/openvpn/route.h</span><br><span>i=
+ndex ea8b767..9b6a47e 100644</span><br><span>--- a/src/openvpn/route.h</spa=
+n><br><span>+++ b/src/openvpn/route.h</span><br><span>@@ -83,14 +83,14 @@</=
+span><br><span> };</span><br><span> </span><br><span> /* redirect-gateway f=
+lags */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define RG_ENA=
+BLE      (1 &lt;&lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#define RG_LOCAL       (1 &lt;&lt; 1)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#define RG_DEF1        (1 &lt;&lt; 2)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#define RG_BYPASS_DHCP (1 &lt;&lt; 3)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#define RG_BYPASS_DNS  (1=
+ &lt;&lt; 4)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define R=
+G_REROUTE_GW  (1 &lt;&lt; 5)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#define RG_AUTO_LOCAL  (1 &lt;&lt; 6)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#define RG_BLOCK_LOCAL (1 &lt;&lt; 7)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#define RG_ENABLE      (1u &lt;&lt=
+; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RG_LOCA=
+L       (1u &lt;&lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#define RG_DEF1        (1u &lt;&lt; 2)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#define RG_BYPASS_DHCP (1u &lt;&lt; 3)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#define RG_BYPASS_DNS  (1u &lt;&l=
+t; 4)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RG_RER=
+OUTE_GW  (1u &lt;&lt; 5)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#define RG_AUTO_LOCAL  (1u &lt;&lt; 6)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#define RG_BLOCK_LOCAL (1u &lt;&lt; 7)</span><br><s=
+pan> </span><br><span> struct route_option_list</span><br><span> {</span><b=
+r><span>@@ -117,9 +117,9 @@</span><br><span> </span><br><span> struct route=
+_ipv4</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#define RT_DEFINED        (1 &lt;&lt; 0)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define RT_ADDED          (1 &lt;&lt; 1)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#define RT_METRIC_DEFINED (1 &lt;&=
+lt; 2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RT_DE=
+FINED        (1u &lt;&lt; 0)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#define RT_ADDED          (1u &lt;&lt; 1)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#define RT_METRIC_DEFINED (1u &lt;&lt; 2)</s=
+pan><br><span>     struct route_ipv4 *next;</span><br><span>     unsigned i=
+nt flags;</span><br><span>     const struct route_option *option;</span><br=
+><span>@@ -227,9 +227,9 @@</span><br><span> </span><br><span> struct route_=
+list</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#define RL_DID_REDIRECT_DEFAULT_GATEWAY (1 &lt;&lt; 0)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#define RL_DID_LOCAL                    =
+(1 &lt;&lt; 1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
+ RL_ROUTES_ADDED                 (1 &lt;&lt; 2)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define RL_DID_REDIRECT_DEFAULT_GATEWAY (1u &lt=
+;&lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RL_=
+DID_LOCAL                    (1u &lt;&lt; 1)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#define RL_ROUTES_ADDED                 (1u &lt;&l=
+t; 2)</span><br><span>     unsigned int iflags;</span><br><span> </span><br=
+><span>     struct route_special_addr spec;</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1109?u=
+sp=3Demail">change 1109</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1109?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib7f78abbcd52c00a32afdea36ef=
+635681ac8e127 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1109 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+
+
+--CtUXc/2sZkw=--
 
