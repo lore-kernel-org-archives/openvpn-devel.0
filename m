@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Mon, 1 Sep 2025 15:09:33 +0000
-In-Reply-To: <gerrit.1753360288000.I0937165c5efa95136bd951345a076e33e396f26a@...2715...>
-References: <gerrit.1753360288000.I0937165c5efa95136bd951345a076e33e396f26a@...2715...>
+In-Reply-To: <gerrit.1754490554000.I5ef21e425786a49c90d4b7305c3fb174ab6ddf92@...2715...>
+References: <gerrit.1754490554000.I5ef21e425786a49c90d4b7305c3fb174ab6ddf92@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <1cd404225f56f29329624f7964161c06c58d45d3-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <af4bd545747a29573921825c91d4bb9244d6382f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ixDkt0oFa0Q="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: manage: Make sure
- various management flags are treated as unsigned
+Content-Type: multipart/alternative; boundary="GNBBiGen+yw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Change
+ resolve flags to unsigned int
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,412 +22,280 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ixDkt0oFa0Q=
+--GNBBiGen+yw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1105?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail
 
-to look at the new patch set (#10).
-
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+to look at the new patch set (#6).
 
 
-Change subject: manage: Make sure various management flags are treated as u=
-nsigned
+Change subject: socket: Change resolve flags to unsigned int
 ......................................................................
 
-manage: Make sure various management flags are treated as unsigned
+socket: Change resolve flags to unsigned int
 
-The variables that hold them are already unsigned, make sure
-the flags are as well to avoid spurious conversion warnings.
+And use them consistently so to avoid conversion
+warnings.
 
-Change-Id: I0937165c5efa95136bd951345a076e33e396f26a
+Change-Id: I5ef21e425786a49c90d4b7305c3fb174ab6ddf92
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/init.c
-M src/openvpn/manage.h
-M src/openvpn/options.h
-3 files changed, 41 insertions(+), 41 deletions(-)
+M src/openvpn/socket.c
+M src/openvpn/socket.h
+M src/openvpn/socket_util.h
+3 files changed, 18 insertions(+), 18 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/1105/10
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/1131/6
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9dd3b96..39ea8e4 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -370,7 +370,7 @@
-         && ((ce->flags >> CE_MAN_QUERY_REMOTE_SHIFT) & CE_MAN_QUERY_REMOTE=
-_MASK)
-                =3D=3D CE_MAN_QUERY_REMOTE_QUERY)
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 306170c..e362e5e 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -245,10 +245,10 @@
+  */
+ static int
+ get_cached_dns_entry(struct cached_dns_entry *dns_cache, const char *hostn=
+ame, const char *servname,
+-                     int ai_family, int resolve_flags, struct addrinfo **a=
+i)
++                     int ai_family, unsigned int resolve_flags, struct add=
+rinfo **ai)
+ {
+     struct cached_dns_entry *ph;
+-    int flags;
++    unsigned int flags;
+
+     /* Only use flags that are relevant for the structure */
+     flags =3D resolve_flags & GETADDR_CACHE_MASK;
+@@ -268,7 +268,7 @@
+
+ static int
+ do_preresolve_host(struct context *c, const char *hostname, const char *se=
+rvname, const int af,
+-                   const int flags)
++                   const unsigned int flags)
+ {
+     struct addrinfo *ai;
+     int status;
+@@ -322,7 +322,7 @@
      {
--        int flags =3D 0;
-+        unsigned int flags =3D 0;
-         if (!strcmp(p[1], "ACCEPT"))
-         {
-             flags =3D CE_MAN_QUERY_REMOTE_ACCEPT;
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index b8892c8..e9e1f95 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -24,24 +24,24 @@
- #define MANAGE_H
+         int status;
+         const char *remote;
+-        int flags =3D preresolve_flags;
++        unsigned int flags =3D preresolve_flags;
 
- /* management_open flags */
--#define MF_SERVER                 (1 << 0)
--#define MF_QUERY_PASSWORDS        (1 << 1)
--#define MF_HOLD                   (1 << 2)
--#define MF_SIGNAL                 (1 << 3)
--#define MF_FORGET_DISCONNECT      (1 << 4)
--#define MF_CONNECT_AS_CLIENT      (1 << 5)
--#define MF_CLIENT_AUTH            (1 << 6)
--/* #define MF_CLIENT_PF         (1<<7) *REMOVED FEATURE* */
--#define MF_UNIX_SOCK              (1 << 8)
--#define MF_EXTERNAL_KEY           (1 << 9)
--#define MF_EXTERNAL_KEY_NOPADDING (1 << 10)
--#define MF_EXTERNAL_KEY_PKCS1PAD  (1 << 11)
--#define MF_UP_DOWN                (1 << 12)
--#define MF_QUERY_REMOTE           (1 << 13)
--#define MF_QUERY_PROXY            (1 << 14)
--#define MF_EXTERNAL_CERT          (1 << 15)
--#define MF_EXTERNAL_KEY_PSSPAD    (1 << 16)
--#define MF_EXTERNAL_KEY_DIGEST    (1 << 17)
-+#define MF_SERVER                 (1u << 0)
-+#define MF_QUERY_PASSWORDS        (1u << 1)
-+#define MF_HOLD                   (1u << 2)
-+#define MF_SIGNAL                 (1u << 3)
-+#define MF_FORGET_DISCONNECT      (1u << 4)
-+#define MF_CONNECT_AS_CLIENT      (1u << 5)
-+#define MF_CLIENT_AUTH            (1u << 6)
-+/* #define MF_CLIENT_PF              (1u << 7) *REMOVED FEATURE* */
-+#define MF_UNIX_SOCK              (1u << 8)
-+#define MF_EXTERNAL_KEY           (1u << 9)
-+#define MF_EXTERNAL_KEY_NOPADDING (1u << 10)
-+#define MF_EXTERNAL_KEY_PKCS1PAD  (1u << 11)
-+#define MF_UP_DOWN                (1u << 12)
-+#define MF_QUERY_REMOTE           (1u << 13)
-+#define MF_QUERY_PROXY            (1u << 14)
-+#define MF_EXTERNAL_CERT          (1u << 15)
-+#define MF_EXTERNAL_KEY_PSSPAD    (1u << 16)
-+#define MF_EXTERNAL_KEY_DIGEST    (1u << 17)
+         struct connection_entry *ce =3D l->array[i];
 
+@@ -1185,7 +1185,7 @@
+     /* resolve local address if undefined */
+     if (!sock->info.lsa->bind_local)
+     {
+-        int flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_F=
+ATAL | GETADDR_PASSIVE;
++        unsigned int flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | =
+GETADDR_FATAL | GETADDR_PASSIVE;
+         int status;
 
- #ifdef ENABLE_MANAGEMENT
-@@ -64,9 +64,9 @@
- {
-     unsigned long cid;
-
--#define DAF_CONNECTION_ESTABLISHED (1 << 0)
--#define DAF_CONNECTION_CLOSED      (1 << 1)
--#define DAF_INITIAL_AUTH           (1 << 2)
-+#define DAF_CONNECTION_ESTABLISHED (1u << 0)
-+#define DAF_CONNECTION_CLOSED      (1u << 1)
-+#define DAF_INITIAL_AUTH           (1u << 2)
-     unsigned int flags;
-
-     unsigned int mda_key_id_counter;
-@@ -117,23 +117,23 @@
-     union log_entry_union u;
+         if (proto_is_dgram(sock->info.proto))
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index cce9183..e45981f 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -67,7 +67,7 @@
+     const char *hostname;
+     const char *servname;
+     int ai_family;
+-    int flags;
++    unsigned int flags;
+     struct addrinfo *ai;
+     struct cached_dns_entry *next;
  };
+diff --git a/src/openvpn/socket_util.h b/src/openvpn/socket_util.h
+index 5ea37dd..801fbfa 100644
+--- a/src/openvpn/socket_util.h
++++ b/src/openvpn/socket_util.h
+@@ -114,18 +114,18 @@
+  * DNS resolution
+  */
 
--#define LOG_PRINT_LOG_PREFIX   (1 << 0)
--#define LOG_PRINT_ECHO_PREFIX  (1 << 1)
--#define LOG_PRINT_STATE_PREFIX (1 << 2)
-+#define LOG_PRINT_LOG_PREFIX   (1u << 0)
-+#define LOG_PRINT_ECHO_PREFIX  (1u << 1)
-+#define LOG_PRINT_STATE_PREFIX (1u << 2)
+-#define GETADDR_RESOLVE                 (1 << 0)
+-#define GETADDR_FATAL                   (1 << 1)
+-#define GETADDR_HOST_ORDER              (1 << 2)
+-#define GETADDR_MENTION_RESOLVE_RETRY   (1 << 3)
+-#define GETADDR_FATAL_ON_SIGNAL         (1 << 4)
+-#define GETADDR_WARN_ON_SIGNAL          (1 << 5)
+-#define GETADDR_MSG_VIRT_OUT            (1 << 6)
+-#define GETADDR_TRY_ONCE                (1 << 7)
+-#define GETADDR_UPDATE_MANAGEMENT_STATE (1 << 8)
+-#define GETADDR_RANDOMIZE               (1 << 9)
+-#define GETADDR_PASSIVE                 (1 << 10)
+-#define GETADDR_DATAGRAM                (1 << 11)
++#define GETADDR_RESOLVE                 (1u << 0)
++#define GETADDR_FATAL                   (1u << 1)
++#define GETADDR_HOST_ORDER              (1u << 2)
++#define GETADDR_MENTION_RESOLVE_RETRY   (1u << 3)
++#define GETADDR_FATAL_ON_SIGNAL         (1u << 4)
++#define GETADDR_WARN_ON_SIGNAL          (1u << 5)
++#define GETADDR_MSG_VIRT_OUT            (1u << 6)
++#define GETADDR_TRY_ONCE                (1u << 7)
++#define GETADDR_UPDATE_MANAGEMENT_STATE (1u << 8)
++#define GETADDR_RANDOMIZE               (1u << 9)
++#define GETADDR_PASSIVE                 (1u << 10)
++#define GETADDR_DATAGRAM                (1u << 11)
 
--#define LOG_PRINT_INT_DATE  (1 << 3)
--#define LOG_PRINT_MSG_FLAGS (1 << 4)
--#define LOG_PRINT_STATE     (1 << 5)
--#define LOG_PRINT_LOCAL_IP  (1 << 6)
-+#define LOG_PRINT_INT_DATE  (1u << 3)
-+#define LOG_PRINT_MSG_FLAGS (1u << 4)
-+#define LOG_PRINT_STATE     (1u << 5)
-+#define LOG_PRINT_LOCAL_IP  (1u << 6)
-
--#define LOG_PRINT_CRLF   (1 << 7)
--#define LOG_FATAL_NOTIFY (1 << 8)
-+#define LOG_PRINT_CRLF   (1u << 7)
-+#define LOG_FATAL_NOTIFY (1u << 8)
-
--#define LOG_PRINT_INTVAL (1 << 9)
-+#define LOG_PRINT_INTVAL (1u << 9)
-=20
--#define LOG_PRINT_REMOTE_IP (1 << 10)
-+#define LOG_PRINT_REMOTE_IP (1u << 10)
-
--#define LOG_ECHO_TO_LOG (1 << 11)
-+#define LOG_ECHO_TO_LOG (1u << 11)
-
- const char *log_entry_print(const struct log_entry *e, unsigned int flags,=
- struct gc_arena *gc);
-
-@@ -175,7 +175,7 @@
- {
-     void *arg;
-
--#define MCF_SERVER (1 << 0) /* is OpenVPN being run as a server? */
-+#define MCF_SERVER (1u << 0) /* is OpenVPN being run as a server? */
-     unsigned int flags;
-
-     void (*status)(void *arg, const int version, struct status_output *so);
-@@ -253,9 +253,9 @@
-     int client_gid;
-
- /* flags for handling the management interface "signal" command */
--#define MANSIG_IGNORE_USR1_HUP  (1 << 0)
--#define MANSIG_MAP_USR1_TO_HUP  (1 << 1)
--#define MANSIG_MAP_USR1_TO_TERM (1 << 2)
-+#define MANSIG_IGNORE_USR1_HUP  (1u << 0)
-+#define MANSIG_MAP_USR1_TO_HUP  (1u << 1)
-+#define MANSIG_MAP_USR1_TO_TERM (1u << 2)
-     unsigned int mansig;
- };
-
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 44f3fc9..bb2c052 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -147,14 +147,14 @@
-     int explicit_exit_notification; /* Explicitly tell peer when we are ex=
-iting via OCC_EXIT or
-                                        [RESTART] message */
-=20
--#define CE_DISABLED                (1 << 0)
--#define CE_MAN_QUERY_PROXY         (1 << 1)
-+#define CE_DISABLED                (1u << 0)
-+#define CE_MAN_QUERY_PROXY         (1u << 1)
- #define CE_MAN_QUERY_REMOTE_UNDEF  0
- #define CE_MAN_QUERY_REMOTE_QUERY  1
- #define CE_MAN_QUERY_REMOTE_ACCEPT 2
- #define CE_MAN_QUERY_REMOTE_MOD    3
- #define CE_MAN_QUERY_REMOTE_SKIP   4
--#define CE_MAN_QUERY_REMOTE_MASK   (0x07)
-+#define CE_MAN_QUERY_REMOTE_MASK   (0x07u)
- #define CE_MAN_QUERY_REMOTE_SHIFT  (2)
-     unsigned int flags;
+ #define GETADDR_CACHE_MASK (GETADDR_DATAGRAM | GETADDR_PASSIVE)
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1105?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0937165c5efa95136bd951345a076e33e396f26a
-Gerrit-Change-Number: 1105
-Gerrit-PatchSet: 10
+Gerrit-Change-Id: I5ef21e425786a49c90d4b7305c3fb174ab6ddf92
+Gerrit-Change-Number: 1131
+Gerrit-PatchSet: 6
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newpatchset
 
---ixDkt0oFa0Q=
+--GNBBiGen+yw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>flichtenheld <strong>uploaded patch set #10</strong> to this change.</p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1105?usp=3Demail">View =
-Change</a></p><p>The change is no longer submittable: checks~ChecksSubmitRu=
-le is unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">manage: Make sure various management flags are treat=
-ed as unsigned<br><br>The variables that hold them are already unsigned, ma=
-ke sure<br>the flags are as well to avoid spurious conversion warnings.<br>=
-<br>Change-Id: I0937165c5efa95136bd951345a076e33e396f26a<br>Signed-off-by: =
-Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/init.c<b=
-r>M src/openvpn/manage.h<br>M src/openvpn/options.h<br>3 files changed, 41 =
-insertions(+), 41 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/05/1105/10</pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/init=
-.c b/src/openvpn/init.c</span><br><span>index 9dd3b96..39ea8e4 100644</span=
-><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.=
-c</span><br><span>@@ -370,7 +370,7 @@</span><br><span>         &amp;&amp; (=
-(ce-&gt;flags &gt;&gt; CE_MAN_QUERY_REMOTE_SHIFT) &amp; CE_MAN_QUERY_REMOTE=
-_MASK)</span><br><span>                =3D=3D CE_MAN_QUERY_REMOTE_QUERY)</s=
-pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       int flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        unsigned int flags =3D 0;</span><br><span>         if (!strcmp(=
-p[1], &quot;ACCEPT&quot;))</span><br><span>         {</span><br><span>     =
-        flags =3D CE_MAN_QUERY_REMOTE_ACCEPT;</span><br><span>diff --git a/=
-src/openvpn/manage.h b/src/openvpn/manage.h</span><br><span>index b8892c8..=
-e9e1f95 100644</span><br><span>--- a/src/openvpn/manage.h</span><br><span>+=
-++ b/src/openvpn/manage.h</span><br><span>@@ -24,24 +24,24 @@</span><br><sp=
-an> #define MANAGE_H</span><br><span> </span><br><span> /* management_open =
-flags */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MF_SE=
-RVER                 (1 &lt;&lt; 0)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#define MF_QUERY_PASSWORDS        (1 &lt;&lt; 1)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define MF_HOLD                   =
-(1 &lt;&lt; 2)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
- MF_SIGNAL                 (1 &lt;&lt; 3)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#define MF_FORGET_DISCONNECT      (1 &lt;&lt; 4)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#define MF_CONNECT_AS_CLIENT=
-      (1 &lt;&lt; 5)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-define MF_CLIENT_AUTH            (1 &lt;&lt; 6)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-/* #define MF_CLIENT_PF         (1&lt;&lt;7) *REM=
-OVED FEATURE* */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defi=
-ne MF_UNIX_SOCK              (1 &lt;&lt; 8)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#define MF_EXTERNAL_KEY           (1 &lt;&lt; 9)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MF_EXTERNAL_KEY_NO=
-PADDING (1 &lt;&lt; 10)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#define MF_EXTERNAL_KEY_PKCS1PAD  (1 &lt;&lt; 11)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define MF_UP_DOWN                (1 &lt;&l=
-t; 12)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MF_QUER=
-Y_REMOTE           (1 &lt;&lt; 13)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#define MF_QUERY_PROXY            (1 &lt;&lt; 14)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define MF_EXTERNAL_CERT          =
-(1 &lt;&lt; 15)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defin=
-e MF_EXTERNAL_KEY_PSSPAD    (1 &lt;&lt; 16)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#define MF_EXTERNAL_KEY_DIGEST    (1 &lt;&lt; 17)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MF_SERVER      =
-           (1u &lt;&lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define MF_QUERY_PASSWORDS        (1u &lt;&lt; 1)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define MF_HOLD                   (1u =
-&lt;&lt; 2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
-MF_SIGNAL                 (1u &lt;&lt; 3)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#define MF_FORGET_DISCONNECT      (1u &lt;&lt; 4)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MF_CONNECT_AS_C=
-LIENT      (1u &lt;&lt; 5)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define MF_CLIENT_AUTH            (1u &lt;&lt; 6)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* #define MF_CLIENT_PF              (=
-1u &lt;&lt; 7) *REMOVED FEATURE* */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#define MF_UNIX_SOCK              (1u &lt;&lt; 8)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#define MF_EXTERNAL_KEY      =
-     (1u &lt;&lt; 9)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#define MF_EXTERNAL_KEY_NOPADDING (1u &lt;&lt; 10)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define MF_EXTERNAL_KEY_PKCS1PAD  (1u &lt=
-;&lt; 11)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MF=
-_UP_DOWN                (1u &lt;&lt; 12)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#define MF_QUERY_REMOTE           (1u &lt;&lt; 13)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MF_QUERY_PROXY =
-           (1u &lt;&lt; 14)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#define MF_EXTERNAL_CERT          (1u &lt;&lt; 15)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define MF_EXTERNAL_KEY_PSSPAD    (1=
-u &lt;&lt; 16)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
-ne MF_EXTERNAL_KEY_DIGEST    (1u &lt;&lt; 17)</span><br><span> </span><br><=
-span> </span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>@@ -64,9 +=
-64,9 @@</span><br><span> {</span><br><span>     unsigned long cid;</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define DAF_=
-CONNECTION_ESTABLISHED (1 &lt;&lt; 0)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#define DAF_CONNECTION_CLOSED      (1 &lt;&lt; 1)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#define DAF_INITIAL_AUTH       =
-    (1 &lt;&lt; 2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-define DAF_CONNECTION_ESTABLISHED (1u &lt;&lt; 0)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#define DAF_CONNECTION_CLOSED      (1u &lt;&l=
-t; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define DAF_IN=
-ITIAL_AUTH           (1u &lt;&lt; 2)</span><br><span>     unsigned int flag=
-s;</span><br><span> </span><br><span>     unsigned int mda_key_id_counter;<=
-/span><br><span>@@ -117,23 +117,23 @@</span><br><span>     union log_entry_=
-union u;</span><br><span> };</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#define LOG_PRINT_LOG_PREFIX   (1 &lt;&lt; 0)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define LOG_PRINT_ECHO_PRE=
-FIX  (1 &lt;&lt; 1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#d=
-efine LOG_PRINT_STATE_PREFIX (1 &lt;&lt; 2)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define LOG_PRINT_LOG_PREFIX   (1u &lt;&lt; 0)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define LOG_PRINT_ECHO_P=
-REFIX  (1u &lt;&lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#define LOG_PRINT_STATE_PREFIX (1u &lt;&lt; 2)</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#define LOG_PRINT_INT_DATE  (=
-1 &lt;&lt; 3)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
-LOG_PRINT_MSG_FLAGS (1 &lt;&lt; 4)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#define LOG_PRINT_STATE     (1 &lt;&lt; 5)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#define LOG_PRINT_LOCAL_IP  (1 &lt;&lt; 6=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define LOG_PRINT_=
-INT_DATE  (1u &lt;&lt; 3)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#define LOG_PRINT_MSG_FLAGS (1u &lt;&lt; 4)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#define LOG_PRINT_STATE     (1u &lt;&lt; 5)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define LOG_PRINT_LOC=
-AL_IP  (1u &lt;&lt; 6)</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-#define LOG_PRINT_CRLF   (1 &lt;&lt; 7)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#define LOG_FATAL_NOTIFY (1 &lt;&lt; 8=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define LOG_PRINT_=
-CRLF   (1u &lt;&lt; 7)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#define LOG_FATAL_NOTIFY (1u &lt;&lt; 8)</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#define LOG_PRINT_INTVAL (1 &lt;&lt=
-; 9)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define LOG_PRI=
-NT_INTVAL (1u &lt;&lt; 9)</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#define LOG_PRINT_REMOTE_IP (1 &lt;&lt; 10)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#define LOG_PRINT_REMOTE_IP (=
-1u &lt;&lt; 10)</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#define LOG_ECHO_TO_LOG (1 &lt;&lt; 11)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define LOG_ECHO_TO_LOG (1u &lt;&lt; 11)<=
-/span><br><span> </span><br><span> const char *log_entry_print(const struct=
- log_entry *e, unsigned int flags, struct gc_arena *gc);</span><br><span> <=
-/span><br><span>@@ -175,7 +175,7 @@</span><br><span> {</span><br><span>    =
- void *arg;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#define MCF_SERVER (1 &lt;&lt; 0) /* is OpenVPN being run as a serv=
-er? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MCF_S=
-ERVER (1u &lt;&lt; 0) /* is OpenVPN being run as a server? */</span><br><sp=
-an>     unsigned int flags;</span><br><span> </span><br><span>     void (*s=
-tatus)(void *arg, const int version, struct status_output *so);</span><br><=
-span>@@ -253,9 +253,9 @@</span><br><span>     int client_gid;</span><br><sp=
-an> </span><br><span> /* flags for handling the management interface &quot;=
-signal&quot; command */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#define MANSIG_IGNORE_USR1_HUP  (1 &lt;&lt; 0)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#define MANSIG_MAP_USR1_TO_HUP  (1 &lt;&lt; 1)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MANSIG_MAP_USR1=
-_TO_TERM (1 &lt;&lt; 2)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#define MANSIG_IGNORE_USR1_HUP  (1u &lt;&lt; 0)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define MANSIG_MAP_USR1_TO_HUP  (1u &lt;&=
-lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MANSI=
-G_MAP_USR1_TO_TERM (1u &lt;&lt; 2)</span><br><span>     unsigned int mansig=
-;</span><br><span> };</span><br><span> </span><br><span>diff --git a/src/op=
-envpn/options.h b/src/openvpn/options.h</span><br><span>index 44f3fc9..bb2c=
-052 100644</span><br><span>--- a/src/openvpn/options.h</span><br><span>+++ =
-b/src/openvpn/options.h</span><br><span>@@ -147,14 +147,14 @@</span><br><sp=
-an>     int explicit_exit_notification; /* Explicitly tell peer when we are=
- exiting via OCC_EXIT or</span><br><span>                                  =
-      [RESTART] message */</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#define CE_DISABLED                (1 &lt;&lt; 0)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define CE_MAN_QUERY_PRO=
-XY         (1 &lt;&lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#define CE_DISABLED                (1u &lt;&lt; 0)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define CE_MAN_QUERY_PROXY         (1u=
- &lt;&lt; 1)</span><br><span> #define CE_MAN_QUERY_REMOTE_UNDEF  0</span><b=
-r><span> #define CE_MAN_QUERY_REMOTE_QUERY  1</span><br><span> #define CE_M=
-AN_QUERY_REMOTE_ACCEPT 2</span><br><span> #define CE_MAN_QUERY_REMOTE_MOD  =
-  3</span><br><span> #define CE_MAN_QUERY_REMOTE_SKIP   4</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#define CE_MAN_QUERY_REMOTE_MASK   (0x0=
-7)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CE_MAN_QU=
-ERY_REMOTE_MASK   (0x07u)</span><br><span> #define CE_MAN_QUERY_REMOTE_SHIF=
-T  (2)</span><br><span>     unsigned int flags;</span><br><span> </span><br=
-><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1105?usp=3Demail">change 1105</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1105?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #6</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail">View C=
+hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">socket: Change resolve flags to unsigned int<br><br>And use them =
+consistently so to avoid conversion<br>warnings.<br><br>Change-Id: I5ef21e4=
+25786a49c90d4b7305c3fb174ab6ddf92<br>Signed-off-by: Frank Lichtenheld &lt;f=
+rank@...2641...&gt;<br>---<br>M src/openvpn/socket.c<br>M src/openvpn/socke=
+t.h<br>M src/openvpn/socket_util.h<br>3 files changed, 18 insertions(+), 18=
+ deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
+s/changes/31/1131/6</pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;"><span>diff --git a/src/openvpn/socket.c b/src/openvpn=
+/socket.c</span><br><span>index 306170c..e362e5e 100644</span><br><span>---=
+ a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><b=
+r><span>@@ -245,10 +245,10 @@</span><br><span>  */</span><br><span> static =
+int</span><br><span> get_cached_dns_entry(struct cached_dns_entry *dns_cach=
+e, const char *hostname, const char *servname,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                     int ai_family, int resolve_fl=
+ags, struct addrinfo **ai)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                     int ai_family, unsigned int resolve_flags, stru=
+ct addrinfo **ai)</span><br><span> {</span><br><span>     struct cached_dns=
+_entry *ph;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int fl=
+ags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned in=
+t flags;</span><br><span> </span><br><span>     /* Only use flags that are =
+relevant for the structure */</span><br><span>     flags =3D resolve_flags =
+&amp; GETADDR_CACHE_MASK;</span><br><span>@@ -268,7 +268,7 @@</span><br><sp=
+an> </span><br><span> static int</span><br><span> do_preresolve_host(struct=
+ context *c, const char *hostname, const char *servname, const int af,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                   const i=
+nt flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+         const unsigned int flags)</span><br><span> {</span><br><span>     =
+struct addrinfo *ai;</span><br><span>     int status;</span><br><span>@@ -3=
+22,7 +322,7 @@</span><br><span>     {</span><br><span>         int status;<=
+/span><br><span>         const char *remote;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        int flags =3D preresolve_flags;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        unsigned int flags =3D p=
+reresolve_flags;</span><br><span> </span><br><span>         struct connecti=
+on_entry *ce =3D l-&gt;array[i];</span><br><span> </span><br><span>@@ -1185=
+,7 +1185,7 @@</span><br><span>     /* resolve local address if undefined */=
+</span><br><span>     if (!sock-&gt;info.lsa-&gt;bind_local)</span><br><spa=
+n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int f=
+lags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL | GETADDR=
+_PASSIVE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        un=
+signed int flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FAT=
+AL | GETADDR_PASSIVE;</span><br><span>         int status;</span><br><span>=
+ </span><br><span>         if (proto_is_dgram(sock-&gt;info.proto))</span><=
+br><span>diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br=
+><span>index cce9183..e45981f 100644</span><br><span>--- a/src/openvpn/sock=
+et.h</span><br><span>+++ b/src/openvpn/socket.h</span><br><span>@@ -67,7 +6=
+7,7 @@</span><br><span>     const char *hostname;</span><br><span>     cons=
+t char *servname;</span><br><span>     int ai_family;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int flags;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    unsigned int flags;</span><br><span>     str=
+uct addrinfo *ai;</span><br><span>     struct cached_dns_entry *next;</span=
+><br><span> };</span><br><span>diff --git a/src/openvpn/socket_util.h b/src=
+/openvpn/socket_util.h</span><br><span>index 5ea37dd..801fbfa 100644</span>=
+<br><span>--- a/src/openvpn/socket_util.h</span><br><span>+++ b/src/openvpn=
+/socket_util.h</span><br><span>@@ -114,18 +114,18 @@</span><br><span>  * DN=
+S resolution</span><br><span>  */</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_RESOLVE                 (1 =
+&lt;&lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GE=
+TADDR_FATAL                   (1 &lt;&lt; 1)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#define GETADDR_HOST_ORDER              (1 &lt;&lt; =
+2)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_MEN=
+TION_RESOLVE_RETRY   (1 &lt;&lt; 3)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#define GETADDR_FATAL_ON_SIGNAL         (1 &lt;&lt; 4)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_WARN_ON_SIGN=
+AL          (1 &lt;&lt; 5)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#define GETADDR_MSG_VIRT_OUT            (1 &lt;&lt; 6)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_TRY_ONCE             =
+   (1 &lt;&lt; 7)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine GETADDR_UPDATE_MANAGEMENT_STATE (1 &lt;&lt; 8)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#define GETADDR_RANDOMIZE               (1 &lt=
+;&lt; 9)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETAD=
+DR_PASSIVE                 (1 &lt;&lt; 10)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#define GETADDR_DATAGRAM                (1 &lt;&lt; 11=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_RE=
+SOLVE                 (1u &lt;&lt; 0)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#define GETADDR_FATAL                   (1u &lt;&lt; 1)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_HOST_=
+ORDER              (1u &lt;&lt; 2)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#define GETADDR_MENTION_RESOLVE_RETRY   (1u &lt;&lt; 3)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_FATAL_ON=
+_SIGNAL         (1u &lt;&lt; 4)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#define GETADDR_WARN_ON_SIGNAL          (1u &lt;&lt; 5)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_MSG_VIRT_OU=
+T            (1u &lt;&lt; 6)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#define GETADDR_TRY_ONCE                (1u &lt;&lt; 7)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_UPDATE_MANAGEM=
+ENT_STATE (1u &lt;&lt; 8)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#define GETADDR_RANDOMIZE               (1u &lt;&lt; 9)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_PASSIVE          =
+       (1u &lt;&lt; 10)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#define GETADDR_DATAGRAM                (1u &lt;&lt; 11)</span><br><spa=
+n> </span><br><span> #define GETADDR_CACHE_MASK (GETADDR_DATAGRAM | GETADDR=
+_PASSIVE)</span><br><span> </span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail">chan=
+ge 1131</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
+emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
+" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail"/><meta itemprop=3D"=
+name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0937165c5efa95136bd951345a0=
-76e33e396f26a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1105 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5ef21e425786a49c90d4b7305c3=
+fb174ab6ddf92 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1131 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---ixDkt0oFa0Q=--
+--GNBBiGen+yw=--
 
