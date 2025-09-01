@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 1 Sep 2025 19:45:16 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon,  1 Sep 2025 21:45:25 +0200
+Message-ID: <20250901194531.13683-1-gert@...1296...>
 In-Reply-To: <gerrit.1753360288000.I6d42c67b8dc5512933bed482bd9c2be80c63e993@...2715...>
 References: <gerrit.1753360288000.I6d42c67b8dc5512933bed482bd9c2be80c63e993@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d6ab541720848653105dbdd816c0938f86033f91-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KAkfHGG+Oq8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: forward: Make sure
- pip flags are treated as unsigned
+Subject: [Openvpn-devel] [PATCH v10] forward: Make sure pip flags are
+ treated as unsigned
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---KAkfHGG+Oq8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+process_ip_header already expects them to be unsigned,
+make sure the flags are to avoid spurious conversion warnings.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1108?usp=3Demail )
+Change-Id: I6d42c67b8dc5512933bed482bd9c2be80c63e993
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-Change subject: forward: Make sure pip flags are treated as unsigned
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1108
+This mail reflects revision 10 of this Change.
 
-Patch Set 10: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1108?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6d42c67b8dc5512933bed482bd9c2be80c63e993
-Gerrit-Change-Number: 1108
-Gerrit-PatchSet: 10
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 01 Sep 2025 19:45:16 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---KAkfHGG+Oq8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1108?usp=3Demail">=
-View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1108?usp=3Demai=
-l">change 1108</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1108?usp=3Demail"/><meta itemp=
-rop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6d42c67b8dc5512933bed482bd9=
-c2be80c63e993 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1108 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 01 Sep 2025 19:45:16=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---KAkfHGG+Oq8=--
+        
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index d564149..79d0f8b 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -314,13 +314,13 @@
+  */
+ void reschedule_multi_process(struct context *c);
+ 
+-#define PIPV4_PASSTOS             (1 << 0)
+-#define PIP_MSSFIX                (1 << 1) /* v4 and v6 */
+-#define PIP_OUTGOING              (1 << 2)
+-#define PIPV4_EXTRACT_DHCP_ROUTER (1 << 3)
+-#define PIPV4_CLIENT_NAT          (1 << 4)
+-#define PIPV6_ICMP_NOHOST_CLIENT  (1 << 5)
+-#define PIPV6_ICMP_NOHOST_SERVER  (1 << 6)
++#define PIPV4_PASSTOS             (1u << 0)
++#define PIP_MSSFIX                (1u << 1) /* v4 and v6 */
++#define PIP_OUTGOING              (1u << 2)
++#define PIPV4_EXTRACT_DHCP_ROUTER (1u << 3)
++#define PIPV4_CLIENT_NAT          (1u << 4)
++#define PIPV6_ICMP_NOHOST_CLIENT  (1u << 5)
++#define PIPV6_ICMP_NOHOST_SERVER  (1u << 6)
+ 
+ 
+ void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf,
 
