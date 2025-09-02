@@ -1,17 +1,10 @@
-From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Sep 2025 15:21:14 +0000
-In-Reply-To: <gerrit.1753449319000.Ic0035d52e0ea123398318870d2f4d21af927a602@...2715...>
-References: <gerrit.1753449319000.Ic0035d52e0ea123398318870d2f4d21af927a602@...2715...>
-Reply-To: ralf@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., gert@...1296...
-Message-ID: <a014969293f26731094cf405657fbdde3670a204-EmailReplacePatchSet-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="02vkMcJLwvI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: management: resync
- timer on bytecount interval change
+Date: Tue, 2 Sep 2025 17:28:23 +0200 (CEST)
+Message-Id: <202509021528.582FSNQO067926@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250902103606.22181-1-gert@...1296...>
+References: <20250902103606.22181-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor management bytecount
+ tracking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,216 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---02vkMcJLwvI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Tested this on client and server side, with and without DCO.
 
-Attention is currently required from: cron2, plaisthos, ralf_lici, stipa.
+Can confirm that "counters with DCO" did not work without this patch,
+and also the change to just get the counters from DCO once for all
+peers is obviously beneficial for larger instances.
 
-Hello cron2, flichtenheld, plaisthos, stipa,
+It took me a while to understand the multiple levels of code 
+complexity that were there *before* (management_bytes_client() doing
+something totally different than management_bytes_server(), for 
+example) - so thanks a lot for refactoring this, the result is
+much easier to understand, and due to the event based timing,
+bytecounts are properly printed "on schedule" now (sometimes +1-2
+seconds due to coarse timer granularity).
 
-I'd like you to reexamine a change. Please visit
+The mailing list and mail-archive.org are not playing nicely today,
+so I've linked to the sourceforge.net list archive instead.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail
+Your patch has been applied to the master branch.
 
-to look at the new patch set (#5).
+commit da309c1e8bed7b9c25e800499400c8ad908276db
+Author: Lev Stipakov
+Date:   Tue Sep 2 12:36:01 2025 +0200
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+     Refactor management bytecount tracking
 
-The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
-e are unsatisfied now.
-
-
-Change subject: management: resync timer on bytecount interval change
-......................................................................
-
-management: resync timer on bytecount interval change
-
-coarse_timer_wakeup tracks when the next timer-driven task will occur.
-If a user issues `bytecount n` via the management interface, but the
-next scheduled wakeup is more than n seconds away, bandwidth logging
-will be delayed until that timer fires.
-
-To ensure timely logging, reset the timer whenever a new `bytecount`
-command is received. This guarantees that logging begins exactly n
-seconds after the command, matching the user-defined interval.
-
-Change-Id: Ic0035d52e0ea123398318870d2f4d21af927a602
-Signed-off-by: Ralf Lici <ralf@...2726...>
----
-M src/openvpn/manage.c
-1 file changed, 23 insertions(+), 0 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/1113/5
-
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index aed04f5..53a3e4e 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -41,6 +41,7 @@
- #include "manage.h"
- #include "openvpn.h"
- #include "dco.h"
-+#include "multi.h"
-
- #include "memdbg.h"
-
-@@ -513,6 +514,28 @@
-         man->connection.bytecount_update_seconds =3D 0;
-         event_timeout_clear(&man->connection.bytecount_update_interval);
-     }
-+
-+    /* The newly received bytecount interval may be sooner than the existi=
-ng
-+     * coarse timer wakeup. Reset the timer to ensure it fires at the corr=
-ect,
-+     * earlier time.
-+     */
-+    if (man->persist.callback.arg)
-+    {
-+        struct context *c;
-+
-+        if (man->settings.flags & MF_SERVER)
-+        {
-+            struct multi_context *m =3D man->persist.callback.arg;
-+            c =3D &m->top;
-+        }
-+        else
-+        {
-+            c =3D man->persist.callback.arg;
-+        }
-+
-+        reset_coarse_timers(c);
-+    }
-+
-     msg(M_CLIENT, "SUCCESS: bytecount interval changed");
- }
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20250902103606.22181-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59228150/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic0035d52e0ea123398318870d2f4d21af927a602
-Gerrit-Change-Number: 1113
-Gerrit-PatchSet: 5
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gert Doering
 
---02vkMcJLwvI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, plaisthos, ralf_lici, stip=
-a. </p>
-<p>ralf_lici <strong>uploaded patch set #5</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1113?usp=3Demail">View Chan=
-ge</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><p>The change is no longer submittable: Code-Revi=
-ew and checks~ChecksSubmitRule are unsatisfied now.</p><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;">management: resync time=
-r on bytecount interval change<br><br>coarse_timer_wakeup tracks when the n=
-ext timer-driven task will occur.<br>If a user issues `bytecount n` via the=
- management interface, but the<br>next scheduled wakeup is more than n seco=
-nds away, bandwidth logging<br>will be delayed until that timer fires.<br><=
-br>To ensure timely logging, reset the timer whenever a new `bytecount`<br>=
-command is received. This guarantees that logging begins exactly n<br>secon=
-ds after the command, matching the user-defined interval.<br><br>Change-Id:=
- Ic0035d52e0ea123398318870d2f4d21af927a602<br>Signed-off-by: Ralf Lici &lt;=
-ralf@...2726...&gt;<br>---<br>M src/openvpn/manage.c<br>1 file changed, 23 =
-insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
-9418/openvpn refs/changes/13/1113/5</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/manage=
-.c b/src/openvpn/manage.c</span><br><span>index aed04f5..53a3e4e 100644</sp=
-an><br><span>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/m=
-anage.c</span><br><span>@@ -41,6 +41,7 @@</span><br><span> #include &quot;m=
-anage.h&quot;</span><br><span> #include &quot;openvpn.h&quot;</span><br><sp=
-an> #include &quot;dco.h&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#include &quot;multi.h&quot;</span><br><span> </span><br><span> =
-#include &quot;memdbg.h&quot;</span><br><span> </span><br><span>@@ -513,6 +=
-514,28 @@</span><br><span>         man-&gt;connection.bytecount_update_seco=
-nds =3D 0;</span><br><span>         event_timeout_clear(&amp;man-&gt;connec=
-tion.bytecount_update_interval);</span><br><span>     }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    /* The newly received bytecount interval may be sooner=
- than the existing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-    * coarse timer wakeup. Reset the timer to ensure it fires at the correc=
-t,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * earlier ti=
-me.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    if (man-&gt;persist.call=
-back.arg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct context *=
-c;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if (man-&gt;settings.flags &=
-amp; MF_SERVER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            st=
-ruct multi_context *m =3D man-&gt;persist.callback.arg;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            c =3D &amp;m-&gt;top;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            c =3D man-&gt;persist.callback.arg;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        reset_coarse_timers(c);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span>     msg(M_CLIENT, &quot;SUCCESS: byt=
-ecount interval changed&quot;);</span><br><span> }</span><br><span> </span>=
-<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1113?usp=3Demail">change 1113</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1113?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic0035d52e0ea123398318870d2f=
-4d21af927a602 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1113 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---02vkMcJLwvI=--
 
