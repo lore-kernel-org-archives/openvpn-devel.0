@@ -1,10 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue,  2 Sep 2025 14:25:36 +0200
-Message-ID: <20250902122542.31023-1-gert@...1296...>
-In-Reply-To: <gerrit.1754914153000.I525d7300e49f9a5a18e7146ee35ccc2af8184b8a@...2715...>
-References: <gerrit.1754914153000.I525d7300e49f9a5a18e7146ee35ccc2af8184b8a@...2715...>
+Date: Tue,  2 Sep 2025 13:59:49 +0200
+Message-ID: <20250902115954.29021-1-gert@...1296...>
+In-Reply-To: <gerrit.1756305807000.I84a73d625c79d6a6a19122e48c91960dbe01ec49@...2715...>
+References: <gerrit.1756305807000.I84a73d625c79d6a6a19122e48c91960dbe01ec49@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco-win: add support for multipeer stats
+Subject: [Openvpn-devel] [PATCH v1] dco: avoid printing mi prefix on float
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,288 +17,126 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+From: Gianmarco De Gregori <gianmarco@...2726...>
 
-Use the new driver API to fetch per-peer link and VPN byte counters
-in both client and server modes.
+On float, a new prefix is generated which leads
+to a mismatch between the current and previous
+peer-id being logged. To avoid this, the
+M_NOIPREFIX flag is now used along with msglevel.
 
-Two usage modes are supported:
-
- - Single peer: pass the peer ID and a fixed-size output buffer. If the
-   IOCTL is not supported (old driver), fall back to the legacy API.
-
- - All peers: first call the IOCTL with a small output buffer to get
-   the required size, then allocate a buffer and call again to fetch
-   stats for all peers.
-
-Change-Id: I525d7300e49f9a5a18e7146ee35ccc2af8184b8a
-Signed-off-by: Lev Stipakov <lev@...515...>
+Change-Id: I84a73d625c79d6a6a19122e48c91960dbe01ec49
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 Acked-by: Gert Doering <gert@...1296...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1143
-This mail reflects revision 2 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1158
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Gert Doering <gert@...1296...>
 
         
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 5317ac1..bf3f151 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -30,6 +30,7 @@
- #include "forward.h"
- #include "tun.h"
- #include "crypto.h"
-+#include "multi.h"
- #include "ssl_common.h"
- #include "openvpn.h"
- 
-@@ -190,6 +191,8 @@
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index a3907fe..6115d51 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -548,7 +548,7 @@
+ int
+ dco_del_peer(dco_context_t *dco, unsigned int peerid)
  {
-     dco_context_t *dco = &c->c1.tuntap->dco;
+-    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peerid);
++    msg(D_DCO_DEBUG | M_NOIPREFIX, "%s: peer-id %d", __func__, peerid);
  
-+    dco->c = c;
-+
-     switch (c->mode)
+     struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_DEL);
+     if (!nl_msg)
+@@ -868,7 +868,7 @@
+     uint32_t peer_id = nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
+     struct context_2 *c2;
+ 
+-    msg(D_DCO_DEBUG, "%s: parsing message for peer %u...", __func__, peer_id);
++    msg(D_DCO_DEBUG | M_NOIPREFIX, "%s: parsing message for peer %u...", __func__, peer_id);
+ 
+     if (dco->ifmode == OVPN_MODE_P2P)
      {
-         case MODE_POINT_TO_POINT:
-@@ -714,12 +717,132 @@
- int
- dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_on_err)
- {
--    /* Not implemented. */
--    return 0;
-+    struct gc_arena gc = gc_new();
-+
-+    int ret = 0;
-+    struct tuntap *tt = dco->tt;
-+
-+    if (!tuntap_defined(tt))
-+    {
-+        ret = -1;
-+        goto done;
-+    }
-+
-+    OVPN_GET_PEER_STATS ps = {
-+        .PeerId = -1
-+    };
-+
-+    DWORD required_size = 0, bytes_returned = 0;
-+    /* first, figure out buffer size */
-+    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_GET_PEER_STATS, &ps, sizeof(ps), &required_size, sizeof(DWORD), &bytes_returned, NULL))
-+    {
-+        if (GetLastError() == ERROR_MORE_DATA)
-+        {
-+            if (bytes_returned != sizeof(DWORD))
-+            {
-+                msg(M_WARN, "%s: invalid bytes returned for size query (%lu, expected %zu)", __func__, bytes_returned, sizeof(DWORD));
-+                ret = -1;
-+                goto done;
-+            }
-+            /* required_size now contains the size written by the driver */
-+            if (required_size == 0)
-+            {
-+                ret = 0; /* no peers to process */
-+                goto done;
-+            }
-+            if (required_size < sizeof(OVPN_PEER_STATS))
-+            {
-+                msg(M_WARN, "%s: invalid required size %lu (minimum %zu)", __func__, required_size, sizeof(OVPN_PEER_STATS));
-+                ret = -1;
-+                goto done;
-+            }
-+        }
-+        else
-+        {
-+            msg(M_WARN | M_ERRNO, "%s: failed to fetch required buffer size", __func__);
-+            ret = -1;
-+            goto done;
-+        }
-+    }
-+    else
-+    {
-+        /* unexpected success? */
-+        if (bytes_returned == 0)
-+        {
-+            ret = 0; /* no peers to process */
-+            goto done;
-+        }
-+
-+        msg(M_WARN, "%s: first DeviceIoControl call succeeded unexpectedly (%lu bytes returned)", __func__, bytes_returned);
-+        ret = -1;
-+        goto done;
-+    }
-+
-+
-+    /* allocate the buffer and fetch stats */
-+    OVPN_PEER_STATS *peer_stats = gc_malloc(required_size, true, &gc);
-+    if (!peer_stats)
-+    {
-+        msg(M_WARN, "%s: failed to allocate buffer of size %lu", __func__, required_size);
-+        ret = -1;
-+        goto done;
-+    }
-+
-+    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_GET_PEER_STATS, &ps, sizeof(ps), peer_stats, required_size, &bytes_returned, NULL))
-+    {
-+        /* unlikely case when a peer has been added since fetching buffer size, not an error! */
-+        if (GetLastError() == ERROR_MORE_DATA)
-+        {
-+            msg(M_WARN, "%s: peer has been added, skip fetching stats", __func__);
-+            ret = 0;
-+            goto done;
-+        }
-+
-+        msg(M_WARN | M_ERRNO, "%s: failed to fetch multipeer stats", __func__);
-+        ret = -1;
-+        goto done;
-+    }
-+
-+    /* iterate over stats and update peers */
-+    for (int i = 0; i < bytes_returned / sizeof(OVPN_PEER_STATS); ++i)
-+    {
-+        OVPN_PEER_STATS *stat = &peer_stats[i];
-+
-+        if (stat->PeerId >= dco->c->multi->max_clients)
-+        {
-+            msg(M_WARN, "%s: received out of bound peer_id %u (max=%u)", __func__, stat->PeerId,
-+                dco->c->multi->max_clients);
-+            continue;
-+        }
-+
-+        struct multi_instance *mi = dco->c->multi->instances[stat->PeerId];
-+        if (!mi)
-+        {
-+            msg(M_WARN, "%s: received data for a non-existing peer %u", __func__, stat->PeerId);
-+            continue;
-+        }
-+
-+        /* update peer stats */
-+        struct context_2 *c2 = &mi->context.c2;
-+        c2->dco_read_bytes = stat->LinkRxBytes;
-+        c2->dco_write_bytes = stat->LinkTxBytes;
-+        c2->tun_read_bytes = stat->VpnRxBytes;
-+        c2->tun_write_bytes = stat->VpnTxBytes;
-+    }
-+
-+done:
-+    gc_free(&gc);
-+
-+    if (raise_sigusr1_on_err && ret < 0)
-+    {
-+        register_signal(dco->c->sig, SIGUSR1, "dco peer stats error");
-+    }
-+
-+    return ret;
- }
+@@ -890,7 +890,7 @@
+         struct multi_instance *mi = dco->c->multi->instances[peer_id];
+         if (!mi)
+         {
+-            msg(M_WARN, "%s: received data for a non-existing peer %u", __func__, peer_id);
++            msg(M_WARN | M_NOIPREFIX, "%s: received data for a non-existing peer %u", __func__, peer_id);
+             return NL_SKIP;
+         }
  
- int
--dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
-+dco_get_peer_stats_fallback(struct context *c, const bool raise_sigusr1_on_err)
- {
-     struct tuntap *tt = c->c1.tuntap;
+@@ -934,32 +934,32 @@
  
-@@ -747,6 +870,48 @@
-     return 0;
- }
+     if (!attrs[OVPN_A_PEER])
+     {
+-        msg(D_DCO, "ovpn-dco: no peer in PEER_DEL_NTF message");
++        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: no peer in PEER_DEL_NTF message");
+         return NL_STOP;
+     }
  
-+int
-+dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
-+{
-+    struct tuntap *tt = c->c1.tuntap;
-+
-+    if (!tuntap_defined(tt))
-+    {
-+        return -1;
-+    }
-+
-+    /* first, try a new ioctl */
-+    OVPN_GET_PEER_STATS ps = { .PeerId = c->c2.tls_multi->dco_peer_id };
-+
-+    OVPN_PEER_STATS peer_stats = { 0 };
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_GET_PEER_STATS, &ps, sizeof(ps), &peer_stats, sizeof(peer_stats),
-+                         &bytes_returned, NULL))
-+    {
-+        if (GetLastError() == ERROR_INVALID_FUNCTION)
-+        {
-+            /* are we using the old driver? */
-+            return dco_get_peer_stats_fallback(c, raise_sigusr1_on_err);
-+        }
-+
-+        msg(M_WARN | M_ERRNO, "%s: DeviceIoControl(OVPN_IOCTL_GET_PEER_STATS) failed", __func__);
-+        return -1;
-+    }
-+
-+    if (bytes_returned != sizeof(OVPN_PEER_STATS))
-+    {
-+        msg(M_WARN | M_ERRNO, "%s: DeviceIoControl(OVPN_IOCTL_GET_PEER_STATS) returnted invalid size", __func__);
-+        return -1;
-+    }
-+
-+    c->c2.dco_read_bytes = peer_stats.LinkRxBytes;
-+    c->c2.dco_write_bytes = peer_stats.LinkTxBytes;
-+    c->c2.tun_read_bytes = peer_stats.VpnRxBytes;
-+    c->c2.tun_write_bytes = peer_stats.VpnTxBytes;
-+
-+    return 0;
-+}
-+
- void
- dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
- {
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
-index a7f4865..4f3f028 100644
---- a/src/openvpn/dco_win.h
-+++ b/src/openvpn/dco_win.h
-@@ -57,6 +57,8 @@
+     struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
+     if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER], NULL))
+     {
+-        msg(D_DCO, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
++        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
+         return NL_STOP;
+     }
  
-     uint64_t dco_read_bytes;
-     uint64_t dco_write_bytes;
-+
-+    struct context *c;
- };
+     if (!dp_attrs[OVPN_A_PEER_DEL_REASON])
+     {
+-        msg(D_DCO, "ovpn-dco: no reason in PEER_DEL_NTF message");
++        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: no reason in PEER_DEL_NTF message");
+         return NL_STOP;
+     }
+     if (!dp_attrs[OVPN_A_PEER_ID])
+     {
+-        msg(D_DCO, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
++        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
+         return NL_STOP;
+     }
  
- typedef struct dco_context dco_context_t;
-diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
-index baf7214..9e1378a 100644
---- a/src/openvpn/ovpn_dco_win.h
-+++ b/src/openvpn/ovpn_dco_win.h
-@@ -83,6 +83,14 @@
- 	LONG64 TunBytesReceived;
- } OVPN_STATS, * POVPN_STATS;
+     int reason = nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);
+     unsigned int peerid = nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);
  
-+typedef struct _OVPN_PEER_STATS {
-+    int PeerId;
-+    LONG64 LinkRxBytes;
-+    LONG64 LinkTxBytes;
-+    LONG64 VpnRxBytes;
-+    LONG64 VpnTxBytes;
-+} OVPN_PEER_STATS, * POVPN_PEER_STATS;
-+
- typedef enum _OVPN_KEY_SLOT {
- 	OVPN_KEY_SLOT_PRIMARY,
- 	OVPN_KEY_SLOT_SECONDARY
-@@ -185,6 +193,10 @@
-     int IPv6;
- } OVPN_MP_IROUTE, * POVPN_MP_IROUTE;
+-    msg(D_DCO_DEBUG, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d",
++    msg(D_DCO_DEBUG | M_NOIPREFIX, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d",
+         dco->ifindex, peerid, reason);
+     dco->dco_message_peer_id = peerid;
+     dco->dco_del_peer_reason = reason;
+@@ -1065,7 +1065,7 @@
+     struct nlmsghdr *nlh = nlmsg_hdr(msg);
+     struct genlmsghdr *gnlh = genlmsg_hdr(nlh);
  
-+typedef struct _OVPN_GET_PEER_STATS {
-+    int PeerId; // -1 for all peers stats
-+} OVPN_GET_PEER_STATS, * POVPN_GET_PEER_STATS;
-+
- #define OVPN_IOCTL_NEW_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 1, METHOD_BUFFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_GET_STATS    CTL_CODE(FILE_DEVICE_UNKNOWN, 2, METHOD_BUFFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_NEW_KEY      CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BUFFERED, FILE_ANY_ACCESS)
-@@ -207,3 +219,5 @@
+-    msg(D_DCO_DEBUG, "ovpn-dco: received netlink message type=%u cmd=%u flags=%#.4x",
++    msg(D_DCO_DEBUG | M_NOIPREFIX, "ovpn-dco: received netlink message type=%u cmd=%u flags=%#.4x",
+         nlh->nlmsg_type, gnlh->cmd, nlh->nlmsg_flags);
  
- #define OVPN_IOCTL_MP_ADD_IROUTE CTL_CODE(FILE_DEVICE_UNKNOWN, 17, METHOD_BUFFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_MP_DEL_IROUTE CTL_CODE(FILE_DEVICE_UNKNOWN, 18, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+
-+#define OVPN_IOCTL_GET_PEER_STATS CTL_CODE(FILE_DEVICE_UNKNOWN, 19, METHOD_BUFFERED, FILE_ANY_ACCESS)
+     /* if we get a message from the NLCTRL family, it means
+@@ -1148,7 +1148,7 @@
+         return 0;
+     }
+ 
+-    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peer_id);
++    msg(D_DCO_DEBUG | M_NOIPREFIX, "%s: peer-id %d", __func__, peer_id);
+ 
+     struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET);
+     struct nlattr *attr = nla_nest_start(nl_msg, OVPN_A_PEER);
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index 5f5a808..ecea635 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -239,7 +239,7 @@
+         {
+             si->source = SIG_SOURCE_CONNECTION_FAILED;
+         }
+-        msg(D_SIGNAL_DEBUG, "register signal: %s (%s)", signal_name(signum, true), signal_text);
++        msg(D_SIGNAL_DEBUG | M_NOIPREFIX, "register signal: %s (%s)", signal_name(signum, true), signal_text);
+     }
+     else
+     {
 
