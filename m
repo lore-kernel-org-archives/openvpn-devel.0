@@ -1,10 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue,  2 Sep 2025 13:59:49 +0200
-Message-ID: <20250902115954.29021-1-gert@...1296...>
-In-Reply-To: <gerrit.1756305807000.I84a73d625c79d6a6a19122e48c91960dbe01ec49@...2715...>
-References: <gerrit.1756305807000.I84a73d625c79d6a6a19122e48c91960dbe01ec49@...2715...>
+Date: Tue,  2 Sep 2025 12:36:01 +0200
+Message-ID: <20250902103606.22181-1-gert@...1296...>
+In-Reply-To: <gerrit.1756460812000.I43a93f0d84f01fd808a64115e1b8c3b806706491@...2715...>
+References: <gerrit.1756460812000.I43a93f0d84f01fd808a64115e1b8c3b806706491@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dco: avoid printing mi prefix on float
+Subject: [Openvpn-devel] [PATCH v3] Refactor management bytecount tracking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,126 +17,304 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@...2726...>
+From: Lev Stipakov <lev@...515...>
 
-On float, a new prefix is generated which leads
-to a mismatch between the current and previous
-peer-id being logged. To avoid this, the
-M_NOIPREFIX flag is now used along with msglevel.
+There are few issues with it:
 
-Change-Id: I84a73d625c79d6a6a19122e48c91960dbe01ec49
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+ - when using DCO, the server part doesn't output BYTECOUNT_CLI
+ since process_incoming_link_part1/process_outgoing_link are not called
+
+ - when using DCO, the server part applies bytecount timer to the each
+ connection, unneccessary making too many calls to the kernel and also
+ uses incorect BYTECOUNT output.
+
+ - client part outputs counters using timer, server part utilizes
+ traffic activity -> inconsistency
+
+Following changes have been made:
+
+ - Use timer to output counters in client and server mode. Code which
+ deals with bytecount on traffic activity has been removed. This unifies
+ DCO and non-DCO, as well as client and server mode
+
+ - In server mode, peers stats are fetched with the single ioctl call
+
+ - Per-packet stats are not persisted anymore in the client mode during
+   traffic activity. Instead cumulative stats (including DCO stats) are
+   persisted when the session closes.
+
+GitHub: https://github.com/OpenVPN/openvpn/issues/820
+
+Change-Id: I43a93f0d84f01fd808a64115e1b8c3b806706491
+Signed-off-by: Lev Stipakov <lev@...515...>
 Acked-by: Gert Doering <gert@...1296...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1158
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1162
+This mail reflects revision 3 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Gert Doering <gert@...1296...>
 
         
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index a3907fe..6115d51 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -548,7 +548,7 @@
- int
- dco_del_peer(dco_context_t *dco, unsigned int peerid)
- {
--    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peerid);
-+    msg(D_DCO_DEBUG | M_NOIPREFIX, "%s: peer-id %d", __func__, peerid);
- 
-     struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_DEL);
-     if (!nl_msg)
-@@ -868,7 +868,7 @@
-     uint32_t peer_id = nla_get_u32(tb_peer[OVPN_A_PEER_ID]);
-     struct context_2 *c2;
- 
--    msg(D_DCO_DEBUG, "%s: parsing message for peer %u...", __func__, peer_id);
-+    msg(D_DCO_DEBUG | M_NOIPREFIX, "%s: parsing message for peer %u...", __func__, peer_id);
- 
-     if (dco->ifmode == OVPN_MODE_P2P)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 75ca9d5..03b6a0c 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -818,7 +818,7 @@
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
      {
-@@ -890,7 +890,7 @@
-         struct multi_instance *mi = dco->c->multi->instances[peer_id];
-         if (!mi)
-         {
--            msg(M_WARN, "%s: received data for a non-existing peer %u", __func__, peer_id);
-+            msg(M_WARN | M_NOIPREFIX, "%s: received data for a non-existing peer %u", __func__, peer_id);
-             return NL_SKIP;
+-        management_check_bytecount(c, management, &c->c2.timeval);
++        management_check_bytecount_client(c, management, &c->c2.timeval);
+     }
+ #endif /* ENABLE_MANAGEMENT */
+ }
+@@ -998,14 +998,6 @@
          }
- 
-@@ -934,32 +934,32 @@
- 
-     if (!attrs[OVPN_A_PEER])
-     {
--        msg(D_DCO, "ovpn-dco: no peer in PEER_DEL_NTF message");
-+        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: no peer in PEER_DEL_NTF message");
-         return NL_STOP;
-     }
- 
-     struct nlattr *dp_attrs[OVPN_A_PEER_MAX + 1];
-     if (nla_parse_nested(dp_attrs, OVPN_A_PEER_MAX, attrs[OVPN_A_PEER], NULL))
-     {
--        msg(D_DCO, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
-+        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: can't parse peer in PEER_DEL_NTF messsage");
-         return NL_STOP;
-     }
- 
-     if (!dp_attrs[OVPN_A_PEER_DEL_REASON])
-     {
--        msg(D_DCO, "ovpn-dco: no reason in PEER_DEL_NTF message");
-+        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: no reason in PEER_DEL_NTF message");
-         return NL_STOP;
-     }
-     if (!dp_attrs[OVPN_A_PEER_ID])
-     {
--        msg(D_DCO, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
-+        msg(D_DCO | M_NOIPREFIX, "ovpn-dco: no peer-id in PEER_DEL_NTF message");
-         return NL_STOP;
-     }
- 
-     int reason = nla_get_u32(dp_attrs[OVPN_A_PEER_DEL_REASON]);
-     unsigned int peerid = nla_get_u32(dp_attrs[OVPN_A_PEER_ID]);
- 
--    msg(D_DCO_DEBUG, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d",
-+    msg(D_DCO_DEBUG | M_NOIPREFIX, "ovpn-dco: received CMD_PEER_DEL_NTF, ifindex: %d, peer-id %u, reason: %d",
-         dco->ifindex, peerid, reason);
-     dco->dco_message_peer_id = peerid;
-     dco->dco_del_peer_reason = reason;
-@@ -1065,7 +1065,7 @@
-     struct nlmsghdr *nlh = nlmsg_hdr(msg);
-     struct genlmsghdr *gnlh = genlmsg_hdr(nlh);
- 
--    msg(D_DCO_DEBUG, "ovpn-dco: received netlink message type=%u cmd=%u flags=%#.4x",
-+    msg(D_DCO_DEBUG | M_NOIPREFIX, "ovpn-dco: received netlink message type=%u cmd=%u flags=%#.4x",
-         nlh->nlmsg_type, gnlh->cmd, nlh->nlmsg_flags);
- 
-     /* if we get a message from the NLCTRL family, it means
-@@ -1148,7 +1148,7 @@
-         return 0;
-     }
- 
--    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peer_id);
-+    msg(D_DCO_DEBUG | M_NOIPREFIX, "%s: peer-id %d", __func__, peer_id);
- 
-     struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_GET);
-     struct nlattr *attr = nla_nest_start(nl_msg, OVPN_A_PEER);
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index 5f5a808..ecea635 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -239,7 +239,7 @@
-         {
-             si->source = SIG_SOURCE_CONNECTION_FAILED;
-         }
--        msg(D_SIGNAL_DEBUG, "register signal: %s (%s)", signal_name(signum, true), signal_text);
-+        msg(D_SIGNAL_DEBUG | M_NOIPREFIX, "register signal: %s (%s)", signal_name(signum, true), signal_text);
+ #endif
+         c->c2.original_recv_size = c->c2.buf.len;
+-#ifdef ENABLE_MANAGEMENT
+-        if (management)
+-        {
+-            management_bytes_client(management, c->c2.buf.len, 0);
+-            management_bytes_server(management, &c->c2.link_read_bytes, &c->c2.link_write_bytes,
+-                                    &c->c2.mda_context);
+-        }
+-#endif
      }
      else
      {
+@@ -1823,14 +1815,6 @@
+                     mmap_stats->link_write_bytes = link_write_bytes_global;
+                 }
+ #endif
+-#ifdef ENABLE_MANAGEMENT
+-                if (management)
+-                {
+-                    management_bytes_client(management, 0, size);
+-                    management_bytes_server(management, &c->c2.link_read_bytes,
+-                                            &c->c2.link_write_bytes, &c->c2.mda_context);
+-                }
+-#endif
+             }
+         }
+ 
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index aed04f5..5311701 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -41,6 +41,7 @@
+ #include "manage.h"
+ #include "openvpn.h"
+ #include "dco.h"
++#include "multi.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -517,29 +518,27 @@
+ }
+ 
+ static void
+-man_bytecount_output_client(struct management *man, counter_type dco_read_bytes,
+-                            counter_type dco_write_bytes)
++man_bytecount_output_client(counter_type bytes_in_total, counter_type bytes_out_total)
+ {
+     char in[32];
+     char out[32];
+ 
+     /* do in a roundabout way to work around possible mingw or mingw-glibc bug */
+-    snprintf(in, sizeof(in), counter_format, man->persist.bytes_in + dco_read_bytes);
+-    snprintf(out, sizeof(out), counter_format, man->persist.bytes_out + dco_write_bytes);
++    snprintf(in, sizeof(in), counter_format, bytes_in_total);
++    snprintf(out, sizeof(out), counter_format, bytes_out_total);
+     msg(M_CLIENT, ">BYTECOUNT:%s,%s", in, out);
+ }
+ 
+-void
+-man_bytecount_output_server(const counter_type *bytes_in_total, const counter_type *bytes_out_total,
++static void
++man_bytecount_output_server(const counter_type bytes_in_total, const counter_type bytes_out_total,
+                             struct man_def_auth_context *mdac)
+ {
+     char in[32];
+     char out[32];
+     /* do in a roundabout way to work around possible mingw or mingw-glibc bug */
+-    snprintf(in, sizeof(in), counter_format, *bytes_in_total);
+-    snprintf(out, sizeof(out), counter_format, *bytes_out_total);
++    snprintf(in, sizeof(in), counter_format, bytes_in_total);
++    snprintf(out, sizeof(out), counter_format, bytes_out_total);
+     msg(M_CLIENT, ">BYTECOUNT_CLI:%lu,%s,%s", mdac->cid, in, out);
+-    mdac->bytecount_last_update = now;
+ }
+ 
+ static void
+@@ -4065,42 +4064,82 @@
+ }
+ 
+ void
+-management_check_bytecount(struct context *c, struct management *man, struct timeval *timeval)
++management_check_bytecount_client(struct context *c, struct management *man, struct timeval *timeval)
+ {
++    if (man->persist.callback.flags & MCF_SERVER)
++    {
++        return;
++    }
++
+     if (event_timeout_trigger(&man->connection.bytecount_update_interval, timeval, ETT_DEFAULT))
+     {
+-        counter_type dco_read_bytes = 0;
+-        counter_type dco_write_bytes = 0;
+-
+         if (dco_enabled(&c->options))
+         {
+             if (dco_get_peer_stats(c, true) < 0)
+             {
+                 return;
+             }
+-
+-            dco_read_bytes = c->c2.dco_read_bytes;
+-            dco_write_bytes = c->c2.dco_write_bytes;
+         }
+ 
+-        if (!(man->persist.callback.flags & MCF_SERVER))
+-        {
+-            man_bytecount_output_client(man, dco_read_bytes, dco_write_bytes);
+-        }
++        man_bytecount_output_client(c->c2.dco_read_bytes + man->persist.bytes_in + c->c2.link_read_bytes,
++                                    c->c2.dco_write_bytes + man->persist.bytes_out + c->c2.link_write_bytes);
+     }
+ }
+ 
+-/* DCO resets stats on reconnect. Since client expects stats
+- * to be preserved across reconnects, we need to save DCO
++void
++management_check_bytecount_server(struct multi_context *multi)
++{
++    if (!(management->persist.callback.flags & MCF_SERVER))
++    {
++        return;
++    }
++
++    struct timeval null;
++    CLEAR(null);
++    if (event_timeout_trigger(&management->connection.bytecount_update_interval, &null, ETT_DEFAULT))
++    {
++        /* fetch counters from dco */
++        if (dco_enabled(&multi->top.options))
++        {
++            if (dco_get_peer_stats_multi(&multi->top.c1.tuntap->dco, true) < 0)
++            {
++                return;
++            }
++        }
++
++        /* iterate over peers and report counters for each connected peer */
++        struct hash_iterator hi;
++        struct hash_element *he;
++        hash_iterator_init(multi->hash, &hi);
++        while ((he = hash_iterator_next(&hi)))
++        {
++            struct multi_instance *mi = (struct multi_instance *)he->value;
++            struct context_2 *c2 = &mi->context.c2;
++
++            if ((c2->mda_context.flags & (DAF_CONNECTION_ESTABLISHED | DAF_CONNECTION_CLOSED)) == DAF_CONNECTION_ESTABLISHED)
++            {
++                man_bytecount_output_server(c2->dco_read_bytes + c2->link_read_bytes, c2->dco_write_bytes + c2->link_write_bytes, &c2->mda_context);
++            }
++        }
++        hash_iterator_free(&hi);
++    }
++}
++
++/* context_2 stats are reset on reconnect. Since client expects stats
++ * to be preserved across reconnects, we need to save context_2
+  * stats before tearing the tunnel down.
+  */
+ void
+ man_persist_client_stats(struct management *man, struct context *c)
+ {
++    man->persist.bytes_in += c->c2.link_read_bytes;
++    man->persist.bytes_out += c->c2.link_write_bytes;
++
+     /* no need to raise SIGUSR1 since we are already closing the instance */
+     if (dco_enabled(&c->options) && (dco_get_peer_stats(c, false) == 0))
+     {
+-        management_bytes_client(man, c->c2.dco_read_bytes, c->c2.dco_write_bytes);
++        man->persist.bytes_in += c->c2.dco_read_bytes;
++        man->persist.bytes_out += c->c2.dco_write_bytes;
+     }
+ }
+ 
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 083caf5..bbf0630 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -70,8 +70,6 @@
+     unsigned int flags;
+ 
+     unsigned int mda_key_id_counter;
+-
+-    time_t bytecount_last_update;
+ };
+ 
+ /*
+@@ -492,34 +490,9 @@
+  * These functions drive the bytecount in/out counters.
+  */
+ 
+-void management_check_bytecount(struct context *c, struct management *man, struct timeval *timeval);
++void management_check_bytecount_client(struct context *c, struct management *man, struct timeval *timeval);
+ 
+-static inline void
+-management_bytes_client(struct management *man, const int size_in, const int size_out)
+-{
+-    if (!(man->persist.callback.flags & MCF_SERVER))
+-    {
+-        man->persist.bytes_in += size_in;
+-        man->persist.bytes_out += size_out;
+-    }
+-}
+-
+-void man_bytecount_output_server(const counter_type *bytes_in_total,
+-                                 const counter_type *bytes_out_total,
+-                                 struct man_def_auth_context *mdac);
+-
+-static inline void
+-management_bytes_server(struct management *man, const counter_type *bytes_in_total,
+-                        const counter_type *bytes_out_total, struct man_def_auth_context *mdac)
+-{
+-    if (man->connection.bytecount_update_seconds > 0
+-        && now >= mdac->bytecount_last_update + man->connection.bytecount_update_seconds
+-        && (mdac->flags & (DAF_CONNECTION_ESTABLISHED | DAF_CONNECTION_CLOSED))
+-               == DAF_CONNECTION_ESTABLISHED)
+-    {
+-        man_bytecount_output_server(bytes_in_total, bytes_out_total, mdac);
+-    }
+-}
++void management_check_bytecount_server(struct multi_context *multi);
+ 
+ void man_persist_client_stats(struct management *man, struct context *c);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index e1ce32a..f1abdbe 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3812,6 +3812,13 @@
+     {
+         check_stale_routes(m);
+     }
++
++#ifdef ENABLE_MANAGEMENT
++    if (management)
++    {
++        management_check_bytecount_server(m);
++    }
++#endif /* ENABLE_MANAGEMENT */
+ }
+ 
+ static void
 
