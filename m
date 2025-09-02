@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Sep 2025 16:45:05 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue,  2 Sep 2025 18:45:15 +0200
+Message-ID: <20250902164521.23145-1-gert@...1296...>
 In-Reply-To: <gerrit.1756824907000.I40c11864745cc1619cb9cbf490b168f90feb5eac@...2715...>
 References: <gerrit.1756824907000.I40c11864745cc1619cb9cbf490b168f90feb5eac@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <3cfa11b2c9de2e5002afd0f78d05e1aa89034b63-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BnvfxxBj584="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco_linux: validate
- tun interface before fetching stats
+Subject: [Openvpn-devel] [PATCH v2] dco_linux: validate tun interface before
+ fetching stats
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,122 +14,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---BnvfxxBj584=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+If dco_get_peer_stats() is called with an uninitialized c->c1.tuntap it
+results in a segfault. This issue happens when a client who has not
+connected to any server:
+  - has --management and exits,
+  - has --management and a management interface client issues either
+    `bytecount` or `status` or
+  - if SIGUSR2 is sent to it.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1166?usp=3Demail )
+Add a check to ensure the tun interface was set up before attempting to
+retrieve peer statistics.
 
-Change subject: dco_linux: validate tun interface before fetching stats
-......................................................................
+Change-Id: I40c11864745cc1619cb9cbf490b168f90feb5eac
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1166
+This mail reflects revision 2 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patchset:
-
-PS2:
-```
->HOLD:Waiting for hold release:0
-bytecount 1
-SUCCESS: bytecount interval changed
-hold release
-SUCCESS: hold release succeeded
->BYTECOUNT:4111,2888
->BYTECOUNT:4219,2996
->BYTECOUNT:4327,3104
-```
-
-no crash *and* counters!
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1166?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I40c11864745cc1619cb9cbf490b168f90feb5eac
-Gerrit-Change-Number: 1166
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Tue, 02 Sep 2025 16:45:05 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---BnvfxxBj584=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos, ralf_lic=
-i. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1166?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1166?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">```<br>&gt;HOLD:Waiting for hold release:0<b=
-r>bytecount 1<br>SUCCESS: bytecount interval changed<br>hold release<br>SUC=
-CESS: hold release succeeded<br>&gt;BYTECOUNT:4111,2888<br>&gt;BYTECOUNT:42=
-19,2996<br>&gt;BYTECOUNT:4327,3104<br>```</p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">no crash *and* counters!</p></li></ul></li></u=
-l><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1166?u=
-sp=3Demail">change 1166</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1166?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I40c11864745cc1619cb9cbf490b=
-168f90feb5eac </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1166 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 02 Sep 2025 16:45:05=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---BnvfxxBj584=--
+        
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index a3907fe..e70b74d 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -1139,6 +1139,8 @@
+ static int
+ dco_get_peer(dco_context_t *dco, int peer_id, const bool raise_sigusr1_on_err)
+ {
++    ASSERT(dco);
++
+     /* peer_id == -1 means "dump all peers", but this is allowed in MP mode only.
+      * If it happens in P2P mode it means that the DCO peer was deleted and we
+      * can simply bail out
+@@ -1182,6 +1184,11 @@
+ int
+ dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
+ {
++    if (!c->c1.tuntap || c->c1.tuntap->dco.ifindex == 0)
++    {
++        return -1;
++    }
++
+     return dco_get_peer(&c->c1.tuntap->dco, c->c2.tls_multi->dco_peer_id, raise_sigusr1_on_err);
+ }
+ 
 
