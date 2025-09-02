@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Sep 2025 15:28:48 +0000
+Date: Tue, 2 Sep 2025 15:28:45 +0000
 In-Reply-To: <gerrit.1756460812000.I43a93f0d84f01fd808a64115e1b8c3b806706491@...2715...>
 References: <gerrit.1756460812000.I43a93f0d84f01fd808a64115e1b8c3b806706491@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., ralf@...2726...,
  lstipakov@...277...
-Message-ID: <f88f1e468e24b1a08dd35d2273d0e13aa399e5c0-HTML@...2715...>
+Message-ID: <f88f1e468e24b1a08dd35d2273d0e13aa399e5c0-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="skRQtCAoyho="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="nmloyTp2OTM="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Refactor management
  bytecount tracking
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, ralf_lici <ralf@...2726...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---skRQtCAoyho=
+--nmloyTp2OTM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-62?usp=3Demail )
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1162?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Refactor management bytecount tracking
 ......................................................................
@@ -75,7 +79,7 @@ M src/openvpn/multi.c
 4 files changed, 73 insertions(+), 70 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1162/4
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
 index 75ca9d5..03b6a0c 100644
@@ -387,86 +391,89 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: ralf_lici <ralf@...2726...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---skRQtCAoyho=
+--nmloyTp2OTM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1162?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Refactor management bytecount tracking<br><br=
->There are few issues with it:<br><br> - when using DCO, the server part do=
-esn&#39;t output BYTECOUNT_CLI since<br>   process_incoming_link_part1/proc=
-ess_outgoing_link are not called<br><br> - when using DCO, the server part =
-applies bytecount timer to the each<br>   connection, unneccessary making t=
-oo many calls to the kernel and also<br>   uses incorrect BYTECOUNT output.=
-<br><br> - client part outputs counters using timer, server part utilizes<b=
-r>   traffic activity -&gt; inconsistency<br><br>Following changes have bee=
-n made:<br><br> - Use timer to output counters in client and server mode. C=
-ode which<br>   deals with bytecount on traffic activity has been removed. =
-This unifies<br>   DCO and non-DCO, as well as client and server mode<br><b=
-r> - In server mode, peers stats are fetched with the single ioctl call<br>=
-<br> - Per-packet stats are not persisted anymore in the client mode during=
-<br>   traffic activity. Instead cumulative stats (including DCO stats) are=
-<br>   persisted when the session closes.<br><br>GitHub: closes OpenVPN/ope=
-nvpn#820<br><br>Change-Id: I43a93f0d84f01fd808a64115e1b8c3b806706491<br>Sig=
-ned-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &l=
-t;gert@...1296...&gt;<br>Message-Id: &lt;20250902103606.22181-1-gert@...1826...=
-6...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59228150=
-/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/op=
-envpn/forward.c<br>M src/openvpn/manage.c<br>M src/openvpn/manage.h<br>M sr=
-c/openvpn/multi.c<br>4 files changed, 73 insertions(+), 70 deletions(-)<br>=
-<br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
-an>index 75ca9d5..03b6a0c 100644</span><br><span>--- a/src/openvpn/forward.=
-c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -818,7 +81=
-8,7 @@</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>     if (m=
-anagement)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        management_check_bytecount(c, management, &amp;c-&gt;c2=
-.timeval);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
-anagement_check_bytecount_client(c, management, &amp;c-&gt;c2.timeval);</sp=
-an><br><span>     }</span><br><span> #endif /* ENABLE_MANAGEMENT */</span><=
-br><span> }</span><br><span>@@ -998,14 +998,6 @@</span><br><span>         }=
-</span><br><span> #endif</span><br><span>         c-&gt;c2.original_recv_si=
-ze =3D c-&gt;c2.buf.len;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (management)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        management_bytes_client(management, c-&gt;c2.buf.len, 0);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            management_bytes_se=
-rver(management, &amp;c-&gt;c2.link_read_bytes, &amp;c-&gt;c2.link_write_by=
-tes,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-                   &amp;c-&gt;c2.mda_context);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#endif</span><br><span>     }</span><br><span>     else</span>=
-<br><span>     {</span><br><span>@@ -1823,14 +1815,6 @@</span><br><span>   =
-                  mmap_stats-&gt;link_write_bytes =3D link_write_bytes_glob=
-al;</span><br><span>                 }</span><br><span> #endif</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MANAGEMENT</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                if (management)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    manag=
-ement_bytes_client(management, 0, size);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                    management_bytes_server(management, =
-&amp;c-&gt;c2.link_read_bytes,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                                            &amp;c-&gt;c2.link_wri=
-te_bytes, &amp;c-&gt;c2.mda_context);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#endif</span><br><span>             }</span><br><span>         =
-}</span><br><span> </span><br><span>diff --git a/src/openvpn/manage.c b/src=
-/openvpn/manage.c</span><br><span>index aed04f5..52b0e5e 100644</span><br><=
-span>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c<=
-/span><br><span>@@ -41,6 +41,7 @@</span><br><span> #include &quot;manage.h&=
-quot;</span><br><span> #include &quot;openvpn.h&quot;</span><br><span> #inc=
-lude &quot;dco.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#include &quot;multi.h&quot;</span><br><span> </span><br><span> #include=
- &quot;memdbg.h&quot;</span><br><span> </span><br><span>@@ -517,29 +518,27 =
-@@</span><br><span> }</span><br><span> </span><br><span> static void</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-man_bytecount_output_client(=
-struct management *man, counter_type dco_read_bytes,</span><br><span style=
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1162=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Refactor management bytecount tracking<br><br>There =
+are few issues with it:<br><br> - when using DCO, the server part doesn&#39=
+;t output BYTECOUNT_CLI since<br>   process_incoming_link_part1/process_out=
+going_link are not called<br><br> - when using DCO, the server part applies=
+ bytecount timer to the each<br>   connection, unneccessary making too many=
+ calls to the kernel and also<br>   uses incorrect BYTECOUNT output.<br><br=
+> - client part outputs counters using timer, server part utilizes<br>   tr=
+affic activity -&gt; inconsistency<br><br>Following changes have been made:=
+<br><br> - Use timer to output counters in client and server mode. Code whi=
+ch<br>   deals with bytecount on traffic activity has been removed. This un=
+ifies<br>   DCO and non-DCO, as well as client and server mode<br><br> - In=
+ server mode, peers stats are fetched with the single ioctl call<br><br> - =
+Per-packet stats are not persisted anymore in the client mode during<br>   =
+traffic activity. Instead cumulative stats (including DCO stats) are<br>   =
+persisted when the session closes.<br><br>GitHub: closes OpenVPN/openvpn#82=
+0<br><br>Change-Id: I43a93f0d84f01fd808a64115e1b8c3b806706491<br>Signed-off=
+-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@=
+...1296...&gt;<br>Message-Id: &lt;20250902103606.22181-1-gert@...1296...&gt=
+;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59228150/<br>Si=
+gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/f=
+orward.c<br>M src/openvpn/manage.c<br>M src/openvpn/manage.h<br>M src/openv=
+pn/multi.c<br>4 files changed, 73 insertions(+), 70 deletions(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1162/4</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><s=
+pan>index 75ca9d5..03b6a0c 100644</span><br><span>--- a/src/openvpn/forward=
+.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -818,7 +8=
+18,7 @@</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>     if (=
+management)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        management_check_bytecount(c, management, &amp;c-&gt;c=
+2.timeval);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+management_check_bytecount_client(c, management, &amp;c-&gt;c2.timeval);</s=
+pan><br><span>     }</span><br><span> #endif /* ENABLE_MANAGEMENT */</span>=
+<br><span> }</span><br><span>@@ -998,14 +998,6 @@</span><br><span>         =
+}</span><br><span> #endif</span><br><span>         c-&gt;c2.original_recv_s=
+ize =3D c-&gt;c2.buf.len;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        if (management)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         management_bytes_client(management, c-&gt;c2.buf.len, 0);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            management_bytes_s=
+erver(management, &amp;c-&gt;c2.link_read_bytes, &amp;c-&gt;c2.link_write_b=
+ytes,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+                    &amp;c-&gt;c2.mda_context);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#endif</span><br><span>     }</span><br><span>     else</span=
+><br><span>     {</span><br><span>@@ -1823,14 +1815,6 @@</span><br><span>  =
+                   mmap_stats-&gt;link_write_bytes =3D link_write_bytes_glo=
+bal;</span><br><span>                 }</span><br><span> #endif</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MANAGEMENT</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                if (management=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    mana=
+gement_bytes_client(management, 0, size);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                    management_bytes_server(management,=
+ &amp;c-&gt;c2.link_read_bytes,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                                            &amp;c-&gt;c2.link_wr=
+ite_bytes, &amp;c-&gt;c2.mda_context);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#endif</span><br><span>             }</span><br><span>        =
+ }</span><br><span> </span><br><span>diff --git a/src/openvpn/manage.c b/sr=
+c/openvpn/manage.c</span><br><span>index aed04f5..52b0e5e 100644</span><br>=
+<span>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c=
+</span><br><span>@@ -41,6 +41,7 @@</span><br><span> #include &quot;manage.h=
+&quot;</span><br><span> #include &quot;openvpn.h&quot;</span><br><span> #in=
+clude &quot;dco.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#include &quot;multi.h&quot;</span><br><span> </span><br><span> #includ=
+e &quot;memdbg.h&quot;</span><br><span> </span><br><span>@@ -517,29 +518,27=
+ @@</span><br><span> }</span><br><span> </span><br><span> static void</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-man_bytecount_output_client=
+(struct management *man, counter_type dco_read_bytes,</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-                            counter_type dc=
 o_write_bytes)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+man_b=
 ytecount_output_client(counter_type bytes_in_total, counter_type bytes_out_=
@@ -694,8 +701,8 @@ nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1162?usp=
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---skRQtCAoyho=--
+--nmloyTp2OTM=--
 
