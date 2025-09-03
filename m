@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 3 Sep 2025 18:38:33 +0000
+Date: Wed, 3 Sep 2025 19:26:11 +0000
 In-Reply-To: <gerrit.1756894870000.Iad5b00c35a1f1993b1fa99e8b945ab17b230ef59@...2715...>
 References: <gerrit.1756894870000.Iad5b00c35a1f1993b1fa99e8b945ab17b230ef59@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <92d9fb64d1f9693b862a53d4637831704cb89103-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <10d147e050a4146bed356dd868e84b78aeb25d53-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Cpm49yFR424="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="XDPw0l5Bzto="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Enable -Wconversion
  -Wno-sign-conversion by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Cpm49yFR424=
+--XDPw0l5Bzto=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1168?usp=3Demail
 
-to look at the new patch set (#6).
+to look at the new patch set (#7).
 
 
 Change subject: Enable -Wconversion -Wno-sign-conversion by default
@@ -138,7 +138,7 @@ M tests/unit_tests/openvpn/test_misc.c
 70 files changed, 666 insertions(+), 4 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/1168/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/1168/7
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 35513e9..8e93653 100644
@@ -824,11 +824,11 @@ index 0750fec..448124c 100644
  mbuf_free(struct mbuf_set *ms)
  {
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 59bf52b..e0fddac 100644
+index 59bf52b..e24d441 100644
 --- a/src/openvpn/misc.c
 +++ b/src/openvpn/misc.c
-@@ -105,6 +105,11 @@
-     return true;
+@@ -72,6 +72,11 @@
+ #endif
  }
 
 +#if defined(__GNUC__) || defined(__clang__)
@@ -836,11 +836,9 @@ index 59bf52b..e0fddac 100644
 +#pragma GCC diagnostic ignored "-Wconversion"
 +#endif
 +
- /**
-  * Parses an authentication challenge string and returns an auth_challenge=
-_info structure.
-  * The authentication challenge string should follow the dynamic challenge=
-/response protocol.
+ #ifdef ENABLE_MANAGEMENT
+ /* Get username/password from the management interface */
+ static bool
 @@ -461,6 +466,10 @@
      return true;
  }
@@ -994,7 +992,7 @@ index f1abdbe..e74affa 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
 @@ -262,6 +262,11 @@
-=20
+
  #endif
 
 +#if defined(__GNUC__) || defined(__clang__)
@@ -1757,7 +1755,7 @@ index 918a1f1..50e8c03 100644
 @@ -290,6 +290,11 @@
      return NULL;
  }
-
+=20
 +#if defined(__GNUC__) || defined(__clang__)
 +#pragma GCC diagnostic push
 +#pragma GCC diagnostic ignored "-Wconversion"
@@ -1793,7 +1791,7 @@ index 6f85dca..10c343a 100644
 @@ -945,6 +950,9 @@
      return ret;
  }
-=20
+
 +#if defined(__GNUC__) || defined(__clang__)
 +#pragma GCC diagnostic pop
 +#endif
@@ -1966,7 +1964,7 @@ index 6c3096b..a6d3f59 100644
 @@ -2932,6 +2951,11 @@
      argv_free(&argv);
  }
-
+=20
 +#if defined(__GNUC__) || defined(__clang__)
 +#pragma GCC diagnostic push
 +#pragma GCC diagnostic ignored "-Wconversion"
@@ -2150,7 +2148,7 @@ index c3f80dc..8a86d71 100644
 @@ -124,6 +124,11 @@
  };
 
-
+=20
 +#if defined(__GNUC__) || defined(__clang__)
 +#pragma GCC diagnostic push
 +#pragma GCC diagnostic ignored "-Wconversion"
@@ -2180,19 +2178,19 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Iad5b00c35a1f1993b1fa99e8b945ab17b230ef59
 Gerrit-Change-Number: 1168
-Gerrit-PatchSet: 6
+Gerrit-PatchSet: 7
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newpatchset
 
---Cpm49yFR424=
+--XDPw0l5Bzto=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #6</strong> to this change.</p><=
+<p>flichtenheld <strong>uploaded patch set #7</strong> to this change.</p><=
 p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1168?usp=3Demail">View C=
 hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
 re-wrap;">Enable -Wconversion -Wno-sign-conversion by default<br><br>Grand-=
@@ -2236,7 +2234,7 @@ teractive.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>M tests/unit_tes=
 ts/openvpn/test_misc.c<br>70 files changed, 666 insertions(+), 4 deletions(=
 -)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
 : pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/6=
-8/1168/6</pre><pre style=3D"font-family: monospace,monospace; white-space: =
+8/1168/7</pre><pre style=3D"font-family: monospace,monospace; white-space: =
 pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><sp=
 an>index 35513e9..8e93653 100644</span><br><span>--- a/CMakeLists.txt</span=
 ><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -113,8 +113,7 @@</span><=
@@ -2711,954 +2709,953 @@ GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
 endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
 an> void</span><br><span> mbuf_free(struct mbuf_set *ms)</span><br><span> {=
 </span><br><span>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span=
-><br><span>index 59bf52b..e0fddac 100644</span><br><span>--- a/src/openvpn/=
-misc.c</span><br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -105,6 +=
-105,11 @@</span><br><span>     return true;</span><br><span> }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
-GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><s=
-pan>  * Parses an authentication challenge string and returns an auth_chall=
-enge_info structure.</span><br><span>  * The authentication challenge strin=
-g should follow the dynamic challenge/response protocol.</span><br><span>@@=
- -461,6 +466,10 @@</span><br><span>     return true;</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
-efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span> void</span><br><span> purge_user_pass(struct=
- user_pass *up, const bool force)</span><br><span> {</span><br><span>diff -=
--git a/src/openvpn/mroute.c b/src/openvpn/mroute.c</span><br><span>index ab=
-01874..88ea647 100644</span><br><span>--- a/src/openvpn/mroute.c</span><br>=
-<span>+++ b/src/openvpn/mroute.c</span><br><span>@@ -103,6 +103,11 @@</span=
-><br><span>     return true;</span><br><span> }</span><br><span> </span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defi=
-ned(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
-ma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span> static inline void</span><br><s=
-pan> mroute_get_in_addr_t(struct mroute_addr *ma, const in_addr_t src, unsi=
-gned int mask)</span><br><span> {</span><br><span>@@ -547,6 +552,10 @@</spa=
-n><br><span>     }</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clan=
-g__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC dia=
-gnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> voi=
-d</span><br><span> mroute_helper_free(struct mroute_helper *mh)</span><br><=
-span> {</span><br><span>diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c<=
-/span><br><span>index 32cd3f8..e7111a8 100644</span><br><span>--- a/src/ope=
-nvpn/mss.c</span><br><span>+++ b/src/openvpn/mss.c</span><br><span>@@ -130,=
-6 +130,11 @@</span><br><span>     }</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) =
-|| defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * =
-change TCP MSS option in SYN/SYN-ACK packets, if present</span><br><span>  =
-* this is generic for IPv4 and IPv6, as the TCP header is the same</span><b=
-r><span>@@ -199,6 +204,10 @@</span><br><span>     }</span><br><span> }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if de=
-fined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span> static inline size_t</span><br><span> adjust_=
-payload_max_cbc(const struct key_type *kt, size_t target)</span><br><span> =
-{</span><br><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</spa=
-n><br><span>index 81310a2..83edec6 100644</span><br><span>--- a/src/openvpn=
-/mtcp.c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -45,6 +=
-45,11 @@</span><br><span>     unsigned int sock;</span><br><span> };</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defi=
-ned(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct mul=
-ti_instance *</span><br><span> multi_create_instance_tcp(struct multi_conte=
-xt *m, struct link_socket *sock)</span><br><span> {</span><br><span>@@ -120=
-,6 +125,10 @@</span><br><span>     return true;</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
-d(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span> void</span><br><span> multi_tcp_instance_specific=
-_free(struct multi_instance *mi)</span><br><span> {</span><br><span>diff --=
-git a/src/openvpn/mtu.c b/src/openvpn/mtu.c</span><br><span>index a419e32..=
-1e021e3 100644</span><br><span>--- a/src/openvpn/mtu.c</span><br><span>+++ =
-b/src/openvpn/mtu.c</span><br><span>@@ -280,6 +280,11 @@</span><br><span>  =
-   struct timeval tv;</span><br><span> };</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__=
-clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC=
- diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
-agma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=
+><br><span>index 59bf52b..e24d441 100644</span><br><span>--- a/src/openvpn/=
+misc.c</span><br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -72,6 +7=
+2,11 @@</span><br><span> #endif</span><br><span> }</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || d=
+efined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#p=
+ragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_MANAGEMENT</sp=
+an><br><span> /* Get username/password from the management interface */</sp=
+an><br><span> static bool</span><br><span>@@ -461,6 +466,10 @@</span><br><s=
+pan>     return true;</span><br><span> }</span><br><span> </span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__c=
+lang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC =
+diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+void</span><br><span> purge_user_pass(struct user_pass *up, const bool forc=
+e)</span><br><span> {</span><br><span>diff --git a/src/openvpn/mroute.c b/s=
+rc/openvpn/mroute.c</span><br><span>index ab01874..88ea647 100644</span><br=
+><span>--- a/src/openvpn/mroute.c</span><br><span>+++ b/src/openvpn/mroute.=
+c</span><br><span>@@ -103,6 +103,11 @@</span><br><span>     return true;</s=
+pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignor=
+ed &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span> static inline void</span><br><span> mroute_get_in_addr_t(struc=
+t mroute_addr *ma, const in_addr_t src, unsigned int mask)</span><br><span>=
+ {</span><br><span>@@ -547,6 +552,10 @@</span><br><span>     }</span><br><s=
+pan> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> mroute_helpe=
+r_free(struct mroute_helper *mh)</span><br><span> {</span><br><span>diff --=
+git a/src/openvpn/mss.c b/src/openvpn/mss.c</span><br><span>index 32cd3f8..=
+e7111a8 100644</span><br><span>--- a/src/openvpn/mss.c</span><br><span>+++ =
+b/src/openvpn/mss.c</span><br><span>@@ -130,6 +130,11 @@</span><br><span>  =
+   }</span><br><span> }</span><br><span> </span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnosti=
+c ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> /*</span><br><span>  * change TCP MSS option in SYN/SYN=
+-ACK packets, if present</span><br><span>  * this is generic for IPv4 and I=
+Pv6, as the TCP header is the same</span><br><span>@@ -199,6 +204,10 @@</sp=
+an><br><span>     }</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cla=
+ng__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC di=
+agnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> st=
+atic inline size_t</span><br><span> adjust_payload_max_cbc(const struct key=
+_type *kt, size_t target)</span><br><span> {</span><br><span>diff --git a/s=
+rc/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 81310a2..83ede=
+c6 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><span>+++ b/sr=
+c/openvpn/mtcp.c</span><br><span>@@ -45,6 +45,11 @@</span><br><span>     un=
+signed int sock;</span><br><span> };</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang=
+__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
+nostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma =
+GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span> struct multi_instance *</span><br><span> m=
+ulti_create_instance_tcp(struct multi_context *m, struct link_socket *sock)=
+</span><br><span> {</span><br><span>@@ -120,6 +125,10 @@</span><br><span>  =
+   return true;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
+ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void<=
+/span><br><span> multi_tcp_instance_specific_free(struct multi_instance *mi=
+)</span><br><span> {</span><br><span>diff --git a/src/openvpn/mtu.c b/src/o=
+penvpn/mtu.c</span><br><span>index a419e32..1e021e3 100644</span><br><span>=
+--- a/src/openvpn/mtu.c</span><br><span>+++ b/src/openvpn/mtu.c</span><br><=
+span>@@ -280,6 +280,11 @@</span><br><span>     struct timeval tv;</span><br=
+><span> };</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &q=
+uot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span> const char *</span><br><span> format_extended_socket_error(int fd, =
+int *mtu, struct gc_arena *gc)</span><br><span> {</span><br><span>@@ -389,6=
+ +394,10 @@</span><br><span>     return BSTR(&amp;out);</span><br><span> }<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+f defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> void</span><br><span> set_sock_extended_e=
+rror_passing(int sd, sa_family_t proto_af)</span><br><span> {</span><br><sp=
+an>diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>ind=
+ex 31134be..a373a6a 100644</span><br><span>--- a/src/openvpn/mudp.c</span><=
+br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@ -180,6 +180,11 @@</spa=
+n><br><span>     return false;</span><br><span> }</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
+agma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Get a =
+client instance based on real address.  If</span><br><span>  * the instance=
+ doesn&#39;t exist, create it while</span><br><span>@@ -310,6 +315,10 @@</s=
+pan><br><span>     return mi;</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || def=
+ined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
+gma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span> /*</span><br><span>  * Send a packet to UDP socket.</span><br><span=
+>  */</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.=
+c</span><br><span>index f1abdbe..e74affa 100644</span><br><span>--- a/src/o=
+penvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@=
+ -262,6 +262,11 @@</span><br><span> </span><br><span> #endif</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GN=
+UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_ASYN=
+C_PUSH</span><br><span> static uint32_t</span><br><span> /*</span><br><span=
+>@@ -3986,6 +3991,10 @@</span><br><span>     return count;</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> const char *</span><br><span> format=
-_extended_socket_error(int fd, int *mtu, struct gc_arena *gc)</span><br><sp=
-an> {</span><br><span>@@ -389,6 +394,10 @@</span><br><span>     return BSTR=
-(&amp;out);</span><br><span> }</span><br><span> </span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic=
- pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span=
-><br><span> set_sock_extended_error_passing(int sd, sa_family_t proto_af)</=
-span><br><span> {</span><br><span>diff --git a/src/openvpn/mudp.c b/src/ope=
-nvpn/mudp.c</span><br><span>index 31134be..a373a6a 100644</span><br><span>-=
--- a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br>=
-<span>@@ -180,6 +180,11 @@</span><br><span>     return false;</span><br><sp=
+l(120, 100%, 40%);">+</span><br><span> static void</span><br><span> managem=
+ent_delete_event(void *arg, event_t event)</span><br><span> {</span><br><sp=
+an>diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sit=
+nl.c</span><br><span>index 4210e92..168401f 100644</span><br><span>--- a/sr=
+c/openvpn/networking_sitnl.c</span><br><span>+++ b/src/openvpn/networking_s=
+itnl.c</span><br><span>@@ -130,6 +130,11 @@</span><br><span>     inet_addre=
+ss_t gw;</span><br><span> };</span><br><span> </span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic p=
+ush</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
+nostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span> /**</span><br><span>  * Helper function used to ea=
+sily add attributes to a rtnl message</span><br><span>  */</span><br><span>=
+@@ -1461,6 +1466,10 @@</span><br><span>     return sitnl_send(&amp;req.n, 0=
+, 0, NULL, NULL);</span><br><span> }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang=
+__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
+nostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #end=
+if /* !ENABLE_SITNL */</span><br><span> </span><br><span> #endif /* TARGET_=
+LINUX */</span><br><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm=
+.c</span><br><span>index c2a93e8..521677b 100644</span><br><span>--- a/src/=
+openvpn/ntlm.c</span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ =
+-74,6 +74,11 @@</span><br><span>     hmac_ctx_free(hmac_ctx);</span><br><sp=
 an> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
 ;">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"co=
 lor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-W=
 conversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
 dif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> /*</span><br><span>  * Get a client instance based on real address.  If</=
-span><br><span>  * the instance doesn&#39;t exist, create it while</span><b=
-r><span>@@ -310,6 +315,10 @@</span><br><span>     return mi;</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Send a packet=
- to UDP socket.</span><br><span>  */</span><br><span>diff --git a/src/openv=
-pn/multi.c b/src/openvpn/multi.c</span><br><span>index f1abdbe..e74affa 100=
-644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/ope=
-nvpn/multi.c</span><br><span>@@ -262,6 +262,11 @@</span><br><span> </span><=
-br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignor=
-ed &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span> #ifdef ENABLE_ASYNC_PUSH</span><br><span> static uint32_t</spa=
-n><br><span> /*</span><br><span>@@ -3986,6 +3991,10 @@</span><br><span>    =
- return count;</span><br><span> }</span><br><span> </span><br><span style=
+> static void</span><br><span> gen_timestamp(uint8_t *timestamp)</span><br>=
+<span> {</span><br><span>@@ -383,4 +388,8 @@</span><br><span> </span><br><s=
+pan>     return ((const char *)make_base64_string2((unsigned char *)phase3,=
+ phase3_bufpos, gc));</span><br><span> }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> #endif /* if NTLM=
+ */</span><br><span>diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c</spa=
+n><br><span>index 8821a06..78013ae 100644</span><br><span>--- a/src/openvpn=
+/occ.c</span><br><span>+++ b/src/openvpn/occ.c</span><br><span>@@ -174,6 +1=
+74,11 @@</span><br><span>     }</span><br><span> }</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || d=
+efined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#p=
+ragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> check_=
+send_occ_load_test_dowork(struct context *c)</span><br><span> {</span><br><=
+span>@@ -347,6 +352,10 @@</span><br><span>     c-&gt;c2.occ_op =3D -1;</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> proc=
+ess_received_occ_msg(struct context *c)</span><br><span> {</span><br><span>=
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h</s=
+pan><br><span>index 143a3cf..6607f2d 100644</span><br><span>--- a/src/openv=
+pn/openssl_compat.h</span><br><span>+++ b/src/openvpn/openssl_compat.h</spa=
+n><br><span>@@ -194,12 +194,21 @@</span><br><span>           LIBRESSL_VERSI=
+ON_NUMBER &gt; 0x3050400fL) */</span><br><span> </span><br><span> #if OPENS=
+SL_VERSION_NUMBER &lt; 0x30200000L &amp;&amp; OPENSSL_VERSION_NUMBER &gt;=
+=3D 0x30000000L</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if =
+defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversi=
+on&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static=
+ inline const char *</span><br><span> SSL_get0_group_name(SSL *s)</span><br=
+><span> {</span><br><span>     int nid =3D SSL_get_negotiated_group(s);</sp=
+an><br><span>     return SSL_group_to_name(s, nid);</span><br><span> }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
 _)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
 ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span> #endif</span><br><span> </span><br><span> #endif /* OPENSSL_C=
+OMPAT_H_ */</span><br><span>diff --git a/src/openvpn/options.c b/src/openvp=
+n/options.c</span><br><span>index a268b92..1ed5966 100644</span><br><span>-=
+-- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</spa=
+n><br><span>@@ -1158,6 +1158,11 @@</span><br><span>     return get_ipv6_add=
+r(ipv6_prefix_spec, &amp;t_addr, &amp;t_bits, M_WARN);</span><br><span> }</=
+span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+ defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconvers=
+ion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
 an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> stati=
-c void</span><br><span> management_delete_event(void *arg, event_t event)</=
-span><br><span> {</span><br><span>diff --git a/src/openvpn/networking_sitnl=
-.c b/src/openvpn/networking_sitnl.c</span><br><span>index 4210e92..168401f =
-100644</span><br><span>--- a/src/openvpn/networking_sitnl.c</span><br><span=
->+++ b/src/openvpn/networking_sitnl.c</span><br><span>@@ -130,6 +130,11 @@<=
-/span><br><span>     inet_address_t gw;</span><br><span> };</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNU=
-C__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span=
->  * Helper function used to easily add attributes to a rtnl message</span>=
-<br><span>  */</span><br><span>@@ -1461,6 +1466,10 @@</span><br><span>     =
-return sitnl_send(&amp;req.n, 0, 0, NULL, NULL);</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defin=
-ed(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span> #endif /* !ENABLE_SITNL */</span><br><span> </sp=
-an><br><span> #endif /* TARGET_LINUX */</span><br><span>diff --git a/src/op=
-envpn/ntlm.c b/src/openvpn/ntlm.c</span><br><span>index c2a93e8..521677b 10=
-0644</span><br><span>--- a/src/openvpn/ntlm.c</span><br><span>+++ b/src/ope=
-nvpn/ntlm.c</span><br><span>@@ -74,6 +74,11 @@</span><br><span>     hmac_ct=
-x_free(hmac_ctx);</span><br><span> }</span><br><span> </span><br><span styl=
+c char *</span><br><span> string_substitute(const char *src, int from, int =
+to, struct gc_arena *gc)</span><br><span> {</span><br><span>@@ -9908,6 +991=
+3,10 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined=
+(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span> bool</span><br><span> has_udp_in_local_list(const =
+struct options *options)</span><br><span> {</span><br><span>diff --git a/sr=
+c/openvpn/options_util.c b/src/openvpn/options_util.c</span><br><span>index=
+ be1eefc..15a1c0c 100644</span><br><span>--- a/src/openvpn/options_util.c</=
+span><br><span>+++ b/src/openvpn/options_util.c</span><br><span>@@ -146,6 +=
+146,11 @@</span><br><span>     return (int)i;</span><br><span> }</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(=
+__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br=
+><span> atoi_constrained(const char *str, int *value, const char *name, int=
+ min, int max, int msglevel)</span><br><span> {</span><br><span>@@ -177,6 +=
+182,10 @@</span><br><span>     return true;</span><br><span> }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
+GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span> static const char *updatable_options[] =3D { &quot;bl=
+ock-ipv6&quot;, &quot;block-outside-dns&quot;,</span><br><span>            =
+                                &quot;dhcp-option&quot;, &quot;dns&quot;,</=
+span><br><span>                                            &quot;ifconfig&q=
+uot;, &quot;ifconfig-ipv6&quot;,</span><br><span>diff --git a/src/openvpn/o=
+time.c b/src/openvpn/otime.c</span><br><span>index 717f749..d9bf157 100644<=
+/span><br><span>--- a/src/openvpn/otime.c</span><br><span>+++ b/src/openvpn=
+/otime.c</span><br><span>@@ -100,6 +100,11 @@</span><br><span> </span><br><=
+span> /* format a time_t as ascii, or use current time if 0 */</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
+GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> const char *</sp=
+an><br><span> time_string(time_t t, long usec, bool show_usec, struct gc_ar=
+ena *gc)</span><br><span> {</span><br><span>@@ -130,6 +135,10 @@</span><br>=
+<span>     return BSTR(&amp;out);</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) ||=
+ defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span> /*</span><br><span>  * Limit the frequency of an event stream.<=
+/span><br><span>  *</span><br><span>diff --git a/src/openvpn/otime.h b/src/=
+openvpn/otime.h</span><br><span>index 5c700bb..108d0f2 100644</span><br><sp=
+an>--- a/src/openvpn/otime.h</span><br><span>+++ b/src/openvpn/otime.h</spa=
+n><br><span>@@ -59,6 +59,11 @@</span><br><span> extern time_t now_usec;</sp=
+an><br><span> void update_now_usec(struct timeval *tv);</span><br><span> </=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__)=
+ || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static inline int</span=
+><br><span> openvpn_gettimeofday(struct timeval *tv, void *tz)</span><br><s=
+pan> {</span><br><span>@@ -236,6 +241,10 @@</span><br><span>     dest-&gt;t=
+v_usec =3D usec;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
+ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #defi=
+ne TV_WITHIN_SIGMA_MAX_SEC  600</span><br><span> #define TV_WITHIN_SIGMA_MA=
+X_USEC (TV_WITHIN_SIGMA_MAX_SEC * 1000000)</span><br><span> </span><br><spa=
+n>diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c</span><br>=
+<span>index 09696db..0b33c9c 100644</span><br><span>--- a/src/openvpn/packe=
+t_id.c</span><br><span>+++ b/src/openvpn/packet_id.c</span><br><span>@@ -71=
+,6 +71,11 @@</span><br><span> #endif</span><br><span> }</span><br><span> </=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__)=
+ || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><=
+span> packet_id_init_recv(struct packet_id_rec *rec, int seq_backtrack, int=
+ time_backtrack,</span><br><span>                     const char *name, int=
+ unit)</span><br><span>@@ -662,6 +667,10 @@</span><br><span>     return epo=
+ch;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><sp=
+an> packet_id_write_epoch(struct packet_id_send *p, uint16_t epoch, struct =
+buffer *buf)</span><br><span> {</span><br><span>diff --git a/src/openvpn/pa=
+cket_id.h b/src/openvpn/packet_id.h</span><br><span>index a7eb256..e9d3647 =
+100644</span><br><span>--- a/src/openvpn/packet_id.h</span><br><span>+++ b/=
+src/openvpn/packet_id.h</span><br><span>@@ -280,6 +280,11 @@</span><br><spa=
+n>     return p-&gt;fd &gt;=3D 0;</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) ||=
+ defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> /* transfer packet_id -&gt=
+; packet_id_persist */</span><br><span> static inline void</span><br><span>=
+ packet_id_persist_save_obj(struct packet_id_persist *p, const struct packe=
+t_id *pid)</span><br><span>@@ -291,6 +296,10 @@</span><br><span>     }</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Re=
+set the current send packet id to its initial state.</span><br><span>  * Us=
+e very carefully (e.g. in the standalone reset packet context) to</span><br=
+><span>diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c</span><br><=
+span>index dfc87f6..d9c16d9 100644</span><br><span>--- a/src/openvpn/pkcs11=
+.c</span><br><span>+++ b/src/openvpn/pkcs11.c</span><br><span>@@ -53,6 +53,=
+11 @@</span><br><span> }</span><br><span> #endif</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || def=
+ined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
+gma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><span> _=
+_mysleep(const unsigned long usec)</span><br><span> {</span><br><span>@@ -5=
+58,6 +563,10 @@</span><br><span>     return success;</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
+efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span> int</span><br><span> tls_ctx_use_pkcs11(stru=
+ct tls_root_ctx *const ssl_ctx, bool pkcs11_id_management,</span><br><span>=
+                    const char *const pkcs11_id)</span><br><span>diff --git=
+ a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c</span><br><s=
+pan>index a912747..70349aa 100644</span><br><span>--- a/src/openvpn/pkcs11_=
+openssl.c</span><br><span>+++ b/src/openvpn/pkcs11_openssl.c</span><br><spa=
+n>@@ -428,6 +428,11 @@</span><br><span>     return dn;</span><br><span> }</=
+span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+ defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconvers=
+ion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</=
+span><br><span> pkcs11_certificate_serial(pkcs11h_certificate_t certificate=
+, char *serial, size_t serial_len)</span><br><span> {</span><br><span>@@ -4=
+68,4 +473,9 @@</span><br><span> </span><br><span>     return ret;</span><br=
+><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defi=
+ned(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
+ma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span> #endif /* defined(ENABLE_PKCS11) &amp;&amp; defined(ENABLE_OPENSSL) =
+*/</span><br><span>diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</=
+span><br><span>index 054cc79..f19dc44 100644</span><br><span>--- a/src/open=
+vpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><br><span>@@ -5=
+4,6 +54,11 @@</span><br><span> }</span><br><span> </span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || d=
+efined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#p=
+ragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> /* cached proxy username/pas=
+sword */</span><br><span> static struct user_pass static_proxy_user_pass;</=
+span><br><span> </span><br><span>@@ -1063,3 +1068,7 @@</span><br><span>    =
+ gc_free(&amp;gc);</span><br><span>     return ret;</span><br><span> }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
+ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span>diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c</span><br><sp=
+an>index eae03e3..4286482 100644</span><br><span>--- a/src/openvpn/ps.c</sp=
+an><br><span>+++ b/src/openvpn/ps.c</span><br><span>@@ -327,6 +327,11 @@</s=
+pan><br><span>     }</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cl=
+ang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC d=
+iagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
+ma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Record IP/port o=
+f client in filesystem, so that server receiving</span><br><span>  * the pr=
+oxy can determine true client origin.</span><br><span>@@ -795,6 +800,10 @@<=
+/span><br><span>     msg(M_INFO, &quot;PORT SHARE PROXY: proxy exiting&quot=
+;);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span=
+>  * Called from the main OpenVPN process to enable the port</span><br><spa=
+n>  * share proxy.</span><br><span>diff --git a/src/openvpn/push.c b/src/op=
+envpn/push.c</span><br><span>index 4f6adfc..2748682 100644</span><br><span>=
+--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</span><br=
+><span>@@ -429,6 +429,10 @@</span><br><span>     gc_free(&amp;gc);</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &q=
+uot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span> </span><br><span> bool</span><br><span> send_aut=
+h_pending_messages(struct tls_multi *tls_multi, struct tls_session *session=
+,</span><br><span>@@ -1082,6 +1086,10 @@</span><br><span>     return ret;</=
+span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><span> pr=
+ocess_incoming_push_msg(struct context *c, const struct buffer *buffer,</sp=
+an><br><span>                           bool honor_received_options, unsign=
+ed int permission_mask,</span><br><span>diff --git a/src/openvpn/push_util.=
+c b/src/openvpn/push_util.c</span><br><span>index 0862a74..98558d2 100644</=
+span><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/open=
+vpn/push_util.c</span><br><span>@@ -4,6 +4,11 @@</span><br><span> </span><b=
+r><span> #include &quot;push.h&quot;</span><br><span> </span><br><span styl=
 e=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang=
 __)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
 nostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma =
 GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"co=
 lor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span> static void</span><br><span> gen_timestamp=
-(uint8_t *timestamp)</span><br><span> {</span><br><span>@@ -383,4 +388,8 @@=
-</span><br><span> </span><br><span>     return ((const char *)make_base64_s=
-tring2((unsigned char *)phase3, phase3_bufpos, gc));</span><br><span> }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+ 100%, 40%);">+</span><br><span> int</span><br><span> process_incoming_push=
+_update(struct context *c, unsigned int permission_mask,</span><br><span>  =
+                            unsigned int *option_types_found, struct buffer=
+ *buf)</span><br><span>@@ -35,3 +40,7 @@</span><br><span> </span><br><span>=
+     return ret;</span><br><span> }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+ defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/src/openvpn=
+/reliable.c b/src/openvpn/reliable.c</span><br><span>index b4a747f..0c8b552=
+ 100644</span><br><span>--- a/src/openvpn/reliable.c</span><br><span>+++ b/=
+src/openvpn/reliable.c</span><br><span>@@ -687,6 +687,11 @@</span><br><span=
+>     }</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pus=
+h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagno=
+stic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span> /* in how many seconds should we wake up to check fo=
+r timeout */</span><br><span> /* if we return BIG_TIMEOUT, nothing to wait =
+for */</span><br><span> interval_t</span><br><span>@@ -719,6 +724,10 @@</sp=
+an><br><span>     return ret;</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || def=
+ined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
+gma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span> /*</span><br><span>  * Enable an incoming buffer previously returne=
+d by a get function as active.</span><br><span>  */</span><br><span>diff --=
+git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index e5044=
+85..d3d2954 100644</span><br><span>--- a/src/openvpn/route.c</span><br><spa=
+n>+++ b/src/openvpn/route.c</span><br><span>@@ -1760,6 +1760,10 @@</span><b=
+r><span>     return (status !=3D RTA_ERROR);</span><br><span> }</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_=
+_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
+an> </span><br><span> void</span><br><span> route_ipv6_clear_host_bits(stru=
+ct route_ipv6 *r6)</span><br><span>@@ -2364,6 +2368,10 @@</span><br><span> =
+    net_ctx_reset(ctx);</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(_=
+_clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GC=
+C diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+> /*</span><br><span>  * The --redirect-gateway option requires OS-specific=
+ code below</span><br><span>  * to get the current default gateway.</span><=
+br><span>@@ -3360,6 +3368,11 @@</span><br><span> </span><br><span> #define =
+max(a, b) ((a) &gt; (b) ? (a) : (b))</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang=
+__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
+nostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma =
+GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span> void</span><br><span> get_default_gateway(=
+struct route_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)</sp=
+an><br><span> {</span><br><span>@@ -3733,6 +3746,10 @@</span><br><span>    =
+ }</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #undef max</span><b=
+r><span> </span><br><span> #elif defined(TARGET_HAIKU)</span><br><span>diff=
+ --git a/src/openvpn/schedule.c b/src/openvpn/schedule.c</span><br><span>in=
+dex c9fef24..1389889 100644</span><br><span>--- a/src/openvpn/schedule.c</s=
+pan><br><span>+++ b/src/openvpn/schedule.c</span><br><span>@@ -65,6 +65,11 =
+@@</span><br><span> }</span><br><span> #endif</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || define=
+d(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma=
+ GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span> static inline void</span><br><spa=
+n> schedule_set_pri(struct schedule_entry *e)</span><br><span> {</span><br>=
+<span>@@ -75,6 +80,10 @@</span><br><span>     }</span><br><span> }</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
+d(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span> /* This is the master key comparison routine.  A =
+key is</span><br><span>  * simply a struct timeval containing the absolute =
+time for</span><br><span>  * an event.  The unique treap priority (pri) is =
+used to ensure</span><br><span>diff --git a/src/openvpn/socket.c b/src/open=
+vpn/socket.c</span><br><span>index 306170c..248c690 100644</span><br><span>=
+--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span=
+><br><span>@@ -72,6 +72,11 @@</span><br><span>     }</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
+efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversio=
+n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</spa=
+n><br><span>  * Functions related to the translation of DNS names to IP add=
+resses.</span><br><span>  */</span><br><span>@@ -2448,6 +2453,10 @@</span><=
+br><span> #endif</span><br><span> }</span><br><span> </span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
 _)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
 ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
-an><br><span> #endif /* if NTLM */</span><br><span>diff --git a/src/openvpn=
-/occ.c b/src/openvpn/occ.c</span><br><span>index 8821a06..78013ae 100644</s=
-pan><br><span>--- a/src/openvpn/occ.c</span><br><span>+++ b/src/openvpn/occ=
-.c</span><br><span>@@ -174,6 +174,11 @@</span><br><span>     }</span><br><s=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #if E=
+NABLE_IP_PKTINFO</span><br><span> </span><br><span> ssize_t</span><br><span=
+>diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c</span><br><span>ind=
+ex 481d3fb..11771d5 100644</span><br><span>--- a/src/openvpn/socks.c</span>=
+<br><span>+++ b/src/openvpn/socks.c</span><br><span>@@ -80,6 +80,11 @@</spa=
+n><br><span>     free(sp);</span><br><span> }</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || define=
+d(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma=
+ GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span> static bool</span><br><span> sock=
+s_username_password_auth(struct socks_proxy_info *p, socket_descriptor_t sd=
+,</span><br><span>                              struct event_timeout *serve=
+r_poll_timeout,</span><br><span>@@ -508,6 +513,10 @@</span><br><span>     r=
+eturn;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br>=
+<span> establish_socks_proxy_udpassoc(struct socks_proxy_info *p,</span><br=
+><span>                                socket_descriptor_t ctrl_sd, /* alre=
+ady open to proxy */</span><br><span>diff --git a/src/openvpn/ssl.c b/src/o=
+penvpn/ssl.c</span><br><span>index b7db1e7..56829c9 100644</span><br><span>=
+--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><=
+span>@@ -180,6 +180,11 @@</span><br><span>     frame-&gt;tun_mtu =3D max_in=
+t(frame-&gt;tun_mtu, TLS_CHANNEL_MTU_MIN);</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__G=
+NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><sp=
+an>  * calculate the maximum overhead that control channel frames have</spa=
+n><br><span>  * This includes header, op code and everything apart from the=
+</span><br><span>@@ -3979,6 +3984,10 @@</span><br><span>     ASSERT(buf_wri=
+te_prepend(buf, &amp;op, 1));</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || def=
+ined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
+gma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span> void</span><br><span> tls_prepend_opcode_v2(const struct tls_multi =
+*multi, struct buffer *buf)</span><br><span> {</span><br><span>diff --git a=
+/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>inde=
+x 635b53c..f19db4c 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</=
+span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -585,6 +5=
+85,11 @@</span><br><span>     return 0;</span><br><span> }</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC=
+__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>=
+  * external_pkcs1_sign implements a mbed TLS rsa_sign_func callback, that =
+uses</span><br><span>  * the management interface to request an RSA signatu=
+re for the supplied hash.</span><br><span>@@ -1004,6 +1009,10 @@</span><br>=
+<span>     }</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnosti=
+c pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span=
+><br><span> tls_version_max(void)</span><br><span> {</span><br><span>diff -=
+-git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c</span><br><span>index =
+51f7f92..a4c1733 100644</span><br><span>--- a/src/openvpn/ssl_ncp.c</span><=
+br><span>+++ b/src/openvpn/ssl_ncp.c</span><br><span>@@ -534,6 +534,11 @@</=
+span><br><span>     }</span><br><span> }</span><br><span> </span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__c=
+lang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC =
+diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
+gma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Replaces the=
+ string DEFAULT with the string \c replace.</span><br><span>  *</span><br><=
+span>@@ -566,6 +571,10 @@</span><br><span>     o-&gt;ncp_ciphers =3D (char =
+*)ncp_ciphers;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
+ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</=
+span><br><span>  * Checks for availibility of Chacha20-Poly1305 and sets</s=
+pan><br><span>  * the ncp_cipher to either AES-256-GCM:AES-128-GCM or</span=
+><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl=
+.c</span><br><span>index aa1ac11..9e8a60c 100644</span><br><span>--- a/src/=
+openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span=
+><br><span>@@ -272,6 +272,11 @@</span><br><span>     return 0;</span><br><s=
 pan> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
 );">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
 olor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-=
 Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
 ndif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n> void</span><br><span> check_send_occ_load_test_dowork(struct context *c)=
-</span><br><span> {</span><br><span>@@ -347,6 +352,10 @@</span><br><span>  =
-   c-&gt;c2.occ_op =3D -1;</span><br><span> }</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || define=
-d(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma=
- GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan> void</span><br><span> process_received_occ_msg(struct context *c)</spa=
-n><br><span> {</span><br><span>diff --git a/src/openvpn/openssl_compat.h b/=
-src/openvpn/openssl_compat.h</span><br><span>index 143a3cf..6607f2d 100644<=
-/span><br><span>--- a/src/openvpn/openssl_compat.h</span><br><span>+++ b/sr=
-c/openvpn/openssl_compat.h</span><br><span>@@ -194,12 +194,21 @@</span><br>=
-<span>           LIBRESSL_VERSION_NUMBER &gt; 0x3050400fL) */</span><br><sp=
-an> </span><br><span> #if OPENSSL_VERSION_NUMBER &lt; 0x30200000L &amp;&amp=
-; OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><span style=3D"color=
+n> static bool</span><br><span> tls_ctx_set_tls_versions(struct tls_root_ct=
+x *ctx, unsigned int ssl_flags)</span><br><span> {</span><br><span>@@ -424,=
+6 +429,10 @@</span><br><span>     }</span><br><span> }</span><br><span> </s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) =
+|| defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span> void</span><br><span> tls_ctx_restrict_ciphers(struct tls_roo=
+t_ctx *ctx, const char *ciphers)</span><br><span> {</span><br><span>diff --=
+git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c</span><br><span>index 6=
+ec05a7..825719c 100644</span><br><span>--- a/src/openvpn/ssl_pkt.c</span><b=
+r><span>+++ b/src/openvpn/ssl_pkt.c</span><br><span>@@ -160,6 +160,11 @@</s=
+pan><br><span>     }</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cl=
+ang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC d=
+iagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
+ma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> void</span><br><span> write_control_aut=
+h(struct tls_session *session, struct key_state *ks, struct buffer *buf,</s=
+pan><br><span>                    struct link_socket_actual **to_link_addr,=
+ int opcode, int max_ack,</span><br><span>@@ -495,6 +500,10 @@</span><br><s=
+pan>     return result.sid;</span><br><span> }</span><br><span> </span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defin=
+ed(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragm=
+a GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> bool</span><br><span> check_session_hmac_and_pkt_id(struct tls_pre_de=
+crypt_state *state,</span><br><span>                               const st=
+ruct openvpn_sockaddr *from,</span><br><span>diff --git a/src/openvpn/ssl_u=
+til.c b/src/openvpn/ssl_util.c</span><br><span>index 918a1f1..50e8c03 10064=
+4</span><br><span>--- a/src/openvpn/ssl_util.c</span><br><span>+++ b/src/op=
+envpn/ssl_util.c</span><br><span>@@ -290,6 +290,11 @@</span><br><span>     =
+return NULL;</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnosti=
+c push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC d=
+iagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span> int</span><br><span> get_num_elements(const cha=
+r *string, char delimiter)</span><br><span> {</span><br><span>@@ -309,3 +31=
+4,7 @@</span><br><span> </span><br><span>     return element_count;</span><=
+br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
+agma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#endif</span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/open=
+vpn/ssl_verify.c</span><br><span>index 6f85dca..10c343a 100644</span><br><s=
+pan>--- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_ve=
+rify.c</span><br><span>@@ -874,6 +874,11 @@</span><br><span>     return sup=
+ported;</span><br><span> }</span><br><span> </span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pus=
 h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagno=
 stic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> static inline const char *</span><br><span> SSL_get0=
-_group_name(SSL *s)</span><br><span> {</span><br><span>     int nid =3D SSL=
-_get_negotiated_group(s);</span><br><span>     return SSL_group_to_name(s, =
-nid);</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
-GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#endif</span><br><span> #endif</span><br><span> </span><br=
-><span> #endif /* OPENSSL_COMPAT_H_ */</span><br><span>diff --git a/src/ope=
-nvpn/options.c b/src/openvpn/options.c</span><br><span>index a268b92..1ed59=
-66 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b=
-/src/openvpn/options.c</span><br><span>@@ -1158,6 +1158,11 @@</span><br><sp=
-an>     return get_ipv6_addr(ipv6_prefix_spec, &amp;t_addr, &amp;t_bits, M_=
-WARN);</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnos=
-tic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span> static char *</span><br><span> string_substitute(cons=
-t char *src, int from, int to, struct gc_arena *gc)</span><br><span> {</spa=
-n><br><span>@@ -9908,6 +9913,10 @@</span><br><span>     gc_free(&amp;gc);</=
+);">+</span><br><span> /**</span><br><span>  *  Checks if the deferred stat=
+e should also send auth pending</span><br><span>  *  request to the client.=
+ Also removes the auth_pending control file</span><br><span>@@ -945,6 +950,=
+9 @@</span><br><span>     return ret;</span><br><span> }</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__=
+) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#endif</span><br><span> </span><br><span> /**</span><br><span>  =
+*  Removes auth_pending and auth_control files from file system</span><br><=
+span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify=
+_mbedtls.c</span><br><span>index cfcfb25..a2c702d 100644</span><br><span>--=
+- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_=
+verify_mbedtls.c</span><br><span>@@ -250,6 +250,11 @@</span><br><span>     =
+return FAILURE;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
+ostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma G=
+CC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span> static struct buffer</span><br><span> x509_=
+get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_x509_crt *cert, s=
+truct gc_arena *gc)</span><br><span> {</span><br><span>@@ -260,6 +265,10 @@=
+</span><br><span>     return fingerprint;</span><br><span> }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GN=
+UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> struct buffer</span><br><span> x509_get_sha1_fingerprin=
+t(mbedtls_x509_crt *cert, struct gc_arena *gc)</span><br><span> {</span><br=
+><span>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_veri=
+fy_openssl.c</span><br><span>index 6de7e2a..122101c 100644</span><br><span>=
+--- a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/openvpn/ss=
+l_verify_openssl.c</span><br><span>@@ -667,6 +667,11 @@</span><br><span>   =
+  return FAILURE;</span><br><span> }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang=
+__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
+nostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma =
+GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span> result_t</span><br><span> x509_verify_cert=
+_ku(X509 *x509, const unsigned *const expected_ku, int expected_len)</span>=
+<br><span> {</span><br><span>@@ -726,6 +731,10 @@</span><br><span>     retu=
+rn fFound;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic =
+pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> result_t</s=
+pan><br><span> x509_verify_cert_eku(X509 *x509, const char *const expected_=
+oid)</span><br><span> {</span><br><span>diff --git a/src/openvpn/status.c b=
+/src/openvpn/status.c</span><br><span>index 34e5a2f..fbd2168 100644</span><=
+br><span>--- a/src/openvpn/status.c</span><br><span>+++ b/src/openvpn/statu=
+s.c</span><br><span>@@ -207,6 +207,11 @@</span><br><span>     return ret;</=
 span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120=
 , 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span> h=
-as_udp_in_local_list(const struct options *options)</span><br><span> {</spa=
-n><br><span>diff --git a/src/openvpn/options_util.c b/src/openvpn/options_u=
-til.c</span><br><span>index be1eefc..15a1c0c 100644</span><br><span>--- a/s=
-rc/openvpn/options_util.c</span><br><span>+++ b/src/openvpn/options_util.c<=
-/span><br><span>@@ -146,6 +146,11 @@</span><br><span>     return (int)i;</s=
-pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignor=
-ed &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span> bool</span><br><span> atoi_constrained(const char *str, int *v=
-alue, const char *name, int min, int max, int msglevel)</span><br><span> {<=
-/span><br><span>@@ -177,6 +182,10 @@</span><br><span>     return true;</spa=
-n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span> static const char *updatab=
-le_options[] =3D { &quot;block-ipv6&quot;, &quot;block-outside-dns&quot;,</=
-span><br><span>                                            &quot;dhcp-optio=
-n&quot;, &quot;dns&quot;,</span><br><span>                                 =
-           &quot;ifconfig&quot;, &quot;ifconfig-ipv6&quot;,</span><br><span=
->diff --git a/src/openvpn/otime.c b/src/openvpn/otime.c</span><br><span>ind=
-ex 717f749..d9bf157 100644</span><br><span>--- a/src/openvpn/otime.c</span>=
-<br><span>+++ b/src/openvpn/otime.c</span><br><span>@@ -100,6 +100,11 @@</s=
-pan><br><span> </span><br><span> /* format a time_t as ascii, or use curren=
-t time if 0 */</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored=
- &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span> const char *</span><br><span> time_string(time_t t, long usec, b=
-ool show_usec, struct gc_arena *gc)</span><br><span> {</span><br><span>@@ -=
-130,6 +135,10 @@</span><br><span>     return BSTR(&amp;out);</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Limit the fre=
-quency of an event stream.</span><br><span>  *</span><br><span>diff --git a=
-/src/openvpn/otime.h b/src/openvpn/otime.h</span><br><span>index 5c700bb..1=
-08d0f2 100644</span><br><span>--- a/src/openvpn/otime.h</span><br><span>+++=
- b/src/openvpn/otime.h</span><br><span>@@ -59,6 +59,11 @@</span><br><span> =
-extern time_t now_usec;</span><br><span> void update_now_usec(struct timeva=
-l *tv);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;=
--Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an> static inline int</span><br><span> openvpn_gettimeofday(struct timeval =
-*tv, void *tz)</span><br><span> {</span><br><span>@@ -236,6 +241,10 @@</spa=
-n><br><span>     dest-&gt;tv_usec =3D usec;</span><br><span> }</span><br><s=
+ style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic igno=
+red &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span> #define STATUS_PRINTF_MAXLEN 512</span><br><span> </span><br>=
+<span> void</span><br><span>@@ -304,3 +309,7 @@</span><br><span> </span><br=
+><span>     return ret;</span><br><span> }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/src/=
+openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</span><br><span>index 2892199=
+..88689da 100644</span><br><span>--- a/src/openvpn/tls_crypt.c</span><br><s=
+pan>+++ b/src/openvpn/tls_crypt.c</span><br><span>@@ -205,6 +205,11 @@</spa=
+n><br><span>     return false;</span><br><span> }</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
+agma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span> tls_cry=
+pt_unwrap(const struct buffer *src, struct buffer *dst, struct crypto_optio=
+ns *opt)</span><br><span> {</span><br><span>@@ -413,6 +418,10 @@</span><br>=
+<span>     return buf_copy(wkc, &amp;work);</span><br><span> }</span><br><s=
 pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
 GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
 , 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span> #define TV_WITHIN_SIGMA_MAX_SEC  600</span><br><span>=
- #define TV_WITHIN_SIGMA_MAX_USEC (TV_WITHIN_SIGMA_MAX_SEC * 1000000)</span=
-><br><span> </span><br><span>diff --git a/src/openvpn/packet_id.c b/src/ope=
-nvpn/packet_id.c</span><br><span>index 09696db..0b33c9c 100644</span><br><s=
-pan>--- a/src/openvpn/packet_id.c</span><br><span>+++ b/src/openvpn/packet_=
-id.c</span><br><span>@@ -71,6 +71,11 @@</span><br><span> #endif</span><br><=
-span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;=
--Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an> static void</span><br><span> packet_id_init_recv(struct packet_id_rec *=
-rec, int seq_backtrack, int time_backtrack,</span><br><span>               =
-      const char *name, int unit)</span><br><span>@@ -662,6 +667,10 @@</spa=
-n><br><span>     return epoch;</span><br><span> }</span><br><span> </span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || de=
-fined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
-agma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> bool</span><br><span> packet_id_write_epoch(struct packet_id_send =
-*p, uint16_t epoch, struct buffer *buf)</span><br><span> {</span><br><span>=
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h</span><br><s=
-pan>index a7eb256..e9d3647 100644</span><br><span>--- a/src/openvpn/packet_=
-id.h</span><br><span>+++ b/src/openvpn/packet_id.h</span><br><span>@@ -280,=
-6 +280,11 @@</span><br><span>     return p-&gt;fd &gt;=3D 0;</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wc=
-onversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
-if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- /* transfer packet_id -&gt; packet_id_persist */</span><br><span> static i=
-nline void</span><br><span> packet_id_persist_save_obj(struct packet_id_per=
-sist *p, const struct packet_id *pid)</span><br><span>@@ -291,6 +296,10 @@<=
-/span><br><span>     }</span><br><span> }</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__=
-clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC=
- diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
-if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- /**</span><br><span>  * Reset the current send packet id to its initial st=
-ate.</span><br><span>  * Use very carefully (e.g. in the standalone reset p=
-acket context) to</span><br><span>diff --git a/src/openvpn/pkcs11.c b/src/o=
-penvpn/pkcs11.c</span><br><span>index dfc87f6..d9c16d9 100644</span><br><sp=
-an>--- a/src/openvpn/pkcs11.c</span><br><span>+++ b/src/openvpn/pkcs11.c</s=
-pan><br><span>@@ -53,6 +53,11 @@</span><br><span> }</span><br><span> #endif=
-</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconve=
-rsion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> sta=
-tic void</span><br><span> __mysleep(const unsigned long usec)</span><br><sp=
-an> {</span><br><span>@@ -558,6 +563,10 @@</span><br><span>     return succ=
-ess;</span><br><span> }</span><br><span> </span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><sp=
-an> tls_ctx_use_pkcs11(struct tls_root_ctx *const ssl_ctx, bool pkcs11_id_m=
-anagement,</span><br><span>                    const char *const pkcs11_id)=
-</span><br><span>diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pk=
-cs11_openssl.c</span><br><span>index a912747..70349aa 100644</span><br><spa=
-n>--- a/src/openvpn/pkcs11_openssl.c</span><br><span>+++ b/src/openvpn/pkcs=
-11_openssl.c</span><br><span>@@ -428,6 +428,11 @@</span><br><span>     retu=
-rn dn;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnos=
-tic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span> int</span><br><span> pkcs11_certificate_serial(pkcs11=
-h_certificate_t certificate, char *serial, size_t serial_len)</span><br><sp=
-an> {</span><br><span>@@ -468,4 +473,9 @@</span><br><span> </span><br><span=
->     return ret;</span><br><span> }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-f defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span> #endif /* defined(ENABLE_PKCS11) &amp;&am=
-p; defined(ENABLE_OPENSSL) */</span><br><span>diff --git a/src/openvpn/prox=
-y.c b/src/openvpn/proxy.c</span><br><span>index 054cc79..f19dc44 100644</sp=
-an><br><span>--- a/src/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/pr=
-oxy.c</span><br><span>@@ -54,6 +54,11 @@</span><br><span> }</span><br><span=
-> </span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wco=
-nversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
-f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-/* cached proxy username/password */</span><br><span> static struct user_pa=
-ss static_proxy_user_pass;</span><br><span> </span><br><span>@@ -1063,3 +10=
-68,7 @@</span><br><span>     gc_free(&amp;gc);</span><br><span>     return =
-ret;</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__G=
-NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif</span><br><span>diff --git a/src/openvpn/ps.c b/src/=
-openvpn/ps.c</span><br><span>index eae03e3..4286482 100644</span><br><span>=
---- a/src/openvpn/ps.c</span><br><span>+++ b/src/openvpn/ps.c</span><br><sp=
-an>@@ -327,6 +327,11 @@</span><br><span>     }</span><br><span> }</span><br=
+;">+</span><br><span> static bool</span><br><span> tls_crypt_v2_unwrap_clie=
+nt_key(struct key2 *client_key, struct buffer *metadata,</span><br><span>  =
+                              struct buffer wrapped_client_key, struct key_=
+ctx *server_key)</span><br><span>diff --git a/src/openvpn/tun.c b/src/openv=
+pn/tun.c</span><br><span>index 6c3096b..a6d3f59 100644</span><br><span>--- =
+a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span=
+>@@ -1717,6 +1717,11 @@</span><br><span>     }</span><br><span> }</span><br=
 ><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined=
 (__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 1=
 00%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot=
 ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br>=
-<span>  * Record IP/port of client in filesystem, so that server receiving<=
-/span><br><span>  * the proxy can determine true client origin.</span><br><=
-span>@@ -795,6 +800,10 @@</span><br><span>     msg(M_INFO, &quot;PORT SHARE=
- PROXY: proxy exiting&quot;);</span><br><span> }</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || def=
-ined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
-gma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span> /*</span><br><span>  * Called from the main OpenVPN process to enab=
-le the port</span><br><span>  * share proxy.</span><br><span>diff --git a/s=
-rc/openvpn/push.c b/src/openvpn/push.c</span><br><span>index 4f6adfc..27486=
-82 100644</span><br><span>--- a/src/openvpn/push.c</span><br><span>+++ b/sr=
-c/openvpn/push.c</span><br><span>@@ -429,6 +429,10 @@</span><br><span>     =
-gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang=
-__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diag=
-nostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma =
-GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span> bool<=
-/span><br><span> send_auth_pending_messages(struct tls_multi *tls_multi, st=
-ruct tls_session *session,</span><br><span>@@ -1082,6 +1086,10 @@</span><br=
-><span>     return ret;</span><br><span> }</span><br><span> </span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(_=
-_clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GC=
-C diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
-dif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> int</span><br><span> process_incoming_push_msg(struct context *c, const s=
-truct buffer *buffer,</span><br><span>                           bool honor=
-_received_options, unsigned int permission_mask,</span><br><span>diff --git=
- a/src/openvpn/push_util.c b/src/openvpn/push_util.c</span><br><span>index =
-0862a74..98558d2 100644</span><br><span>--- a/src/openvpn/push_util.c</span=
-><br><span>+++ b/src/openvpn/push_util.c</span><br><span>@@ -4,6 +4,11 @@</=
-span><br><span> </span><br><span> #include &quot;push.h&quot;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__G=
-NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><sp=
-an> process_incoming_push_update(struct context *c, unsigned int permission=
-_mask,</span><br><span>                              unsigned int *option_t=
-ypes_found, struct buffer *buf)</span><br><span>@@ -35,3 +40,7 @@</span><br=
-><span> </span><br><span>     return ret;</span><br><span> }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
->diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c</span><br><sp=
-an>index b4a747f..0c8b552 100644</span><br><span>--- a/src/openvpn/reliable=
-.c</span><br><span>+++ b/src/openvpn/reliable.c</span><br><span>@@ -687,6 +=
-687,11 @@</span><br><span>     }</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || =
-defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> /* in how many seconds shou=
-ld we wake up to check for timeout */</span><br><span> /* if we return BIG_=
-TIMEOUT, nothing to wait for */</span><br><span> interval_t</span><br><span=
->@@ -719,6 +724,10 @@</span><br><span>     return ret;</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
- defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span> /*</span><br><span>  * Enable an incoming =
-buffer previously returned by a get function as active.</span><br><span>  *=
-/</span><br><span>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</s=
-pan><br><span>index e504485..d3d2954 100644</span><br><span>--- a/src/openv=
-pn/route.c</span><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -17=
-60,6 +1760,10 @@</span><br><span>     return (status !=3D RTA_ERROR);</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored =
-&quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#endif</span><br><span> </span><br><span> void</span><br><span> route_=
-ipv6_clear_host_bits(struct route_ipv6 *r6)</span><br><span>@@ -2364,6 +236=
-8,10 @@</span><br><span>     net_ctx_reset(ctx);</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defin=
-ed(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span> /*</span><br><span>  * The --redirect-gateway op=
-tion requires OS-specific code below</span><br><span>  * to get the current=
- default gateway.</span><br><span>@@ -3360,6 +3368,11 @@</span><br><span> <=
-/span><br><span> #define max(a, b) ((a) &gt; (b) ? (a) : (b))</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__G=
-NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><s=
-pan> get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, op=
-envpn_net_ctx_t *ctx)</span><br><span> {</span><br><span>@@ -3733,6 +3746,1=
-0 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defin=
-ed(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragm=
-a GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span> #undef max</span><br><span> </span><br><span> #elif defined(TARGET_HA=
-IKU)</span><br><span>diff --git a/src/openvpn/schedule.c b/src/openvpn/sche=
-dule.c</span><br><span>index c9fef24..1389889 100644</span><br><span>--- a/=
-src/openvpn/schedule.c</span><br><span>+++ b/src/openvpn/schedule.c</span><=
-br><span>@@ -65,6 +65,11 @@</span><br><span> }</span><br><span> #endif</spa=
-n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if de=
-fined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion=
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static i=
-nline void</span><br><span> schedule_set_pri(struct schedule_entry *e)</spa=
-n><br><span> {</span><br><span>@@ -75,6 +80,10 @@</span><br><span>     }</s=
-pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* This is the master k=
-ey comparison routine.  A key is</span><br><span>  * simply a struct timeva=
-l containing the absolute time for</span><br><span>  * an event.  The uniqu=
-e treap priority (pri) is used to ensure</span><br><span>diff --git a/src/o=
-penvpn/socket.c b/src/openvpn/socket.c</span><br><span>index 306170c..248c6=
-90 100644</span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/=
-src/openvpn/socket.c</span><br><span>@@ -72,6 +72,11 @@</span><br><span>   =
-  }</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic=
- ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span> /*</span><br><span>  * Functions related to the translat=
-ion of DNS names to IP addresses.</span><br><span>  */</span><br><span>@@ -=
-2448,6 +2453,10 @@</span><br><span> #endif</span><br><span> }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__G=
-NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span> #if ENABLE_IP_PKTINFO</span><br><span> </span><br><spa=
-n> ssize_t</span><br><span>diff --git a/src/openvpn/socks.c b/src/openvpn/s=
-ocks.c</span><br><span>index 481d3fb..11771d5 100644</span><br><span>--- a/=
-src/openvpn/socks.c</span><br><span>+++ b/src/openvpn/socks.c</span><br><sp=
-an>@@ -80,6 +80,11 @@</span><br><span>     free(sp);</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
-efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversio=
-n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static =
-bool</span><br><span> socks_username_password_auth(struct socks_proxy_info =
-*p, socket_descriptor_t sd,</span><br><span>                              s=
-truct event_timeout *server_poll_timeout,</span><br><span>@@ -508,6 +513,10=
- @@</span><br><span>     return;</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || =
-defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span> void</span><br><span> establish_socks_proxy_udpassoc(struct sock=
-s_proxy_info *p,</span><br><span>                                socket_des=
-criptor_t ctrl_sd, /* already open to proxy */</span><br><span>diff --git a=
-/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index b7db1e7..56829=
-c9 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src=
-/openvpn/ssl.c</span><br><span>@@ -180,6 +180,11 @@</span><br><span>     fr=
-ame-&gt;tun_mtu =3D max_int(frame-&gt;tun_mtu, TLS_CHANNEL_MTU_MIN);</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &=
-quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> /**</span><br><span>  * calculate the maximum overhead that contro=
-l channel frames have</span><br><span>  * This includes header, op code and=
- everything apart from the</span><br><span>@@ -3979,6 +3984,10 @@</span><br=
-><span>     ASSERT(buf_write_prepend(buf, &amp;op, 1));</span><br><span> }<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-f defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span> void</span><br><span> tls_prepend_opcode_=
-v2(const struct tls_multi *multi, struct buffer *buf)</span><br><span> {</s=
-pan><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbed=
-tls.c</span><br><span>index 635b53c..f19db4c 100644</span><br><span>--- a/s=
-rc/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</s=
-pan><br><span>@@ -585,6 +585,11 @@</span><br><span>     return 0;</span><br=
-><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &q=
-uot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span> /**</span><br><span>  * external_pkcs1_sign implements a mbed TLS r=
-sa_sign_func callback, that uses</span><br><span>  * the management interfa=
-ce to request an RSA signature for the supplied hash.</span><br><span>@@ -1=
-004,6 +1009,10 @@</span><br><span>     }</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNU=
-C__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span> int</span><br><span> tls_version_max(void)</span><br><sp=
-an> {</span><br><span>diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_=
-ncp.c</span><br><span>index 51f7f92..a4c1733 100644</span><br><span>--- a/s=
-rc/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.c</span><br>=
-<span>@@ -534,6 +534,11 @@</span><br><span>     }</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defi=
-ned(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span>=
-<br><span>  * Replaces the string DEFAULT with the string \c replace.</span=
-><br><span>  *</span><br><span>@@ -566,6 +571,10 @@</span><br><span>     o-=
-&gt;ncp_ciphers =3D (char *)ncp_ciphers;</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNU=
-C__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span> /**</span><br><span>  * Checks for availibility of Chach=
-a20-Poly1305 and sets</span><br><span>  * the ncp_cipher to either AES-256-=
-GCM:AES-128-GCM or</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b=
-/src/openvpn/ssl_openssl.c</span><br><span>index aa1ac11..9e8a60c 100644</s=
-pan><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/ope=
-nvpn/ssl_openssl.c</span><br><span>@@ -272,6 +272,11 @@</span><br><span>   =
-  return 0;</span><br><span> }</span><br><span> </span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic=
- push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC di=
-agnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span> static bool</span><br><span> tls_ctx_set_tls_ver=
-sions(struct tls_root_ctx *ctx, unsigned int ssl_flags)</span><br><span> {<=
-/span><br><span>@@ -424,6 +429,10 @@</span><br><span>     }</span><br><span=
-> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> void</span><br><span> tls_ctx_restri=
-ct_ciphers(struct tls_root_ctx *ctx, const char *ciphers)</span><br><span> =
-{</span><br><span>diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.=
-c</span><br><span>index 6ec05a7..825719c 100644</span><br><span>--- a/src/o=
-penvpn/ssl_pkt.c</span><br><span>+++ b/src/openvpn/ssl_pkt.c</span><br><spa=
-n>@@ -160,6 +160,11 @@</span><br><span>     }</span><br><span> }</span><br>=
-<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(=
-__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static int</s=
+pan><br><span> write_tun_header(struct tuntap *tt, uint8_t *buf, int len)</=
+span><br><span> {</span><br><span>@@ -1770,6 +1775,11 @@</span><br><span>  =
+       return read(tt-&gt;fd, buf, len);</span><br><span>     }</span><br><=
+span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || define=
+d(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma=
+ GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> #endif /* if defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */</sp=
+an><br><span> </span><br><span> bool</span><br><span>@@ -2241,6 +2251,11 @@=
+</span><br><span>     free(tt);</span><br><span> }</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || d=
+efined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#p=
+ragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><span> write_t=
+un(struct tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><=
+span>@@ -2253,6 +2268,10 @@</span><br><span>     return read(tt-&gt;fd, buf=
+, len);</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop=
 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br=
-><span> write_control_auth(struct tls_session *session, struct key_state *k=
-s, struct buffer *buf,</span><br><span>                    struct link_sock=
-et_actual **to_link_addr, int opcode, int max_ack,</span><br><span>@@ -495,=
-6 +500,10 @@</span><br><span>     return result.sid;</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
-efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span> bool</span><br><span> check_session_hmac_and=
-_pkt_id(struct tls_pre_decrypt_state *state,</span><br><span>              =
-                 const struct openvpn_sockaddr *from,</span><br><span>diff =
---git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c</span><br><span>ind=
-ex 918a1f1..50e8c03 100644</span><br><span>--- a/src/openvpn/ssl_util.c</sp=
-an><br><span>+++ b/src/openvpn/ssl_util.c</span><br><span>@@ -290,6 +290,11=
- @@</span><br><span>     return NULL;</span><br><span> }</span><br><span> <=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__=
-) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><span> g=
-et_num_elements(const char *string, char delimiter)</span><br><span> {</spa=
-n><br><span>@@ -309,3 +314,7 @@</span><br><span> </span><br><span>     retu=
-rn element_count;</span><br><span> }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-f defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/src/openvp=
-n/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>index 6f85dca..10=
-c343a 100644</span><br><span>--- a/src/openvpn/ssl_verify.c</span><br><span=
->+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -874,6 +874,11 @@</span>=
-<br><span>     return supported;</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || =
-defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  *  Ch=
-ecks if the deferred state should also send auth pending</span><br><span>  =
-*  request to the client. Also removes the auth_pending control file</span>=
-<br><span>@@ -945,6 +950,9 @@</span><br><span>     return ret;</span><br><s=
-pan> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><spa=
-n> /**</span><br><span>  *  Removes auth_pending and auth_control files fro=
-m file system</span><br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c=
- b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>index cfcfb25..a2c702d =
-100644</span><br><span>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><sp=
-an>+++ b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>@@ -250,6 +250,11=
- @@</span><br><span>     return FAILURE;</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNU=
-C__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static struct buffe=
-r</span><br><span> x509_get_fingerprint(const mbedtls_md_info_t *md_info, m=
-bedtls_x509_crt *cert, struct gc_arena *gc)</span><br><span> {</span><br><s=
-pan>@@ -260,6 +265,10 @@</span><br><span>     return fingerprint;</span><br=
-><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span> struct buffer</span><br><span=
-> x509_get_sha1_fingerprint(mbedtls_x509_crt *cert, struct gc_arena *gc)</s=
-pan><br><span> {</span><br><span>diff --git a/src/openvpn/ssl_verify_openss=
-l.c b/src/openvpn/ssl_verify_openssl.c</span><br><span>index 6de7e2a..12210=
-1c 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br>=
-<span>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -667,6 +667=
-,11 @@</span><br><span>     return FAILURE;</span><br><span> }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
-GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> result_t</span><=
-br><span> x509_verify_cert_ku(X509 *x509, const unsigned *const expected_ku=
-, int expected_len)</span><br><span> {</span><br><span>@@ -726,6 +731,10 @@=
-</span><br><span>     return fFound;</span><br><span> }</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__)=
- || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span> result_t</span><br><span> x509_verify_cert_eku(X509 *x509, c=
-onst char *const expected_oid)</span><br><span> {</span><br><span>diff --gi=
-t a/src/openvpn/status.c b/src/openvpn/status.c</span><br><span>index 34e5a=
-2f..fbd2168 100644</span><br><span>--- a/src/openvpn/status.c</span><br><sp=
-an>+++ b/src/openvpn/status.c</span><br><span>@@ -207,6 +207,11 @@</span><b=
-r><span>     return ret;</span><br><span> }</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(=
-__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma G=
-CC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span> #define STATUS_PRINTF_MAXLEN 512</s=
-pan><br><span> </span><br><span> void</span><br><span>@@ -304,3 +309,7 @@</=
-span><br><span> </span><br><span>     return ret;</span><br><span> }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnosti=
-c pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><=
-br><span>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</sp=
-an><br><span>index 2892199..88689da 100644</span><br><span>--- a/src/openvp=
-n/tls_crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</span><br><span=
->@@ -205,6 +205,11 @@</span><br><span>     return false;</span><br><span> }=
-</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconve=
-rsion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> boo=
-l</span><br><span> tls_crypt_unwrap(const struct buffer *src, struct buffer=
- *dst, struct crypto_options *opt)</span><br><span> {</span><br><span>@@ -4=
-13,6 +418,10 @@</span><br><span>     return buf_copy(wkc, &amp;work);</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> static bool</span><br><span=
-> tls_crypt_v2_unwrap_client_key(struct key2 *client_key, struct buffer *me=
-tadata,</span><br><span>                                struct buffer wrapp=
-ed_client_key, struct key_ctx *server_key)</span><br><span>diff --git a/src=
-/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 6c3096b..a6d3f59 1=
-00644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/ope=
-nvpn/tun.c</span><br><span>@@ -1717,6 +1717,11 @@</span><br><span>     }</s=
-pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignor=
-ed &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span> static int</span><br><span> write_tun_header(struct tuntap *tt=
-, uint8_t *buf, int len)</span><br><span> {</span><br><span>@@ -1770,6 +177=
-5,11 @@</span><br><span>         return read(tt-&gt;fd, buf, len);</span><b=
-r><span>     }</span><br><span> }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
-efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span> #endif /* if defined (TARGET_OPENBSD) || def=
-ined(TARGET_DARWIN) */</span><br><span> </span><br><span> bool</span><br><s=
-pan>@@ -2241,6 +2251,11 @@</span><br><span>     free(tt);</span><br><span> =
-}</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wco=
-nversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
-f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-int</span><br><span> write_tun(struct tuntap *tt, uint8_t *buf, int len)</s=
-pan><br><span> {</span><br><span>@@ -2253,6 +2268,10 @@</span><br><span>   =
-  return read(tt-&gt;fd, buf, len);</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) =
-|| defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span> #elif defined(TARGET_SOLARIS)</span><br><span> </span><br><sp=
-an> #ifndef TUNNEWPPA</span><br><span>@@ -2932,6 +2951,11 @@</span><br><spa=
-n>     argv_free(&amp;argv);</span><br><span> }</span><br><span> </span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defi=
-ned(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
-ma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><span> write_tun(=
-struct tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><spa=
-n>@@ -2986,6 +3010,10 @@</span><br><span>     }</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
-d(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span> #elif defined(TARGET_DRAGONFLY)</span><br><span> =
-</span><br><span> static inline int</span><br><span>@@ -3274,6 +3302,11 @@<=
-/span><br><span>     }</span><br><span> }</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__=
-clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC=
- diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pr=
-agma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> void</span><br><span> close_tun(stru=
-ct tuntap *tt, openvpn_net_ctx_t *ctx)</span><br><span> {</span><br><span>@=
-@ -3323,6 +3356,10 @@</span><br><span>     }</span><br><span> }</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_=
-_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> #elif defined(TARGET_AIX)</span><br><span> </span><b=
-r><span> void</span><br><span>@@ -5514,6 +5551,11 @@</span><br><span>     r=
-eturn ret;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic =
-push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC dia=
-gnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span> /*</span><br><span>  * Convert DHCP options from =
-the command line / config file</span><br><span>  * into a raw DHCP-format o=
-ptions string.</span><br><span>@@ -5653,6 +5695,10 @@</span><br><span>     =
-buf_write(buf, tmp_buf, len);</span><br><span> }</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || def=
-ined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pra=
-gma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span> static bool</span><br><span> build_dhcp_options_string(struct buffe=
-r *buf, const struct tuntap_options *o)</span><br><span> {</span><br><span>=
-diff --git a/src/openvpn/vlan.c b/src/openvpn/vlan.c</span><br><span>index =
-a6a6e93..3da470a 100644</span><br><span>--- a/src/openvpn/vlan.c</span><br>=
-<span>+++ b/src/openvpn/vlan.c</span><br><span>@@ -43,6 +43,11 @@</span><br=
-><span>     return ntohs(hdr-&gt;pcp_cfi_vid &amp; OPENVPN_8021Q_MASK_VID);=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #elif defined(=
+TARGET_SOLARIS)</span><br><span> </span><br><span> #ifndef TUNNEWPPA</span>=
+<br><span>@@ -2932,6 +2951,11 @@</span><br><span>     argv_free(&amp;argv);=
 </span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span=
 ><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ig=
 nored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100=
 %, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> /*</span><br><span>  * Set the VLAN Identifier (VID) in an =
-IEEE 802.1Q header.</span><br><span>  *</span><br><span>@@ -56,6 +61,10 @@<=
-/span><br><span>         (hdr-&gt;pcp_cfi_vid &amp; ~OPENVPN_8021Q_MASK_VID=
-) | (htons(vid) &amp; OPENVPN_8021Q_MASK_VID);</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined=
-(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span> /*</span><br><span>  * vlan_decapsulate - remove 8=
-02.1q header and return VID</span><br><span>  *</span><br><span>diff --git =
-a/src/openvpn/win32.c b/src/openvpn/win32.c</span><br><span>index 15bcf37..=
-eac2352 100644</span><br><span>--- a/src/openvpn/win32.c</span><br><span>++=
-+ b/src/openvpn/win32.c</span><br><span>@@ -1418,6 +1418,11 @@</span><br><s=
-pan>     return (const char *)out.data;</span><br><span> }</span><br><span>=
+span><br><span> int</span><br><span> write_tun(struct tuntap *tt, uint8_t *=
+buf, int len)</span><br><span> {</span><br><span>@@ -2986,6 +3010,10 @@</sp=
+an><br><span>     }</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cla=
+ng__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC di=
+agnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #e=
+lif defined(TARGET_DRAGONFLY)</span><br><span> </span><br><span> static inl=
+ine int</span><br><span>@@ -3274,6 +3302,11 @@</span><br><span>     }</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored =
+&quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span> void</span><br><span> close_tun(struct tuntap *tt, openvpn_net_ct=
+x_t *ctx)</span><br><span> {</span><br><span>@@ -3323,6 +3356,10 @@</span><=
+br><span>     }</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
+ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #elif=
+ defined(TARGET_AIX)</span><br><span> </span><br><span> void</span><br><spa=
+n>@@ -5514,6 +5551,11 @@</span><br><span>     return ret;</span><br><span> =
+}</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wco=
+nversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+/*</span><br><span>  * Convert DHCP options from the command line / config =
+file</span><br><span>  * into a raw DHCP-format options string.</span><br><=
+span>@@ -5653,6 +5695,10 @@</span><br><span>     buf_write(buf, tmp_buf, le=
+n);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static bool</span>=
+<br><span> build_dhcp_options_string(struct buffer *buf, const struct tunta=
+p_options *o)</span><br><span> {</span><br><span>diff --git a/src/openvpn/v=
+lan.c b/src/openvpn/vlan.c</span><br><span>index a6a6e93..3da470a 100644</s=
+pan><br><span>--- a/src/openvpn/vlan.c</span><br><span>+++ b/src/openvpn/vl=
+an.c</span><br><span>@@ -43,6 +43,11 @@</span><br><span>     return ntohs(h=
+dr-&gt;pcp_cfi_vid &amp; OPENVPN_8021Q_MASK_VID);</span><br><span> }</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defi=
+ned(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><=
+br><span>  * Set the VLAN Identifier (VID) in an IEEE 802.1Q header.</span>=
+<br><span>  *</span><br><span>@@ -56,6 +61,10 @@</span><br><span>         (=
+hdr-&gt;pcp_cfi_vid &amp; ~OPENVPN_8021Q_MASK_VID) | (htons(vid) &amp; OPEN=
+VPN_8021Q_MASK_VID);</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cl=
+ang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC d=
+iagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /=
+*</span><br><span>  * vlan_decapsulate - remove 802.1q header and return VI=
+D</span><br><span>  *</span><br><span>diff --git a/src/openvpn/win32.c b/sr=
+c/openvpn/win32.c</span><br><span>index 15bcf37..eac2352 100644</span><br><=
+span>--- a/src/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</s=
+pan><br><span>@@ -1418,6 +1418,11 @@</span><br><span>     return (const cha=
+r *)out.data;</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnost=
+ic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC =
+diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span> bool</span><br><span> send_msg_iservice(HANDLE=
+ pipe, const void *data, size_t size, ack_message_t *ack,</span><br><span> =
+                  const char *context)</span><br><span>@@ -1632,4 +1637,8 @=
+@</span><br><span>     return ret;</span><br><span> }</span><br><span> </sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) |=
+| defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span> #endif /* ifdef _WIN32 */</span><br><span>diff --git a/src/ope=
+nvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><br><span>inde=
+x 0983e59..ce0d4dd 100644</span><br><span>--- a/src/openvpnserv/interactive=
+.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><br><span>@@ -=
+1383,6 +1383,11 @@</span><br><span>     return TRUE;</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
+efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversio=
+n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</sp=
+an><br><span>  * Prepare DNS domain &quot;SearchList&quot; registry value, =
+so additional</span><br><span>  * VPN domains can be added and its original=
+ state can be restored</span><br><span>@@ -2614,6 +2619,10 @@</span><br><sp=
+an>     return err;</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cla=
+ng__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC di=
+agnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*=
+*</span><br><span>  * Return the registry key where NRPT rules are stored</=
+span><br><span>  *</span><br><span>diff --git a/tests/unit_tests/openvpn/te=
+st_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><span>index =
+12ddaba..1e6ccc0 100644</span><br><span>--- a/tests/unit_tests/openvpn/test=
+_crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto.c</spa=
+n><br><span>@@ -674,6 +674,11 @@</span><br><span>     struct crypto_options=
+ co;</span><br><span> };</span><br><span> </span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnost=
+ic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> static int</span><br><span> crypto_test_epoch_setup(vo=
+id **state)</span><br><span> {</span><br><span>@@ -694,6 +699,10 @@</span><=
+br><span>     return 0;</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(_=
+_clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GC=
+C diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+> static int</span><br><span> crypto_test_epoch_teardown(void **state)</spa=
+n><br><span> {</span><br><span>diff --git a/tests/unit_tests/openvpn/test_m=
+isc.c b/tests/unit_tests/openvpn/test_misc.c</span><br><span>index c3f80dc.=
+.8a86d71 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_misc.c<=
+/span><br><span>+++ b/tests/unit_tests/openvpn/test_misc.c</span><br><span>=
+@@ -124,6 +124,11 @@</span><br><span> };</span><br><span> </span><br><span>=
  </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC=
 __) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40=
 %);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, =
 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span=
 ><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> bool</span><br><span=
-> send_msg_iservice(HANDLE pipe, const void *data, size_t size, ack_message=
-_t *ack,</span><br><span>                   const char *context)</span><br>=
-<span>@@ -1632,4 +1637,8 @@</span><br><span>     return ret;</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> #endif /* ifdef _WIN32 */</span><br>=
-<span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interact=
-ive.c</span><br><span>index 0983e59..ce0d4dd 100644</span><br><span>--- a/s=
-rc/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interact=
-ive.c</span><br><span>@@ -1383,6 +1383,11 @@</span><br><span>     return TR=
-UE;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic=
- ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span> /**</span><br><span>  * Prepare DNS domain &quot;SearchL=
-ist&quot; registry value, so additional</span><br><span>  * VPN domains can=
- be added and its original state can be restored</span><br><span>@@ -2614,6=
- +2619,10 @@</span><br><span>     return err;</span><br><span> }</span><br>=
-<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(=
-__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> /**</span><br><span>  * Return the registry key whe=
-re NRPT rules are stored</span><br><span>  *</span><br><span>diff --git a/t=
-ests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypt=
-o.c</span><br><span>index 12ddaba..1e6ccc0 100644</span><br><span>--- a/tes=
-ts/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_tests/=
-openvpn/test_crypto.c</span><br><span>@@ -674,6 +674,11 @@</span><br><span>=
-     struct crypto_options co;</span><br><span> };</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || d=
-efined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#p=
-ragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span> static int</span><br><span> =
-crypto_test_epoch_setup(void **state)</span><br><span> {</span><br><span>@@=
- -694,6 +699,10 @@</span><br><span>     return 0;</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defi=
-ned(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span> static int</span><br><span> crypto_test_epoch_t=
-eardown(void **state)</span><br><span> {</span><br><span>diff --git a/tests=
-/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c</spa=
-n><br><span>index c3f80dc..8a86d71 100644</span><br><span>--- a/tests/unit_=
-tests/openvpn/test_misc.c</span><br><span>+++ b/tests/unit_tests/openvpn/te=
-st_misc.c</span><br><span>@@ -124,6 +124,11 @@</span><br><span> };</span><b=
-r><span> </span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &q=
-uot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span> static uint32_t</span><br><span> word_hash_function(const void *key=
-, uint32_t iv)</span><br><span> {</span><br><span>@@ -316,6 +321,10 @@</spa=
-n><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) |=
-| defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span> static void</span><br><span> test_atoi_variants(void **state)<=
-/span><br><span> {</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1168?usp=3Demail">change 1168</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1168?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static uint32_t</spa=
+n><br><span> word_hash_function(const void *key, uint32_t iv)</span><br><sp=
+an> {</span><br><span>@@ -316,6 +321,10 @@</span><br><span>     gc_free(&am=
+p;gc);</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</sp=
+an><br><span> test_atoi_variants(void **state)</span><br><span> {</span><br=
+><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1168?usp=3Demail">change 1168</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1168?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Iad5b00c35a1f1993b1fa99e8b94=
 5ab17b230ef59 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1168 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -3670,5 +3667,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Cpm49yFR424=--
+--XDPw0l5Bzto=--
 
