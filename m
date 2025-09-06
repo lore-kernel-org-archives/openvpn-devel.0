@@ -1,8 +1,17 @@
-From: Matthias Andree <matthias.andree@...68...>
-Date: Sat,  6 Sep 2025 15:54:13 +0200
-Message-ID: <20250906135413.166789-1-matthias.andree@...68...>
+From: "mandree (Code Review)" <gerrit@...515...>
+Date: Sat, 6 Sep 2025 14:01:35 +0000
+In-Reply-To: <gerrit.1757094927000.I53e6d1b31c4f673cb646716dce774ef3210f36bd@...2715...>
+References: <gerrit.1757094927000.I53e6d1b31c4f673cb646716dce774ef3210f36bd@...2715...>
+Reply-To: matthias.andree@...68..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <4ec936d040b5c14b0f2f55fba3485b835e444f59-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco_freebsd: replace assert() by if...return
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="R0ZoLhpcHHg="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: dco: support
+ float notifications on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +20,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--R0ZoLhpcHHg=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Matthias Andree <matthias.andree@...68...>
 
-The assert() check might be optimized away in Release builds,
-and killing the process through abort() when input formats are
-bad when we already have an error message in place does not seem right.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-Suggested by: Ralf Lici <ralf@...2726...>
+mandree has posted comments on this change. ( http://gerrit.openvpn.net/c/o=
+penvpn/+/1170?usp=3Demail )
 
-Signed-off-by: Matthias Andree <matthias.andree@...68...>
----
- src/openvpn/dco_freebsd.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Change subject: dco: support float notifications on FreeBSD
+......................................................................
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 931f9f68..a756dcca 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -100,7 +100,10 @@ nvlist_to_sockaddr(const nvlist_t *nvl, struct sockadd=
-r_storage *ss)
-=20
-             in->sin_len =3D sizeof(*in);
-             data =3D nvlist_get_binary(nvl, "address", &len);
--            assert(len =3D=3D sizeof(in->sin_addr));
-+            if (len !=3D sizeof(in->sin_addr))
-+            {
-+                return (false);
-+            }
-             memcpy(&in->sin_addr, data, sizeof(in->sin_addr));
-             in->sin_port =3D nvlist_get_number(nvl, "port");
-             break;
-@@ -114,7 +117,10 @@ nvlist_to_sockaddr(const nvlist_t *nvl, struct sockadd=
-r_storage *ss)
-=20
-             in6->sin6_len =3D sizeof(*in6);
-             data =3D nvlist_get_binary(nvl, "address", &len);
--            assert(len =3D=3D sizeof(in6->sin6_addr));
-+            if (len !=3D sizeof(in6->sin6_addr))
-+            {
-+                return (false);
-+            }
-             memcpy(&in6->sin6_addr, data, sizeof(in6->sin6_addr));
-             in6->sin6_port =3D nvlist_get_number(nvl, "port");
-=20
---=20
-2.51.0
 
+Patch Set 1: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I53e6d1b31c4f673cb646716dce774ef3210f36bd
+Gerrit-Change-Number: 1170
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: mandree <matthias.andree@...68...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sat, 06 Sep 2025 14:01:35 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--R0ZoLhpcHHg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail=
+">change 1170</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I53e6d1b31c4f673cb646716dce7=
+74ef3210f36bd </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1170 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: mandree &lt;matthias.andree@...220...=
+..68...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 06 Sep 2025 14:01:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--R0ZoLhpcHHg=--
 
