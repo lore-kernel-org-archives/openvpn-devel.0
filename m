@@ -1,15 +1,15 @@
 From: "mandree (Code Review)" <gerrit@...515...>
-Date: Sat, 6 Sep 2025 14:01:35 +0000
+Date: Sat, 6 Sep 2025 14:03:11 +0000
 In-Reply-To: <gerrit.1757094927000.I53e6d1b31c4f673cb646716dce774ef3210f36bd@...2715...>
 References: <gerrit.1757094927000.I53e6d1b31c4f673cb646716dce774ef3210f36bd@...2715...>
 Reply-To: matthias.andree@...68..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <4ec936d040b5c14b0f2f55fba3485b835e444f59-EmailReviewComments-HTML@...2715...>
+Message-ID: <2ffec9b5f94faf52f03e6b73183ee314e58bbf6a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="R0ZoLhpcHHg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="M+csfmX2R/o="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: dco: support
  float notifications on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,22 +22,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---R0ZoLhpcHHg=
+--M+csfmX2R/o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-mandree has posted comments on this change. ( http://gerrit.openvpn.net/c/o=
-penvpn/+/1170?usp=3Demail )
+mandree has removed a vote from this change. ( http://gerrit.openvpn.net/c/=
+openvpn/+/1170?usp=3Demail )
+
 
 Change subject: dco: support float notifications on FreeBSD
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
-
-
+Removed Code-Review+2 by mandree <matthias.andree@...68...>
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -56,28 +55,25 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sat, 06 Sep 2025 14:01:35 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: deleteVote
 
---R0ZoLhpcHHg=
+--M+csfmX2R/o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail=
-">change 1170</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p>mandree <strong>removed a vote</strong> from this change.</p><p><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail">View Change</a>=
+</p><div style=3D"white-space:pre-wrap">Removed Code-Review+2 by mandree &l=
+t;matthias.andree@...68...&gt;</div><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1170?usp=3Demail">change 1170</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1170?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
+nge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
@@ -101,12 +97,8 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 06 Sep 2025 14:01:35=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
 
 
---R0ZoLhpcHHg=--
+--M+csfmX2R/o=--
 
