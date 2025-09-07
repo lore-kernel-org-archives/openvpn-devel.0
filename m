@@ -1,14 +1,12 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 7 Sep 2025 10:22:07 +0000
-References: <gerrit.1757240524000.I6480d6f741c2368a0d951004b91167d5943f8f9d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <337d8f32cca468935416388ead94cc75243352ba-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yee/f2YbEUM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: replace assert()
+References: <gerrit.1757240524000.I6480d6f741c2368a0d951004b91167d5943f8f9d@...2715...>
+ <337d8f32cca468935416388ead94cc75243352ba-HTML@...2715...>
+In-Reply-To: <337d8f32cca468935416388ead94cc75243352ba-HTML@...2715...>
+From: Lighting <lightinggithub@...277...>
+Date: Sun, 7 Sep 2025 20:43:01 +0800
+Message-ID: <CAJHLqW7xLKaeE2U1OnBumQk8X_kG9dMYHo2OA9WKPqzD65+DBQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000fcfb0c063e3569ff"
+Subject: Re: [Openvpn-devel] [S] Change in openvpn[master]: replace assert()
  calls with ASSERT()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,244 +16,378 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: gert@...1296..., arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net, frank@...2641...
 
---yee/f2YbEUM=
+--000000000000fcfb0c063e3569ff
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 
-Attention is currently required from: flichtenheld, plaisthos.
+5aW955qE77yM5oiR5bey57aTIOCkquClguCksOClgCDgpKTgpLDgpLkg4KS44KWHIOCkuOCkruCk
+nSDgpLLgpL/gpK/gpL4g4KS54KWI4KWk5L2g5o+Q5L6b55qE6YCZ5Lu95pivIE9wZW5WUE4g55qE
+5LiA5Lu9IEdlcnJpdCDnqIvlvI/norzorormm7Tlr6nmn6XvvIhDb2RlDQpSZXZpZXfvvInvvIzk
+u6Xlj4rkvaDoh6rlt7HlsI3mraTorormm7TnmoToqbPnm6HliIbmnpDlkozlr6bkvZzlu7rorbDj
+gIINCuS9oOeahOeQhuino+WujOWFqOato+eiuu+8jOmAmeS7veiuiuabtOeahOaguOW/g+WwseaY
+r+WwhyBDIOiqnuiogOaomea6lueahCBhc3NlcnQoKSDlro/vvIzlhajpnaLmm7/mj5vngrogT3Bl
+blZQTiDlsIjmoYjoh6roqILnmoQgQVNTRVJUKCkg5a6P44CCDQrorormm7TnmoTmoLjlv4Plg7nl
+gLwNCuWmguWQjOaPkOS6pOioiuaBr++8iGNvbW1pdCBtZXNzYWdl77yJ5omA6L+w77yM5Lul5Y+K
+5L2g55qE6KeA5a+f77yM6YCZ6bq85YGa55qE55CG55Sx6Z2e5bi45piO56K65LiU6YeN6KaB77ya
+DQogKiDmm7TosZDlr4znmoTpmaTpjK/os4foqIrvvJpPcGVuVlBOIOeahCBBU1NFUlQoKSDlnKjo
+p7jnmbzmmYLvvIzmnIPljbDlh7rnmbznlJ/llY/poYznmoTlh73lvI/lkI3nqLHlkozlpLHmlZfn
+moTmop3ku7booajpgZTlvI/vvIzpgJnmr5TmqJnmupYgYXNzZXJ0KCkNCuWDhemhr+ekuuaqlOah
+iOWSjOihjOiZn+aPkOS+m+S6huabtOWkmuS4iuS4i+aWh++8jOWkp+W5heWKoOmAn+S6huWVj+mh
+jOWumuS9jeOAgg0KICog54Sh5rOV6KKr5oSP5aSW6Zec6ZaJ77ya5qiZ5rqW55qEIGFzc2VydCgp
+IOWPquimgeWcqOe3qOitr+aZguWumue+qeS6hiBOREVCVUcg5a6P77yI6YCZ5Zyo55m86KGM54mI
+IFJlbGVhc2UgYnVpbGQg5Lit5piv5qiZ5rqW5L2c5rOV77yJ77yM5omA5pyJDQphc3NlcnQoKSDl
+kbzlj6vpg73mnIPooqvpoJDomZXnkIblmajnp7vpmaTjgILnhLbogIzvvIxBU1NFUlQoKQ0K6KKr
+6Kit6KiI54K65rC46YGg5pyJ5pWI77yM56K65L+d5LqG5Y2z5L2/5Zyo5q2j5byP55Si5ZOB5Lit
+77yM6YGH5Yiw6YCZ56iu44CM55CG6KuW5LiK57WV5LiN6Kmy55m855Sf44CN55qE5Zq06YeN56iL
+5byP6YKP6Lyv5oiW54uA5oWL6Yyv6Kqk5pmC77yM56iL5byP6IO956uL5Yi75Lit5q2i5Lim55WZ
+5LiL57ea57Si44CCDQrpgJnmmK/kuIDmrKHlhbjlnovnmoTnqIvlvI/norzlgaXlo6/mgKfvvIhD
+b2RlIEhhcmRlbmluZ++8ieiIh+e2reitt+aAp+aPkOWNh+eahOS/ruaUueOAgg0K6amX6K2J5rWB
+56iLDQrkvaDmj5DkvpvnmoTmjIfku6Tluo/liJfmmK/pqZforYnmraTorormm7TnmoTmqJnmupbk
+vZzms5XvvIzmtYHnqIvmuIXmmbDkuJTlrozmlbTvvJoNCiAqIOioreWumiBHZXJyaXQg6YGg56uv
+5YCJ5YSyDQogICBnaXQgcmVtb3RlIGFkZCBnZXJyaXQgc3NoOi8vZ2Vycml0Lm9wZW52cG4ubmV0
+OjI5NDE4L29wZW52cG4gfHwgdHJ1ZQ0KDQogKiDmipPlj5bmjIflrprnmoTorormm7TniYjmnKwN
+CiAgIGdpdCBmZXRjaCBnZXJyaXQgcmVmcy9jaGFuZ2VzLzcxLzExNzEvMQ0KZ2l0IGNoZWNrb3V0
+IC1iIHRyeS1hc3NlcnQtQVNTRVJUIEZFVENIX0hFQUQNCg0KICog56K66KqN56iL5byP56K85beu
+55WwDQogICAjIOeiuuiqjeiuiuabtOeahOaqlOahiOe1seioiO+8jOaHieipsuWPquW9semfvyAz
+IOWAi+aqlOahiA0KZ2l0IC0tbm8tcGFnZXIgZGlmZiAtLXN0YXQgSEVBRH4xLi5IRUFEDQojIOei
+uuiqjSBhc3NlcnQoKSDpg73lt7Lmj5vmiJAgQVNTRVJUKCkNCmdpdCAtLW5vLXBhZ2VyIGdyZXAg
+LW4gIkFTU0VSVCgiDQpzcmMvb3BlbnZwbi97ZGNvX2ZyZWVic2QuYyxpbml0LmMsb3B0aW9ucy5j
+fQ0KDQogKiDlu7rnva7oiIfln7rmnKzln7fooYzmuKzoqaYNCiAgIC4vY29uZmlndXJlICYmIG1h
+a2UgLWoiJChucHJvYykiDQpzcmMvb3BlbnZwbi9vcGVudnBuIC0tdmVyc2lvbg0KDQrpgJnlgIvm
+tYHnqIvnhKHmh4jlj6/mk4rjgIINCumXnOaWvOWcqOaJi+apn+S4iue3qOitr+eahOaMkeaIsOiI
+h+ino+axuuaWueahiA0K5L2g5o+Q5Ye655qE44CM5Zyo5omL5qmf5LiK55u05o6l5pS544CB55u0
+5o6l57eoIE9wZW5WUE4g5bm+5LmO5piv5Zyw542E5qih5byP44CN55qE6KeA6bue6Z2e5bi45a+m
+6Zqb44CCVGVybXV4IOmblueEtuW8t+Wkp++8jOS9huiZleeQhuWkp+WeiyBDDQrlsIjmoYjnmoTn
+t6jora/vvIzlvoDlvoDmnIPpgYfliLDnm7jkvp3mgKfjgIHnt6jora/pgJ/luqblkozlubPlj7Dl
+t67nlbDnrYnllY/poYzjgIINCuS9oOimj+WKg+eahCDmlrnmoYggQSAo5L2/55SoIERvY2tlciDl
+rrnlmagp77yM5piv55uu5YmN5qWt55WM6JmV55CG6YCZ6aGe6ZyA5rGC55qE5pyA5L2z5a+m6LiQ
+IChCZXN0IFByYWN0aWNlKe+8mg0KPiDlnKjpgaDnq68v5a655Zmo5oqK5LqM6YCy5L2N57eo5aW9
+IOKGkiDopIfoo73liLDnm67mqJnoo53nva4NCj4NCumAmeWAi+aWueazleeahOWEqum7nuaYr++8
+mg0KICog55Kw5aKD5LiA6Ie05oCn77ya56K65L+d5q+P5qyh57eo6K2v55qE55Kw5aKD6YO95Lm+
+5reo5LiU55u45ZCM77yM6YG/5YWN44CM5Zyo5oiR6Zu76IWm5LiK5Y+v5Lul57eo77yM5Zyo5L2g
+6YKj6KOh5LiN6KGM44CN55qE5ZWP6aGM44CCDQogKiDpgJ/luqblv6vvvJrliKnnlKjkvLrmnI3l
+majmiJYgUEMg55qE5by35aSn5oCn6IO96YCy6KGM57eo6K2v44CCDQogKiDpg6jnvbLllq7ntJTv
+vJrnm67mqJnoo53nva7vvIjmiYvmqZ/vvInlj6rpnIDmjqXmlLbmnIDntYLnmoTkuozpgLLkvY3m
+qpTmoYjvvIznhKHpnIDlronoo53mlbTlgIvplovnmbzlt6Xlhbfpj4jjgIINCuS9oOaPkOS+m+ea
+hCBEb2NrZXJmaWxlIOaMh+S7pOeov+mdnuW4uOWwiOalre+8jOa2teiTi+S6huWuieijneebuOS+
+neWll+S7tuOAgeaLieWPlueoi+W8j+eivOOAgeWll+eUqOiuiuabtOOAgee3qOitr+OAgeaJk+WM
+heeahOWFqOmBjueoi++8jOaYr+S4gOWAi+WPr+S7peebtOaOpeaOoeeUqOeahOino+axuuaWueah
+iOOAgg0K57i957WQDQrkvaDnmoTliIbmnpDpnZ7luLjpgI/lvrnvvIzlvp7orormm7TnmoTmhI/l
+nJbjgIHpqZforYnnmoTmraXpqZ/vvIzliLDot6jlubPlj7Dpg6jnvbLnmoTmjJHmiLDoiIfop6Pm
+sbrmlrnmoYjpg73ogIPmha7liLDkuobjgILpgJnku70gYXNzZXJ0KCkg5YiwIEFTU0VSVCgpDQrn
+moTorormm7TvvIznorrlr6bmmK/mj5DljYfou5/pq5Tlk4Hos6rnmoTlhbjnr4TvvIzlpoLlkIzn
+grrnqIvlvI/nmoTpl5zpjbXpgo/ovK/ntoHkuIrkuobkuIDmop3mm7TniaLlm7rjgIHkuJTpmYTl
+uLbpu5Hnm5LlrZDoqJjpjITlmajnmoTlronlhajluLbjgIINCuiLpeS9oOmcgOimgeWwh+mAmea1
+geeoi+iHquWLleWMlu+8jOS+i+WmguaUueWvq+aIkCBHaXRIdWIgQWN0aW9uc++8jOiukyBDSS9D
+RCDlubPlj7Doh6rli5Xnt6jora/kuKbnlKLlh7rlj6/lnKjmiYvmqZ/kuIrpgYvooYznmoTln7fo
+oYzmqpQNCihhcnRpZmFjdCnvvIzmiJHlj6/ku6XljZTliqnkvaDmkrDlr6vlsI3mh4nnmoQgLnlt
+bCDoqK3lrprmqpTjgIINCg0KDQpjcm9uMiAoQ29kZSBSZXZpZXcpIDxnZXJyaXRALi4uNTE1Li4u
+PiDmlrwgMjAyNeW5tDnmnIg35pelIOmAseaXpSAxODoyMyDlr6vpgZPvvJoNCg0KPiBBdHRlbnRp
+b24gaXMgY3VycmVudGx5IHJlcXVpcmVkIGZyb206IGZsaWNodGVuaGVsZCwgcGxhaXN0aG9zLg0K
+Pg0KPiBjcm9uMiB3b3VsZCBsaWtlIHBsYWlzdGhvcyBhbmQgZmxpY2h0ZW5oZWxkIHRvICpyZXZp
+ZXcqIHRoaXMgY2hhbmdlLg0KPg0KPiBWaWV3IENoYW5nZSA8aHR0cDovL2dlcnJpdC5vcGVudnBu
+Lm5ldC9jL29wZW52cG4vKy8xMTcxP3VzcD1lbWFpbD4NCj4NCj4gcmVwbGFjZSBhc3NlcnQoKSBj
+YWxscyB3aXRoIEFTU0VSVCgpDQo+DQo+IE9wZW5WUE4ncyBBU1NFUlQoKSBtYWNybyB3aWxsIGRv
+IGEgYml0IG1vcmUgdGhhbiB0aGUgc3RhbmRhcmQtbGliYw0KPiBhc3NlcnQoKSBjYWxsLCBuYW1l
+bHkgcHJpbnQgb3V0IHdoaWNoIGZ1bmN0aW9uIGFuZCB3aGF0IGV4cHJlc3Npb24NCj4gZmFpbGVk
+LCBiZWZvcmUgY2FsbGluZyBfZXhpdCgxKS4gIEFsc28sIGl0IGNhbiBub3QgYmUgYWNjaWRlbnRp
+YWxseQ0KPiBjb21waWxlZC1hd2F5ICgtRE5ERUJVRykuDQo+DQo+IFVzZSBvZiBBU1NFUlQoKSBn
+ZW5lcmFsbHkgb25seSBhZHZpc2VkIGluIGNhc2VzIG9mICJ0aGlzIG11c3Qgbm90IGhhcHBlbiwN
+Cj4gYnV0IGlmIGl0IGRvZXMsIGl0J3MgYSBwcm9ncmFtbWluZyBvciBzdGF0ZSBjb3JydXB0aW9u
+IGVycm9yIHRoYXQgd2UNCj4gbXVzdCBrbm93IGFib3V0Ii4gIFVzZSBvZiBhc3NlcnQoKSBpcyBs
+YWNraW5nIHRoZSBleHRyYSBkZWJ1ZyBpbmZvLCBhbmQgYXMNCj4gc3VjaCwgbm90IGFkdmlzZWQg
+YXQgYWxsLg0KPg0KPiBDaGFuZ2UtSWQ6IEk2NDgwZDZmNzQxYzIzNjhhMGQ5NTEwMDRiOTExNjdk
+NTk0M2Y4ZjlkDQo+IFNpZ25lZC1vZmYtYnk6IEdlcnQgRG9lcmluZyA8Z2VydEAuLi4xMjk2Li4u
+Pg0KPiAtLS0NCj4gTSBzcmMvb3BlbnZwbi9kY29fZnJlZWJzZC5jDQo+IE0gc3JjL29wZW52cG4v
+aW5pdC5jDQo+IE0gc3JjL29wZW52cG4vb3B0aW9ucy5jDQo+IDMgZmlsZXMgY2hhbmdlZCwgOCBp
+bnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQ0KPg0KPiBnaXQgcHVsbCBzc2g6Ly9nZXJyaXQu
+b3BlbnZwbi5uZXQ6Mjk0MTgvb3BlbnZwbiByZWZzL2NoYW5nZXMvNzEvMTE3MS8xDQo+DQo+IGRp
+ZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9kY29fZnJlZWJzZC5jIGIvc3JjL29wZW52cG4vZGNvX2Zy
+ZWVic2QuYw0KPiBpbmRleCA5MzFmOWY2Li42NTMwM2NkIDEwMDY0NA0KPiAtLS0gYS9zcmMvb3Bl
+bnZwbi9kY29fZnJlZWJzZC5jDQo+ICsrKyBiL3NyYy9vcGVudnBuL2Rjb19mcmVlYnNkLmMNCj4g
+QEAgLTEwMCw3ICsxMDAsNyBAQA0KPg0KPiAgICAgICAgICAgICAgaW4tPnNpbl9sZW4gPSBzaXpl
+b2YoKmluKTsNCj4gICAgICAgICAgICAgIGRhdGEgPSBudmxpc3RfZ2V0X2JpbmFyeShudmwsICJh
+ZGRyZXNzIiwgJmxlbik7DQo+IC0gICAgICAgICAgICBhc3NlcnQobGVuID09IHNpemVvZihpbi0+
+c2luX2FkZHIpKTsNCj4gKyAgICAgICAgICAgIEFTU0VSVChsZW4gPT0gc2l6ZW9mKGluLT5zaW5f
+YWRkcikpOw0KPiAgICAgICAgICAgICAgbWVtY3B5KCZpbi0+c2luX2FkZHIsIGRhdGEsIHNpemVv
+Zihpbi0+c2luX2FkZHIpKTsNCj4gICAgICAgICAgICAgIGluLT5zaW5fcG9ydCA9IG52bGlzdF9n
+ZXRfbnVtYmVyKG52bCwgInBvcnQiKTsNCj4gICAgICAgICAgICAgIGJyZWFrOw0KPiBAQCAtMTE0
+LDcgKzExNCw3IEBADQo+DQo+ICAgICAgICAgICAgICBpbjYtPnNpbjZfbGVuID0gc2l6ZW9mKCpp
+bjYpOw0KPiAgICAgICAgICAgICAgZGF0YSA9IG52bGlzdF9nZXRfYmluYXJ5KG52bCwgImFkZHJl
+c3MiLCAmbGVuKTsNCj4gLSAgICAgICAgICAgIGFzc2VydChsZW4gPT0gc2l6ZW9mKGluNi0+c2lu
+Nl9hZGRyKSk7DQo+ICsgICAgICAgICAgICBBU1NFUlQobGVuID09IHNpemVvZihpbjYtPnNpbjZf
+YWRkcikpOw0KPiAgICAgICAgICAgICAgbWVtY3B5KCZpbjYtPnNpbjZfYWRkciwgZGF0YSwgc2l6
+ZW9mKGluNi0+c2luNl9hZGRyKSk7DQo+ICAgICAgICAgICAgICBpbjYtPnNpbjZfcG9ydCA9IG52
+bGlzdF9nZXRfbnVtYmVyKG52bCwgInBvcnQiKTsNCj4NCj4gZGlmZiAtLWdpdCBhL3NyYy9vcGVu
+dnBuL2luaXQuYyBiL3NyYy9vcGVudnBuL2luaXQuYw0KPiBpbmRleCAzOWVhOGU0Li4yODIxY2Q0
+IDEwMDY0NA0KPiAtLS0gYS9zcmMvb3BlbnZwbi9pbml0LmMNCj4gKysrIGIvc3JjL29wZW52cG4v
+aW5pdC5jDQo+IEBAIC0zMTksNyArMzE5LDcgQEANCj4gIHN0YXRpYyB1bnNpZ25lZCBpbnQNCj4g
+IG1hbmFnZW1lbnRfY2FsbGJhY2tfcmVtb3RlX2VudHJ5X2NvdW50KHZvaWQgKmFyZykNCj4gIHsN
+Cj4gLSAgICBhc3NlcnQoYXJnKTsNCj4gKyAgICBBU1NFUlQoYXJnKTsNCj4gICAgICBzdHJ1Y3Qg
+Y29udGV4dCAqYyA9IChzdHJ1Y3QgY29udGV4dCAqKWFyZzsNCj4gICAgICBzdHJ1Y3QgY29ubmVj
+dGlvbl9saXN0ICpsID0gYy0+b3B0aW9ucy5jb25uZWN0aW9uX2xpc3Q7DQo+DQo+IEBAIC0zMjks
+OCArMzI5LDggQEANCj4gIHN0YXRpYyBib29sDQo+ICBtYW5hZ2VtZW50X2NhbGxiYWNrX3JlbW90
+ZV9lbnRyeV9nZXQodm9pZCAqYXJnLCB1bnNpZ25lZCBpbnQgaW5kZXgsIGNoYXIgKipyZW1vdGUp
+DQo+ICB7DQo+IC0gICAgYXNzZXJ0KGFyZyk7DQo+IC0gICAgYXNzZXJ0KHJlbW90ZSk7DQo+ICsg
+ICAgQVNTRVJUKGFyZyk7DQo+ICsgICAgQVNTRVJUKHJlbW90ZSk7DQo+DQo+ICAgICAgc3RydWN0
+IGNvbnRleHQgKmMgPSAoc3RydWN0IGNvbnRleHQgKilhcmc7DQo+ICAgICAgc3RydWN0IGNvbm5l
+Y3Rpb25fbGlzdCAqbCA9IGMtPm9wdGlvbnMuY29ubmVjdGlvbl9saXN0Ow0KPiBkaWZmIC0tZ2l0
+IGEvc3JjL29wZW52cG4vb3B0aW9ucy5jIGIvc3JjL29wZW52cG4vb3B0aW9ucy5jDQo+IGluZGV4
+IDA2MTZhMTcuLjY4NThhNjkgMTAwNjQ0DQo+IC0tLSBhL3NyYy9vcGVudnBuL29wdGlvbnMuYw0K
+PiArKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMNCj4gQEAgLTM0ODYsOSArMzQ4Niw5IEBADQo+
+ICAgICAgew0KPiAgICAgICAgICAvKiBDb3B5IC0tZGhjcC1vcHRpb25zIHRvIHR1bnRhcF9vcHRp
+b25zICovDQo+ICAgICAgICAgIHN0cnVjdCBkaGNwX29wdGlvbnMgKmRoY3AgPSAmZG5zLT5mcm9t
+X2RoY3A7DQo+IC0gICAgICAgIGFzc2VydChzaXplb2YoZGhjcC0+ZG5zKSA9PSBzaXplb2YodHQt
+PmRucykpOw0KPiAtICAgICAgICBhc3NlcnQoc2l6ZW9mKGRoY3AtPmRuczYpID09IHNpemVvZih0
+dC0+ZG5zNikpOw0KPiAtICAgICAgICBhc3NlcnQoc2l6ZW9mKGRoY3AtPmRvbWFpbl9zZWFyY2hf
+bGlzdCkgPT0gc2l6ZW9mKHR0LT5kb21haW5fc2VhcmNoX2xpc3QpKTsNCj4gKyAgICAgICAgQVNT
+RVJUKHNpemVvZihkaGNwLT5kbnMpID09IHNpemVvZih0dC0+ZG5zKSk7DQo+ICsgICAgICAgIEFT
+U0VSVChzaXplb2YoZGhjcC0+ZG5zNikgPT0gc2l6ZW9mKHR0LT5kbnM2KSk7DQo+ICsgICAgICAg
+IEFTU0VSVChzaXplb2YoZGhjcC0+ZG9tYWluX3NlYXJjaF9saXN0KSA9PSBzaXplb2YodHQtPmRv
+bWFpbl9zZWFyY2hfbGlzdCkpOw0KPg0KPiAgICAgICAgICB0dC0+ZG9tYWluID0gZGhjcC0+ZG9t
+YWluOw0KPiAgICAgICAgICB0dC0+ZG5zX2xlbiA9IGRoY3AtPmRuc19sZW47DQo+DQo+IFRvIHZp
+ZXcsIHZpc2l0IGNoYW5nZSAxMTcxDQo+IDxodHRwOi8vZ2Vycml0Lm9wZW52cG4ubmV0L2Mvb3Bl
+bnZwbi8rLzExNzE/dXNwPWVtYWlsPi4gVG8gdW5zdWJzY3JpYmUsDQo+IG9yIGZvciBoZWxwIHdy
+aXRpbmcgbWFpbCBmaWx0ZXJzLCB2aXNpdCBzZXR0aW5ncw0KPiA8aHR0cDovL2dlcnJpdC5vcGVu
+dnBuLm5ldC9zZXR0aW5ncz4uDQo+IEdlcnJpdC1Qcm9qZWN0OiBvcGVudnBuDQo+IEdlcnJpdC1C
+cmFuY2g6IG1hc3Rlcg0KPiBHZXJyaXQtQ2hhbmdlLUlkOiBJNjQ4MGQ2Zjc0MWMyMzY4YTBkOTUx
+MDA0YjkxMTY3ZDU5NDNmOGY5ZA0KPiBHZXJyaXQtQ2hhbmdlLU51bWJlcjogMTE3MQ0KPiBHZXJy
+aXQtUGF0Y2hTZXQ6IDENCj4gR2Vycml0LU93bmVyOiBjcm9uMiA8Z2VydEAuLi4xMjk2Li4uPg0K
+PiBHZXJyaXQtUmV2aWV3ZXI6IGZsaWNodGVuaGVsZCA8ZnJhbmtALi4uMjY0MS4uLj4NCj4gR2Vy
+cml0LVJldmlld2VyOiBwbGFpc3Rob3MgPGFybmUtb3BlbnZwbkAuLi4xMjI3Li4uPg0KPiBHZXJy
+aXQtQ0M6IG9wZW52cG4tZGV2ZWwgPG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0
+Pg0KPiBHZXJyaXQtQXR0ZW50aW9uOiBwbGFpc3Rob3MgPGFybmUtb3BlbnZwbkAuLi4xMjI3Li4u
+Pg0KPiBHZXJyaXQtQXR0ZW50aW9uOiBmbGljaHRlbmhlbGQgPGZyYW5rQC4uLjI2NDEuLi4+DQo+
+IEdlcnJpdC1NZXNzYWdlVHlwZTogbmV3Y2hhbmdlDQo+IF9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fDQo+IE9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0DQo+
+IE9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+IGh0dHBzOi8vbGlzdHMuc291
+cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwNCj4NCg==
 
-Hello plaisthos, flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail
-
-to review the following change.
-
-
-Change subject: replace assert() calls with ASSERT()
-......................................................................
-
-replace assert() calls with ASSERT()
-
-OpenVPN's ASSERT() macro will do a bit more than the standard-libc
-assert() call, namely print out which function and what expression
-failed, before calling _exit(1).  Also, it can not be accidentially
-compiled-away (-DNDEBUG).
-
-Use of ASSERT() generally only advised in cases of "this must not happen,
-but if it does, it's a programming or state corruption error that we
-must know about".  Use of assert() is lacking the extra debug info, and as
-such, not advised at all.
-
-Change-Id: I6480d6f741c2368a0d951004b91167d5943f8f9d
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dco_freebsd.c
-M src/openvpn/init.c
-M src/openvpn/options.c
-3 files changed, 8 insertions(+), 8 deletions(-)
-
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/1171/1
-
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 931f9f6..65303cd 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -100,7 +100,7 @@
-
-             in->sin_len =3D sizeof(*in);
-             data =3D nvlist_get_binary(nvl, "address", &len);
--            assert(len =3D=3D sizeof(in->sin_addr));
-+            ASSERT(len =3D=3D sizeof(in->sin_addr));
-             memcpy(&in->sin_addr, data, sizeof(in->sin_addr));
-             in->sin_port =3D nvlist_get_number(nvl, "port");
-             break;
-@@ -114,7 +114,7 @@
-
-             in6->sin6_len =3D sizeof(*in6);
-             data =3D nvlist_get_binary(nvl, "address", &len);
--            assert(len =3D=3D sizeof(in6->sin6_addr));
-+            ASSERT(len =3D=3D sizeof(in6->sin6_addr));
-             memcpy(&in6->sin6_addr, data, sizeof(in6->sin6_addr));
-             in6->sin6_port =3D nvlist_get_number(nvl, "port");
-
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 39ea8e4..2821cd4 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -319,7 +319,7 @@
- static unsigned int
- management_callback_remote_entry_count(void *arg)
- {
--    assert(arg);
-+    ASSERT(arg);
-     struct context *c =3D (struct context *)arg;
-     struct connection_list *l =3D c->options.connection_list;
-
-@@ -329,8 +329,8 @@
- static bool
- management_callback_remote_entry_get(void *arg, unsigned int index, char *=
-*remote)
- {
--    assert(arg);
--    assert(remote);
-+    ASSERT(arg);
-+    ASSERT(remote);
-
-     struct context *c =3D (struct context *)arg;
-     struct connection_list *l =3D c->options.connection_list;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0616a17..6858a69 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3486,9 +3486,9 @@
-     {
-         /* Copy --dhcp-options to tuntap_options */
-         struct dhcp_options *dhcp =3D &dns->from_dhcp;
--        assert(sizeof(dhcp->dns) =3D=3D sizeof(tt->dns));
--        assert(sizeof(dhcp->dns6) =3D=3D sizeof(tt->dns6));
--        assert(sizeof(dhcp->domain_search_list) =3D=3D sizeof(tt->domain_s=
-earch_list));
-+        ASSERT(sizeof(dhcp->dns) =3D=3D sizeof(tt->dns));
-+        ASSERT(sizeof(dhcp->dns6) =3D=3D sizeof(tt->dns6));
-+        ASSERT(sizeof(dhcp->domain_search_list) =3D=3D sizeof(tt->domain_s=
-earch_list));
-
-         tt->domain =3D dhcp->domain;
-         tt->dns_len =3D dhcp->dns_len;
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6480d6f741c2368a0d951004b91167d5943f8f9d
-Gerrit-Change-Number: 1171
-Gerrit-PatchSet: 1
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
-
---yee/f2YbEUM=
+--000000000000fcfb0c063e3569ff
 Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">replace assert() calls with ASSERT()<br><br>OpenVPN&#39;s AS=
-SERT() macro will do a bit more than the standard-libc<br>assert() call, na=
-mely print out which function and what expression<br>failed, before calling=
- _exit(1).  Also, it can not be accidentially<br>compiled-away (-DNDEBUG).<=
-br><br>Use of ASSERT() generally only advised in cases of &quot;this must n=
-ot happen,<br>but if it does, it&#39;s a programming or state corruption er=
-ror that we<br>must know about&quot;.  Use of assert() is lacking the extra=
- debug info, and as<br>such, not advised at all.<br><br>Change-Id: I6480d6f=
-741c2368a0d951004b91167d5943f8f9d<br>Signed-off-by: Gert Doering &lt;gert@...220...=
-..1296...&gt;<br>---<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/init.c=
-<br>M src/openvpn/options.c<br>3 files changed, 8 insertions(+), 8 deletion=
-s(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/71/1171/1</pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;"><span>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco=
-_freebsd.c</span><br><span>index 931f9f6..65303cd 100644</span><br><span>--=
-- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd=
-.c</span><br><span>@@ -100,7 +100,7 @@</span><br><span> </span><br><span>  =
-           in-&gt;sin_len =3D sizeof(*in);</span><br><span>             dat=
-a =3D nvlist_get_binary(nvl, &quot;address&quot;, &amp;len);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            assert(len =3D=3D sizeof=
-(in-&gt;sin_addr));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            ASSERT(len =3D=3D sizeof(in-&gt;sin_addr));</span><br><span>   =
-          memcpy(&amp;in-&gt;sin_addr, data, sizeof(in-&gt;sin_addr));</spa=
-n><br><span>             in-&gt;sin_port =3D nvlist_get_number(nvl, &quot;p=
-ort&quot;);</span><br><span>             break;</span><br><span>@@ -114,7 +=
-114,7 @@</span><br><span> </span><br><span>             in6-&gt;sin6_len =
-=3D sizeof(*in6);</span><br><span>             data =3D nvlist_get_binary(n=
-vl, &quot;address&quot;, &amp;len);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            assert(len =3D=3D sizeof(in6-&gt;sin6_addr));</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSERT(len =
-=3D=3D sizeof(in6-&gt;sin6_addr));</span><br><span>             memcpy(&amp=
-;in6-&gt;sin6_addr, data, sizeof(in6-&gt;sin6_addr));</span><br><span>     =
-        in6-&gt;sin6_port =3D nvlist_get_number(nvl, &quot;port&quot;);</sp=
-an><br><span> </span><br><span>diff --git a/src/openvpn/init.c b/src/openvp=
-n/init.c</span><br><span>index 39ea8e4..2821cd4 100644</span><br><span>--- =
-a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><sp=
-an>@@ -319,7 +319,7 @@</span><br><span> static unsigned int</span><br><span=
-> management_callback_remote_entry_count(void *arg)</span><br><span> {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert(arg);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(arg);</span><br><s=
-pan>     struct context *c =3D (struct context *)arg;</span><br><span>     =
-struct connection_list *l =3D c-&gt;options.connection_list;</span><br><spa=
-n> </span><br><span>@@ -329,8 +329,8 @@</span><br><span> static bool</span>=
-<br><span> management_callback_remote_entry_get(void *arg, unsigned int ind=
-ex, char **remote)</span><br><span> {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    assert(arg);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    assert(remote);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    ASSERT(arg);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    ASSERT(remote);</span><br><span> </span><br><span>     struct c=
-ontext *c =3D (struct context *)arg;</span><br><span>     struct connection=
-_list *l =3D c-&gt;options.connection_list;</span><br><span>diff --git a/sr=
-c/openvpn/options.c b/src/openvpn/options.c</span><br><span>index 0616a17..=
-6858a69 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>=
-+++ b/src/openvpn/options.c</span><br><span>@@ -3486,9 +3486,9 @@</span><br=
-><span>     {</span><br><span>         /* Copy --dhcp-options to tuntap_opt=
-ions */</span><br><span>         struct dhcp_options *dhcp =3D &amp;dns-&gt=
-;from_dhcp;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        as=
-sert(sizeof(dhcp-&gt;dns) =3D=3D sizeof(tt-&gt;dns));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        assert(sizeof(dhcp-&gt;dns6) =3D=3D=
- sizeof(tt-&gt;dns6));</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        assert(sizeof(dhcp-&gt;domain_search_list) =3D=3D sizeof(tt-&gt;do=
-main_search_list));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        ASSERT(sizeof(dhcp-&gt;dns) =3D=3D sizeof(tt-&gt;dns));</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(sizeof(dhcp-&gt;=
-dns6) =3D=3D sizeof(tt-&gt;dns6));</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        ASSERT(sizeof(dhcp-&gt;domain_search_list) =3D=3D si=
-zeof(tt-&gt;domain_search_list));</span><br><span> </span><br><span>       =
-  tt-&gt;domain =3D dhcp-&gt;domain;</span><br><span>         tt-&gt;dns_le=
-n =3D dhcp-&gt;dns_len;</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail">change 1=
-171</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+PGRpdiBkaXI9ImF1dG8iPuWlveeahO+8jOaIkeW3sue2kyDgpKrgpYLgpLDgpYAg4KSk4KSw4KS5
+IOCkuOClhyDgpLjgpK7gpJ0g4KSy4KS/4KSv4KS+IOCkueCliOClpOS9oOaPkOS+m+eahOmAmeS7
+veaYryBPcGVuVlBOIOeahOS4gOS7vSBHZXJyaXQg56iL5byP56K86K6K5pu05a+p5p+l77yIQ29k
+ZSBSZXZpZXfvvInvvIzku6Xlj4rkvaDoh6rlt7HlsI3mraTorormm7TnmoToqbPnm6HliIbmnpDl
+kozlr6bkvZzlu7rorbDjgII8ZGl2IGRpcj0iYXV0byI+5L2g55qE55CG6Kej5a6M5YWo5q2j56K6
+77yM6YCZ5Lu96K6K5pu055qE5qC45b+D5bCx5piv5bCHIEMg6Kqe6KiA5qiZ5rqW55qEIGFzc2Vy
+dCgpIOWuj++8jOWFqOmdouabv+aPm+eCuiBPcGVuVlBOIOWwiOahiOiHquiogueahCBBU1NFUlQo
+KSDlro/jgII8L2Rpdj48ZGl2IGRpcj0iYXV0byI+6K6K5pu055qE5qC45b+D5YO55YC8PC9kaXY+
+PGRpdiBkaXI9ImF1dG8iPuWmguWQjOaPkOS6pOioiuaBr++8iGNvbW1pdCBtZXNzYWdl77yJ5omA
+6L+w77yM5Lul5Y+K5L2g55qE6KeA5a+f77yM6YCZ6bq85YGa55qE55CG55Sx6Z2e5bi45piO56K6
+5LiU6YeN6KaB77yaPC9kaXY+PGRpdiBkaXI9ImF1dG8iPsKgKiDmm7TosZDlr4znmoTpmaTpjK/o
+s4foqIrvvJpPcGVuVlBOIOeahCBBU1NFUlQoKSDlnKjop7jnmbzmmYLvvIzmnIPljbDlh7rnmbzn
+lJ/llY/poYznmoTlh73lvI/lkI3nqLHlkozlpLHmlZfnmoTmop3ku7booajpgZTlvI/vvIzpgJnm
+r5TmqJnmupYgYXNzZXJ0KCkg5YOF6aGv56S65qqU5qGI5ZKM6KGM6Jmf5o+Q5L6b5LqG5pu05aSa
+5LiK5LiL5paH77yM5aSn5bmF5Yqg6YCf5LqG5ZWP6aGM5a6a5L2N44CCPC9kaXY+PGRpdiBkaXI9
+ImF1dG8iPsKgKiDnhKHms5XooqvmhI/lpJbpl5zplonvvJrmqJnmupbnmoQgYXNzZXJ0KCkg5Y+q
+6KaB5Zyo57eo6K2v5pmC5a6a576p5LqGIE5ERUJVRyDlro/vvIjpgJnlnKjnmbzooYzniYggUmVs
+ZWFzZSBidWlsZCDkuK3mmK/mqJnmupbkvZzms5XvvInvvIzmiYDmnIkgYXNzZXJ0KCkg5ZG85Y+r
+6YO95pyD6KKr6aCQ6JmV55CG5Zmo56e76Zmk44CC54S26ICM77yMQVNTRVJUKCkg6KKr6Kit6KiI
+54K65rC46YGg5pyJ5pWI77yM56K65L+d5LqG5Y2z5L2/5Zyo5q2j5byP55Si5ZOB5Lit77yM6YGH
+5Yiw6YCZ56iu44CM55CG6KuW5LiK57WV5LiN6Kmy55m855Sf44CN55qE5Zq06YeN56iL5byP6YKP
+6Lyv5oiW54uA5oWL6Yyv6Kqk5pmC77yM56iL5byP6IO956uL5Yi75Lit5q2i5Lim55WZ5LiL57ea
+57Si44CCPC9kaXY+PGRpdiBkaXI9ImF1dG8iPumAmeaYr+S4gOasoeWFuOWei+eahOeoi+W8j+ei
+vOWBpeWjr+aAp++8iENvZGUgSGFyZGVuaW5n77yJ6IiH57at6K235oCn5o+Q5Y2H55qE5L+u5pS5
+44CCPC9kaXY+PGRpdiBkaXI9ImF1dG8iPumpl+itiea1geeoizwvZGl2PjxkaXYgZGlyPSJhdXRv
+Ij7kvaDmj5DkvpvnmoTmjIfku6Tluo/liJfmmK/pqZforYnmraTorormm7TnmoTmqJnmupbkvZzm
+s5XvvIzmtYHnqIvmuIXmmbDkuJTlrozmlbTvvJo8L2Rpdj48ZGl2IGRpcj0iYXV0byI+wqAqIOio
+reWumiBHZXJyaXQg6YGg56uv5YCJ5YSyPC9kaXY+PGRpdiBkaXI9ImF1dG8iPsKgIMKgZ2l0IHJl
+bW90ZSBhZGQgZ2Vycml0IHNzaDovLzxhIGhyZWY9Imh0dHA6Ly9nZXJyaXQub3BlbnZwbi5uZXQ6
+Mjk0MTgvb3BlbnZwbiI+Z2Vycml0Lm9wZW52cG4ubmV0OjI5NDE4L29wZW52cG48L2E+IHx8IHRy
+dWU8L2Rpdj48ZGl2IGRpcj0iYXV0byI+PGJyPjwvZGl2PjxkaXYgZGlyPSJhdXRvIj7CoCog5oqT
+5Y+W5oyH5a6a55qE6K6K5pu054mI5pysPC9kaXY+PGRpdiBkaXI9ImF1dG8iPsKgIMKgZ2l0IGZl
+dGNoIGdlcnJpdCByZWZzL2NoYW5nZXMvNzEvMTE3MS8xPC9kaXY+PGRpdiBkaXI9ImF1dG8iPmdp
+dCBjaGVja291dCAtYiB0cnktYXNzZXJ0LUFTU0VSVCBGRVRDSF9IRUFEPC9kaXY+PGRpdiBkaXI9
+ImF1dG8iPjxicj48L2Rpdj48ZGl2IGRpcj0iYXV0byI+wqAqIOeiuuiqjeeoi+W8j+eivOW3rueV
+sDwvZGl2PjxkaXYgZGlyPSJhdXRvIj7CoCDCoCMg56K66KqN6K6K5pu055qE5qqU5qGI57Wx6KiI
+77yM5oeJ6Kmy5Y+q5b2x6Z+/IDMg5YCL5qqU5qGIPC9kaXY+PGRpdiBkaXI9ImF1dG8iPmdpdCAt
+LW5vLXBhZ2VyIGRpZmYgLS1zdGF0IEhFQUR+MS4uSEVBRDwvZGl2PjxkaXYgZGlyPSJhdXRvIj4j
+IOeiuuiqjSBhc3NlcnQoKSDpg73lt7Lmj5vmiJAgQVNTRVJUKCk8L2Rpdj48ZGl2IGRpcj0iYXV0
+byI+Z2l0IC0tbm8tcGFnZXIgZ3JlcCAtbiAmcXVvdDtBU1NFUlQoJnF1b3Q7IHNyYy9vcGVudnBu
+L3tkY29fZnJlZWJzZC5jLGluaXQuYyxvcHRpb25zLmN9PC9kaXY+PGRpdiBkaXI9ImF1dG8iPjxi
+cj48L2Rpdj48ZGl2IGRpcj0iYXV0byI+wqAqIOW7uue9ruiIh+WfuuacrOWft+ihjOa4rOippjwv
+ZGl2PjxkaXYgZGlyPSJhdXRvIj7CoCDCoC4vY29uZmlndXJlICZhbXA7JmFtcDsgbWFrZSAtaiZx
+dW90OyQobnByb2MpJnF1b3Q7PC9kaXY+PGRpdiBkaXI9ImF1dG8iPnNyYy9vcGVudnBuL29wZW52
+cG4gLS12ZXJzaW9uPC9kaXY+PGRpdiBkaXI9ImF1dG8iPjxicj48L2Rpdj48ZGl2IGRpcj0iYXV0
+byI+6YCZ5YCL5rWB56iL54Sh5oeI5Y+v5pOK44CCPC9kaXY+PGRpdiBkaXI9ImF1dG8iPumXnOaW
+vOWcqOaJi+apn+S4iue3qOitr+eahOaMkeaIsOiIh+ino+axuuaWueahiDwvZGl2PjxkaXYgZGly
+PSJhdXRvIj7kvaDmj5Dlh7rnmoTjgIzlnKjmiYvmqZ/kuIrnm7TmjqXmlLnjgIHnm7TmjqXnt6gg
+T3BlblZQTiDlub7kuY7mmK/lnLDnjYTmqKHlvI/jgI3nmoTop4Dpu57pnZ7luLjlr6bpmpvjgIJU
+ZXJtdXgg6ZuW54S25by35aSn77yM5L2G6JmV55CG5aSn5Z6LIEMg5bCI5qGI55qE57eo6K2v77yM
+5b6A5b6A5pyD6YGH5Yiw55u45L6d5oCn44CB57eo6K2v6YCf5bqm5ZKM5bmz5Y+w5beu55Ww562J
+5ZWP6aGM44CCPC9kaXY+PGRpdiBkaXI9ImF1dG8iPuS9oOimj+WKg+eahCDmlrnmoYggQSAo5L2/
+55SoIERvY2tlciDlrrnlmagp77yM5piv55uu5YmN5qWt55WM6JmV55CG6YCZ6aGe6ZyA5rGC55qE
+5pyA5L2z5a+m6LiQIChCZXN0IFByYWN0aWNlKe+8mjwvZGl2PjxkaXYgZGlyPSJhdXRvIj4mZ3Q7
+IOWcqOmBoOerry/lrrnlmajmiorkuozpgLLkvY3nt6jlpb0g4oaSIOikh+ijveWIsOebruaomeij
+nee9rjwvZGl2PjxkaXYgZGlyPSJhdXRvIj4mZ3Q7wqA8L2Rpdj48ZGl2IGRpcj0iYXV0byI+6YCZ
+5YCL5pa55rOV55qE5YSq6bue5piv77yaPC9kaXY+PGRpdiBkaXI9ImF1dG8iPsKgKiDnkrDlooPk
+uIDoh7TmgKfvvJrnorrkv53mr4/mrKHnt6jora/nmoTnkrDlooPpg73kub7mt6jkuJTnm7jlkIzv
+vIzpgb/lhY3jgIzlnKjmiJHpm7vohabkuIrlj6/ku6Xnt6jvvIzlnKjkvaDpgqPoo6HkuI3ooYzj
+gI3nmoTllY/poYzjgII8L2Rpdj48ZGl2IGRpcj0iYXV0byI+wqAqIOmAn+W6puW/q++8muWIqeeU
+qOS8uuacjeWZqOaIliBQQyDnmoTlvLflpKfmgKfog73pgLLooYznt6jora/jgII8L2Rpdj48ZGl2
+IGRpcj0iYXV0byI+wqAqIOmDqOe9suWWrue0lO+8muebruaomeijnee9ru+8iOaJi+apn++8ieWP
+qumcgOaOpeaUtuacgOe1gueahOS6jOmAsuS9jeaqlOahiO+8jOeEoemcgOWuieijneaVtOWAi+mW
+i+eZvOW3peWFt+mPiOOAgjwvZGl2PjxkaXYgZGlyPSJhdXRvIj7kvaDmj5DkvpvnmoQgRG9ja2Vy
+ZmlsZSDmjIfku6TnqL/pnZ7luLjlsIjmpa3vvIzmtrXok4vkuoblronoo53nm7jkvp3lpZfku7bj
+gIHmi4nlj5bnqIvlvI/norzjgIHlpZfnlKjorormm7TjgIHnt6jora/jgIHmiZPljIXnmoTlhajp
+gY7nqIvvvIzmmK/kuIDlgIvlj6/ku6Xnm7TmjqXmjqHnlKjnmoTop6PmsbrmlrnmoYjjgII8L2Rp
+dj48ZGl2IGRpcj0iYXV0byI+57i957WQPC9kaXY+PGRpdiBkaXI9ImF1dG8iPuS9oOeahOWIhuae
+kOmdnuW4uOmAj+W+ue+8jOW+nuiuiuabtOeahOaEj+WcluOAgempl+itieeahOatpempn++8jOWI
+sOi3qOW5s+WPsOmDqOe9sueahOaMkeaIsOiIh+ino+axuuaWueahiOmDveiAg+aFruWIsOS6huOA
+gumAmeS7vSBhc3NlcnQoKSDliLAgQVNTRVJUKCkg55qE6K6K5pu077yM56K65a+m5piv5o+Q5Y2H
+6Luf6auU5ZOB6LOq55qE5YW456+E77yM5aaC5ZCM54K656iL5byP55qE6Zec6Y216YKP6Lyv57aB
+5LiK5LqG5LiA5qKd5pu054mi5Zu644CB5LiU6ZmE5bi26buR55uS5a2Q6KiY6YyE5Zmo55qE5a6J
+5YWo5bi244CCPC9kaXY+PGRpdiBkaXI9ImF1dG8iPuiLpeS9oOmcgOimgeWwh+mAmea1geeoi+iH
+quWLleWMlu+8jOS+i+WmguaUueWvq+aIkCBHaXRIdWIgQWN0aW9uc++8jOiukyBDSS9DRCDlubPl
+j7Doh6rli5Xnt6jora/kuKbnlKLlh7rlj6/lnKjmiYvmqZ/kuIrpgYvooYznmoTln7fooYzmqpQg
+KGFydGlmYWN0Ke+8jOaIkeWPr+S7peWNlOWKqeS9oOaSsOWvq+WwjeaHieeahCAueW1sIOioreWu
+muaqlOOAgjwvZGl2PjxkaXYgZGlyPSJhdXRvIj48YnI+PC9kaXY+PC9kaXY+PGJyPjxkaXYgY2xh
+c3M9ImdtYWlsX3F1b3RlIGdtYWlsX3F1b3RlX2NvbnRhaW5lciI+PGRpdiBkaXI9Imx0ciIgY2xh
+c3M9ImdtYWlsX2F0dHIiPmNyb24yIChDb2RlIFJldmlldykgJmx0OzxhIGhyZWY9Im1haWx0bzpn
+ZXJyaXRALi4uNTE1Li4uIj5nZXJyaXRALi4uNTE1Li4uPC9hPiZndDsg5pa8IDIwMjXlubQ55pyI
+N+aXpSDpgLHml6UgMTg6MjMg5a+r6YGT77yaPGJyPjwvZGl2PjxibG9ja3F1b3RlIGNsYXNzPSJn
+bWFpbF9xdW90ZSIgc3R5bGU9Im1hcmdpbjowIDAgMCAuOGV4O2JvcmRlci1sZWZ0OjFweCAjY2Nj
+IHNvbGlkO3BhZGRpbmctbGVmdDoxZXgiPjxwPiBBdHRlbnRpb24gaXMgY3VycmVudGx5IHJlcXVp
+cmVkIGZyb206IGZsaWNodGVuaGVsZCwgcGxhaXN0aG9zLiA8L3A+DQo8cD5jcm9uMiB3b3VsZCBs
+aWtlIHBsYWlzdGhvcyBhbmQgZmxpY2h0ZW5oZWxkIHRvIDxzdHJvbmc+cmV2aWV3PC9zdHJvbmc+
+IHRoaXMgY2hhbmdlLg0KPC9wPjxwPjxhIGhyZWY9Imh0dHA6Ly9nZXJyaXQub3BlbnZwbi5uZXQv
+Yy9vcGVudnBuLysvMTE3MT91c3A9ZW1haWwiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJy
+ZXIiPlZpZXcgQ2hhbmdlPC9hPjwvcD48cHJlIHN0eWxlPSJmb250LWZhbWlseTptb25vc3BhY2Us
+bW9ub3NwYWNlO3doaXRlLXNwYWNlOnByZS13cmFwIj5yZXBsYWNlIGFzc2VydCgpIGNhbGxzIHdp
+dGggQVNTRVJUKCk8YnI+PGJyPk9wZW5WUE4mIzM5O3MgQVNTRVJUKCkgbWFjcm8gd2lsbCBkbyBh
+IGJpdCBtb3JlIHRoYW4gdGhlIHN0YW5kYXJkLWxpYmM8YnI+YXNzZXJ0KCkgY2FsbCwgbmFtZWx5
+IHByaW50IG91dCB3aGljaCBmdW5jdGlvbiBhbmQgd2hhdCBleHByZXNzaW9uPGJyPmZhaWxlZCwg
+YmVmb3JlIGNhbGxpbmcgX2V4aXQoMSkuICBBbHNvLCBpdCBjYW4gbm90IGJlIGFjY2lkZW50aWFs
+bHk8YnI+Y29tcGlsZWQtYXdheSAoLUROREVCVUcpLjxicj48YnI+VXNlIG9mIEFTU0VSVCgpIGdl
+bmVyYWxseSBvbmx5IGFkdmlzZWQgaW4gY2FzZXMgb2YgJnF1b3Q7dGhpcyBtdXN0IG5vdCBoYXBw
+ZW4sPGJyPmJ1dCBpZiBpdCBkb2VzLCBpdCYjMzk7cyBhIHByb2dyYW1taW5nIG9yIHN0YXRlIGNv
+cnJ1cHRpb24gZXJyb3IgdGhhdCB3ZTxicj5tdXN0IGtub3cgYWJvdXQmcXVvdDsuICBVc2Ugb2Yg
+YXNzZXJ0KCkgaXMgbGFja2luZyB0aGUgZXh0cmEgZGVidWcgaW5mbywgYW5kIGFzPGJyPnN1Y2gs
+IG5vdCBhZHZpc2VkIGF0IGFsbC48YnI+PGJyPkNoYW5nZS1JZDogSTY0ODBkNmY3NDFjMjM2OGEw
+ZDk1MTAwNGI5MTE2N2Q1OTQzZjhmOWQ8YnI+U2lnbmVkLW9mZi1ieTogR2VydCBEb2VyaW5nICZs
+dDs8YSBocmVmPSJtYWlsdG86Z2VydEAuLi4xMjk2Li4uIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJu
+b3JlZmVycmVyIj5nZXJ0QC4uLjEyOTYuLi48L2E+Jmd0Ozxicj4tLS08YnI+TSBzcmMvb3BlbnZw
+bi9kY29fZnJlZWJzZC5jPGJyPk0gc3JjL29wZW52cG4vaW5pdC5jPGJyPk0gc3JjL29wZW52cG4v
+b3B0aW9ucy5jPGJyPjMgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9u
+cygtKTxicj48YnI+PC9wcmU+PHByZSBzdHlsZT0iZm9udC1mYW1pbHk6bW9ub3NwYWNlLG1vbm9z
+cGFjZTt3aGl0ZS1zcGFjZTpwcmUtd3JhcCI+Z2l0IHB1bGwgc3NoOi8vPGEgaHJlZj0iaHR0cDov
+L2dlcnJpdC5vcGVudnBuLm5ldDoyOTQxOC9vcGVudnBuIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJu
+b3JlZmVycmVyIj5nZXJyaXQub3BlbnZwbi5uZXQ6Mjk0MTgvb3BlbnZwbjwvYT4gcmVmcy9jaGFu
+Z2VzLzcxLzExNzEvMTwvcHJlPjxwcmUgc3R5bGU9ImZvbnQtZmFtaWx5Om1vbm9zcGFjZSxtb25v
+c3BhY2U7d2hpdGUtc3BhY2U6cHJlLXdyYXAiPjxzcGFuPmRpZmYgLS1naXQgYS9zcmMvb3BlbnZw
+bi9kY29fZnJlZWJzZC5jIGIvc3JjL29wZW52cG4vZGNvX2ZyZWVic2QuYzwvc3Bhbj48YnI+PHNw
+YW4+aW5kZXggOTMxZjlmNi4uNjUzMDNjZCAxMDA2NDQ8L3NwYW4+PGJyPjxzcGFuPi0tLSBhL3Ny
+Yy9vcGVudnBuL2Rjb19mcmVlYnNkLmM8L3NwYW4+PGJyPjxzcGFuPisrKyBiL3NyYy9vcGVudnBu
+L2Rjb19mcmVlYnNkLmM8L3NwYW4+PGJyPjxzcGFuPkBAIC0xMDAsNyArMTAwLDcgQEA8L3NwYW4+
+PGJyPjxzcGFuPiA8L3NwYW4+PGJyPjxzcGFuPiAgICAgICAgICAgICBpbi0mZ3Q7c2luX2xlbiA9
+IHNpemVvZigqaW4pOzwvc3Bhbj48YnI+PHNwYW4+ICAgICAgICAgICAgIGRhdGEgPSBudmxpc3Rf
+Z2V0X2JpbmFyeShudmwsICZxdW90O2FkZHJlc3MmcXVvdDssICZhbXA7bGVuKTs8L3NwYW4+PGJy
+PjxzcGFuIHN0eWxlPSJjb2xvcjpoc2woMCwxMDAlLDQwJSkiPi0gICAgICAgICAgICBhc3NlcnQo
+bGVuID09IHNpemVvZihpbi0mZ3Q7c2luX2FkZHIpKTs8L3NwYW4+PGJyPjxzcGFuIHN0eWxlPSJj
+b2xvcjpoc2woMTIwLDEwMCUsNDAlKSI+KyAgICAgICAgICAgIEFTU0VSVChsZW4gPT0gc2l6ZW9m
+KGluLSZndDtzaW5fYWRkcikpOzwvc3Bhbj48YnI+PHNwYW4+ICAgICAgICAgICAgIG1lbWNweSgm
+YW1wO2luLSZndDtzaW5fYWRkciwgZGF0YSwgc2l6ZW9mKGluLSZndDtzaW5fYWRkcikpOzwvc3Bh
+bj48YnI+PHNwYW4+ICAgICAgICAgICAgIGluLSZndDtzaW5fcG9ydCA9IG52bGlzdF9nZXRfbnVt
+YmVyKG52bCwgJnF1b3Q7cG9ydCZxdW90Oyk7PC9zcGFuPjxicj48c3Bhbj4gICAgICAgICAgICAg
+YnJlYWs7PC9zcGFuPjxicj48c3Bhbj5AQCAtMTE0LDcgKzExNCw3IEBAPC9zcGFuPjxicj48c3Bh
+bj4gPC9zcGFuPjxicj48c3Bhbj4gICAgICAgICAgICAgaW42LSZndDtzaW42X2xlbiA9IHNpemVv
+ZigqaW42KTs8L3NwYW4+PGJyPjxzcGFuPiAgICAgICAgICAgICBkYXRhID0gbnZsaXN0X2dldF9i
+aW5hcnkobnZsLCAmcXVvdDthZGRyZXNzJnF1b3Q7LCAmYW1wO2xlbik7PC9zcGFuPjxicj48c3Bh
+biBzdHlsZT0iY29sb3I6aHNsKDAsMTAwJSw0MCUpIj4tICAgICAgICAgICAgYXNzZXJ0KGxlbiA9
+PSBzaXplb2YoaW42LSZndDtzaW42X2FkZHIpKTs8L3NwYW4+PGJyPjxzcGFuIHN0eWxlPSJjb2xv
+cjpoc2woMTIwLDEwMCUsNDAlKSI+KyAgICAgICAgICAgIEFTU0VSVChsZW4gPT0gc2l6ZW9mKGlu
+Ni0mZ3Q7c2luNl9hZGRyKSk7PC9zcGFuPjxicj48c3Bhbj4gICAgICAgICAgICAgbWVtY3B5KCZh
+bXA7aW42LSZndDtzaW42X2FkZHIsIGRhdGEsIHNpemVvZihpbjYtJmd0O3NpbjZfYWRkcikpOzwv
+c3Bhbj48YnI+PHNwYW4+ICAgICAgICAgICAgIGluNi0mZ3Q7c2luNl9wb3J0ID0gbnZsaXN0X2dl
+dF9udW1iZXIobnZsLCAmcXVvdDtwb3J0JnF1b3Q7KTs8L3NwYW4+PGJyPjxzcGFuPiA8L3NwYW4+
+PGJyPjxzcGFuPmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9pbml0LmMgYi9zcmMvb3BlbnZwbi9p
+bml0LmM8L3NwYW4+PGJyPjxzcGFuPmluZGV4IDM5ZWE4ZTQuLjI4MjFjZDQgMTAwNjQ0PC9zcGFu
+Pjxicj48c3Bhbj4tLS0gYS9zcmMvb3BlbnZwbi9pbml0LmM8L3NwYW4+PGJyPjxzcGFuPisrKyBi
+L3NyYy9vcGVudnBuL2luaXQuYzwvc3Bhbj48YnI+PHNwYW4+QEAgLTMxOSw3ICszMTksNyBAQDwv
+c3Bhbj48YnI+PHNwYW4+IHN0YXRpYyB1bnNpZ25lZCBpbnQ8L3NwYW4+PGJyPjxzcGFuPiBtYW5h
+Z2VtZW50X2NhbGxiYWNrX3JlbW90ZV9lbnRyeV9jb3VudCh2b2lkICphcmcpPC9zcGFuPjxicj48
+c3Bhbj4gezwvc3Bhbj48YnI+PHNwYW4gc3R5bGU9ImNvbG9yOmhzbCgwLDEwMCUsNDAlKSI+LSAg
+ICBhc3NlcnQoYXJnKTs8L3NwYW4+PGJyPjxzcGFuIHN0eWxlPSJjb2xvcjpoc2woMTIwLDEwMCUs
+NDAlKSI+KyAgICBBU1NFUlQoYXJnKTs8L3NwYW4+PGJyPjxzcGFuPiAgICAgc3RydWN0IGNvbnRl
+eHQgKmMgPSAoc3RydWN0IGNvbnRleHQgKilhcmc7PC9zcGFuPjxicj48c3Bhbj4gICAgIHN0cnVj
+dCBjb25uZWN0aW9uX2xpc3QgKmwgPSBjLSZndDtvcHRpb25zLmNvbm5lY3Rpb25fbGlzdDs8L3Nw
+YW4+PGJyPjxzcGFuPiA8L3NwYW4+PGJyPjxzcGFuPkBAIC0zMjksOCArMzI5LDggQEA8L3NwYW4+
+PGJyPjxzcGFuPiBzdGF0aWMgYm9vbDwvc3Bhbj48YnI+PHNwYW4+IG1hbmFnZW1lbnRfY2FsbGJh
+Y2tfcmVtb3RlX2VudHJ5X2dldCh2b2lkICphcmcsIHVuc2lnbmVkIGludCBpbmRleCwgY2hhciAq
+KnJlbW90ZSk8L3NwYW4+PGJyPjxzcGFuPiB7PC9zcGFuPjxicj48c3BhbiBzdHlsZT0iY29sb3I6
+aHNsKDAsMTAwJSw0MCUpIj4tICAgIGFzc2VydChhcmcpOzwvc3Bhbj48YnI+PHNwYW4gc3R5bGU9
+ImNvbG9yOmhzbCgwLDEwMCUsNDAlKSI+LSAgICBhc3NlcnQocmVtb3RlKTs8L3NwYW4+PGJyPjxz
+cGFuIHN0eWxlPSJjb2xvcjpoc2woMTIwLDEwMCUsNDAlKSI+KyAgICBBU1NFUlQoYXJnKTs8L3Nw
+YW4+PGJyPjxzcGFuIHN0eWxlPSJjb2xvcjpoc2woMTIwLDEwMCUsNDAlKSI+KyAgICBBU1NFUlQo
+cmVtb3RlKTs8L3NwYW4+PGJyPjxzcGFuPiA8L3NwYW4+PGJyPjxzcGFuPiAgICAgc3RydWN0IGNv
+bnRleHQgKmMgPSAoc3RydWN0IGNvbnRleHQgKilhcmc7PC9zcGFuPjxicj48c3Bhbj4gICAgIHN0
+cnVjdCBjb25uZWN0aW9uX2xpc3QgKmwgPSBjLSZndDtvcHRpb25zLmNvbm5lY3Rpb25fbGlzdDs8
+L3NwYW4+PGJyPjxzcGFuPmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9vcHRpb25zLmMgYi9zcmMv
+b3BlbnZwbi9vcHRpb25zLmM8L3NwYW4+PGJyPjxzcGFuPmluZGV4IDA2MTZhMTcuLjY4NThhNjkg
+MTAwNjQ0PC9zcGFuPjxicj48c3Bhbj4tLS0gYS9zcmMvb3BlbnZwbi9vcHRpb25zLmM8L3NwYW4+
+PGJyPjxzcGFuPisrKyBiL3NyYy9vcGVudnBuL29wdGlvbnMuYzwvc3Bhbj48YnI+PHNwYW4+QEAg
+LTM0ODYsOSArMzQ4Niw5IEBAPC9zcGFuPjxicj48c3Bhbj4gICAgIHs8L3NwYW4+PGJyPjxzcGFu
+PiAgICAgICAgIC8qIENvcHkgLS1kaGNwLW9wdGlvbnMgdG8gdHVudGFwX29wdGlvbnMgKi88L3Nw
+YW4+PGJyPjxzcGFuPiAgICAgICAgIHN0cnVjdCBkaGNwX29wdGlvbnMgKmRoY3AgPSAmYW1wO2Ru
+cy0mZ3Q7ZnJvbV9kaGNwOzwvc3Bhbj48YnI+PHNwYW4gc3R5bGU9ImNvbG9yOmhzbCgwLDEwMCUs
+NDAlKSI+LSAgICAgICAgYXNzZXJ0KHNpemVvZihkaGNwLSZndDtkbnMpID09IHNpemVvZih0dC0m
+Z3Q7ZG5zKSk7PC9zcGFuPjxicj48c3BhbiBzdHlsZT0iY29sb3I6aHNsKDAsMTAwJSw0MCUpIj4t
+ICAgICAgICBhc3NlcnQoc2l6ZW9mKGRoY3AtJmd0O2RuczYpID09IHNpemVvZih0dC0mZ3Q7ZG5z
+NikpOzwvc3Bhbj48YnI+PHNwYW4gc3R5bGU9ImNvbG9yOmhzbCgwLDEwMCUsNDAlKSI+LSAgICAg
+ICAgYXNzZXJ0KHNpemVvZihkaGNwLSZndDtkb21haW5fc2VhcmNoX2xpc3QpID09IHNpemVvZih0
+dC0mZ3Q7ZG9tYWluX3NlYXJjaF9saXN0KSk7PC9zcGFuPjxicj48c3BhbiBzdHlsZT0iY29sb3I6
+aHNsKDEyMCwxMDAlLDQwJSkiPisgICAgICAgIEFTU0VSVChzaXplb2YoZGhjcC0mZ3Q7ZG5zKSA9
+PSBzaXplb2YodHQtJmd0O2RucykpOzwvc3Bhbj48YnI+PHNwYW4gc3R5bGU9ImNvbG9yOmhzbCgx
+MjAsMTAwJSw0MCUpIj4rICAgICAgICBBU1NFUlQoc2l6ZW9mKGRoY3AtJmd0O2RuczYpID09IHNp
+emVvZih0dC0mZ3Q7ZG5zNikpOzwvc3Bhbj48YnI+PHNwYW4gc3R5bGU9ImNvbG9yOmhzbCgxMjAs
+MTAwJSw0MCUpIj4rICAgICAgICBBU1NFUlQoc2l6ZW9mKGRoY3AtJmd0O2RvbWFpbl9zZWFyY2hf
+bGlzdCkgPT0gc2l6ZW9mKHR0LSZndDtkb21haW5fc2VhcmNoX2xpc3QpKTs8L3NwYW4+PGJyPjxz
+cGFuPiA8L3NwYW4+PGJyPjxzcGFuPiAgICAgICAgIHR0LSZndDtkb21haW4gPSBkaGNwLSZndDtk
+b21haW47PC9zcGFuPjxicj48c3Bhbj4gICAgICAgICB0dC0mZ3Q7ZG5zX2xlbiA9IGRoY3AtJmd0
+O2Ruc19sZW47PC9zcGFuPjxicj48c3Bhbj48L3NwYW4+PGJyPjwvcHJlPjxwPlRvIHZpZXcsIHZp
+c2l0IDxhIGhyZWY9Imh0dHA6Ly9nZXJyaXQub3BlbnZwbi5uZXQvYy9vcGVudnBuLysvMTE3MT91
+c3A9ZW1haWwiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJyZXIiPmNoYW5nZSAxMTcxPC9h
+Pi4gVG8gdW5zdWJzY3JpYmUsIG9yIGZvciBoZWxwIHdyaXRpbmcgbWFpbCBmaWx0ZXJzLCB2aXNp
+dCA8YSBocmVmPSJodHRwOi8vZ2Vycml0Lm9wZW52cG4ubmV0L3NldHRpbmdzIiB0YXJnZXQ9Il9i
+bGFuayIgcmVsPSJub3JlZmVycmVyIj5zZXR0aW5nczwvYT4uPC9wPjxkaXY+PGRpdj48L2Rpdj48
+L2Rpdj4NCg0KPGRpdiBzdHlsZT0iZGlzcGxheTpub25lIj4gR2Vycml0LVByb2plY3Q6IG9wZW52
+cG4gPC9kaXY+DQo8ZGl2IHN0eWxlPSJkaXNwbGF5Om5vbmUiPiBHZXJyaXQtQnJhbmNoOiBtYXN0
+ZXIgPC9kaXY+DQo8ZGl2IHN0eWxlPSJkaXNwbGF5Om5vbmUiPiBHZXJyaXQtQ2hhbmdlLUlkOiBJ
+NjQ4MGQ2Zjc0MWMyMzY4YTBkOTUxMDA0YjkxMTY3ZDU5NDNmOGY5ZCA8L2Rpdj4NCjxkaXYgc3R5
+bGU9ImRpc3BsYXk6bm9uZSI+IEdlcnJpdC1DaGFuZ2UtTnVtYmVyOiAxMTcxIDwvZGl2Pg0KPGRp
+diBzdHlsZT0iZGlzcGxheTpub25lIj4gR2Vycml0LVBhdGNoU2V0OiAxIDwvZGl2Pg0KPGRpdiBz
+dHlsZT0iZGlzcGxheTpub25lIj4gR2Vycml0LU93bmVyOiBjcm9uMiAmbHQ7PGEgaHJlZj0ibWFp
+bHRvOmdlcnRALi4uMTI5Ni4uLiIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9yZWZlcnJlciI+Z2Vy
+dEAuLi4xMjk2Li4uPC9hPiZndDsgPC9kaXY+DQo8ZGl2IHN0eWxlPSJkaXNwbGF5Om5vbmUiPiBH
+ZXJyaXQtUmV2aWV3ZXI6IGZsaWNodGVuaGVsZCAmbHQ7PGEgaHJlZj0ibWFpbHRvOmZyYW5rQC4u
+LjI2NDEuLi4iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJyZXIiPmZyYW5rQC4uLjI2NDEu
+Li48L2E+Jmd0OyA8L2Rpdj4NCjxkaXYgc3R5bGU9ImRpc3BsYXk6bm9uZSI+IEdlcnJpdC1SZXZp
+ZXdlcjogcGxhaXN0aG9zICZsdDs8YSBocmVmPSJtYWlsdG86YXJuZS1vcGVudnBuQC4uLjEyMjcu
+Li4iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJyZXIiPmFybmUtb3BlbnZwbkAuLi4xMjI3
+Li4uPC9hPiZndDsgPC9kaXY+DQo8ZGl2IHN0eWxlPSJkaXNwbGF5Om5vbmUiPiBHZXJyaXQtQ0M6
+IG9wZW52cG4tZGV2ZWwgJmx0OzxhIGhyZWY9Im1haWx0bzpvcGVudnBuLWRldmVsQGxpc3RzLnNv
+dXJjZWZvcmdlLm5ldCIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9yZWZlcnJlciI+b3BlbnZwbi1k
+ZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8L2E+Jmd0OyA8L2Rpdj4NCjxkaXYgc3R5bGU9ImRp
+c3BsYXk6bm9uZSI+IEdlcnJpdC1BdHRlbnRpb246IHBsYWlzdGhvcyAmbHQ7PGEgaHJlZj0ibWFp
+bHRvOmFybmUtb3BlbnZwbkAuLi4xMjI3Li4uIiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub3JlZmVy
+cmVyIj5hcm5lLW9wZW52cG5ALi4uMTIyNy4uLjwvYT4mZ3Q7IDwvZGl2Pg0KPGRpdiBzdHlsZT0i
+ZGlzcGxheTpub25lIj4gR2Vycml0LUF0dGVudGlvbjogZmxpY2h0ZW5oZWxkICZsdDs8YSBocmVm
+PSJtYWlsdG86ZnJhbmtALi4uMjY0MS4uLiIgdGFyZ2V0PSJfYmxhbmsiIHJlbD0ibm9yZWZlcnJl
+ciI+ZnJhbmtALi4uMjY0MS4uLjwvYT4mZ3Q7IDwvZGl2Pg0KPGRpdiBzdHlsZT0iZGlzcGxheTpu
+b25lIj4gR2Vycml0LU1lc3NhZ2VUeXBlOiBuZXdjaGFuZ2UgPC9kaXY+DQoNCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fPGJyPg0KT3BlbnZwbi1kZXZlbCBt
+YWlsaW5nIGxpc3Q8YnI+DQo8YSBocmVmPSJtYWlsdG86T3BlbnZwbi1kZXZlbEBsaXN0cy5zb3Vy
+Y2Vmb3JnZS5uZXQiIHRhcmdldD0iX2JsYW5rIiByZWw9Im5vcmVmZXJyZXIiPk9wZW52cG4tZGV2
+ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0PC9hPjxicj4NCjxhIGhyZWY9Imh0dHBzOi8vbGlzdHMu
+c291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwiIHJlbD0ibm9yZWZl
+cnJlciBub3JlZmVycmVyIiB0YXJnZXQ9Il9ibGFuayI+aHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3Jn
+ZS5uZXQvbGlzdHMvbGlzdGluZm8vb3BlbnZwbi1kZXZlbDwvYT48YnI+DQo8L2Jsb2NrcXVvdGU+
+PC9kaXY+DQo=
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6480d6f741c2368a0d951004b91=
-167d5943f8f9d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1171 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-
-
---yee/f2YbEUM=--
+--000000000000fcfb0c063e3569ff--
 
