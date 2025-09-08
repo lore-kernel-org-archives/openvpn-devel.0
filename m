@@ -1,13 +1,17 @@
-Message-ID: <6b903268-b7d9-4bce-be1f-1732b1550590@...68...>
-Date: Mon, 8 Sep 2025 21:04:23 +0200
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Sep 2025 20:40:13 +0000
+In-Reply-To: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+References: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <e351551bbb5920acfe1b02f9f7e80d15d7caa379-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <20250906135413.166789-1-matthias.andree@...68...>
- <aL6yZcbddCf7FgxN@...1296...>
-Content-Language: en-US
-From: Matthias Andree <matthias.andree@...68...>
-In-Reply-To: <aL6yZcbddCf7FgxN@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] dco_freebsd: replace assert() by
- if...return
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="91cbluyQPJw="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: drop client
+ prefix after DCO PEER_FLOAT notification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +20,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 08.09.25 um 12:39 schrieb Gert Doering:
-> Hi,
->
-> On Sat, Sep 06, 2025 at 03:54:13PM +0200, Matthias Andree via Openvpn-dev=
-el wrote:
->> The assert() check might be optimized away in Release builds,
->> and killing the process through abort() when input formats are
->> bad when we already have an error message in place does not seem right.
->>
->> Suggested by: Ralf Lici <ralf@...2726...>
->>
->> Signed-off-by: Matthias Andree <matthias.andree@...68...>
-> Thanks for the patch.  There has been lots of parallel work going on
-> this weekend, and in the end it was decided to go for OpenVPN ASSERT()
-> instead.
->
-> (Committed in master and release/2.6 as of "just now")
-I have updated the FreeBSD port to follow suit but backported the=20
-master's patch, didn't take the one from release/2.6. Part of FreeBSD's=20
-openvpn-2.6.14_3 port and package, to be consistent with upstream.
+--91cbluyQPJw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: flichtenheld, ordex, plaisthos.
+
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1116?usp=3Demail )
+
+Change subject: dco: drop client prefix after DCO PEER_FLOAT notification
+......................................................................
+
+
+Patch Set 2:
+
+(2 comments)
+
+Patchset:
+
+PS2:
+closing in on better understanding how the rest of multi.c does this
+
+
+File src/openvpn/multi.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1116/comment/e172fcee_459f337e :
+PS2, Line 3421:              * don't to keep it at this point.
+don't "want" to keep it?
+
+But I think we can just drop that comment, as the overall logic is always t=
+he same across multi.c
+
+```
+   /* find mi that this is about */
+   set_prefix(mi);
+   /* do something */
+   clear_prefix();
+```
+
+... and I think this should look the same.  Will test more and come back.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
+Gerrit-Change-Number: 1116
+Gerrit-PatchSet: 2
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Mon, 08 Sep 2025 20:40:13 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--91cbluyQPJw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail">View =
+Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-sty=
+le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
+le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1116?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">closing in on better understanding how the rest=
+ of multi.c does this</p></li></ul></li><li style=3D"margin: 0; padding: 0;=
+"><p>File src/openvpn/multi.c:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom:=
+ 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116/comment/e172fc=
+ee_459f337e">Patch Set #2, Line 3421:</a> <code style=3D"font-family:monosp=
+ace,monospace">             * don&#39;t to keep it at this point.</code></p=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">don&#39;t &quot=
+;want&quot; to keep it?</p><p style=3D"white-space: pre-wrap; word-wrap: br=
+eak-word;">But I think we can just drop that comment, as the overall logic =
+is always the same across multi.c</p><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">```<br>   /* find mi that this is about *=
+/<br>   set_prefix(mi);<br>   /* do something */<br>   clear_prefix();<br>`=
+``</pre><p style=3D"white-space: pre-wrap; word-wrap: break-word;">... and =
+I think this should look the same.  Will test more and come back.</p></li><=
+/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1116?usp=3Demail">change 1116</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329=
+a9335d1a36f24 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1116 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Sep 2025 20:40:13=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--91cbluyQPJw=--
 
