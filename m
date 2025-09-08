@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Sep 2025 10:38:04 +0000
+Date: Mon, 8 Sep 2025 10:38:07 +0000
 In-Reply-To: <gerrit.1757240524000.I6480d6f741c2368a0d951004b91167d5943f8f9d@...2715...>
 References: <gerrit.1757240524000.I6480d6f741c2368a0d951004b91167d5943f8f9d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., matthias.andree@...68...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <9312d7f2a28aa7aea41383c44af8eafbc2c311d5-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <9312d7f2a28aa7aea41383c44af8eafbc2c311d5-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7OtYRm0IWDQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="h/KADhevuew="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: replace assert()
  calls with ASSERT()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,24 +19,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, mandree <matthias.andree@...68...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: mandree <matthias.andree@...68...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7OtYRm0IWDQ=
+--h/KADhevuew=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello flichtenheld, mandree, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by mandree
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
+71?usp=3Demail )
 
 Change subject: replace assert() calls with ASSERT()
 ......................................................................
@@ -67,7 +57,7 @@ M src/openvpn/options.c
 3 files changed, 8 insertions(+), 8 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/1171/2
+
 
 diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
 index 931f9f6..65303cd 100644
@@ -136,7 +126,7 @@ earch_list));
          tt->domain =3D dhcp->domain;
          tt->dns_len =3D dhcp->dns_len;
 
---
+--=20
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
@@ -151,97 +141,94 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: mandree <matthias.andree@...68...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---7OtYRm0IWDQ=
+--h/KADhevuew=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by mandree</p><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;">replace assert() calls with ASSERT()<br><br>OpenVP=
-N&#39;s ASSERT() macro will do a bit more than the standard-libc<br>assert(=
-) call, namely print out which function and what expression<br>failed, befo=
-re calling _exit(1).  Also, it can not be accidentially<br>compiled-away (-=
-DNDEBUG).<br><br>Use of ASSERT() is generally only advised in cases of &quo=
-t;this must not<br>happen, but if it does, it&#39;s a programming or state =
-corruption error<br>that we must know about&quot;.  Use of assert() is lack=
-ing the extra debug<br>info, and as such, not advised at all.<br><br>Change=
--Id: I6480d6f741c2368a0d951004b91167d5943f8f9d<br>Signed-off-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>Acked-by: mandree &lt;matthias.andree@...2908...=
-.&gt;<br>Message-Id: &lt;20250907211252.23924-1-gert@...1296...&gt;<br>URL:=
- https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32824.=
-html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src=
-/openvpn/dco_freebsd.c<br>M src/openvpn/init.c<br>M src/openvpn/options.c<b=
-r>3 files changed, 8 insertions(+), 8 deletions(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/71/1171/2</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span=
->index 931f9f6..65303cd 100644</span><br><span>--- a/src/openvpn/dco_freebs=
-d.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -100=
-,7 +100,7 @@</span><br><span> </span><br><span>             in-&gt;sin_len =
-=3D sizeof(*in);</span><br><span>             data =3D nvlist_get_binary(nv=
-l, &quot;address&quot;, &amp;len);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            assert(len =3D=3D sizeof(in-&gt;sin_addr));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSERT(len =3D=
-=3D sizeof(in-&gt;sin_addr));</span><br><span>             memcpy(&amp;in-&=
-gt;sin_addr, data, sizeof(in-&gt;sin_addr));</span><br><span>             i=
-n-&gt;sin_port =3D nvlist_get_number(nvl, &quot;port&quot;);</span><br><spa=
-n>             break;</span><br><span>@@ -114,7 +114,7 @@</span><br><span> =
-</span><br><span>             in6-&gt;sin6_len =3D sizeof(*in6);</span><br>=
-<span>             data =3D nvlist_get_binary(nvl, &quot;address&quot;, &am=
-p;len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            as=
-sert(len =3D=3D sizeof(in6-&gt;sin6_addr));</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            ASSERT(len =3D=3D sizeof(in6-&gt;sin6_a=
-ddr));</span><br><span>             memcpy(&amp;in6-&gt;sin6_addr, data, si=
-zeof(in6-&gt;sin6_addr));</span><br><span>             in6-&gt;sin6_port =
-=3D nvlist_get_number(nvl, &quot;port&quot;);</span><br><span> </span><br><=
-span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>i=
-ndex 39ea8e4..2821cd4 100644</span><br><span>--- a/src/openvpn/init.c</span=
-><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -319,7 +319,7 @@</sp=
-an><br><span> static unsigned int</span><br><span> management_callback_remo=
-te_entry_count(void *arg)</span><br><span> {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    assert(arg);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    ASSERT(arg);</span><br><span>     struct context *c=
- =3D (struct context *)arg;</span><br><span>     struct connection_list *l =
-=3D c-&gt;options.connection_list;</span><br><span> </span><br><span>@@ -32=
-9,8 +329,8 @@</span><br><span> static bool</span><br><span> management_call=
-back_remote_entry_get(void *arg, unsigned int index, char **remote)</span><=
-br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert=
-(arg);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert(remo=
-te);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(arg)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(remote)=
-;</span><br><span> </span><br><span>     struct context *c =3D (struct cont=
-ext *)arg;</span><br><span>     struct connection_list *l =3D c-&gt;options=
-.connection_list;</span><br><span>diff --git a/src/openvpn/options.c b/src/=
-openvpn/options.c</span><br><span>index 0616a17..6858a69 100644</span><br><=
-span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.=
-c</span><br><span>@@ -3486,9 +3486,9 @@</span><br><span>     {</span><br><s=
-pan>         /* Copy --dhcp-options to tuntap_options */</span><br><span>  =
-       struct dhcp_options *dhcp =3D &amp;dns-&gt;from_dhcp;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        assert(sizeof(dhcp-&gt;dns) =
-=3D=3D sizeof(tt-&gt;dns));</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        assert(sizeof(dhcp-&gt;dns6) =3D=3D sizeof(tt-&gt;dns6));</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        assert(sizeof(dhc=
-p-&gt;domain_search_list) =3D=3D sizeof(tt-&gt;domain_search_list));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(sizeof(dhcp=
--&gt;dns) =3D=3D sizeof(tt-&gt;dns));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        ASSERT(sizeof(dhcp-&gt;dns6) =3D=3D sizeof(tt-&gt=
-;dns6));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASS=
-ERT(sizeof(dhcp-&gt;domain_search_list) =3D=3D sizeof(tt-&gt;domain_search_=
-list));</span><br><span> </span><br><span>         tt-&gt;domain =3D dhcp-&=
-gt;domain;</span><br><span>         tt-&gt;dns_len =3D dhcp-&gt;dns_len;</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1171?usp=3Demail">change 1171</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1171?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1171?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">replace assert() calls with ASSERT()<br><br>O=
+penVPN&#39;s ASSERT() macro will do a bit more than the standard-libc<br>as=
+sert() call, namely print out which function and what expression<br>failed,=
+ before calling _exit(1).  Also, it can not be accidentially<br>compiled-aw=
+ay (-DNDEBUG).<br><br>Use of ASSERT() is generally only advised in cases of=
+ &quot;this must not<br>happen, but if it does, it&#39;s a programming or s=
+tate corruption error<br>that we must know about&quot;.  Use of assert() is=
+ lacking the extra debug<br>info, and as such, not advised at all.<br><br>C=
+hange-Id: I6480d6f741c2368a0d951004b91167d5943f8f9d<br>Signed-off-by: Gert =
+Doering &lt;gert@...1296...&gt;<br>Acked-by: mandree &lt;matthias.andree@...1186...=
+.68...&gt;<br>Message-Id: &lt;20250907211252.23924-1-gert@...1296...&gt;<br=
+>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg3=
+2824.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>=
+M src/openvpn/dco_freebsd.c<br>M src/openvpn/init.c<br>M src/openvpn/option=
+s.c<br>3 files changed, 8 insertions(+), 8 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span=
+><br><span>index 931f9f6..65303cd 100644</span><br><span>--- a/src/openvpn/=
+dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><sp=
+an>@@ -100,7 +100,7 @@</span><br><span> </span><br><span>             in-&g=
+t;sin_len =3D sizeof(*in);</span><br><span>             data =3D nvlist_get=
+_binary(nvl, &quot;address&quot;, &amp;len);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            assert(len =3D=3D sizeof(in-&gt;sin_addr=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSE=
+RT(len =3D=3D sizeof(in-&gt;sin_addr));</span><br><span>             memcpy=
+(&amp;in-&gt;sin_addr, data, sizeof(in-&gt;sin_addr));</span><br><span>    =
+         in-&gt;sin_port =3D nvlist_get_number(nvl, &quot;port&quot;);</spa=
+n><br><span>             break;</span><br><span>@@ -114,7 +114,7 @@</span><=
+br><span> </span><br><span>             in6-&gt;sin6_len =3D sizeof(*in6);<=
+/span><br><span>             data =3D nvlist_get_binary(nvl, &quot;address&=
+quot;, &amp;len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        assert(len =3D=3D sizeof(in6-&gt;sin6_addr));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            ASSERT(len =3D=3D sizeof(in6-=
+&gt;sin6_addr));</span><br><span>             memcpy(&amp;in6-&gt;sin6_addr=
+, data, sizeof(in6-&gt;sin6_addr));</span><br><span>             in6-&gt;si=
+n6_port =3D nvlist_get_number(nvl, &quot;port&quot;);</span><br><span> </sp=
+an><br><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br=
+><span>index 39ea8e4..2821cd4 100644</span><br><span>--- a/src/openvpn/init=
+.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -319,7 +319,=
+7 @@</span><br><span> static unsigned int</span><br><span> management_callb=
+ack_remote_entry_count(void *arg)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    assert(arg);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    ASSERT(arg);</span><br><span>     struct c=
+ontext *c =3D (struct context *)arg;</span><br><span>     struct connection=
+_list *l =3D c-&gt;options.connection_list;</span><br><span> </span><br><sp=
+an>@@ -329,8 +329,8 @@</span><br><span> static bool</span><br><span> manage=
+ment_callback_remote_entry_get(void *arg, unsigned int index, char **remote=
+)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   assert(arg);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    as=
+sert(remote);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    AS=
+SERT(arg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSER=
+T(remote);</span><br><span> </span><br><span>     struct context *c =3D (st=
+ruct context *)arg;</span><br><span>     struct connection_list *l =3D c-&g=
+t;options.connection_list;</span><br><span>diff --git a/src/openvpn/options=
+.c b/src/openvpn/options.c</span><br><span>index 0616a17..6858a69 100644</s=
+pan><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn=
+/options.c</span><br><span>@@ -3486,9 +3486,9 @@</span><br><span>     {</sp=
+an><br><span>         /* Copy --dhcp-options to tuntap_options */</span><br=
+><span>         struct dhcp_options *dhcp =3D &amp;dns-&gt;from_dhcp;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        assert(sizeof(dhcp-=
+&gt;dns) =3D=3D sizeof(tt-&gt;dns));</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        assert(sizeof(dhcp-&gt;dns6) =3D=3D sizeof(tt-&gt;dn=
+s6));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        assert(s=
+izeof(dhcp-&gt;domain_search_list) =3D=3D sizeof(tt-&gt;domain_search_list)=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(si=
+zeof(dhcp-&gt;dns) =3D=3D sizeof(tt-&gt;dns));</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        ASSERT(sizeof(dhcp-&gt;dns6) =3D=3D size=
+of(tt-&gt;dns6));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      ASSERT(sizeof(dhcp-&gt;domain_search_list) =3D=3D sizeof(tt-&gt;domai=
+n_search_list));</span><br><span> </span><br><span>         tt-&gt;domain =
+=3D dhcp-&gt;domain;</span><br><span>         tt-&gt;dns_len =3D dhcp-&gt;d=
+ns_len;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/1171?usp=3Demail">change 1171</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1171?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -259,8 +246,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---7OtYRm0IWDQ=--
+--h/KADhevuew=--
 
