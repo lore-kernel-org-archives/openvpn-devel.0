@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Sep 2025 09:48:48 +0000
+Date: Mon, 8 Sep 2025 09:48:50 +0000
 In-Reply-To: <gerrit.1757094927000.Ib748e726eb84dcbe8a48b297d165dec80c0e578d@...2715...>
 References: <gerrit.1757094927000.Ib748e726eb84dcbe8a48b297d165dec80c0e578d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <6737ccbc673e3c8d0c92a997c4c4c9630787e58b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <6737ccbc673e3c8d0c92a997c4c4c9630787e58b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Jha1bN6olHk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="n2McgNkoONc="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: dco: backport
  OS-independent part of peer float support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,24 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Jha1bN6olHk=
+--n2McgNkoONc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello flichtenheld, plaisthos, ralf_lici,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1169?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by ralf_lici
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
+69?usp=3Demail )
 
 Change subject: dco: backport OS-independent part of peer float support
 ......................................................................
@@ -73,7 +64,7 @@ M src/openvpn/multi.c
 3 files changed, 73 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1169/2
+
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
 index 0f2ec07..ab5ebda 100644
@@ -216,63 +207,61 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: ralf_lici <ralf@...2726...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---Jha1bN6olHk=
+--n2McgNkoONc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1169?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by ralf_lici</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">dco: backport OS-independent part of peer float =
-support<br><br>This is a backport of commit cb8a0f6f5741d102b667d98370ab4d5=
-53503d0b5,<br>which introduces float support for DCO linux, Windows, and th=
-e<br>OS-independent parts.<br><br>DCO linux/windows in 2.6 has no float sup=
-port kernel-side, so this<br>ignores all OS dependent parts, backporting ju=
-st enough to add<br>FreeBSD support in the next patch.<br><br>One notable d=
-ifference in the backport is that 2.6 has no multi-socket<br>support, so al=
-l the &quot;link_sockets[0]&quot; occurances need to be changed back<br>to =
-&quot;link_socket&quot;.<br><br>See https://bugs.freebsd.org/bugzilla/show_=
-bug.cgi?id=3D289303 for all<br>the epic details...<br><br>Change-Id: Ib748e=
-726eb84dcbe8a48b297d165dec80c0e578d<br>Signed-off-by: Ralf Lici &lt;ralf@...1186...=
-.2726...&gt;<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>Acke=
-d-by: Ralf Lici &lt;ralf@...2726...&gt;<br>(cherry picked from commit cb8a0=
-f6f5741d102b667d98370ab4d553503d0b5)<br>Message-Id: &lt;20250908081124.1793=
-3-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/m=
-essage/59230454/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
----<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/openvpn/=
-multi.c<br>3 files changed, 73 insertions(+), 0 deletions(-)<br><br></pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
-pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1169/2</pre><pr=
-e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>=
-index 0f2ec07..ab5ebda 100644</span><br><span>--- a/src/openvpn/forward.c</=
-span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -1234,6 +1234=
-,41 @@</span><br><span>     perf_pop();</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+extract_dco_float_peer_addr(const=
- sa_family_t socket_family,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                            struct openvpn_sockaddr *out_osaddr,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-      const struct sockaddr *float_sa)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (float_sa-&gt;sa_family =3D=3D AF_INET)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        struct sockaddr_in *float4 =3D (struct sockaddr_in *)=
-float_sa;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
- DCO treats IPv4-mapped IPv6 addresses as pure IPv4. However, on a</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+         * dual-stack socket=
-, we need to preserve the mapping otherwise openvpn</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+         * will not be able to find the p=
-eer by its transport address.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if (socket_family =3D=3D AF_INET6)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            out_osaddr-&gt;addr.in6.sin6_family =3D AF_INET6=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            out_os=
-addr-&gt;addr.in6.sin6_port =3D float4-&gt;sin_port;</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1169?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">dco: backport OS-independent part of peer flo=
+at support<br><br>This is a backport of commit cb8a0f6f5741d102b667d98370ab=
+4d553503d0b5,<br>which introduces float support for DCO linux, Windows, and=
+ the<br>OS-independent parts.<br><br>DCO linux/windows in 2.6 has no float =
+support kernel-side, so this<br>ignores all OS dependent parts, backporting=
+ just enough to add<br>FreeBSD support in the next patch.<br><br>One notabl=
+e difference in the backport is that 2.6 has no multi-socket<br>support, so=
+ all the &quot;link_sockets[0]&quot; occurances need to be changed back<br>=
+to &quot;link_socket&quot;.<br><br>See https://bugs.freebsd.org/bugzilla/sh=
+ow_bug.cgi?id=3D289303 for all<br>the epic details...<br><br>Change-Id: Ib7=
+48e726eb84dcbe8a48b297d165dec80c0e578d<br>Signed-off-by: Ralf Lici &lt;ralf=
+@...2726...&gt;<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>A=
+cked-by: Ralf Lici &lt;ralf@...2726...&gt;<br>(cherry picked from commit cb=
+8a0f6f5741d102b667d98370ab4d553503d0b5)<br>Message-Id: &lt;20250908081124.1=
+7933-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailma=
+n/message/59230454/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<=
+br>---<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/openv=
+pn/multi.c<br>3 files changed, 73 insertions(+), 0 deletions(-)<br><br></pr=
+e>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
+an>index 0f2ec07..ab5ebda 100644</span><br><span>--- a/src/openvpn/forward.=
+c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -1234,6 +1=
+234,41 @@</span><br><span>     perf_pop();</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+extract_dco_float_peer_addr(co=
+nst sa_family_t socket_family,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                            struct openvpn_sockaddr *out_osaddr,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+         const struct sockaddr *float_sa)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    if (float_sa-&gt;sa_family =3D=3D AF_INET)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        struct sockaddr_in *float4 =3D (struct sockaddr_in=
+ *)float_sa;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ /* DCO treats IPv4-mapped IPv6 addresses as pure IPv4. However, on a</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+         * dual-stack soc=
+ket, we need to preserve the mapping otherwise openvpn</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+         * will not be able to find the =
+peer by its transport address.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        if (socket_family =3D=3D AF_INET6)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            out_osaddr-&gt;addr.in6.sin6_family =3D AF_INET=
+6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            out_o=
+saddr-&gt;addr.in6.sin6_port =3D float4-&gt;sin_port;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+            memset(&amp;out_osaddr-&gt;addr.in6.sin6_addr.s6=
 _addr, 0, 10);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
@@ -392,8 +381,8 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: ralf_lici &lt;ralf@...2726...&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---Jha1bN6olHk=--
+--n2McgNkoONc=--
 
