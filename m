@@ -1,17 +1,11 @@
-From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Sep 2025 08:13:33 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon,  8 Sep 2025 10:33:49 +0200
+Message-ID: <20250908083354.19811-1-gert@...1296...>
 In-Reply-To: <gerrit.1757094927000.I53e6d1b31c4f673cb646716dce774ef3210f36bd@...2715...>
 References: <gerrit.1757094927000.I53e6d1b31c4f673cb646716dce774ef3210f36bd@...2715...>
-Reply-To: ralf@...2726..., arne-openvpn@...1227..., matthias.andree@...68...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <f8c784c86e510d29b4a499850dbcd057e552bde0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fOoYaykggz4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: dco: support
- float notifications on FreeBSD
+Subject: [Openvpn-devel] [PATCH v1] dco: support float notifications on
+ FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,111 +14,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: mandree <matthias.andree@...68...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---fOoYaykggz4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Kristof Provost <kp@...1376...>
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+this is a backport of commit b66b80b2ab and 796ad2c559
+(squashed, as the second commit undoes quite a bit of #ifdef from the first)
 
-ralf_lici has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1170?usp=3Demail )
+Change-Id: I53e6d1b31c4f673cb646716dce774ef3210f36bd
+Signed-off-by: Kristof Provost <kprovost@...2661...>
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Ralf Lici <ralf@...2726...>
+(cherry picked from commit b66b80b2ab73bb422826911b675798e6b789ef03)
+(cherry picked from commit 796ad2c55951635382e48ea5b71d13bbb83ebfb1)
+---
 
-Change subject: dco: support float notifications on FreeBSD
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.6.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1170
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Ralf Lici <ralf@...2726...>
 
-(1 comment)
-
-Patchset:
-
-PS1:
-As discussed on IRC, this LGTM, it just needs the assert() fix included in =
-change #1171.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I53e6d1b31c4f673cb646716dce774ef3210f36bd
-Gerrit-Change-Number: 1170
-Gerrit-PatchSet: 1
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: mandree <matthias.andree@...68...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: ralf_lici <ralf@...2726...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 08 Sep 2025 08:13:33 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---fOoYaykggz4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
-/p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1170?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">As discussed on IRC, this LGTM, it just need=
-s the assert() fix included in change #1171.</p></li></ul></li></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demai=
-l">change 1170</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1170?usp=3Demail"/><meta itemp=
-rop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I53e6d1b31c4f673cb646716dce7=
-74ef3210f36bd </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1170 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: mandree &lt;matthias.andree@...220...=
-..68...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ralf_lici &lt;ralf@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Sep 2025 08:13:33=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---fOoYaykggz4=--
+        
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index ed7ea92..25532d4 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -72,6 +72,61 @@
+     return (nvl);
+ }
+ 
++static bool
++nvlist_to_sockaddr(const nvlist_t *nvl, struct sockaddr_storage *ss)
++{
++    if (!nvlist_exists_number(nvl, "af"))
++    {
++        return (false);
++    }
++    if (!nvlist_exists_binary(nvl, "address"))
++    {
++        return (false);
++    }
++    if (!nvlist_exists_number(nvl, "port"))
++    {
++        return (false);
++    }
++
++    ss->ss_family = nvlist_get_number(nvl, "af");
++
++    switch (ss->ss_family)
++    {
++        case AF_INET:
++        {
++            struct sockaddr_in *in = (struct sockaddr_in *)ss;
++            const void *data;
++            size_t len;
++
++            in->sin_len = sizeof(*in);
++            data = nvlist_get_binary(nvl, "address", &len);
++            assert(len == sizeof(in->sin_addr));
++            memcpy(&in->sin_addr, data, sizeof(in->sin_addr));
++            in->sin_port = nvlist_get_number(nvl, "port");
++            break;
++        }
++
++        case AF_INET6:
++        {
++            struct sockaddr_in6 *in6 = (struct sockaddr_in6 *)ss;
++            const void *data;
++            size_t len;
++
++            in6->sin6_len = sizeof(*in6);
++            data = nvlist_get_binary(nvl, "address", &len);
++            assert(len == sizeof(in6->sin6_addr));
++            memcpy(&in6->sin6_addr, data, sizeof(in6->sin6_addr));
++            in6->sin6_port = nvlist_get_number(nvl, "port");
++            break;
++        }
++
++        default:
++            return (false);
++    }
++
++    return (true);
++}
++
+ int
+ dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
+              struct sockaddr *localaddr, struct sockaddr *remoteaddr,
+@@ -571,6 +626,25 @@
+             dco->dco_message_type = OVPN_CMD_SWAP_KEYS;
+             break;
+ 
++        case OVPN_NOTIF_FLOAT: {
++            const nvlist_t *address;
++
++            if (!nvlist_exists_nvlist(nvl, "address"))
++            {
++                msg(M_WARN, "Float notification without address");
++                break;
++            }
++
++            address = nvlist_get_nvlist(nvl, "address");
++            if (!nvlist_to_sockaddr(address, &dco->dco_float_peer_ss))
++            {
++                msg(M_WARN, "Failed to parse float notification");
++                break;
++            }
++            dco->dco_message_type = OVPN_CMD_FLOAT_PEER;
++            break;
++        }
++
+         default:
+             msg(M_WARN, "Unknown kernel notification %d", type);
+             break;
+diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
+index e1a054e..ab5891e 100644
+--- a/src/openvpn/dco_freebsd.h
++++ b/src/openvpn/dco_freebsd.h
+@@ -36,6 +36,7 @@
+     OVPN_CMD_DEL_PEER,
+     OVPN_CMD_PACKET,
+     OVPN_CMD_SWAP_KEYS,
++    OVPN_CMD_FLOAT_PEER,
+ };
+ 
+ enum ovpn_del_reason_t {
+@@ -55,6 +56,7 @@
+     int dco_message_type;
+     int dco_message_peer_id;
+     int dco_del_peer_reason;
++    struct sockaddr_storage dco_float_peer_ss;
+     uint64_t dco_read_bytes;
+     uint64_t dco_write_bytes;
+ } dco_context_t;
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index eb5f932..310211c 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3313,7 +3313,7 @@
+         {
+             process_incoming_del_peer(m, mi, dco);
+         }
+-#if 0
++#if defined(TARGET_FREEBSD)
+         else if (dco->dco_message_type == OVPN_CMD_FLOAT_PEER)
+         {
+             ASSERT(mi->context.c2.link_socket);
+diff --git a/src/openvpn/ovpn_dco_freebsd.h b/src/openvpn/ovpn_dco_freebsd.h
+index 53f94df..7eb643b 100644
+--- a/src/openvpn/ovpn_dco_freebsd.h
++++ b/src/openvpn/ovpn_dco_freebsd.h
+@@ -37,6 +37,7 @@
+ enum ovpn_notif_type {
+     OVPN_NOTIF_DEL_PEER,
+     OVPN_NOTIF_ROTATE_KEY,
++    OVPN_NOTIF_FLOAT,
+ };
+ 
+ enum ovpn_del_reason {
 
