@@ -1,15 +1,15 @@
 From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Tue, 9 Sep 2025 08:21:07 +0000
-References: <gerrit.1757406065000.I74e2b6aed3c7454e897db57f777e6a191be3d87f@...2715...>
+Date: Tue, 9 Sep 2025 09:06:54 +0000
+References: <gerrit.1757408812000.Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b@...2715...>
 Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <85a451702057aa482c4338e809f6d48864c98a8c-HTML@...2715...>
+Message-ID: <8b0408860b62a18af8a23d147abd008285ae6bd1-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4Vq27eyBgAw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix multi-socket
- and dco-win interaction
+Content-Type: multipart/alternative; boundary="L8k9DBXYS/A="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Multi-socket win:
+ avoid repeated socket_set()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4Vq27eyBgAw=
+--L8k9DBXYS/A=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,58 +32,63 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Fix multi-socket and dco-win interaction
+Change subject: Multi-socket win: avoid repeated socket_set()
 ......................................................................
 
-Fix multi-socket and dco-win interaction
+Multi-socket win: avoid repeated socket_set()
 
-The dco_check_option_ce(), for dco_win, checked only
-the global protocol of the current connection entry,
-but now it should be extended to the local_list
-and since dco_win does not support more than 1
-socket, checking the first entry of the local_list
-will be enough.
+On Windows, multi-socket support failed with
+mixed protocols due to repeated socket_set()
+calls, which caused accept() to be triggered
+before having an event to process.
+This fix skips socket_set() calls for
+non-UDP sockets in MODE_SERVER inside
+multi_io_process_flags().
 
-Change-Id: I74e2b6aed3c7454e897db57f777e6a191be3d87f
+Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b
 Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 ---
-M src/openvpn/dco.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+M src/openvpn/forward.c
+1 file changed, 4 insertions(+), 1 deletion(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/1173/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/1174/1
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 1abebbb..70a8c0a 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -268,7 +268,7 @@
- #endif
-
- #if defined(_WIN32)
--    if (!proto_is_udp(ce->proto) && mode =3D=3D MODE_SERVER)
-+    if (!proto_is_udp(ce->local_list->array[0]->proto) && mode =3D=3D MODE=
-_SERVER)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 03b6a0c..ce69324 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2124,7 +2124,10 @@
+      */
+     for (int i =3D 0; i < c->c1.link_sockets_num; i++)
      {
-         msg(msglevel,
-             "NOTE: TCP transport disables data channel offload on Windows =
-in server mode.");
+-        socket_set(c->c2.link_sockets[i], es, socket, &c->c2.link_sockets[=
+i]->ev_arg, NULL);
++        if (c->mode !=3D MODE_SERVER || proto_is_dgram(c->c2.link_sockets[=
+i]->info.proto))
++        {
++            socket_set(c->c2.link_sockets[i], es, socket, &c->c2.link_sock=
+ets[i]->ev_arg, NULL);
++        }
+     }
+
+     tun_set(c->c1.tuntap, es, tuntap, (void *)tun_shift, NULL);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I74e2b6aed3c7454e897db57f777e6a191be3d87f
-Gerrit-Change-Number: 1173
+Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b
+Gerrit-Change-Number: 1174
 Gerrit-PatchSet: 1
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -93,49 +98,54 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---4Vq27eyBgAw=
+--L8k9DBXYS/A=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
 g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">Fix multi-socket and dco-win interaction<br><br>The dco_chec=
-k_option_ce(), for dco_win, checked only<br>the global protocol of the curr=
-ent connection entry,<br>but now it should be extended to the local_list<br=
->and since dco_win does not support more than 1<br>socket, checking the fir=
-st entry of the local_list<br>will be enough.<br><br>Change-Id: I74e2b6aed3=
-c7454e897db57f777e6a191be3d87f<br>Signed-off-by: Gianmarco De Gregori &lt;g=
-ianmarco@...2726...&gt;<br>---<br>M src/openvpn/dco.c<br>1 file changed, 1 =
-insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/73/1173/1</pre><pre style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/=
-src/openvpn/dco.c</span><br><span>index 1abebbb..70a8c0a 100644</span><br><=
-span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span>=
-<br><span>@@ -268,7 +268,7 @@</span><br><span> #endif</span><br><span> </sp=
-an><br><span> #if defined(_WIN32)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if (!proto_is_udp(ce-&gt;proto) &amp;&amp; mode =3D=3D MODE=
-_SERVER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!pr=
-oto_is_udp(ce-&gt;local_list-&gt;array[0]-&gt;proto) &amp;&amp; mode =3D=3D=
- MODE_SERVER)</span><br><span>     {</span><br><span>         msg(msglevel,=
-</span><br><span>             &quot;NOTE: TCP transport disables data chann=
-el offload on Windows in server mode.&quot;);</span><br><span></span><br></=
-pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173=
-?usp=3Demail">change 1173</a>. To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ce: pre-wrap;">Multi-socket win: avoid repeated socket_set()<br><br>On Wind=
+ows, multi-socket support failed with<br>mixed protocols due to repeated so=
+cket_set()<br>calls, which caused accept() to be triggered<br>before having=
+ an event to process.<br>This fix skips socket_set() calls for<br>non-UDP s=
+ockets in MODE_SERVER inside<br>multi_io_process_flags().<br><br>Change-Id:=
+ Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b<br>Signed-off-by: Gianmarco De G=
+regori &lt;gianmarco@...2726...&gt;<br>---<br>M src/openvpn/forward.c<br>1 =
+file changed, 4 insertions(+), 1 deletion(-)<br><br></pre><pre style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t.openvpn.net:29418/openvpn refs/changes/74/1174/1</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
+/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index 03b6a0c..c=
+e69324 100644</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+=
+++ b/src/openvpn/forward.c</span><br><span>@@ -2124,7 +2124,10 @@</span><br=
+><span>      */</span><br><span>     for (int i =3D 0; i &lt; c-&gt;c1.link=
+_sockets_num; i++)</span><br><span>     {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        socket_set(c-&gt;c2.link_sockets[i], es, socket=
+, &amp;c-&gt;c2.link_sockets[i]-&gt;ev_arg, NULL);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        if (c-&gt;mode !=3D MODE_SERVER || p=
+roto_is_dgram(c-&gt;c2.link_sockets[i]-&gt;info.proto))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            socket_set(c-&gt;c2.link_sockets[i], =
+es, socket, &amp;c-&gt;c2.link_sockets[i]-&gt;ev_arg, NULL);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</=
+span><br><span> </span><br><span>     tun_set(c-&gt;c1.tuntap, es, tuntap, =
+(void *)tun_shift, NULL);</span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail">change=
+ 1174</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail"/><meta itemprop=3D"n=
+ame" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I74e2b6aed3c7454e897db57f777=
-e6a191be3d87f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1173 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c=
+23c17c04e6e9b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1174 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
@@ -152,5 +162,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---4Vq27eyBgAw=--
+--L8k9DBXYS/A=--
 
