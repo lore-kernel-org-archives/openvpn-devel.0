@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Sep 2025 20:40:13 +0000
-In-Reply-To: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
-References: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <e351551bbb5920acfe1b02f9f7e80d15d7caa379-EmailReviewComments-HTML@...2715...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Tue, 9 Sep 2025 08:21:07 +0000
+References: <gerrit.1757406065000.I74e2b6aed3c7454e897db57f777e6a191be3d87f@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <85a451702057aa482c4338e809f6d48864c98a8c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="91cbluyQPJw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: drop client
- prefix after DCO PEER_FLOAT notification
+Content-Type: multipart/alternative; boundary="4Vq27eyBgAw="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix multi-socket
+ and dco-win interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,119 +18,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---91cbluyQPJw=
+--4Vq27eyBgAw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1116?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: dco: drop client prefix after DCO PEER_FLOAT notification
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Fix multi-socket and dco-win interaction
 ......................................................................
 
+Fix multi-socket and dco-win interaction
 
-Patch Set 2:
+The dco_check_option_ce(), for dco_win, checked only
+the global protocol of the current connection entry,
+but now it should be extended to the local_list
+and since dco_win does not support more than 1
+socket, checking the first entry of the local_list
+will be enough.
 
-(2 comments)
-
-Patchset:
-
-PS2:
-closing in on better understanding how the rest of multi.c does this
-
-
-File src/openvpn/multi.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1116/comment/e172fcee_459f337e :
-PS2, Line 3421:              * don't to keep it at this point.
-don't "want" to keep it?
-
-But I think we can just drop that comment, as the overall logic is always t=
-he same across multi.c
-
-```
-   /* find mi that this is about */
-   set_prefix(mi);
-   /* do something */
-   clear_prefix();
-```
-
-... and I think this should look the same.  Will test more and come back.
+Change-Id: I74e2b6aed3c7454e897db57f777e6a191be3d87f
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+---
+M src/openvpn/dco.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/1173/1
+
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 1abebbb..70a8c0a 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -268,7 +268,7 @@
+ #endif
+
+ #if defined(_WIN32)
+-    if (!proto_is_udp(ce->proto) && mode =3D=3D MODE_SERVER)
++    if (!proto_is_udp(ce->local_list->array[0]->proto) && mode =3D=3D MODE=
+_SERVER)
+     {
+         msg(msglevel,
+             "NOTE: TCP transport disables data channel offload on Windows =
+in server mode.");
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
-Gerrit-Change-Number: 1116
-Gerrit-PatchSet: 2
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I74e2b6aed3c7454e897db57f777e6a191be3d87f
+Gerrit-Change-Number: 1173
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Mon, 08 Sep 2025 20:40:13 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---91cbluyQPJw=
+--4Vq27eyBgAw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail">View =
-Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-sty=
-le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
-le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1116?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wr=
-ap; word-wrap: break-word;">closing in on better understanding how the rest=
- of multi.c does this</p></li></ul></li><li style=3D"margin: 0; padding: 0;=
-"><p>File src/openvpn/multi.c:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom:=
- 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116/comment/e172fc=
-ee_459f337e">Patch Set #2, Line 3421:</a> <code style=3D"font-family:monosp=
-ace,monospace">             * don&#39;t to keep it at this point.</code></p=
-><p style=3D"white-space: pre-wrap; word-wrap: break-word;">don&#39;t &quot=
-;want&quot; to keep it?</p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">But I think we can just drop that comment, as the overall logic =
-is always the same across multi.c</p><pre style=3D"font-family: monospace,m=
-onospace; white-space: pre-wrap;">```<br>   /* find mi that this is about *=
-/<br>   set_prefix(mi);<br>   /* do something */<br>   clear_prefix();<br>`=
-``</pre><p style=3D"white-space: pre-wrap; word-wrap: break-word;">... and =
-I think this should look the same.  Will test more and come back.</p></li><=
-/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/1116?usp=3Demail">change 1116</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>its_Giaan would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Fix multi-socket and dco-win interaction<br><br>The dco_chec=
+k_option_ce(), for dco_win, checked only<br>the global protocol of the curr=
+ent connection entry,<br>but now it should be extended to the local_list<br=
+>and since dco_win does not support more than 1<br>socket, checking the fir=
+st entry of the local_list<br>will be enough.<br><br>Change-Id: I74e2b6aed3=
+c7454e897db57f777e6a191be3d87f<br>Signed-off-by: Gianmarco De Gregori &lt;g=
+ianmarco@...2726...&gt;<br>---<br>M src/openvpn/dco.c<br>1 file changed, 1 =
+insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/73/1173/1</pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/=
+src/openvpn/dco.c</span><br><span>index 1abebbb..70a8c0a 100644</span><br><=
+span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span>=
+<br><span>@@ -268,7 +268,7 @@</span><br><span> #endif</span><br><span> </sp=
+an><br><span> #if defined(_WIN32)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (!proto_is_udp(ce-&gt;proto) &amp;&amp; mode =3D=3D MODE=
+_SERVER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!pr=
+oto_is_udp(ce-&gt;local_list-&gt;array[0]-&gt;proto) &amp;&amp; mode =3D=3D=
+ MODE_SERVER)</span><br><span>     {</span><br><span>         msg(msglevel,=
+</span><br><span>             &quot;NOTE: TCP transport disables data chann=
+el offload on Windows in server mode.&quot;);</span><br><span></span><br></=
+pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173=
+?usp=3Demail">change 1173</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329=
-a9335d1a36f24 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1116 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I74e2b6aed3c7454e897db57f777=
+e6a191be3d87f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1173 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -143,14 +149,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Sep 2025 20:40:13=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---91cbluyQPJw=--
+--4Vq27eyBgAw=--
 
