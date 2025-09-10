@@ -1,13 +1,15 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Sep 2025 11:35:21 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 10 Sep 2025 20:43:01 +0000
+In-Reply-To: <gerrit.1757504119000.Ie135e070b481b88033c43b76f872060fb237243c@...2715...>
 References: <gerrit.1757504119000.Ie135e070b481b88033c43b76f872060fb237243c@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8f437ed33753e39fc3c8a1311f629371d195cc2c-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <69a3ba97703ae5708f38a74c6ff1c495edc8cd8a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MmfiFOP+j/I="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="w0nCR7iHfew="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: win: replace
  wmic invocation with powershell
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,131 +20,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MmfiFOP+j/I=
+--w0nCR7iHfew=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-Hello plaisthos, flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail
-
-to review the following change.
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1175?usp=3Demail )
 
 Change subject: win: replace wmic invocation with powershell
 ......................................................................
 
-win: replace wmic invocation with powershell
 
-Since wmic has been recently deprecated and is absent on new
-systems, replace setting DNS domain "old-style" with powershell.
+Patch Set 1:
 
-GitHub: https://github.com/OpenVPN/openvpn/issues/642
+(1 comment)
 
-Change-Id: Ie135e070b481b88033c43b76f872060fb237243c
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M src/openvpn/tun.c
-M src/openvpn/win32.h
-2 files changed, 14 insertions(+), 9 deletions(-)
+Patchset:
 
+PS1:
+What about the wmic invocation in the (2.6) service?
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/1175/1
-
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 92e71a3..1ece1e1 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -383,7 +383,7 @@
- }
-
- static void
--do_dns_domain_wmic(bool add, const struct tuntap *tt)
-+do_dns_domain_pwsh(bool add, const struct tuntap *tt)
- {
-     if (!tt->options.domain)
-     {
-@@ -391,9 +391,14 @@
-     }
-
-     struct argv argv =3D argv_new();
--    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=3D%ld) call S=
-etDNSDomain '%s'",
--                get_win_sys_path(), WMIC_PATH_SUFFIX, tt->adapter_index, a=
-dd ? tt->options.domain : "");
--    exec_command("WMIC", &argv, 1, M_WARN);
-+    argv_printf(&argv,
-+                "%s%s -NoProfile -NonInteractive -Command Set-DnsClient -I=
-nterfaceIndex %ld -ConnectionSpecificSuffix '%s'",
-+                get_win_sys_path(),
-+                POWERSHELL_PATH_SUFFIX,
-+                tt->adapter_index,
-+                add ? tt->options.domain : ""
-+                );
-+    exec_command("PowerShell", &argv, 1, M_WARN);
-
-     argv_free(&argv);
- }
-@@ -1269,7 +1274,7 @@
-
-         if (!tt->did_ifconfig_setup)
-         {
--            do_dns_domain_wmic(true, tt);
-+            do_dns_domain_pwsh(true, tt);
-         }
-     }
- #else /* platforms we have no IPv6 code for */
-@@ -1625,7 +1630,7 @@
-                            tt->adapter_netmask, NI_IP_NETMASK | NI_OPTIONS=
-);
-         }
-
--        do_dns_domain_wmic(true, tt);
-+        do_dns_domain_pwsh(true, tt);
-     }
+```
+Your branch is up to date with 'stable/release/2.6'.
+gert@...2910...:/home/gert/src/openvpn-maint/openvpn$ git grep wmic.exe
+src/openvpn/win32.h:#define WMIC_PATH_SUFFIX "\\system32\\wbem\\wmic.exe"
+src/openvpnserv/interactive.c:    openvpn_swprintf(argv0, _countof(argv0), =
+L"%ls\\%ls", get_win_sys_path(), L"wbem\\wmic.exe");
+```
 
 
-@@ -7024,7 +7029,7 @@
-         {
-             if (!tt->did_ifconfig_setup)
-             {
--                do_dns_domain_wmic(false, tt);
-+                do_dns_domain_pwsh(false, tt);
-             }
-
-             netsh_delete_address_dns(tt, true, &gc);
-@@ -7050,7 +7055,7 @@
-         }
-         else
-         {
--            do_dns_domain_wmic(false, tt);
-+            do_dns_domain_pwsh(false, tt);
-
-             if (tt->options.ip_win32_type =3D=3D IPW32_SET_NETSH)
-             {
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 1b87fa3..67e6169 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -38,7 +38,7 @@
- #define WIN_ROUTE_PATH_SUFFIX "\\system32\\route.exe"
- #define WIN_IPCONFIG_PATH_SUFFIX "\\system32\\ipconfig.exe"
- #define WIN_NET_PATH_SUFFIX "\\system32\\net.exe"
--#define WMIC_PATH_SUFFIX "\\system32\\wbem\\wmic.exe"
-+#define POWERSHELL_PATH_SUFFIX "\\system32\\WindowsPowerShell\\v1.0\\power=
-shell.exe"
-
- /*
-  * Win32-specific OpenVPN code, targeted at the mingw
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail
@@ -157,101 +68,43 @@ Gerrit-PatchSet: 1
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Wed, 10 Sep 2025 20:43:01 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---MmfiFOP+j/I=
+--w0nCR7iHfew=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">win: replace wmic invocation with powershell<br><br>Since wm=
-ic has been recently deprecated and is absent on new<br>systems, replace se=
-tting DNS domain &quot;old-style&quot; with powershell.<br><br>GitHub: http=
-s://github.com/OpenVPN/openvpn/issues/642<br><br>Change-Id: Ie135e070b481b8=
-8033c43b76f872060fb237243c<br>Signed-off-by: Lev Stipakov &lt;lev@...515...=
-&gt;<br>---<br>M src/openvpn/tun.c<br>M src/openvpn/win32.h<br>2 files chan=
-ged, 14 insertions(+), 9 deletions(-)<br><br></pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openv=
-pn.net:29418/openvpn refs/changes/75/1175/1</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
-n/tun.c b/src/openvpn/tun.c</span><br><span>index 92e71a3..1ece1e1 100644</=
-span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tu=
-n.c</span><br><span>@@ -383,7 +383,7 @@</span><br><span> }</span><br><span>=
- </span><br><span> static void</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-do_dns_domain_wmic(bool add, const struct tuntap *tt)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+do_dns_domain_pwsh(bool add, con=
-st struct tuntap *tt)</span><br><span> {</span><br><span>     if (!tt-&gt;o=
-ptions.domain)</span><br><span>     {</span><br><span>@@ -391,9 +391,14 @@<=
-/span><br><span>     }</span><br><span> </span><br><span>     struct argv a=
-rgv =3D argv_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  argv_printf(&amp;argv, &quot;%s%s nicconfig where (InterfaceIndex=3D%ld) =
-call SetDNSDomain &#39;%s&#39;&quot;,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                get_win_sys_path(), WMIC_PATH_SUFFIX, tt-&g=
-t;adapter_index, add ? tt-&gt;options.domain : &quot;&quot;);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    exec_command(&quot;WMIC&quot;, =
-&amp;argv, 1, M_WARN);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    argv_printf(&amp;argv,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                &quot;%s%s -NoProfile -NonInteractive -Command Se=
-t-DnsClient -InterfaceIndex %ld -ConnectionSpecificSuffix &#39;%s&#39;&quot=
-;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                g=
-et_win_sys_path(),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               POWERSHELL_PATH_SUFFIX,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                tt-&gt;adapter_index,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                add ? tt-&gt;options.d=
-omain : &quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    exec_command(&quot;PowerShell&quot;, &amp;argv, 1, M_WARN);</span><br><=
-span> </span><br><span>     argv_free(&amp;argv);</span><br><span> }</span>=
-<br><span>@@ -1269,7 +1274,7 @@</span><br><span> </span><br><span>         =
-if (!tt-&gt;did_ifconfig_setup)</span><br><span>         {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            do_dns_domain_wmic(true, t=
-t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            do_d=
-ns_domain_pwsh(true, tt);</span><br><span>         }</span><br><span>     }=
-</span><br><span> #else /* platforms we have no IPv6 code for */</span><br>=
-<span>@@ -1625,7 +1630,7 @@</span><br><span>                            tt-=
-&gt;adapter_netmask, NI_IP_NETMASK | NI_OPTIONS);</span><br><span>         =
-}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      do_dns_domain_wmic(true, tt);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        do_dns_domain_pwsh(true, tt);</span><br><span>     =
-}</span><br><span> </span><br><span> </span><br><span>@@ -7024,7 +7029,7 @@=
-</span><br><span>         {</span><br><span>             if (!tt-&gt;did_if=
-config_setup)</span><br><span>             {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                do_dns_domain_wmic(false, tt);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                do_dns_do=
-main_pwsh(false, tt);</span><br><span>             }</span><br><span> </spa=
-n><br><span>             netsh_delete_address_dns(tt, true, &amp;gc);</span=
-><br><span>@@ -7050,7 +7055,7 @@</span><br><span>         }</span><br><span=
->         else</span><br><span>         {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            do_dns_domain_wmic(false, tt);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            do_dns_domain_pwsh(f=
-alse, tt);</span><br><span> </span><br><span>             if (tt-&gt;option=
-s.ip_win32_type =3D=3D IPW32_SET_NETSH)</span><br><span>             {</spa=
-n><br><span>diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h</span><b=
-r><span>index 1b87fa3..67e6169 100644</span><br><span>--- a/src/openvpn/win=
-32.h</span><br><span>+++ b/src/openvpn/win32.h</span><br><span>@@ -38,7 +38=
-,7 @@</span><br><span> #define WIN_ROUTE_PATH_SUFFIX &quot;\\system32\\rout=
-e.exe&quot;</span><br><span> #define WIN_IPCONFIG_PATH_SUFFIX &quot;\\syste=
-m32\\ipconfig.exe&quot;</span><br><span> #define WIN_NET_PATH_SUFFIX &quot;=
-\\system32\\net.exe&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#define WMIC_PATH_SUFFIX &quot;\\system32\\wbem\\wmic.exe&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#define POWERSHELL_PATH_SUF=
-FIX &quot;\\system32\\WindowsPowerShell\\v1.0\\powershell.exe&quot;</span><=
-br><span> </span><br><span> /*</span><br><span>  * Win32-specific OpenVPN c=
-ode, targeted at the mingw</span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail">chang=
-e 1175</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1175?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">What about the wmic invocation in the (2.6) serv=
+ice?</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>Y=
+our branch is up to date with &#39;stable/release/2.6&#39;.<br>gert@...2911...=
+...:/home/gert/src/openvpn-maint/openvpn$ git grep wmic.exe<br>src/openvpn/=
+win32.h:#define WMIC_PATH_SUFFIX &quot;\\system32\\wbem\\wmic.exe&quot;<br>=
+src/openvpnserv/interactive.c:    openvpn_swprintf(argv0, _countof(argv0), =
+L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;wbem\\wmic.exe&quot;);<br=
+>```</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1175?usp=3Demail">change 1175</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1175?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
@@ -265,14 +118,21 @@ ame" content=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Sep 2025 20:43:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---MmfiFOP+j/I=--
+--w0nCR7iHfew=--
 
