@@ -1,16 +1,17 @@
-From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Thu, 11 Sep 2025 18:34:34 +0000
-In-Reply-To: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
-References: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
-Reply-To: marco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1fcd576fd1b17a96345113509f18dc75fa2893aa-EmailReplacePatchSet-HTML@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Thu, 11 Sep 2025 19:00:21 +0000
+In-Reply-To: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+References: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <3ccfbe347f951fd926037cd7976c743585079b00-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zeItrG9VKjE="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: push-update-server:
- comment about buf_string_compare_advance() usage ...
+Content-Type: multipart/alternative; boundary="hZ/1fqA3NNQ="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: add standard
+ mi prefix handling to multi_process_incoming_dco()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,129 +20,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zeItrG9VKjE=
+--hZ/1fqA3NNQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos,
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1116?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail
-
-to look at the new patch set (#3).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
-
-
-Change subject: push-update-server: comment about buf_string_compare_advanc=
-e() usage in send_single_push_update()
+Change subject: dco: add standard mi prefix handling to multi_process_incom=
+ing_dco()
 ......................................................................
 
-push-update-server: comment about buf_string_compare_advance() usage in sen=
-d_single_push_update()
 
-Change-Id: I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb
-Signed-off-by: Marco Baffo <marco@...2726...>
----
-M src/openvpn/push_util.c
-1 file changed, 4 insertions(+), 0 deletions(-)
+Patch Set 3:
+
+(1 comment)
+
+Patchset:
+
+PS3:
+This looks sane to me. The only question I have is: it possible that we had=
+ set another prefix before waiting for the next event and now this spurious=
+ DCO notification is getting in the way? Or we normally clear the prefix be=
+fore going back to waiting for the next event?
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1177/3
-
-diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
-index bd3992b..f7a4fca 100644
---- a/src/openvpn/push_util.c
-+++ b/src/openvpn/push_util.c
-@@ -161,6 +161,10 @@
-          * will not be routed towards the client.
-          * For the same reason we later update the vhash too in
-          * `send_push_update()` function.
-+         * Using `buf_string_compare_advance()` we mimic the behavior
-+         * inside `process_incoming_push_msg()`. However, we don't need
-+         * to check the return value here because we just want to `advance=
-`,
-+         * meaning we skip the `push_update_cmd' we added earlier.
-          */
-         buf_string_compare_advance(&msgs[i], push_update_cmd);
-         if (process_incoming_push_update(c, pull_permission_mask(c), optio=
-n_types_found, &msgs[i], true) =3D=3D PUSH_MSG_ERROR)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb
-Gerrit-Change-Number: 1177
+Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
+Gerrit-Change-Number: 1116
 Gerrit-PatchSet: 3
-Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Thu, 11 Sep 2025 19:00:21 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---zeItrG9VKjE=
+--hZ/1fqA3NNQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>mrbff <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">push-update-server: comment about buf_string_=
-compare_advance() usage in send_single_push_update()<br><br>Change-Id: I73f=
-8ad9bf105920f4bde357ea9dcf0e485f3f3cb<br>Signed-off-by: Marco Baffo &lt;mar=
-co@...2726...&gt;<br>---<br>M src/openvpn/push_util.c<br>1 file changed, 4 =
-insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
-9418/openvpn refs/changes/77/1177/3</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/push_u=
-til.c b/src/openvpn/push_util.c</span><br><span>index bd3992b..f7a4fca 1006=
-44</span><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/=
-openvpn/push_util.c</span><br><span>@@ -161,6 +161,10 @@</span><br><span>  =
-        * will not be routed towards the client.</span><br><span>          =
-* For the same reason we later update the vhash too in</span><br><span>    =
-      * `send_push_update()` function.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+         * Using `buf_string_compare_advance()` we mimic=
- the behavior</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-   * inside `process_incoming_push_msg()`. However, we don&#39;t need</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+         * to check the r=
-eturn value here because we just want to `advance`,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+         * meaning we skip the `push_upda=
-te_cmd&#39; we added earlier.</span><br><span>          */</span><br><span>=
-         buf_string_compare_advance(&amp;msgs[i], push_update_cmd);</span><=
-br><span>         if (process_incoming_push_update(c, pull_permission_mask(=
-c), option_types_found, &amp;msgs[i], true) =3D=3D PUSH_MSG_ERROR)</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1177?usp=3Demail">change 1177</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1177?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1116?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">This looks sane to me. The only question I have =
+is: it possible that we had set another prefix before waiting for the next =
+event and now this spurious DCO notification is getting in the way? Or we n=
+ormally clear the prefix before going back to waiting for the next event?</=
+p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1116?usp=3Demail">change 1116</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+116?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
+div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I73f8ad9bf105920f4bde357ea9d=
-cf0e485f3f3cb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1177 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329=
+a9335d1a36f24 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1116 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -150,10 +116,16 @@ cf0e485f3f3cb </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 11 Sep 2025 19:00:21=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---zeItrG9VKjE=--
+--hZ/1fqA3NNQ=--
 
