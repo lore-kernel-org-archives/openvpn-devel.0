@@ -1,13 +1,16 @@
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Thu, 11 Sep 2025 18:33:07 +0000
+In-Reply-To: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
+References: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b5cc49a8ab60cae84a4ad657afac4f1bd11b9cbd-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <gerrit.1757408812000.Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b@...2715...>
- <0a3df5d288681bbf31d8f886d429d848a4ad3df7-EmailReplacePatchSet-HTML@...2715...>
-In-Reply-To: <0a3df5d288681bbf31d8f886d429d848a4ad3df7-EmailReplacePatchSet-HTML@...2715...>
-From: Jon Chiappetta <root@...2904...>
-Date: Thu, 11 Sep 2025 13:32:57 -0400
-Message-ID: <CAOh3LPOqmhVvtNJmJCiT_qtJVyyGv7U0gx0rak7t_KOYpW6O-g@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ddd3a6063e8a1e70"
-Subject: Re: [Openvpn-devel] [XS] Change in openvpn[master]: Multi-socket
- win: avoid repeated socket_set()
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="7gPszY3sDUg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: push-update-server:
+ comment about `buf_string_compare_advance()` usag...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,175 +19,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: gianmarco@...2726..., arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net, frank@...2641...
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000ddd3a6063e8a1e70
+--7gPszY3sDUg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-I don't have proof of it but I think I was being hit with this accept issue
-as I've been running and testing OpenVPN in TCP client/server modes only.
-I'll wait for this to hit master and rebase my PRs - thanks :)
+Attention is currently required from: flichtenheld, plaisthos.
 
-On Thu, Sep 11, 2025 at 10:23=E2=80=AFAM its_Giaan (Code Review) <gerrit@...1186...=
-.515...>
-wrote:
+mrbff has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1177?usp=3Demail )
 
-> Attention is currently required from: flichtenheld, plaisthos.
->
-> its_Giaan *uploaded patch set #3* to this change.
->
-> View Change <http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail>
->
-> Multi-socket win: avoid repeated socket_set()
->
-> On Windows, multi-socket support failed with
-> mixed protocols due to repeated socket_set()
-> calls, which caused accept() to be triggered
-> before having an event to process.
-> This fix skips socket_set() calls for
-> non-UDP sockets in MODE_SERVER inside
-> multi_io_process_flags().
->
-> Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b
-> Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-> ---
-> M src/openvpn/forward.c
-> 1 file changed, 6 insertions(+), 1 deletion(-)
->
-> git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/1174/3
->
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 03b6a0c..5d22fa3 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -2121,10 +2121,15 @@
->
->      /*
->       * Configure event wait based on socket, tuntap flags.
-> +     * (for TCP server sockets this happens in
-> +     *  socket_set_listen_persistent()).
->       */
->      for (int i =3D 0; i < c->c1.link_sockets_num; i++)
->      {
-> -        socket_set(c->c2.link_sockets[i], es, socket, &c->c2.link_socket=
-s[i]->ev_arg, NULL);
-> +        if ((c->options.mode !=3D MODE_SERVER) || (proto_is_dgram(c->c2.=
-link_sockets[i]->info.proto)))
-> +        {
-> +            socket_set(c->c2.link_sockets[i], es, socket, &c->c2.link_so=
-ckets[i]->ev_arg, NULL);
-> +        }
->      }
->
->      tun_set(c->c1.tuntap, es, tuntap, (void *)tun_shift, NULL);
->
-> To view, visit change 1174
-> <http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail>. To unsubscribe,
-> or for help writing mail filters, visit settings
-> <http://gerrit.openvpn.net/settings>.
-> Gerrit-Project: openvpn
-> Gerrit-Branch: master
-> Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b
-> Gerrit-Change-Number: 1174
-> Gerrit-PatchSet: 3
-> Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-> Gerrit-Reviewer: flichtenheld <frank@...2641...>
-> Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-> Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-> Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-> Gerrit-Attention: flichtenheld <frank@...2641...>
-> Gerrit-MessageType: newpatchset
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+Change subject: push-update-server: comment about `buf_string_compare_advan=
+ce()` usage in `send_single_push_update()`
+......................................................................
 
---000000000000ddd3a6063e8a1e70
+
+Patch Set 2:
+
+(1 comment)
+
+Commit Message:
+
+http://gerrit.openvpn.net/c/openvpn/+/1177/comment/2729df5a_2d31f050 :
+PS1, Line 7: push-update-server: comment about `buf_string_compare_advance(=
+)` usage in `send_single_push_updaate()`
+> You ignored the second part of this comment. Please remove the "`" quotes=
+ from the commit message. [=E2=80=A6]
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb
+Gerrit-Change-Number: 1177
+Gerrit-PatchSet: 2
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 11 Sep 2025 18:33:07 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: mrbff <marco@...2726...>
+Gerrit-MessageType: comment
+
+--7gPszY3sDUg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">I don&#39;t have proof of it but I think I was being hit w=
-ith this accept issue as I&#39;ve been running and testing OpenVPN in TCP c=
-lient/server modes only. I&#39;ll wait for this to hit master and rebase my=
- PRs - thanks :)=C2=A0</div><br><div class=3D"gmail_quote gmail_quote_conta=
-iner"><div dir=3D"ltr" class=3D"gmail_attr">On Thu, Sep 11, 2025 at 10:23=
-=E2=80=AFAM its_Giaan (Code Review) &lt;<a href=3D"mailto:gerrit@...515..."=
->gerrit@...515...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-style:=
-solid;border-left-color:rgb(204,204,204);padding-left:1ex"><p> Attention is=
- currently required from: flichtenheld, plaisthos. </p>
-<p>its_Giaan <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail" target=3D=
-"_blank">View Change</a></p><pre style=3D"font-family:monospace,monospace;w=
-hite-space:pre-wrap">Multi-socket win: avoid repeated socket_set()<br><br>O=
-n Windows, multi-socket support failed with<br>mixed protocols due to repea=
-ted socket_set()<br>calls, which caused accept() to be triggered<br>before =
-having an event to process.<br>This fix skips socket_set() calls for<br>non=
--UDP sockets in MODE_SERVER inside<br>multi_io_process_flags().<br><br>Chan=
-ge-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b<br>Signed-off-by: Gianmarc=
-o De Gregori &lt;<a href=3D"mailto:gianmarco@...2726..." target=3D"_blank">=
-gianmarco@...2726...</a>&gt;<br>---<br>M src/openvpn/forward.c<br>1 file ch=
-anged, 6 insertions(+), 1 deletion(-)<br><br></pre><pre style=3D"font-famil=
-y:monospace,monospace;white-space:pre-wrap">git pull ssh://<a href=3D"http:=
-//gerrit.openvpn.net:29418/openvpn" target=3D"_blank">gerrit.openvpn.net:29=
-418/openvpn</a> refs/changes/74/1174/3</pre><pre style=3D"font-family:monos=
-pace,monospace;white-space:pre-wrap"><span>diff --git a/src/openvpn/forward=
-.c b/src/openvpn/forward.c</span><br><span>index 03b6a0c..5d22fa3 100644</s=
-pan><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn=
-/forward.c</span><br><span>@@ -2121,10 +2121,15 @@</span><br><span> </span>=
-<br><span>     /*</span><br><span>      * Configure event wait based on soc=
-ket, tuntap flags.</span><br><span style=3D"color:rgb(0,204,0)">+     * (fo=
-r TCP server sockets this happens in</span><br><span style=3D"color:rgb(0,2=
-04,0)">+     *  socket_set_listen_persistent()).</span><br><span>      */</=
-span><br><span>     for (int i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++=
-)</span><br><span>     {</span><br><span style=3D"color:rgb(204,0,0)">-    =
-    socket_set(c-&gt;c2.link_sockets[i], es, socket, &amp;c-&gt;c2.link_soc=
-kets[i]-&gt;ev_arg, NULL);</span><br><span style=3D"color:rgb(0,204,0)">+  =
-      if ((c-&gt;options.mode !=3D MODE_SERVER) || (proto_is_dgram(c-&gt;c2=
-.link_sockets[i]-&gt;info.proto)))</span><br><span style=3D"color:rgb(0,204=
-,0)">+        {</span><br><span style=3D"color:rgb(0,204,0)">+            s=
-ocket_set(c-&gt;c2.link_sockets[i], es, socket, &amp;c-&gt;c2.link_sockets[=
-i]-&gt;ev_arg, NULL);</span><br><span style=3D"color:rgb(0,204,0)">+       =
- }</span><br><span>     }</span><br><span> </span><br><span>     tun_set(c-=
-&gt;c1.tuntap, es, tuntap, (void *)tun_shift, NULL);</span><br><span></span=
-><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1174?usp=3Demail" target=3D"_blank">change 1174</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings" target=3D"_blank">settings</a>.</p><div><div></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"lis=
+t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
+p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1177/comment/2729df5a_2d31f050">Patch Set #1, Line 7:</a> <code style=
+=3D"font-family:monospace,monospace">push-update-server: comment about `buf=
+_string_compare_advance()` usage in `send_single_push_updaate()`</code></p>=
+<p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddin=
+g: 0 10px;">You ignored the second part of this comment. Please remove the =
+&quot;`&quot; quotes from the commit message. [=E2=80=A6]</blockquote></p><=
+p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul=
+></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1177?usp=3Demail">change 1177</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
+/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
+mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c=
-23c17c04e6e9b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1174 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;<a href=3D"mailto:=
-gianmarco@...2726..." target=3D"_blank">gianmarco@...2726...</a>&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;<a href=3D"m=
-ailto:frank@...2641..." target=3D"_blank">frank@...2641...</a>&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;<a href=3D"mail=
-to:arne-openvpn@...1227..." target=3D"_blank">arne-openvpn@...1227...</a>&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;<a href=3D"mailto=
-:openvpn-devel@lists.sourceforge.net" target=3D"_blank">openvpn-devel@...1697...=
-.sourceforge.net</a>&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;<a href=3D"mai=
-lto:arne-openvpn@...1227..." target=3D"_blank">arne-openvpn@...1227...</a>&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;<a href=3D"=
-mailto:frank@...2641..." target=3D"_blank">frank@...2641...</a>&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I73f8ad9bf105920f4bde357ea9d=
+cf0e485f3f3cb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1177 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 11 Sep 2025 18:33:07=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: mrbff &lt;marco@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
 
---000000000000ddd3a6063e8a1e70--
+--7gPszY3sDUg=--
 
