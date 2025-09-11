@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Thu, 11 Sep 2025 22:16:52 +0200
-Message-ID: <20250911201658.25736-1-gert@...1296...>
-In-Reply-To: <gerrit.1753360288000.I03e5ece7580ca4ebd41a7928ead544df46e8bad1@...2715...>
-References: <gerrit.1753360288000.I03e5ece7580ca4ebd41a7928ead544df46e8bad1@...2715...>
+Date: Thu, 11 Sep 2025 22:17:13 +0200
+Message-ID: <20250911201719.25773-1-gert@...1296...>
+In-Reply-To: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
+References: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v9] ssl_common: Make sure ssl flags are
- treated as unsigned
+Subject: [Openvpn-devel] [PATCH v8] openvpn_PRF: Change API to use size_t
+ for lenghts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,13 +20,10 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@...2641...>
 
-tls_options.ssl_flags is already unsigned, make sure the
-flags are as well to avoid spurious conversion warnings.
+Basically all users already wanted that anyway. And most
+of the library functions also take size_t nowadays.
 
-Also fix various warning regarding the use of the flags
-for TLS version handling.
-
-Change-Id: I03e5ece7580ca4ebd41a7928ead544df46e8bad1
+Change-Id: Ic88cd6e143bc48cab3c9ebb7c7007513803bd199
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: MaxF <max@...2606...>
 ---
@@ -34,106 +31,210 @@ Acked-by: MaxF <max@...2606...>
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1104
-This mail reflects revision 9 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1135
+This mail reflects revision 8 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 MaxF <max@...2606...>
 
         
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 74946a4..7f86611 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2717,9 +2717,9 @@
-                     "may accept clients which do not present a certificate");
-     }
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index a63e543..4c0f684 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1903,8 +1903,8 @@
+     uint8_t out[8];
+     uint8_t expected_out[] = { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 };
  
--    const int tls_version_max =
-+    const unsigned int tls_version_max =
-         (options->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
--    const int tls_version_min =
-+    const unsigned int tls_version_min =
-         (options->ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK;
+-    int ret = ssl_tls1_PRF((uint8_t *)seed, (int)strlen(seed), (uint8_t *)secret,
+-                           (int)strlen(secret), out, sizeof(out));
++    int ret = ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *)secret,
++                           strlen(secret), out, sizeof(out));
  
-     if (tls_version_max > 0 && tls_version_max < tls_version_min)
-@@ -3385,10 +3385,10 @@
- options_set_backwards_compatible_options(struct options *o)
+     return (ret && memcmp(out, expected_out, sizeof(out)) == 0);
+ }
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 59418f6..b74cb7f 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -716,7 +716,7 @@
+  *
+  * @return              true if successful, false on any error
+  */
+-bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
+-                  uint8_t *output, int output_len);
++bool ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
++                  uint8_t *output, size_t output_len);
+ 
+ #endif /* CRYPTO_BACKEND_H_ */
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 86317dd..2423435 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -983,8 +983,8 @@
+  * from recent versions, so we use our own implementation if necessary. */
+ #if defined(HAVE_MBEDTLS_SSL_TLS_PRF) && defined(MBEDTLS_SSL_TLS_PRF_TLS1)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
++             uint8_t *output, size_t output_len)
  {
-     /* TLS min version is not set */
--    int tls_ver_min = (o->ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK;
-+    unsigned int tls_ver_min = (o->ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK;
-     if (tls_ver_min == 0)
-     {
--        int tls_ver_max = (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
-+        unsigned int tls_ver_max = (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
-         if (need_compatibility_before(o, 20307))
-         {
-             /* 2.3.6 and earlier have TLS 1.0 only, set minimum to TLS 1.0 */
-@@ -9367,9 +9367,8 @@
-     }
-     else if (streq(p[0], "tls-version-min") && p[1] && !p[3])
-     {
--        int ver;
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        ver = tls_version_parse(p[1], p[2]);
-+        int ver = tls_version_parse(p[1], p[2]);
-         if (ver == TLS_VER_BAD)
-         {
-             msg(msglevel, "unknown tls-version-min parameter: %s", p[1]);
-@@ -9385,20 +9384,19 @@
+     return mbed_ok(mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret, secret_len, "", seed,
+                                        seed_len, output, output_len));
+@@ -1002,8 +1002,8 @@
+  * @param olen          Length of the output buffer
+  */
+ static void
+-tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, int sec_len, const uint8_t *seed,
+-            int seed_len, uint8_t *out, int olen)
++tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t sec_len, const uint8_t *seed,
++            size_t seed_len, uint8_t *out, size_t olen)
+ {
+     struct gc_arena gc = gc_new();
+     uint8_t A1[MAX_HMAC_KEY_LENGTH];
+@@ -1011,7 +1011,7 @@
+ #ifdef ENABLE_DEBUG
+     /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid unused
+      * variables warnings if compiled with --enable-small */
+-    const int olen_orig = olen;
++    const size_t olen_orig = olen;
+     const uint8_t *out_orig = out;
  #endif
  
-         options->ssl_flags &= ~(SSLF_TLS_VERSION_MIN_MASK << SSLF_TLS_VERSION_MIN_SHIFT);
--        options->ssl_flags |= (ver << SSLF_TLS_VERSION_MIN_SHIFT);
-+        options->ssl_flags |= ((unsigned int)ver << SSLF_TLS_VERSION_MIN_SHIFT);
-     }
-     else if (streq(p[0], "tls-version-max") && p[1] && !p[2])
+@@ -1021,7 +1021,7 @@
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
+ 
+-    int chunk = mbedtls_md_get_size(md_kt);
++    unsigned int chunk = mbedtls_md_get_size(md_kt);
+     unsigned int A1_len = mbedtls_md_get_size(md_kt);
+ 
+     /* This is the only place where we init an HMAC with a key that is not
+@@ -1089,8 +1089,8 @@
+  * (2) The pre-master secret is generated by the client.
+  */
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     struct gc_arena gc = gc_new();
+     const md_kt_t *md5 = md_get("MD5");
+@@ -1098,7 +1098,7 @@
+ 
+     uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
+ 
+-    int len = slen / 2;
++    size_t len = slen / 2;
+     const uint8_t *S1 = sec;
+     const uint8_t *S2 = &(sec[len]);
+     len += (slen & 1); /* add for odd, make longer */
+@@ -1106,14 +1106,14 @@
+     tls1_P_hash(md5, S1, len, label, label_len, out1, olen);
+     tls1_P_hash(sha1, S2, len, label, label_len, out2, olen);
+ 
+-    for (int i = 0; i < olen; i++)
++    for (size_t i = 0; i < olen; i++)
      {
--        int ver;
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        ver = tls_version_parse(p[1], NULL);
-+        int ver = tls_version_parse(p[1], NULL);
-         if (ver == TLS_VER_BAD)
-         {
-             msg(msglevel, "unknown tls-version-max parameter: %s", p[1]);
-             goto err;
-         }
-         options->ssl_flags &= ~(SSLF_TLS_VERSION_MAX_MASK << SSLF_TLS_VERSION_MAX_SHIFT);
--        options->ssl_flags |= (ver << SSLF_TLS_VERSION_MAX_SHIFT);
-+        options->ssl_flags |= ((unsigned int)ver << SSLF_TLS_VERSION_MAX_SHIFT);
+         out1[i] ^= out2[i];
      }
- #ifndef ENABLE_CRYPTO_MBEDTLS
-     else if (streq(p[0], "pkcs12") && p[1] && !p[2])
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 428bf5a..a40f18d 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -421,17 +421,17 @@
- #endif
  
-     /* configuration file SSL-related boolean and low-permutation options */
--#define SSLF_CLIENT_CERT_NOT_REQUIRED (1 << 0)
--#define SSLF_CLIENT_CERT_OPTIONAL     (1 << 1)
--#define SSLF_USERNAME_AS_COMMON_NAME  (1 << 2)
--#define SSLF_AUTH_USER_PASS_OPTIONAL  (1 << 3)
--#define SSLF_OPT_VERIFY               (1 << 4)
--#define SSLF_CRL_VERIFY_DIR           (1 << 5)
-+#define SSLF_CLIENT_CERT_NOT_REQUIRED (1u << 0)
-+#define SSLF_CLIENT_CERT_OPTIONAL     (1u << 1)
-+#define SSLF_USERNAME_AS_COMMON_NAME  (1u << 2)
-+#define SSLF_AUTH_USER_PASS_OPTIONAL  (1u << 3)
-+#define SSLF_OPT_VERIFY               (1u << 4)
-+#define SSLF_CRL_VERIFY_DIR           (1u << 5)
- #define SSLF_TLS_VERSION_MIN_SHIFT    6
--#define SSLF_TLS_VERSION_MIN_MASK     0xF /* (uses bit positions 6 to 9) */
-+#define SSLF_TLS_VERSION_MIN_MASK     0xFu /* (uses bit positions 6 to 9) */
- #define SSLF_TLS_VERSION_MAX_SHIFT    10
--#define SSLF_TLS_VERSION_MAX_MASK     0xF /* (uses bit positions 10 to 13) */
--#define SSLF_TLS_DEBUG_ENABLED        (1 << 14)
-+#define SSLF_TLS_VERSION_MAX_MASK     0xFu /* (uses bit positions 10 to 13) */
-+#define SSLF_TLS_DEBUG_ENABLED        (1u << 14)
-     unsigned int ssl_flags;
+     secure_memzero(out2, olen);
  
- #ifdef ENABLE_MANAGEMENT
+-    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
++    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%zu]: %s", olen, format_hex(out1, olen, 0, &gc));
+ 
+     gc_free(&gc);
+     return true;
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 2351bfd..75af4f5 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1341,8 +1341,8 @@
+ }
+ #if (OPENSSL_VERSION_NUMBER >= 0x30000000L) && !defined(LIBRESSL_VERSION_NUMBER)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     bool ret = true;
+     EVP_KDF_CTX *kctx = NULL;
+@@ -1368,9 +1368,9 @@
+     params[0] =
+         OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, SN_md5_sha1, strlen(SN_md5_sha1));
+     params[1] = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET, (uint8_t *)secret,
+-                                                  (size_t)secret_len);
++                                                  secret_len);
+     params[2] =
+-        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)seed, (size_t)seed_len);
++        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)seed, seed_len);
+     params[3] = OSSL_PARAM_construct_end();
+ 
+     if (EVP_KDF_derive(kctx, output, output_len, params) <= 0)
+@@ -1392,15 +1392,15 @@
+ }
+ #elif defined(OPENSSL_IS_AWSLC)
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen, label, label_len, NULL, 0, NULL, 0);
+ }
+ #elif !defined(LIBRESSL_VERSION_NUMBER) && !defined(ENABLE_CRYPTO_WOLFSSL)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
+     if (!pctx)
+@@ -1448,8 +1448,8 @@
+  * OpenSSL does. As result they will only be able to support
+  * peers that support TLS EKM like when running with OpenSSL 3.x FIPS */
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     return false;
+ }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 85b018b..284d951 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1294,10 +1294,10 @@
+ }
+ 
+ static bool
+-openvpn_PRF(const uint8_t *secret, int secret_len, const char *label, const uint8_t *client_seed,
+-            int client_seed_len, const uint8_t *server_seed, int server_seed_len,
++openvpn_PRF(const uint8_t *secret, size_t secret_len, const char *label, const uint8_t *client_seed,
++            size_t client_seed_len, const uint8_t *server_seed, size_t server_seed_len,
+             const struct session_id *client_sid, const struct session_id *server_sid,
+-            uint8_t *output, int output_len)
++            uint8_t *output, size_t output_len)
+ {
+     /* concatenate seed components */
+ 
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 12ddaba..5df1046 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -161,7 +161,7 @@
+ 
+ 
+     uint8_t out[32];
+-    bool ret = ssl_tls1_PRF(seed, (int)seed_len, secret, (int)secret_len, out, sizeof(out));
++    bool ret = ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, sizeof(out));
+ 
+ #if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSSL)
+     /* No TLS1 PRF support in these libraries */
 
