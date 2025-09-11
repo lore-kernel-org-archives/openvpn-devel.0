@@ -1,15 +1,17 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 11 Sep 2025 16:20:23 +0000
-References: <gerrit.1757607620000.I73c46ac630834a8cf8894aaa2dcc429fbedd3db7@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <0c69c8ce91e2945b288f30251c0ecb101c2cbd0f-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 11 Sep 2025 17:39:44 +0000
+In-Reply-To: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+References: <gerrit.1753488078000.I1ad5df0f6785ffe9becd9f83329a9335d1a36f24@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <1dd2a5cb7d5febcdd791f65c4ccea76219458e59-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ydsUsewUz4Y="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: vlan: Limit
- -Wconversion override to GCC 10 and older
+Content-Type: multipart/alternative; boundary="NUTPtKFCz+0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: add standard
+ mi prefix handling to multi_process_incoming_dco()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,142 +20,163 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ydsUsewUz4Y=
+--NUTPtKFCz+0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: cron2, flichtenheld, ordex, plaisthos.
 
-Hello plaisthos,
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ ordex. ( http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail
-
-to review the following change.
+The following approvals got outdated and were removed:
+Code-Review-1 by cron2
 
 
-Change subject: vlan: Limit -Wconversion override to GCC 10 and older
+Change subject: dco: add standard mi prefix handling to multi_process_incom=
+ing_dco()
 ......................................................................
 
-vlan: Limit -Wconversion override to GCC 10 and older
+dco: add standard mi prefix handling to multi_process_incoming_dco()
 
-Only Debian 11 complains about this. This way we know
-we can remove this at some point.
+Our code generally expects functions that deal with a multi instance
+to set up a log prefix at the beginning with set_prefix(mi) and clear
+it at the end with clear_prefix().
 
-Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db7
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Add the calls to multi_process_incoming_dco() in a similar way to
+what is done for multi_process_incoming_link() - handling "link
+events" and "dco events" the same, with correct prefix in the
+function and no leftover prefix afterwards.
+
+Github: closes OpenVPN/openvpn#799
+Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/vlan.c
-1 file changed, 3 insertions(+), 2 deletions(-)
+M src/openvpn/multi.c
+1 file changed, 2 insertions(+), 0 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1116/3
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1179/1
-
-diff --git a/src/openvpn/vlan.c b/src/openvpn/vlan.c
-index 3da470a..f6e2251 100644
---- a/src/openvpn/vlan.c
-+++ b/src/openvpn/vlan.c
-@@ -43,7 +43,8 @@
-     return ntohs(hdr->pcp_cfi_vid & OPENVPN_8021Q_MASK_VID);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
-+/* ~OPENVPN_8021Q_MASK_VID is "int" on old GCC */
-+#if defined(__GNUC__) && __GNUC__ < 11
- #pragma GCC diagnostic push
- #pragma GCC diagnostic ignored "-Wconversion"
- #endif
-@@ -61,7 +62,7 @@
-         (hdr->pcp_cfi_vid & ~OPENVPN_8021Q_MASK_VID) | (htons(vid) & OPENV=
-PN_8021Q_MASK_VID);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
-+#if defined(__GNUC__) && __GNUC__ < 11
- #pragma GCC diagnostic pop
- #endif
-
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 85975ff..40c7f8f 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3294,6 +3294,7 @@
+     if ((peer_id < m->max_clients) && (m->instances[peer_id]))
+     {
+         mi =3D m->instances[peer_id];
++        set_prefix(mi);
+         if (dco->dco_message_type =3D=3D OVPN_CMD_DEL_PEER)
+         {
+             process_incoming_del_peer(m, mi, dco);
+@@ -3311,6 +3312,7 @@
+         {
+             tls_session_soft_reset(mi->context.c2.tls_multi);
+         }
++        clear_prefix();
+     }
+     else
+     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db7
-Gerrit-Change-Number: 1179
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24
+Gerrit-Change-Number: 1116
+Gerrit-PatchSet: 3
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-MessageType: newpatchset
 
---ydsUsewUz4Y=
+--NUTPtKFCz+0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">vlan: Limit -Wconversion override to GCC 10 and older<br><br=
->Only Debian 11 complains about this. This way we know<br>we can remove thi=
-s at some point.<br><br>Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db=
-7<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M =
-src/openvpn/vlan.c<br>1 file changed, 3 insertions(+), 2 deletions(-)<br><b=
-r></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1179/1=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/src/openvpn/vlan.c b/src/openvpn/vlan.c</span><br><sp=
-an>index 3da470a..f6e2251 100644</span><br><span>--- a/src/openvpn/vlan.c</=
-span><br><span>+++ b/src/openvpn/vlan.c</span><br><span>@@ -43,7 +43,8 @@</=
-span><br><span>     return ntohs(hdr-&gt;pcp_cfi_vid &amp; OPENVPN_8021Q_MA=
-SK_VID);</span><br><span> }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+/* ~OPENVPN_8021Q_MASK_VID =
-is &quot;int&quot; on old GCC */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#if defined(__GNUC__) &amp;&amp; __GNUC__ &lt; 11</span><br><s=
-pan> #pragma GCC diagnostic push</span><br><span> #pragma GCC diagnostic ig=
-nored &quot;-Wconversion&quot;</span><br><span> #endif</span><br><span>@@ -=
-61,7 +62,7 @@</span><br><span>         (hdr-&gt;pcp_cfi_vid &amp; ~OPENVPN_=
-8021Q_MASK_VID) | (htons(vid) &amp; OPENVPN_8021Q_MASK_VID);</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#if defined(__GNUC__) &amp;&amp; __GNUC__ &lt; 11<=
-/span><br><span> #pragma GCC diagnostic pop</span><br><span> #endif</span><=
-br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail">change 1179</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1179?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+<p> Attention is currently required from: cron2, flichtenheld, ordex, plais=
+thos. </p>
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by ordex.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review-1 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">dco: add standard mi prefix handling to multi_proces=
+s_incoming_dco()<br><br>Our code generally expects functions that deal with=
+ a multi instance<br>to set up a log prefix at the beginning with set_prefi=
+x(mi) and clear<br>it at the end with clear_prefix().<br><br>Add the calls =
+to multi_process_incoming_dco() in a similar way to<br>what is done for mul=
+ti_process_incoming_link() - handling &quot;link<br>events&quot; and &quot;=
+dco events&quot; the same, with correct prefix in the<br>function and no le=
+ftover prefix afterwards.<br><br>Github: closes OpenVPN/openvpn#799<br>Chan=
+ge-Id: I1ad5df0f6785ffe9becd9f83329a9335d1a36f24<br>Signed-off-by: Antonio =
+Quartulli &lt;antonio@...2726...&gt;<br>Signed-off-by: Gert Doering &lt;ger=
+t@...1296...&gt;<br>---<br>M src/openvpn/multi.c<br>1 file changed, 2 inser=
+tions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
+openvpn refs/changes/16/1116/3</pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/multi.c b/s=
+rc/openvpn/multi.c</span><br><span>index 85975ff..40c7f8f 100644</span><br>=
+<span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</=
+span><br><span>@@ -3294,6 +3294,7 @@</span><br><span>     if ((peer_id &lt;=
+ m-&gt;max_clients) &amp;&amp; (m-&gt;instances[peer_id]))</span><br><span>=
+     {</span><br><span>         mi =3D m-&gt;instances[peer_id];</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        set_prefix(mi);</span>=
+<br><span>         if (dco-&gt;dco_message_type =3D=3D OVPN_CMD_DEL_PEER)</=
+span><br><span>         {</span><br><span>             process_incoming_del=
+_peer(m, mi, dco);</span><br><span>@@ -3311,6 +3312,7 @@</span><br><span>  =
+       {</span><br><span>             tls_session_soft_reset(mi-&gt;context=
+.c2.tls_multi);</span><br><span>         }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        clear_prefix();</span><br><span>     }</span=
+><br><span>     else</span><br><span>     {</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?u=
+sp=3Demail">change 1116</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1116?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I73c46ac630834a8cf8894aaa2dc=
-c429fbedd3db7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1179 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1ad5df0f6785ffe9becd9f83329=
+a9335d1a36f24 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1116 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---ydsUsewUz4Y=--
+--NUTPtKFCz+0=--
 
