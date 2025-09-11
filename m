@@ -1,17 +1,12 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Sep 2025 20:43:01 +0000
-In-Reply-To: <gerrit.1757504119000.Ie135e070b481b88033c43b76f872060fb237243c@...2715...>
-References: <gerrit.1757504119000.Ie135e070b481b88033c43b76f872060fb237243c@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <69a3ba97703ae5708f38a74c6ff1c495edc8cd8a-EmailReviewComments-HTML@...2715...>
+Date: Thu, 11 Sep 2025 04:45:01 +0000
+From: tincantech <tincantech@...2282...>
+Message-ID: <9W9Pu1mApai_RdAknKQ-SMMFGV-tUKhmPYIBC6CoF9JJAC2Haluy8ZAtF-cG66s0ygjgqoy8e65ziqSy1f0MlGm908WNOOV7voL_B7-dvYg=@protonmail.com>
+In-Reply-To: <aa06cd4f-f6d1-491d-9c93-e79cafda0562@...2722...>
+References: <aa06cd4f-f6d1-491d-9c93-e79cafda0562@...2722...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w0nCR7iHfew="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: win: replace
- wmic invocation with powershell
+Content-Type: multipart/mixed;
+ boundary="b1=_dkGmJ4oBsTylu0dUz4j9BmNgEooRczaLXvkRrP2Y"
+Subject: Re: [Openvpn-devel] IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,119 +15,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Johan Draaisma <johan@...2722...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---w0nCR7iHfew=
-Content-Type: text/plain; charset="UTF-8"
+--b1=_dkGmJ4oBsTylu0dUz4j9BmNgEooRczaLXvkRrP2Y
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1175?usp=3Demail )
+At this crucial time, OpenVPN 2.7 launch, where are the meeting summaries?
 
-Change subject: win: replace wmic invocation with powershell
-......................................................................
+For those of us that are not prepared to tolerate libera IRC network.
 
+Thank you.
 
-Patch Set 1:
+Sent with Proton Mail secure email.
 
-(1 comment)
+On Wednesday, 27 August 2025 at 13:54, Johan Draaisma <johan@...2722...> wr=
+ote:
 
-Patchset:
+> Meeting summary for 27 August 2025:
+>=20
 
-PS1:
-What about the wmic invocation in the (2.6) service?
+<snip>
 
-```
-Your branch is up to date with 'stable/release/2.6'.
-gert@...2910...:/home/gert/src/openvpn-maint/openvpn$ git grep wmic.exe
-src/openvpn/win32.h:#define WMIC_PATH_SUFFIX "\\system32\\wbem\\wmic.exe"
-src/openvpnserv/interactive.c:    openvpn_swprintf(argv0, _countof(argv0), =
-L"%ls\\%ls", get_win_sys_path(), L"wbem\\wmic.exe");
-```
+> As always you're welcome to join at #openvpn-meeting on Libera IRC networ=
+k every Wednesday at 14:00 Central European Time.
+>=20
+> Kind regards,
+> Johan Draaisma
+-----BEGIN PGP SIGNATURE-----
+Version: ProtonMail
 
+wsC5BAEBCgBtBYJowlO/CZBPl5z2a5C4nUUUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3Jn8TvKvGWcu1+8fKogmwtQPURPS4iPau9H1Cla
+DS3ntXgWIQQJvD1EZ6ONcnnFVVVPl5z2a5C4nQAAOFMH/iLbPJDa3JHDb+7h
+WMVUFlNbrLo8VSjieJoRtPmAhTSdIuoxvkveJBZ5gglWxWxDuJKbLfF+TWVs
+aIXazXaRnMEVZ4B3VM/RF560yyZUvfT/xGy+Er8Uw3g0QnAhd80uwKV8RVV6
+pg5T2OpAJZq1I6uBoMPMFQG2Aq9IjY7mZe5LcHEwgZexqNHXGFC3nP6hdYkY
+JneHdtHRXiHqWRgSw1QpftjvpSgER52pTqmXKRCK88/3hm3Tx3q1u1WZqJj9
+RFdPD0p08Ddsd0AMbh6S2d9D2Atf8dKm9Gw7cAoFU6jB5jDqLWXjRUPhvA+4
+QIpQiOqQhASIAm0FLktz26Isvkg=3D
+=3DJZv2
+-----END PGP SIGNATURE-----
 
+--b1=_dkGmJ4oBsTylu0dUz4j9BmNgEooRczaLXvkRrP2Y
+Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgp4c0JOQkZ2d1NjY0JDQURPbUhF
+blFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YKTDJvTnAwbnJkR2xLS0RK
+cTUwWTA5U1IrVVJZQlFtS21ZM0VtenB5VUlLTS9yZ28xUnl1YkhwTVJIYkRwCjdKcDhMeGtmZkZC
+VkpqL3Q1Vk1wRDZlTVI2YVVjaVFqZ1JMOE5aZTYrVDd4ZlhYWHdWNWhvUmVaM2pPKwp6SGk2U1I3
+eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNaV0o1ZXAKSk5t
+Z2VCNk03K09XMDhVMVNzWHRLcnBMUmNJNnlLbVYzOGpoelByMlpnUDlybXJsRXJSLzFpcVFRSFhZ
+Cm84LzBEZlB5RjBtSDl5blFJaUxFL2wrRll1NHJzRzhWaUtseGhYY3plUHpBdExDamlCMGEwbVJW
+QUJFQgpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0SWlBOGRHbHVZMkZ1
+ZEdWamFFQncKY205MGIyNXRZV2xzTG1OdmJUN0N3SDhFRUFFSUFDa0ZBbHZ3U2NjR0N3a0hDQU1D
+Q1JCUGw1ejJhNUM0Cm5RUVZDQW9DQXhZQ0FRSVpBUUliQXdJZUFRQUtDUkJQbDV6MmE1QzRuUUJE
+Qi85WlVvOUJPWEpSNjFObQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0ROdkFzNElKV01EVkVRZllh
+bmIrNDIxUU5kLzVkNkgxaVhGK2kKNExESzBNNmFnQytnc05GSm5qUEdJdHZQdGo3V3lqeW5aUng4
+RDQwUFBYaWdmSFl1dzJvUnUwbHIrUDFwCjFxZVVlNE5iY3FJdjhJSXZMejJ6Q2xZWk9OZ0FzUVZj
+TkFIaTdaNG9ydFEyaW8yQkFWai84MTlKUFlNdAp0SGdZODF3UzFWN3Y4R0RUWmc4b2FQaFhHZmFD
+NFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYKQVVyYzN1R1ZPSCtPZEcvQlcyZ2NZcXB2
+VUZCdWtYeENVQllIUDJOZlhoTmZ6R3Q5bkMxdWxOS1llUDE5ClRHbE9vckJNWUlBRUhvR3h2cGJV
+WGZiYU5XQ1V6c0JOQkZ2d1NjY0JDQUM5S3lWWlJTNWFNYUc1UGkwbgpmeDhhTm9zM2JZcDI0Nk10
+ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNBZGY1bGdWSCsKV3ZMdkltaUdyU3J6
+VnBNVDJuQ1MwOUxxTDUwUWp6OEE3Z3A1SC9oUXp0WjhpTnlzR0Q5Tk80Nk9uSTc1CjkwZEhmQ3JY
+alFQU0Z0RkdzVHpnRHhRSWlNdXp6OURSN0Jla0tQbXVPRkloQmU5ZUVacWJ4YzhSV2VRdApoYTdp
+L0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lKVXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MK
+bCthT200TDBLR0REWWxtL0ZReC9FTUN1YnZsenkvenhEZEI2bnFGaWgycVpyZnltbmlTT0thakcw
+am9UCnBab3ovRXorNGZBdGc2eTBQc3BOUjZpZEFCRUJBQUhDd0drRUdBRUlBQk1GQWx2d1NjY0pF
+RStYblBacgprTGlkQWhzTUFBb0pFRStYblBacmtMaWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktF
+QU81czd4NDdlTnkKR1BmWnNseVkrSGp6R1UwZDA3TWtrR21Wa1BUVnp3cVZ6Tlpibnk3WkF2MXps
+VzBVeTB5SHAxQVBweVl0CjhidVVwcFRCcTdkNDdvZ3hFUll6dC9MYzJMNWEvVktGTlJiaE4xL1hR
+bVBpejJFbGU0dHlpcGJUYXBjeQoremJ5ZnpBTUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4
+UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgKTkovbDdiWFNLc0dxb1lxSmVaOFZOQnh3V1dVYnVHNGpq
+cmg0M01JUmdVWjVXc1BVWVY2SHgwNTZrTWpiCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxx
+MFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZWXViMXBPOApxckN6Ulp4MG9OQT0KPS9EZWEKLS0tLS1F
+TkQgUEdQIFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
 
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ie135e070b481b88033c43b76f872060fb237243c
-Gerrit-Change-Number: 1175
-Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Wed, 10 Sep 2025 20:43:01 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+--b1=_dkGmJ4oBsTylu0dUz4j9BmNgEooRczaLXvkRrP2Y
+Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
---w0nCR7iHfew=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+wsC5BAABCgBtBYJowlO/CZBPl5z2a5C4nUUUAAAAAAAcACBzYWx0QG5vdGF0aW9ucy5vcGVucGdw
+anMub3JnPxfAlRFrJfY5pSbUpD2Pk4020aoM4DWMosqh14VBl3EWIQQJvD1EZ6ONcnnFVVVPl5z2
+a5C4nQAABswH/jeWJ6gfaCKETZMUt0UW5mjbWEeasX92A9Bo7Hj9mz7n0O/rOmPzHM46li+ZqQGO
+LGx6xrmX0VU3wDeW+YJkk8C1ob5VSwvJnhQmbU2KP/9sB0kM49wIKbHw7bHF4vBkSge3fttw47Le
+8f7C0n6jLDOog5r9aLha01jbRwxtjRyY/BVxXvwg5pTHp8BPjUKnJbsXyPzqkyo7Sp8RuUgqM4so
+QgjB0dAIMh5moKCUimamzDa2Ke54STo/+8Z5WdiMb8qBMKMHFpb7i0i5qGKnQnf1OHlPguT7jjNr
+/vow7qSucl60GzWzTV5zmoL3o7s9EUQvJl1tBcYjBXMwlpJKS7s=
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1175?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">What about the wmic invocation in the (2.6) serv=
-ice?</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>Y=
-our branch is up to date with &#39;stable/release/2.6&#39;.<br>gert@...2911...=
-...:/home/gert/src/openvpn-maint/openvpn$ git grep wmic.exe<br>src/openvpn/=
-win32.h:#define WMIC_PATH_SUFFIX &quot;\\system32\\wbem\\wmic.exe&quot;<br>=
-src/openvpnserv/interactive.c:    openvpn_swprintf(argv0, _countof(argv0), =
-L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;wbem\\wmic.exe&quot;);<br=
->```</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1175?usp=3Demail">change 1175</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1175?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
+--b1=_dkGmJ4oBsTylu0dUz4j9BmNgEooRczaLXvkRrP2Y--
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie135e070b481b88033c43b76f87=
-2060fb237243c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1175 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Sep 2025 20:43:01=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---w0nCR7iHfew=--
 
