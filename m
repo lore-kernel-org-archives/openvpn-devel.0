@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 11 Sep 2025 22:17:13 +0200
-Message-ID: <20250911201719.25773-1-gert@...1296...>
-In-Reply-To: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
-References: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Sep 2025 06:30:21 +0000
+In-Reply-To: <gerrit.1757408812000.Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b@...2715...>
+References: <gerrit.1757408812000.Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <95aad270392fa68e8e8738335612fa8f1323c084-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v8] openvpn_PRF: Change API to use size_t
- for lenghts
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ftdExa0Ao4s="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Multi-socket win:
+ avoid repeated socket_set()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,227 +20,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--ftdExa0Ao4s=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Basically all users already wanted that anyway. And most
-of the library functions also take size_t nowadays.
+Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
-Change-Id: Ic88cd6e143bc48cab3c9ebb7c7007513803bd199
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: MaxF <max@...2606...>
----
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1174?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Multi-socket win: avoid repeated socket_set()
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1135
-This mail reflects revision 8 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-MaxF <max@...2606...>
+Patch Set 3: Code-Review+1
 
-        
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index a63e543..4c0f684 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1903,8 +1903,8 @@
-     uint8_t out[8];
-     uint8_t expected_out[] = { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 };
- 
--    int ret = ssl_tls1_PRF((uint8_t *)seed, (int)strlen(seed), (uint8_t *)secret,
--                           (int)strlen(secret), out, sizeof(out));
-+    int ret = ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *)secret,
-+                           strlen(secret), out, sizeof(out));
- 
-     return (ret && memcmp(out, expected_out, sizeof(out)) == 0);
- }
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 59418f6..b74cb7f 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -716,7 +716,7 @@
-  *
-  * @return              true if successful, false on any error
-  */
--bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
--                  uint8_t *output, int output_len);
-+bool ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
-+                  uint8_t *output, size_t output_len);
- 
- #endif /* CRYPTO_BACKEND_H_ */
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 86317dd..2423435 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -983,8 +983,8 @@
-  * from recent versions, so we use our own implementation if necessary. */
- #if defined(HAVE_MBEDTLS_SSL_TLS_PRF) && defined(MBEDTLS_SSL_TLS_PRF_TLS1)
- bool
--ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
--             uint8_t *output, int output_len)
-+ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
-+             uint8_t *output, size_t output_len)
- {
-     return mbed_ok(mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret, secret_len, "", seed,
-                                        seed_len, output, output_len));
-@@ -1002,8 +1002,8 @@
-  * @param olen          Length of the output buffer
-  */
- static void
--tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, int sec_len, const uint8_t *seed,
--            int seed_len, uint8_t *out, int olen)
-+tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t sec_len, const uint8_t *seed,
-+            size_t seed_len, uint8_t *out, size_t olen)
- {
-     struct gc_arena gc = gc_new();
-     uint8_t A1[MAX_HMAC_KEY_LENGTH];
-@@ -1011,7 +1011,7 @@
- #ifdef ENABLE_DEBUG
-     /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid unused
-      * variables warnings if compiled with --enable-small */
--    const int olen_orig = olen;
-+    const size_t olen_orig = olen;
-     const uint8_t *out_orig = out;
- #endif
- 
-@@ -1021,7 +1021,7 @@
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
- 
--    int chunk = mbedtls_md_get_size(md_kt);
-+    unsigned int chunk = mbedtls_md_get_size(md_kt);
-     unsigned int A1_len = mbedtls_md_get_size(md_kt);
- 
-     /* This is the only place where we init an HMAC with a key that is not
-@@ -1089,8 +1089,8 @@
-  * (2) The pre-master secret is generated by the client.
-  */
- bool
--ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,
--             int olen)
-+ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,
-+             size_t olen)
- {
-     struct gc_arena gc = gc_new();
-     const md_kt_t *md5 = md_get("MD5");
-@@ -1098,7 +1098,7 @@
- 
-     uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
- 
--    int len = slen / 2;
-+    size_t len = slen / 2;
-     const uint8_t *S1 = sec;
-     const uint8_t *S2 = &(sec[len]);
-     len += (slen & 1); /* add for odd, make longer */
-@@ -1106,14 +1106,14 @@
-     tls1_P_hash(md5, S1, len, label, label_len, out1, olen);
-     tls1_P_hash(sha1, S2, len, label, label_len, out2, olen);
- 
--    for (int i = 0; i < olen; i++)
-+    for (size_t i = 0; i < olen; i++)
-     {
-         out1[i] ^= out2[i];
-     }
- 
-     secure_memzero(out2, olen);
- 
--    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1, olen, 0, &gc));
-+    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%zu]: %s", olen, format_hex(out1, olen, 0, &gc));
- 
-     gc_free(&gc);
-     return true;
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 2351bfd..75af4f5 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1341,8 +1341,8 @@
- }
- #if (OPENSSL_VERSION_NUMBER >= 0x30000000L) && !defined(LIBRESSL_VERSION_NUMBER)
- bool
--ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
--             uint8_t *output, int output_len)
-+ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
-+             uint8_t *output, size_t output_len)
- {
-     bool ret = true;
-     EVP_KDF_CTX *kctx = NULL;
-@@ -1368,9 +1368,9 @@
-     params[0] =
-         OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, SN_md5_sha1, strlen(SN_md5_sha1));
-     params[1] = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET, (uint8_t *)secret,
--                                                  (size_t)secret_len);
-+                                                  secret_len);
-     params[2] =
--        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)seed, (size_t)seed_len);
-+        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)seed, seed_len);
-     params[3] = OSSL_PARAM_construct_end();
- 
-     if (EVP_KDF_derive(kctx, output, output_len, params) <= 0)
-@@ -1392,15 +1392,15 @@
- }
- #elif defined(OPENSSL_IS_AWSLC)
- bool
--ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,
--             int olen)
-+ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,
-+             size_t olen)
- {
-     CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen, label, label_len, NULL, 0, NULL, 0);
- }
- #elif !defined(LIBRESSL_VERSION_NUMBER) && !defined(ENABLE_CRYPTO_WOLFSSL)
- bool
--ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,
--             uint8_t *output, int output_len)
-+ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,
-+             uint8_t *output, size_t output_len)
- {
-     EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
-     if (!pctx)
-@@ -1448,8 +1448,8 @@
-  * OpenSSL does. As result they will only be able to support
-  * peers that support TLS EKM like when running with OpenSSL 3.x FIPS */
- bool
--ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,
--             int olen)
-+ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,
-+             size_t olen)
- {
-     return false;
- }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 85b018b..284d951 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1294,10 +1294,10 @@
- }
- 
- static bool
--openvpn_PRF(const uint8_t *secret, int secret_len, const char *label, const uint8_t *client_seed,
--            int client_seed_len, const uint8_t *server_seed, int server_seed_len,
-+openvpn_PRF(const uint8_t *secret, size_t secret_len, const char *label, const uint8_t *client_seed,
-+            size_t client_seed_len, const uint8_t *server_seed, size_t server_seed_len,
-             const struct session_id *client_sid, const struct session_id *server_sid,
--            uint8_t *output, int output_len)
-+            uint8_t *output, size_t output_len)
- {
-     /* concatenate seed components */
- 
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 12ddaba..5df1046 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -161,7 +161,7 @@
- 
- 
-     uint8_t out[32];
--    bool ret = ssl_tls1_PRF(seed, (int)seed_len, secret, (int)secret_len, out, sizeof(out));
-+    bool ret = ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, sizeof(out));
- 
- #if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSSL)
-     /* No TLS1 PRF support in these libraries */
+(1 comment)
+
+Patchset:
+
+PS3:
+Tested on Windows - indeed before the patch, the server rans into endless l=
+oop. Now it works as it should.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b
+Gerrit-Change-Number: 1174
+Gerrit-PatchSet: 3
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 12 Sep 2025 06:30:21 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--ftdExa0Ao4s=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
+s. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1174?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">Tested on Windows - indeed before the patch,=
+ the server rans into endless loop. Now it works as it should.</p></li></ul=
+></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1174?usp=3Demail">change 1174</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
+/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
+mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c=
+23c17c04e6e9b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1174 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Sep 2025 06:30:21=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--ftdExa0Ao4s=--
 
