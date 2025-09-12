@@ -1,11 +1,11 @@
 From: Marek Mietus <mmietus97@...109...>
-Date: Fri, 12 Sep 2025 13:24:18 +0200
-Message-ID: <20250912112420.4394-2-mmietus97@...109...>
+Date: Fri, 12 Sep 2025 13:24:19 +0200
+Message-ID: <20250912112420.4394-3-mmietus97@...109...>
 In-Reply-To: <20250912112420.4394-1-mmietus97@...109...>
 References: <20250912112420.4394-1-mmietus97@...109...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH net-next v2 1/3] net: dst_cache: implement
- RCU variants for dst_cache helpers
+Subject: [Openvpn-devel] [PATCH net-next v2 2/3] net: tunnel: implement
+ noref flows in udp_tunnel_xmit_skb
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,192 +19,164 @@ Content-Transfer-Encoding: 8bit
 To: netdev@...2909..., antonio@...515..., kuba@...2912...
 Cc: openvpn-devel@lists.sourceforge.net, Marek Mietus <mmietus97@...109...>
 
-Implement RCU variants for existing dst_cache helpers interacting with
-dst_entry.
+In cases where udp_tunnel_xmit_skb is called inside a RCU read-side
+critical section, we can avoid referencing the dst_entry.
 
-The new helpers avoid referencing the dst_entry, sparing some unnecessary
-atomic operations. They should only be used in flows that are already
-guaranteed to be inside a RCU read-side critical context.
+Implement noref variants for udp_tunnel_xmit_skb and iptunnel_xmit to be
+used in noref flows.
 
 Signed-off-by: Marek Mietus <mmietus97@...109...>
 ---
- include/net/dst_cache.h | 26 ++++++++++++++
- net/core/dst_cache.c    | 78 +++++++++++++++++++++++++++++++++++------
- 2 files changed, 94 insertions(+), 10 deletions(-)
+ include/net/ip_tunnels.h   |  3 +++
+ include/net/udp_tunnel.h   |  4 ++++
+ net/ipv4/ip_tunnel_core.c  | 34 +++++++++++++++++++++++++++-------
+ net/ipv4/udp_tunnel_core.c | 29 +++++++++++++++++++++++++----
+ 4 files changed, 59 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
-index 1961699598e2..d3bf616a6e6f 100644
---- a/include/net/dst_cache.h
-+++ b/include/net/dst_cache.h
-@@ -32,6 +32,21 @@ struct dst_entry *dst_cache_get(struct dst_cache *dst_cache);
-  */
- struct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr);
+diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
+index 8cf1380f3656..6dcea237bf21 100644
+--- a/include/net/ip_tunnels.h
++++ b/include/net/ip_tunnels.h
+@@ -604,6 +604,9 @@ static inline int iptunnel_pull_header(struct sk_buff *skb, int hdr_len,
+ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
+ 		   __be32 src, __be32 dst, u8 proto,
+ 		   u8 tos, u8 ttl, __be16 df, bool xnet, u16 ipcb_flags);
++void iptunnel_xmit_noref(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
++			 __be32 src, __be32 dst, u8 proto,
++			 u8 tos, u8 ttl, __be16 df, bool xnet, u16 ipcb_flags);
+ struct metadata_dst *iptunnel_metadata_reply(struct metadata_dst *md,
+ 					     gfp_t flags);
+ int skb_tunnel_check_pmtu(struct sk_buff *skb, struct dst_entry *encap_dst,
+diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
+index 9acef2fbd2fd..033098ebf789 100644
+--- a/include/net/udp_tunnel.h
++++ b/include/net/udp_tunnel.h
+@@ -135,6 +135,10 @@ void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb
+ 			 __be32 src, __be32 dst, __u8 tos, __u8 ttl,
+ 			 __be16 df, __be16 src_port, __be16 dst_port,
+ 			 bool xnet, bool nocheck, u16 ipcb_flags);
++void udp_tunnel_xmit_skb_noref(struct rtable *rt, struct sock *sk, struct sk_buff *skb,
++			       __be32 src, __be32 dst, __u8 tos, __u8 ttl,
++			       __be16 df, __be16 src_port, __be16 dst_port,
++			       bool xnet, bool nocheck, u16 ipcb_flags);
  
-+/**
-+ * dst_cache_get_ip4_rcu - lookup cache and ipv4 source under RCU
-+ * @dst_cache: the cache
-+ * @saddr: return value for the retrieved source address
-+ *
-+ * Perform cache lookup and fetch ipv4 source without taking a
-+ * reference on the dst.
-+ * Must be called with local BH disabled, and within an rcu read side
-+ * critical section.
-+ *
-+ * Return: Pointer to retrieved rtable if cache is initialized and
-+ * cached dst is valid, NULL otherwise.
-+ */
-+struct rtable *dst_cache_get_ip4_rcu(struct dst_cache *dst_cache, __be32 *saddr);
-+
- /**
-  *	dst_cache_set_ip4 - store the ipv4 dst into the cache
-  *	@dst_cache: the cache
-@@ -43,6 +58,17 @@ struct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr);
- void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
- 		       __be32 saddr);
+ void udp_tunnel6_xmit_skb(struct dst_entry *dst, struct sock *sk,
+ 			  struct sk_buff *skb,
+diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
+index cc9915543637..8b03fb380397 100644
+--- a/net/ipv4/ip_tunnel_core.c
++++ b/net/ipv4/ip_tunnel_core.c
+@@ -47,10 +47,10 @@ const struct ip6_tnl_encap_ops __rcu *
+ 		ip6tun_encaps[MAX_IPTUN_ENCAP_OPS] __read_mostly;
+ EXPORT_SYMBOL(ip6tun_encaps);
  
-+/**
-+ * dst_cache_steal_ip4 - store the ipv4 dst into the cache and steal its
-+ * reference
-+ * @dst_cache: the cache
-+ * @dst: the entry to be cached whose reference will be stolen
-+ * @saddr: the source address to be stored inside the cache
-+ *
-+ * local BH must be disabled
-+ */
-+void dst_cache_steal_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
-+			 __be32 saddr);
- #if IS_ENABLED(CONFIG_IPV6)
- 
- /**
-diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
-index 9ab4902324e1..f1e3992d8171 100644
---- a/net/core/dst_cache.c
-+++ b/net/core/dst_cache.c
-@@ -25,20 +25,30 @@ struct dst_cache_pcpu {
- 	};
- };
- 
--static void dst_cache_per_cpu_dst_set(struct dst_cache_pcpu *dst_cache,
--				      struct dst_entry *dst, u32 cookie)
-+static void __dst_cache_per_cpu_dst_set(struct dst_cache_pcpu *dst_cache,
-+					struct dst_entry *dst, u32 cookie)
+-void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
+-		   __be32 src, __be32 dst, __u8 proto,
+-		   __u8 tos, __u8 ttl, __be16 df, bool xnet,
+-		   u16 ipcb_flags)
++static void __iptunnel_xmit(struct sock *sk, struct rtable *rt,
++			    struct sk_buff *skb, __be32 src, __be32 dst,
++			    __u8 proto, __u8 tos, __u8 ttl, __be16 df,
++			    u16 ipcb_flags)
  {
- 	DEBUG_NET_WARN_ON_ONCE(!in_softirq());
- 	dst_release(dst_cache->dst);
--	if (dst)
--		dst_hold(dst);
+ 	int pkt_len = skb->len - skb_inner_network_offset(skb);
+ 	struct net *net = dev_net(rt->dst.dev);
+@@ -58,10 +58,7 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
+ 	struct iphdr *iph;
+ 	int err;
  
- 	dst_cache->cookie = cookie;
- 	dst_cache->dst = dst;
- }
- 
--static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
--					       struct dst_cache_pcpu *idst)
-+static void dst_cache_per_cpu_dst_set(struct dst_cache_pcpu *dst_cache,
-+				      struct dst_entry *dst, u32 cookie)
-+{
-+	if (dst == dst_cache->dst && cookie == dst_cache->cookie)
-+		return;
-+
-+	if (dst)
-+		dst_hold(dst);
-+
-+	__dst_cache_per_cpu_dst_set(dst_cache, dst, cookie);
-+}
-+
-+static struct dst_entry *__dst_cache_per_cpu_get(struct dst_cache *dst_cache,
-+						 struct dst_cache_pcpu *idst)
- {
- 	struct dst_entry *dst;
- 
-@@ -47,14 +57,10 @@ static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
- 	if (!dst)
- 		goto fail;
- 
--	/* the cache already hold a dst reference; it can't go away */
--	dst_hold(dst);
+-	skb_scrub_packet(skb, xnet);
 -
- 	if (unlikely(!time_after(idst->refresh_ts,
- 				 READ_ONCE(dst_cache->reset_ts)) ||
- 		     (READ_ONCE(dst->obsolete) && !dst->ops->check(dst, idst->cookie)))) {
- 		dst_cache_per_cpu_dst_set(idst, NULL, 0);
--		dst_release(dst);
- 		goto fail;
+ 	skb_clear_hash_if_not_l4(skb);
+-	skb_dst_set(skb, &rt->dst);
+ 	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
+ 	IPCB(skb)->flags = ipcb_flags;
+ 
+@@ -89,8 +86,31 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
+ 		iptunnel_xmit_stats(dev, pkt_len);
  	}
- 	return dst;
-@@ -64,6 +70,18 @@ static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
- 	return NULL;
  }
- 
-+static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
-+					       struct dst_cache_pcpu *idst)
++
++void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
++		   __be32 src, __be32 dst, __u8 proto,
++		   __u8 tos, __u8 ttl, __be16 df, bool xnet,
++		   u16 ipcb_flags)
 +{
-+	struct dst_entry *dst;
++	skb_scrub_packet(skb, xnet);
++	skb_dst_set(skb, &rt->dst);
 +
-+	dst = __dst_cache_per_cpu_get(dst_cache, idst);
-+	if (dst)
-+		/* the cache already hold a dst reference; it can't go away */
-+		dst_hold(dst);
-+	return dst;
++	__iptunnel_xmit(sk, rt, skb, src, dst, proto, tos, ttl, df, ipcb_flags);
 +}
+ EXPORT_SYMBOL_GPL(iptunnel_xmit);
+ 
++void iptunnel_xmit_noref(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
++			 __be32 src, __be32 dst, __u8 proto,
++			 __u8 tos, __u8 ttl, __be16 df, bool xnet,
++			 u16 ipcb_flags)
++{
++	skb_scrub_packet(skb, xnet);
++	skb_dst_set_noref(skb, &rt->dst);
 +
- struct dst_entry *dst_cache_get(struct dst_cache *dst_cache)
++	__iptunnel_xmit(sk, rt, skb, src, dst, proto, tos, ttl, df, ipcb_flags);
++}
++EXPORT_SYMBOL_GPL(iptunnel_xmit_noref);
++
+ int __iptunnel_pull_header(struct sk_buff *skb, int hdr_len,
+ 			   __be16 inner_proto, bool raw_proto, bool xnet)
  {
- 	struct dst_entry *dst;
-@@ -100,6 +118,28 @@ struct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr)
+diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
+index fce945f23069..c0e9007cf081 100644
+--- a/net/ipv4/udp_tunnel_core.c
++++ b/net/ipv4/udp_tunnel_core.c
+@@ -170,10 +170,9 @@ void udp_tunnel_notify_del_rx_port(struct socket *sock, unsigned short type)
  }
- EXPORT_SYMBOL_GPL(dst_cache_get_ip4);
+ EXPORT_SYMBOL_GPL(udp_tunnel_notify_del_rx_port);
  
-+struct rtable *dst_cache_get_ip4_rcu(struct dst_cache *dst_cache, __be32 *saddr)
-+{
-+	struct dst_cache_pcpu *idst;
-+	struct dst_entry *dst;
-+
-+	if (!dst_cache->cache)
-+		return NULL;
-+
-+	local_lock_nested_bh(&dst_cache->cache->bh_lock);
-+	idst = this_cpu_ptr(dst_cache->cache);
-+	dst = __dst_cache_per_cpu_get(dst_cache, idst);
-+	if (!dst) {
-+		local_unlock_nested_bh(&dst_cache->cache->bh_lock);
-+		return NULL;
-+	}
-+
-+	*saddr = idst->in_saddr.s_addr;
-+	local_unlock_nested_bh(&dst_cache->cache->bh_lock);
-+	return dst_rtable(dst);
-+}
-+EXPORT_SYMBOL_GPL(dst_cache_get_ip4_rcu);
-+
- void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
- 		       __be32 saddr)
+-void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb,
+-			 __be32 src, __be32 dst, __u8 tos, __u8 ttl,
+-			 __be16 df, __be16 src_port, __be16 dst_port,
+-			 bool xnet, bool nocheck, u16 ipcb_flags)
++static void udp_tunnel_add_hdr(struct sk_buff *skb, __be32 src,
++			       __be32 dst, __be16 src_port,
++			       __be16 dst_port, bool nocheck)
  {
-@@ -116,6 +156,24 @@ void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
- }
- EXPORT_SYMBOL_GPL(dst_cache_set_ip4);
+ 	struct udphdr *uh;
  
-+void dst_cache_steal_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
-+			 __be32 saddr)
-+{
-+	struct dst_cache_pcpu *idst;
-+
-+	if (!dst_cache->cache) {
-+		dst_release(dst);
-+		return;
-+	}
-+
-+	local_lock_nested_bh(&dst_cache->cache->bh_lock);
-+	idst = this_cpu_ptr(dst_cache->cache);
-+	__dst_cache_per_cpu_dst_set(idst, dst, 0);
-+	idst->in_saddr.s_addr = saddr;
-+	local_unlock_nested_bh(&dst_cache->cache->bh_lock);
+@@ -188,12 +187,34 @@ void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb
+ 	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
+ 
+ 	udp_set_csum(nocheck, skb, src, dst, skb->len);
 +}
-+EXPORT_SYMBOL_GPL(dst_cache_steal_ip4);
 +
- #if IS_ENABLED(CONFIG_IPV6)
- void dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
- 		       const struct in6_addr *saddr)
++void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk,
++			 struct sk_buff *skb, __be32 src, __be32 dst,
++			 __u8 tos, __u8 ttl, __be16 df, __be16 src_port,
++			 __be16 dst_port, bool xnet, bool nocheck,
++			 u16 ipcb_flags)
++{
++	udp_tunnel_add_hdr(skb, src, dst, src_port, dst_port, nocheck);
+ 
+ 	iptunnel_xmit(sk, rt, skb, src, dst, IPPROTO_UDP, tos, ttl, df, xnet,
+ 		      ipcb_flags);
+ }
+ EXPORT_SYMBOL_GPL(udp_tunnel_xmit_skb);
+ 
++void udp_tunnel_xmit_skb_noref(struct rtable *rt, struct sock *sk,
++			       struct sk_buff *skb, __be32 src, __be32 dst,
++			       __u8 tos, __u8 ttl, __be16 df, __be16 src_port,
++			       __be16 dst_port, bool xnet, bool nocheck,
++			       u16 ipcb_flags)
++{
++	udp_tunnel_add_hdr(skb, src, dst, src_port, dst_port, nocheck);
++
++	iptunnel_xmit_noref(sk, rt, skb, src, dst, IPPROTO_UDP, tos, ttl, df,
++			    xnet, ipcb_flags);
++}
++EXPORT_SYMBOL_GPL(udp_tunnel_xmit_skb_noref);
++
+ void udp_tunnel_sock_release(struct socket *sock)
+ {
+ 	rcu_assign_sk_user_data(sock->sk, NULL);
 -- 
 2.51.0
 
