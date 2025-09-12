@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 12 Sep 2025 15:22:35 +0200
-Message-Id: <20250912132235.44304-1-frank@...2641...>
-In-Reply-To: <gerrit.1757677796000.I815e68dd5d365743faff2b80783b776d9e8a645c@...2715...>
-References: <gerrit.1757677796000.I815e68dd5d365743faff2b80783b776d9e8a645c@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Sep 2025 13:24:12 +0000
+In-Reply-To: <gerrit.1757504119000.Ie135e070b481b88033c43b76f872060fb237243c@...2715...>
+References: <gerrit.1757504119000.Ie135e070b481b88033c43b76f872060fb237243c@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277..., gert@...1296...
+Message-ID: <64bdd9aa493036f00a24f1097dd84cf89ad2186f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Preserve --dhcp-option values from local
- config
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="jOPRxjdYCfQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: win: replace
+ wmic invocation with powershell
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,57 +19,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--jOPRxjdYCfQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Commit
+Attention is currently required from: plaisthos, stipa.
 
-  2dfc4f8 ("dns: deal with --dhcp-options when --dns is active")
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1175?usp=3Demail )
 
-has changed the way how --dhcp-option values are stored. Instead of
-storing them directly in tuntap_options, they are now stored in
-dns_options->from_dhcp.
+Change subject: win: replace wmic invocation with powershell
+......................................................................
 
-Before connect, we save options before --pull is applied, for that
-we call clone_dns_options(). However, this routing was missing cloning
-of from_dhcp struct, and as a result, the values of --dhcp-option from'
-the local config have been lost.
 
-Fix by adding shallow-copying of dhcp_options to clone_dns_options(). It
-is safe to do because it only contains fixed-size arrays, scalar types
-and pointers to the strings which this struct doesn't own.
+Patch Set 1: Code-Review-1
 
-GitHub: https://github.com/OpenVPN/openvpn/issues/839
+(1 comment)
 
-Change-Id: I815e68dd5d365743faff2b80783b776d9e8a645c
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+Patchset:
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+PS1:
+Since Gert did not mark this as needing work, doing so now.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1181
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 8554089..5421004 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -264,6 +264,7 @@
-     clone.servers_prepull = clone_dns_servers(o->servers_prepull, gc);
-     clone.updown = o->updown;
-     clone.updown_flags = o->updown_flags;
-+    clone.from_dhcp = o->from_dhcp;
- 
-     return clone;
- }
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Ie135e070b481b88033c43b76f872060fb237243c
+Gerrit-Change-Number: 1175
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 12 Sep 2025 13:24:12 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--jOPRxjdYCfQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1175?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">Since Gert did not mark this as needing work=
+, doing so now.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/1175?usp=3Demail">change 1175</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1175?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
+Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie135e070b481b88033c43b76f87=
+2060fb237243c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1175 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Sep 2025 13:24:12=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--jOPRxjdYCfQ=--
 
