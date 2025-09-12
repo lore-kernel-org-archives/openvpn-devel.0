@@ -1,16 +1,17 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Sep 2025 14:18:24 +0000
-In-Reply-To: <gerrit.1757684109000.Iff2f4ea677fe2d88659d7814dab0f792f5004fb3@...2715...>
-References: <gerrit.1757684109000.Iff2f4ea677fe2d88659d7814dab0f792f5004fb3@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <72fe24165dc690ad839020160fb3ef341bff7820-EmailReplacePatchSet-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Sep 2025 15:04:52 +0000
+In-Reply-To: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
+References: <gerrit.1754490554000.Ic88cd6e143bc48cab3c9ebb7c7007513803bd199@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <19227e59b5a4206d8e9f88fe811aeedca8f0cfbe-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gd/KXwN8o6w="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: win: replace
- wmic invocation with powershell
+Content-Type: multipart/alternative; boundary="0rnC8WNJd0Q="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpn_PRF: Change
+ API to use size_t for lengths
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,421 +20,536 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, MaxF <max@...2606...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---gd/KXwN8o6w=
+--0rnC8WNJd0Q=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
-
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail
-
-to look at the new patch set (#2).
+cron2 has uploaded a new patch set (#9) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1135?usp=3Demail )
 
 The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+Code-Review+2 by MaxF
 
 
-Change subject: win: replace wmic invocation with powershell
+Change subject: openvpn_PRF: Change API to use size_t for lengths
 ......................................................................
 
-win: replace wmic invocation with powershell
+openvpn_PRF: Change API to use size_t for lengths
 
-Since wmic has been recently deprecated and is absent on new
-systems, replace setting DNS domain "old-style" with powershell.
+Basically all users already wanted that anyway. And most
+of the library functions also take size_t nowadays.
 
-Some changes to the service implementation:
-
- - remove action parameter and hardcode Set-DnsClient since this is
- the only used action
-
- - remove support of multiple domains, since we only pass a single domain
- (tuntap_options.domain)
-
-GitHub: https://github.com/OpenVPN/openvpn/issues/642
-
-Change-Id: Iff2f4ea677fe2d88659d7814dab0f792f5004fb3
-Signed-off-by: Lev Stipakov <lev@...515...>
+Change-Id: Ic88cd6e143bc48cab3c9ebb7c7007513803bd199
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: MaxF <max@...2606...>
+Message-Id: <20250911201719.25773-1-gert@...1296...>
+URL: https://sourceforge.net/p/openvpn/mailman/message/59232185/
+URL: https://gerrit.openvpn.net/c/openvpn/+/1135
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/tun.c
-M src/openvpn/win32.h
-M src/openvpnserv/interactive.c
-3 files changed, 21 insertions(+), 30 deletions(-)
+M src/openvpn/crypto.c
+M src/openvpn/crypto_backend.h
+M src/openvpn/crypto_mbedtls.c
+M src/openvpn/crypto_openssl.c
+M src/openvpn/ssl.c
+M tests/unit_tests/openvpn/test_crypto.c
+6 files changed, 29 insertions(+), 29 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/1183/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1135/9
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 92e71a3..7c8a351 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -383,7 +383,7 @@
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index a63e543..4c0f684 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1903,8 +1903,8 @@
+     uint8_t out[8];
+     uint8_t expected_out[] =3D { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 =
+};
+
+-    int ret =3D ssl_tls1_PRF((uint8_t *)seed, (int)strlen(seed), (uint8_t =
+*)secret,
+-                           (int)strlen(secret), out, sizeof(out));
++    int ret =3D ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *)sec=
+ret,
++                           strlen(secret), out, sizeof(out));
+
+     return (ret && memcmp(out, expected_out, sizeof(out)) =3D=3D 0);
  }
-
- static void
--do_dns_domain_wmic(bool add, const struct tuntap *tt)
-+do_dns_domain_pwsh(bool add, const struct tuntap *tt)
- {
-     if (!tt->options.domain)
-     {
-@@ -391,9 +391,14 @@
-     }
-
-     struct argv argv =3D argv_new();
--    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=3D%ld) call S=
-etDNSDomain '%s'",
--                get_win_sys_path(), WMIC_PATH_SUFFIX, tt->adapter_index, a=
-dd ? tt->options.domain : "");
--    exec_command("WMIC", &argv, 1, M_WARN);
-+    argv_printf(&argv,
-+                "%s%s -NoProfile -NonInteractive -Command Set-DnsClient -I=
-nterfaceIndex %lu -ConnectionSpecificSuffix '%s'",
-+                get_win_sys_path(),
-+                POWERSHELL_PATH_SUFFIX,
-+                tt->adapter_index,
-+                add ? tt->options.domain : ""
-+                );
-+    exec_command("PowerShell", &argv, 1, M_WARN);
-
-     argv_free(&argv);
- }
-@@ -1269,7 +1274,7 @@
-
-         if (!tt->did_ifconfig_setup)
-         {
--            do_dns_domain_wmic(true, tt);
-+            do_dns_domain_pwsh(true, tt);
-         }
-     }
- #else /* platforms we have no IPv6 code for */
-@@ -1625,7 +1630,7 @@
-                            tt->adapter_netmask, NI_IP_NETMASK | NI_OPTIONS=
-);
-         }
-
--        do_dns_domain_wmic(true, tt);
-+        do_dns_domain_pwsh(true, tt);
-     }
-
-
-@@ -7024,7 +7029,7 @@
-         {
-             if (!tt->did_ifconfig_setup)
-             {
--                do_dns_domain_wmic(false, tt);
-+                do_dns_domain_pwsh(false, tt);
-             }
-
-             netsh_delete_address_dns(tt, true, &gc);
-@@ -7050,7 +7055,7 @@
-         }
-         else
-         {
--            do_dns_domain_wmic(false, tt);
-+            do_dns_domain_pwsh(false, tt);
-
-             if (tt->options.ip_win32_type =3D=3D IPW32_SET_NETSH)
-             {
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 1b87fa3..67e6169 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -38,7 +38,7 @@
- #define WIN_ROUTE_PATH_SUFFIX "\\system32\\route.exe"
- #define WIN_IPCONFIG_PATH_SUFFIX "\\system32\\ipconfig.exe"
- #define WIN_NET_PATH_SUFFIX "\\system32\\net.exe"
--#define WMIC_PATH_SUFFIX "\\system32\\wbem\\wmic.exe"
-+#define POWERSHELL_PATH_SUFFIX "\\system32\\WindowsPowerShell\\v1.0\\power=
-shell.exe"
-
- /*
-  * Win32-specific OpenVPN code, targeted at the mingw
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index a25d26f..ca58596 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1150,45 +1150,31 @@
- }
-
- /**
-- * Run command: wmic nicconfig (InterfaceIndex=3D$if_index) call $action (=
-$data)
-+ * Run command: powershell -NoProfile -NonInteractive -Command Set-DnsClie=
-nt -InterfaceIndex %ld -ConnectionSpecificSuffix '%s'
-  * @param  if_index    "index of interface"
-- * @param  action      e.g., "SetDNSDomain"
-  * @param  data        data if required for action
-  *                     - a single word for SetDNSDomain, empty or NULL to =
-delete
-- *                     - comma separated values for a list
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 59418f6..b74cb7f 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -716,7 +716,7 @@
+  *
+  * @return              true if successful, false on any error
   */
- static DWORD
--wmic_nicconfig_cmd(const wchar_t *action, const NET_IFINDEX if_index,
--                   const wchar_t *data)
-+pwsh_setdns_cmd(const NET_IFINDEX if_index, const wchar_t *data)
+-bool ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret=
+, int secret_len,
+-                  uint8_t *output, int output_len);
++bool ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *sec=
+ret, size_t secret_len,
++                  uint8_t *output, size_t output_len);
+
+ #endif /* CRYPTO_BACKEND_H_ */
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 86317dd..2423435 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -983,8 +983,8 @@
+  * from recent versions, so we use our own implementation if necessary. */
+ #if defined(HAVE_MBEDTLS_SSL_TLS_PRF) && defined(MBEDTLS_SSL_TLS_PRF_TLS1)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int=
+ secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, =
+size_t secret_len,
++             uint8_t *output, size_t output_len)
  {
-     DWORD err =3D 0;
-     wchar_t argv0[MAX_PATH];
-     wchar_t *cmdline =3D NULL;
-     int timeout =3D 10000; /* in msec */
+     return mbed_ok(mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1, secret, s=
+ecret_len, "", seed,
+                                        seed_len, output, output_len));
+@@ -1002,8 +1002,8 @@
+  * @param olen          Length of the output buffer
+  */
+ static void
+-tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, int sec_le=
+n, const uint8_t *seed,
+-            int seed_len, uint8_t *out, int olen)
++tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t sec=
+_len, const uint8_t *seed,
++            size_t seed_len, uint8_t *out, size_t olen)
+ {
+     struct gc_arena gc =3D gc_new();
+     uint8_t A1[MAX_HMAC_KEY_LENGTH];
+@@ -1011,7 +1011,7 @@
+ #ifdef ENABLE_DEBUG
+     /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid u=
+nused
+      * variables warnings if compiled with --enable-small */
+-    const int olen_orig =3D olen;
++    const size_t olen_orig =3D olen;
+     const uint8_t *out_orig =3D out;
+ #endif
 
--    openvpn_swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path=
-(), L"wbem\\wmic.exe");
-+    openvpn_swprintf(argv0, _countof(argv0), L"%ls\\%ls", get_win_sys_path=
-(), L"WindowsPowerShell\\v1.0\\powershell.exe");
+@@ -1021,7 +1021,7 @@
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len=
+, 0, &gc));
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_=
+len, 0, &gc));
 
--    const wchar_t *fmt;
--    /* comma separated list must be enclosed in parenthesis */
--    if (data && wcschr(data, L','))
--    {
--        fmt =3D L"wmic nicconfig where (InterfaceIndex=3D%ld) call %ls (%l=
-s)";
--    }
--    else
--    {
--        fmt =3D L"wmic nicconfig where (InterfaceIndex=3D%ld) call %ls \"%=
-ls\"";
--    }
-+    const wchar_t *fmt =3D L"-NoProfile -NonInteractive -Command Set-DnsCl=
-ient -InterfaceIndex %lu -ConnectionSpecificSuffix '%s'";
+-    int chunk =3D mbedtls_md_get_size(md_kt);
++    unsigned int chunk =3D mbedtls_md_get_size(md_kt);
+     unsigned int A1_len =3D mbedtls_md_get_size(md_kt);
 
--    size_t ncmdline =3D wcslen(fmt) + 20 + wcslen(action) /* max 20 for if=
-index */
--                      + (data ? wcslen(data) + 1 : 1);
-+    size_t ncmdline =3D wcslen(fmt) + 20 + /* max 20 for ifindex */ (data =
-? wcslen(data) + 1 : 1);
-     cmdline =3D malloc(ncmdline*sizeof(wchar_t));
-     if (!cmdline)
+     /* This is the only place where we init an HMAC with a key that is not
+@@ -1089,8 +1089,8 @@
+  * (2) The pre-master secret is generated by the client.
+  */
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int =
+slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, s=
+ize_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     struct gc_arena gc =3D gc_new();
+     const md_kt_t *md5 =3D md_get("MD5");
+@@ -1098,7 +1098,7 @@
+
+     uint8_t *out2 =3D (uint8_t *)gc_malloc(olen, false, &gc);
+
+-    int len =3D slen / 2;
++    size_t len =3D slen / 2;
+     const uint8_t *S1 =3D sec;
+     const uint8_t *S2 =3D &(sec[len]);
+     len +=3D (slen & 1); /* add for odd, make longer */
+@@ -1106,14 +1106,14 @@
+     tls1_P_hash(md5, S1, len, label, label_len, out1, olen);
+     tls1_P_hash(sha1, S2, len, label, label_len, out2, olen);
+
+-    for (int i =3D 0; i < olen; i++)
++    for (size_t i =3D 0; i < olen; i++)
      {
-         return ERROR_OUTOFMEMORY;
+         out1[i] ^=3D out2[i];
      }
 
--    openvpn_swprintf(cmdline, ncmdline, fmt, if_index, action,
--                     data ? data : L"");
-+    openvpn_swprintf(cmdline, ncmdline, fmt, if_index, data ? data : L"");
-     err =3D ExecCommand(argv0, cmdline, timeout);
+     secure_memzero(out2, olen);
 
-     free(cmdline);
-@@ -1248,7 +1234,7 @@
-         free(RemoveListItem(&(*lists)[undo_domain], CmpWString, (void *)if=
-_name));
-     }
+-    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%d]: %s", olen, format_hex(out1,=
+ olen, 0, &gc));
++    dmsg(D_SHOW_KEY_SOURCE, "tls1_PRF out[%zu]: %s", olen, format_hex(out1=
+, olen, 0, &gc));
 
--    err =3D wmic_nicconfig_cmd(L"SetDNSDomain", if_index, wdomain);
-+    err =3D pwsh_setdns_cmd(if_index, wdomain);
+     gc_free(&gc);
+     return true;
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 4fb6393..98fe37f 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1341,8 +1341,8 @@
+ }
+ #if (OPENSSL_VERSION_NUMBER >=3D 0x30000000L) && !defined(LIBRESSL_VERSION=
+_NUMBER)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int=
+ secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, =
+size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     bool ret =3D true;
+     EVP_KDF_CTX *kctx =3D NULL;
+@@ -1368,9 +1368,9 @@
+     params[0] =3D
+         OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, SN_md5_sha=
+1, strlen(SN_md5_sha1));
+     params[1] =3D OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET,=
+ (uint8_t *)secret,
+-                                                  (size_t)secret_len);
++                                                  secret_len);
+     params[2] =3D
+-        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)=
+seed, (size_t)seed_len);
++        OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)=
+seed, seed_len);
+     params[3] =3D OSSL_PARAM_construct_end();
 
-     /* Add to undo list if domain is non-empty */
-     if (err =3D=3D 0 && wdomain[0] && lists)
+     if (EVP_KDF_derive(kctx, output, output_len, params) <=3D 0)
+@@ -1392,15 +1392,15 @@
+ }
+ #elif defined(OPENSSL_IS_AWSLC)
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int =
+slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, s=
+ize_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen, label, label_le=
+n, NULL, 0, NULL, 0);
+ }
+ #elif !defined(LIBRESSL_VERSION_NUMBER) && !defined(ENABLE_CRYPTO_WOLFSSL)
+ bool
+-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret, int=
+ secret_len,
+-             uint8_t *output, int output_len)
++ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret, =
+size_t secret_len,
++             uint8_t *output, size_t output_len)
+ {
+     EVP_PKEY_CTX *pctx =3D EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
+     if (!pctx)
+@@ -1448,8 +1448,8 @@
+  * OpenSSL does. As result they will only be able to support
+  * peers that support TLS EKM like when running with OpenSSL 3.x FIPS */
+ bool
+-ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int =
+slen, uint8_t *out1,
+-             int olen)
++ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, s=
+ize_t slen, uint8_t *out1,
++             size_t olen)
+ {
+     return false;
+ }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index b7db1e7..c17e608 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1294,10 +1294,10 @@
+ }
+
+ static bool
+-openvpn_PRF(const uint8_t *secret, int secret_len, const char *label, cons=
+t uint8_t *client_seed,
+-            int client_seed_len, const uint8_t *server_seed, int server_se=
+ed_len,
++openvpn_PRF(const uint8_t *secret, size_t secret_len, const char *label, c=
+onst uint8_t *client_seed,
++            size_t client_seed_len, const uint8_t *server_seed, size_t ser=
+ver_seed_len,
+             const struct session_id *client_sid, const struct session_id *=
+server_sid,
+-            uint8_t *output, int output_len)
++            uint8_t *output, size_t output_len)
+ {
+     /* concatenate seed components */
+
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index 12ddaba..5df1046 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -161,7 +161,7 @@
+
+
+     uint8_t out[32];
+-    bool ret =3D ssl_tls1_PRF(seed, (int)seed_len, secret, (int)secret_len=
+, out, sizeof(out));
++    bool ret =3D ssl_tls1_PRF(seed, seed_len, secret, secret_len, out, siz=
+eof(out));
+
+ #if defined(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSSL)
+     /* No TLS1 PRF support in these libraries */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1135?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Iff2f4ea677fe2d88659d7814dab0f792f5004fb3
-Gerrit-Change-Number: 1183
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic88cd6e143bc48cab3c9ebb7c7007513803bd199
+Gerrit-Change-Number: 1135
+Gerrit-PatchSet: 9
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
 Gerrit-MessageType: newpatchset
 
---gd/KXwN8o6w=
+--0rnC8WNJd0Q=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">win: replace wmic invocation with powershell<=
-br><br>Since wmic has been recently deprecated and is absent on new<br>syst=
-ems, replace setting DNS domain &quot;old-style&quot; with powershell.<br><=
-br>Some changes to the service implementation:<br><br> - remove action para=
-meter and hardcode Set-DnsClient since this is<br> the only used action<br>=
-<br> - remove support of multiple domains, since we only pass a single doma=
-in<br> (tuntap_options.domain)<br><br>GitHub: https://github.com/OpenVPN/op=
-envpn/issues/642<br><br>Change-Id: Iff2f4ea677fe2d88659d7814dab0f792f5004fb=
-3<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/open=
-vpn/tun.c<br>M src/openvpn/win32.h<br>M src/openvpnserv/interactive.c<br>3 =
-files changed, 21 insertions(+), 30 deletions(-)<br><br></pre><pre style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
-errit.openvpn.net:29418/openvpn refs/changes/83/1183/2</pre><pre style=3D"f=
-ont-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a=
-/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 92e71a3..7c8a3=
-51 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src=
-/openvpn/tun.c</span><br><span>@@ -383,7 +383,7 @@</span><br><span> }</span=
-><br><span> </span><br><span> static void</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-do_dns_domain_wmic(bool add, const struct tuntap *tt)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_dns_domain_pwsh(bo=
-ol add, const struct tuntap *tt)</span><br><span> {</span><br><span>     if=
- (!tt-&gt;options.domain)</span><br><span>     {</span><br><span>@@ -391,9 =
-+391,14 @@</span><br><span>     }</span><br><span> </span><br><span>     st=
-ruct argv argv =3D argv_new();</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    argv_printf(&amp;argv, &quot;%s%s nicconfig where (InterfaceIn=
-dex=3D%ld) call SetDNSDomain &#39;%s&#39;&quot;,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                get_win_sys_path(), WMIC_PATH_SU=
-FFIX, tt-&gt;adapter_index, add ? tt-&gt;options.domain : &quot;&quot;);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    exec_command(&quot;W=
-MIC&quot;, &amp;argv, 1, M_WARN);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    argv_printf(&amp;argv,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                &quot;%s%s -NoProfile -NonInteractive =
--Command Set-DnsClient -InterfaceIndex %lu -ConnectionSpecificSuffix &#39;%=
-s&#39;&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          get_win_sys_path(),</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                POWERSHELL_PATH_SUFFIX,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                tt-&gt;adapter_index,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                add ? tt-&g=
-t;options.domain : &quot;&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                );</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    exec_command(&quot;PowerShell&quot;, &amp;argv, 1, M_WARN);<=
-/span><br><span> </span><br><span>     argv_free(&amp;argv);</span><br><spa=
-n> }</span><br><span>@@ -1269,7 +1274,7 @@</span><br><span> </span><br><spa=
-n>         if (!tt-&gt;did_ifconfig_setup)</span><br><span>         {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            do_dns_domain_w=
-mic(true, tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       do_dns_domain_pwsh(true, tt);</span><br><span>         }</span><br><=
-span>     }</span><br><span> #else /* platforms we have no IPv6 code for */=
-</span><br><span>@@ -1625,7 +1630,7 @@</span><br><span>                    =
-        tt-&gt;adapter_netmask, NI_IP_NETMASK | NI_OPTIONS);</span><br><spa=
-n>         }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        do_dns_domain_wmic(true, tt);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        do_dns_domain_pwsh(true, tt);</span><br>=
-<span>     }</span><br><span> </span><br><span> </span><br><span>@@ -7024,7=
- +7029,7 @@</span><br><span>         {</span><br><span>             if (!tt=
--&gt;did_ifconfig_setup)</span><br><span>             {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                do_dns_domain_wmic(false,=
- tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  do_dns_domain_pwsh(false, tt);</span><br><span>             }</span><br><=
-span> </span><br><span>             netsh_delete_address_dns(tt, true, &amp=
-;gc);</span><br><span>@@ -7050,7 +7055,7 @@</span><br><span>         }</spa=
-n><br><span>         else</span><br><span>         {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            do_dns_domain_wmic(false, tt);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            do_dns_d=
-omain_pwsh(false, tt);</span><br><span> </span><br><span>             if (t=
-t-&gt;options.ip_win32_type =3D=3D IPW32_SET_NETSH)</span><br><span>       =
-      {</span><br><span>diff --git a/src/openvpn/win32.h b/src/openvpn/win3=
-2.h</span><br><span>index 1b87fa3..67e6169 100644</span><br><span>--- a/src=
-/openvpn/win32.h</span><br><span>+++ b/src/openvpn/win32.h</span><br><span>=
-@@ -38,7 +38,7 @@</span><br><span> #define WIN_ROUTE_PATH_SUFFIX &quot;\\sy=
-stem32\\route.exe&quot;</span><br><span> #define WIN_IPCONFIG_PATH_SUFFIX &=
-quot;\\system32\\ipconfig.exe&quot;</span><br><span> #define WIN_NET_PATH_S=
-UFFIX &quot;\\system32\\net.exe&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#define WMIC_PATH_SUFFIX &quot;\\system32\\wbem\\wmic.exe&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define POWERSH=
-ELL_PATH_SUFFIX &quot;\\system32\\WindowsPowerShell\\v1.0\\powershell.exe&q=
-uot;</span><br><span> </span><br><span> /*</span><br><span>  * Win32-specif=
-ic OpenVPN code, targeted at the mingw</span><br><span>diff --git a/src/ope=
-nvpnserv/interactive.c b/src/openvpnserv/interactive.c</span><br><span>inde=
-x a25d26f..ca58596 100644</span><br><span>--- a/src/openvpnserv/interactive=
-.c</span><br><span>+++ b/src/openvpnserv/interactive.c</span><br><span>@@ -=
-1150,45 +1150,31 @@</span><br><span> }</span><br><span> </span><br><span> /=
-**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Run command: wmi=
-c nicconfig (InterfaceIndex=3D$if_index) call $action ($data)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * Run command: powershell -NoPro=
-file -NonInteractive -Command Set-DnsClient -InterfaceIndex %ld -Connection=
-SpecificSuffix &#39;%s&#39;</span><br><span>  * @param  if_index    &quot;i=
-ndex of interface&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * @param  action      e.g., &quot;SetDNSDomain&quot;</span><br><span>  *=
- @param  data        data if required for action</span><br><span>  *       =
-              - a single word for SetDNSDomain, empty or NULL to delete</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- *                     - =
-comma separated values for a list</span><br><span>  */</span><br><span> sta=
-tic DWORD</span><br><span style=3D"color: hsl(0, 100%, 40%);">-wmic_nicconf=
-ig_cmd(const wchar_t *action, const NET_IFINDEX if_index,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                   const wchar_t *data)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pwsh_setdns_cmd(con=
-st NET_IFINDEX if_index, const wchar_t *data)</span><br><span> {</span><br>=
-<span>     DWORD err =3D 0;</span><br><span>     wchar_t argv0[MAX_PATH];</=
-span><br><span>     wchar_t *cmdline =3D NULL;</span><br><span>     int tim=
-eout =3D 10000; /* in msec */</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    openvpn_swprintf(argv0, _countof(argv0), L&qu=
-ot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;wbem\\wmic.exe&quot;);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_swprintf(argv0=
-, _countof(argv0), L&quot;%ls\\%ls&quot;, get_win_sys_path(), L&quot;Window=
-sPowerShell\\v1.0\\powershell.exe&quot;);</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    const wchar_t *fmt;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    /* comma separated list must be=
- enclosed in parenthesis */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    if (data &amp;&amp; wcschr(data, L&#39;,&#39;))</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        fmt =3D L&quot;wmic nicconfig where (InterfaceI=
-ndex=3D%ld) call %ls (%ls)&quot;;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        fmt =3D L&quot;wmic nicco=
-nfig where (InterfaceIndex=3D%ld) call %ls \&quot;%ls\&quot;&quot;;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const wchar_t *fmt =3D L&quot;-NoProf=
-ile -NonInteractive -Command Set-DnsClient -InterfaceIndex %lu -ConnectionS=
-pecificSuffix &#39;%s&#39;&quot;;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    size_t ncmdline =3D wcslen(fmt) + 20 + =
-wcslen(action) /* max 20 for ifindex */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                      + (data ? wcslen(data) + 1 : 1);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t ncmdline =
-=3D wcslen(fmt) + 20 + /* max 20 for ifindex */ (data ? wcslen(data) + 1 : =
-1);</span><br><span>     cmdline =3D malloc(ncmdline*sizeof(wchar_t));</spa=
-n><br><span>     if (!cmdline)</span><br><span>     {</span><br><span>     =
-    return ERROR_OUTOFMEMORY;</span><br><span>     }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdli=
-ne, ncmdline, fmt, if_index, action,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                     data ? data : L&quot;&quot;);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_swprintf(cmdline,=
- ncmdline, fmt, if_index, data ? data : L&quot;&quot;);</span><br><span>   =
-  err =3D ExecCommand(argv0, cmdline, timeout);</span><br><span> </span><br=
-><span>     free(cmdline);</span><br><span>@@ -1248,7 +1234,7 @@</span><br>=
-<span>         free(RemoveListItem(&amp;(*lists)[undo_domain], CmpWString, =
-(void *)if_name));</span><br><span>     }</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    err =3D wmic_nicconfig_cmd(L&quot=
-;SetDNSDomain&quot;, if_index, wdomain);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    err =3D pwsh_setdns_cmd(if_index, wdomain);</span>=
-<br><span> </span><br><span>     /* Add to undo list if domain is non-empty=
- */</span><br><span>     if (err =3D=3D 0 &amp;&amp; wdomain[0] &amp;&amp; =
-lists)</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail">change 1183</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1183?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #9</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1135?usp=3Demail">View Change</a></p><p>The following approvals got outd=
+ated and were removed:
+Code-Review+2 by MaxF</p><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;">openvpn_PRF: Change API to use size_t for lengths<br>=
+<br>Basically all users already wanted that anyway. And most<br>of the libr=
+ary functions also take size_t nowadays.<br><br>Change-Id: Ic88cd6e143bc48c=
+ab3c9ebb7c7007513803bd199<br>Signed-off-by: Frank Lichtenheld &lt;frank@...493...=
+2641...&gt;<br>Acked-by: MaxF &lt;max@...2606...&gt;<br>Message-Id: &lt;202=
+50911201719.25773-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/o=
+penvpn/mailman/message/59232185/<br>URL: https://gerrit.openvpn.net/c/openv=
+pn/+/1135<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>=
+M src/openvpn/crypto.c<br>M src/openvpn/crypto_backend.h<br>M src/openvpn/c=
+rypto_mbedtls.c<br>M src/openvpn/crypto_openssl.c<br>M src/openvpn/ssl.c<br=
+>M tests/unit_tests/openvpn/test_crypto.c<br>6 files changed, 29 insertions=
+(+), 29 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
+vpn refs/changes/35/1135/9</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto.c b/src/=
+openvpn/crypto.c</span><br><span>index a63e543..4c0f684 100644</span><br><s=
+pan>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</=
+span><br><span>@@ -1903,8 +1903,8 @@</span><br><span>     uint8_t out[8];</=
+span><br><span>     uint8_t expected_out[] =3D { &#39;q&#39;, &#39;D&#39;, =
+0xfe, &#39;%&#39;, &#39;@&#39;, &#39;s&#39;, &#39;u&#39;, 0x95 };</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =
+=3D ssl_tls1_PRF((uint8_t *)seed, (int)strlen(seed), (uint8_t *)secret,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
+  (int)strlen(secret), out, sizeof(out));</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    int ret =3D ssl_tls1_PRF((uint8_t *)seed, strlen(=
+seed), (uint8_t *)secret,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                           strlen(secret), out, sizeof(out));</span><=
+br><span> </span><br><span>     return (ret &amp;&amp; memcmp(out, expected=
+_out, sizeof(out)) =3D=3D 0);</span><br><span> }</span><br><span>diff --git=
+ a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h</span><br><s=
+pan>index 59418f6..b74cb7f 100644</span><br><span>--- a/src/openvpn/crypto_=
+backend.h</span><br><span>+++ b/src/openvpn/crypto_backend.h</span><br><spa=
+n>@@ -716,7 +716,7 @@</span><br><span>  *</span><br><span>  * @return      =
+        true if successful, false on any error</span><br><span>  */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-bool ssl_tls1_PRF(const uint8=
+_t *seed, int seed_len, const uint8_t *secret, int secret_len,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                  uint8_t *output,=
+ int output_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bo=
+ol ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret=
+, size_t secret_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                  uint8_t *output, size_t output_len);</span><br><span> </=
+span><br><span> #endif /* CRYPTO_BACKEND_H_ */</span><br><span>diff --git a=
+/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><spa=
+n>index 86317dd..2423435 100644</span><br><span>--- a/src/openvpn/crypto_mb=
+edtls.c</span><br><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>=
+@@ -983,8 +983,8 @@</span><br><span>  * from recent versions, so we use our=
+ own implementation if necessary. */</span><br><span> #if defined(HAVE_MBED=
+TLS_SSL_TLS_PRF) &amp;&amp; defined(MBEDTLS_SSL_TLS_PRF_TLS1)</span><br><sp=
+an> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ssl_tls1_PRF(=
+const uint8_t *seed, int seed_len, const uint8_t *secret, int secret_len,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-             uint8_t *o=
+utput, int output_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, const uint8_t *secret=
+, size_t secret_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++             uint8_t *output, size_t output_len)</span><br><span> {</span>=
+<br><span>     return mbed_ok(mbedtls_ssl_tls_prf(MBEDTLS_SSL_TLS_PRF_TLS1,=
+ secret, secret_len, &quot;&quot;, seed,</span><br><span>                  =
+                      seed_len, output, output_len));</span><br><span>@@ -1=
+002,8 +1002,8 @@</span><br><span>  * @param olen          Length of the out=
+put buffer</span><br><span>  */</span><br><span> static void</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-tls1_P_hash(const mbedtls_md_info_t =
+*md_kt, const uint8_t *sec, int sec_len, const uint8_t *seed,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            int seed_len, uint8_t *=
+out, int olen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls1_=
+P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t sec_len, =
+const uint8_t *seed,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            size_t seed_len, uint8_t *out, size_t olen)</span><br><span> {=
+</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>    =
+ uint8_t A1[MAX_HMAC_KEY_LENGTH];</span><br><span>@@ -1011,7 +1011,7 @@</sp=
+an><br><span> #ifdef ENABLE_DEBUG</span><br><span>     /* used by the D_SHO=
+W_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid unused</span><br><span>   =
+   * variables warnings if compiled with --enable-small */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    const int olen_orig =3D olen;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    const size_t olen_or=
+ig =3D olen;</span><br><span>     const uint8_t *out_orig =3D out;</span><b=
+r><span> #endif</span><br><span> </span><br><span>@@ -1021,7 +1021,7 @@</sp=
+an><br><span>     dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_P_hash sec: %s&quot;, =
+format_hex(sec, sec_len, 0, &amp;gc));</span><br><span>     dmsg(D_SHOW_KEY=
+_SOURCE, &quot;tls1_P_hash seed: %s&quot;, format_hex(seed, seed_len, 0, &a=
+mp;gc));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    int chunk =3D mbedtls_md_get_size(md_kt);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    unsigned int chunk =3D mbedtls_md_get_si=
+ze(md_kt);</span><br><span>     unsigned int A1_len =3D mbedtls_md_get_size=
+(md_kt);</span><br><span> </span><br><span>     /* This is the only place w=
+here we init an HMAC with a key that is not</span><br><span>@@ -1089,8 +108=
+9,8 @@</span><br><span>  * (2) The pre-master secret is generated by the cl=
+ient.</span><br><span>  */</span><br><span> bool</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-ssl_tls1_PRF(const uint8_t *label, int label_len=
+, const uint8_t *sec, int slen, uint8_t *out1,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-             int olen)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8_t *label, size_t label=
+_len, const uint8_t *sec, size_t slen, uint8_t *out1,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+             size_t olen)</span><br><span=
+> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span> =
+    const md_kt_t *md5 =3D md_get(&quot;MD5&quot;);</span><br><span>@@ -109=
+8,7 +1098,7 @@</span><br><span> </span><br><span>     uint8_t *out2 =3D (ui=
+nt8_t *)gc_malloc(olen, false, &amp;gc);</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    int len =3D slen / 2;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    size_t len =3D slen / 2;</sp=
+an><br><span>     const uint8_t *S1 =3D sec;</span><br><span>     const uin=
+t8_t *S2 =3D &amp;(sec[len]);</span><br><span>     len +=3D (slen &amp; 1);=
+ /* add for odd, make longer */</span><br><span>@@ -1106,14 +1106,14 @@</sp=
+an><br><span>     tls1_P_hash(md5, S1, len, label, label_len, out1, olen);<=
+/span><br><span>     tls1_P_hash(sha1, S2, len, label, label_len, out2, ole=
+n);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    for (int i =3D 0; i &lt; olen; i++)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; olen; i++)</span><br><s=
+pan>     {</span><br><span>         out1[i] ^=3D out2[i];</span><br><span> =
+    }</span><br><span> </span><br><span>     secure_memzero(out2, olen);</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dm=
+sg(D_SHOW_KEY_SOURCE, &quot;tls1_PRF out[%d]: %s&quot;, olen, format_hex(ou=
+t1, olen, 0, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_PRF out[%zu]: %s&quot;, olen, fo=
+rmat_hex(out1, olen, 0, &amp;gc));</span><br><span> </span><br><span>     g=
+c_free(&amp;gc);</span><br><span>     return true;</span><br><span>diff --g=
+it a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br>=
+<span>index 4fb6393..98fe37f 100644</span><br><span>--- a/src/openvpn/crypt=
+o_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><s=
+pan>@@ -1341,8 +1341,8 @@</span><br><span> }</span><br><span> #if (OPENSSL_=
+VERSION_NUMBER &gt;=3D 0x30000000L) &amp;&amp; !defined(LIBRESSL_VERSION_NU=
+MBER)</span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret=
+, int secret_len,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+         uint8_t *output, int output_len)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8_t *seed, size_t seed_len, co=
+nst uint8_t *secret, size_t secret_len,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+             uint8_t *output, size_t output_len)</span>=
+<br><span> {</span><br><span>     bool ret =3D true;</span><br><span>     E=
+VP_KDF_CTX *kctx =3D NULL;</span><br><span>@@ -1368,9 +1368,9 @@</span><br>=
+<span>     params[0] =3D</span><br><span>         OSSL_PARAM_construct_utf8=
+_string(OSSL_KDF_PARAM_DIGEST, SN_md5_sha1, strlen(SN_md5_sha1));</span><br=
+><span>     params[1] =3D OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_=
+SECRET, (uint8_t *)secret,</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                                                  (size_t)secret_len);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+                               secret_len);</span><br><span>     params[2] =
+=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        OSSL_PARAM=
+_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)seed, (size_t)seed_=
+len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        OSSL_P=
+ARAM_construct_octet_string(OSSL_KDF_PARAM_SEED, (uint8_t *)seed, seed_len)=
+;</span><br><span>     params[3] =3D OSSL_PARAM_construct_end();</span><br>=
+<span> </span><br><span>     if (EVP_KDF_derive(kctx, output, output_len, p=
+arams) &lt;=3D 0)</span><br><span>@@ -1392,15 +1392,15 @@</span><br><span> =
+}</span><br><span> #elif defined(OPENSSL_IS_AWSLC)</span><br><span> bool</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-ssl_tls1_PRF(const uint8=
+_t *label, int label_len, const uint8_t *sec, int slen, uint8_t *out1,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-             int olen)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint=
+8_t *label, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out=
+1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             size=
+_t olen)</span><br><span> {</span><br><span>     CRYPTO_tls1_prf(EVP_md5_sh=
+a1(), out1, olen, sec, slen, label, label_len, NULL, 0, NULL, 0);</span><br=
+><span> }</span><br><span> #elif !defined(LIBRESSL_VERSION_NUMBER) &amp;&am=
+p; !defined(ENABLE_CRYPTO_WOLFSSL)</span><br><span> bool</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-ssl_tls1_PRF(const uint8_t *seed, int se=
+ed_len, const uint8_t *secret, int secret_len,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-             uint8_t *output, int output_len)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8=
+_t *seed, size_t seed_len, const uint8_t *secret, size_t secret_len,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+             uint8_t *outp=
+ut, size_t output_len)</span><br><span> {</span><br><span>     EVP_PKEY_CTX=
+ *pctx =3D EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);</span><br><span>  =
+   if (!pctx)</span><br><span>@@ -1448,8 +1448,8 @@</span><br><span>  * Ope=
+nSSL does. As result they will only be able to support</span><br><span>  * =
+peers that support TLS EKM like when running with OpenSSL 3.x FIPS */</span=
+><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ssl_t=
+ls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec, int slen, =
+uint8_t *out1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+      int olen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_=
+tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, size_t=
+ slen, uint8_t *out1,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+             size_t olen)</span><br><span> {</span><br><span>     return =
+false;</span><br><span> }</span><br><span>diff --git a/src/openvpn/ssl.c b/=
+src/openvpn/ssl.c</span><br><span>index b7db1e7..c17e608 100644</span><br><=
+span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span>=
+<br><span>@@ -1294,10 +1294,10 @@</span><br><span> }</span><br><span> </spa=
+n><br><span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-openvpn_PRF(const uint8_t *secret, int secret_len, const char *label, co=
+nst uint8_t *client_seed,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            int client_seed_len, const uint8_t *server_seed, int server=
+_seed_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+openvpn_P=
+RF(const uint8_t *secret, size_t secret_len, const char *label, const uint8=
+_t *client_seed,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         size_t client_seed_len, const uint8_t *server_seed, size_t server_=
+seed_len,</span><br><span>             const struct session_id *client_sid,=
+ const struct session_id *server_sid,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            uint8_t *output, int output_len)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            uint8_t *output, size_=
+t output_len)</span><br><span> {</span><br><span>     /* concatenate seed c=
+omponents */</span><br><span> </span><br><span>diff --git a/tests/unit_test=
+s/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br>=
+<span>index 12ddaba..5df1046 100644</span><br><span>--- a/tests/unit_tests/=
+openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_c=
+rypto.c</span><br><span>@@ -161,7 +161,7 @@</span><br><span> </span><br><sp=
+an> </span><br><span>     uint8_t out[32];</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    bool ret =3D ssl_tls1_PRF(seed, (int)seed_len, sec=
+ret, (int)secret_len, out, sizeof(out));</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    bool ret =3D ssl_tls1_PRF(seed, seed_len, secret, =
+secret_len, out, sizeof(out));</span><br><span> </span><br><span> #if defin=
+ed(LIBRESSL_VERSION_NUMBER) || defined(ENABLE_CRYPTO_WOLFSSL)</span><br><sp=
+an>     /* No TLS1 PRF support in these libraries */</span><br><span></span=
+><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1135?usp=3Demail">change 1135</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
+/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
+mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1135?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iff2f4ea677fe2d88659d7814dab=
-0f792f5004fb3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1183 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic88cd6e143bc48cab3c9ebb7c70=
+07513803bd199 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1135 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---gd/KXwN8o6w=--
+--0rnC8WNJd0Q=--
 
