@@ -1,11 +1,15 @@
-From: Marek Mietus <mmietus97@...109...>
-Date: Fri, 12 Sep 2025 13:24:19 +0200
-Message-ID: <20250912112420.4394-3-mmietus97@...109...>
-In-Reply-To: <20250912112420.4394-1-mmietus97@...109...>
-References: <20250912112420.4394-1-mmietus97@...109...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Sep 2025 11:49:59 +0000
+References: <gerrit.1757677796000.I815e68dd5d365743faff2b80783b776d9e8a645c@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f7e996320688902d3b853929ec7fd56d28c9e8fd-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH net-next v2 2/3] net: tunnel: implement
- noref flows in udp_tunnel_xmit_skb
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="kCZhpzupTRw="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Preserve
+ --dhcp-option values from local config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,170 +18,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: netdev@...2909..., antonio@...515..., kuba@...2912...
-Cc: openvpn-devel@lists.sourceforge.net, Marek Mietus <mmietus97@...109...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-In cases where udp_tunnel_xmit_skb is called inside a RCU read-side
-critical section, we can avoid referencing the dst_entry.
+--kCZhpzupTRw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Implement noref variants for udp_tunnel_xmit_skb and iptunnel_xmit to be
-used in noref flows.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Signed-off-by: Marek Mietus <mmietus97@...109...>
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1181?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Preserve --dhcp-option values from local config
+......................................................................
+
+Preserve --dhcp-option values from local config
+
+Commit
+
+  2dfc4f8 ("dns: deal with --dhcp-options when --dns is active")
+
+has changed the way how --dhcp-option values are stored. Instead of
+storing them directly in tuntap_options, they are now stored in
+dns_options->from_dhcp.
+
+Before connect, we save options before --pull is applied, for that
+we call clone_dns_options(). However, this routing was missing cloning
+of from_dhcp struct, and as a result, the values of --dhcp-option from'
+the local config have been lost.
+
+Fix by adding shallow-copying of dhcp_options to clone_dns_options(). It
+is safe to do because it only contains fixed-size arrays, scalar types
+and pointers to the strings which this struct doesn't own.
+
+GitHub: https://github.com/OpenVPN/openvpn/issues/839
+
+Change-Id: I815e68dd5d365743faff2b80783b776d9e8a645c
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- include/net/ip_tunnels.h   |  3 +++
- include/net/udp_tunnel.h   |  4 ++++
- net/ipv4/ip_tunnel_core.c  | 34 +++++++++++++++++++++++++++-------
- net/ipv4/udp_tunnel_core.c | 29 +++++++++++++++++++++++++----
- 4 files changed, 59 insertions(+), 11 deletions(-)
+M src/openvpn/dns.c
+1 file changed, 1 insertion(+), 0 deletions(-)
 
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 8cf1380f3656..6dcea237bf21 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -604,6 +604,9 @@ static inline int iptunnel_pull_header(struct sk_buff *skb, int hdr_len,
- void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
- 		   __be32 src, __be32 dst, u8 proto,
- 		   u8 tos, u8 ttl, __be16 df, bool xnet, u16 ipcb_flags);
-+void iptunnel_xmit_noref(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
-+			 __be32 src, __be32 dst, u8 proto,
-+			 u8 tos, u8 ttl, __be16 df, bool xnet, u16 ipcb_flags);
- struct metadata_dst *iptunnel_metadata_reply(struct metadata_dst *md,
- 					     gfp_t flags);
- int skb_tunnel_check_pmtu(struct sk_buff *skb, struct dst_entry *encap_dst,
-diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
-index 9acef2fbd2fd..033098ebf789 100644
---- a/include/net/udp_tunnel.h
-+++ b/include/net/udp_tunnel.h
-@@ -135,6 +135,10 @@ void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb
- 			 __be32 src, __be32 dst, __u8 tos, __u8 ttl,
- 			 __be16 df, __be16 src_port, __be16 dst_port,
- 			 bool xnet, bool nocheck, u16 ipcb_flags);
-+void udp_tunnel_xmit_skb_noref(struct rtable *rt, struct sock *sk, struct sk_buff *skb,
-+			       __be32 src, __be32 dst, __u8 tos, __u8 ttl,
-+			       __be16 df, __be16 src_port, __be16 dst_port,
-+			       bool xnet, bool nocheck, u16 ipcb_flags);
- 
- void udp_tunnel6_xmit_skb(struct dst_entry *dst, struct sock *sk,
- 			  struct sk_buff *skb,
-diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index cc9915543637..8b03fb380397 100644
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -47,10 +47,10 @@ const struct ip6_tnl_encap_ops __rcu *
- 		ip6tun_encaps[MAX_IPTUN_ENCAP_OPS] __read_mostly;
- EXPORT_SYMBOL(ip6tun_encaps);
- 
--void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
--		   __be32 src, __be32 dst, __u8 proto,
--		   __u8 tos, __u8 ttl, __be16 df, bool xnet,
--		   u16 ipcb_flags)
-+static void __iptunnel_xmit(struct sock *sk, struct rtable *rt,
-+			    struct sk_buff *skb, __be32 src, __be32 dst,
-+			    __u8 proto, __u8 tos, __u8 ttl, __be16 df,
-+			    u16 ipcb_flags)
- {
- 	int pkt_len = skb->len - skb_inner_network_offset(skb);
- 	struct net *net = dev_net(rt->dst.dev);
-@@ -58,10 +58,7 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
- 	struct iphdr *iph;
- 	int err;
- 
--	skb_scrub_packet(skb, xnet);
--
- 	skb_clear_hash_if_not_l4(skb);
--	skb_dst_set(skb, &rt->dst);
- 	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
- 	IPCB(skb)->flags = ipcb_flags;
- 
-@@ -89,8 +86,31 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
- 		iptunnel_xmit_stats(dev, pkt_len);
- 	}
- }
-+
-+void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
-+		   __be32 src, __be32 dst, __u8 proto,
-+		   __u8 tos, __u8 ttl, __be16 df, bool xnet,
-+		   u16 ipcb_flags)
-+{
-+	skb_scrub_packet(skb, xnet);
-+	skb_dst_set(skb, &rt->dst);
-+
-+	__iptunnel_xmit(sk, rt, skb, src, dst, proto, tos, ttl, df, ipcb_flags);
-+}
- EXPORT_SYMBOL_GPL(iptunnel_xmit);
- 
-+void iptunnel_xmit_noref(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
-+			 __be32 src, __be32 dst, __u8 proto,
-+			 __u8 tos, __u8 ttl, __be16 df, bool xnet,
-+			 u16 ipcb_flags)
-+{
-+	skb_scrub_packet(skb, xnet);
-+	skb_dst_set_noref(skb, &rt->dst);
-+
-+	__iptunnel_xmit(sk, rt, skb, src, dst, proto, tos, ttl, df, ipcb_flags);
-+}
-+EXPORT_SYMBOL_GPL(iptunnel_xmit_noref);
-+
- int __iptunnel_pull_header(struct sk_buff *skb, int hdr_len,
- 			   __be16 inner_proto, bool raw_proto, bool xnet)
- {
-diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
-index fce945f23069..c0e9007cf081 100644
---- a/net/ipv4/udp_tunnel_core.c
-+++ b/net/ipv4/udp_tunnel_core.c
-@@ -170,10 +170,9 @@ void udp_tunnel_notify_del_rx_port(struct socket *sock, unsigned short type)
- }
- EXPORT_SYMBOL_GPL(udp_tunnel_notify_del_rx_port);
- 
--void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb,
--			 __be32 src, __be32 dst, __u8 tos, __u8 ttl,
--			 __be16 df, __be16 src_port, __be16 dst_port,
--			 bool xnet, bool nocheck, u16 ipcb_flags)
-+static void udp_tunnel_add_hdr(struct sk_buff *skb, __be32 src,
-+			       __be32 dst, __be16 src_port,
-+			       __be16 dst_port, bool nocheck)
- {
- 	struct udphdr *uh;
- 
-@@ -188,12 +187,34 @@ void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb
- 	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
- 
- 	udp_set_csum(nocheck, skb, src, dst, skb->len);
-+}
-+
-+void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk,
-+			 struct sk_buff *skb, __be32 src, __be32 dst,
-+			 __u8 tos, __u8 ttl, __be16 df, __be16 src_port,
-+			 __be16 dst_port, bool xnet, bool nocheck,
-+			 u16 ipcb_flags)
-+{
-+	udp_tunnel_add_hdr(skb, src, dst, src_port, dst_port, nocheck);
- 
- 	iptunnel_xmit(sk, rt, skb, src, dst, IPPROTO_UDP, tos, ttl, df, xnet,
- 		      ipcb_flags);
- }
- EXPORT_SYMBOL_GPL(udp_tunnel_xmit_skb);
- 
-+void udp_tunnel_xmit_skb_noref(struct rtable *rt, struct sock *sk,
-+			       struct sk_buff *skb, __be32 src, __be32 dst,
-+			       __u8 tos, __u8 ttl, __be16 df, __be16 src_port,
-+			       __be16 dst_port, bool xnet, bool nocheck,
-+			       u16 ipcb_flags)
-+{
-+	udp_tunnel_add_hdr(skb, src, dst, src_port, dst_port, nocheck);
-+
-+	iptunnel_xmit_noref(sk, rt, skb, src, dst, IPPROTO_UDP, tos, ttl, df,
-+			    xnet, ipcb_flags);
-+}
-+EXPORT_SYMBOL_GPL(udp_tunnel_xmit_skb_noref);
-+
- void udp_tunnel_sock_release(struct socket *sock)
- {
- 	rcu_assign_sk_user_data(sock->sk, NULL);
--- 
-2.51.0
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/1181/1
+
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 8554089..5421004 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -264,6 +264,7 @@
+     clone.servers_prepull =3D clone_dns_servers(o->servers_prepull, gc);
+     clone.updown =3D o->updown;
+     clone.updown_flags =3D o->updown_flags;
++    clone.from_dhcp =3D o->from_dhcp;
+
+     return clone;
+ }
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1181?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I815e68dd5d365743faff2b80783b776d9e8a645c
+Gerrit-Change-Number: 1181
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--kCZhpzupTRw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1181?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Preserve --dhcp-option values from local config<br><br>Commi=
+t<br><br>  2dfc4f8 (&quot;dns: deal with --dhcp-options when --dns is activ=
+e&quot;)<br><br>has changed the way how --dhcp-option values are stored. In=
+stead of<br>storing them directly in tuntap_options, they are now stored in=
+<br>dns_options-&gt;from_dhcp.<br><br>Before connect, we save options befor=
+e --pull is applied, for that<br>we call clone_dns_options(). However, this=
+ routing was missing cloning<br>of from_dhcp struct, and as a result, the v=
+alues of --dhcp-option from&#39;<br>the local config have been lost.<br><br=
+>Fix by adding shallow-copying of dhcp_options to clone_dns_options(). It<b=
+r>is safe to do because it only contains fixed-size arrays, scalar types<br=
+>and pointers to the strings which this struct doesn&#39;t own.<br><br>GitH=
+ub: https://github.com/OpenVPN/openvpn/issues/839<br><br>Change-Id: I815e68=
+dd5d365743faff2b80783b776d9e8a645c<br>Signed-off-by: Lev Stipakov &lt;lev@...220...=
+..515...&gt;<br>---<br>M src/openvpn/dns.c<br>1 file changed, 1 insertion(+=
+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn=
+ refs/changes/81/1181/1</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dns.c b/src/openvp=
+n/dns.c</span><br><span>index 8554089..5421004 100644</span><br><span>--- a=
+/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>=
+@@ -264,6 +264,7 @@</span><br><span>     clone.servers_prepull =3D clone_dn=
+s_servers(o-&gt;servers_prepull, gc);</span><br><span>     clone.updown =3D=
+ o-&gt;updown;</span><br><span>     clone.updown_flags =3D o-&gt;updown_fla=
+gs;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    clone.from_d=
+hcp =3D o-&gt;from_dhcp;</span><br><span> </span><br><span>     return clon=
+e;</span><br><span> }</span><br><span></span><br></pre><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/1181?usp=3Demail">change 118=
+1</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1181?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I815e68dd5d365743faff2b80783=
+b776d9e8a645c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1181 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--kCZhpzupTRw=--
 
