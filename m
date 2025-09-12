@@ -1,17 +1,17 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Sep 2025 06:51:34 +0000
-In-Reply-To: <gerrit.1757408812000.Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b@...2715...>
-References: <gerrit.1757408812000.Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b@...2715...>
+Date: Fri, 12 Sep 2025 06:52:09 +0000
+In-Reply-To: <gerrit.1757406065000.I74e2b6aed3c7454e897db57f777e6a191be3d87f@...2715...>
+References: <gerrit.1757406065000.I74e2b6aed3c7454e897db57f777e6a191be3d87f@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <30450931ab46a0f55b20dd7e00e9695443a4c343-EmailReviewComments-HTML@...2715...>
+Message-ID: <971faf1057b5ea8e557f3d3013df348a3088e5b0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+fYNOh1OKuE="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Multi-socket win:
- avoid repeated socket_set()
+Content-Type: multipart/alternative; boundary="R4xYK7PONvs="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix multi-socket
+ and dco-win interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,32 +23,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+fYNOh1OKuE=
+--R4xYK7PONvs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, its_Giaan, plaisthos.
 
 stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1174?usp=3Demail )
+nvpn/+/1173?usp=3Demail )
 
-Change subject: Multi-socket win: avoid repeated socket_set()
+Change subject: Fix multi-socket and dco-win interaction
 ......................................................................
 
 
-Patch Set 3: Code-Review+2
+Patch Set 1: Code-Review+2
+
+(1 comment)
+
+Patchset:
+
+PS1:
+Indeed it was broken before the fix and not broken now.
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c23c17c04e6e9b
-Gerrit-Change-Number: 1174
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: I74e2b6aed3c7454e897db57f777e6a191be3d87f
+Gerrit-Change-Number: 1173
+Gerrit-PatchSet: 1
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -57,35 +65,41 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 12 Sep 2025 06:51:34 +0000
-Gerrit-HasComments: No
+Gerrit-Comment-Date: Fri, 12 Sep 2025 06:52:09 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---+fYNOh1OKuE=
+--R4xYK7PONvs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, its_Giaan, plaistho=
 s. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail=
-">change 1174</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1174?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1173?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1173?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">Indeed it was broken before the fix and not =
+broken now.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1173?usp=3Demail">change 1173</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/1173?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia389fcec50fb2bbc0aa5ad41a2c=
-23c17c04e6e9b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1174 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I74e2b6aed3c7454e897db57f777=
+e6a191be3d87f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1173 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -102,12 +116,12 @@ ts.sourceforge.net&gt; </div>
 726...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Sep 2025 06:51:34=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Sep 2025 06:52:09=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---+fYNOh1OKuE=--
+--R4xYK7PONvs=--
 
