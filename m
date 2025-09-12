@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Sep 2025 15:36:42 +0000
+Date: Fri, 12 Sep 2025 15:36:40 +0000
 In-Reply-To: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
 References: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <73e80c0abc4c0fd3c578b1e3c530bc53fa4fedde-HTML@...2715...>
+Message-ID: <73e80c0abc4c0fd3c578b1e3c530bc53fa4fedde-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4kf66h91MP0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Di0wRq14b8A="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: push-update-server:
  comment about buf_string_compare_advance() usage ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4kf66h91MP0=
+--Di0wRq14b8A=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-77?usp=3Demail )
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: push-update-server: comment about buf_string_compare_advanc=
 e() usage in send_single_push_update()
@@ -48,7 +52,7 @@ M src/openvpn/push_util.c
 1 file changed, 4 insertions(+), 0 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1177/4
 
 diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
 index bd3992b..f7a4fca 100644
@@ -82,15 +86,17 @@ Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---4kf66h91MP0=
+--Di0wRq14b8A=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1177?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
+eated by mrbff.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
 pace; white-space: pre-wrap;">push-update-server: comment about buf_string_=
 compare_advance() usage in send_single_push_update()<br><br>Change-Id: I73f=
 8ad9bf105920f4bde357ea9dcf0e485f3f3cb<br>Signed-off-by: Marco Baffo &lt;mar=
@@ -99,32 +105,33 @@ r>Message-Id: &lt;20250912131519.43222-1-frank@...2641...&gt;<br>URL: https=
 ://sourceforge.net/p/openvpn/mailman/message/59232447/<br>URL: https://gerr=
 it.openvpn.net/c/openvpn/+/1177<br>Signed-off-by: Gert Doering &lt;gert@...493...=
 1296...&gt;<br>---<br>M src/openvpn/push_util.c<br>1 file changed, 4 insert=
-ions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c</span><br=
-><span>index bd3992b..f7a4fca 100644</span><br><span>--- a/src/openvpn/push=
-_util.c</span><br><span>+++ b/src/openvpn/push_util.c</span><br><span>@@ -1=
-61,6 +161,10 @@</span><br><span>          * will not be routed towards the =
-client.</span><br><span>          * For the same reason we later update the=
- vhash too in</span><br><span>          * `send_push_update()` function.</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+         * Using `buf_=
-string_compare_advance()` we mimic the behavior</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+         * inside `process_incoming_push_msg()`=
-. However, we don&#39;t need</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+         * to check the return value here because we just want to =
-`advance`,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-* meaning we skip the `push_update_cmd&#39; we added earlier.</span><br><sp=
-an>          */</span><br><span>         buf_string_compare_advance(&amp;ms=
-gs[i], push_update_cmd);</span><br><span>         if (process_incoming_push=
-_update(c, pull_permission_mask(c), option_types_found, &amp;msgs[i], true)=
- =3D=3D PUSH_MSG_ERROR)</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail">change 1=
-177</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+ions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/77/1177/4</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/push_util.c =
+b/src/openvpn/push_util.c</span><br><span>index bd3992b..f7a4fca 100644</sp=
+an><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/openvp=
+n/push_util.c</span><br><span>@@ -161,6 +161,10 @@</span><br><span>        =
+  * will not be routed towards the client.</span><br><span>          * For =
+the same reason we later update the vhash too in</span><br><span>          =
+* `send_push_update()` function.</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+         * Using `buf_string_compare_advance()` we mimic the b=
+ehavior</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * i=
+nside `process_incoming_push_msg()`. However, we don&#39;t need</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+         * to check the return =
+value here because we just want to `advance`,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+         * meaning we skip the `push_update_cmd&#=
+39; we added earlier.</span><br><span>          */</span><br><span>        =
+ buf_string_compare_advance(&amp;msgs[i], push_update_cmd);</span><br><span=
+>         if (process_incoming_push_update(c, pull_permission_mask(c), opti=
+on_types_found, &amp;msgs[i], true) =3D=3D PUSH_MSG_ERROR)</span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1177?usp=3Demail">change 1177</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -140,8 +147,8 @@ cf0e485f3f3cb </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---4kf66h91MP0=--
+--Di0wRq14b8A=--
 
