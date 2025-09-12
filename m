@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 12 Sep 2025 09:47:03 +0000
-In-Reply-To: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
-References: <gerrit.1757600733000.I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <c7177217a989d0256382e6126b91e13250ce27fb-EmailReviewComments-HTML@...2715...>
+From: Marek Mietus <mmietus97@...109...>
+Date: Fri, 12 Sep 2025 13:24:17 +0200
+Message-ID: <20250912112420.4394-1-mmietus97@...109...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="saEywsP2gQo="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: push-update-server:
- comment about buf_string_compare_advance() usage ...
+References: <20250912112420.4394-1-mmietus97.ref@...109...>
+Subject: [Openvpn-devel] [PATCH net-next v2 0/3] net: tunnel: introduce
+ noref xmit flows for tunnels
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,88 +13,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: netdev@...2909..., antonio@...515..., kuba@...2912...
+Cc: openvpn-devel@lists.sourceforge.net, Marek Mietus <mmietus97@...109...>
 
---saEywsP2gQo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Currently, all xmit flows use dst_cache in a way that references
+its dst_entry for each xmitted packet. These atomic operations
+are redundant in some flows.
 
-Attention is currently required from: mrbff, plaisthos.
+This patchset introduces new noref xmit helpers, and incorporates
+them in the OpenVPN driver.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/1177?usp=3Demail )
+Changes in v2:
+ - Fixed docstrings for dst_cache_get_ip4_rcu and dst_cache_steal_ip4
 
-Change subject: push-update-server: comment about buf_string_compare_advanc=
-e() usage in send_single_push_update()
-......................................................................
+Link to v1: https://lore.kernel.org/netdev/20250909054333.12572-1-mmietus97@...109.../
+-- 
+2.51.0
 
-
-Patch Set 3: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I73f8ad9bf105920f4bde357ea9dcf0e485f3f3cb
-Gerrit-Change-Number: 1177
-Gerrit-PatchSet: 3
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Fri, 12 Sep 2025 09:47:03 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---saEywsP2gQo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: mrbff, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail=
-">change 1177</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1177?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I73f8ad9bf105920f4bde357ea9d=
-cf0e485f3f3cb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1177 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 12 Sep 2025 09:47:03=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---saEywsP2gQo=--
 
