@@ -1,16 +1,10 @@
-Date: Sat, 13 Sep 2025 22:41:02 +0200
+Date: Sun, 14 Sep 2025 14:07:42 +0200 (CEST)
+Message-Id: <202509141207.58EC7gcA086051@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <aMXW3jwQJ9TyvOae@...1296...>
-References: <65233605-9738-4B2C-8401-37AA5C43D797@...2913...>
- <aMWo1HvleNGzIEDO@...1296...>
- <E4C462D1-FB86-40BE-B218-C0242E946FFD@...2913...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="z7yLDQ2PjZg0RMS/"
-Content-Disposition: inline
-In-Reply-To: <E4C462D1-FB86-40BE-B218-C0242E946FFD@...2913...>
-Subject: Re: [Openvpn-devel] [PATCH] Bugfix: Set broadcast address on
- interface
+In-Reply-To: <20250912131056.42342-1-frank@...2641...>
+References: <20250912131056.42342-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix multi-socket and dco-win
+ interaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,83 +13,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Sebastian Marsching <sebastian@...2913...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---z7yLDQ2PjZg0RMS/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+So, we discussed the background of this on IRC for quite a bit - with
+the multisocket patch, there is a disconnect between ce->proto
+("reflects the global 'proto' setting in the config") and the
+ce->local_list->array[*]->proto values ("one for each 'local' statement").
 
-Hi,
+For servers, it depends a bit on how the server config is set up, but
+if you do
 
-On Sat, Sep 13, 2025 at 10:10:41PM +0200, Sebastian Marsching wrote:
-> Thanks for pointing me to the netbits_to_netmask function. Using this fun=
-ction, the code looks so much cleaner. See the updated patch below.
+  --proto udp (default)
+  --local * 443 tcp
 
-Close...
+the "tcp" part will not be visible in ce->proto.
 
-> @@ -760,6 +761,7 @@ sitnl_addr_set(int cmd, uint32_t flags, int ifindex, =
-sa_family_t af_family,
->  {
->      struct sitnl_addr_req req;
->      uint32_t size;
-> +    inet_address_t broadcast;
->      int ret =3D -EINVAL;
->=20=20
->      CLEAR(req);
-> @@ -803,6 +805,13 @@ sitnl_addr_set(int cmd, uint32_t flags, int ifindex,=
- sa_family_t af_family,
->          SITNL_ADDATTR(&req.n, sizeof(req), IFA_LOCAL, local, size);
->      }
->=20=20
-> +    if (af_family =3D=3D AF_INET && local && !remote && prefixlen <=3D 3=
-0)
-> +    {
-> +        broadcast =3D *local;
-> +        broadcast.ipv4 |=3D htonl(~netbits_to_netmask(prefixlen));
-> +        SITNL_ADDATTR(&req.n, sizeof(req), IFA_BROADCAST, &broadcast, si=
-ze);
+If there is *no* "local" statement (just lport + bind), the code will
+synthesize local_list->array[0] from the config settings provided - so
+whatever happens, for a server config, array[0]->proto contains the
+protocol for the first listening socket requested.
 
-... but we do want local-scoped things to be declared locally (C99), so
+Lev has actually tested this, while I've discussed it at length to
+understand the subtle differences - written up for the benefit of
+the archives.
 
-  +        inet_address_t broadcast =3D *local;
 
-here (SITNL_ADDATTR() will copy the struct content, not the reference).
+Again, mail-archive.org refuses to acknowledge that this mail was ever
+sent, so referencing sf.net + gerrit.
 
-When sending a v3, can you send that with "git send-email -v3" in
-its own mail, "--in-reply-to <this_thread>"?  This makes it easy to
-see which version is the latest.
+Your patch has been applied to the master branch.
 
-thanks,
+commit 864bb498ef7a15eb256cbe6013350e76ae96c32b
+Author: Gianmarco De Gregori
+Date:   Fri Sep 12 15:10:56 2025 +0200
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Fix multi-socket and dco-win interaction
 
-Gert Doering - Munich, Germany                             gert@...1296...
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20250912131056.42342-1-frank@...2641...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59232442/
+     URL: https://gerrit.openvpn.net/c/openvpn/+/1173
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---z7yLDQ2PjZg0RMS/
-Content-Type: application/pgp-signature; name=signature.asc
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJoxdbeAAoJEB2Cnv7KVigS3o8MAJuUI0QXI61iyvGrQZFyoyjb
-TC100Q5rMS67j7RHEmLYwarYyiydo3n39c+rrQzHGS9UUphq8X2uE8hM2FDSR1o4
-lyl70UKHV4jGJh7RMQ5Y3BAuhJTNXYbvJgDiySv6PB0vnD8xybg1Kq+myWdYz2Q/
-1aXhE6J0aBiQtBhvWpIoA/h8+thhc5GwALI7NnVqlT3M491HLleWZ4arrubOZEYD
-NhwPlPJnNTw9WqKhfNwV6UqcnIL+R8Ru7Cg3gnCysC4Ha3qW861KjUjQVH9/psmX
-SMYGKI3n+ujbQBvHgmv7b13gi0YcedNA1cwjhZcYNTKggls+4n77hHLieIsK/8pR
-L/K86KBWS11URKPaf05N/kpbgsuPlHE5cj+69Jc3J6doy11RrBuKWsK6/Lba1VHJ
-TqGY1k+C9DtApmYfVbS1DdOyOdUeDsP+9ONwsFsKWWa0JBlNbC5OzCIRM9Eu/E4W
-3EmX262hNs9hv8BNUGGjLcwMH1OjkjMQUVZgAfZvKA==
-=YBgi
------END PGP SIGNATURE-----
+Gert Doering
 
---z7yLDQ2PjZg0RMS/--
 
