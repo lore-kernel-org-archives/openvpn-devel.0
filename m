@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 14 Sep 2025 19:46:29 +0200
-Message-ID: <20250914174638.6867-1-gert@...1296...>
-In-Reply-To: <gerrit.1754490554000.Ifc183e42b190e19e1d8c351d1cd460a038626e63@...2715...>
-References: <gerrit.1754490554000.Ifc183e42b190e19e1d8c351d1cd460a038626e63@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 14 Sep 2025 19:54:50 +0000
+In-Reply-To: <gerrit.1757684109000.Iff2f4ea677fe2d88659d7814dab0f792f5004fb3@...2715...>
+References: <gerrit.1757684109000.Iff2f4ea677fe2d88659d7814dab0f792f5004fb3@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <523c35953ddf97b7e1db2f10f58c404a7ce42cd6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] manage: Change command_line_* API to use
- size_t for lengths
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="p9pUo+EWgQ0="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: win: replace
+ wmic invocation with powershell
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,92 +20,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--p9pUo+EWgQ0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The used functions already expect this.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-Change-Id: Ifc183e42b190e19e1d8c351d1cd460a038626e63
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1183?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: win: replace wmic invocation with powershell
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1136
-This mail reflects revision 5 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 2: Code-Review+1
 
-        
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 16b1b73..9750d58 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2247,7 +2247,7 @@
-         bool processed_command = false;
- 
-         ASSERT(len <= (int)sizeof(buf));
--        command_line_add(man->connection.in, buf, len);
-+        command_line_add(man->connection.in, buf, (size_t)len);
- 
-         /*
-          * Reset output object
-@@ -3786,7 +3786,7 @@
-  */
- 
- struct command_line *
--command_line_new(const int buf_len)
-+command_line_new(const size_t buf_len)
- {
-     struct command_line *cl;
-     ALLOC_OBJ_CLEAR(cl, struct command_line);
-@@ -3816,10 +3816,9 @@
- }
- 
- void
--command_line_add(struct command_line *cl, const unsigned char *buf, const int len)
-+command_line_add(struct command_line *cl, const unsigned char *buf, const size_t len)
- {
--    int i;
--    for (i = 0; i < len; ++i)
-+    for (size_t i = 0; i < len; ++i)
-     {
-         if (buf[i] && char_class(buf[i], (CC_PRINT | CC_NEWLINE)))
-         {
-@@ -3834,10 +3833,9 @@
- const char *
- command_line_get(struct command_line *cl)
- {
--    int i;
-     const char *ret = NULL;
- 
--    i = buf_substring_len(&cl->buf, '\n');
-+    int i = buf_substring_len(&cl->buf, '\n');
-     if (i >= 0)
-     {
-         buf_copy_excess(&cl->residual, &cl->buf, i);
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 01d180a..e234df7 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -83,11 +83,11 @@
-     struct buffer residual;
- };
- 
--struct command_line *command_line_new(const int buf_len);
-+struct command_line *command_line_new(const size_t buf_len);
- 
- void command_line_free(struct command_line *cl);
- 
--void command_line_add(struct command_line *cl, const unsigned char *buf, const int len);
-+void command_line_add(struct command_line *cl, const unsigned char *buf, const size_t len);
- 
- const char *command_line_get(struct command_line *cl);
- 
+(1 comment)
+
+Patchset:
+
+PS2:
+I have tested this on win11 24h2 / arm64.
+
+With 2.6.14 "standard" and DCO, setting DNS domain does not work (no useful=
+ error log findable though, see github #842).  Stopping the service, replac=
+ing openvpnsrv.exe with one from Lev's repo, and restarting, makes DNS doma=
+in work.
+
+Did not test running openvpn.exe in privileged mode.
+
+For a +2 someone who understands this better should do an actual review ;-)
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Iff2f4ea677fe2d88659d7814dab0f792f5004fb3
+Gerrit-Change-Number: 1183
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Sun, 14 Sep 2025 19:54:50 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--p9pUo+EWgQ0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1183?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">I have tested this on win11 24h2 / arm64.</p=
+><p style=3D"white-space: pre-wrap; word-wrap: break-word;">With 2.6.14 &qu=
+ot;standard&quot; and DCO, setting DNS domain does not work (no useful erro=
+r log findable though, see github #842).  Stopping the service, replacing o=
+penvpnsrv.exe with one from Lev&#39;s repo, and restarting, makes DNS domai=
+n work.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Did n=
+ot test running openvpn.exe in privileged mode.</p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">For a +2 someone who understands this be=
+tter should do an actual review ;-)</p></li></ul></li></ul><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail">change=
+ 1183</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1183?usp=3Demail"/><meta itemprop=3D"n=
+ame" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iff2f4ea677fe2d88659d7814dab=
+0f792f5004fb3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1183 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 14 Sep 2025 19:54:50=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--p9pUo+EWgQ0=--
 
