@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 14 Sep 2025 15:47:08 +0200
-Message-ID: <20250914134713.19315-1-gert@...1296...>
-In-Reply-To: <gerrit.1756814708000.I0f2fff8358d4645c4ace504c65ae8559a68794cc@...2715...>
-References: <gerrit.1756814708000.I0f2fff8358d4645c4ace504c65ae8559a68794cc@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 14 Sep 2025 13:51:10 +0000
+In-Reply-To: <gerrit.1753360288000.I0272b709b907545de05bfded03a649b259ce5af6@...2715...>
+References: <gerrit.1753360288000.I0272b709b907545de05bfded03a649b259ce5af6@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <4e694159041bac07da7a3ff8fd460d072be9edb5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] ps: Clean up conversion warnings in
- journal_add function
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="IusTGUml/8A="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: events: Make sure
+ rwflags are treated as unsigned
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,75 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--IusTGUml/8A=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since these are only local variables, these are trivial
-changes.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I0f2fff8358d4645c4ace504c65ae8559a68794cc
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
----
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1107?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: events: Make sure rwflags are treated as unsigned
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1163
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 10: Code-Review+2
 
-        
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index eae03e3..e95a33b 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -334,26 +334,22 @@
- static void
- journal_add(const char *journal_dir, struct proxy_connection *pc, struct proxy_connection *cp)
- {
--    struct gc_arena gc = gc_new();
-     struct openvpn_sockaddr from, to;
--    socklen_t slen, dlen;
--    int fnlen;
--    char *jfn;
--    int fd;
- 
--    slen = sizeof(from.addr);
--    dlen = sizeof(to.addr);
-+    socklen_t slen = sizeof(from.addr);
-+    socklen_t dlen = sizeof(to.addr);
-     if (!getpeername(pc->sd, (struct sockaddr *)&from.addr.sa, &slen)
-         && !getsockname(cp->sd, (struct sockaddr *)&to.addr.sa, &dlen))
-     {
-+        struct gc_arena gc = gc_new();
-         const char *f = print_openvpn_sockaddr(&from, &gc);
-         const char *t = print_openvpn_sockaddr(&to, &gc);
--        fnlen = strlen(journal_dir) + strlen(t) + 2;
--        jfn = (char *)malloc(fnlen);
-+        size_t fnlen = strlen(journal_dir) + strlen(t) + 2;
-+        char *jfn = (char *)malloc(fnlen);
-         check_malloc_return(jfn);
-         snprintf(jfn, fnlen, "%s/%s", journal_dir, t);
-         dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: client origin %s -> %s", jfn, f);
--        fd = platform_open(jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP);
-+        int fd = platform_open(jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP);
-         if (fd != -1)
-         {
-             if (write(fd, f, strlen(f)) != strlen(f))
-@@ -368,8 +364,8 @@
-             msg(M_WARN | M_ERRNO, "PORT SHARE: unable to write journal file in %s", jfn);
-             free(jfn);
-         }
-+        gc_free(&gc);
-     }
--    gc_free(&gc);
- }
- 
- /*
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I0272b709b907545de05bfded03a649b259ce5af6
+Gerrit-Change-Number: 1107
+Gerrit-PatchSet: 10
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 14 Sep 2025 13:51:10 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--IusTGUml/8A=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demail">=
+View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demai=
+l">change 1107</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
+cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
+"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demail"/><meta itemp=
+rop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0272b709b907545de05bfded03a=
+649b259ce5af6 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1107 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 14 Sep 2025 13:51:10=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--IusTGUml/8A=--
 
