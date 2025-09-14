@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 14 Sep 2025 13:51:10 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 14 Sep 2025 15:51:20 +0200
+Message-ID: <20250914135128.19621-1-gert@...1296...>
 In-Reply-To: <gerrit.1753360288000.I0272b709b907545de05bfded03a649b259ce5af6@...2715...>
 References: <gerrit.1753360288000.I0272b709b907545de05bfded03a649b259ce5af6@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4e694159041bac07da7a3ff8fd460d072be9edb5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IusTGUml/8A="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: events: Make sure
- rwflags are treated as unsigned
+Subject: [Openvpn-devel] [PATCH v10] events: Make sure rwflags are treated
+ as unsigned
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +14,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---IusTGUml/8A=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+event_set_return.rwflags is already unsigned, make sure the
+flags are as well to avoid spurious conversion warnings.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1107?usp=3Demail )
+Requires to change rwflags in proxy_connection struct as
+well since those use the same flags.
 
-Change subject: events: Make sure rwflags are treated as unsigned
-......................................................................
+Change-Id: I0272b709b907545de05bfded03a649b259ce5af6
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 10: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1107
+This mail reflects revision 10 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0272b709b907545de05bfded03a649b259ce5af6
-Gerrit-Change-Number: 1107
-Gerrit-PatchSet: 10
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 14 Sep 2025 13:51:10 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---IusTGUml/8A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demail">=
-View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demai=
-l">change 1107</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1107?usp=3Demail"/><meta itemp=
-rop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0272b709b907545de05bfded03a=
-649b259ce5af6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1107 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 14 Sep 2025 13:51:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---IusTGUml/8A=--
+        
+diff --git a/src/openvpn/event.h b/src/openvpn/event.h
+index 8422996..8a89a25 100644
+--- a/src/openvpn/event.h
++++ b/src/openvpn/event.h
+@@ -35,8 +35,8 @@
+ #define WRITE_SHIFT 1
+ 
+ #define EVENT_UNDEF 4
+-#define EVENT_READ  (1 << READ_SHIFT)
+-#define EVENT_WRITE (1 << WRITE_SHIFT)
++#define EVENT_READ  (1u << READ_SHIFT)
++#define EVENT_WRITE (1u << WRITE_SHIFT)
+ 
+ /* event flags returned by io_wait.
+  *
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index eae03e3..b4199c3 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -70,7 +70,7 @@
+     struct proxy_connection *counterpart;
+     struct buffer buf;
+     bool buffer_initial;
+-    int rwflags;
++    unsigned int rwflags;
+     int sd;
+     char *jfn;
+ };
+@@ -391,12 +391,12 @@
+ }
+ 
+ static inline void
+-proxy_connection_io_requeue(struct proxy_connection *pc, const int rwflags_new,
++proxy_connection_io_requeue(struct proxy_connection *pc, const unsigned int rwflags_new,
+                             struct event_set *es)
+ {
+     if (socket_defined(pc->sd) && pc->rwflags != rwflags_new)
+     {
+-        /*dmsg (D_PS_PROXY_DEBUG, "PORT SHARE PROXY: requeue[%d] rwflags=%d", (int)pc->sd,
++        /*dmsg (D_PS_PROXY_DEBUG, "PORT SHARE PROXY: requeue[%d] rwflags=%u", (int)pc->sd,
+          * rwflags_new);*/
+         event_ctl(es, pc->sd, rwflags_new, (void *)pc);
+         pc->rwflags = rwflags_new;
+@@ -656,7 +656,7 @@
+  * Decide how the receipt of an EAGAIN status should affect our next IO queueing.
+  */
+ static bool
+-proxy_connection_io_status(const int status, int *rwflags_pc, int *rwflags_cp)
++proxy_connection_io_status(const int status, unsigned int *rwflags_pc, unsigned int *rwflags_cp)
+ {
+     switch (status)
+     {
+@@ -687,12 +687,13 @@
+  * in the proxied connection.
+  */
+ static int
+-proxy_connection_io_dispatch(struct proxy_connection *pc, const int rwflags, struct event_set *es)
++proxy_connection_io_dispatch(struct proxy_connection *pc, const unsigned int rwflags,
++                             struct event_set *es)
+ {
+     const int max_transfer_per_iteration = 10000;
+     struct proxy_connection *cp = pc->counterpart;
+-    int rwflags_pc = pc->rwflags;
+-    int rwflags_cp = cp->rwflags;
++    unsigned int rwflags_pc = pc->rwflags;
++    unsigned int rwflags_cp = cp->rwflags;
+ 
+     ASSERT(pc->defined && cp->defined && cp->counterpart == pc);
+ 
 
