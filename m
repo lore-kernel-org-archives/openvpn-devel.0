@@ -1,11 +1,13 @@
+Date: Mon, 15 Sep 2025 15:15:22 +0200
 From: Gert Doering <gert@...1296...>
-Date: Mon, 15 Sep 2025 15:03:38 +0200
-Message-ID: <20250915130344.2906-1-gert@...1296...>
-In-Reply-To: <gerrit.1757941198000.Ibb126e9ca4548aeb8b60df226e37c9b414698247@...2715...>
-References: <gerrit.1757941198000.Ibb126e9ca4548aeb8b60df226e37c9b414698247@...2715...>
+Message-ID: <aMgRai46hBXHnzSy@...1296...>
+References: <CAH+fs=9O0-SdY=A3ujsV+bmcG2m64jeJ-rbCKqzGNuWp-d5rFw@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] win: replace wmic invocation with
- powershell
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="/lW9zEW0ELy0k4iK"
+Content-Disposition: inline
+In-Reply-To: <CAH+fs=9O0-SdY=A3ujsV+bmcG2m64jeJ-rbCKqzGNuWp-d5rFw@...278...>
+Subject: Re: [Openvpn-devel] GCC15 errors (Debian, openvpn3)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,116 +16,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Marc Leeman <marc.leeman@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+--/lW9zEW0ELy0k4iK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Since wmic has been recently deprecated and is absent on new
-systems, replace setting DNS domain "old-style" with powershell.
+Hi,
 
-This is based on 2.6 patch which replaces wmic with powershell
+On Mon, Sep 15, 2025 at 01:33:30PM +0200, Marc Leeman wrote:
+> FYI, i've received a couple bugs wrt GCC15. For gdbuspp, I'll demote
+> the free-no-heap error atm, still need to look into the second error.
+>=20
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1114118
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1114248
 
-    d383d6e "win: replace wmic invocation with powershell"
+JFTR, this is about openvpn3-linux -> David, can you have a look?
 
-except that here we only touch openvpn process code. There is no
-wmic calls in 2.7 service.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Github: fixes OpenVPN/openvpn#642
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Change-Id: Ibb126e9ca4548aeb8b60df226e37c9b414698247
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
----
+--/lW9zEW0ELy0k4iK
+Content-Type: application/pgp-signature; name=signature.asc
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+-----BEGIN PGP SIGNATURE-----
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1187
-This mail reflects revision 1 of this Change.
+iQGcBAEBAgAGBQJoyBFqAAoJEB2Cnv7KVigS7DkL+wQCC0VmOfEDhhL6mBUlEj7t
+nGs88ibf2dGjvDSI6DYtEfFS2sPYmZkKefmZ/tAkQM88mnVAZNElTvgrZsIkJypu
+Z+mcqTiC755rpOWE5JOT5I64ItGTS9f4QHhUYyQwzLPBKhlWI5VYf3AJ+tMND5cR
+bajrQ2hTFF7buwAw8/jqX8+lNJVeUDSBpw9FPT+s5o8u4NCVYXr9b+Doe+KuQ1ED
+xbQ5fLTPegREZGwgP8uALjW1XIgptF5Zp8K8EhGEWV/QAzcMwnZdjuqVaXUCS5Gn
+GKoxfC9YiF1ht6wXF4htMeac9keXesEDN721yijZlTLoZrkuCmkkTeW04APZ88xG
+Ior8wXDL3tGdgHmZHWvY0ypUZN8E2dElCZdE5tVRnwsBWy8hKwKkYljbHLFJngyt
+ihD5DXEPKEaDP3zSsXp6jkDFVhfWclkmvDll4KlKgHE4n6W4q6Qjvi+JIxERqj+g
+wmRpIzOgOFtM5urhWtkVeqC2YBREL3F1rwxUC3/h+Q==
+=dVNd
+-----END PGP SIGNATURE-----
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-
-        
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 29f74a2..ee0733a 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -405,7 +405,7 @@
- }
- 
- static void
--do_dns_domain_wmic(bool add, const struct tuntap *tt)
-+do_dns_domain_pwsh(bool add, const struct tuntap *tt)
- {
-     if (!tt->options.domain)
-     {
-@@ -413,10 +413,13 @@
-     }
- 
-     struct argv argv = argv_new();
--    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=%ld) call SetDNSDomain '%s'",
--                get_win_sys_path(), WMIC_PATH_SUFFIX, tt->adapter_index,
-+    argv_printf(&argv,
-+                "%s%s -NoProfile -NonInteractive -Command Set-DnsClient -InterfaceIndex %lu -ConnectionSpecificSuffix '%s'",
-+                get_win_sys_path(),
-+                POWERSHELL_PATH_SUFFIX,
-+                tt->adapter_index,
-                 add ? tt->options.domain : "");
--    exec_command("WMIC", &argv, 1, M_WARN);
-+    exec_command("PowerShell", &argv, 1, M_WARN);
- 
-     argv_free(&argv);
- }
-@@ -1208,7 +1211,7 @@
- 
-         if (!tt->did_ifconfig_setup)
-         {
--            do_dns_domain_wmic(true, tt);
-+            do_dns_domain_pwsh(true, tt);
-         }
-     }
- #else  /* platforms we have no IPv6 code for */
-@@ -1527,7 +1530,7 @@
-                            NI_IP_NETMASK | NI_OPTIONS);
-         }
- 
--        do_dns_domain_wmic(true, tt);
-+        do_dns_domain_pwsh(true, tt);
-     }
- 
- 
-@@ -6547,7 +6550,7 @@
-         {
-             if (!tt->did_ifconfig_setup)
-             {
--                do_dns_domain_wmic(false, tt);
-+                do_dns_domain_pwsh(false, tt);
-             }
- 
-             netsh_delete_address_dns(tt, true, &gc);
-@@ -6574,7 +6577,7 @@
-         }
-         else
-         {
--            do_dns_domain_wmic(false, tt);
-+            do_dns_domain_pwsh(false, tt);
- 
-             if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-             {
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index dbfa5bc..ff3145a 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -40,7 +40,7 @@
- #define WIN_ROUTE_PATH_SUFFIX    "\\system32\\route.exe"
- #define WIN_IPCONFIG_PATH_SUFFIX "\\system32\\ipconfig.exe"
- #define WIN_NET_PATH_SUFFIX      "\\system32\\net.exe"
--#define WMIC_PATH_SUFFIX         "\\system32\\wbem\\wmic.exe"
-+#define POWERSHELL_PATH_SUFFIX   "\\system32\\WindowsPowerShell\\v1.0\\powershell.exe"
- 
- /*
-  * Win32-specific OpenVPN code, targeted at the mingw
+--/lW9zEW0ELy0k4iK--
 
