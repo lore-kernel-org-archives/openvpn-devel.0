@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 15 Sep 2025 13:03:24 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 15 Sep 2025 15:03:38 +0200
+Message-ID: <20250915130344.2906-1-gert@...1296...>
 In-Reply-To: <gerrit.1757941198000.Ibb126e9ca4548aeb8b60df226e37c9b414698247@...2715...>
 References: <gerrit.1757941198000.Ibb126e9ca4548aeb8b60df226e37c9b414698247@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <067dbab46db36cf6614805a6a4666a29b21ca42a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kjCwTgoijGM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: win: replace wmic
- invocation with powershell
+Subject: [Openvpn-devel] [PATCH v1] win: replace wmic invocation with
+ powershell
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,94 +14,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---kjCwTgoijGM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Since wmic has been recently deprecated and is absent on new
+systems, replace setting DNS domain "old-style" with powershell.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1187?usp=3Demail )
+This is based on 2.6 patch which replaces wmic with powershell
 
-Change subject: win: replace wmic invocation with powershell
-......................................................................
+    d383d6e "win: replace wmic invocation with powershell"
 
+except that here we only touch openvpn process code. There is no
+wmic calls in 2.7 service.
 
-Patch Set 1: Code-Review+2
+Github: fixes OpenVPN/openvpn#642
 
+Change-Id: Ibb126e9ca4548aeb8b60df226e37c9b414698247
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1187?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ibb126e9ca4548aeb8b60df226e37c9b414698247
-Gerrit-Change-Number: 1187
-Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 15 Sep 2025 13:03:24 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1187
+This mail reflects revision 1 of this Change.
 
---kjCwTgoijGM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1187?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1187?usp=3Demail=
-">change 1187</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1187?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibb126e9ca4548aeb8b60df226e3=
-7c9b414698247 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1187 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 15 Sep 2025 13:03:24=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---kjCwTgoijGM=--
+        
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 29f74a2..ee0733a 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -405,7 +405,7 @@
+ }
+ 
+ static void
+-do_dns_domain_wmic(bool add, const struct tuntap *tt)
++do_dns_domain_pwsh(bool add, const struct tuntap *tt)
+ {
+     if (!tt->options.domain)
+     {
+@@ -413,10 +413,13 @@
+     }
+ 
+     struct argv argv = argv_new();
+-    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=%ld) call SetDNSDomain '%s'",
+-                get_win_sys_path(), WMIC_PATH_SUFFIX, tt->adapter_index,
++    argv_printf(&argv,
++                "%s%s -NoProfile -NonInteractive -Command Set-DnsClient -InterfaceIndex %lu -ConnectionSpecificSuffix '%s'",
++                get_win_sys_path(),
++                POWERSHELL_PATH_SUFFIX,
++                tt->adapter_index,
+                 add ? tt->options.domain : "");
+-    exec_command("WMIC", &argv, 1, M_WARN);
++    exec_command("PowerShell", &argv, 1, M_WARN);
+ 
+     argv_free(&argv);
+ }
+@@ -1208,7 +1211,7 @@
+ 
+         if (!tt->did_ifconfig_setup)
+         {
+-            do_dns_domain_wmic(true, tt);
++            do_dns_domain_pwsh(true, tt);
+         }
+     }
+ #else  /* platforms we have no IPv6 code for */
+@@ -1527,7 +1530,7 @@
+                            NI_IP_NETMASK | NI_OPTIONS);
+         }
+ 
+-        do_dns_domain_wmic(true, tt);
++        do_dns_domain_pwsh(true, tt);
+     }
+ 
+ 
+@@ -6547,7 +6550,7 @@
+         {
+             if (!tt->did_ifconfig_setup)
+             {
+-                do_dns_domain_wmic(false, tt);
++                do_dns_domain_pwsh(false, tt);
+             }
+ 
+             netsh_delete_address_dns(tt, true, &gc);
+@@ -6574,7 +6577,7 @@
+         }
+         else
+         {
+-            do_dns_domain_wmic(false, tt);
++            do_dns_domain_pwsh(false, tt);
+ 
+             if (tt->options.ip_win32_type == IPW32_SET_NETSH)
+             {
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index dbfa5bc..ff3145a 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -40,7 +40,7 @@
+ #define WIN_ROUTE_PATH_SUFFIX    "\\system32\\route.exe"
+ #define WIN_IPCONFIG_PATH_SUFFIX "\\system32\\ipconfig.exe"
+ #define WIN_NET_PATH_SUFFIX      "\\system32\\net.exe"
+-#define WMIC_PATH_SUFFIX         "\\system32\\wbem\\wmic.exe"
++#define POWERSHELL_PATH_SUFFIX   "\\system32\\WindowsPowerShell\\v1.0\\powershell.exe"
+ 
+ /*
+  * Win32-specific OpenVPN code, targeted at the mingw
 
