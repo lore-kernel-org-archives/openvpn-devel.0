@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 15 Sep 2025 06:51:12 +0000
-In-Reply-To: <gerrit.1754490554000.Ifc183e42b190e19e1d8c351d1cd460a038626e63@...2715...>
-References: <gerrit.1754490554000.Ifc183e42b190e19e1d8c351d1cd460a038626e63@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2f6fb446816b3af66183259364fc263fe083e1c5-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="47nAvuckNQc="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: manage: Change
- command_line_* API to use size_t for lengths
+Date: Mon, 15 Sep 2025 09:01:26 +0200 (CEST)
+Message-Id: <202509150701.58F71Qtw026203@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250915062013.2555-1-gert@...1296...>
+References: <20250915062013.2555-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: win: replace wmic invocation
+ with powershell
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,216 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---47nAvuckNQc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Tested on Win11 22H4 ("brand new install") which does not bring a wmic.exe
+binary - with 2.6.14 out of the box, setting the DNS domain for the 
+interface does no longer work with DCO, and a wmic error is logged in
+the event log (see issue #842).  With this patch applied, setting the
+domain works again.  Heiko also tested this with iservice and privileged
+openvpn.exe calls.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-36?usp=3Demail )
+DHCP on TAP is never affected, because in that case everything is sent
+to windows "using DHCP", but of course we need DCO to function.
 
-Change subject: manage: Change command_line_* API to use size_t for lengths
-......................................................................
+Under normal conditions we'd not change something like this at the end
+of a release lifespan (2.6.14 -> 2.6.15, with 2.7.0 very close) - but
+we'll see usage of 2.6.x versions for a long time, and with Microsoft
+breaking functionality behind our backs, what shall we do...
 
-manage: Change command_line_* API to use size_t for lengths
+This change affects windows only.
 
-The used functions already expect this.
+Your patch has been applied to the release/2.6 branch.
 
-Change-Id: Ifc183e42b190e19e1d8c351d1cd460a038626e63
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1136
-Message-Id: <20250914174638.6867-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32=
-929.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/manage.c
-M src/openvpn/manage.h
-2 files changed, 7 insertions(+), 9 deletions(-)
+commit d383d6ed6270b8d1f95716d08e9da3dd0d712f2d (release/2.6)
+Author: Lev Stipakov
+Date:   Mon Sep 15 08:20:06 2025 +0200
+     win: replace wmic invocation with powershell
 
-
-
-
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 114e4c6..4decdfe 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2334,7 +2334,7 @@
-         bool processed_command =3D false;
-
-         ASSERT(len <=3D (int)sizeof(buf));
--        command_line_add(man->connection.in, buf, len);
-+        command_line_add(man->connection.in, buf, (size_t)len);
-=20
-         /*
-          * Reset output object
-@@ -3873,7 +3873,7 @@
-  */
-
- struct command_line *
--command_line_new(const int buf_len)
-+command_line_new(const size_t buf_len)
- {
-     struct command_line *cl;
-     ALLOC_OBJ_CLEAR(cl, struct command_line);
-@@ -3903,10 +3903,9 @@
- }
-
- void
--command_line_add(struct command_line *cl, const unsigned char *buf, const =
-int len)
-+command_line_add(struct command_line *cl, const unsigned char *buf, const =
-size_t len)
- {
--    int i;
--    for (i =3D 0; i < len; ++i)
-+    for (size_t i =3D 0; i < len; ++i)
-     {
-         if (buf[i] && char_class(buf[i], (CC_PRINT | CC_NEWLINE)))
-         {
-@@ -3921,10 +3920,9 @@
- const char *
- command_line_get(struct command_line *cl)
- {
--    int i;
-     const char *ret =3D NULL;
-
--    i =3D buf_substring_len(&cl->buf, '\n');
-+    int i =3D buf_substring_len(&cl->buf, '\n');
-     if (i >=3D 0)
-     {
-         buf_copy_excess(&cl->residual, &cl->buf, i);
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 0bce25e..7c189ba 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -80,11 +80,11 @@
-     struct buffer residual;
- };
-
--struct command_line *command_line_new(const int buf_len);
-+struct command_line *command_line_new(const size_t buf_len);
-
- void command_line_free(struct command_line *cl);
-
--void command_line_add(struct command_line *cl, const unsigned char *buf, c=
-onst int len);
-+void command_line_add(struct command_line *cl, const unsigned char *buf, c=
-onst size_t len);
-
- const char *command_line_get(struct command_line *cl);
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1183
+     Message-Id: <20250915062013.2555-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32938.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1136?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ifc183e42b190e19e1d8c351d1cd460a038626e63
-Gerrit-Change-Number: 1136
-Gerrit-PatchSet: 6
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gert Doering
 
---47nAvuckNQc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1136?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">manage: Change command_line_* API to use size=
-_t for lengths<br><br>The used functions already expect this.<br><br>Change=
--Id: Ifc183e42b190e19e1d8c351d1cd460a038626e63<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1726...=
-...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1136<br>Messa=
-ge-Id: &lt;20250914174638.6867-1-gert@...1296...&gt;<br>URL: https://www.ma=
-il-archive.com/openvpn-devel@lists.sourceforge.net/msg32929.html<br>Signed-=
-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/manage=
-.c<br>M src/openvpn/manage.h<br>2 files changed, 7 insertions(+), 9 deletio=
-ns(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span=
->index 114e4c6..4decdfe 100644</span><br><span>--- a/src/openvpn/manage.c</=
-span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -2334,7 +2334,=
-7 @@</span><br><span>         bool processed_command =3D false;</span><br><=
-span> </span><br><span>         ASSERT(len &lt;=3D (int)sizeof(buf));</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        command_line_add(ma=
-n-&gt;connection.in, buf, len);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        command_line_add(man-&gt;connection.in, buf, (size_t)le=
-n);</span><br><span> </span><br><span>         /*</span><br><span>         =
- * Reset output object</span><br><span>@@ -3873,7 +3873,7 @@</span><br><spa=
-n>  */</span><br><span> </span><br><span> struct command_line *</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-command_line_new(const int buf_le=
-n)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+command_line_new(=
-const size_t buf_len)</span><br><span> {</span><br><span>     struct comman=
-d_line *cl;</span><br><span>     ALLOC_OBJ_CLEAR(cl, struct command_line);<=
-/span><br><span>@@ -3903,10 +3903,9 @@</span><br><span> }</span><br><span> =
-</span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--command_line_add(struct command_line *cl, const unsigned char *buf, const =
-int len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+command_lin=
-e_add(struct command_line *cl, const unsigned char *buf, const size_t len)<=
-/span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D=
- 0; i &lt; len; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    for (size_t i =3D 0; i &lt; len; ++i)</span><br><span>     {</span><br=
-><span>         if (buf[i] &amp;&amp; char_class(buf[i], (CC_PRINT | CC_NEW=
-LINE)))</span><br><span>         {</span><br><span>@@ -3921,10 +3920,9 @@</=
-span><br><span> const char *</span><br><span> command_line_get(struct comma=
-nd_line *cl)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    int i;</span><br><span>     const char *ret =3D NULL;</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i =3D b=
-uf_substring_len(&amp;cl-&gt;buf, &#39;\n&#39;);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    int i =3D buf_substring_len(&amp;cl-&gt;bu=
-f, &#39;\n&#39;);</span><br><span>     if (i &gt;=3D 0)</span><br><span>   =
-  {</span><br><span>         buf_copy_excess(&amp;cl-&gt;residual, &amp;cl-=
-&gt;buf, i);</span><br><span>diff --git a/src/openvpn/manage.h b/src/openvp=
-n/manage.h</span><br><span>index 0bce25e..7c189ba 100644</span><br><span>--=
-- a/src/openvpn/manage.h</span><br><span>+++ b/src/openvpn/manage.h</span><=
-br><span>@@ -80,11 +80,11 @@</span><br><span>     struct buffer residual;</=
-span><br><span> };</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-struct command_line *command_line_new(const int buf_len);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+struct command_line *c=
-ommand_line_new(const size_t buf_len);</span><br><span> </span><br><span> v=
-oid command_line_free(struct command_line *cl);</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-void command_line_add(struct co=
-mmand_line *cl, const unsigned char *buf, const int len);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+void command_line_add(struct command_=
-line *cl, const unsigned char *buf, const size_t len);</span><br><span> </s=
-pan><br><span> const char *command_line_get(struct command_line *cl);</span=
-><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/1136?usp=3Demail">change 1136</a>. To=
- unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
-rit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:=
-//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
-ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1136?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifc183e42b190e19e1d8c351d1cd=
-460a038626e63 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1136 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---47nAvuckNQc=--
 
