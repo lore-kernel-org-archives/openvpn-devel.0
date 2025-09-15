@@ -1,17 +1,15 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Mon, 15 Sep 2025 17:38:48 +0000
-In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <45a471b026f62e73870e3936e90db69dabbbe67a-EmailReviewComments-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 15 Sep 2025 17:39:08 +0000
+References: <gerrit.1757957943000.I34e6b680618a52003d8408852d415c8aeac01feb@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <625d97ea2d056fa0d24ef17d8ab3526fed324a2a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="a6RjOEuljms="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
- writing messages to the event log
+Content-Type: multipart/alternative; boundary="SkVY+yGY4bI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Clarify some code
+ in epoch with better comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,123 +18,171 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---a6RjOEuljms=
+--SkVY+yGY4bI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: flichtenheld.
 
-selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1188?usp=3Demail )
+Hello flichtenheld,
 
-Change subject: openvpnserv: Fix writing messages to the event log
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1190?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Clarify some code in epoch with better comments
 ......................................................................
 
+Clarify some code in epoch with better comments
 
-Patch Set 1:
-
-(2 comments)
-
-File src/openvpnserv/common.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1188/comment/c9d63194_9fa73d93 :
-PS1, Line 209:                         NULL, error, MAKELANGID(LANG_NEUTRAL=
-, SUBLANG_DEFAULT), (LPTSTR)&tmp, 0, NULL);
-Explict use of the unicode version "FormatMessageW" preferred.
+Change-Id: I34e6b680618a52003d8408852d415c8aeac01feb
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M src/openvpn/crypto.c
+M src/openvpn/crypto.h
+2 files changed, 5 insertions(+), 2 deletions(-)
 
 
-http://gerrit.openvpn.net/c/openvpn/+/1188/comment/6b08b575_87668df4 :
-PS1, Line 228:     buf[_countof(buf) - 1] =3D L'\0';
-Previously we removed openvp_swprintf etc. assuming this explicit null-term=
-ination is no longer required. (commit 130548fe).
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/1190/1
 
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 4c0f684..873fda5 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -97,6 +97,9 @@
+         /* IV starts with packet id to make the IV unique for packet */
+         if (use_epoch_data_format)
+         {
++            /* Note this does not check aead_usage_limit but overstepping =
+it by a few
++             * extra block in by one extra write, is not affecting the sec=
+urity margin,
++             * next iteration/call to epoch_check_send_iterate will iterat=
+e the epoch */
+             if (!packet_id_write_epoch(&opt->packet_id.send, ctx->epoch, &=
+iv_buffer))
+             {
+                 msg(D_CRYPT_ERRORS, "ENCRYPT ERROR: packet ID roll over");
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index efd7f60..0f0db13 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -298,7 +298,7 @@
+
+     /** last epoch_key used for generation of the current send data keys.
+      * As invariant, the epoch of epoch_key_send is always kept >=3D the e=
+poch of
+-     * epoch_key_recv */
++     * key_ctx_bi.decrypt.epoch  */
+     struct epoch_key epoch_key_send;
+
+     /** epoch_key used for the highest receive epoch keys */
+@@ -309,7 +309,7 @@
+
+     /** The limit for AEAD cipher, this is the sum of packets + blocks
+      * that are allowed to be used. Will switch to a new epoch if this
+-     * limit is reached*/
++     * limit is reached. */
+     uint64_t aead_usage_limit;
+
+     /** Keeps the future epoch data keys for decryption. The current one
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1190?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
-Gerrit-Change-Number: 1188
+Gerrit-Change-Id: I34e6b680618a52003d8408852d415c8aeac01feb
+Gerrit-Change-Number: 1190
 Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: selvanair <selva.nair@...277...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 15 Sep 2025 17:38:48 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---a6RjOEuljms=
+--SkVY+yGY4bI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
-Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/common.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1188/comment/c9d63194_9fa73d93">Patch Set #1, Line 20=
-9:</a> <code style=3D"font-family:monospace,monospace">                    =
-    NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&amp;tm=
-p, 0, NULL);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">Explict use of the unicode version &quot;FormatMessageW&quot; prefer=
-red.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
-in-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188/comm=
-ent/6b08b575_87668df4">Patch Set #1, Line 228:</a> <code style=3D"font-fami=
-ly:monospace,monospace">    buf[_countof(buf) - 1] =3D L&#39;\0&#39;;</code=
-></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Previously =
-we removed openvp_swprintf etc. assuming this explicit null-termination is =
-no longer required. (commit 130548fe).</p></li></ul></li></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">cha=
-nge 1188</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1190?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Clarify some code in epoch with better comments<br><br>Chang=
+e-Id: I34e6b680618a52003d8408852d415c8aeac01feb<br>Signed-off-by: Arne Schw=
+abe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/crypto.c<br>M src/openv=
+pn/crypto.h<br>2 files changed, 5 insertions(+), 2 deletions(-)<br><br></pr=
+e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
+it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/1190/1</pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span=
+>index 4c0f684..873fda5 100644</span><br><span>--- a/src/openvpn/crypto.c</=
+span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -97,6 +97,9 @@=
+</span><br><span>         /* IV starts with packet id to make the IV unique=
+ for packet */</span><br><span>         if (use_epoch_data_format)</span><b=
+r><span>         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           /* Note this does not check aead_usage_limit but overstepping it=
+ by a few</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+   * extra block in by one extra write, is not affecting the security margi=
+n,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * ne=
+xt iteration/call to epoch_check_send_iterate will iterate the epoch */</sp=
+an><br><span>             if (!packet_id_write_epoch(&amp;opt-&gt;packet_id=
+.send, ctx-&gt;epoch, &amp;iv_buffer))</span><br><span>             {</span=
+><br><span>                 msg(D_CRYPT_ERRORS, &quot;ENCRYPT ERROR: packet=
+ ID roll over&quot;);</span><br><span>diff --git a/src/openvpn/crypto.h b/s=
+rc/openvpn/crypto.h</span><br><span>index efd7f60..0f0db13 100644</span><br=
+><span>--- a/src/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.=
+h</span><br><span>@@ -298,7 +298,7 @@</span><br><span> </span><br><span>   =
+  /** last epoch_key used for generation of the current send data keys.</sp=
+an><br><span>      * As invariant, the epoch of epoch_key_send is always ke=
+pt &gt;=3D the epoch of</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-     * epoch_key_recv */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+     * key_ctx_bi.decrypt.epoch  */</span><br><span>     struct epoc=
+h_key epoch_key_send;</span><br><span> </span><br><span>     /** epoch_key =
+used for the highest receive epoch keys */</span><br><span>@@ -309,7 +309,7=
+ @@</span><br><span> </span><br><span>     /** The limit for AEAD cipher, t=
+his is the sum of packets + blocks</span><br><span>      * that are allowed=
+ to be used. Will switch to a new epoch if this</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-     * limit is reached*/</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     * limit is reached. */</span><br><sp=
+an>     uint64_t aead_usage_limit;</span><br><span> </span><br><span>     /=
+** Keeps the future epoch data keys for decryption. The current one</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1190?usp=3Demail">change 1190</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1190?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
-8034a73cf5905 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I34e6b680618a52003d8408852d4=
+15c8aeac01feb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1190 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: selvanair &lt;selva.nair@...277...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 15 Sep 2025 17:38:48=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---a6RjOEuljms=--
+--SkVY+yGY4bI=--
 
