@@ -1,17 +1,16 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Sep 2025 07:05:41 +0000
-In-Reply-To: <gerrit.1757934422000.I9b9f38e11b06701142bdc1339d9bedf080de5f86@...2715...>
-References: <gerrit.1757934422000.I9b9f38e11b06701142bdc1339d9bedf080de5f86@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <2efa37c3fc121647fb19ec10a68439b3e016bca7-EmailReplacePatchSet-HTML@...2715...>
+Date: Tue, 16 Sep 2025 07:10:24 +0000
+In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5d005d88119c7783b5c212976089f6a4fd3ea0ec-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PDHdOG3rKB8="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: openvpnserv:
- Fix writing messages to the event log
+Content-Type: multipart/alternative; boundary="jxuU+IDA++k="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
+ writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,460 +19,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---PDHdOG3rKB8=
+--jxuU+IDA++k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos, stipa.
+Attention is currently required from: flichtenheld, plaisthos, selvanair.
 
-Hello cron2, flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail
-
-to look at the new patch set (#3).
-
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1188?usp=3Demail )
 
 Change subject: openvpnserv: Fix writing messages to the event log
 ......................................................................
 
-openvpnserv: Fix writing messages to the event log
 
-There are two problems with the current implementation:
+Patch Set 2:
 
- - due to the code bug, we never display actual error message
-corresponding to the Windows error code. We use
-FORMAT_MESSAGE_ALLOCATE_BUFFER, in which case we must pass
-a pointer to the LPTSTR, not the LPTSTR itself.
+(2 comments)
 
- - The error is not displayed in the "General" tab, which is very confusing.
-One needs to go to the "Details" tab to see what is wrong.
+File src/openvpnserv/common.c:
 
-This commit solves both problems. We now display a proper error
-message in addition to the text provided by the service ("what went wrong").
-While on it, remove trailing symbols =C3=ADn a safer way.
-
-To display the message in "General" tab, we create a registered message file
-(openvpnservmsg.dll), which contains message template. Note that this requi=
-res
-changes to the installer - we need to install the new DLL and
-add a registry entry.
-
-GitHub: https://github.com/OpenVPN/openvpn/issues/842
-
-Change-Id: I9b9f38e11b06701142bdc1339d9bedf080de5f86
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M src/openvpnserv/CMakeLists.txt
-M src/openvpnserv/common.c
-A src/openvpnserv/eventmsg.mc
-3 files changed, 82 insertions(+), 14 deletions(-)
+http://gerrit.openvpn.net/c/openvpn/+/1188/comment/faf6c002_b6bdf61f :
+PS1, Line 209:                         NULL, error, MAKELANGID(LANG_NEUTRAL=
+, SUBLANG_DEFAULT), (LPTSTR)&tmp, 0, NULL);
+> Explict use of the unicode version "FormatMessageW" preferred.
+Acknowledged
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/1185/3
+http://gerrit.openvpn.net/c/openvpn/+/1188/comment/33eaf24d_50732a8f :
+PS1, Line 228:     buf[_countof(buf) - 1] =3D L'\0';
+> Previously we removed openvp_swprintf etc. [=E2=80=A6]
+JFTR: only MSFT version of swprintf guarantees NULL termination. Other vers=
+ions won't write anything (and won't terminate) if the string doesn't fit. =
+OTOH, we build releases with MSVC and in any case we nowadays use MSFT impl=
+ementation (ucrtbase.dll) from OS.
 
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 17cd90c..201350c 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -6,11 +6,14 @@
 
- add_executable(openvpnserv)
-
-+set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
-+
- target_include_directories(openvpnserv PRIVATE
-     ${CMAKE_CURRENT_BINARY_DIR}/../../
-     ../../include/
-     ../openvpn/
-     ../compat/
-+    ${MC_GEN_DIR}
-     )
- target_sources(openvpnserv PRIVATE
-     common.c
-@@ -32,3 +35,34 @@
-     target_compile_options(openvpnserv PRIVATE -municode)
-     target_link_options(openvpnserv PRIVATE -municode)
- endif ()
-+
-+# below we generate a DLL which contains an event source for event log mes=
-sages from eventmsg.mc template
-+file(MAKE_DIRECTORY ${MC_GEN_DIR})
-+set(MC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc)
-+
-+find_program(MC_COMPILER NAMES mc mc.exe x86_64-w64-mingw32-windmc i686-w6=
-4-mingw32-windmc windmc)
-+
-+if (NOT MC_COMPILER)
-+    message(FATAL_ERROR "No message compiler found.")
-+endif()
-+
-+add_custom_command(
-+    OUTPUT ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h
-+    COMMAND ${MC_COMPILER} -U -h ${MC_GEN_DIR} -r ${MC_GEN_DIR} ${MC_FILE}
-+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc
-+    VERBATIM
-+    )
-+
-+# generate rc file for DLL and header for the service binary
-+add_custom_target(msg_mc_gen ALL DEPENDS ${MC_GEN_DIR}/eventmsg.rc ${MC_GE=
-N_DIR}/eventmsg.h)
-+
-+add_library(openvpnservmsg SHARED ${MC_GEN_DIR}/eventmsg.rc)
-+
-+if (MSVC)
-+    set_target_properties(openvpnservmsg PROPERTIES LINK_FLAGS "/NOENTRY")
-+else()
-+    target_link_options(openvpnservmsg PRIVATE "-Wl,--no-entry")
-+endif()
-+
-+add_dependencies(openvpnservmsg msg_mc_gen)
-+add_dependencies(openvpnserv msg_mc_gen)
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index bd0a484..feaae19 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -23,6 +23,7 @@
-
- #include "service.h"
- #include "validate.h"
-+#include "eventmsg.h"
-
- LPCTSTR service_instance =3D TEXT("");
- static wchar_t win_sys_path[MAX_PATH];
-@@ -219,24 +220,28 @@
-     LPTSTR tmp =3D NULL;
-
-     error =3D GetLastError();
--    len =3D FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_=
-FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
--                        NULL, error, LANG_NEUTRAL, tmp, 0, NULL);
-+    len =3D FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE=
-_FROM_SYSTEM| FORMAT_MESSAGE_IGNORE_INSERTS,
-+                         NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEF=
-AULT), (LPTSTR)&tmp, 0, NULL);
-
--    if (len =3D=3D 0 || (long) _countof(buf) < (long) len + 14)
-+    if (!len || !tmp)
-     {
--        buf[0] =3D TEXT('\0');
--    }
--    else
--    {
--        tmp[wcslen(tmp) - 2] =3D TEXT('\0'); /* remove CR/LF characters */
--        openvpn_swprintf(buf, _countof(buf), TEXT("%ls (0x%x)"), tmp, erro=
-r);
-+        openvpn_swprintf(buf, _countof(buf), TEXT("Unknown error (0x%lx)")=
-, error);
-+        if (tmp)
-+        {
-+            LocalFree(tmp);
-+        }
-+        return buf;
-     }
-
--    if (tmp)
-+    /* trim trailing CR / LF / spaces safely */
-+    while (len && (tmp[len - 1] =3D=3D TEXT('\r') || tmp[len - 1] =3D=3D T=
-EXT('\n') || tmp[len - 1] =3D=3D TEXT(' ')))
-     {
--        LocalFree(tmp);
-+        tmp[--len] =3D TEXT('\0');
-     }
-
-+    openvpn_swprintf(buf, _countof(buf), TEXT("%ls (0x%lx)"), tmp, error);
-+
-+    LocalFree(tmp);
-     return buf;
- }
-
-@@ -268,9 +273,15 @@
-         va_end(arglist);
-
-         const TCHAR *mesg[] =3D { msg[0], msg[1] };
--        ReportEvent(hEventSource, flags & MSG_FLAGS_ERROR ?
--                    EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,
--                    0, 0, NULL, 2, 0, mesg, NULL);
-+        ReportEvent(hEventSource,
-+                    flags & MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTL=
-OG_INFORMATION_TYPE,
-+                    0,
-+                    EVT_TEXT_2,
-+                    NULL,
-+                    2,
-+                    0,
-+                    mesg,
-+                    NULL);
-         DeregisterEventSource(hEventSource);
-     }
-
-diff --git a/src/openvpnserv/eventmsg.mc b/src/openvpnserv/eventmsg.mc
-new file mode 100644
-index 0000000..722a30e
---- /dev/null
-+++ b/src/openvpnserv/eventmsg.mc
-@@ -0,0 +1,23 @@
-+MessageIdTypedef=3DDWORD
-+
-+SeverityNames=3D(Success=3D0x0:STATUS_SEVERITY_SUCCESS
-+    Informational=3D0x1:STATUS_SEVERITY_INFORMATIONAL
-+    Warning=3D0x2:STATUS_SEVERITY_WARNING
-+    Error=3D0x3:STATUS_SEVERITY_ERROR
-+    )
-+
-+FacilityNames=3D(System=3D0x0:FACILITY_SYSTEM
-+    Runtime=3D0x2:FACILITY_RUNTIME
-+    Stubs=3D0x3:FACILITY_STUBS
-+    Io=3D0x4:FACILITY_IO_ERROR_CODE
-+)
-+
-+LanguageNames=3D(English=3D0x409:MSG00409)
-+
-+MessageId=3D0x1
-+Severity=3DError
-+Facility=3DRuntime
-+SymbolicName=3DEVT_TEXT_2
-+Language=3DEnglish
-+%1%n%2
-+.
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I9b9f38e11b06701142bdc1339d9bedf080de5f86
-Gerrit-Change-Number: 1185
-Gerrit-PatchSet: 3
+Gerrit-Branch: master
+Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
+Gerrit-Change-Number: 1188
+Gerrit-PatchSet: 2
 Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: selvanair <selva.nair@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Tue, 16 Sep 2025 07:10:24 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: selvanair <selva.nair@...277...>
+Gerrit-MessageType: comment
 
---PDHdOG3rKB8=
+--jxuU+IDA++k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld, plaisthos, s=
-tipa. </p>
-<p>stipa <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">openvpnserv: Fix writing messages to the event log<br><br>There are two =
-problems with the current implementation:<br><br> - due to the code bug, we=
- never display actual error message<br>corresponding to the Windows error c=
-ode. We use<br>FORMAT_MESSAGE_ALLOCATE_BUFFER, in which case we must pass<b=
-r>a pointer to the LPTSTR, not the LPTSTR itself.<br><br> - The error is no=
-t displayed in the &quot;General&quot; tab, which is very confusing.<br>One=
- needs to go to the &quot;Details&quot; tab to see what is wrong.<br><br>Th=
-is commit solves both problems. We now display a proper error<br>message in=
- addition to the text provided by the service (&quot;what went wrong&quot;)=
-.<br>While on it, remove trailing symbols =C3=ADn a safer way.<br><br>To di=
-splay the message in &quot;General&quot; tab, we create a registered messag=
-e file<br>(openvpnservmsg.dll), which contains message template. Note that =
-this requires<br>changes to the installer - we need to install the new DLL =
-and<br>add a registry entry.<br><br>GitHub: https://github.com/OpenVPN/open=
-vpn/issues/842<br><br>Change-Id: I9b9f38e11b06701142bdc1339d9bedf080de5f86<=
-br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvp=
-nserv/CMakeLists.txt<br>M src/openvpnserv/common.c<br>A src/openvpnserv/eve=
-ntmsg.mc<br>3 files changed, 82 insertions(+), 14 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/1185/3</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.=
-txt</span><br><span>index 17cd90c..201350c 100644</span><br><span>--- a/src=
-/openvpnserv/CMakeLists.txt</span><br><span>+++ b/src/openvpnserv/CMakeList=
-s.txt</span><br><span>@@ -6,11 +6,14 @@</span><br><span> </span><br><span> =
-add_executable(openvpnserv)</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> targ=
-et_include_directories(openvpnserv PRIVATE</span><br><span>     ${CMAKE_CUR=
-RENT_BINARY_DIR}/../../</span><br><span>     ../../include/</span><br><span=
->     ../openvpn/</span><br><span>     ../compat/</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    ${MC_GEN_DIR}</span><br><span>     )</spa=
-n><br><span> target_sources(openvpnserv PRIVATE</span><br><span>     common=
-.c</span><br><span>@@ -32,3 +35,34 @@</span><br><span>     target_compile_o=
-ptions(openvpnserv PRIVATE -municode)</span><br><span>     target_link_opti=
-ons(openvpnserv PRIVATE -municode)</span><br><span> endif ()</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+# below we generate a DLL which contains an event sou=
-rce for event log messages from eventmsg.mc template</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+file(MAKE_DIRECTORY ${MC_GEN_DIR})</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+set(MC_FILE ${CMAKE_CURREN=
-T_SOURCE_DIR}/eventmsg.mc)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+find_program=
-(MC_COMPILER NAMES mc mc.exe x86_64-w64-mingw32-windmc i686-w64-mingw32-win=
-dmc windmc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+if (NOT MC_COMPILER)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    message(FATAL_ERROR &q=
-uot;No message compiler found.&quot;)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+endif()</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_custom_co=
-mmand(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OUTPUT ${=
-MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    COMMAND ${MC_COMPILER} -U -h ${MC_GEN_DIR}=
- -r ${MC_GEN_DIR} ${MC_FILE}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    VERBATIM</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+# generate rc file for DLL and header for the service binary</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+add_custom_target(msg_mc_gen ALL =
-DEPENDS ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+add_library(openvpnservmsg SHARED ${MC_GEN_DIR}/eventm=
-sg.rc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+if (MSVC)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    set_target_properties(openvpnservmsg =
-PROPERTIES LINK_FLAGS &quot;/NOENTRY&quot;)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+else()</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    target_link_options(openvpnservmsg PRIVATE &quot;-Wl,--no-en=
-try&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif()</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+add_dependencies(openvpnservmsg msg_mc_g=
-en)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_dependencies=
-(openvpnserv msg_mc_gen)</span><br><span>diff --git a/src/openvpnserv/commo=
-n.c b/src/openvpnserv/common.c</span><br><span>index bd0a484..feaae19 10064=
-4</span><br><span>--- a/src/openvpnserv/common.c</span><br><span>+++ b/src/=
-openvpnserv/common.c</span><br><span>@@ -23,6 +23,7 @@</span><br><span> </s=
-pan><br><span> #include &quot;service.h&quot;</span><br><span> #include &qu=
-ot;validate.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#include &quot;eventmsg.h&quot;</span><br><span> </span><br><span> LPCTSTR =
-service_instance =3D TEXT(&quot;&quot;);</span><br><span> static wchar_t wi=
-n_sys_path[MAX_PATH];</span><br><span>@@ -219,24 +220,28 @@</span><br><span=
->     LPTSTR tmp =3D NULL;</span><br><span> </span><br><span>     error =3D=
- GetLastError();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    l=
-en =3D FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_S=
-YSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                        NULL, error, LANG_NEUTRAL, tmp, 0,=
- NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    len =3D =
-FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM|=
- FORMAT_MESSAGE_IGNORE_INSERTS,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                         NULL, error, MAKELANGID(LANG_NEUTRAL, =
-SUBLANG_DEFAULT), (LPTSTR)&amp;tmp, 0, NULL);</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if (len =3D=3D 0 || (long) _c=
-ountof(buf) &lt; (long) len + 14)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (!len || !tmp)</span><br><span>     {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        buf[0] =3D TEXT(&#39;\0&#39;);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        tmp[wcslen(tmp) - 2] =3D TEXT(&#39;\0&#39;); /* remove CR/=
-LF characters */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   openvpn_swprintf(buf, _countof(buf), TEXT(&quot;%ls (0x%x)&quot;), tmp, =
-error);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        open=
-vpn_swprintf(buf, _countof(buf), TEXT(&quot;Unknown error (0x%lx)&quot;), e=
-rror);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (t=
-mp)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            LocalFree(tmp)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        return buf;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (tmp)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* trim trailing CR / LF / spaces safely */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    while (len &amp;&amp; (tmp[len - 1] =
-=3D=3D TEXT(&#39;\r&#39;) || tmp[len - 1] =3D=3D TEXT(&#39;\n&#39;) || tmp[=
-len - 1] =3D=3D TEXT(&#39; &#39;)))</span><br><span>     {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        LocalFree(tmp);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        tmp[--len] =3D TEXT(&#39;\=
-0&#39;);</span><br><span>     }</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    openvpn_swprintf(buf, _countof(buf), TEXT=
-(&quot;%ls (0x%lx)&quot;), tmp, error);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    LocalFree(tmp);</span><br><span>     return buf;</span><br><span> }</s=
-pan><br><span> </span><br><span>@@ -268,9 +273,15 @@</span><br><span>      =
-   va_end(arglist);</span><br><span> </span><br><span>         const TCHAR =
-*mesg[] =3D { msg[0], msg[1] };</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        ReportEvent(hEventSource, flags &amp; MSG_FLAGS_ERROR ?</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    EVE=
-NTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                    0, 0, NULL, 2, 0, mesg, NULL);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ReportEvent(=
-hEventSource,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-              flags &amp; MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTLOG_=
-INFORMATION_TYPE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                  0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                    EVT_TEXT_2,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                    NULL,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                    2,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    0,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                    mesg,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                    NULL);</span><br><span> =
-        DeregisterEventSource(hEventSource);</span><br><span>     }</span><=
-br><span> </span><br><span>diff --git a/src/openvpnserv/eventmsg.mc b/src/o=
-penvpnserv/eventmsg.mc</span><br><span>new file mode 100644</span><br><span=
->index 0000000..722a30e</span><br><span>--- /dev/null</span><br><span>+++ b=
-/src/openvpnserv/eventmsg.mc</span><br><span>@@ -0,0 +1,23 @@</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+MessageIdTypedef=3DDWORD</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+SeverityNames=3D(Success=3D0x0:STATUS_SEVERITY_=
-SUCCESS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    Informat=
-ional=3D0x1:STATUS_SEVERITY_INFORMATIONAL</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    Warning=3D0x2:STATUS_SEVERITY_WARNING</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    Error=3D0x3:STATUS_SEVERITY=
-_ERROR</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    )</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+FacilityNames=3D(System=3D0x0:FACILITY_SYSTEM<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    Runtime=3D0x2:FA=
-CILITY_RUNTIME</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    S=
-tubs=3D0x3:FACILITY_STUBS</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    Io=3D0x4:FACILITY_IO_ERROR_CODE</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+LanguageNames=
-=3D(English=3D0x409:MSG00409)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+MessageId=
-=3D0x1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Severity=3DEr=
-ror</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Facility=3DRunti=
-me</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SymbolicName=3DEV=
-T_TEXT_2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Language=3D=
-English</span><br><span style=3D"color: hsl(120, 100%, 40%);">+%1%n%2</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+.</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1185?usp=3Demail">change 1185</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
-a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
-scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
-temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos, selvanai=
+r. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
+Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/common.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1188/comment/faf6c002_b6bdf61f">Patch Set #1, Line 20=
+9:</a> <code style=3D"font-family:monospace,monospace">                    =
+    NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&amp;tm=
+p, 0, NULL);</code></p><p><blockquote style=3D"border-left: 1px solid #aaa;=
+ margin: 10px 0; padding: 0 10px;">Explict use of the unicode version &quot=
+;FormatMessageW&quot; preferred.</blockquote></p><p style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">Acknowledged</p></li><li style=3D"margin: =
+0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1188/comment/33eaf24d_50732a8f">Patch Set #=
+1, Line 228:</a> <code style=3D"font-family:monospace,monospace">    buf[_c=
+ountof(buf) - 1] =3D L&#39;\0&#39;;</code></p><p><blockquote style=3D"borde=
+r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Previously we rem=
+oved openvp_swprintf etc. [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">JFTR: only MSFT version of swprintf g=
+uarantees NULL termination. Other versions won&#39;t write anything (and wo=
+n&#39;t terminate) if the string doesn&#39;t fit. OTOH, we build releases w=
+ith MSVC and in any case we nowadays use MSFT implementation (ucrtbase.dll)=
+ from OS.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
+EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
+org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1188?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9b9f38e11b06701142bdc1339d9=
-bedf080de5f86 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1185 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
+8034a73cf5905 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: selvanair &lt;selva.nair@...277...&=
+gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 07:10:24=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
+...277...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---PDHdOG3rKB8=--
+--jxuU+IDA++k=--
 
