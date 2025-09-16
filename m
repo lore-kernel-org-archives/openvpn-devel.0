@@ -1,16 +1,16 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Sep 2025 20:52:02 +0000
-In-Reply-To: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
-References: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
+Date: Tue, 16 Sep 2025 20:57:43 +0000
+In-Reply-To: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+References: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <610d34fce2c5d8d4617cbc06e6b036cf781914cc-EmailReviewComments-HTML@...2715...>
+Message-ID: <ba3502431a6c1c8444284a5b69b9159bc38fc21c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ro92F50wg6o="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Install host routes
- with onlink scope iroutes for ifconfig-push routes
+Content-Type: multipart/alternative; boundary="WZPyn1nA67s="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow
+ route_ipv6_match_host to be used outside of route.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,110 +22,85 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ro92F50wg6o=
+--WZPyn1nA67s=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
 d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1192?usp=3Demail )
+nvpn/+/1191?usp=3Demail )
 
-Change subject: Install host routes with onlink scope iroutes for ifconfig-=
-push routes
+Change subject: Allow route_ipv6_match_host to be used outside of route.c
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 3:
 
-(3 comments)
+(1 comment)
 
-File doc/man-sections/server-options.rst:
+File src/openvpn/route.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/3599a99a_f568303b :
-PS2, Line 317:   When DCO is enabled, OpenVPN will install a /32 route for =
-the local IP
-Should this also be documented for `ifconfig-ipv6-push`?
-
-
-File src/openvpn/mroute.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/dca75073_98b8eff0 :
-PS2, Line 78: /* MRoute is an on link/scope address  ather than a route */
-Typo r`ather`
-
-
-File src/openvpn/multi.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/b815c5df_9c118436 :
-PS2, Line 4347: /**
-Doxygen is already in the header file
+http://gerrit.openvpn.net/c/openvpn/+/1191/comment/829340fe_7ea4f3b8 :
+PS1, Line 726:     int i =3D 0;
+> No i is used outside the loop in line 740/742
+Yeah, I meant `int i;` is enough here, like it was before.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff
-Gerrit-Change-Number: 1192
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
+Gerrit-Change-Number: 1191
+Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 16 Sep 2025 20:52:02 +0000
+Gerrit-Comment-Date: Tue, 16 Sep 2025 20:57:43 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: d12fk <heiko@...515...>
 Gerrit-MessageType: comment
 
---ro92F50wg6o=
+--WZPyn1nA67s=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">View =
-Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/server-optio=
-ns.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1192/comment/3599a99a_f568303b">Patch Set =
-#2, Line 317:</a> <code style=3D"font-family:monospace,monospace">  When DC=
-O is enabled, OpenVPN will install a /32 route for the local IP</code></p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">Should this also =
-be documented for `ifconfig-ipv6-push`?</p></li></ul></li><li style=3D"marg=
-in: 0; padding: 0;"><p>File src/openvpn/mroute.h:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1192/comment/dca75073_98b8eff0">Patch Set #2, Line 78:</a> <code style=3D"f=
-ont-family:monospace,monospace">/* MRoute is an on link/scope address  athe=
-r than a route */</code></p><p style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">Typo r`ather`</p></li></ul></li><li style=3D"margin: 0; padding=
-: 0;"><p>File src/openvpn/multi.c:</p><ul style=3D"list-style: none; paddin=
-g: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
-tom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192/comment/b8=
-15c5df_9c118436">Patch Set #2, Line 4347:</a> <code style=3D"font-family:mo=
-nospace,monospace">/**</code></p><p style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">Doxygen is already in the header file</p></li></ul></li></=
-ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?=
-usp=3Demail">change 1192</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/route.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1191/comment/829340fe_7ea4f3b8">Patch Set #1, Line 726:</a>=
+ <code style=3D"font-family:monospace,monospace">    int i =3D 0;</code></p=
+><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddi=
+ng: 0 10px;">No i is used outside the loop in line 740/742</blockquote></p>=
+<p style=3D"white-space: pre-wrap; word-wrap: break-word;">Yeah, I meant `i=
+nt i;` is enough here, like it was before.</p></li></ul></li></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail"=
+>change 1191</a>. To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I83295e00d1a756dfa44050b0a44=
-93095fb050fff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1192 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264=
+372d3869423f1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1191 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -137,12 +112,16 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 20:52:02=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 20:57:43=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---ro92F50wg6o=--
+--WZPyn1nA67s=--
 
