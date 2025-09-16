@@ -1,15 +1,17 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Sep 2025 16:01:09 +0000
-References: <gerrit.1758038466000.I28f856c1c156b54089d95b2e2539ecdb374cdd37@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <57e33c88dd3f743625fa57bb87bc675ec1984fff-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 16 Sep 2025 16:51:25 +0000
+In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <bc0896d0355c9faa7de6fecacd899dadcdb0d982-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4NXXLmQ4zMk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: Change sd
- argument to dco_new_peer from int to socket_descriptor_t
+Content-Type: multipart/alternative; boundary="0srWjaz3ZqI="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
+ writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,229 +20,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4NXXLmQ4zMk=
+--0srWjaz3ZqI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-Hello plaisthos,
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1188?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail
-
-to review the following change.
-
-
-Change subject: dco: Change sd argument to dco_new_peer from int to socket_=
-descriptor_t
+Change subject: openvpnserv: Fix writing messages to the event log
 ......................................................................
 
-dco: Change sd argument to dco_new_peer from int to socket_descriptor_t
 
-Doesn't change anything for non-Win32 platforms.
+Patch Set 2:
 
-Change-Id: I28f856c1c156b54089d95b2e2539ecdb374cdd37
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/dco.c
-M src/openvpn/dco_internal.h
-M src/openvpn/dco_win.c
-3 files changed, 4 insertions(+), 13 deletions(-)
+(1 comment)
 
+Patchset:
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/1195/1
-
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 8f39e80..bcc05c7 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -491,11 +491,6 @@
-     return true;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- dco_p2p_add_new_peer(struct context *c)
- {
-@@ -604,7 +599,7 @@
-     int peer_id =3D c->c2.tls_multi->peer_id;
-     struct sockaddr *remoteaddr, *localaddr =3D NULL;
-     struct sockaddr_storage local =3D { 0 };
--    int sd =3D c->c2.link_sockets[0]->sd;
-+    const socket_descriptor_t sd =3D c->c2.link_sockets[0]->sd;
+PS2:
+@selva.nair@...277... - if you're fine with the patch otherwise, feel free =
+to +2 it.  I'll volunteer to take care of the autconf bits (and send in a f=
+ollowup patch).
 
 
-     if (c->mode =3D=3D CM_CHILD_TCP)
-@@ -650,10 +645,6 @@
-     return 0;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- dco_install_iroute(struct multi_context *m, struct multi_instance *mi, str=
-uct mroute_addr *addr)
- {
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index 83013ef..86af003 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -59,7 +59,7 @@
-  * They are implemented by dco_linux.c
-  */
-
--int dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd, struct s=
-ockaddr *localaddr,
-+int dco_new_peer(dco_context_t *dco, unsigned int peerid, socket_descripto=
-r_t sd, struct sockaddr *localaddr,
-                  struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, st=
-ruct in6_addr *vpn_ipv6);
-
- int dco_del_peer(dco_context_t *dco, unsigned int peerid);
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 39a5ab6..8db9f26 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -415,10 +415,10 @@
- }
-
- int
--dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd, struct socka=
-ddr *localaddr,
-+dco_new_peer(dco_context_t *dco, unsigned int peerid, socket_descriptor_t =
-sd, struct sockaddr *localaddr,
-              struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct=
- in6_addr *vpn_ipv6)
- {
--    msg(D_DCO_DEBUG, "%s: peer-id %d, fd %d", __func__, peerid, sd);
-+    msg(D_DCO_DEBUG, "%s: peer-id %d, fd " SOCKET_PRINTF, __func__, peerid=
-, sd);
-
-     if (dco->ifmode =3D=3D DCO_MODE_P2P)
-     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I28f856c1c156b54089d95b2e2539ecdb374cdd37
-Gerrit-Change-Number: 1195
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
+Gerrit-Change-Number: 1188
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Tue, 16 Sep 2025 16:51:25 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---4NXXLmQ4zMk=
+--0srWjaz3ZqI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">dco: Change sd argument to dco_new_peer from int to socket_d=
-escriptor_t<br><br>Doesn&#39;t change anything for non-Win32 platforms.<br>=
-<br>Change-Id: I28f856c1c156b54089d95b2e2539ecdb374cdd37<br>Signed-off-by: =
-Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/dco.c<br=
->M src/openvpn/dco_internal.h<br>M src/openvpn/dco_win.c<br>3 files changed=
-, 4 insertions(+), 13 deletions(-)<br><br></pre><pre style=3D"font-family: =
-monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.=
-net:29418/openvpn refs/changes/95/1195/1</pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/d=
-co.c b/src/openvpn/dco.c</span><br><span>index 8f39e80..bcc05c7 100644</spa=
-n><br><span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c=
-</span><br><span>@@ -491,11 +491,6 @@</span><br><span>     return true;</sp=
-an><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quo=
-t;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
-> int</span><br><span> dco_p2p_add_new_peer(struct context *c)</span><br><s=
-pan> {</span><br><span>@@ -604,7 +599,7 @@</span><br><span>     int peer_id=
- =3D c-&gt;c2.tls_multi-&gt;peer_id;</span><br><span>     struct sockaddr *=
-remoteaddr, *localaddr =3D NULL;</span><br><span>     struct sockaddr_stora=
-ge local =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  int sd =3D c-&gt;c2.link_sockets[0]-&gt;sd;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    const socket_descriptor_t sd =3D c-&gt;c2.lin=
-k_sockets[0]-&gt;sd;</span><br><span> </span><br><span> </span><br><span>  =
-   if (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span>@@ -650,10 +645,6 @@=
-</span><br><span>     return 0;</span><br><span> }</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || def=
-ined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragm=
-a GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
-> void</span><br><span> dco_install_iroute(struct multi_context *m, struct =
-multi_instance *mi, struct mroute_addr *addr)</span><br><span> {</span><br>=
-<span>diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h<=
-/span><br><span>index 83013ef..86af003 100644</span><br><span>--- a/src/ope=
-nvpn/dco_internal.h</span><br><span>+++ b/src/openvpn/dco_internal.h</span>=
-<br><span>@@ -59,7 +59,7 @@</span><br><span>  * They are implemented by dco=
-_linux.c</span><br><span>  */</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-int dco_new_peer(dco_context_t *dco, unsigned int=
- peerid, int sd, struct sockaddr *localaddr,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+int dco_new_peer(dco_context_t *dco, unsigned int =
-peerid, socket_descriptor_t sd, struct sockaddr *localaddr,</span><br><span=
->                  struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, s=
-truct in6_addr *vpn_ipv6);</span><br><span> </span><br><span> int dco_del_p=
-eer(dco_context_t *dco, unsigned int peerid);</span><br><span>diff --git a/=
-src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>index 39a5ab6=
-..8db9f26 100644</span><br><span>--- a/src/openvpn/dco_win.c</span><br><spa=
-n>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -415,10 +415,10 @@</span><=
-br><span> }</span><br><span> </span><br><span> int</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-dco_new_peer(dco_context_t *dco, unsigned int =
-peerid, int sd, struct sockaddr *localaddr,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+dco_new_peer(dco_context_t *dco, unsigned int peeri=
-d, socket_descriptor_t sd, struct sockaddr *localaddr,</span><br><span>    =
-          struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct in6=
-_addr *vpn_ipv6)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: peer-id %d, fd %d&quot;, __fun=
-c__, peerid, sd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  msg(D_DCO_DEBUG, &quot;%s: peer-id %d, fd &quot; SOCKET_PRINTF, __func__,=
- peerid, sd);</span><br><span> </span><br><span>     if (dco-&gt;ifmode =3D=
-=3D DCO_MODE_P2P)</span><br><span>     {</span><br><span></span><br></pre><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=
-=3Demail">change 1195</a>. To unsubscribe, or for help writing mail filters=
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1188?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">@selva.nair@...277... - if you&#39;re fine with =
+the patch otherwise, feel free to +2 it.  I&#39;ll volunteer to take care o=
+f the autconf bits (and send in a followup patch).</p></li></ul></li></ul><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=
+=3Demail">change 1188</a>. To unsubscribe, or for help writing mail filters=
 , visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
 v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
 prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail"/><met=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail"/><met=
 a itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I28f856c1c156b54089d95b2e253=
-9ecdb374cdd37 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1195 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
+8034a73cf5905 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 16:51:25=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---4NXXLmQ4zMk=--
+--0srWjaz3ZqI=--
 
