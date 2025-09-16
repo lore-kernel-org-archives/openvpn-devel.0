@@ -1,15 +1,15 @@
 From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Sep 2025 17:39:03 +0000
+Date: Tue, 16 Sep 2025 17:42:20 +0000
 In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
 References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
 Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277..., gert@...1296...
-Message-ID: <0cecd6437159f9d5ea893bc4d536830e112981da-EmailReviewComments-HTML@...2715...>
+Message-ID: <3608246b13125bd4011577fce413adf263473841-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ypLJ7pNzQh4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="IiNPmVtcx7M="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
  writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: stipa <lstipakov@...277...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ypLJ7pNzQh4=
+--IiNPmVtcx7M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -43,10 +43,9 @@ Patch Set 2:
 Patchset:
 
 PS2:
-> @selva.nair@...277... - if you're fine with the patch otherwise, feel fre=
-e to +2 it. [=E2=80=A6]
-Trying to find some time to build test it. autotools thing can wait (or be =
-deprecated) as cmake build using mingw is probably supported.
+Building with cmake and mingw using mingw-x64 preset works, but openvpnserv=
+msg.dll not generated. eventmsg.h and rc do get made without error.
+If there is an MSVC build artifact somewhere, I can test it.
 
 
 
@@ -70,13 +69,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Tue, 16 Sep 2025 17:39:03 +0000
+Gerrit-Comment-Date: Tue, 16 Sep 2025 17:42:20 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
 Gerrit-MessageType: comment
 
---ypLJ7pNzQh4=
+--IiNPmVtcx7M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -87,19 +85,18 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
 e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
 e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">@selva.nair@...1663...=
-. - if you&#39;re fine with the patch otherwise, feel free to +2 it. [=E2=
-=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break=
--word;">Trying to find some time to build test it. autotools thing can wait=
- (or be deprecated) as cmake build using mingw is probably supported.</p></=
-li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, or for help wr=
-iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
-ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
-div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
-><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+1188?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">Building with cmake and mingw using mingw-x64 pr=
+eset works, but openvpnservmsg.dll not generated. eventmsg.h and rc do get =
+made without error.<br>If there is an MSVC build artifact somewhere, I can =
+test it.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1188?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
+/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -126,14 +123,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 17:39:03=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 17:42:20=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---ypLJ7pNzQh4=--
+--IiNPmVtcx7M=--
 
