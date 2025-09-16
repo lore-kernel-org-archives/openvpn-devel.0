@@ -1,15 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Sep 2025 16:51:25 +0000
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Tue, 16 Sep 2025 17:39:03 +0000
 In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
 References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <bc0896d0355c9faa7de6fecacd899dadcdb0d982-EmailReviewComments-HTML@...2715...>
+ lstipakov@...277..., gert@...1296...
+Message-ID: <0cecd6437159f9d5ea893bc4d536830e112981da-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0srWjaz3ZqI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ypLJ7pNzQh4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
  writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,16 +21,16 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: stipa <lstipakov@...277...>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0srWjaz3ZqI=
+--ypLJ7pNzQh4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: cron2, flichtenheld, plaisthos, stipa.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1188?usp=3Demail )
+selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1188?usp=3Demail )
 
 Change subject: openvpnserv: Fix writing messages to the event log
 ......................................................................
@@ -43,9 +43,10 @@ Patch Set 2:
 Patchset:
 
 PS2:
-@selva.nair@...277... - if you're fine with the patch otherwise, feel free =
-to +2 it.  I'll volunteer to take care of the autconf bits (and send in a f=
-ollowup patch).
+> @selva.nair@...277... - if you're fine with the patch otherwise, feel fre=
+e to +2 it. [=E2=80=A6]
+Trying to find some time to build test it. autotools thing can wait (or be =
+deprecated) as cmake build using mingw is probably supported.
 
 
 
@@ -66,35 +67,39 @@ Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Tue, 16 Sep 2025 16:51:25 +0000
+Gerrit-Comment-Date: Tue, 16 Sep 2025 17:39:03 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
 Gerrit-MessageType: comment
 
---0srWjaz3ZqI=
+--ypLJ7pNzQh4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos, s=
+tipa. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
 e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
 e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1188?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">@selva.nair@...277... - if you&#39;re fine with =
-the patch otherwise, feel free to +2 it.  I&#39;ll volunteer to take care o=
-f the autconf bits (and send in a followup patch).</p></li></ul></li></ul><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=
-=3Demail">change 1188</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
+1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">@selva.nair@...1663...=
+. - if you&#39;re fine with the patch otherwise, feel free to +2 it. [=E2=
+=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">Trying to find some time to build test it. autotools thing can wait=
+ (or be deprecated) as cmake build using mingw is probably supported.</p></=
+li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -115,16 +120,20 @@ a itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 16:51:25=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 17:39:03=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---0srWjaz3ZqI=--
+--ypLJ7pNzQh4=--
 
