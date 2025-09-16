@@ -1,14 +1,16 @@
-Date: Tue, 16 Sep 2025 12:43:31 +0200
-From: Sabrina Dubroca <sd@...2891...>
-Message-ID: <aMk_U3zeHviJC1GI@...2915...>
-References: <20250909054333.12572-1-mmietus97.ref@...109...>
- <20250909054333.12572-1-mmietus97@...109...>
- <b8b604f7-c5c3-4257-93da-8f6881e96fe4@...515...>
- <8e6b83b3-c986-4d6e-b61a-363e13bf1ddc@...109...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 16 Sep 2025 11:50:39 +0000
+In-Reply-To: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+References: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <709b6e664a56739a895f3922631a33bd5293b57e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-In-Reply-To: <8e6b83b3-c986-4d6e-b61a-363e13bf1ddc@...109...>
-Subject: Re: [Openvpn-devel] [PATCH net-next 0/3] net: tunnel: introduce
- noref xmit flows for tunnels
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ktklqxDNC/w="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow
+ route_ipv6_match_host to be used outside of route.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +19,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Marek Mietus <mmietus97@...109...>
-Cc: Antonio Quartulli <antonio@...515...>, netdev@...2909..., openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-2025-09-09, 16:43:01 +0200, Marek Mietus wrote:
-> W dniu 9/9/25 o 13:17, Antonio Quartulli pisze:
-> > On 09/09/2025 07:43, Marek Mietus wrote:
-> >> Currently, all xmit flows use dst_cache in a way that references
-> >> its dst_entry for each xmitted packet. These atomic operations
-> >> are redundant in some flows.
-> > 
-> > Can you elaborate on the current limits/drawbacks and explain what we gain with this new approach?
-> > 
-> > It may be obvious for some, but it's not for me.
-> > 
-> 
-> The only difference with the new approach is that we avoid taking an unnecessary
-> reference on dst_entry. This is possible since the entire flow is protected by RCU.
-> This change reduces an atomic write operation on every xmit, resulting in a performance
-> improvement.
+--ktklqxDNC/w=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-It would be nice to incorporate this information into the cover
-letter, and to provide numbers showing the performance
-improvement. That way, it's available to other reviewers and gets
-recorded in the git log. Are you doing crypto with some accelerator?
-Otherwise I'd imagine skipping a few atomic operations is not really
-noticeable.
+Attention is currently required from: plaisthos.
 
-> There are other flows in the kernel where a similar approach is used (e.g. __ip_queue_xmit
-> uses skb_dst_set_noref).
-> 
-> > Also it sounded as if more tunnels were affected, but in the end only ovpn is being changed.
-> > Does it mean all other tunnels don't need this?
-> > 
-> 
-> More tunneling code can be updated to utilize these new helpers. I only worked
-> on OpenVPN, as I am more familiar with it. It was very easy to implement the
-> changes in OpenVPN because it doesn't use the udp_tunnel_dst_lookup helper
-> that adds some complexity.
-> 
-> I hope to incorporate these changes in more tunnels in the future.
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1191?usp=3Demail )
 
-It would also be good to add this to the cover letter. Something like
-"For now, only ovpn is updated <for $reason>, but other tunnels could
-also take advantage of this."
+Change subject: Allow route_ipv6_match_host to be used outside of route.c
+......................................................................
 
--- 
-Sabrina
+
+Patch Set 1:
+
+(2 comments)
+
+File src/openvpn/route.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1191/comment/1fc5a8a3_d7b71b82 :
+PS1, Line 713: /**
+Why make this doxygen? The doxygen part is covered by the comment at the de=
+claration, isn't it?
+
+
+http://gerrit.openvpn.net/c/openvpn/+/1191/comment/c57f9efb_cf95f1a2 :
+PS1, Line 740:     unsigned mask =3D 0xff << (8 - bits);
+any particular reason you left the "int" off here but used in the other pla=
+ces?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
+Gerrit-Change-Number: 1191
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Tue, 16 Sep 2025 11:50:39 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--ktklqxDNC/w=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">View =
+Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/route.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1191/comment/1fc5a8a3_d7b71b82">Patch Set #1, Line 713:</a=
+> <code style=3D"font-family:monospace,monospace">/**</code></p><p style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">Why make this doxygen? The =
+doxygen part is covered by the comment at the declaration, isn&#39;t it?</p=
+></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
+om: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191/comment/c57=
+f9efb_cf95f1a2">Patch Set #1, Line 740:</a> <code style=3D"font-family:mono=
+space,monospace">    unsigned mask =3D 0xff &lt;&lt; (8 - bits);</code></p>=
+<p style=3D"white-space: pre-wrap; word-wrap: break-word;">any particular r=
+eason you left the &quot;int&quot; off here but used in the other places?</=
+p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1191?usp=3Demail">change 1191</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+191?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
+div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264=
+372d3869423f1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1191 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 11:50:39=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--ktklqxDNC/w=--
 
