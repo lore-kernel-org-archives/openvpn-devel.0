@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 17 Sep 2025 11:05:48 +0200
-Message-ID: <20250917090557.25414-1-gert@...1296...>
-In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Sep 2025 09:06:31 +0000
+In-Reply-To: <gerrit.1757934422000.I9b9f38e11b06701142bdc1339d9bedf080de5f86@...2715...>
+References: <gerrit.1757934422000.I9b9f38e11b06701142bdc1339d9bedf080de5f86@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <4c34a22752ecacf443345e4f3fff8493960e0c96-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] openvpnserv: Fix writing messages to the
- event log
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="fQprmoa9cXk="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: openvpnserv:
+ Fix writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,200 +20,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--fQprmoa9cXk=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-There are two problems with the current implementation:
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
- - due to the code bug, we never display actual error message
-corresponding to the Windows error code. We use
-FORMAT_MESSAGE_ALLOCATE_BUFFER, in which case we must pass
-a pointer to the LPTSTR, not the LPTSTR itself.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1185?usp=3Demail )
 
- - The error is not displayed in the "General" tab, which is very confusing.
-One needs to go to the "Details" tab to see what is wrong.
+Change subject: openvpnserv: Fix writing messages to the event log
+......................................................................
 
-This commit solves both problems. We now display a proper error
-message in addition to the text provided by the service ("what went wrong").
-While on it, remove trailing symbols ín a safer way.
 
-To display the message in "General" tab, we create a registered message file
-(openvpnservmsg.dll), which contains message template. Note that this requires
-changes to the installer - we need to install the new DLL and
-add a registry entry.
+Patch Set 3: Code-Review+2
 
-GitHub: https://github.com/OpenVPN/openvpn/issues/842
 
-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Selva Nair <selva.nair@...277...>
----
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I9b9f38e11b06701142bdc1339d9bedf080de5f86
+Gerrit-Change-Number: 1185
+Gerrit-PatchSet: 3
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Wed, 17 Sep 2025 09:06:31 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1188
-This mail reflects revision 2 of this Change.
+--fQprmoa9cXk=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by according to Gerrit (reflected above):
-Selva Nair <selva.nair@...277...>
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail=
+">change 1185</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1185?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
-        
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 7e3efb2..82099f1 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -6,11 +6,14 @@
- 
- add_executable(openvpnserv)
- 
-+set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
-+
- target_include_directories(openvpnserv PRIVATE
-     ${CMAKE_CURRENT_BINARY_DIR}/../../
-     ../../include/
-     ../openvpn/
-     ../compat/
-+    ${MC_GEN_DIR}
-     )
- target_sources(openvpnserv PRIVATE
-     common.c
-@@ -33,3 +36,34 @@
-     target_compile_options(openvpnserv PRIVATE -municode)
-     target_link_options(openvpnserv PRIVATE -municode)
- endif ()
-+
-+# below we generate a DLL which contains an event source for event log messages from eventmsg.mc template
-+file(MAKE_DIRECTORY ${MC_GEN_DIR})
-+set(MC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc)
-+
-+find_program(MC_COMPILER NAMES mc mc.exe x86_64-w64-mingw32-windmc i686-w64-mingw32-windmc windmc)
-+
-+if (NOT MC_COMPILER)
-+    message(FATAL_ERROR "No message compiler found.")
-+endif()
-+
-+add_custom_command(
-+    OUTPUT ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h
-+    COMMAND ${MC_COMPILER} -U -h ${MC_GEN_DIR} -r ${MC_GEN_DIR} ${MC_FILE}
-+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc
-+    VERBATIM
-+    )
-+
-+# generate rc file for DLL and header for the service binary
-+add_custom_target(msg_mc_gen ALL DEPENDS ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h)
-+
-+add_library(openvpnservmsg SHARED ${MC_GEN_DIR}/eventmsg.rc)
-+
-+if (MSVC)
-+    set_target_properties(openvpnservmsg PROPERTIES LINK_FLAGS "/NOENTRY")
-+else()
-+    target_link_options(openvpnservmsg PRIVATE "-Wl,--no-entry")
-+endif()
-+
-+add_dependencies(openvpnservmsg msg_mc_gen)
-+add_dependencies(openvpnserv msg_mc_gen)
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index a42c65d..e975cc7 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -22,6 +22,7 @@
- 
- #include "service.h"
- #include "validate.h"
-+#include "eventmsg.h"
- 
- LPCWSTR service_instance = L"";
- static wchar_t win_sys_path[MAX_PATH];
-@@ -203,25 +204,29 @@
-     LPWSTR tmp = NULL;
- 
-     error = GetLastError();
--    len = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
--                            | FORMAT_MESSAGE_ARGUMENT_ARRAY,
--                        NULL, error, LANG_NEUTRAL, tmp, 0, NULL);
-+    len = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
-+                             | FORMAT_MESSAGE_IGNORE_INSERTS,
-+                         NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&tmp, 0, NULL);
- 
--    if (len == 0 || (long)_countof(buf) < (long)len + 14)
-+    if (!len || !tmp)
-     {
--        buf[0] = L'\0';
--    }
--    else
--    {
--        tmp[wcslen(tmp) - 2] = L'\0'; /* remove CR/LF characters */
--        swprintf(buf, _countof(buf), L"%ls (0x%x)", tmp, error);
-+        swprintf(buf, _countof(buf), L"Unknown error (0x%lx)", error);
-+        if (tmp)
-+        {
-+            LocalFree(tmp);
-+        }
-+        return buf;
-     }
- 
--    if (tmp)
-+    /* trim trailing CR / LF / spaces safely */
-+    while (len && (tmp[len - 1] == L'\r' || tmp[len - 1] == L'\n' || tmp[len - 1] == L' '))
-     {
--        LocalFree(tmp);
-+        tmp[--len] = L'\0';
-     }
- 
-+    swprintf(buf, _countof(buf), L"%ls (0x%lx)", tmp, error);
-+
-+    LocalFree(tmp);
-     return buf;
- }
- 
-@@ -253,8 +258,14 @@
- 
-         const WCHAR *mesg[] = { msg[0], msg[1] };
-         ReportEvent(hEventSource,
--                    flags & MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE, 0, 0,
--                    NULL, 2, 0, mesg, NULL);
-+                    flags & MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,
-+                    0,
-+                    EVT_TEXT_2,
-+                    NULL,
-+                    2,
-+                    0,
-+                    mesg,
-+                    NULL);
-         DeregisterEventSource(hEventSource);
-     }
- 
-diff --git a/src/openvpnserv/eventmsg.mc b/src/openvpnserv/eventmsg.mc
-new file mode 100644
-index 0000000..722a30e
---- /dev/null
-+++ b/src/openvpnserv/eventmsg.mc
-@@ -0,0 +1,23 @@
-+MessageIdTypedef=DWORD
-+
-+SeverityNames=(Success=0x0:STATUS_SEVERITY_SUCCESS
-+    Informational=0x1:STATUS_SEVERITY_INFORMATIONAL
-+    Warning=0x2:STATUS_SEVERITY_WARNING
-+    Error=0x3:STATUS_SEVERITY_ERROR
-+    )
-+
-+FacilityNames=(System=0x0:FACILITY_SYSTEM
-+    Runtime=0x2:FACILITY_RUNTIME
-+    Stubs=0x3:FACILITY_STUBS
-+    Io=0x4:FACILITY_IO_ERROR_CODE
-+)
-+
-+LanguageNames=(English=0x409:MSG00409)
-+
-+MessageId=0x1
-+Severity=Error
-+Facility=Runtime
-+SymbolicName=EVT_TEXT_2
-+Language=English
-+%1%n%2
-+.
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9b9f38e11b06701142bdc1339d9=
+bedf080de5f86 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1185 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Sep 2025 09:06:31=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--fQprmoa9cXk=--
 
