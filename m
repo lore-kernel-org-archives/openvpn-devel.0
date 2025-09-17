@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 17 Sep 2025 14:07:15 +0200
-Message-ID: <20250917120720.30738-1-gert@...1296...>
-In-Reply-To: <gerrit.1758101669000.Idb137ecbade4b0584a4d74aee34978062e247bc5@...2715...>
-References: <gerrit.1758101669000.Idb137ecbade4b0584a4d74aee34978062e247bc5@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Sep 2025 12:17:14 +0000
+In-Reply-To: <gerrit.1758038466000.I28f856c1c156b54089d95b2e2539ecdb374cdd37@...2715...>
+References: <gerrit.1758038466000.I28f856c1c156b54089d95b2e2539ecdb374cdd37@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, antonio@...2726...
+Message-ID: <33307c7421dfbdb115e86dfea11bd54fad51b8ce-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dev-tools/gerrit-send-mail.py: include
- Gerrit URL into the commit message
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="dmW9M0CnuSI="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: Change sd
+ argument to dco_new_peer from int to socket_descriptor_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,60 +19,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Gert Doering <gert@...1296...>, Frank Lichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-We used to reference to one of the mailing list archives as the formal
-reference for the patch and the review discussions.  With the problematic
-reliability of the archives, I've started to manually add the URLs in
-the OpenVPN Gerrit to the commits because they give a better reference
-and (usually) all the feedback is there in a useful format.
+--dmW9M0CnuSI=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-So, enhance this dev-tool script to do this automatically.
+Attention is currently required from: plaisthos.
 
-Change-Id: Idb137ecbade4b0584a4d74aee34978062e247bc5
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1196
----
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1195?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: dco: Change sd argument to dco_new_peer from int to socket_=
+descriptor_t
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1196
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+Patch Set 2:
 
-        
-diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py
-index 0b49ae9..450e920 100755
---- a/dev-tools/gerrit-send-mail.py
-+++ b/dev-tools/gerrit-send-mail.py
-@@ -99,6 +99,7 @@
-     assert comment_start > signed_off_end
-     acked_by_text = ""
-     acked_by_names = ""
-+    gerrit_url = f"{args.url}/c/{details['project']}/+/{args.changeid}"
-     for ack in details["acked_by"]:
-         acked_by_text += f"Acked-by: {ack}\n"
-         acked_by_names += f"{ack}\n"
-@@ -106,12 +107,13 @@
-         patch_text[:signed_off_end]
-         + signed_off_text
-         + acked_by_text
-+        + f"Gerrit URL: {gerrit_url}\n"
-         + patch_text[signed_off_end:comment_start]
-         + f"""
- This change was reviewed on Gerrit and approved by at least one
- developer. I request to merge it to {details["target"]}.
- 
--Gerrit URL: {args.url}/c/{details["project"]}/+/{args.changeid}
-+Gerrit URL: {gerrit_url}
- This mail reflects revision {details["revision"]} of this Change.
- {signed_off_comment}
- Acked-by according to Gerrit (reflected above):
+(1 comment)
+
+Patchset:
+
+PS1:
+> love that we are getting rid of that #pragma. [=E2=80=A6]
+Tbf, that pragma is not actually in master. That is from https://gerrit.ope=
+nvpn.net/c/openvpn/+/1168
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I28f856c1c156b54089d95b2e2539ecdb374cdd37
+Gerrit-Change-Number: 1195
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 17 Sep 2025 12:17:14 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: ordex <antonio@...2726...>
+Gerrit-MessageType: comment
+
+--dmW9M0CnuSI=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1195?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">love that we are get=
+ting rid of that #pragma. [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">Tbf, that pragma is not actually in m=
+aster. That is from https://gerrit.openvpn.net/c/openvpn/+/1168</p></li></u=
+l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1195?usp=3Demail">change 1195</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I28f856c1c156b54089d95b2e253=
+9ecdb374cdd37 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1195 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Sep 2025 12:17:14=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--dmW9M0CnuSI=--
 
