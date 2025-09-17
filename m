@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Sep 2025 12:36:59 +0000
-In-Reply-To: <gerrit.1757945695000.I4b0078d099e975d223825194ad104945b1247554@...2715...>
-References: <gerrit.1757945695000.I4b0078d099e975d223825194ad104945b1247554@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <cb47fb830537ee229de6d68015f90de4e967b30a-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------VhhALx4Xlw7ZZxXSlhJjU3BF"
+Message-ID: <9daef3a3-f9c3-42da-a315-b0a04d9eaf99@...2722...>
+Date: Wed, 17 Sep 2025 19:57:15 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2CoM5O6qBUU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change msglevel
- flags to int
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,68 +14,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---2CoM5O6qBUU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------VhhALx4Xlw7ZZxXSlhJjU3BF
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-flichtenheld has abandoned this change. ( http://gerrit.openvpn.net/c/openv=
-pn/+/1189?usp=3Demail )
+Meeting summary for 17 September 2025:
 
-Change subject: Change msglevel flags to int
-......................................................................
+  *
 
+    *Updated: Release 2.7*
+    OpenVPN 2.7 beta2 was planned for 18th of September but will be
+    shifted to early next week instead.
+    Reason is there's some concern and discussion about a recently
+    merged bit of code that must be cleared up first.
 
-Abandoned
+  *
 
-Will go for #1110
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1189?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+    *Updated: wolfSSL license changed from gplv2 to gplv3*
+    The release notes of wolfSSL indicate the license changed to GPLv3.
+    This basically makes wolfSSL incompatible in regards to licensing
+    with OpenVPN.
+    We reached out to WolfSSL and we got back a response indicating that
+    other parties have also expressed similar concerns and an exception
+    may be considered.
+    We're giving them time to figure out this exception.
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4b0078d099e975d223825194ad104945b1247554
-Gerrit-Change-Number: 1189
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+  *
 
---2CoM5O6qBUU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+    *New: small change to merge procedure*
+    cron2 mentioned that the mail archive site mail-archive.com has been
+    acting up and some patch messages not even arriving there.
+    That undermines the idea we have that you can always go back to the
+    mail archive to see discussions on patches there.
+    On top of links to mail archives cron2 will also include in the
+    commit messages links to the review platform Gerrit that we use.
 
-<p>flichtenheld <strong>abandoned</strong> this change.</p><p><a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1189?usp=3Demail">View Change</a></p><d=
-iv style=3D"white-space:pre-wrap">Abandoned
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Will go for #1110</div><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/1189?usp=3Demail">change 1189</a>. To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
-s">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
-ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
-tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1189?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
+Kind regards,
+Johan Draaisma
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4b0078d099e975d223825194ad1=
-04945b1247554 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1189 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+--------------VhhALx4Xlw7ZZxXSlhJjU3BF
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 17 September 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          OpenVPN 2.7 beta2 was planned for 18th of September but will
+          be shifted to early next week instead.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Reason is there's some concern and discussion about a recently
+          merged bit of code that must be cleared up first.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            wolfSSL license changed from gplv2 to gplv3</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The release notes of wolfSSL indicate the license changed to
+          GPLv3. This basically makes wolfSSL incompatible in regards to
+          licensing with OpenVPN.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We reached out to WolfSSL and we got back a response
+          indicating that other parties have also expressed similar
+          concerns and an exception may be considered.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We're giving them time to figure out this exception.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
+            small change to merge procedure</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          cron2 mentioned that the mail archive site mail-archive.com
+          has been acting up and some patch messages not even arriving
+          there.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          That undermines the idea we have that you can always go back
+          to the mail archive to see discussions on patches there.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          On top of links to mail archives cron2 will also include in
+          the commit messages links to the review platform Gerrit that
+          we use.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
---2CoM5O6qBUU=--
+--------------VhhALx4Xlw7ZZxXSlhJjU3BF--
 
