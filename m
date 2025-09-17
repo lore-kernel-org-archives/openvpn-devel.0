@@ -1,17 +1,17 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Sep 2025 21:40:03 +0000
-In-Reply-To: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
-References: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Sep 2025 07:12:49 +0000
+In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <58253d1d13d8e3a8668f7af17bb8e7f64567c746-EmailReviewComments-HTML@...2715...>
+ gert@...1296...
+Message-ID: <27ccd074d0313ecfd230a96f5d6ca046668bc4cc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="crgFEgBF3e0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Install host routes
- with onlink scope iroutes for ifconfig-push routes
+Content-Type: multipart/alternative; boundary="lUSDNAv7q2E="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
+ writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,135 +20,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---crgFEgBF3e0=
+--lUSDNAv7q2E=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Attention is currently required from: cron2, flichtenheld, plaisthos.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1192?usp=3Demail )
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1188?usp=3Demail )
 
-Change subject: Install host routes with onlink scope iroutes for ifconfig-=
-push routes
+Change subject: openvpnserv: Fix writing messages to the event log
 ......................................................................
 
 
-Patch Set 4:
+Patch Set 2:
 
-(2 comments)
+(1 comment)
 
-File doc/man-sections/server-options.rst:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/a01854be_05971411 :
-PS2, Line 317:   When DCO is enabled, OpenVPN will install a /32 route for =
-the local IP
-> @heiko@...2292... [=E2=80=A6]
-Yeah, was looking at an old version.
+PS2:
+> Building with cmake and mingw using mingw-x64 preset works, but openvpnse=
+rvmsg.dll not generated. [=E2=80=A6]
+I haven't tried mingw myself but GHA log says:
 
-
-File src/openvpn/mroute.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/8364575a_c2f0e56d :
-PS2, Line 78: /* MRoute is an on link/scope address  ather than a route */
-> Typo r`ather`
-Done
+ [261/267] Linking RC shared library src/openvpnserv/Debug/libopenvpnservms=
+g.dll
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff
-Gerrit-Change-Number: 1192
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
+Gerrit-Change-Number: 1188
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-CC: d12fk <heiko@...515...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Tue, 16 Sep 2025 21:40:03 +0000
+Gerrit-Comment-Date: Wed, 17 Sep 2025 07:12:49 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Comment-In-Reply-To: d12fk <heiko@...515...>
+Comment-In-Reply-To: selvanair <selva.nair@...277...>
 Gerrit-MessageType: comment
 
---crgFEgBF3e0=
+--lUSDNAv7q2E=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+<p> Attention is currently required from: cron2, flichtenheld, plaisthos. <=
 /p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">View =
-Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/server-optio=
-ns.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1192/comment/a01854be_05971411">Patch Set =
-#2, Line 317:</a> <code style=3D"font-family:monospace,monospace">  When DC=
-O is enabled, OpenVPN will install a /32 route for the local IP</code></p><=
-p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
-: 0 10px;">@heiko@...2292... [=E2=80=A6]</blockquote></p><p style=3D"white-=
-space: pre-wrap; word-wrap: break-word;">Yeah, was looking at an old versio=
-n.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openv=
-pn/mroute.h:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
-rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/8364575a_c2f0e56d">Patch=
- Set #2, Line 78:</a> <code style=3D"font-family:monospace,monospace">/* MR=
-oute is an on link/scope address  ather than a route */</code></p><p><block=
-quote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px=
-;">Typo r`ather`</blockquote></p><p style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">change 1192</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1192?usp=3Demail"/><meta itemprop=3D"name" content=3D=
-"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Building with cmake =
+and mingw using mingw-x64 preset works, but openvpnservmsg.dll not generate=
+d. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">I haven&#39;t tried mingw myself but GHA log says:</p><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"> [261/267=
+] Linking RC shared library src/openvpnserv/Debug/libopenvpnservmsg.dll</pr=
+e></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+188?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
+div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I83295e00d1a756dfa44050b0a44=
-93095fb050fff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1192 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
+8034a73cf5905 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Sep 2025 21:40:03=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Sep 2025 07:12:49=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
-&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
+...277...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---crgFEgBF3e0=--
+--lUSDNAv7q2E=--
 
