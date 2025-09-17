@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Sep 2025 12:17:14 +0000
-In-Reply-To: <gerrit.1758038466000.I28f856c1c156b54089d95b2e2539ecdb374cdd37@...2715...>
-References: <gerrit.1758038466000.I28f856c1c156b54089d95b2e2539ecdb374cdd37@...2715...>
+Date: Wed, 17 Sep 2025 12:36:59 +0000
+In-Reply-To: <gerrit.1757945695000.I4b0078d099e975d223825194ad104945b1247554@...2715...>
+References: <gerrit.1757945695000.I4b0078d099e975d223825194ad104945b1247554@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <33307c7421dfbdb115e86dfea11bd54fad51b8ce-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <cb47fb830537ee229de6d68015f90de4e967b30a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dmW9M0CnuSI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: Change sd
- argument to dco_new_peer from int to socket_descriptor_t
+Content-Type: multipart/alternative; boundary="2CoM5O6qBUU="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change msglevel
+ flags to int
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,101 +21,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dmW9M0CnuSI=
+--2CoM5O6qBUU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+flichtenheld has abandoned this change. ( http://gerrit.openvpn.net/c/openv=
+pn/+/1189?usp=3Demail )
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/1195?usp=3Demail )
-
-Change subject: dco: Change sd argument to dco_new_peer from int to socket_=
-descriptor_t
+Change subject: Change msglevel flags to int
 ......................................................................
 
 
-Patch Set 2:
+Abandoned
 
-(1 comment)
-
-Patchset:
-
-PS1:
-> love that we are getting rid of that #pragma. [=E2=80=A6]
-Tbf, that pragma is not actually in master. That is from https://gerrit.ope=
-nvpn.net/c/openvpn/+/1168
-
-
-
+Will go for #1110
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1189?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I28f856c1c156b54089d95b2e2539ecdb374cdd37
-Gerrit-Change-Number: 1195
+Gerrit-Change-Id: I4b0078d099e975d223825194ad104945b1247554
+Gerrit-Change-Number: 1189
 Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 17 Sep 2025 12:17:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: abandon
 
---dmW9M0CnuSI=
+--2CoM5O6qBUU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1195?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">love that we are get=
-ting rid of that #pragma. [=E2=80=A6]</blockquote></p><p style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">Tbf, that pragma is not actually in m=
-aster. That is from https://gerrit.openvpn.net/c/openvpn/+/1168</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1195?usp=3Demail">change 1195</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1195?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>flichtenheld <strong>abandoned</strong> this change.</p><p><a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1189?usp=3Demail">View Change</a></p><d=
+iv style=3D"white-space:pre-wrap">Abandoned
+
+Will go for #1110</div><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1189?usp=3Demail">change 1189</a>. To unsubscribe, or for he=
+lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
+s">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
+tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1189?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I28f856c1c156b54089d95b2e253=
-9ecdb374cdd37 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1195 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4b0078d099e975d223825194ad1=
+04945b1247554 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1189 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Sep 2025 12:17:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
 
 
---dmW9M0CnuSI=--
+--2CoM5O6qBUU=--
 
