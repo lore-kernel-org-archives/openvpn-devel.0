@@ -1,17 +1,17 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Wed, 17 Sep 2025 13:22:06 +0000
-In-Reply-To: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
-References: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+In-Reply-To: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
+References: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
 Reply-To: arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <b0f58cb3ed528da40ca9899578fdd0939612add1-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <a97fe901c146d95db0723604285dbfc5cad51474-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yRTKN5+dC+E="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow
- route_ipv6_match_host to be used outside of route.c
+Content-Type: multipart/alternative; boundary="Z4H9V9raL/k="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Install host routes
+ for ifconfig-push routes when DCO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,140 +23,402 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yRTKN5+dC+E=
+--Z4H9V9raL/k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Attention is currently required from: d12fk, flichtenheld, ordex, plaisthos.
 
 Hello flichtenheld, ordex,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#5).
 
 The following approvals got outdated and were removed:
 Code-Review+1 by ordex
 
 
-Change subject: Allow route_ipv6_match_host to be used outside of route.c
+Change subject: Install host routes for ifconfig-push routes when DCO is en=
+abled
 ......................................................................
 
-Allow route_ipv6_match_host to be used outside of route.c
+Install host routes for ifconfig-push routes when DCO is enabled
 
-Also adjust style a bit to C99
+ifconfig-push and ifconfig-ipv6-push can configure the IP address of a
+client. If this IP address lies inside the network that is configured
+on the ovpn/tun device this works as expected as the routing table point to
+the ovpn/tun interface. However, if the IP address
+is outside that range, the IP packets are not forwarded to the ovpn/tun
+interface.
 
-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
+This patch adds logic to add host routes for these
+ifconfig-push/ifconfig-ipv6-push addresses to ensure that traffic for
+these IP addresses is also directed to the VPN.
+
+For Linux it is important that these extra routes are routes using scope li=
+nk
+rather than static since otherwise routes via these IP addresses, like
+iroute, will not work. On FreeBSD we also use interface routes as works and
+routes that target interfaces instead of IP addresses are less brittle.
+
+Tested using a server with ccd:
+
+   openvpn --server 10.33.0.0 255.255.192.0 --server-ipv6 fd00:f00f::1/64  =
+--client-config-dir ~/ccd [...]
+
+and a client with lwipvonpn and the following ccd file:
+
+   iroute-ipv6 FD00:F00F:CAFE::1001/64
+   ifconfig-ipv6-push FD00:F00F:D00D::77/64
+   push "setenv-safe ifconfig_ipv6_local_2 FD00:F00F:CAFE::1001"
+   push "setenv-safe ifconfig_ipv6_netbits_2 64"
+
+   iroute 10.234.234.0 255.255.255.0
+   ifconfig-push 10.11.12.13 255.255.255.0
+   push "setenv-safe ifconfig_local_2 10.234.234.12"
+   push "setenv-safe ifconfig_netmask_2 255.255.255.0"
+
+This setups an ifconfig-push addresses outside the --server/--server-ipv6
+network and additionally configures a iroute behind that client. The
+setenv-safe configure lwipovpn to use that additional IP addresses to allow
+testing via ping.
+
+Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/route.c
-M src/openvpn/route.h
-2 files changed, 23 insertions(+), 14 deletions(-)
+M doc/man-sections/server-options.rst
+M src/openvpn/dco.c
+M src/openvpn/mroute.h
+M src/openvpn/multi.c
+M src/openvpn/multi.h
+5 files changed, 157 insertions(+), 7 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/91/1191/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/92/1192/5
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index e504485..2bae681 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -710,25 +710,20 @@
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
+options.rst
+index ccc1374..9c7fa46 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -314,6 +314,10 @@
+   3.  Use ``--ifconfig-pool`` allocation for dynamic IP (last
+       choice).
+
++  When DCO is enabled and the IP is not in contained in the network specif=
+ied
++  by ``--ifconfig``, OpenVPN will install a /32 host route for the ``local=
+``
++  IP address.
++
+ --ifconfig-ipv6-push args
+   for ``--client-config-dir`` per-client static IPv6 interface
+   configuration, see ``--client-config-dir`` and ``--ifconfig-push`` for
+@@ -324,6 +328,10 @@
+
+      ifconfig-ipv6-push ipv6addr/bits ipv6remote
+=20
++  When DCO is enabled and the IP is not in contained in the network specif=
+ied
++  by ``--ifconfig-ipv6``, OpenVPN will install a /128 host route for the
++  ``ipv6addr`` IP address.
++
+ --multihome
+   Configure a multi-homed UDP server. This option needs to be used when a
+   server has more than one IP address (e.g. multiple interfaces, or
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 70a8c0a..e533d65 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -670,8 +670,14 @@
+         dco_win_add_iroute_ipv6(&c->c1.tuntap->dco, addr->v6.addr, addr->n=
+etbits,
+                                 c->c2.tls_multi->peer_id);
+ #else
++        const struct in6_addr *gateway =3D &mi->context.c2.push_ifconfig_i=
+pv6_local;
++        if (addr->type & MR_ONLINK_ADDR)
++        {
++            gateway =3D NULL;
++        }
++
+         net_route_v6_add(&m->top.net_ctx, &addr->v6.addr, addr->netbits,
+-                         &mi->context.c2.push_ifconfig_ipv6_local, c->c1.t=
+untap->actual_name, 0,
++                         gateway, c->c1.tuntap->actual_name, 0,
+                          DCO_IROUTE_METRIC);
+ #endif
+     }
+@@ -682,7 +688,13 @@
+                                 c->c2.tls_multi->peer_id);
+ #else
+         in_addr_t dest =3D htonl(addr->v4.addr);
+-        net_route_v4_add(&m->top.net_ctx, &dest, addr->netbits, &mi->conte=
+xt.c2.push_ifconfig_local,
++        const in_addr_t *gateway =3D &mi->context.c2.push_ifconfig_local;
++        if (addr->type & MR_ONLINK_ADDR)
++        {
++            gateway =3D NULL;
++        }
++
++        net_route_v4_add(&m->top.net_ctx, &dest, addr->netbits, gateway,
+                          c->c1.tuntap->actual_name, 0, DCO_IROUTE_METRIC);
+ #endif
+     }
+@@ -713,6 +725,18 @@
+                              DCO_IROUTE_METRIC);
+ #endif
+         }
++
++        /* Check if we added a host route as the assigned client IP addres=
+s was
++         * not in the on link scope defined by --ifconfig */
++        if (multi_check_push_ifconfig_extra_route(mi))
++        {
++#if defined(_WIN32)
++            dco_win_del_iroute_ipv4(&c->c1.tuntap->dco, mi->context.c2.pus=
+h_ifconfig_local, 32);
++#else
++            net_route_v4_del(&m->top.net_ctx, &mi->context.c2.push_ifconfi=
+g_local, 32,
++                             NULL, c->c1.tuntap->actual_name, 0, DCO_IROUT=
+E_METRIC);
++#endif
++        }
+     }
+
+     if (mi->context.c2.push_ifconfig_ipv6_defined)
+@@ -727,6 +751,18 @@
+                              DCO_IROUTE_METRIC);
+ #endif
+         }
++
++        /* Checked if we added a host route as the assigned client IP addr=
+ess was
++         * outside the --ifconfig-ipv6 tun interface config */
++        if (multi_check_push_ifconfig_ipv6_extra_route(mi))
++        {
++#if defined(_WIN32)
++            dco_win_del_iroute_ipv6(&c->c1.tuntap->dco, mi->context.c2.pus=
+h_ifconfig_ipv6_local, 128);
++#else
++            net_route_v6_del(&m->top.net_ctx, &mi->context.c2.push_ifconfi=
+g_ipv6_local, 128,
++                             NULL, c->c1.tuntap->actual_name, 0, DCO_IROUT=
+E_METRIC);
++#endif
++        }
+     }
+ #endif /* if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_=
+WIN32) */
+ }
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index 5b0c694..852ccb6 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -20,6 +20,7 @@
+  *  with this program; if not, see <https://www.gnu.org/licenses/>.
+  */
+
++
+ #ifndef MROUTE_H
+ #define MROUTE_H
+
+@@ -74,6 +75,9 @@
+ /* Address type mask indicating that proto # is part of address */
+ #define MR_WITH_PROTO 32
+
++/* MRoute is an on link/scope address rather than a route */
++#define MR_ONLINK_ADDR 64
++
+ struct mroute_addr
+ {
+     uint8_t len;     /* length of address */
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 6e4cc42..43ed4be 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -42,6 +42,7 @@
+ #include "ssl_ncp.h"
+ #include "vlan.h"
+ #include "auth_token.h"
++#include "route.h"
+ #include <inttypes.h>
+ #include <string.h>
+
+@@ -1240,11 +1241,26 @@
+         management_learn_addr(management, &mi->context.c2.mda_context, &ad=
+dr, primary);
+     }
+ #endif
+-    if (!primary)
++    if (primary && multi_check_push_ifconfig_extra_route(mi))
+     {
+-        /* "primary" is the VPN ifconfig address of the peer and already
+-         * known to DCO, so only install "extra" iroutes (primary =3D fals=
+e)
+-         */
++        /* "primary" is the VPN ifconfig address of the peer */
++        /* if it does not fall into the network defined by ifconfig_local
++         * we install this as extra onscope address on the interface  */
++        struct gc_arena gc =3D gc_new();
++        /* The IP address is not assigned inside the network of
++         * the DCO interface configured by --ifconfig */
++        msg(D_MULTI_LOW, "MULTI: Adding /32 on-link route for route %s -> =
+%s",
++            print_in_addr_t(remote_si.addr.in4.sin_addr.s_addr, 0, &gc),
++            multi_instance_string(mi, false, &gc));
++
++        addr.netbits =3D 32;
++        addr.type |=3D MR_ONLINK_ADDR;
++
++        dco_install_iroute(m, mi, &addr);
++        gc_free(&gc);
++    }
++    else if (!primary)
++    {
+         ASSERT(netbits >=3D 0); /* DCO requires populated netbits */
+         dco_install_iroute(m, mi, &addr);
+     }
+@@ -1278,7 +1294,25 @@
+         management_learn_addr(management, &mi->context.c2.mda_context, &ad=
+dr, primary);
+     }
+ #endif
+-    if (!primary)
++    if (primary && multi_check_push_ifconfig_ipv6_extra_route(mi))
++    {
++        /* "primary" is the VPN ifconfig address of the peer */
++        /* if it does not fall into the network defined by ifconfig_local
++         * we install this as extra onscope address on the interface  */
++        struct gc_arena gc =3D gc_new();
++        /* The IP address is not assigned to the interface of the DCO devi=
+ce */
++        msg(D_MULTI_LOW, "MULTI: Adding /128 on-link route for "
++                         "ifconfig-ipv6-push %s -> %s",
++            print_in6_addr(mi->context.options.push_ifconfig_ipv6_local, 0=
+, &gc),
++            multi_instance_string(mi, false, &gc));
++
++        addr.netbits =3D 128;
++        addr.type |=3D MR_ONLINK_ADDR;
++
++        dco_install_iroute(m, mi, &addr);
++        gc_free(&gc);
++    }
++    else if (!primary)
+     {
+         /* "primary" is the VPN ifconfig address of the peer and already
+          * known to DCO, so only install "extra" iroutes (primary =3D fals=
+e)
+@@ -4309,3 +4343,49 @@
+      *  }
+      */
+ }
++
++bool
++multi_check_push_ifconfig_extra_route(struct multi_instance *mi)
++{
++    struct options *o =3D &mi->context.options;
++    in_addr_t local_addr, local_netmask;
++
++    if (!o->ifconfig_local || !o->ifconfig_remote_netmask)
++    {
++        /* If we do not have a local address, we just return false as
++         * this check doesn't make sense. */
++        return false;
++    }
++
++    /* if it falls into the network defined by ifconfig_local we assume
++     * it is already known to DCO and only install "extra" iroutes  */
++    in_addr_t push_ifconfig_local =3D htonl(mi->context.c2.push_ifconfig_l=
+ocal);
++    inet_pton(AF_INET, o->ifconfig_local, &local_addr);
++    inet_pton(AF_INET, o->ifconfig_remote_netmask, &local_netmask);
++
++    return (local_addr & local_netmask) !=3D (push_ifconfig_local & local_=
+netmask);
++}
++
++bool
++multi_check_push_ifconfig_ipv6_extra_route(struct multi_instance *mi)
++{
++    struct options *o =3D &mi->context.options;
++
++    if (!o->ifconfig_ipv6_local || !o->ifconfig_ipv6_netbits)
++    {
++        /* If we do not have a local address, we just return false as
++         * this check doesn't make sense. */
++        return false;
++    }
++
++    /* if it falls into the network defined by ifconfig_local we assume
++     * it is already known to DCO and only install "extra" iroutes  */
++    struct in6_addr ifconfig_local;
++    if (inet_pton(AF_INET6, o->ifconfig_ipv6_local, &ifconfig_local) !=3D =
+1)
++    {
++        return false;
++    }
++
++    return (!ipv6_net_contains_host(&ifconfig_local, o->ifconfig_ipv6_netb=
+its,
++                                    &o->push_ifconfig_ipv6_local));
++}
+\ No newline at end of file
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 087c0e6..bc58d38 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -666,6 +666,28 @@
      return ret;
  }
 
--/* check whether an IPv6 host address is covered by a given route_ipv6
-- * (not the most beautiful implementation in the world, but portable and
-- * "good enough")
-- */
--static bool
--route_ipv6_match_host(const struct route_ipv6 *r6, const struct in6_addr *=
-host)
-+bool
-+ipv6_net_contains_host(const struct in6_addr *network, unsigned int bits, =
-const struct in6_addr *host)
- {
--    unsigned int bits =3D r6->netbits;
--    int i;
--    unsigned int mask;
--
-+    /* (not the most beautiful implementation in the world, but portable a=
-nd
-+     * "good enough") */
-     if (bits > 128)
-     {
-         return false;
-     }
-
-+    int i =3D 0;
-     for (i =3D 0; bits >=3D 8; i++, bits -=3D 8)
-     {
--        if (r6->network.s6_addr[i] !=3D host->s6_addr[i])
-+        if (network->s6_addr[i] !=3D host->s6_addr[i])
-         {
-             return false;
-         }
-@@ -739,9 +734,9 @@
-         return true;
-     }
-
--    mask =3D 0xff << (8 - bits);
-+    unsigned int mask =3D 0xff << (8 - bits);
-
--    if ((r6->network.s6_addr[i] & mask) =3D=3D (host->s6_addr[i] & mask))
-+    if ((network->s6_addr[i] & mask) =3D=3D (host->s6_addr[i] & mask))
-     {
-         return true;
-     }
-@@ -830,7 +825,8 @@
-                  * avoiding routing loops, so ignore this part and let
-                  * need_remote_ipv6_route always evaluate to false
-                  */
--                if (remote_host_ipv6 && route_ipv6_match_host(r6, remote_h=
-ost_ipv6))
-+                if (remote_host_ipv6
-+                    && ipv6_net_contains_host(&r6->network, r6->netbits, r=
-emote_host_ipv6))
-                 {
-                     need_remote_ipv6_route =3D true;
-                     msg(D_ROUTE,
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 9b6a47e..21f37a2 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -426,4 +426,17 @@
-     return rl && BOOL_CAST(rl->iflags & RL_DID_REDIRECT_DEFAULT_GATEWAY);
- }
-
-+
 +/**
-+ * check whether an IPv6 host address is covered by a given network/bits
-+ * @param network the network address
-+ * @param bits the network mask
-+ * @param host the host address to be checked if it is contained by the ne=
-twork
++ * Determines if the ifconfig_push_local address falls into the range of t=
+he local
++ * IP addresses of the VPN interface (ifconfig_local with ifconfig_remote_=
+netmask)
 + *
-+ * @return true if the host address is covered by the network with the giv=
-en
-+ *         network mask by bits
++ * @param mi           The multi-instance to check this condition for
++ *
++ * @return Returns true if ifconfig_push is outside that range and require=
+s an extra
++ * route to be installed.
 + */
 +bool
-+ipv6_net_contains_host(const struct in6_addr *network, unsigned int bits, =
-const struct in6_addr *host);
++multi_check_push_ifconfig_extra_route(struct multi_instance *mi);
 +
- #endif /* ifndef ROUTE_H */
++/**
++ * Determines if the ifconfig_ipv6_local address falls into the range of t=
+he local
++ * IP addresses of the VPN interface (ifconfig_local with ifconfig_remote_=
+netmask)
++ *
++ * @return Returns true if ifconfig_push is outside that range and require=
+s an extra
++ * route to be installed.
++ */
++bool
++multi_check_push_ifconfig_ipv6_extra_route(struct multi_instance *mi);
++
+ /*
+  * Check for signals.
+  */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
-Gerrit-Change-Number: 1191
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff
+Gerrit-Change-Number: 1192
+Gerrit-PatchSet: 5
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: ordex <antonio@...2726...>
@@ -165,112 +427,346 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Attention: d12fk <heiko@...515...>
 Gerrit-MessageType: newpatchset
 
---yRTKN5+dC+E=
+--Z4H9V9raL/k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
-/p>
-<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">View Chan=
+<p> Attention is currently required from: d12fk, flichtenheld, ordex, plais=
+thos. </p>
+<p>plaisthos <strong>uploaded patch set #5</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">View Chan=
 ge</a></p><p>The following approvals got outdated and were removed:
 Code-Review+1 by ordex</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Allow route_ipv6_match_host to be used outside of ro=
-ute.c<br><br>Also adjust style a bit to C99<br><br>Change-Id: Ief1495b52ea8=
-1cac35d78e40264372d3869423f1<br>Signed-off-by: Arne Schwabe &lt;arne@...2068...=
-7...&gt;<br>---<br>M src/openvpn/route.c<br>M src/openvpn/route.h<br>2 file=
-s changed, 23 insertions(+), 14 deletions(-)<br><br></pre><pre style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
-t.openvpn.net:29418/openvpn refs/changes/91/1191/4</pre><pre style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
-/openvpn/route.c b/src/openvpn/route.c</span><br><span>index e504485..2bae6=
-81 100644</span><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/s=
-rc/openvpn/route.c</span><br><span>@@ -710,25 +710,20 @@</span><br><span>  =
-   return ret;</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-/* check whether an IPv6 host address is co=
-vered by a given route_ipv6</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- * (not the most beautiful implementation in the world, but portable =
-and</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * &quot;good enou=
-gh&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-route_ipv6_match_host(const struct route=
-_ipv6 *r6, const struct in6_addr *host)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ipv6_net_contains_host(const struct in6_addr *network, unsigned int bi=
-ts, const struct in6_addr *host)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    unsigned int bits =3D r6-&gt;netbits;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    unsigned int mask;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    /* (not the most beautiful implementation in the=
- world, but portable and</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     * &quot;good enough&quot;) */</span><br><span>     if (bits &gt; =
-128)</span><br><span>     {</span><br><span>         return false;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    int i =3D 0;</span><br><span>     for (i =3D 0; bits &gt;=
-=3D 8; i++, bits -=3D 8)</span><br><span>     {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        if (r6-&gt;network.s6_addr[i] !=3D host-&=
-gt;s6_addr[i])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   if (network-&gt;s6_addr[i] !=3D host-&gt;s6_addr[i])</span><br><span>   =
-      {</span><br><span>             return false;</span><br><span>        =
- }</span><br><span>@@ -739,9 +734,9 @@</span><br><span>         return true=
-;</span><br><span>     }</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    mask =3D 0xff &lt;&lt; (8 - bits);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    unsigned int mask =3D 0xff &lt;=
-&lt; (8 - bits);</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    if ((r6-&gt;network.s6_addr[i] &amp; mask) =3D=3D (host-&g=
-t;s6_addr[i] &amp; mask))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if ((network-&gt;s6_addr[i] &amp; mask) =3D=3D (host-&gt;s6_addr[=
-i] &amp; mask))</span><br><span>     {</span><br><span>         return true=
-;</span><br><span>     }</span><br><span>@@ -830,7 +825,8 @@</span><br><spa=
-n>                  * avoiding routing loops, so ignore this part and let</=
-span><br><span>                  * need_remote_ipv6_route always evaluate t=
-o false</span><br><span>                  */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                if (remote_host_ipv6 &amp;&amp; rout=
-e_ipv6_match_host(r6, remote_host_ipv6))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                if (remote_host_ipv6</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                    &amp;&amp; ipv6_n=
-et_contains_host(&amp;r6-&gt;network, r6-&gt;netbits, remote_host_ipv6))</s=
-pan><br><span>                 {</span><br><span>                     need_=
-remote_ipv6_route =3D true;</span><br><span>                     msg(D_ROUT=
-E,</span><br><span>diff --git a/src/openvpn/route.h b/src/openvpn/route.h</=
-span><br><span>index 9b6a47e..21f37a2 100644</span><br><span>--- a/src/open=
-vpn/route.h</span><br><span>+++ b/src/openvpn/route.h</span><br><span>@@ -4=
-26,4 +426,17 @@</span><br><span>     return rl &amp;&amp; BOOL_CAST(rl-&gt;=
-iflags &amp; RL_DID_REDIRECT_DEFAULT_GATEWAY);</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * check whether an IPv6 host address is cover=
-ed by a given network/bits</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * @param network the network address</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * @param bits the network mask</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @param host the host address to be =
-checked if it is contained by the network</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * @return true if the host address is covered by the network with the=
- given</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         ne=
-twork mask by bits</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ipv6_net_contains_host(const str=
-uct in6_addr *network, unsigned int bits, const struct in6_addr *host);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endi=
-f /* ifndef ROUTE_H */</span><br><span></span><br></pre><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">change 11=
-91</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
+hite-space: pre-wrap;">Install host routes for ifconfig-push routes when DC=
+O is enabled<br><br>ifconfig-push and ifconfig-ipv6-push can configure the =
+IP address of a<br>client. If this IP address lies inside the network that =
+is configured<br>on the ovpn/tun device this works as expected as the routi=
+ng table point to<br>the ovpn/tun interface. However, if the IP address<br>=
+is outside that range, the IP packets are not forwarded to the ovpn/tun<br>=
+interface.<br><br>This patch adds logic to add host routes for these<br>ifc=
+onfig-push/ifconfig-ipv6-push addresses to ensure that traffic for<br>these=
+ IP addresses is also directed to the VPN.<br><br>For Linux it is important=
+ that these extra routes are routes using scope link<br>rather than static =
+since otherwise routes via these IP addresses, like<br>iroute, will not wor=
+k. On FreeBSD we also use interface routes as works and<br>routes that targ=
+et interfaces instead of IP addresses are less brittle.<br><br>Tested using=
+ a server with ccd:<br><br>   openvpn --server 10.33.0.0 255.255.192.0 --se=
+rver-ipv6 fd00:f00f::1/64  --client-config-dir ~/ccd [...]<br><br>and a cli=
+ent with lwipvonpn and the following ccd file:<br><br>   iroute-ipv6 FD00:F=
+00F:CAFE::1001/64<br>   ifconfig-ipv6-push FD00:F00F:D00D::77/64<br>   push=
+ &quot;setenv-safe ifconfig_ipv6_local_2 FD00:F00F:CAFE::1001&quot;<br>   p=
+ush &quot;setenv-safe ifconfig_ipv6_netbits_2 64&quot;<br><br>   iroute 10.=
+234.234.0 255.255.255.0<br>   ifconfig-push 10.11.12.13 255.255.255.0<br>  =
+ push &quot;setenv-safe ifconfig_local_2 10.234.234.12&quot;<br>   push &qu=
+ot;setenv-safe ifconfig_netmask_2 255.255.255.0&quot;<br><br>This setups an=
+ ifconfig-push addresses outside the --server/--server-ipv6<br>network and =
+additionally configures a iroute behind that client. The<br>setenv-safe con=
+figure lwipovpn to use that additional IP addresses to allow<br>testing via=
+ ping.<br><br>Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff<br>Signe=
+d-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M doc/man-sections=
+/server-options.rst<br>M src/openvpn/dco.c<br>M src/openvpn/mroute.h<br>M s=
+rc/openvpn/multi.c<br>M src/openvpn/multi.h<br>5 files changed, 157 inserti=
+ons(+), 7 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
+envpn refs/changes/92/1192/5</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/server-o=
+ptions.rst b/doc/man-sections/server-options.rst</span><br><span>index ccc1=
+374..9c7fa46 100644</span><br><span>--- a/doc/man-sections/server-options.r=
+st</span><br><span>+++ b/doc/man-sections/server-options.rst</span><br><spa=
+n>@@ -314,6 +314,10 @@</span><br><span>   3.  Use ``--ifconfig-pool`` alloc=
+ation for dynamic IP (last</span><br><span>       choice).</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  When DCO is enab=
+led and the IP is not in contained in the network specified</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  by ``--ifconfig``, OpenVPN will i=
+nstall a /32 host route for the ``local``</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  IP address.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> --ifconfig-ipv6-push args</span><br><span=
+>   for ``--client-config-dir`` per-client static IPv6 interface</span><br>=
+<span>   configuration, see ``--client-config-dir`` and ``--ifconfig-push``=
+ for</span><br><span>@@ -324,6 +328,10 @@</span><br><span> </span><br><span=
+>      ifconfig-ipv6-push ipv6addr/bits ipv6remote</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  When DCO is enabled and =
+the IP is not in contained in the network specified</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  by ``--ifconfig-ipv6``, OpenVPN will in=
+stall a /128 host route for the</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  ``ipv6addr`` IP address.</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span> --multihome</span><br><span>   Configu=
+re a multi-homed UDP server. This option needs to be used when a</span><br>=
+<span>   server has more than one IP address (e.g. multiple interfaces, or<=
+/span><br><span>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><b=
+r><span>index 70a8c0a..e533d65 100644</span><br><span>--- a/src/openvpn/dco=
+.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><span>@@ -670,8 +670,1=
+4 @@</span><br><span>         dco_win_add_iroute_ipv6(&amp;c-&gt;c1.tuntap-=
+&gt;dco, addr-&gt;v6.addr, addr-&gt;netbits,</span><br><span>              =
+                   c-&gt;c2.tls_multi-&gt;peer_id);</span><br><span> #else<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const struct=
+ in6_addr *gateway =3D &amp;mi-&gt;context.c2.push_ifconfig_ipv6_local;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (addr-&gt;ty=
+pe &amp; MR_ONLINK_ADDR)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       gateway =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span>         net_route_v6_add(&amp;m-&gt;top.net_ctx, &amp;addr-&gt=
+;v6.addr, addr-&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                         &amp;mi-&gt;context.c2.push_ifconfig_ipv6_lo=
+cal, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                         gateway, c-&gt;c1.tuntap-&gt;=
+actual_name, 0,</span><br><span>                          DCO_IROUTE_METRIC=
+);</span><br><span> #endif</span><br><span>     }</span><br><span>@@ -682,7=
+ +688,13 @@</span><br><span>                                 c-&gt;c2.tls_m=
+ulti-&gt;peer_id);</span><br><span> #else</span><br><span>         in_addr_=
+t dest =3D htonl(addr-&gt;v4.addr);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        net_route_v4_add(&amp;m-&gt;top.net_ctx, &amp;dest, a=
+ddr-&gt;netbits, &amp;mi-&gt;context.c2.push_ifconfig_local,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        const in_addr_t *gateway =
+=3D &amp;mi-&gt;context.c2.push_ifconfig_local;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        if (addr-&gt;type &amp; MR_ONLINK_ADDR)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            gateway =3D NULL;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        net_route_v4_add(&amp;m-&gt;top.net_ctx,=
+ &amp;dest, addr-&gt;netbits, gateway,</span><br><span>                    =
+      c-&gt;c1.tuntap-&gt;actual_name, 0, DCO_IROUTE_METRIC);</span><br><sp=
+an> #endif</span><br><span>     }</span><br><span>@@ -713,6 +725,18 @@</spa=
+n><br><span>                              DCO_IROUTE_METRIC);</span><br><sp=
+an> #endif</span><br><span>         }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       /* Check if we added a host route as the assigned client IP address =
+was</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * not i=
+n the on link scope defined by --ifconfig */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        if (multi_check_push_ifconfig_extra_route(=
+mi))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            dco_win_del_i=
+route_ipv4(&amp;c-&gt;c1.tuntap-&gt;dco, mi-&gt;context.c2.push_ifconfig_lo=
+cal, 32);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            net_route_v4=
+_del(&amp;m-&gt;top.net_ctx, &amp;mi-&gt;context.c2.push_ifconfig_local, 32=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+           NULL, c-&gt;c1.tuntap-&gt;actual_name, 0, DCO_IROUTE_METRIC);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</s=
+pan><br><span> </span><br><span>     if (mi-&gt;context.c2.push_ifconfig_ip=
+v6_defined)</span><br><span>@@ -727,6 +751,18 @@</span><br><span>          =
+                    DCO_IROUTE_METRIC);</span><br><span> #endif</span><br><=
+span>         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Checked if w=
+e added a host route as the assigned client IP address was</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+         * outside the --ifconfig-ip=
+v6 tun interface config */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        if (multi_check_push_ifconfig_ipv6_extra_route(mi))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            dco_win_del_iroute_ipv6(&a=
+mp;c-&gt;c1.tuntap-&gt;dco, mi-&gt;context.c2.push_ifconfig_ipv6_local, 128=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            net_route_v6_del(&a=
+mp;m-&gt;top.net_ctx, &amp;mi-&gt;context.c2.push_ifconfig_ipv6_local, 128,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+          NULL, c-&gt;c1.tuntap-&gt;actual_name, 0, DCO_IROUTE_METRIC);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</sp=
+an><br><span> #endif /* if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)=
+ || defined(_WIN32) */</span><br><span> }</span><br><span>diff --git a/src/=
+openvpn/mroute.h b/src/openvpn/mroute.h</span><br><span>index 5b0c694..852c=
+cb6 100644</span><br><span>--- a/src/openvpn/mroute.h</span><br><span>+++ b=
+/src/openvpn/mroute.h</span><br><span>@@ -20,6 +20,7 @@</span><br><span>  *=
+  with this program; if not, see &lt;https://www.gnu.org/licenses/&gt;.</sp=
+an><br><span>  */</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> #ifndef MROUTE_H</span><br><span> #define=
+ MROUTE_H</span><br><span> </span><br><span>@@ -74,6 +75,9 @@</span><br><sp=
+an> /* Address type mask indicating that proto # is part of address */</spa=
+n><br><span> #define MR_WITH_PROTO 32</span><br><span> </span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+/* MRoute is an on link/scope address r=
+ather than a route */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#define MR_ONLINK_ADDR 64</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span> struct mroute_addr</span><br><span> {</span><br><=
+span>     uint8_t len;     /* length of address */</span><br><span>diff --g=
+it a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 6e4cc4=
+2..43ed4be 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span=
+>+++ b/src/openvpn/multi.c</span><br><span>@@ -42,6 +42,7 @@</span><br><spa=
+n> #include &quot;ssl_ncp.h&quot;</span><br><span> #include &quot;vlan.h&qu=
+ot;</span><br><span> #include &quot;auth_token.h&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &quot;route.h&quot;</span><br><=
+span> #include &lt;inttypes.h&gt;</span><br><span> #include &lt;string.h&gt=
+;</span><br><span> </span><br><span>@@ -1240,11 +1241,26 @@</span><br><span=
+>         management_learn_addr(management, &amp;mi-&gt;context.c2.mda_cont=
+ext, &amp;addr, primary);</span><br><span>     }</span><br><span> #endif</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!primary)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (primary &amp;&amp;=
+ multi_check_push_ifconfig_extra_route(mi))</span><br><span>     {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        /* &quot;primary&quot;=
+ is the VPN ifconfig address of the peer and already</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-         * known to DCO, so only install &q=
+uot;extra&quot; iroutes (primary =3D false)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        /* &quot;primary&quot; is the VPN ifconfig address of=
+ the peer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ /* if it does not fall into the network defined by ifconfig_local</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+         * we install this a=
+s extra onscope address on the interface  */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        struct gc_arena gc =3D gc_new();</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        /* The IP address is =
+not assigned inside the network of</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+         * the DCO interface configured by --ifconfig */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW=
+, &quot;MULTI: Adding /32 on-link route for route %s -&gt; %s&quot;,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            print_in_addr_=
+t(remote_si.addr.in4.sin_addr.s_addr, 0, &amp;gc),</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            multi_instance_string(mi, false,=
+ &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        addr.netbits =3D 32=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        addr.type =
+|=3D MR_ONLINK_ADDR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco_instal=
+l_iroute(m, mi, &amp;addr);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    else if (!primary)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span>         ASSERT(netbits &gt;=3D 0); /* DCO require=
+s populated netbits */</span><br><span>         dco_install_iroute(m, mi, &=
+amp;addr);</span><br><span>     }</span><br><span>@@ -1278,7 +1294,25 @@</s=
+pan><br><span>         management_learn_addr(management, &amp;mi-&gt;contex=
+t.c2.mda_context, &amp;addr, primary);</span><br><span>     }</span><br><sp=
+an> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!pr=
+imary)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (prima=
+ry &amp;&amp; multi_check_push_ifconfig_ipv6_extra_route(mi))</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        /* &quot;primary&quot; is the VPN ifcon=
+fig address of the peer */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        /* if it does not fall into the network defined by ifconfig_=
+local</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * we =
+install this as extra onscope address on the interface  */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc =3D gc_ne=
+w();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* The =
+IP address is not assigned to the interface of the DCO device */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW, &quot=
+;MULTI: Adding /128 on-link route for &quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                         &quot;ifconfig-ipv6-push =
+%s -&gt; %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           print_in6_addr(mi-&gt;context.options.push_ifconfig_ipv6_local, =
+0, &amp;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     multi_instance_string(mi, false, &amp;gc));</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        addr.netbits =3D 128;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        addr.type |=3D MR_ONLINK_ADDR;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        dco_install_iroute(m, mi, &amp;addr);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    else if (!primary)</span><br><spa=
+n>     {</span><br><span>         /* &quot;primary&quot; is the VPN ifconfi=
+g address of the peer and already</span><br><span>          * known to DCO,=
+ so only install &quot;extra&quot; iroutes (primary =3D false)</span><br><s=
+pan>@@ -4309,3 +4343,49 @@</span><br><span>      *  }</span><br><span>     =
+ */</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+multi_check_push_ifconfig_extra=
+_route(struct multi_instance *mi)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct options *o =3D &amp;mi-&gt;context.options;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    in_addr_t local_addr, local_netmask;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!o-&gt;ifconfig_local || !o-&gt;i=
+fconfig_remote_netmask)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
+ If we do not have a local address, we just return false as</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+         * this check doesn&#39;t m=
+ake sense. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* if it falls into the network d=
+efined by ifconfig_local we assume</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+     * it is already known to DCO and only install &quot;ext=
+ra&quot; iroutes  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    in_addr_t push_ifconfig_local =3D htonl(mi-&gt;context.c2.push_ifconfi=
+g_local);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_p=
+ton(AF_INET, o-&gt;ifconfig_local, &amp;local_addr);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    inet_pton(AF_INET, o-&gt;ifconfig_rem=
+ote_netmask, &amp;local_netmask);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
+eturn (local_addr &amp; local_netmask) !=3D (push_ifconfig_local &amp; loca=
+l_netmask);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+multi_check_push_ifconfig_ipv6_extra_route(struct multi_inst=
+ance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    struct options *o =3D &a=
+mp;mi-&gt;context.options;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!o-&=
+gt;ifconfig_ipv6_local || !o-&gt;ifconfig_ipv6_netbits)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        /* If we do not have a local address, we just=
+ return false as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+      * this check doesn&#39;t make sense. */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
+* if it falls into the network defined by ifconfig_local we assume</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+     * it is already known t=
+o DCO and only install &quot;extra&quot; iroutes  */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr ifconfig_local;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (inet_pton(AF_INET=
+6, o-&gt;ifconfig_ipv6_local, &amp;ifconfig_local) !=3D 1)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
+turn (!ipv6_net_contains_host(&amp;ifconfig_local, o-&gt;ifconfig_ipv6_netb=
+its,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                     &amp;o-&gt;push_ifconfig_ipv6_local));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>\ No newline at e=
+nd of file</span><br><span>diff --git a/src/openvpn/multi.h b/src/openvpn/m=
+ulti.h</span><br><span>index 087c0e6..bc58d38 100644</span><br><span>--- a/=
+src/openvpn/multi.h</span><br><span>+++ b/src/openvpn/multi.h</span><br><sp=
+an>@@ -666,6 +666,28 @@</span><br><span>     return ret;</span><br><span> }=
+</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
+**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Determines if =
+the ifconfig_push_local address falls into the range of the local</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * IP addresses of the VPN in=
+terface (ifconfig_local with ifconfig_remote_netmask)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param mi           The multi-instance to check this co=
+ndition for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return Returns true i=
+f ifconfig_push is outside that range and requires an extra</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * route to be installed.</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+multi_check_push_ifconfig_extra_route(struct multi_instance =
+*mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * Determines if the ifconfig_ipv6_local address =
+falls into the range of the local</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * IP addresses of the VPN interface (ifconfig_local with ifc=
+onfig_remote_netmask)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return Retu=
+rns true if ifconfig_push is outside that range and requires an extra</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * route to be installed.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+multi_check_push_ifconfig_ipv6_extra_route(struct =
+multi_instance *mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span> /*</span><br><span>  * Check for signals.</span><br><spa=
+n>  */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">change 1192</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1192?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264=
-372d3869423f1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1191 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I83295e00d1a756dfa44050b0a44=
+93095fb050fff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1192 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -286,8 +782,10 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
 &gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---yRTKN5+dC+E=--
+--Z4H9V9raL/k=--
 
