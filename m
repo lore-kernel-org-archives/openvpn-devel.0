@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 17 Sep 2025 11:06:44 +0200
-Message-ID: <20250917090653.25510-1-gert@...1296...>
-In-Reply-To: <gerrit.1757934422000.I9b9f38e11b06701142bdc1339d9bedf080de5f86@...2715...>
-References: <gerrit.1757934422000.I9b9f38e11b06701142bdc1339d9bedf080de5f86@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Sep 2025 09:34:32 +0000
+References: <gerrit.1758101669000.Idb137ecbade4b0584a4d74aee34978062e247bc5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <004e85915ef06e2f585b5ed53a9d229ad84ec357-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] openvpnserv: Fix writing messages to the
- event log
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Ov2Xk8nJkek="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
+ dev-tools/gerrit-send-mail.py: include Gerrit URL into the commit mes...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,200 +18,172 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--Ov2Xk8nJkek=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-There are two problems with the current implementation:
+Attention is currently required from: flichtenheld, plaisthos.
 
- - due to the code bug, we never display actual error message
-corresponding to the Windows error code. We use
-FORMAT_MESSAGE_ALLOCATE_BUFFER, in which case we must pass
-a pointer to the LPTSTR, not the LPTSTR itself.
+Hello plaisthos, flichtenheld,
 
- - The error is not displayed in the "General" tab, which is very confusing.
-One needs to go to the "Details" tab to see what is wrong.
+I'd like you to do a code review.
+Please visit
 
-This commit solves both problems. We now display a proper error
-message in addition to the text provided by the service ("what went wrong").
-While on it, remove trailing symbols ín a safer way.
+    http://gerrit.openvpn.net/c/openvpn/+/1196?usp=3Demail
 
-To display the message in "General" tab, we create a registered message file
-(openvpnservmsg.dll), which contains message template. Note that this requires
-changes to the installer - we need to install the new DLL and
-add a registry entry.
+to review the following change.
 
-GitHub: https://github.com/OpenVPN/openvpn/issues/842
 
-Change-Id: I9b9f38e11b06701142bdc1339d9bedf080de5f86
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
+Change subject: dev-tools/gerrit-send-mail.py: include Gerrit URL into the =
+commit message
+......................................................................
+
+dev-tools/gerrit-send-mail.py: include Gerrit URL into the commit message
+
+We used to reference to one of the mailing list archives as the formal
+reference for the patch and the review discussions.  With the problematic
+reliability of the archives, I've started to manually add the URLs in
+the OpenVPN Gerrit to the commits because they give a better reference
+and (usually) all the feedback is there in a useful format.
+
+So, enhance this dev-tool script to do this automatically.
+
+Change-Id: Idb137ecbade4b0584a4d74aee34978062e247bc5
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
+M dev-tools/gerrit-send-mail.py
+1 file changed, 4 insertions(+), 2 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1185
-This mail reflects revision 3 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/1196/1
 
-        
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 17cd90c..201350c 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -6,11 +6,14 @@
- 
- add_executable(openvpnserv)
- 
-+set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
-+
- target_include_directories(openvpnserv PRIVATE
-     ${CMAKE_CURRENT_BINARY_DIR}/../../
-     ../../include/
-     ../openvpn/
-     ../compat/
-+    ${MC_GEN_DIR}
-     )
- target_sources(openvpnserv PRIVATE
-     common.c
-@@ -32,3 +35,34 @@
-     target_compile_options(openvpnserv PRIVATE -municode)
-     target_link_options(openvpnserv PRIVATE -municode)
- endif ()
-+
-+# below we generate a DLL which contains an event source for event log messages from eventmsg.mc template
-+file(MAKE_DIRECTORY ${MC_GEN_DIR})
-+set(MC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc)
-+
-+find_program(MC_COMPILER NAMES mc mc.exe x86_64-w64-mingw32-windmc i686-w64-mingw32-windmc windmc)
-+
-+if (NOT MC_COMPILER)
-+    message(FATAL_ERROR "No message compiler found.")
-+endif()
-+
-+add_custom_command(
-+    OUTPUT ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h
-+    COMMAND ${MC_COMPILER} -U -h ${MC_GEN_DIR} -r ${MC_GEN_DIR} ${MC_FILE}
-+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc
-+    VERBATIM
-+    )
-+
-+# generate rc file for DLL and header for the service binary
-+add_custom_target(msg_mc_gen ALL DEPENDS ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h)
-+
-+add_library(openvpnservmsg SHARED ${MC_GEN_DIR}/eventmsg.rc)
-+
-+if (MSVC)
-+    set_target_properties(openvpnservmsg PROPERTIES LINK_FLAGS "/NOENTRY")
-+else()
-+    target_link_options(openvpnservmsg PRIVATE "-Wl,--no-entry")
-+endif()
-+
-+add_dependencies(openvpnservmsg msg_mc_gen)
-+add_dependencies(openvpnserv msg_mc_gen)
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index bd0a484..feaae19 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -23,6 +23,7 @@
- 
- #include "service.h"
- #include "validate.h"
-+#include "eventmsg.h"
- 
- LPCTSTR service_instance = TEXT("");
- static wchar_t win_sys_path[MAX_PATH];
-@@ -219,24 +220,28 @@
-     LPTSTR tmp = NULL;
- 
-     error = GetLastError();
--    len = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
--                        NULL, error, LANG_NEUTRAL, tmp, 0, NULL);
-+    len = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM| FORMAT_MESSAGE_IGNORE_INSERTS,
-+                         NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&tmp, 0, NULL);
- 
--    if (len == 0 || (long) _countof(buf) < (long) len + 14)
-+    if (!len || !tmp)
-     {
--        buf[0] = TEXT('\0');
--    }
--    else
--    {
--        tmp[wcslen(tmp) - 2] = TEXT('\0'); /* remove CR/LF characters */
--        openvpn_swprintf(buf, _countof(buf), TEXT("%ls (0x%x)"), tmp, error);
-+        openvpn_swprintf(buf, _countof(buf), TEXT("Unknown error (0x%lx)"), error);
-+        if (tmp)
-+        {
-+            LocalFree(tmp);
-+        }
-+        return buf;
-     }
- 
--    if (tmp)
-+    /* trim trailing CR / LF / spaces safely */
-+    while (len && (tmp[len - 1] == TEXT('\r') || tmp[len - 1] == TEXT('\n') || tmp[len - 1] == TEXT(' ')))
-     {
--        LocalFree(tmp);
-+        tmp[--len] = TEXT('\0');
-     }
- 
-+    openvpn_swprintf(buf, _countof(buf), TEXT("%ls (0x%lx)"), tmp, error);
-+
-+    LocalFree(tmp);
-     return buf;
- }
- 
-@@ -268,9 +273,15 @@
-         va_end(arglist);
- 
-         const TCHAR *mesg[] = { msg[0], msg[1] };
--        ReportEvent(hEventSource, flags & MSG_FLAGS_ERROR ?
--                    EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,
--                    0, 0, NULL, 2, 0, mesg, NULL);
-+        ReportEvent(hEventSource,
-+                    flags & MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,
-+                    0,
-+                    EVT_TEXT_2,
-+                    NULL,
-+                    2,
-+                    0,
-+                    mesg,
-+                    NULL);
-         DeregisterEventSource(hEventSource);
-     }
- 
-diff --git a/src/openvpnserv/eventmsg.mc b/src/openvpnserv/eventmsg.mc
-new file mode 100644
-index 0000000..722a30e
---- /dev/null
-+++ b/src/openvpnserv/eventmsg.mc
-@@ -0,0 +1,23 @@
-+MessageIdTypedef=DWORD
-+
-+SeverityNames=(Success=0x0:STATUS_SEVERITY_SUCCESS
-+    Informational=0x1:STATUS_SEVERITY_INFORMATIONAL
-+    Warning=0x2:STATUS_SEVERITY_WARNING
-+    Error=0x3:STATUS_SEVERITY_ERROR
-+    )
-+
-+FacilityNames=(System=0x0:FACILITY_SYSTEM
-+    Runtime=0x2:FACILITY_RUNTIME
-+    Stubs=0x3:FACILITY_STUBS
-+    Io=0x4:FACILITY_IO_ERROR_CODE
-+)
-+
-+LanguageNames=(English=0x409:MSG00409)
-+
-+MessageId=0x1
-+Severity=Error
-+Facility=Runtime
-+SymbolicName=EVT_TEXT_2
-+Language=English
-+%1%n%2
-+.
+diff --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py
+index 0b49ae9..e412d10 100755
+--- a/dev-tools/gerrit-send-mail.py
++++ b/dev-tools/gerrit-send-mail.py
+@@ -99,19 +99,21 @@
+     assert comment_start > signed_off_end
+     acked_by_text =3D ""
+     acked_by_names =3D ""
++    gerrit_url =3D f"{args.url}/c/{details['project']}/+/{args.changeid}"
+     for ack in details["acked_by"]:
+         acked_by_text +=3D f"Acked-by: {ack}\n"
+         acked_by_names +=3D f"{ack}\n"
+     patch_text_mod =3D (
+         patch_text[:signed_off_end]
+         + signed_off_text
+-        + acked_by_text
++        + acked_by_text
++	+ f"Gerrit URL: {gerrit_url}\n"
+         + patch_text[signed_off_end:comment_start]
+         + f"""
+ This change was reviewed on Gerrit and approved by at least one
+ developer. I request to merge it to {details["target"]}.
+
+-Gerrit URL: {args.url}/c/{details["project"]}/+/{args.changeid}
++Gerrit URL: {gerrit_url}
+ This mail reflects revision {details["revision"]} of this Change.
+ {signed_off_comment}
+ Acked-by according to Gerrit (reflected above):
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1196?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Idb137ecbade4b0584a4d74aee34978062e247bc5
+Gerrit-Change-Number: 1196
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--Ov2Xk8nJkek=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1196?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dev-tools/gerrit-send-mail.py: include Gerrit URL into the c=
+ommit message<br><br>We used to reference to one of the mailing list archiv=
+es as the formal<br>reference for the patch and the review discussions.  Wi=
+th the problematic<br>reliability of the archives, I&#39;ve started to manu=
+ally add the URLs in<br>the OpenVPN Gerrit to the commits because they give=
+ a better reference<br>and (usually) all the feedback is there in a useful =
+format.<br><br>So, enhance this dev-tool script to do this automatically.<b=
+r><br>Change-Id: Idb137ecbade4b0584a4d74aee34978062e247bc5<br>Signed-off-by=
+: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M dev-tools/gerrit-send-ma=
+il.py<br>1 file changed, 4 insertions(+), 2 deletions(-)<br><br></pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/1196/1</pre><pre st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
+ --git a/dev-tools/gerrit-send-mail.py b/dev-tools/gerrit-send-mail.py</spa=
+n><br><span>index 0b49ae9..e412d10 100755</span><br><span>--- a/dev-tools/g=
+errit-send-mail.py</span><br><span>+++ b/dev-tools/gerrit-send-mail.py</spa=
+n><br><span>@@ -99,19 +99,21 @@</span><br><span>     assert comment_start &=
+gt; signed_off_end</span><br><span>     acked_by_text =3D &quot;&quot;</spa=
+n><br><span>     acked_by_names =3D &quot;&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    gerrit_url =3D f&quot;{args.url}/c/{detail=
+s[&#39;project&#39;]}/+/{args.changeid}&quot;</span><br><span>     for ack =
+in details[&quot;acked_by&quot;]:</span><br><span>         acked_by_text +=
+=3D f&quot;Acked-by: {ack}\n&quot;</span><br><span>         acked_by_names =
++=3D f&quot;{ack}\n&quot;</span><br><span>     patch_text_mod =3D (</span><=
+br><span>         patch_text[:signed_off_end]</span><br><span>         + si=
+gned_off_text</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
++ acked_by_text</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    + acked_by_text </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++	+ f&quot;Gerrit URL: {gerrit_url}\n&quot;</span><br><span>         + patc=
+h_text[signed_off_end:comment_start]</span><br><span>         + f&quot;&quo=
+t;&quot;</span><br><span> This change was reviewed on Gerrit and approved b=
+y at least one</span><br><span> developer. I request to merge it to {detail=
+s[&quot;target&quot;]}.</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-Gerrit URL: {args.url}/c/{details[&quot;project&quot;]}=
+/+/{args.changeid}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+G=
+errit URL: {gerrit_url}</span><br><span> This mail reflects revision {detai=
+ls[&quot;revision&quot;]} of this Change.</span><br><span> {signed_off_comm=
+ent}</span><br><span> Acked-by according to Gerrit (reflected above):</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1196?usp=3Demail">change 1196</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1196?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idb137ecbade4b0584a4d74aee34=
+978062e247bc5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1196 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--Ov2Xk8nJkek=--
 
