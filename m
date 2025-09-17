@@ -1,17 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Sep 2025 15:56:29 +0000
-In-Reply-To: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
-References: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...,
- gert@...1296...
-Message-ID: <82fb3ea01553be5492ef964d0fe303f4b146b2de-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hdPi55Rv2Tg="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Introduce msglvl_t
- to unify msglevel type handling
+Date: Wed, 17 Sep 2025 18:26:29 +0200 (CEST)
+Message-Id: <202509171626.58HGQTYh039521@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250917090557.25414-1-gert@...1296...>
+References: <20250917090557.25414-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: Fix writing
+ messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,114 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---hdPi55Rv2Tg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+So this has a bit of a complicated journey - the initial patch was
+gerrit 1183 for 2.6, which had v1..v3, and then this one for master,
+which only got up to v2 but is now the same code change, essentially.
 
-Attention is currently required from: cron2, ordex, plaisthos.
+I have tested a 2.6 installer with this, and it makes really nice 
+log entries in the event log - so definitely a MUST HAVE.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/1110?usp=3Demail )
+HEADS UP: when building installers with "autoconf" on mingw, this will
+not currently produce the necessary .dll to proceed.  I'll send a patch
+to add this.  The official way releases are built is "cmake with msvc"
+or "cmake with mingw", and both produce the new .dll - and for "just
+build a test openvpn.exe with configure/mingw" this is not critical
+(which is what I usually do).
 
-Change subject: Introduce msglvl_t to unify msglevel type handling
-......................................................................
+Your patch has been applied to the master branch.
 
+commit 06919a60ae61d6d88546b23b52092f742599a8ae
+Author: Lev Stipakov
+Date:   Wed Sep 17 11:05:48 2025 +0200
 
-Patch Set 16:
+     openvpnserv: Fix writing messages to the event log
 
-(1 comment)
-
-Patchset:
-
-PS10:
-> I just checked both patches and honestly it immediately looked weird to m=
-e that "flags" are stored i [=E2=80=A6]
-Acknowledged
-
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1188
+     Message-Id: <20250917090557.25414-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59234559/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id492cb774c6d022d06bb3cf5fec2a4bdd410e619
-Gerrit-Change-Number: 1110
-Gerrit-PatchSet: 16
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Wed, 17 Sep 2025 15:56:29 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Gerrit-MessageType: comment
+Gert Doering
 
---hdPi55Rv2Tg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1110?tab=3Dcomments">Patch Set #10:</a> </p><p><blockquote style=3D"border-=
-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I just checked both=
- patches and honestly it immediately looked weird to me that &quot;flags&qu=
-ot; are stored i [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Acknowledged</p></li></ul></li></ul><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail">=
-change 1110</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id492cb774c6d022d06bb3cf5fec=
-2a4bdd410e619 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1110 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 16 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Sep 2025 15:56:29=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---hdPi55Rv2Tg=--
 
