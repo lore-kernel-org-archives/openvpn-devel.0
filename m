@@ -1,17 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Sep 2025 17:20:01 +0000
-In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
+Date: Thu, 18 Sep 2025 17:21:20 +0000
+In-Reply-To: <gerrit.1758178873000.I071e8190dac28f429257b8af1c6f9e68f8896bc0@...2715...>
+References: <gerrit.1758178873000.I071e8190dac28f429257b8af1c6f9e68f8896bc0@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <e2a75ef0c77d616c0045025f168bf711e076a4bd-EmailReviewComments-HTML@...2715...>
+Message-ID: <8fc54722f667b66a45681b277cda581b033a81b9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WARD0DmCDfA="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
- writing messages to the event log
+Content-Type: multipart/alternative; boundary="G2izsV3tiKA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: fix building of
+ openvpnsrvmsg.dll from eventmsg.mc in mingw builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,119 +20,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WARD0DmCDfA=
+--G2izsV3tiKA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1188?usp=3Demail )
+Attention is currently required from: plaisthos, stipa.
 
-Change subject: openvpnserv: Fix writing messages to the event log
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1197?usp=3Demail )
+
+Change subject: fix building of openvpnsrvmsg.dll from eventmsg.mc in mingw=
+ builds
 ......................................................................
 
 
-Patch Set 3:
+Patch Set 4:
 
 (1 comment)
 
-Patchset:
+File src/openvpnserv/CMakeLists.txt:
 
-PS2:
-> That's the POST_BUILD task running a powershell script. [=E2=80=A6]
-Yep, we discovered as well.  It looked nice and calm and no errors, just di=
-dn't work ;-)
-
-#1197 has a patch that fixes this for good in our tests (cmake+msvc, cmake+=
-mingw, autoconf+mingw).  It might not be fully correct autoconf style yet, =
-but it works ;-)
+http://gerrit.openvpn.net/c/openvpn/+/1197/comment/873ee4aa_9d95209e :
+PS3, Line 64:     set_target_properties(openvpnservmsg PRIVATE "/NOENTRY")
+> My bad, this should be set_target_properties(openvpnservmsg PROPERTIES LI=
+NK_FLAGS "/NOENTRY") - basi [=E2=80=A6]
+Done
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
-Gerrit-Change-Number: 1188
-Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Change-Id: I071e8190dac28f429257b8af1c6f9e68f8896bc0
+Gerrit-Change-Number: 1197
+Gerrit-PatchSet: 4
+Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Comment-Date: Thu, 18 Sep 2025 17:20:01 +0000
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Thu, 18 Sep 2025 17:21:20 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
 Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---WARD0DmCDfA=
+--G2izsV3tiKA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">That&#39;s the POST_=
-BUILD task running a powershell script. [=E2=80=A6]</blockquote></p><p styl=
-e=3D"white-space: pre-wrap; word-wrap: break-word;">Yep, we discovered as w=
-ell.  It looked nice and calm and no errors, just didn&#39;t work ;-)</p><p=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">#1197 has a patch =
-that fixes this for good in our tests (cmake+msvc, cmake+mingw, autoconf+mi=
-ngw).  It might not be fully correct autoconf style yet, but it works ;-)</=
-p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-188?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/CMakeLists.txt=
+:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1197/comment/873ee4aa_9d95209e">Patch Set #3, Li=
+ne 64:</a> <code style=3D"font-family:monospace,monospace">    set_target_p=
+roperties(openvpnservmsg PRIVATE &quot;/NOENTRY&quot;)</code></p><p><blockq=
+uote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;=
+">My bad, this should be set_target_properties(openvpnservmsg PROPERTIES LI=
+NK_FLAGS &quot;/NOENTRY&quot;) - basi [=E2=80=A6]</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><=
+/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1197=
+?usp=3Demail">change 1197</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
-8034a73cf5905 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I071e8190dac28f429257b8af1c6=
+f9e68f8896bc0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1197 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 17:20:01=
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 17:21:20=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
 7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---WARD0DmCDfA=--
+--G2izsV3tiKA=--
 
