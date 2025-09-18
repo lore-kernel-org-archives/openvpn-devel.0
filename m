@@ -1,17 +1,17 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Sep 2025 23:39:32 +0000
-In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Thu, 18 Sep 2025 03:14:36 +0000
+In-Reply-To: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+References: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., gert@...1296...
-Message-ID: <9342ca215c1967a9b9c96ad04fa944799e579b06-EmailReviewComments-HTML@...2715...>
+ antonio@...2726...
+Message-ID: <5db28eca9ebc4010bb167bb931039fbbbd709132-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4ET4Wm5xhig="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
- writing messages to the event log
+Content-Type: multipart/alternative; boundary="wMFWkNsSB+8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow
+ route_ipv6_match_host to be used outside of route.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,130 +20,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4ET4Wm5xhig=
+--wMFWkNsSB+8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1188?usp=3Demail )
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-Change subject: openvpnserv: Fix writing messages to the event log
+d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1191?usp=3Demail )
+
+Change subject: Allow route_ipv6_match_host to be used outside of route.c
 ......................................................................
 
 
-Patch Set 3:
+Patch Set 4:
 
 (1 comment)
 
-Patchset:
+File src/openvpn/route.c:
 
-PS2:
-> FWIW, buildbot also has a mingw build and it shows it generates the file.=
- @selva.nair@...2916... [=E2=80=A6]
-If that is so, all is good. Does the log just show building, or is the dll =
-really generated as well? Also, is there a way to see buildbot logs -- for =
-me the link always times out trying to connect to some AWS site.
-
-Further, is --no-entry really a valid linker option? Googling brings it up =
-but that could be an "AI hallucination" based on MSVC's /NOENTRY. Anyway, I=
- cant get that option to work. A way to make DLLs with no entry point using=
- gnu linker is probably to pass -nostartfiles option to gcc.
-
-That said, I get no build errors -- just no dll to be found anyhere, nor th=
-e command building it is in the verbose logs.(https://gist.github.com/selva=
-nair/7145365eab2b38c2c961646efca692ea).
+http://gerrit.openvpn.net/c/openvpn/+/1191/comment/80b8c376_b808626c :
+PS1, Line 719: route_ipv6_match_host(const struct in6_addr *network, unsign=
+ed int bits, const struct in6_addr *host)
+> I agree - that also makes it obvious that there is no route involved anym=
+ore
+Done
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
-Gerrit-Change-Number: 1188
-Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
+Gerrit-Change-Number: 1191
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Comment-Date: Wed, 17 Sep 2025 23:39:32 +0000
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Thu, 18 Sep 2025 03:14:36 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
-Comment-In-Reply-To: stipa <lstipakov@...277...>
+Comment-In-Reply-To: ordex <antonio@...2726...>
+Comment-In-Reply-To: d12fk <heiko@...515...>
 Gerrit-MessageType: comment
 
---4ET4Wm5xhig=
+--wMFWkNsSB+8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">FWIW, buildbot also =
-has a mingw build and it shows it generates the file. @selva.nair@...2917...=
-. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">If that is so, all is good. Does the log just show building, =
-or is the dll really generated as well? Also, is there a way to see buildbo=
-t logs -- for me the link always times out trying to connect to some AWS si=
-te. </p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Further,=
- is --no-entry really a valid linker option? Googling brings it up but that=
- could be an &quot;AI hallucination&quot; based on MSVC&#39;s /NOENTRY. Any=
-way, I cant get that option to work. A way to make DLLs with no entry point=
- using gnu linker is probably to pass -nostartfiles option to gcc.</p><p st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">That said, I get no b=
-uild errors -- just no dll to be found anyhere, nor the command building it=
- is in the verbose logs.(https://gist.github.com/selvanair/7145365eab2b38c2=
-c961646efca692ea).</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">change 1188</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1188?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/route.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1191/comment/80b8c376_b808626c">Patch Set #1, Line 719:</a>=
+ <code style=3D"font-family:monospace,monospace">route_ipv6_match_host(cons=
+t struct in6_addr *network, unsigned int bits, const struct in6_addr *host)=
+</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10p=
+x 0; padding: 0 10px;">I agree - that also makes it obvious that there is n=
+o route involved anymore</blockquote></p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">change 1191<=
+/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
+p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
-8034a73cf5905 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264=
+372d3869423f1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1191 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Sep 2025 23:39:32=
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 03:14:36=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---4ET4Wm5xhig=--
+--wMFWkNsSB+8=--
 
