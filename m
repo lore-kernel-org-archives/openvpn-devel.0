@@ -1,17 +1,13 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Sep 2025 15:17:20 +0000
-In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., gert@...1296...
-Message-ID: <b21b71d54a4f2cb27ef47c34922b74670e85c818-EmailReviewComments-HTML@...2715...>
+Message-ID: <cd8193c9-1af8-4182-8e6a-a769acfde340@...109...>
+Date: Thu, 18 Sep 2025 18:29:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="h9y3H7PU49o="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
- writing messages to the event log
+References: <20250912112420.4394-1-mmietus97@...109...>
+ <20250912112420.4394-4-mmietus97@...109...> <aMlApjuzBJsHVMjN@...2915...>
+Content-Language: en-US
+From: Marek Mietus <mmietus97@...109...>
+In-Reply-To: <aMlApjuzBJsHVMjN@...2915...>
+Subject: Re: [Openvpn-devel] [PATCH net-next v2 3/3] net: ovpn: use new
+ noref xmit flow in ovpn_udp4_output
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,115 +16,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Sabrina Dubroca <sd@...2891...>
+Cc: netdev@...2909..., antonio@...515..., kuba@...2912..., openvpn-devel@lists.sourceforge.net
 
---h9y3H7PU49o=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+W dniu 9/16/25 o 12:49, Sabrina Dubroca pisze:
+> 2025-09-12, 13:24:20 +0200, Marek Mietus wrote:
+>> ovpn_udp4_output unnecessarily references the dst_entry from the
+>> dst_cache.
+> 
+> This should probably include a description of why it's safe to skip
+> the reference in this context.
+> 
 
-selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/1188?usp=3Demail )
+Noted, will do.
 
-Change subject: openvpnserv: Fix writing messages to the event log
-......................................................................
+>> Reduce this overhead by using the newly implemented
+>> udp_tunnel_xmit_skb_noref function and dst_cache helpers.
+>>
+>> Signed-off-by: Marek Mietus <mmietus97@...109...>
+>> ---
+>>  drivers/net/ovpn/udp.c | 12 ++++++------
+>>  1 file changed, 6 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+>> index d6a0f7a0b75d..c5d289c23d2b 100644
+>> --- a/drivers/net/ovpn/udp.c
+>> +++ b/drivers/net/ovpn/udp.c
+>> @@ -158,7 +158,7 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+>>  	int ret;
+>>  
+>>  	local_bh_disable();
+>> -	rt = dst_cache_get_ip4(cache, &fl.saddr);
+>> +	rt = dst_cache_get_ip4_rcu(cache, &fl.saddr);
+>>  	if (rt)
+>>  		goto transmit;
+>>  
+>> @@ -194,12 +194,12 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+>>  				    ret);
+>>  		goto err;
+>>  	}
+>> -	dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
+>> +	dst_cache_steal_ip4(cache, &rt->dst, fl.saddr);
+>>  
+>>  transmit:
+>> -	udp_tunnel_xmit_skb(rt, sk, skb, fl.saddr, fl.daddr, 0,
+>> -			    ip4_dst_hoplimit(&rt->dst), 0, fl.fl4_sport,
+>> -			    fl.fl4_dport, false, sk->sk_no_check_tx, 0);
+>> +	udp_tunnel_xmit_skb_noref(rt, sk, skb, fl.saddr, fl.daddr, 0,
+>> +				  ip4_dst_hoplimit(&rt->dst), 0, fl.fl4_sport,
+>> +				  fl.fl4_dport, false, sk->sk_no_check_tx, 0);
+>>  	ret = 0;
+>>  err:
+>>  	local_bh_enable();
+>> @@ -269,7 +269,7 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+>>  	 * fragment packets if needed.
+>>  	 *
+>>  	 * NOTE: this is not needed for IPv4 because we pass df=0 to
+>> -	 * udp_tunnel_xmit_skb()
+>> +	 * udp_tunnel_xmit_skb_noref()
+>>  	 */
+>>  	skb->ignore_df = 1;
+>>  	udp_tunnel6_xmit_skb(dst, sk, skb, skb->dev, &fl.saddr, &fl.daddr, 0,
+> 
+> Why are you changing only ipv4? Is there something in the ipv6 code
+> that prevents this?
+> 
 
-
-Patch Set 3:
-
-(1 comment)
-
-Patchset:
-
-PS2:
-> Line #336 has something, the target binary is "libopenvpnservmsg.dll" [=
-=E2=80=A6]
-That's the POST_BUILD task running a powershell script. Apparently that scr=
-ipt appears to just exit if neither source binary nor target binary is foun=
-d. There is no linking steps for this dll in the verbose logs.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
-Gerrit-Change-Number: 1188
-Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Comment-Date: Thu, 18 Sep 2025 15:17:20 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-Gerrit-MessageType: comment
-
---h9y3H7PU49o=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Line #336 has someth=
-ing, the target binary is &quot;libopenvpnservmsg.dll&quot; [=E2=80=A6]</bl=
-ockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Tha=
-t&#39;s the POST_BUILD task running a powershell script. Apparently that sc=
-ript appears to just exit if neither source binary nor target binary is fou=
-nd. There is no linking steps for this dll in the verbose logs.</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
-8034a73cf5905 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 15:17:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---h9y3H7PU49o=--
+I'm not sure. I'm not as acquainted with IPv6 as I am with IPv4. (and thought I'd hold off
+until I got a positive response about the series)
+IPv4 already has some noref xmit optimizations, so it just felt like the right place to start.
 
