@@ -1,17 +1,17 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Sep 2025 03:16:17 +0000
-In-Reply-To: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
-References: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
+Date: Thu, 18 Sep 2025 03:16:24 +0000
+In-Reply-To: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
+References: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <ac7b0057fa922fcc1aa69c693e0285a2b29d38b6-EmailReviewComments-HTML@...2715...>
+Message-ID: <c0f8fd5d1f3071fdb69f33dedd74922e27e00ef6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4cx+59P1ItI="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Install host routes
- for ifconfig-push routes when DCO is enabled
+Content-Type: multipart/alternative; boundary="Ql7jTpEH/Z4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow
+ route_ipv6_match_host to be used outside of route.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,33 +23,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4cx+59P1ItI=
+--Ql7jTpEH/Z4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, ordex, plaisthos.
 
 d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1192?usp=3Demail )
+nvpn/+/1191?usp=3Demail )
 
-Change subject: Install host routes for ifconfig-push routes when DCO is en=
-abled
+Change subject: Allow route_ipv6_match_host to be used outside of route.c
 ......................................................................
 
 
-Patch Set 7: Code-Review+1
+Patch Set 4: Code-Review+1
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff
-Gerrit-Change-Number: 1192
-Gerrit-PatchSet: 7
+Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
+Gerrit-Change-Number: 1191
+Gerrit-PatchSet: 4
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -58,35 +57,35 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Thu, 18 Sep 2025 03:16:17 +0000
+Gerrit-Comment-Date: Thu, 18 Sep 2025 03:16:24 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---4cx+59P1ItI=
+--Ql7jTpEH/Z4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
 /p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail=
-">change 1192</a>. To unsubscribe, or for help writing mail filters, visit =
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail=
+">change 1191</a>. To unsubscribe, or for help writing mail filters, visit =
 <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
 ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
 action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail"/><meta itempr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail"/><meta itempr=
 op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I83295e00d1a756dfa44050b0a44=
-93095fb050fff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1192 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264=
+372d3869423f1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1191 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
@@ -103,12 +102,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
 &gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 03:16:17=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 03:16:24=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---4cx+59P1ItI=--
+--Ql7jTpEH/Z4=--
 
