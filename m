@@ -1,15 +1,17 @@
-Message-ID: <c17df80c-35ba-4671-8cf2-e54e72da2374@...109...>
-Date: Thu, 18 Sep 2025 18:31:01 +0200
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 18 Sep 2025 17:20:01 +0000
+In-Reply-To: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+References: <gerrit.1757943505000.I423c9880def0eb479abb72bef2e8034a73cf5905@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <e2a75ef0c77d616c0045025f168bf711e076a4bd-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <20250909054333.12572-1-mmietus97.ref@...109...>
- <20250909054333.12572-1-mmietus97@...109...>
- <b8b604f7-c5c3-4257-93da-8f6881e96fe4@...515...>
- <8e6b83b3-c986-4d6e-b61a-363e13bf1ddc@...109...> <aMk_U3zeHviJC1GI@...2915...>
-Content-Language: en-US
-From: Marek Mietus <mmietus97@...109...>
-In-Reply-To: <aMk_U3zeHviJC1GI@...2915...>
-Subject: Re: [Openvpn-devel] [PATCH net-next 0/3] net: tunnel: introduce
- noref xmit flows for tunnels
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="WARD0DmCDfA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
+ writing messages to the event log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,54 +20,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Sabrina Dubroca <sd@...2891...>
-Cc: Antonio Quartulli <antonio@...515...>, netdev@...2909..., openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-W dniu 9/16/25 o 12:43, Sabrina Dubroca pisze:
-> 2025-09-09, 16:43:01 +0200, Marek Mietus wrote:
->> W dniu 9/9/25 o 13:17, Antonio Quartulli pisze:
->>> On 09/09/2025 07:43, Marek Mietus wrote:
->>>> Currently, all xmit flows use dst_cache in a way that references
->>>> its dst_entry for each xmitted packet. These atomic operations
->>>> are redundant in some flows.
->>>
->>> Can you elaborate on the current limits/drawbacks and explain what we gain with this new approach?
->>>
->>> It may be obvious for some, but it's not for me.
->>>
->>
->> The only difference with the new approach is that we avoid taking an unnecessary
->> reference on dst_entry. This is possible since the entire flow is protected by RCU.
->> This change reduces an atomic write operation on every xmit, resulting in a performance
->> improvement.
-> 
-> It would be nice to incorporate this information into the cover
-> letter, and to provide numbers showing the performance
-> improvement. That way, it's available to other reviewers and gets
-> recorded in the git log. Are you doing crypto with some accelerator?
-> Otherwise I'd imagine skipping a few atomic operations is not really
-> noticeable.
-> 
->> There are other flows in the kernel where a similar approach is used (e.g. __ip_queue_xmit
->> uses skb_dst_set_noref).
->>
->>> Also it sounded as if more tunnels were affected, but in the end only ovpn is being changed.
->>> Does it mean all other tunnels don't need this?
->>>
->>
->> More tunneling code can be updated to utilize these new helpers. I only worked
->> on OpenVPN, as I am more familiar with it. It was very easy to implement the
->> changes in OpenVPN because it doesn't use the udp_tunnel_dst_lookup helper
->> that adds some complexity.
->>
->> I hope to incorporate these changes in more tunnels in the future.
-> 
-> It would also be good to add this to the cover letter. Something like
-> "For now, only ovpn is updated <for $reason>, but other tunnels could
-> also take advantage of this."
-> 
+--WARD0DmCDfA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Noted, will add in the next revision.
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1188?usp=3Demail )
+
+Change subject: openvpnserv: Fix writing messages to the event log
+......................................................................
+
+
+Patch Set 3:
+
+(1 comment)
+
+Patchset:
+
+PS2:
+> That's the POST_BUILD task running a powershell script. [=E2=80=A6]
+Yep, we discovered as well.  It looked nice and calm and no errors, just di=
+dn't work ;-)
+
+#1197 has a patch that fixes this for good in our tests (cmake+msvc, cmake+=
+mingw, autoconf+mingw).  It might not be fully correct autoconf style yet, =
+but it works ;-)
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I423c9880def0eb479abb72bef2e8034a73cf5905
+Gerrit-Change-Number: 1188
+Gerrit-PatchSet: 3
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Comment-Date: Thu, 18 Sep 2025 17:20:01 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: selvanair <selva.nair@...277...>
+Comment-In-Reply-To: stipa <lstipakov@...277...>
+Gerrit-MessageType: comment
+
+--WARD0DmCDfA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1188?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1188?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">That&#39;s the POST_=
+BUILD task running a powershell script. [=E2=80=A6]</blockquote></p><p styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">Yep, we discovered as w=
+ell.  It looked nice and calm and no errors, just didn&#39;t work ;-)</p><p=
+ style=3D"white-space: pre-wrap; word-wrap: break-word;">#1197 has a patch =
+that fixes this for good in our tests (cmake+msvc, cmake+mingw, autoconf+mi=
+ngw).  It might not be fully correct autoconf style yet, but it works ;-)</=
+p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1188?usp=3Demail">change 1188</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+188?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
+div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I423c9880def0eb479abb72bef2e=
+8034a73cf5905 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1188 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 17:20:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
+...277...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--WARD0DmCDfA=--
 
