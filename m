@@ -1,13 +1,15 @@
-Message-ID: <cd8193c9-1af8-4182-8e6a-a769acfde340@...109...>
-Date: Thu, 18 Sep 2025 18:29:08 +0200
+Message-ID: <c17df80c-35ba-4671-8cf2-e54e72da2374@...109...>
+Date: Thu, 18 Sep 2025 18:31:01 +0200
 MIME-Version: 1.0
-References: <20250912112420.4394-1-mmietus97@...109...>
- <20250912112420.4394-4-mmietus97@...109...> <aMlApjuzBJsHVMjN@...2915...>
+References: <20250909054333.12572-1-mmietus97.ref@...109...>
+ <20250909054333.12572-1-mmietus97@...109...>
+ <b8b604f7-c5c3-4257-93da-8f6881e96fe4@...515...>
+ <8e6b83b3-c986-4d6e-b61a-363e13bf1ddc@...109...> <aMk_U3zeHviJC1GI@...2915...>
 Content-Language: en-US
 From: Marek Mietus <mmietus97@...109...>
-In-Reply-To: <aMlApjuzBJsHVMjN@...2915...>
-Subject: Re: [Openvpn-devel] [PATCH net-next v2 3/3] net: ovpn: use new
- noref xmit flow in ovpn_udp4_output
+In-Reply-To: <aMk_U3zeHviJC1GI@...2915...>
+Subject: Re: [Openvpn-devel] [PATCH net-next 0/3] net: tunnel: introduce
+ noref xmit flows for tunnels
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +21,51 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Sabrina Dubroca <sd@...2891...>
-Cc: netdev@...2909..., antonio@...515..., kuba@...2912..., openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>, netdev@...2909..., openvpn-devel@lists.sourceforge.net
 
-W dniu 9/16/25 o 12:49, Sabrina Dubroca pisze:
-> 2025-09-12, 13:24:20 +0200, Marek Mietus wrote:
->> ovpn_udp4_output unnecessarily references the dst_entry from the
->> dst_cache.
-> 
-> This should probably include a description of why it's safe to skip
-> the reference in this context.
-> 
-
-Noted, will do.
-
->> Reduce this overhead by using the newly implemented
->> udp_tunnel_xmit_skb_noref function and dst_cache helpers.
+W dniu 9/16/25 o 12:43, Sabrina Dubroca pisze:
+> 2025-09-09, 16:43:01 +0200, Marek Mietus wrote:
+>> W dniu 9/9/25 o 13:17, Antonio Quartulli pisze:
+>>> On 09/09/2025 07:43, Marek Mietus wrote:
+>>>> Currently, all xmit flows use dst_cache in a way that references
+>>>> its dst_entry for each xmitted packet. These atomic operations
+>>>> are redundant in some flows.
+>>>
+>>> Can you elaborate on the current limits/drawbacks and explain what we gain with this new approach?
+>>>
+>>> It may be obvious for some, but it's not for me.
+>>>
 >>
->> Signed-off-by: Marek Mietus <mmietus97@...109...>
->> ---
->>  drivers/net/ovpn/udp.c | 12 ++++++------
->>  1 file changed, 6 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
->> index d6a0f7a0b75d..c5d289c23d2b 100644
->> --- a/drivers/net/ovpn/udp.c
->> +++ b/drivers/net/ovpn/udp.c
->> @@ -158,7 +158,7 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
->>  	int ret;
->>  
->>  	local_bh_disable();
->> -	rt = dst_cache_get_ip4(cache, &fl.saddr);
->> +	rt = dst_cache_get_ip4_rcu(cache, &fl.saddr);
->>  	if (rt)
->>  		goto transmit;
->>  
->> @@ -194,12 +194,12 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
->>  				    ret);
->>  		goto err;
->>  	}
->> -	dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
->> +	dst_cache_steal_ip4(cache, &rt->dst, fl.saddr);
->>  
->>  transmit:
->> -	udp_tunnel_xmit_skb(rt, sk, skb, fl.saddr, fl.daddr, 0,
->> -			    ip4_dst_hoplimit(&rt->dst), 0, fl.fl4_sport,
->> -			    fl.fl4_dport, false, sk->sk_no_check_tx, 0);
->> +	udp_tunnel_xmit_skb_noref(rt, sk, skb, fl.saddr, fl.daddr, 0,
->> +				  ip4_dst_hoplimit(&rt->dst), 0, fl.fl4_sport,
->> +				  fl.fl4_dport, false, sk->sk_no_check_tx, 0);
->>  	ret = 0;
->>  err:
->>  	local_bh_enable();
->> @@ -269,7 +269,7 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
->>  	 * fragment packets if needed.
->>  	 *
->>  	 * NOTE: this is not needed for IPv4 because we pass df=0 to
->> -	 * udp_tunnel_xmit_skb()
->> +	 * udp_tunnel_xmit_skb_noref()
->>  	 */
->>  	skb->ignore_df = 1;
->>  	udp_tunnel6_xmit_skb(dst, sk, skb, skb->dev, &fl.saddr, &fl.daddr, 0,
+>> The only difference with the new approach is that we avoid taking an unnecessary
+>> reference on dst_entry. This is possible since the entire flow is protected by RCU.
+>> This change reduces an atomic write operation on every xmit, resulting in a performance
+>> improvement.
 > 
-> Why are you changing only ipv4? Is there something in the ipv6 code
-> that prevents this?
+> It would be nice to incorporate this information into the cover
+> letter, and to provide numbers showing the performance
+> improvement. That way, it's available to other reviewers and gets
+> recorded in the git log. Are you doing crypto with some accelerator?
+> Otherwise I'd imagine skipping a few atomic operations is not really
+> noticeable.
+> 
+>> There are other flows in the kernel where a similar approach is used (e.g. __ip_queue_xmit
+>> uses skb_dst_set_noref).
+>>
+>>> Also it sounded as if more tunnels were affected, but in the end only ovpn is being changed.
+>>> Does it mean all other tunnels don't need this?
+>>>
+>>
+>> More tunneling code can be updated to utilize these new helpers. I only worked
+>> on OpenVPN, as I am more familiar with it. It was very easy to implement the
+>> changes in OpenVPN because it doesn't use the udp_tunnel_dst_lookup helper
+>> that adds some complexity.
+>>
+>> I hope to incorporate these changes in more tunnels in the future.
+> 
+> It would also be good to add this to the cover letter. Something like
+> "For now, only ovpn is updated <for $reason>, but other tunnels could
+> also take advantage of this."
 > 
 
-I'm not sure. I'm not as acquainted with IPv6 as I am with IPv4. (and thought I'd hold off
-until I got a positive response about the series)
-IPv4 already has some noref xmit optimizations, so it just felt like the right place to start.
+Noted, will add in the next revision.
 
