@@ -1,15 +1,15 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Sep 2025 08:13:48 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 18 Sep 2025 09:44:52 +0000
 In-Reply-To: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
 References: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, antonio@...2726...,
  gert@...1296...
-Message-ID: <6420e7806581929841db637743d1df278bb4c072-EmailReviewComments-HTML@...2715...>
+Message-ID: <d86fbf37110b1585c53d8438761172e9f8b097c0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jORdBdq9aM0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="UIyd3Hdn+OI="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Introduce msglvl_t
  to unify msglevel type handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,17 +20,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jORdBdq9aM0=
+--UIyd3Hdn+OI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: ordex, plaisthos.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/1110?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/1110?usp=3Demail )
 
 Change subject: Introduce msglvl_t to unify msglevel type handling
 ......................................................................
@@ -42,15 +41,12 @@ Patch Set 16:
 
 File src/openvpn/error.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1110/comment/e38154f9_4a81f5bc :
+http://gerrit.openvpn.net/c/openvpn/+/1110/comment/e7d1179f_51d3b84a :
 PS16, Line 104: set_debug_level(const int level, const unsigned int flags)
-why not turning this into msglvl_t too?
-I see it normally gets passed o->verbosity, but it could also be turned to =
-msglvl_t as well since it never gets assigned a negative number.
-
-The only situation to check is manage.c:1467. The mgmt interface technicall=
-y accepts "verb -1", but it is a bogus case. We could force it to be positi=
-ve as well.
+> why not turning this into msglvl_t too? [=E2=80=A6]
+I considered it, but then decided to leave it as is. I had to draw a bounda=
+ry somewhere. We could definitely change it in a separate commit but this o=
+ne is big enough as it is.
 
 
 
@@ -70,39 +66,38 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: ordex <antonio@...2726...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 18 Sep 2025 08:13:48 +0000
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Thu, 18 Sep 2025 09:44:52 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: ordex <antonio@...2726...>
 Gerrit-MessageType: comment
 
---jORdBdq9aM0=
+--UIyd3Hdn+OI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p> Attention is currently required from: ordex, plaisthos. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/error.c:</p><ul st=
 yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1110/comment/e38154f9_4a81f5bc">Patch Set #16, Line 104:</a=
+net/c/openvpn/+/1110/comment/e7d1179f_51d3b84a">Patch Set #16, Line 104:</a=
 > <code style=3D"font-family:monospace,monospace">set_debug_level(const int=
- level, const unsigned int flags)</code></p><p style=3D"white-space: pre-wr=
-ap; word-wrap: break-word;">why not turning this into msglvl_t too?<br>I se=
-e it normally gets passed o-&gt;verbosity, but it could also be turned to m=
-sglvl_t as well since it never gets assigned a negative number.</p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">The only situation to ch=
-eck is manage.c:1467. The mgmt interface technically accepts &quot;verb -1&=
-quot;, but it is a bogus case. We could force it to be positive as well.</p=
-></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1110?usp=3Demail">change 1110</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/11=
-10?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+ level, const unsigned int flags)</code></p><p><blockquote style=3D"border-=
+left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">why not turning thi=
+s into msglvl_t too? [=E2=80=A6]</blockquote></p><p style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">I considered it, but then decided to leave=
+ it as is. I had to draw a boundary somewhere. We could definitely change i=
+t in a separate commit but this one is big enough as it is.</p></li></ul></=
+li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1110?usp=3Demail">change 1110</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -122,14 +117,16 @@ ts.sourceforge.net&gt; </div>
 div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 08:13:48=
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 09:44:52=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---jORdBdq9aM0=--
+--UIyd3Hdn+OI=--
 
