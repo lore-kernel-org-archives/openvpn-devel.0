@@ -1,16 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Sep 2025 07:27:23 +0000
-In-Reply-To: <gerrit.1758178873000.I071e8190dac28f429257b8af1c6f9e68f8896bc0@...2715...>
-References: <gerrit.1758178873000.I071e8190dac28f429257b8af1c6f9e68f8896bc0@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1a21ccffd691a994c3b7cbd213036b15d56c2a52-EmailReplacePatchSet-HTML@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Thu, 18 Sep 2025 08:13:48 +0000
+In-Reply-To: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
+References: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <6420e7806581929841db637743d1df278bb4c072-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hvsFcMAsY6k="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: add building of
- openvpnsrvmsg.dll from eventmsg.mc to autoconf/mingw ...
+Content-Type: multipart/alternative; boundary="jORdBdq9aM0="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Introduce msglvl_t
+ to unify msglevel type handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,202 +20,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hvsFcMAsY6k=
+--jORdBdq9aM0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello flichtenheld, plaisthos,
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1110?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail
-
-to look at the new patch set (#2).
-
-
-Change subject: add building of openvpnsrvmsg.dll from eventmsg.mc to autoc=
-onf/mingw builds
+Change subject: Introduce msglvl_t to unify msglevel type handling
 ......................................................................
 
-add building of openvpnsrvmsg.dll from eventmsg.mc to autoconf/mingw builds
 
-commit 06919a60ae61 introduces .mc files that need to be compiled to
-.h and .bin by the windows "mc.exe" tool, and from there into a new
-.dll
+Patch Set 16:
 
-Add logic to configure.ac to find the "windmc" binary in the linux or
-mingw variants, add rules to src/openvpnserv/Makefile.am so make knows
-what to do.
+(1 comment)
 
-Libtool is getting in the way when "openvpnsrvmsg.dll" is created as
-anything listed in ...BIN or ...LIB, so decare it as "DATA" and make
-the necessary rules explicit.
+File src/openvpn/error.c:
 
-See also:
-https://learn.microsoft.com/en-us/cpp/build/creating-a-resource-only-dll?vi=
-ew=3Dmsvc-170
+http://gerrit.openvpn.net/c/openvpn/+/1110/comment/e38154f9_4a81f5bc :
+PS16, Line 104: set_debug_level(const int level, const unsigned int flags)
+why not turning this into msglvl_t too?
+I see it normally gets passed o->verbosity, but it could also be turned to =
+msglvl_t as well since it never gets assigned a negative number.
 
-Change-Id: I071e8190dac28f429257b8af1c6f9e68f8896bc0
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M configure.ac
-M src/openvpnserv/Makefile.am
-2 files changed, 13 insertions(+), 0 deletions(-)
+The only situation to check is manage.c:1467. The mgmt interface technicall=
+y accepts "verb -1", but it is a bogus case. We could force it to be positi=
+ve as well.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/1197/2
-
-diff --git a/configure.ac b/configure.ac
-index 7059871..38b14a1 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -441,6 +441,7 @@
- AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
- AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
- AC_DEFINE_UNQUOTED([SYSTEMD_ASK_PASSWORD_PATH], ["$SYSTEMD_ASK_PASSWORD"],=
- [Path to systemd-ask-password tool])
-+AC_CHECK_TOOLS([WINDMC], [windmc mc.exe],[no])
-
- #
- #  man page generation - based on python-docutils
-diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-index ef5f3f3..d475186 100644
---- a/src/openvpnserv/Makefile.am
-+++ b/src/openvpnserv/Makefile.am
-@@ -28,6 +28,10 @@
- openvpnserv_LDADD =3D \
- 	-ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lrpcrt4 \
- 	-lshlwapi -lnetapi32 -lws2_32 -lntdll -lole32
-+noinst_DATA =3D \
-+	MSG00409.bin eventmsg.h eventmsg.rc openvpnservmsg.dll
-+BUILT_SOURCES =3D \
-+	eventmsg.h
- endif
-
- openvpnserv_SOURCES =3D \
-@@ -37,3 +41,11 @@
- 	validate.c validate.h \
- 	$(top_srcdir)/src/openvpn/wfp_block.c $(top_srcdir)/src/openvpn/wfp_block=
-.h \
- 	openvpnserv_resources.rc
-+
-+openvpnservmsg.dll: eventmsg.o
-+	$(CC) -shared -Wl,--entry=3D0 -nostdlib -nostartfiles -o openvpnservmsg.d=
-ll eventmsg.o
-+
-+eventmsg.o: eventmsg.rc
-+
-+eventmsg.h: eventmsg.mc
-+	$(WINDMC) -U eventmsg.mc
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I071e8190dac28f429257b8af1c6f9e68f8896bc0
-Gerrit-Change-Number: 1197
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Id492cb774c6d022d06bb3cf5fec2a4bdd410e619
+Gerrit-Change-Number: 1110
+Gerrit-PatchSet: 16
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <antonio@...2726...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Thu, 18 Sep 2025 08:13:48 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---hvsFcMAsY6k=
+--jORdBdq9aM0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail">View Change</=
-a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;">add building of openvpnsrvmsg.dll from eventmsg.mc to autoconf/mingw bui=
-lds<br><br>commit 06919a60ae61 introduces .mc files that need to be compile=
-d to<br>.h and .bin by the windows &quot;mc.exe&quot; tool, and from there =
-into a new<br>.dll<br><br>Add logic to configure.ac to find the &quot;windm=
-c&quot; binary in the linux or<br>mingw variants, add rules to src/openvpns=
-erv/Makefile.am so make knows<br>what to do.<br><br>Libtool is getting in t=
-he way when &quot;openvpnsrvmsg.dll&quot; is created as<br>anything listed =
-in ...BIN or ...LIB, so decare it as &quot;DATA&quot; and make<br>the neces=
-sary rules explicit.<br><br>See also:<br>https://learn.microsoft.com/en-us/=
-cpp/build/creating-a-resource-only-dll?view=3Dmsvc-170<br><br>Change-Id: I0=
-71e8190dac28f429257b8af1c6f9e68f8896bc0<br>Signed-off-by: Gert Doering &lt;=
-gert@...1296...&gt;<br>---<br>M configure.ac<br>M src/openvpnserv/Makefile.=
-am<br>2 files changed, 13 insertions(+), 0 deletions(-)<br><br></pre><pre s=
-tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
-ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/1197/2</pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
---git a/configure.ac b/configure.ac</span><br><span>index 7059871..38b14a1 =
-100644</span><br><span>--- a/configure.ac</span><br><span>+++ b/configure.a=
-c</span><br><span>@@ -441,6 +441,7 @@</span><br><span> AC_DEFINE_UNQUOTED([=
-IPROUTE_PATH], [&quot;$IPROUTE&quot;], [Path to iproute tool])</span><br><s=
-pan> AC_DEFINE_UNQUOTED([ROUTE_PATH], [&quot;$ROUTE&quot;], [Path to route =
-tool])</span><br><span> AC_DEFINE_UNQUOTED([SYSTEMD_ASK_PASSWORD_PATH], [&q=
-uot;$SYSTEMD_ASK_PASSWORD&quot;], [Path to systemd-ask-password tool])</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+AC_CHECK_TOOLS([WINDMC],=
- [windmc mc.exe],[no])</span><br><span> </span><br><span> #</span><br><span=
-> #  man page generation - based on python-docutils</span><br><span>diff --=
-git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am</span><br><=
-span>index ef5f3f3..d475186 100644</span><br><span>--- a/src/openvpnserv/Ma=
-kefile.am</span><br><span>+++ b/src/openvpnserv/Makefile.am</span><br><span=
->@@ -28,6 +28,10 @@</span><br><span> openvpnserv_LDADD =3D \</span><br><spa=
-n> 	-ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lrpcrt4 \</span><br><span> =
-	-lshlwapi -lnetapi32 -lws2_32 -lntdll -lole32</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+noinst_DATA =3D \</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+	MSG00409.bin eventmsg.h eventmsg.rc openvpnservms=
-g.dll</span><br><span style=3D"color: hsl(120, 100%, 40%);">+BUILT_SOURCES =
-=3D \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	eventmsg.h</s=
-pan><br><span> endif</span><br><span> </span><br><span> openvpnserv_SOURCES=
- =3D \</span><br><span>@@ -37,3 +41,11 @@</span><br><span> 	validate.c vali=
-date.h \</span><br><span> 	$(top_srcdir)/src/openvpn/wfp_block.c $(top_srcd=
-ir)/src/openvpn/wfp_block.h \</span><br><span> 	openvpnserv_resources.rc</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+openvpnservmsg.dll: eventmsg.o</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+	$(CC) -shared -Wl,--entry=3D0=
- -nostdlib -nostartfiles -o openvpnservmsg.dll eventmsg.o</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+eventmsg.o: eventmsg.rc</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+eventmsg.h: eventmsg.mc</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	$(WINDMC) -U eventmsg.mc</span><br><span></span><br></pre><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail=
-">change 1197</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1197?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/error.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1110/comment/e38154f9_4a81f5bc">Patch Set #16, Line 104:</a=
+> <code style=3D"font-family:monospace,monospace">set_debug_level(const int=
+ level, const unsigned int flags)</code></p><p style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">why not turning this into msglvl_t too?<br>I se=
+e it normally gets passed o-&gt;verbosity, but it could also be turned to m=
+sglvl_t as well since it never gets assigned a negative number.</p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">The only situation to ch=
+eck is manage.c:1467. The mgmt interface technically accepts &quot;verb -1&=
+quot;, but it is a bogus case. We could force it to be positive as well.</p=
+></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1110?usp=3Demail">change 1110</a>. To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/11=
+10?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I071e8190dac28f429257b8af1c6=
-f9e68f8896bc0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1197 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id492cb774c6d022d06bb3cf5fec=
+2a4bdd410e619 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1110 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 16 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 18 Sep 2025 08:13:48=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---hvsFcMAsY6k=--
+--jORdBdq9aM0=--
 
