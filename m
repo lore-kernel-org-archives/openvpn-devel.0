@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 19 Sep 2025 16:42:53 +0000
-In-Reply-To: <gerrit.1754490554000.I5ef21e425786a49c90d4b7305c3fb174ab6ddf92@...2715...>
-References: <gerrit.1754490554000.I5ef21e425786a49c90d4b7305c3fb174ab6ddf92@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <eedba23e8fc774c78b9d0816bb680d044db13acd-EmailReplacePatchSet-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Fri, 19 Sep 2025 18:44:34 +0200
+Message-ID: <20250919164440.23251-1-gert@...1296...>
+In-Reply-To: <gerrit.1758297014000.Ic9912627b707bf4edd4fe4bfc37b8a639feaba08@...2715...>
+References: <gerrit.1758297014000.Ic9912627b707bf4edd4fe4bfc37b8a639feaba08@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3PZLbMTMHWE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Change
- resolve flags to unsigned int
+Subject: [Openvpn-devel] [PATCH v1] Rename Fox Crypto to Sentyron in
+ copyright notices
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,290 +14,813 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---3PZLbMTMHWE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Max Fillinger <maximilian.fillinger@...2918...>
 
-cron2 has uploaded a new patch set (#7) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail )
+Fox Crypto has been renamed to Sentyron on September 4th 2025.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+See https://sentyron.com/press-release-foxcrypto-sentyron/ for the
+announcement.
 
-
-Change subject: socket: Change resolve flags to unsigned int
-......................................................................
-
-socket: Change resolve flags to unsigned int
-
-And use them consistently so to avoid conversion
-warnings.
-
-Change-Id: I5ef21e425786a49c90d4b7305c3fb174ab6ddf92
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1131
-Message-Id: <20250919154040.17684-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
-098.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: Ic9912627b707bf4edd4fe4bfc37b8a639feaba08
+Signed-off-by: MaxF <max@...2606...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1047
 ---
-M src/openvpn/socket.c
-M src/openvpn/socket.h
-M src/openvpn/socket_util.h
-3 files changed, 18 insertions(+), 18 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/1131/7
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1047
+This mail reflects revision 1 of this Change.
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index eeb42d1..afedf5d 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -246,10 +246,10 @@
-  */
- static int
- get_cached_dns_entry(struct cached_dns_entry *dns_cache, const char *hostn=
-ame, const char *servname,
--                     int ai_family, int resolve_flags, struct addrinfo **a=
-i)
-+                     int ai_family, unsigned int resolve_flags, struct add=
-rinfo **ai)
- {
-     struct cached_dns_entry *ph;
--    int flags;
-+    unsigned int flags;
+Signed-off-by line for the author was added as per our policy.
 
-     /* Only use flags that are relevant for the structure */
-     flags =3D resolve_flags & GETADDR_CACHE_MASK;
-@@ -269,7 +269,7 @@
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
- static int
- do_preresolve_host(struct context *c, const char *hostname, const char *se=
-rvname, const int af,
--                   const int flags)
-+                   const unsigned int flags)
- {
-     struct addrinfo *ai;
-     int status;
-@@ -323,7 +323,7 @@
-     {
-         int status;
-         const char *remote;
--        int flags =3D preresolve_flags;
-+        unsigned int flags =3D preresolve_flags;
-
-         struct connection_entry *ce =3D l->array[i];
-
-@@ -1186,7 +1186,7 @@
-     /* resolve local address if undefined */
-     if (!sock->info.lsa->bind_local)
-     {
--        int flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_F=
-ATAL | GETADDR_PASSIVE;
-+        unsigned int flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | =
-GETADDR_FATAL | GETADDR_PASSIVE;
-         int status;
-
-         if (proto_is_dgram(sock->info.proto))
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index cce9183..e45981f 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -67,7 +67,7 @@
-     const char *hostname;
-     const char *servname;
-     int ai_family;
--    int flags;
-+    unsigned int flags;
-     struct addrinfo *ai;
-     struct cached_dns_entry *next;
- };
-diff --git a/src/openvpn/socket_util.h b/src/openvpn/socket_util.h
-index ada52a4..f3dfd22 100644
---- a/src/openvpn/socket_util.h
-+++ b/src/openvpn/socket_util.h
-@@ -114,18 +114,18 @@
-  * DNS resolution
-  */
-
--#define GETADDR_RESOLVE                 (1 << 0)
--#define GETADDR_FATAL                   (1 << 1)
--#define GETADDR_HOST_ORDER              (1 << 2)
--#define GETADDR_MENTION_RESOLVE_RETRY   (1 << 3)
--#define GETADDR_FATAL_ON_SIGNAL         (1 << 4)
--#define GETADDR_WARN_ON_SIGNAL          (1 << 5)
--#define GETADDR_MSG_VIRT_OUT            (1 << 6)
--#define GETADDR_TRY_ONCE                (1 << 7)
--#define GETADDR_UPDATE_MANAGEMENT_STATE (1 << 8)
--#define GETADDR_RANDOMIZE               (1 << 9)
--#define GETADDR_PASSIVE                 (1 << 10)
--#define GETADDR_DATAGRAM                (1 << 11)
-+#define GETADDR_RESOLVE                 (1u << 0)
-+#define GETADDR_FATAL                   (1u << 1)
-+#define GETADDR_HOST_ORDER              (1u << 2)
-+#define GETADDR_MENTION_RESOLVE_RETRY   (1u << 3)
-+#define GETADDR_FATAL_ON_SIGNAL         (1u << 4)
-+#define GETADDR_WARN_ON_SIGNAL          (1u << 5)
-+#define GETADDR_MSG_VIRT_OUT            (1u << 6)
-+#define GETADDR_TRY_ONCE                (1u << 7)
-+#define GETADDR_UPDATE_MANAGEMENT_STATE (1u << 8)
-+#define GETADDR_RANDOMIZE               (1u << 9)
-+#define GETADDR_PASSIVE                 (1u << 10)
-+#define GETADDR_DATAGRAM                (1u << 11)
-
- #define GETADDR_CACHE_MASK (GETADDR_DATAGRAM | GETADDR_PASSIVE)
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I5ef21e425786a49c90d4b7305c3fb174ab6ddf92
-Gerrit-Change-Number: 1131
-Gerrit-PatchSet: 7
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
-
---3PZLbMTMHWE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>uploaded patch set #7</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1131?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">socket: Change resolve flags to unsigned int<br><br>=
-And use them consistently so to avoid conversion<br>warnings.<br><br>Change=
--Id: I5ef21e425786a49c90d4b7305c3fb174ab6ddf92<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1726...=
-...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1131<br>Messa=
-ge-Id: &lt;20250919154040.17684-1-gert@...1296...&gt;<br>URL: https://www.m=
-ail-archive.com/openvpn-devel@lists.sourceforge.net/msg33098.html<br>Signed=
--off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/socke=
-t.c<br>M src/openvpn/socket.h<br>M src/openvpn/socket_util.h<br>3 files cha=
-nged, 18 insertions(+), 18 deletions(-)<br><br></pre><pre style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
-nvpn.net:29418/openvpn refs/changes/31/1131/7</pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/open=
-vpn/socket.c b/src/openvpn/socket.c</span><br><span>index eeb42d1..afedf5d =
-100644</span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src=
-/openvpn/socket.c</span><br><span>@@ -246,10 +246,10 @@</span><br><span>  *=
-/</span><br><span> static int</span><br><span> get_cached_dns_entry(struct =
-cached_dns_entry *dns_cache, const char *hostname, const char *servname,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                     int=
- ai_family, int resolve_flags, struct addrinfo **ai)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     int ai_family, unsig=
-ned int resolve_flags, struct addrinfo **ai)</span><br><span> {</span><br><=
-span>     struct cached_dns_entry *ph;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    int flags;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    unsigned int flags;</span><br><span> </span><br><span>     =
-/* Only use flags that are relevant for the structure */</span><br><span>  =
-   flags =3D resolve_flags &amp; GETADDR_CACHE_MASK;</span><br><span>@@ -26=
-9,7 +269,7 @@</span><br><span> </span><br><span> static int</span><br><span=
-> do_preresolve_host(struct context *c, const char *hostname, const char *s=
-ervname, const int af,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                   const int flags)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                   const unsigned int flags)</span><br><sp=
-an> {</span><br><span>     struct addrinfo *ai;</span><br><span>     int st=
-atus;</span><br><span>@@ -323,7 +323,7 @@</span><br><span>     {</span><br>=
-<span>         int status;</span><br><span>         const char *remote;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        int flags =3D pre=
-resolve_flags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   unsigned int flags =3D preresolve_flags;</span><br><span> </span><br><sp=
-an>         struct connection_entry *ce =3D l-&gt;array[i];</span><br><span=
-> </span><br><span>@@ -1186,7 +1186,7 @@</span><br><span>     /* resolve lo=
-cal address if undefined */</span><br><span>     if (!sock-&gt;info.lsa-&gt=
-;bind_local)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        int flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNA=
-L | GETADDR_FATAL | GETADDR_PASSIVE;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        unsigned int flags =3D GETADDR_RESOLVE | GETADDR_W=
-ARN_ON_SIGNAL | GETADDR_FATAL | GETADDR_PASSIVE;</span><br><span>         i=
-nt status;</span><br><span> </span><br><span>         if (proto_is_dgram(so=
-ck-&gt;info.proto))</span><br><span>diff --git a/src/openvpn/socket.h b/src=
-/openvpn/socket.h</span><br><span>index cce9183..e45981f 100644</span><br><=
-span>--- a/src/openvpn/socket.h</span><br><span>+++ b/src/openvpn/socket.h<=
-/span><br><span>@@ -67,7 +67,7 @@</span><br><span>     const char *hostname=
-;</span><br><span>     const char *servname;</span><br><span>     int ai_fa=
-mily;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int flags;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int flag=
-s;</span><br><span>     struct addrinfo *ai;</span><br><span>     struct ca=
-ched_dns_entry *next;</span><br><span> };</span><br><span>diff --git a/src/=
-openvpn/socket_util.h b/src/openvpn/socket_util.h</span><br><span>index ada=
-52a4..f3dfd22 100644</span><br><span>--- a/src/openvpn/socket_util.h</span>=
-<br><span>+++ b/src/openvpn/socket_util.h</span><br><span>@@ -114,18 +114,1=
-8 @@</span><br><span>  * DNS resolution</span><br><span>  */</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_RE=
-SOLVE                 (1 &lt;&lt; 0)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#define GETADDR_FATAL                   (1 &lt;&lt; 1)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_HOST_ORDER =
-             (1 &lt;&lt; 2)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#define GETADDR_MENTION_RESOLVE_RETRY   (1 &lt;&lt; 3)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_FATAL_ON_SIGNAL     =
-    (1 &lt;&lt; 4)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#de=
-fine GETADDR_WARN_ON_SIGNAL          (1 &lt;&lt; 5)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_MSG_VIRT_OUT            (1 =
-&lt;&lt; 6)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GE=
-TADDR_TRY_ONCE                (1 &lt;&lt; 7)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#define GETADDR_UPDATE_MANAGEMENT_STATE (1 &lt;&lt; =
-8)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_RAN=
-DOMIZE               (1 &lt;&lt; 9)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#define GETADDR_PASSIVE                 (1 &lt;&lt; 10)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#define GETADDR_DATAGRAM   =
-             (1 &lt;&lt; 11)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#define GETADDR_RESOLVE                 (1u &lt;&lt; 0)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_FATAL         =
-          (1u &lt;&lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#define GETADDR_HOST_ORDER              (1u &lt;&lt; 2)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_MENTION_RESOLVE_R=
-ETRY   (1u &lt;&lt; 3)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#define GETADDR_FATAL_ON_SIGNAL         (1u &lt;&lt; 4)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_WARN_ON_SIGNAL      =
-    (1u &lt;&lt; 5)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#define GETADDR_MSG_VIRT_OUT            (1u &lt;&lt; 6)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_TRY_ONCE               =
- (1u &lt;&lt; 7)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine GETADDR_UPDATE_MANAGEMENT_STATE (1u &lt;&lt; 8)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_RANDOMIZE               (=
-1u &lt;&lt; 9)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
-ne GETADDR_PASSIVE                 (1u &lt;&lt; 10)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define GETADDR_DATAGRAM                (=
-1u &lt;&lt; 11)</span><br><span> </span><br><span> #define GETADDR_CACHE_MA=
-SK (GETADDR_DATAGRAM | GETADDR_PASSIVE)</span><br><span> </span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1131?usp=3Demail">change 1131</a>. To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
-ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
-v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
-link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1131?us=
-p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5ef21e425786a49c90d4b7305c3=
-fb174ab6ddf92 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1131 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---3PZLbMTMHWE=--
+        
+diff --git a/dev-tools/update-copyright.sh b/dev-tools/update-copyright.sh
+index d19343f..15e7428 100755
+--- a/dev-tools/update-copyright.sh
++++ b/dev-tools/update-copyright.sh
+@@ -30,7 +30,7 @@
+ 
+ # Only update Copyright lines with these owners
+ # The 'or' operator is GNU sed specific, and must be \|
+-UPDATE_COPYRIGHT_LINES="@openvpn\.net\|@fox-it\.com\|@sophos.com\|@eurephia\.org\|@greenie\.muc\.de\|@rozman.si\|@unstable\.cc\|@rfc2549.org\|@karger\.me\|selva.nair@"
++UPDATE_COPYRIGHT_LINES="@openvpn\.net\|@sentyron\.com\|@sophos.com\|@eurephia\.org\|@greenie\.muc\.de\|@rozman.si\|@unstable\.cc\|@rfc2549.org\|@karger\.me\|selva.nair@"
+ COPY_YEAR="$1"
+ 
+ cd "$(git rev-parse --show-toplevel)"
+diff --git a/doc/doxygen/Makefile.am b/doc/doxygen/Makefile.am
+index ec1045e..e0a52d0 100644
+--- a/doc/doxygen/Makefile.am
++++ b/doc/doxygen/Makefile.am
+@@ -5,7 +5,7 @@
+ #             packet encryption, packet authentication, and
+ #             packet compression.
+ #
+-#  Copyright (C) 2017-2021 Fox-IT B.V. <openvpn@...2507...>
++#  Copyright (C) 2017-2021 Sentyron B.V. <openvpn@...2918...>
+ #
+ 
+ MAINTAINERCLEANFILES = \
+diff --git a/doc/doxygen/doc_compression.h b/doc/doxygen/doc_compression.h
+index d5a1bd9..51ad7c0 100644
+--- a/doc/doxygen/doc_compression.h
++++ b/doc/doxygen/doc_compression.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_control_processor.h b/doc/doxygen/doc_control_processor.h
+index 03549e2..f265622 100644
+--- a/doc/doxygen/doc_control_processor.h
++++ b/doc/doxygen/doc_control_processor.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_control_tls.h b/doc/doxygen/doc_control_tls.h
+index c6bbfe6..07251c0 100644
+--- a/doc/doxygen/doc_control_tls.h
++++ b/doc/doxygen/doc_control_tls.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_data_control.h b/doc/doxygen/doc_data_control.h
+index 010155b..91e49c4 100644
+--- a/doc/doxygen/doc_data_control.h
++++ b/doc/doxygen/doc_data_control.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_data_crypto.h b/doc/doxygen/doc_data_crypto.h
+index b2e50ab..64024a1 100644
+--- a/doc/doxygen/doc_data_crypto.h
++++ b/doc/doxygen/doc_data_crypto.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_eventloop.h b/doc/doxygen/doc_eventloop.h
+index ec60afb..aa91166 100644
+--- a/doc/doxygen/doc_eventloop.h
++++ b/doc/doxygen/doc_eventloop.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_external_multiplexer.h b/doc/doxygen/doc_external_multiplexer.h
+index 15ae8bb..03a0bb4 100644
+--- a/doc/doxygen/doc_external_multiplexer.h
++++ b/doc/doxygen/doc_external_multiplexer.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_fragmentation.h b/doc/doxygen/doc_fragmentation.h
+index 02d8cb2..8b0ccee 100644
+--- a/doc/doxygen/doc_fragmentation.h
++++ b/doc/doxygen/doc_fragmentation.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_internal_multiplexer.h b/doc/doxygen/doc_internal_multiplexer.h
+index 3da2df8..40ef32e 100644
+--- a/doc/doxygen/doc_internal_multiplexer.h
++++ b/doc/doxygen/doc_internal_multiplexer.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_key_generation.h b/doc/doxygen/doc_key_generation.h
+index 766f433..1c67fa7 100644
+--- a/doc/doxygen/doc_key_generation.h
++++ b/doc/doxygen/doc_key_generation.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_mainpage.h b/doc/doxygen/doc_mainpage.h
+index 25fd40e..1ff8f7a 100644
+--- a/doc/doxygen/doc_mainpage.h
++++ b/doc/doxygen/doc_mainpage.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_memory_management.h b/doc/doxygen/doc_memory_management.h
+index 5e9a930..74a47ba 100644
+--- a/doc/doxygen/doc_memory_management.h
++++ b/doc/doxygen/doc_memory_management.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_protocol_overview.h b/doc/doxygen/doc_protocol_overview.h
+index a6e9369..3fb81c8 100644
+--- a/doc/doxygen/doc_protocol_overview.h
++++ b/doc/doxygen/doc_protocol_overview.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_reliable.h b/doc/doxygen/doc_reliable.h
+index e9a8b06..73200e3 100644
+--- a/doc/doxygen/doc_reliable.h
++++ b/doc/doxygen/doc_reliable.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/doc/doxygen/doc_tunnel_state.h b/doc/doxygen/doc_tunnel_state.h
+index 04a48f3..f2f788e 100644
+--- a/doc/doxygen/doc_tunnel_state.h
++++ b/doc/doxygen/doc_tunnel_state.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 0abcd7f..ec7da43 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index d69db59..72c6821 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index b74cb7f..4d6a96c 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 2423435..2bab312 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
+index 80f1d16..71514fc 100644
+--- a/src/openvpn/crypto_mbedtls.h
++++ b/src/openvpn/crypto_mbedtls.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 98fe37f..1f95fba 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 6218b39..d0421e8 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
+index 62ed257..68096c4 100644
+--- a/src/openvpn/mbedtls_compat.h
++++ b/src/openvpn/mbedtls_compat.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2023 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2023 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 143a3cf..6fd7390 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
+index cb4229e..fdc0c55 100644
+--- a/src/openvpn/options_util.c
++++ b/src/openvpn/options_util.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/options_util.h b/src/openvpn/options_util.h
+index 1492eef..5bb710a 100644
+--- a/src/openvpn/options_util.h
++++ b/src/openvpn/options_util.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/pkcs11_backend.h b/src/openvpn/pkcs11_backend.h
+index caa0735..4010bcf 100644
+--- a/src/openvpn/pkcs11_backend.h
++++ b/src/openvpn/pkcs11_backend.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
+index 245aa8d..eaaa07c 100644
+--- a/src/openvpn/pkcs11_mbedtls.c
++++ b/src/openvpn/pkcs11_mbedtls.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+index a912747..23c01ab 100644
+--- a/src/openvpn/pkcs11_openssl.c
++++ b/src/openvpn/pkcs11_openssl.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index c17e608..9159b8c 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *  Copyright (C) 2008-2025 David Sommerseth <dazo@...2108...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 976808d..ffcc7c4 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index da3e1e1..1c3c22e 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index a40f18d..de89d30 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 635b53c..338de83 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *  Copyright (C) 2006-2010, Brainspark B.V.
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index 513a07e..0f85d96 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 51f7f92..958acea 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *  Copyright (C) 2008-2025 David Sommerseth <dazo@...2108...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
+index ed5d281..6edd074 100644
+--- a/src/openvpn/ssl_ncp.h
++++ b/src/openvpn/ssl_ncp.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index aa1ac11..8c8b1e21 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
+index 08a3d53..2c1f36d 100644
+--- a/src/openvpn/ssl_openssl.h
++++ b/src/openvpn/ssl_openssl.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 6f85dca..7658f2d 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index fdf6bb5..accf558 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
+index 2bad3eb..ceaef3f 100644
+--- a/src/openvpn/ssl_verify_backend.h
++++ b/src/openvpn/ssl_verify_backend.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index 3588071..61f64af 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify_mbedtls.h b/src/openvpn/ssl_verify_mbedtls.h
+index 0b2f2d2..d3217d2 100644
+--- a/src/openvpn/ssl_verify_mbedtls.h
++++ b/src/openvpn/ssl_verify_mbedtls.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 0f257e2..9cd2418 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/ssl_verify_openssl.h b/src/openvpn/ssl_verify_openssl.h
+index 7577cb2..3c5cb29 100644
+--- a/src/openvpn/ssl_verify_openssl.h
++++ b/src/openvpn/ssl_verify_openssl.h
+@@ -6,7 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2025 OpenVPN Inc <sales@...515...>
+- *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2010-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 2892199..737b556 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 87aa8d2..f6604ba 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/mock_get_random.c b/tests/unit_tests/openvpn/mock_get_random.c
+index 77db18e..4077afa 100644
+--- a/tests/unit_tests/openvpn/mock_get_random.c
++++ b/tests/unit_tests/openvpn/mock_get_random.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2017-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2017-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c
+index 69d2d1d..a2aa3f9 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_msg.h
+index 6dddf0b..c6321dc 100644
+--- a/tests/unit_tests/openvpn/mock_msg.h
++++ b/tests/unit_tests/openvpn/mock_msg.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
+index 0c5467e..a2a10ea 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
+index 0cfb918..c86c19e 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/openvpn/test_common.h
+index 2f2207a..da98531 100644
+--- a/tests/unit_tests/openvpn/test_common.h
++++ b/tests/unit_tests/openvpn/test_common.h
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 5df1046..3f327c2 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c
+index d623c3d..0eacbab 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index b6c612b..b5211cd 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 44d51fe..950ce26 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -5,7 +5,7 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *  Copyright (C) 2016-2021 Sentyron B.V. <openvpn@...2918...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
 
