@@ -1,17 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 19 Sep 2025 13:05:55 +0000
-In-Reply-To: <gerrit.1758198221000.Iaebc46f9156657128dc52c979202545be8865656@...2715...>
-References: <gerrit.1758198221000.Iaebc46f9156657128dc52c979202545be8865656@...2715...>
+Date: Fri, 19 Sep 2025 15:40:23 +0000
+In-Reply-To: <gerrit.1754490554000.I5ef21e425786a49c90d4b7305c3fb174ab6ddf92@...2715...>
+References: <gerrit.1754490554000.I5ef21e425786a49c90d4b7305c3fb174ab6ddf92@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <99883a87ad11ae65b22eaaab09d75370006d6622-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <4d423656de288fd0979614d6da9108eb0b8948ed-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="z0BhFU4mqk0="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: GHA: collect more
- artifacts for mingw builds
+Content-Type: multipart/alternative; boundary="UBhmhIC7zGY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Change
+ resolve flags to unsigned int
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,133 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---z0BhFU4mqk0=
+--UBhmhIC7zGY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-00?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: GHA: collect more artifacts for mingw builds
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1131?usp=3Demail )
+
+Change subject: socket: Change resolve flags to unsigned int
 ......................................................................
 
-GHA: collect more artifacts for mingw builds
 
-Collect also binaries for openvpnserv, tapctl and openvpnmsica.
+Patch Set 6: Code-Review+2
 
-Change-Id: Iaebc46f9156657128dc52c979202545be8865656
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1200
-Message-Id: <20250918135908.14364-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
-058.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M .github/workflows/build.yaml
-1 file changed, 2 insertions(+), 2 deletions(-)
-
-
-
-
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index f7883c7..a306670 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -97,8 +97,8 @@
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}
-           path: |
--            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
-ug/*.exe
--            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
-ug/*.dll
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/=
-Debug/*.exe
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/=
-Debug/*.dll
-             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/De=
-bug/test_*.exe
-
-       - uses: actions/upload-artifact@...2868... # v4.6.2
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1200?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iaebc46f9156657128dc52c979202545be8865656
-Gerrit-Change-Number: 1200
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I5ef21e425786a49c90d4b7305c3fb174ab6ddf92
+Gerrit-Change-Number: 1131
+Gerrit-PatchSet: 6
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 19 Sep 2025 15:40:23 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---z0BhFU4mqk0=
+--UBhmhIC7zGY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1200?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">GHA: collect more artifacts for mingw builds<=
-br><br>Collect also binaries for openvpnserv, tapctl and openvpnmsica.<br><=
-br>Change-Id: Iaebc46f9156657128dc52c979202545be8865656<br>Signed-off-by: L=
-ev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@=
-...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1200<b=
-r>Message-Id: &lt;20250918135908.14364-1-gert@...1296...&gt;<br>URL: https:=
-//www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33058.html<br=
->Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .github/wo=
-rkflows/build.yaml<br>1 file changed, 2 insertions(+), 2 deletions(-)<br><b=
-r></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
-</span><br><span>index f7883c7..a306670 100644</span><br><span>--- a/.githu=
-b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
-span><br><span>@@ -97,8 +97,8 @@</span><br><span>         with:</span><br><=
-span>           name: openvpn-mingw-${{ matrix.arch }}</span><br><span>    =
-       path: |</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/*.exe=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ${{ githu=
-b.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/*.dll</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            ${{ github.workspace =
-}}/out/build/mingw/${{ matrix.arch }}/**/Debug/*.exe</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            ${{ github.workspace }}/out/b=
-uild/mingw/${{ matrix.arch }}/**/Debug/*.dll</span><br><span>             !=
-${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe=
-</span><br><span> </span><br><span>       - uses: actions/upload-artifact@...220...=
-..2868... # v4.6.2</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1200?usp=3Demail">change 1200</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1200?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail=
+">change 1131</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1131?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iaebc46f9156657128dc52c97920=
-2545be8865656 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1200 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5ef21e425786a49c90d4b7305c3=
+fb174ab6ddf92 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1131 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 19 Sep 2025 15:40:23=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---z0BhFU4mqk0=--
+--UBhmhIC7zGY=--
 
