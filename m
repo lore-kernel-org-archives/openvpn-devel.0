@@ -1,11 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 19 Sep 2025 13:24:19 +0200
-Message-ID: <20250919112424.24728-1-gert@...1296...>
-In-Reply-To: <gerrit.1758178873000.I071e8190dac28f429257b8af1c6f9e68f8896bc0@...2715...>
-References: <gerrit.1758178873000.I071e8190dac28f429257b8af1c6f9e68f8896bc0@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 19 Sep 2025 11:30:57 +0000
+In-Reply-To: <gerrit.1758280732000.I93406dd91694974df4ea087b9312ae2fafbc7fe7@...2715...>
+References: <gerrit.1758280732000.I93406dd91694974df4ea087b9312ae2fafbc7fe7@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <fd42320d506504d12cce32b77e20bb780376aff6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] fix building of openvpnsrvmsg.dll from
- eventmsg.mc in mingw builds
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="9wb4ta1+Jp4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Makefile: fix
+ "make dist"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,123 +20,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-commit 06919a60ae61 introduces .mc files that need to be compiled to
-.h and .bin by the windows "mc.exe" tool, and from there into a new
-.dll.  This worked for MSVC builds, did nothing for cmake/mingw builds,
-and broke compilation on autoconf/mingw builds.
+--9wb4ta1+Jp4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This patch consists of two parts:
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-1. add building of openvpnsrvmsg.dll to autoconf/mingw builds
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1201?usp=3Demail )
 
-   Add logic to configure.ac to find the "windmc" binary in the linux or
-   mingw variants, add rules to src/openvpnserv/Makefile.am so make knows
-   what to do.
+Change subject: Makefile: fix "make dist"
+......................................................................
 
-   Libtool is getting in the way when "openvpnsrvmsg.dll" is created as
-   anything listed in ...BIN or ...LIB, so decare it as "DATA" and make
-   the necessary rules explicit.
 
-2. fix building of openvpnsrvmsg.dll on cmake/mingw builds
+Patch Set 2: Code-Review+2
 
-   Fix "find_program()" invocation to avoid using "midnight commander"
-   binary (mc) on Linux (called "windmc" there).
 
-   Change from "-Wl,--noentry" to linker invocation that works.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1201?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-See also:
-https://learn.microsoft.com/en-us/cpp/build/creating-a-resource-only-dll?view=msvc-170
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I93406dd91694974df4ea087b9312ae2fafbc7fe7
+Gerrit-Change-Number: 1201
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 19 Sep 2025 11:30:57 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
-Change-Id: I071e8190dac28f429257b8af1c6f9e68f8896bc0
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1197
----
+--9wb4ta1+Jp4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1201?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1201?usp=3Demail=
+">change 1201</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1201?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1197
-This mail reflects revision 4 of this Change.
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I93406dd91694974df4ea087b931=
+2ae2fafbc7fe7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1201 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 19 Sep 2025 11:30:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/configure.ac b/configure.ac
-index 7059871..38b14a1 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -441,6 +441,7 @@
- AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
- AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
- AC_DEFINE_UNQUOTED([SYSTEMD_ASK_PASSWORD_PATH], ["$SYSTEMD_ASK_PASSWORD"], [Path to systemd-ask-password tool])
-+AC_CHECK_TOOLS([WINDMC], [windmc mc.exe],[no])
- 
- #
- #  man page generation - based on python-docutils
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 82099f1..340b904 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -41,7 +41,7 @@
- file(MAKE_DIRECTORY ${MC_GEN_DIR})
- set(MC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/eventmsg.mc)
- 
--find_program(MC_COMPILER NAMES mc mc.exe x86_64-w64-mingw32-windmc i686-w64-mingw32-windmc windmc)
-+find_program(MC_COMPILER NAMES mc.exe x86_64-w64-mingw32-windmc i686-w64-mingw32-windmc windmc)
- 
- if (NOT MC_COMPILER)
-     message(FATAL_ERROR "No message compiler found.")
-@@ -58,12 +58,17 @@
- add_custom_target(msg_mc_gen ALL DEPENDS ${MC_GEN_DIR}/eventmsg.rc ${MC_GEN_DIR}/eventmsg.h)
- 
- add_library(openvpnservmsg SHARED ${MC_GEN_DIR}/eventmsg.rc)
-+add_dependencies(openvpnservmsg msg_mc_gen)
- 
- if (MSVC)
-     set_target_properties(openvpnservmsg PROPERTIES LINK_FLAGS "/NOENTRY")
- else()
--    target_link_options(openvpnservmsg PRIVATE "-Wl,--no-entry")
-+    set_target_properties(openvpnservmsg PROPERTIES LINKER_LANGUAGE C OUTPUT_NAME "openvpnservmsg")
-+    target_link_options(openvpnservmsg PRIVATE
-+        -Wl,--entry=0
-+        -nostdlib
-+        -nostartfiles
-+    )
- endif()
- 
--add_dependencies(openvpnservmsg msg_mc_gen)
- add_dependencies(openvpnserv msg_mc_gen)
-diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-index ef5f3f3..a27fbbf 100644
---- a/src/openvpnserv/Makefile.am
-+++ b/src/openvpnserv/Makefile.am
-@@ -28,6 +28,10 @@
- openvpnserv_LDADD = \
- 	-ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lrpcrt4 \
- 	-lshlwapi -lnetapi32 -lws2_32 -lntdll -lole32
-+noinst_DATA = \
-+	MSG00409.bin eventmsg.h eventmsg.rc openvpnservmsg.dll
-+BUILT_SOURCES = \
-+	eventmsg.h
- endif
- 
- openvpnserv_SOURCES = \
-@@ -37,3 +41,11 @@
- 	validate.c validate.h \
- 	$(top_srcdir)/src/openvpn/wfp_block.c $(top_srcdir)/src/openvpn/wfp_block.h \
- 	openvpnserv_resources.rc
-+
-+openvpnservmsg.dll: eventmsg.o
-+	$(CC) -shared -Wl,--entry=0 -nostdlib -nostartfiles -o $@ $<
-+
-+eventmsg.o: eventmsg.rc
-+
-+eventmsg.h: eventmsg.mc
-+	$(WINDMC) -U $<
+--9wb4ta1+Jp4=--
 
