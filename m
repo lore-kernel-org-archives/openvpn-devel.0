@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 19 Sep 2025 14:51:40 +0000
+Date: Fri, 19 Sep 2025 14:51:31 +0000
 In-Reply-To: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
 References: <gerrit.1753364704000.Id492cb774c6d022d06bb3cf5fec2a4bdd410e619@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <8bc89d7a6a3d4beef5166f2e6b21f63e59856d21-HTML@...2715...>
+Message-ID: <8bc89d7a6a3d4beef5166f2e6b21f63e59856d21-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dlby/pvO9xY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="1VllKtja4lk="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Introduce msglvl_t
  to unify msglevel type handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dlby/pvO9xY=
+--1VllKtja4lk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-10?usp=3Demail )
+cron2 has uploaded a new patch set (#17) to the change originally created b=
+y flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2, Code-Review+2 by ordex
+
 
 Change subject: Introduce msglvl_t to unify msglevel type handling
 ......................................................................
@@ -131,7 +135,7 @@ M tests/unit_tests/openvpn/test_user_pass.c
 69 files changed, 283 insertions(+), 275 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/1110/17
 
 diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
 index 903fc0a..79b541a 100644
@@ -462,7 +466,7 @@ index 65303cd..d5ca277 100644
 +++ b/src/openvpn/dco_freebsd.c
 @@ -658,7 +658,7 @@
  }
-=20
+
  bool
 -dco_available(int msglevel)
 +dco_available(msglvl_t msglevel)
@@ -538,7 +542,7 @@ index 6c7df8e..2ae71ab 100644
 +++ b/src/openvpn/env_set.c
 @@ -209,7 +209,7 @@
  }
-=20
+
  void
 -env_set_print(int msglevel, const struct env_set *es)
 +env_set_print(msglvl_t msglevel, const struct env_set *es)
@@ -780,7 +784,7 @@ t);
  #ifndef ENABLE_SMALL
 @@ -254,14 +256,14 @@
  /* Inline functions */
-
+=20
  static inline bool
 -check_debug_level(unsigned int level)
 +check_debug_level(msglvl_t level)
@@ -851,7 +855,7 @@ l_t msglevel);
 @@ -303,7 +303,8 @@
   * @param msglevel   - Message level to use for logging
   */
-=20
+
 -bool send_control_channel_string_dowork(struct tls_session *session, const=
  char *str, int msglevel);
 +bool send_control_channel_string_dowork(struct tls_session *session, const=
@@ -930,7 +934,7 @@ ix)
 @@ -208,7 +208,7 @@
      buf_printf(&out, " ET:%d", frame->extra_tun);
      buf_printf(&out, " ]");
-=20
+
 -    msg(level, "%s", out.data);
 +    msg(msglevel, "%s", out.data);
      gc_free(&gc);
@@ -1720,12 +1724,12 @@ index 6cecef0..36e9fca 100644
 @@ -78,7 +78,7 @@
 
  void ifconfig_pool_free(struct ifconfig_pool *pool);
-=20
+
 -bool ifconfig_pool_verify_range(const int msglevel, const in_addr_t start,=
  const in_addr_t end);
 +bool ifconfig_pool_verify_range(const msglvl_t msglevel, const in_addr_t s=
 tart, const in_addr_t end);
-
+=20
  ifconfig_pool_handle ifconfig_pool_acquire(struct ifconfig_pool *pool, in_=
 addr_t *local,
                                             in_addr_t *remote, struct in6_a=
@@ -1826,7 +1830,7 @@ index e504485..aa5ce69 100644
 +++ b/src/openvpn/route.c
 @@ -1228,28 +1228,28 @@
  }
-=20
+
  static void
 -print_route_option(const struct route_option *ro, int level)
 +print_route_option(const struct route_option *ro, msglvl_t msglevel)
@@ -2659,1860 +2663,1863 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---dlby/pvO9xY=
+--1VllKtja4lk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1110?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Introduce msglvl_t to unify msglevel type han=
-dling<br><br>msglevel was definitely unsigned as the first<br>argument to m=
-sg(), but many parts of the code<br>had it as signed. So this produced a LO=
-T of<br>warnings when enabling -Wsign-conversion.<br><br>Introduce a msglvl=
-_t typedef and switch all<br>users to it. This includes any values that<br>=
-are stored in the msglevel field, including<br>debug level and mute level.<=
-br><br>There is one exception in struct status_output<br>where -1 is a vali=
-d value in the API. Only<br>positive values are translated into standard<br=
->message levels.<br><br>Change-Id: Id492cb774c6d022d06bb3cf5fec2a4bdd410e61=
-9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn=
-.net/c/openvpn/+/1110<br>Message-Id: &lt;20250917170428.3310-1-gert@...1726...=
-...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1483...=
-e.net/msg33028.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<=
-br>---<br>M src/openvpn/argv.c<br>M src/openvpn/argv.h<br>M src/openvpn/buf=
-fer.c<br>M src/openvpn/clinat.c<br>M src/openvpn/clinat.h<br>M src/openvpn/=
-comp.c<br>M src/openvpn/comp.h<br>M src/openvpn/crypto.c<br>M src/openvpn/c=
-rypto.h<br>M src/openvpn/dco.c<br>M src/openvpn/dco.h<br>M src/openvpn/dco_=
-freebsd.c<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/=
-openvpn/dns.c<br>M src/openvpn/dns.h<br>M src/openvpn/env_set.c<br>M src/op=
-envpn/env_set.h<br>M src/openvpn/error.c<br>M src/openvpn/error.h<br>M src/=
-openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/openvpn/init.c<br>M s=
-rc/openvpn/init.h<br>M src/openvpn/manage.c<br>M src/openvpn/manage.h<br>M =
-src/openvpn/mtu.c<br>M src/openvpn/mtu.h<br>M src/openvpn/multi.c<br>M src/=
-openvpn/options.c<br>M src/openvpn/options.h<br>M src/openvpn/options_util.=
-c<br>M src/openvpn/options_util.h<br>M src/openvpn/packet_id.c<br>M src/ope=
-nvpn/pkcs11.c<br>M src/openvpn/plugin.c<br>M src/openvpn/plugin.h<br>M src/=
-openvpn/pool.c<br>M src/openvpn/pool.h<br>M src/openvpn/proto.c<br>M src/op=
-envpn/push.c<br>M src/openvpn/push.h<br>M src/openvpn/route.c<br>M src/open=
-vpn/route.h<br>M src/openvpn/run_command.c<br>M src/openvpn/run_command.h<b=
-r>M src/openvpn/sig.c<br>M src/openvpn/sig.h<br>M src/openvpn/socket.c<br>M=
- src/openvpn/socket_util.c<br>M src/openvpn/socket_util.h<br>M src/openvpn/=
-ssl_verify_backend.h<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn=
-/ssl_verify_openssl.c<br>M src/openvpn/status.c<br>M src/openvpn/status.h<b=
-r>M src/openvpn/tun.c<br>M src/openvpn/tun.h<br>M tests/unit_tests/openvpn/=
-mock_msg.c<br>M tests/unit_tests/openvpn/mock_msg.h<br>M tests/unit_tests/o=
-penvpn/mock_ssl_dependencies.c<br>M tests/unit_tests/openvpn/test_argv.c<br=
->M tests/unit_tests/openvpn/test_misc.c<br>M tests/unit_tests/openvpn/test_=
-pkcs11.c<br>M tests/unit_tests/openvpn/test_pkt.c<br>M tests/unit_tests/ope=
-nvpn/test_push_update_msg.c<br>M tests/unit_tests/openvpn/test_socket.c<br>=
-M tests/unit_tests/openvpn/test_tls_crypt.c<br>M tests/unit_tests/openvpn/t=
-est_user_pass.c<br>69 files changed, 283 insertions(+), 275 deletions(-)<br=
-><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c</span><br><span>ind=
-ex 903fc0a..79b541a 100644</span><br><span>--- a/src/openvpn/argv.c</span><=
-br><span>+++ b/src/openvpn/argv.c</span><br><span>@@ -235,14 +235,14 @@</sp=
-an><br><span> /**</span><br><span>  *  Write the arguments stored in a stru=
-ct argv via the msg() command.</span><br><span>  *</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- *  @param msglev  Integer with the message le=
-vel used by msg().</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
- @param a       Valid pointer to the struct argv with the arguments to writ=
-e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @param msglev=
-el  Integer with the message level used by msg().</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *  @param a         Valid pointer to the str=
-uct argv with the arguments to write.</span><br><span>  */</span><br><span>=
- void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-argv_msg(const i=
-nt msglev, const struct argv *a)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+argv_msg(const msglvl_t msglevel, const struct argv *a)</span>=
-<br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;%s&quot;=
-, argv_str(a, &amp;gc, 0));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    msg(msglevel, &quot;%s&quot;, argv_str(a, &amp;gc, 0));</span><=
-br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </span>=
-<br><span>@@ -250,16 +250,16 @@</span><br><span>  *  Similar to argv_msg() =
-but prefixes the messages being written with a</span><br><span>  *  given s=
-tring.</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- *  @param msglev  Integer with the message level used by msg().</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- *  @param a       Valid po=
-inter to the struct argv with the arguments to write</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *  @param prefix  Valid pointer to the pre=
-fix string</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @para=
-m msglevel  Integer with the message level used by msg().</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *  @param a         Valid pointer to=
- the struct argv with the arguments to write</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *  @param prefix    Valid pointer to the prefix s=
-tring</span><br><span>  *</span><br><span>  */</span><br><span> void</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-argv_msg_prefix(const int ms=
-glev, const struct argv *a, const char *prefix)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+argv_msg_prefix(const msglvl_t msglevel, const =
-struct argv *a, const char *prefix)</span><br><span> {</span><br><span>    =
- struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    msg(msglev, &quot;%s: %s&quot;, prefix, argv_str(a, &amp;gc=
-, 0));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msgle=
-vel, &quot;%s: %s&quot;, prefix, argv_str(a, &amp;gc, 0));</span><br><span>=
-     gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span=
->diff --git a/src/openvpn/argv.h b/src/openvpn/argv.h</span><br><span>index=
- 056fe31..969d7b1 100644</span><br><span>--- a/src/openvpn/argv.h</span><br=
-><span>+++ b/src/openvpn/argv.h</span><br><span>@@ -47,9 +47,9 @@</span><br=
-><span> </span><br><span> struct argv argv_insert_head(const struct argv *a=
-, const char *head);</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-void argv_msg(const int msglev, const struct argv *a);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+void argv_msg(const msg=
-lvl_t msglevel, const struct argv *a);</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-void argv_msg_prefix(const int msglev, c=
-onst struct argv *a, const char *prefix);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+void argv_msg_prefix(const msglvl_t msglevel, const s=
-truct argv *a, const char *prefix);</span><br><span> </span><br><span> void=
- argv_parse_cmd(struct argv *a, const char *s);</span><br><span> </span><br=
-><span>diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><=
-span>index 0f0d17e..c0b85b2 100644</span><br><span>--- a/src/openvpn/buffer=
-.c</span><br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -1127,7 +1=
-127,7 @@</span><br><span> {</span><br><span>     if (buf &amp;&amp; buf-&gt=
-;len)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        int msglevel =3D D_ALIGN_DEBUG;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        msglvl_t msglevel =3D D_ALIGN_DEBUG;</sp=
-an><br><span>         const unsigned int u =3D (unsigned int)BPTR(buf);</sp=
-an><br><span> </span><br><span>         if (u &amp; (PAYLOAD_ALIGN - 1))</s=
-pan><br><span>diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c</spa=
-n><br><span>index 48a2057..b49d4bb 100644</span><br><span>--- a/src/openvpn=
-/clinat.c</span><br><span>+++ b/src/openvpn/clinat.c</span><br><span>@@ -47=
-,7 +47,7 @@</span><br><span> }</span><br><span> </span><br><span> void</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-print_client_nat_list(cons=
-t struct client_nat_option_list *list, int msglevel)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+print_client_nat_list(const struct client=
-_nat_option_list *list, msglvl_t msglevel)</span><br><span> {</span><br><sp=
-an>     struct gc_arena gc =3D gc_new();</span><br><span>     int i;</span>=
-<br><span>@@ -101,7 +101,7 @@</span><br><span> void</span><br><span> add_cl=
-ient_nat_to_option_list(struct client_nat_option_list *dest, const char *ty=
-pe,</span><br><span>                               const char *network, con=
-st char *netmask, const char *foreign_network,</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                              int msglevel)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                          =
-    msglvl_t msglevel)</span><br><span> {</span><br><span>     struct clien=
-t_nat_entry e;</span><br><span>     bool ok;</span><br><span>@@ -159,7 +159=
-,7 @@</span><br><span> #endif</span><br><span> </span><br><span> static voi=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_pkt(struct ope=
-nvpn_iphdr *iph, const char *prefix, const int direction, const int msgleve=
-l)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_pkt(struct =
-openvpn_iphdr *iph, const char *prefix, const int direction, const msglvl_t=
- msglevel)</span><br><span> {</span><br><span>     struct gc_arena gc =3D g=
-c_new();</span><br><span> </span><br><span>diff --git a/src/openvpn/clinat.=
-h b/src/openvpn/clinat.h</span><br><span>index abfa0b7..7d787e0 100644</spa=
-n><br><span>--- a/src/openvpn/clinat.h</span><br><span>+++ b/src/openvpn/cl=
-inat.h</span><br><span>@@ -54,11 +54,11 @@</span><br><span> void copy_clien=
-t_nat_option_list(struct client_nat_option_list *dest,</span><br><span>    =
-                              const struct client_nat_option_list *src);</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void p=
-rint_client_nat_list(const struct client_nat_option_list *list, int msgleve=
-l);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void print_clien=
-t_nat_list(const struct client_nat_option_list *list, msglvl_t msglevel);</=
-span><br><span> </span><br><span> void add_client_nat_to_option_list(struct=
- client_nat_option_list *dest, const char *type,</span><br><span>          =
-                          const char *network, const char *netmask,</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-                             =
-      const char *foreign_network, int msglevel);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                                   const char=
- *foreign_network, msglvl_t msglevel);</span><br><span> </span><br><span> v=
-oid client_nat_transform(const struct client_nat_option_list *list, struct =
-buffer *ipbuf,</span><br><span>                           const int directi=
-on);</span><br><span>diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c</=
-span><br><span>index 1a2e775..9d35141 100644</span><br><span>--- a/src/open=
-vpn/comp.c</span><br><span>+++ b/src/openvpn/comp.c</span><br><span>@@ -159=
-,7 +159,7 @@</span><br><span> #endif /* USE_COMP */</span><br><span> </span=
-><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check=
-_compression_settings_valid(struct compress_options *info, int msglevel)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+check_compression_sett=
-ings_valid(struct compress_options *info, msglvl_t msglevel)</span><br><spa=
-n> {</span><br><span>     /*</span><br><span>      * We also allow comp-stu=
-b-v2 here as it technically allows escaping of</span><br><span>diff --git a=
-/src/openvpn/comp.h b/src/openvpn/comp.h</span><br><span>index 0354896..171=
-7029 100644</span><br><span>--- a/src/openvpn/comp.h</span><br><span>+++ b/=
-src/openvpn/comp.h</span><br><span>@@ -84,12 +84,14 @@</span><br><span>    =
-        &amp;&amp; info-&gt;alg !=3D COMP_ALG_UNDEF;</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#incl=
-ude &quot;error.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span> /**</span><br><span>  * Checks if the compression set=
-tings are valid. Takes into account the</span><br><span>  * flags of allow-=
-compression and also the whether algorithms are compiled</span><br><span>  =
-* in</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-bool check_compression_settings_valid(struct compress_options *info, in=
-t msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool ch=
-eck_compression_settings_valid(struct compress_options *info, msglvl_t msgl=
-evel);</span><br><span> </span><br><span> #ifdef USE_COMP</span><br><span> =
-#include &quot;buffer.h&quot;</span><br><span>diff --git a/src/openvpn/cryp=
-to.c b/src/openvpn/crypto.c</span><br><span>index 4c0f684..0abcd7f 100644</=
-span><br><span>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn=
-/crypto.c</span><br><span>@@ -1609,7 +1609,7 @@</span><br><span> }</span><b=
-r><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-ascii2keydirection(int msglevel, const char *str)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ascii2keydirection(msglvl_t msglevel=
-, const char *str)</span><br><span> {</span><br><span>     if (!str)</span>=
-<br><span>     {</span><br><span>diff --git a/src/openvpn/crypto.h b/src/op=
-envpn/crypto.h</span><br><span>index efd7f60..d69db59 100644</span><br><spa=
-n>--- a/src/openvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</sp=
-an><br><span>@@ -618,7 +618,7 @@</span><br><span> </span><br><span> void mu=
-st_have_n_keys(const char *filename, const char *option, const struct key2 =
-*key2, int n);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-int ascii2keydirection(int msglevel, const char *str);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+int ascii2keydirection(msglvl=
-_t msglevel, const char *str);</span><br><span> </span><br><span> const cha=
-r *keydirection2ascii(int kd, bool remote, bool humanreadable);</span><br><=
-span> </span><br><span>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</=
-span><br><span>index 70a8c0a..881459c 100644</span><br><span>--- a/src/open=
-vpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><span>@@ -233,7=
- +233,7 @@</span><br><span> }</span><br><span> </span><br><span> static boo=
-l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_option_ce(=
-const struct connection_entry *ce, int msglevel, int mode)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+dco_check_option_ce(const struct con=
-nection_entry *ce, msglvl_t msglevel, int mode)</span><br><span> {</span><b=
-r><span>     if (ce-&gt;fragment)</span><br><span>     {</span><br><span>@@=
- -293,7 +293,7 @@</span><br><span> }</span><br><span> </span><br><span> boo=
-l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_startup_op=
-tion(int msglevel, const struct options *o)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+dco_check_startup_option(msglvl_t msglevel, const s=
-truct options *o)</span><br><span> {</span><br><span>     /* check if no de=
-v name was specified at all. In the case,</span><br><span>      * later log=
-ic will most likely stop OpenVPN, so no need to</span><br><span>@@ -430,7 +=
-430,7 @@</span><br><span> }</span><br><span> </span><br><span> bool</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_option(int msglevel=
-, const struct options *o)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+dco_check_option(msglvl_t msglevel, const struct options *o)</span><=
-br><span> {</span><br><span>     /* At this point the ciphers have already =
-been normalised */</span><br><span>     if (o-&gt;enable_ncp_fallback</span=
-><br><span>@@ -480,7 +480,7 @@</span><br><span> }</span><br><span> </span><=
-br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_che=
-ck_pull_options(int msglevel, const struct options *o)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+dco_check_pull_options(msglvl_t msglevel=
-, const struct options *o)</span><br><span> {</span><br><span>     if (!o-&=
-gt;use_peer_id)</span><br><span>     {</span><br><span>diff --git a/src/ope=
-nvpn/dco.h b/src/openvpn/dco.h</span><br><span>index 59acb18..a362977 10064=
-4</span><br><span>--- a/src/openvpn/dco.h</span><br><span>+++ b/src/openvpn=
-/dco.h</span><br><span>@@ -55,7 +55,7 @@</span><br><span>  * @param msgleve=
-l      level to print messages to</span><br><span>  * @return              =
-true if ovpn-dco is available, false otherwise</span><br><span>  */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-bool dco_available(int msglev=
-el);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool dco_availa=
-ble(msglvl_t msglevel);</span><br><span> </span><br><span> </span><br><span=
-> /**</span><br><span>@@ -75,7 +75,7 @@</span><br><span>  * @param o       =
-  the options struct that hold the options</span><br><span>  * @return     =
-     true if no conflict was detected, false otherwise</span><br><span>  */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool dco_check_option=
-(int msglevel, const struct options *o);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+bool dco_check_option(msglvl_t msglevel, const struct =
-options *o);</span><br><span> </span><br><span> /**</span><br><span>  * Che=
-ck whether the options struct has any further option that is not supported<=
-/span><br><span>@@ -87,7 +87,7 @@</span><br><span>  * @param o         the =
-options struct that hold the options</span><br><span>  * @return          t=
-rue if no conflict was detected, false otherwise</span><br><span>  */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-bool dco_check_startup_opti=
-on(int msglevel, const struct options *o);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+bool dco_check_startup_option(msglvl_t msglevel, con=
-st struct options *o);</span><br><span> </span><br><span> /**</span><br><sp=
-an>  * Check whether any of the options pushed by the server is not support=
-ed by</span><br><span>@@ -98,7 +98,7 @@</span><br><span>  * @param o       =
-  the options struct that hold the options</span><br><span>  * @return     =
-     true if no conflict was detected, false otherwise</span><br><span>  */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool dco_check_pull_o=
-ptions(int msglevel, const struct options *o);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+bool dco_check_pull_options(msglvl_t msglevel, c=
-onst struct options *o);</span><br><span> </span><br><span> /**</span><br><=
-span>  * Initialize the DCO context</span><br><span>@@ -261,7 +261,7 @@</sp=
-an><br><span> typedef void *dco_context_t;</span><br><span> </span><br><spa=
-n> static inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-dco_available(int msglevel)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+dco_available(msglvl_t msglevel)</span><br><span> {</span><br><span=
->     return false;</span><br><span> }</span><br><span>@@ -273,19 +273,19 @=
-@</span><br><span> }</span><br><span> </span><br><span> static inline bool<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_option(int m=
-sglevel, const struct options *o)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+dco_check_option(msglvl_t msglevel, const struct options *o)<=
-/span><br><span> {</span><br><span>     return false;</span><br><span> }</s=
-pan><br><span> </span><br><span> static inline bool</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-dco_check_startup_option(int msglevel, cons=
-t struct options *o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+dco_check_startup_option(msglvl_t msglevel, const struct options *o)</span=
-><br><span> {</span><br><span>     return false;</span><br><span> }</span><=
-br><span> </span><br><span> static inline bool</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-dco_check_pull_options(int msglevel, const struct =
-options *o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_chec=
-k_pull_options(msglvl_t msglevel, const struct options *o)</span><br><span>=
- {</span><br><span>     return false;</span><br><span> }</span><br><span>di=
-ff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br>=
-<span>index 65303cd..d5ca277 100644</span><br><span>--- a/src/openvpn/dco_f=
-reebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@=
- -658,7 +658,7 @@</span><br><span> }</span><br><span> </span><br><span> boo=
-l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_available(int ms=
-glevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_availabl=
-e(msglvl_t msglevel)</span><br><span> {</span><br><span>     struct if_clon=
-ereq ifcr;</span><br><span>     char *buf =3D NULL;</span><br><span>diff --=
-git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>ind=
-ex 40674e7..d8357ca 100644</span><br><span>--- a/src/openvpn/dco_linux.c</s=
-pan><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -74,7 +74,7 =
-@@</span><br><span>  * @return ID on success, negative error code on error<=
-/span><br><span>  */</span><br><span> static int</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-resolve_ovpn_netlink_id(int msglevel)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+resolve_ovpn_netlink_id(msglvl=
-_t msglevel)</span><br><span> {</span><br><span>     int ret;</span><br><sp=
-an>     struct nl_sock *nl_sock =3D nl_socket_alloc();</span><br><span>@@ -=
-1199,7 +1199,7 @@</span><br><span> }</span><br><span> </span><br><span> boo=
-l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_available(int ms=
-glevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_availabl=
-e(msglvl_t msglevel)</span><br><span> {</span><br><span>     if (resolve_ov=
-pn_netlink_id(D_DCO_DEBUG) &lt; 0)</span><br><span>     {</span><br><span>d=
-iff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>i=
-ndex 01ba017..2d08ed8 100644</span><br><span>--- a/src/openvpn/dco_win.c</s=
-pan><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -599,7 +599,7 =
-@@</span><br><span> }</span><br><span> </span><br><span> bool</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-dco_available(int msglevel)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+dco_available(msglvl_t msgl=
-evel)</span><br><span> {</span><br><span>     /* try to open device by symb=
-olic name */</span><br><span>     HANDLE h =3D CreateFile(&quot;\\\\.\\ovpn=
--dco&quot;, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,</span><br=
-><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>i=
-ndex 5421004..efb888a 100644</span><br><span>--- a/src/openvpn/dns.c</span>=
-<br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -200,7 +200,7 @@</span=
-><br><span> }</span><br><span> </span><br><span> bool</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-dns_options_verify(int msglevel, const stru=
-ct dns_options *o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
-ns_options_verify(msglvl_t msglevel, const struct dns_options *o)</span><br=
-><span> {</span><br><span>     const struct dns_server *server =3D o-&gt;se=
-rvers ? o-&gt;servers : o-&gt;servers_prepull;</span><br><span>     while (=
-server)</span><br><span>diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h<=
-/span><br><span>index 6d97b40..6cd98f2 100644</span><br><span>--- a/src/ope=
-nvpn/dns.h</span><br><span>+++ b/src/openvpn/dns.h</span><br><span>@@ -166,=
-7 +166,7 @@</span><br><span>  * @param   o           Pointer to the DNS opt=
-ions to validate</span><br><span>  * @return              True if no error =
-was found</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-bool dns_options_verify(int msglevel, const struct dns_options *o)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool dns_options_v=
-erify(msglvl_t msglevel, const struct dns_options *o);</span><br><span> </s=
-pan><br><span> /**</span><br><span>  * Makes a deep copy of the passed DNS =
-options.</span><br><span>diff --git a/src/openvpn/env_set.c b/src/openvpn/e=
-nv_set.c</span><br><span>index 6c7df8e..2ae71ab 100644</span><br><span>--- =
-a/src/openvpn/env_set.c</span><br><span>+++ b/src/openvpn/env_set.c</span><=
-br><span>@@ -209,7 +209,7 @@</span><br><span> }</span><br><span> </span><br=
-><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-env_set_p=
-rint(int msglevel, const struct env_set *es)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+env_set_print(msglvl_t msglevel, const struct env_=
-set *es)</span><br><span> {</span><br><span>     if (check_debug_level(msgl=
-evel))</span><br><span>     {</span><br><span>diff --git a/src/openvpn/env_=
-set.h b/src/openvpn/env_set.h</span><br><span>index 3973a4e..ddcfa14 100644=
-</span><br><span>--- a/src/openvpn/env_set.h</span><br><span>+++ b/src/open=
-vpn/env_set.h</span><br><span>@@ -85,7 +85,7 @@</span><br><span> </span><br=
-><span> const char *env_set_get(const struct env_set *es, const char *name)=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-vo=
-id env_set_print(int msglevel, const struct env_set *es);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+void env_set_print(msglvl_t msglevel,=
- const struct env_set *es);</span><br><span> </span><br><span> /**</span><b=
-r><span>  * Write a struct env_set to a file. Each item on one line.</span>=
-<br><span>diff --git a/src/openvpn/error.c b/src/openvpn/error.c</span><br>=
-<span>index 1b98235..58c2fd1 100644</span><br><span>--- a/src/openvpn/error=
-.c</span><br><span>+++ b/src/openvpn/error.c</span><br><span>@@ -48,12 +48,=
-12 @@</span><br><span> #endif</span><br><span> </span><br><span> /* Globals=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-unsigned int x_deb=
-ug_level; /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+msglvl_t x_debug_level; /* GLOBAL */</span><br><span> </span><br><span> =
-/* Mute state */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stati=
-c int mute_cutoff;   /* GLOBAL */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-static int mute_count;    /* GLOBAL */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-static int mute_category; /* GLOBAL */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+static int mute_cutoff;    =
-    /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic int mute_count;         /* GLOBAL */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+static msglvl_t mute_category; /* GLOBAL */</span><br>=
-<span> </span><br><span> /*</span><br><span>  * Output mode priorities are =
-as follows:</span><br><span>@@ -103,16 +103,14 @@</span><br><span> bool</sp=
-an><br><span> set_debug_level(const int level, const unsigned int flags)</s=
-pan><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c=
-onst int ceiling =3D 15;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (level &gt;=
-=3D 0 &amp;&amp; level &lt;=3D ceiling)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (level &gt;=3D 0 &amp;&amp; level &lt;=3D M_DEBU=
-G_LEVEL)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        x_debug_level =3D level;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        x_debug_level =3D (msglvl_t)level;</span><br=
-><span>         return true;</span><br><span>     }</span><br><span>     el=
-se if (flags &amp; SDL_CONSTRAIN)</span><br><span>     {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        x_debug_level =3D constrain_int(=
-level, 0, ceiling);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        x_debug_level =3D (msglvl_t)constrain_int(level, 0, M_DEBUG_LEVEL);=
-</span><br><span>         return true;</span><br><span>     }</span><br><sp=
-an>     return false;</span><br><span>@@ -132,7 +130,7 @@</span><br><span> =
-    }</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+msglvl_t</span><br><span> get_debug_level(void)</span><br><span> {</sp=
-an><br><span>     return x_debug_level;</span><br><span>@@ -190,7 +188,7 @@=
-</span><br><span>  * Return a file to print messages to before syslog is op=
-ened.</span><br><span>  */</span><br><span> FILE *</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-msg_fp(const unsigned int flags)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+msg_fp(const msglvl_t flags)</spa=
-n><br><span> {</span><br><span>     FILE *fp =3D msgfp;</span><br><span>   =
-  if (!fp)</span><br><span>@@ -214,7 +212,7 @@</span><br><span> int x_msg_l=
-ine_num; /* GLOBAL */</span><br><span> </span><br><span> void</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-x_msg(const unsigned int flags, con=
-st char *format, ...)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+x_msg(const msglvl_t flags, const char *format, ...)</span><br><span> {</=
-span><br><span>     va_list arglist;</span><br><span>     va_start(arglist,=
- format);</span><br><span>@@ -235,7 +233,7 @@</span><br><span> }</span><br>=
-<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-x_msg_va(const unsigned int flags, const char *format, va_list argl=
-ist)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+x_msg_va(const =
-msglvl_t flags, const char *format, va_list arglist)</span><br><span> {</sp=
-an><br><span>     struct gc_arena gc;</span><br><span> #if SYSLOG_CAPABILIT=
-Y</span><br><span>@@ -385,13 +383,13 @@</span><br><span>  * Apply muting fi=
-lter.</span><br><span>  */</span><br><span> bool</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-dont_mute(unsigned int flags)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+dont_mute(msglvl_t flags)</span><br><s=
-pan> {</span><br><span>     bool ret =3D true;</span><br><span>     if (mut=
-e_cutoff &gt; 0 &amp;&amp; !(flags &amp; M_NOMUTE))</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int mute=
-_level =3D DECODE_MUTE_LEVEL(flags);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        if (mute_level &gt; 0 &amp;&amp; mute_level =3D=3D m=
-ute_category)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  const msglvl_t mute_level =3D DECODE_MUTE_LEVEL(flags);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if (mute_level =3D=3D mute_ca=
-tegory)</span><br><span>         {</span><br><span>             if (mute_co=
-unt =3D=3D mute_cutoff)</span><br><span>             {</span><br><span>@@ -=
-750,7 +748,7 @@</span><br><span>  * Translate msg flags into a string</span=
-><br><span>  */</span><br><span> const char *</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-msg_flags_string(const unsigned int flags, struct g=
-c_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msg_fla=
-gs_string(const msglvl_t flags, struct gc_arena *gc)</span><br><span> {</sp=
-an><br><span>     struct buffer out =3D alloc_buf_gc(16, gc);</span><br><sp=
-an>     if (flags =3D=3D M_INFO)</span><br><span>diff --git a/src/openvpn/e=
-rror.h b/src/openvpn/error.h</span><br><span>index 8388f82..2913498 100644<=
-/span><br><span>--- a/src/openvpn/error.h</span><br><span>+++ b/src/openvpn=
-/error.h</span><br><span>@@ -74,31 +74,33 @@</span><br><span> #define openv=
-pn_errno() errno</span><br><span> #endif</span><br><span> </span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+typedef unsigned int msglvl_t;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</spa=
-n><br><span>  * These globals should not be accessed directly,</span><br><s=
-pan>  * but rather through macros or inline functions defined below.</span>=
-<br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-extern =
-unsigned int x_debug_level;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+extern msglvl_t x_debug_level;</span><br><span> extern int x_msg_li=
-ne_num;</span><br><span> </span><br><span> /* msg() flags */</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_DEBUG_LE=
-VEL (0x0F) /* debug level mask */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#define M_DEBUG_LEVEL (0x0Fu) /* debug level mask */</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_FA=
-TAL    (1 &lt;&lt; 4)  /* exit program */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#define M_NONFATAL (1 &lt;&lt; 5)  /* non-fatal error *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_WARN     (=
-1 &lt;&lt; 6)  /* call syslog with LOG_WARNING */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#define M_DEBUG    (1 &lt;&lt; 7)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#define M_FATAL    (1u &lt;&lt; 4=
-)  /* exit program */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#define M_NONFATAL (1u &lt;&lt; 5)  /* non-fatal error */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#define M_WARN     (1u &lt;&lt; 6) =
- /* call syslog with LOG_WARNING */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#define M_DEBUG    (1u &lt;&lt; 7)</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_ERRNO (1 &lt;&lt; =
-8)         /* show errno description */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#define M_ERRNO (1u &lt;&lt; 8)         /* show errno d=
-escription */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#define M_NOMUTE       (1 &lt;&lt; 11) /* don&#39;t do mute proce=
-ssing */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_NOP=
-REFIX     (1 &lt;&lt; 12) /* don&#39;t show date/time prefix */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#define M_USAGE_SMALL  (1 &lt;&lt=
-; 13) /* fatal options error, call usage_small */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#define M_MSG_VIRT_OUT (1 &lt;&lt; 14) /* outpu=
-t message through msg_status_output callback */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#define M_OPTERR       (1 &lt;&lt; 15) /* print &=
-quot;Options error:&quot; prefix */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#define M_NOLF         (1 &lt;&lt; 16) /* don&#39;t print new=
- line */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_NOI=
-PREFIX    (1 &lt;&lt; 17) /* don&#39;t print instance prefix */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#define M_NOMUTE       (1u &lt;=
-&lt; 11) /* don&#39;t do mute processing */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define M_NOPREFIX     (1u &lt;&lt; 12) /* don&#39;=
-t show date/time prefix */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define M_USAGE_SMALL  (1u &lt;&lt; 13) /* fatal options error, call=
- usage_small */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#def=
-ine M_MSG_VIRT_OUT (1u &lt;&lt; 14) /* output message through msg_status_ou=
-tput callback */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine M_OPTERR       (1u &lt;&lt; 15) /* print &quot;Options error:&quot; pr=
-efix */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define M_NO=
-LF         (1u &lt;&lt; 16) /* don&#39;t print new line */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define M_NOIPREFIX    (1u &lt;&lt; =
-17) /* don&#39;t print instance prefix */</span><br><span> </span><br><span=
-> /* flag combinations which are frequently used */</span><br><span> #defin=
-e M_ERR    (M_FATAL | M_ERRNO)</span><br><span>@@ -112,7 +114,7 @@</span><b=
-r><span>  * A mute level of 0 is always printed.</span><br><span>  */</span=
-><br><span> #define MUTE_LEVEL_SHIFT 24</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#define MUTE_LEVEL_MASK  0xFF</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#define MUTE_LEVEL_MASK  0xFFu</span><br><span>=
- </span><br><span> #define ENCODE_MUTE_LEVEL(mute_level) (((mute_level) &am=
-p; MUTE_LEVEL_MASK) &lt;&lt; MUTE_LEVEL_SHIFT)</span><br><span> #define DEC=
-ODE_MUTE_LEVEL(flags)      (((flags) &gt;&gt; MUTE_LEVEL_SHIFT) &amp; MUTE_=
-LEVEL_MASK)</span><br><span>@@ -135,7 +137,7 @@</span><br><span>  */</span>=
-<br><span> </span><br><span> /** Check muting filter */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-bool dont_mute(unsigned int flags);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+bool dont_mute(msglvl_t f=
-lags);</span><br><span> </span><br><span> /* Macro to ensure (and teach sta=
-tic analysis tools) we exit on fatal errors */</span><br><span> #define EXI=
-T_FATAL(flags)      \</span><br><span>@@ -170,7 +172,7 @@</span><br><span> =
-#define dmsg(flags, ...)</span><br><span> #endif</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-void x_msg(const unsigned int =
-flags, const char *format, ...)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+void x_msg(const msglvl_t flags, const char *format, ...)</span=
-><br><span> #ifdef __GNUC__</span><br><span> #if __USE_MINGW_ANSI_STDIO</sp=
-an><br><span>     __attribute__((format(gnu_printf, 2, 3)))</span><br><span=
->@@ -180,7 +182,7 @@</span><br><span> #endif</span><br><span>     ; /* shou=
-ld be called via msg above */</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-void x_msg_va(const unsigned int flags, const cha=
-r *format, va_list arglist);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+void x_msg_va(const msglvl_t flags, const char *format, va_list ar=
-glist);</span><br><span> </span><br><span> /*</span><br><span>  * Function =
-prototypes</span><br><span>@@ -201,16 +203,16 @@</span><br><span> </span><b=
-r><span> bool set_mute_cutoff(const int cutoff);</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-int get_debug_level(void);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+msglvl_t get_debug_leve=
-l(void);</span><br><span> </span><br><span> int get_mute_cutoff(void);</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-const ch=
-ar *msg_flags_string(const unsigned int flags, struct gc_arena *gc);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+const char *msg_flags_stri=
-ng(const msglvl_t flags, struct gc_arena *gc);</span><br><span> </span><br>=
-<span> /*</span><br><span>  * File to print messages to before syslog is op=
-ened.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-FILE *msg_fp(const unsigned int flags);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+FILE *msg_fp(const msglvl_t flags);</span><br><spa=
-n> </span><br><span> /* Fatal logic errors */</span><br><span> #ifndef ENAB=
-LE_SMALL</span><br><span>@@ -254,14 +256,14 @@</span><br><span> /* Inline f=
-unctions */</span><br><span> </span><br><span> static inline bool</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-check_debug_level(unsigned int =
-level)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_debug_l=
-evel(msglvl_t level)</span><br><span> {</span><br><span>     return (level =
-&amp; M_DEBUG_LEVEL) &lt;=3D x_debug_level;</span><br><span> }</span><br><s=
-pan> </span><br><span> /** Return true if flags represent an enabled, not m=
-uted log level */</span><br><span> static inline bool</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-msg_test(unsigned int flags)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+msg_test(msglvl_t flags)</span><br=
-><span> {</span><br><span>     return check_debug_level(flags) &amp;&amp; d=
-ont_mute(flags);</span><br><span> }</span><br><span>@@ -400,8 +402,8 @@</sp=
-an><br><span> }</span><br><span> </span><br><span> /** Convert fatal errors=
- to nonfatal, don&#39;t touch other errors */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-static inline unsigned int</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-nonfatal(const unsigned int err)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+static inline msglvl_t</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+nonfatal(const msglvl_t err)</=
-span><br><span> {</span><br><span>     return err &amp; M_FATAL ? (err ^ M_=
-FATAL) | M_NONFATAL : err;</span><br><span> }</span><br><span>diff --git a/=
-src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index 5d22fa3=
-..12dd6a7 100644</span><br><span>--- a/src/openvpn/forward.c</span><br><spa=
-n>+++ b/src/openvpn/forward.c</span><br><span>@@ -368,7 +368,8 @@</span><br=
-><span> }</span><br><span> </span><br><span> bool</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-send_control_channel_string_dowork(struct tls_s=
-ession *session, const char *str, int msglevel)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+send_control_channel_string_dowork(struct tls_s=
-ession *session, const char *str,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                                   msglvl_t msglevel)</span><=
-br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br=
-><span>     bool stat;</span><br><span>@@ -395,7 +396,7 @@</span><br><span>=
- }</span><br><span> </span><br><span> bool</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-send_control_channel_string(struct context *c, const c=
-har *str, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+send_control_channel_string(struct context *c, const char *str, msglvl_=
-t msglevel)</span><br><span> {</span><br><span>     if (c-&gt;c2.tls_multi)=
-</span><br><span>     {</span><br><span>diff --git a/src/openvpn/forward.h =
-b/src/openvpn/forward.h</span><br><span>index 79d0f8b..a575faf 100644</span=
-><br><span>--- a/src/openvpn/forward.h</span><br><span>+++ b/src/openvpn/fo=
-rward.h</span><br><span>@@ -285,7 +285,7 @@</span><br><span>  * @param str =
-       - The message to be sent</span><br><span>  * @param msglevel   - Mes=
-sage level to use for logging</span><br><span>  */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-bool send_control_channel_string(struct contex=
-t *c, const char *str, int msglevel);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+bool send_control_channel_string(struct context *c, const=
- char *str, msglvl_t msglevel);</span><br><span> </span><br><span> /*</span=
-><br><span>  * Send a string to remote over the TLS control channel.</span>=
-<br><span>@@ -303,7 +303,8 @@</span><br><span>  * @param msglevel   - Messa=
-ge level to use for logging</span><br><span>  */</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-bool send_control_channel_stri=
-ng_dowork(struct tls_session *session, const char *str, int msglevel);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+bool send_control_channe=
-l_string_dowork(struct tls_session *session, const char *str,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                                 =
-       msglvl_t msglevel);</span><br><span> </span><br><span> </span><br><s=
-pan> /**</span><br><span>diff --git a/src/openvpn/init.c b/src/openvpn/init=
-.c</span><br><span>index 2821cd4..0d7a2ec 100644</span><br><span>--- a/src/=
-openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ =
--4273,7 +4273,7 @@</span><br><span> }</span><br><span> </span><br><span> vo=
-id</span><br><span style=3D"color: hsl(0, 100%, 40%);">-management_show_net=
-_callback(void *arg, const int msglevel)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+management_show_net_callback(void *arg, const msglvl_t=
- msglevel)</span><br><span> {</span><br><span> #ifdef _WIN32</span><br><spa=
-n>     show_routes(msglevel);</span><br><span>diff --git a/src/openvpn/init=
-.h b/src/openvpn/init.h</span><br><span>index a807874..e89615b 100644</span=
-><br><span>--- a/src/openvpn/init.h</span><br><span>+++ b/src/openvpn/init.=
-h</span><br><span>@@ -136,7 +136,7 @@</span><br><span> </span><br><span> vo=
-id close_management(void);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-void management_show_net_callback(void *arg, const i=
-nt msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void m=
-anagement_show_net_callback(void *arg, const msglvl_t msglevel);</span><br>=
-<span> </span><br><span> #endif</span><br><span> </span><br><span>diff --gi=
-t a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span>index 4decd=
-fe..c675e95 100644</span><br><span>--- a/src/openvpn/manage.c</span><br><sp=
-an>+++ b/src/openvpn/manage.c</span><br><span>@@ -1475,7 +1475,7 @@</span><=
-br><span>         }</span><br><span>         else</span><br><span>         =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_CL=
-IENT, &quot;SUCCESS: verb=3D%d&quot;, get_debug_level());</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot;SUCCE=
-SS: verb=3D%u&quot;, get_debug_level());</span><br><span>         }</span><=
-br><span>     }</span><br><span>     else if (streq(p[0], &quot;mute&quot;)=
-)</span><br><span>diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h<=
-/span><br><span>index 7c189ba..bff96d3 100644</span><br><span>--- a/src/ope=
-nvpn/manage.h</span><br><span>+++ b/src/openvpn/manage.h</span><br><span>@@=
- -176,7 +176,7 @@</span><br><span>     unsigned int flags;</span><br><span>=
- </span><br><span>     void (*status)(void *arg, const int version, struct =
-status_output *so);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  void (*show_net)(void *arg, const int msglevel);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    void (*show_net)(void *arg, const msglvl=
-_t msglevel);</span><br><span>     int (*kill_by_cn)(void *arg, const char =
-*common_name);</span><br><span>     int (*kill_by_addr)(void *arg, const in=
-_addr_t addr, const int port, const int proto);</span><br><span>     void (=
-*delete_event)(void *arg, event_t event);</span><br><span>diff --git a/src/=
-openvpn/mtu.c b/src/openvpn/mtu.c</span><br><span>index a419e32..9c1a772 10=
-0644</span><br><span>--- a/src/openvpn/mtu.c</span><br><span>+++ b/src/open=
-vpn/mtu.c</span><br><span>@@ -187,7 +187,7 @@</span><br><span> }</span><br>=
-<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-frame_print(const struct frame *frame, int level, const char *prefi=
-x)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+frame_print(const=
- struct frame *frame, msglvl_t msglevel, const char *prefix)</span><br><spa=
-n> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>=
-     struct buffer out =3D alloc_buf_gc(256, &amp;gc);</span><br><span>@@ -=
-208,7 +208,7 @@</span><br><span>     buf_printf(&amp;out, &quot; ET:%d&quot=
-;, frame-&gt;extra_tun);</span><br><span>     buf_printf(&amp;out, &quot; ]=
-&quot;);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    msg(level, &quot;%s&quot;, out.data);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;%s&quot;, out.data);</sp=
-an><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </s=
-pan><br><span>diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h</span><br>=
-<span>index c092461..3bbff6f 100644</span><br><span>--- a/src/openvpn/mtu.h=
-</span><br><span>+++ b/src/openvpn/mtu.h</span><br><span>@@ -181,7 +181,7 @=
-@</span><br><span>  * Function prototypes.</span><br><span>  */</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void frame_prin=
-t(const struct frame *frame, int level, const char *prefix);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+void frame_print(const struct fram=
-e *frame, msglvl_t msglevel, const char *prefix);</span><br><span> </span><=
-br><span> void set_mtu_discover_type(socket_descriptor_t sd, int mtu_type, =
-sa_family_t proto_af);</span><br><span> </span><br><span>diff --git a/src/o=
-penvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 6e4cc42..8676a09=
- 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src=
-/openvpn/multi.c</span><br><span>@@ -3316,7 +3316,7 @@</span><br><span>    =
- }</span><br><span>     else</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int msglevel =3D D_DCO;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        msglvl_t msglevel =3D D=
-_DCO;</span><br><span>         if (dco-&gt;dco_message_type =3D=3D OVPN_CMD=
-_DEL_PEER</span><br><span>             &amp;&amp; dco-&gt;dco_del_peer_reas=
-on =3D=3D OVPN_DEL_PEER_REASON_USERSPACE)</span><br><span>         {</span>=
-<br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span>=
-<br><span>index ae285d9..f1f66b9 100644</span><br><span>--- a/src/openvpn/o=
-ptions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -11=
-07,7 +1107,7 @@</span><br><span> #endif /* ifndef _WIN32 */</span><br><span=
-> </span><br><span> static in_addr_t</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-get_ip_addr(const char *ip_string, int msglevel, bool *error=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_ip_addr(const =
-char *ip_string, msglvl_t msglevel, bool *error)</span><br><span> {</span><=
-br><span>     unsigned int flags =3D GETADDR_HOST_ORDER;</span><br><span>  =
-   bool succeeded =3D false;</span><br><span>@@ -1187,7 +1187,7 @@</span><b=
-r><span>  * @param   gc          The returned object will be allocated in t=
-his gc</span><br><span>  */</span><br><span> static struct verify_hash_list=
- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-parse_hash_fingerpr=
-int(const char *str, int nbytes, int msglevel, struct gc_arena *gc)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+parse_hash_fingerprint(cons=
-t char *str, int nbytes, msglvl_t msglevel, struct gc_arena *gc)</span><br>=
-<span> {</span><br><span>     int i =3D 0;</span><br><span>     const char =
-*cp =3D str;</span><br><span>@@ -1240,7 +1240,8 @@</span><br><span>  * @par=
-am   gc          The returned list items will be allocated in this gc</span=
-><br><span>  */</span><br><span> static struct verify_hash_list *</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-parse_hash_fingerprint_multilin=
-e(const char *str, int nbytes, int msglevel, struct gc_arena *gc)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+parse_hash_fingerprint_multil=
-ine(const char *str, int nbytes, msglvl_t msglevel,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                 struct g=
-c_arena *gc)</span><br><span> {</span><br><span>     struct gc_arena gc_tem=
-p =3D gc_new();</span><br><span>     char *lines =3D string_alloc(str, &amp=
-;gc_temp);</span><br><span>@@ -1329,7 +1330,7 @@</span><br><span> #endif /*=
- ifdef _WIN32 */</span><br><span> </span><br><span> static void</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-dhcp_option_dns6_parse(const char=
- *parm, struct in6_addr *dns6_list, int *len, int msglevel)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+dhcp_option_dns6_parse(const char *=
-parm, struct in6_addr *dns6_list, int *len, msglvl_t msglevel)</span><br><s=
-pan> {</span><br><span>     struct in6_addr addr;</span><br><span>     if (=
-*len &gt;=3D N_DHCP_ADDR)</span><br><span>@@ -1344,7 +1345,7 @@</span><br><=
-span> }</span><br><span> static void</span><br><span> dhcp_option_address_p=
-arse(const char *name, const char *parm, in_addr_t *array, int *len,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                          in=
-t msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-                  msglvl_t msglevel)</span><br><span> {</span><br><span>   =
-  if (*len &gt;=3D N_DHCP_ADDR)</span><br><span>     {</span><br><span>@@ -=
-1480,7 +1481,8 @@</span><br><span> #endif /* ! ENABLE_SMALL */</span><br><s=
-pan> </span><br><span> static void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-option_iroute(struct options *o, const char *network_str, cons=
-t char *netmask_str, int msglevel)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+option_iroute(struct options *o, const char *network_str, co=
-nst char *netmask_str,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+              msglvl_t msglevel)</span><br><span> {</span><br><span>    =
- struct iroute *ir;</span><br><span> </span><br><span>@@ -1506,7 +1508,7 @@=
-</span><br><span> }</span><br><span> </span><br><span> static void</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-option_iroute_ipv6(struct opti=
-ons *o, const char *prefix_str, int msglevel)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+option_iroute_ipv6(struct options *o, const char =
-*prefix_str, msglvl_t msglevel)</span><br><span> {</span><br><span>     str=
-uct iroute_ipv6 *ir;</span><br><span> </span><br><span>@@ -2063,7 +2065,7 @=
-@</span><br><span> }</span><br><span> </span><br><span> static struct local=
-_entry *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-alloc_local_e=
-ntry(struct connection_entry *ce, const int msglevel, struct gc_arena *gc)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+alloc_local_entry(st=
-ruct connection_entry *ce, const msglvl_t msglevel, struct gc_arena *gc)</s=
-pan><br><span> {</span><br><span>     struct local_list *l =3D alloc_local_=
-list_if_undef(ce, gc);</span><br><span>     struct local_entry *e;</span><b=
-r><span>@@ -2104,7 +2106,7 @@</span><br><span> }</span><br><span> </span><b=
-r><span> static struct connection_entry *</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-alloc_connection_entry(struct options *options, const i=
-nt msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+alloc_c=
-onnection_entry(struct options *options, const msglvl_t msglevel)</span><br=
-><span> {</span><br><span>     struct connection_list *l =3D alloc_connecti=
-on_list_if_undef(options);</span><br><span>     struct connection_entry *e;=
-</span><br><span>@@ -2140,7 +2142,7 @@</span><br><span> }</span><br><span> =
-</span><br><span> static struct remote_entry *</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-alloc_remote_entry(struct options *options, const =
-int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+alloc_=
-remote_entry(struct options *options, const msglvl_t msglevel)</span><br><s=
-pan> {</span><br><span>     struct remote_list *l =3D alloc_remote_list_if_=
-undef(options);</span><br><span>     struct remote_entry *e;</span><br><spa=
-n>@@ -2694,7 +2696,7 @@</span><br><span> </span><br><span>     if (!options=
--&gt;tls_server &amp;&amp; !options-&gt;tls_client)</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int msglevel =
-=3D M_USAGE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- msglvl_t msglevel =3D M_USAGE;</span><br><span>         if (options-&gt;al=
-low_deprecated_insecure_static_crypto)</span><br><span>         {</span><br=
-><span>             msglevel =3D M_INFO;</span><br><span>@@ -4566,8 +4568,9=
- @@</span><br><span> }</span><br><span> </span><br><span> static void</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-options_warning_safe_scan2(=
-const int msglevel, const int delim, const bool report_inconsistent,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                           c=
-onst char *p1, const struct buffer *b2_src, const char *b1_name,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+options_warning_safe_scan2(con=
-st msglvl_t msglevel, const int delim,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                           const bool report_inconsisten=
-t, const char *p1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                          const struct buffer *b2_src, const char *b1_name,=
-</span><br><span>                            const char *b2_name)</span><br=
-><span> {</span><br><span>     /* We will stop sending &#39;key-method&#39;=
-, &#39;keydir&#39;, &#39;proto&#39; and &#39;tls-auth&#39; in</span><br><sp=
-an>@@ -4619,9 +4622,9 @@</span><br><span> }</span><br><span> </span><br><sp=
-an> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-option=
-s_warning_safe_scan1(const int msglevel, const int delim, const bool report=
-_inconsistent,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-                    const struct buffer *b1_src, const struct buffer *b2_sr=
-c,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
-        const char *b1_name, const char *b2_name)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+options_warning_safe_scan1(const msglvl_t msg=
-level, const int delim,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                           const bool report_inconsistent, const struct=
- buffer *b1_src,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                        const struct buffer *b2_src, const char *b1_name, c=
-onst char *b2_name)</span><br><span> {</span><br><span>     struct gc_arena=
- gc =3D gc_new();</span><br><span>     struct buffer b =3D *b1_src;</span><=
-br><span>@@ -4637,7 +4640,7 @@</span><br><span> }</span><br><span> </span><=
-br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-options_warning_safe_ml(const int msglevel, char *actual, const char *expec=
-ted, size_t actual_n)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+options_warning_safe_ml(const msglvl_t msglevel, char *actual, const char=
- *expected, size_t actual_n)</span><br><span> {</span><br><span>     struct=
- gc_arena gc =3D gc_new();</span><br><span> </span><br><span>@@ -4729,7 +47=
-32,7 @@</span><br><span>  */</span><br><span> </span><br><span> int</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-parse_topology(const char *st=
-r, const int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+parse_topology(const char *str, const msglvl_t msglevel)</span><br><span=
-> {</span><br><span>     if (streq(str, &quot;net30&quot;))</span><br><span=
->     {</span><br><span>@@ -4785,7 +4788,7 @@</span><br><span> }</span><br>=
-<span> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-auth_retry_set(const int msglevel, const char *option)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+auth_retry_set(const msglvl_t ms=
-glevel, const char *option)</span><br><span> {</span><br><span>     if (str=
-eq(option, &quot;interact&quot;))</span><br><span>     {</span><br><span>@@=
- -4942,7 +4945,7 @@</span><br><span> </span><br><span> #if 0</span><br><spa=
-n> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ping_re=
-c_err(int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-ping_rec_err(msglvl_t msglevel)</span><br><span> {</span><br><span>     msg=
-(msglevel, &quot;only one of --ping-exit or --ping-restart options may be s=
-pecified&quot;);</span><br><span> }</span><br><span>@@ -4966,7 +4969,7 @@</=
-span><br><span> </span><br><span> int</span><br><span> parse_line(const cha=
-r *line, char *p[], const int n, const char *file, const int line_num,</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-           int msglevel, s=
-truct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-           msglvl_t msglevel, struct gc_arena *gc)</span><br><span> {</span=
-><br><span>     const int STATE_INITIAL =3D 0;</span><br><span>     const i=
-nt STATE_READING_QUOTED_PARM =3D 1;</span><br><span>@@ -5271,24 +5274,25 @@=
-</span><br><span> }</span><br><span> </span><br><span> static void add_opti=
-on(struct options *options, char *p[], bool is_inline, const char *file,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                       i=
-nt line, const int level, const int msglevel,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                       int line, const int level,=
- const msglvl_t msglevel,</span><br><span>                        const uns=
-igned int permission_mask, unsigned int *option_types_found,</span><br><spa=
-n>                        struct env_set *es);</span><br><span> </span><br>=
-<span> static void remove_option(struct context *c, struct options *options=
-, char *p[], bool is_inline,</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                          const char *file, int line, const int msgl=
-evel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-            const char *file, int line, const msglvl_t msglevel,</span><br>=
-<span>                           const unsigned int permission_mask, unsign=
-ed int *option_types_found,</span><br><span>                           stru=
-ct env_set *es);</span><br><span> </span><br><span> static void update_opti=
-on(struct context *c, struct options *options, char *p[], bool is_inline,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
-   const char *file, int line, const int level, const int msglevel,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                          c=
-onst char *file, int line, const int level, const msglvl_t msglevel,</span>=
-<br><span>                           const unsigned int permission_mask, un=
-signed int *option_types_found,</span><br><span>                           =
-struct env_set *es, unsigned int *update_options_found);</span><br><span> <=
-/span><br><span> static void</span><br><span> read_config_file(struct optio=
-ns *options, const char *file, int level, const char *top_file,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                 const int top_li=
-ne, const int msglevel, const unsigned int permission_mask,</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                 unsigned int *option=
-_types_found, struct env_set *es)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                 const int top_line, const msglvl_t msglevel,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 co=
-nst unsigned int permission_mask, unsigned int *option_types_found,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                 struct env=
-_set *es)</span><br><span> {</span><br><span>     const int max_recursive_l=
-evels =3D 10;</span><br><span>     FILE *fp;</span><br><span>@@ -5360,7 +53=
-64,7 @@</span><br><span> </span><br><span> static void</span><br><span> rea=
-d_config_string(const char *prefix, struct options *options, const char *co=
-nfig,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-   const int msglevel, const unsigned int permission_mask,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                   const msglvl_t ms=
-glevel, const unsigned int permission_mask,</span><br><span>               =
-     unsigned int *option_types_found, struct env_set *es)</span><br><span>=
- {</span><br><span>     char line[OPTION_LINE_SIZE];</span><br><span>@@ -53=
-88,7 +5392,7 @@</span><br><span> }</span><br><span> </span><br><span> void<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-parse_argv(struct opti=
-ons *options, const int argc, char *argv[], const int msglevel,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+parse_argv(struct options *opti=
-ons, const int argc, char *argv[], const msglvl_t msglevel,</span><br><span=
->            const unsigned int permission_mask, unsigned int *option_types=
-_found, struct env_set *es)</span><br><span> {</span><br><span>     /* usag=
-e message */</span><br><span>@@ -5457,7 +5461,7 @@</span><br><span>     cha=
-r line[OPTION_PARM_SIZE];</span><br><span>     int line_num =3D 0;</span><b=
-r><span>     const char *file =3D &quot;[PUSH-OPTIONS]&quot;;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    const int msglevel =3D D_PUSH_E=
-RRORS | M_OPTERR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  const msglvl_t msglevel =3D D_PUSH_ERRORS | M_OPTERR;</span><br><span>   =
-  unsigned int update_options_found =3D 0;</span><br><span> </span><br><spa=
-n>     while (buf_parse(buf, &#39;,&#39;, line, sizeof(line)))</span><br><s=
-pan>@@ -5514,7 +5518,7 @@</span><br><span> }</span><br><span> </span><br><s=
-pan> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-options_serv=
-er_import(struct options *o, const char *filename, int msglevel,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+options_server_import(struct o=
-ptions *o, const char *filename, msglvl_t msglevel,</span><br><span>       =
-                unsigned int permission_mask, unsigned int *option_types_fo=
-und,</span><br><span>                       struct env_set *es)</span><br><=
-span> {</span><br><span>@@ -5524,7 +5528,7 @@</span><br><span> }</span><br>=
-<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-options_string_import(struct options *options, const char *config, =
-const int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-options_string_import(struct options *options, const char *config, const ms=
-glvl_t msglevel,</span><br><span>                       const unsigned int =
-permission_mask, unsigned int *option_types_found,</span><br><span>        =
-               struct env_set *es)</span><br><span> {</span><br><span>@@ -5=
-543,7 +5547,7 @@</span><br><span> </span><br><span> static bool</span><br><=
-span> verify_permission(const char *name, const char *file, int line, const=
- unsigned int type,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-                const unsigned int allowed, unsigned int *found, const int =
-msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-        const unsigned int allowed, unsigned int *found, const msglvl_t msg=
-level,</span><br><span>                   struct options *options, bool is_=
-inline)</span><br><span> {</span><br><span>     if (!(type &amp; allowed))<=
-/span><br><span>@@ -5595,7 +5599,7 @@</span><br><span> #define NM_QUOTE_HIN=
-T (1 &lt;&lt; 0)</span><br><span> </span><br><span> static bool</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-no_more_than_n_args(const int msg=
-level, char *p[], const int max, const unsigned int flags)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+no_more_than_n_args(const msglvl_t m=
-sglevel, char *p[], const int max, const unsigned int flags)</span><br><spa=
-n> {</span><br><span>     const int len =3D string_array_len((const char **=
-)p);</span><br><span> </span><br><span>@@ -5619,8 +5623,8 @@</span><br><spa=
-n>     }</span><br><span> }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-static inline int</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-msglevel_forward_compatible(struct options *options, co=
-nst int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
-atic inline msglvl_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+msglevel_forward_compatible(struct options *options, const msglvl_t msglev=
-el)</span><br><span> {</span><br><span>     return options-&gt;forward_comp=
-atible ? M_WARN : msglevel;</span><br><span> }</span><br><span>@@ -5654,10 =
-+5658,11 @@</span><br><span>  */</span><br><span> static void</span><br><sp=
-an> remove_option(struct context *c, struct options *options, char *p[], bo=
-ol is_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-      const char *file, int line, const int msglevel, const unsigned int pe=
-rmission_mask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-       unsigned int *option_types_found, struct env_set *es)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+              const char *file, in=
-t line, const msglvl_t msglevel,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+              const unsigned int permission_mask, unsigned int=
- *option_types_found,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+              struct env_set *es)</span><br><span> {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    int msglevel_fc =3D msglevel_forward_c=
-ompatible(options, msglevel);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    msglvl_t msglevel_fc =3D msglevel_forward_compatible(options,=
- msglevel);</span><br><span> </span><br><span>     if (streq(p[0], &quot;if=
-config&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>@@ -=
-5792,11 +5797,10 @@</span><br><span> #endif</span><br><span>     else</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int=
- msglevel_unknown =3D msglevel_fc;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        msglvl_t msglevel_unknown =3D msglevel_fc;</span><br=
-><span>         /* Check if an option is in --ignore-unknown-option and</sp=
-an><br><span>          * set warning level to non fatal */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; options-&gt;igno=
-re_unknown_option &amp;&amp; options-&gt;ignore_unknown_option[i]; i++)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D =
-0; options-&gt;ignore_unknown_option &amp;&amp; options-&gt;ignore_unknown_=
-option[i]; i++)</span><br><span>         {</span><br><span>             if =
-(streq(p[0], options-&gt;ignore_unknown_option[i]))</span><br><span>       =
-      {</span><br><span>@@ -5815,7 +5819,7 @@</span><br><span> </span><br><=
-span> </span><br><span> static bool</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-check_route_option(struct options *options, char *p[], const =
-int msglevel, bool pull_mode)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+check_route_option(struct options *options, char *p[], const msgl=
-vl_t msglevel, bool pull_mode)</span><br><span> {</span><br><span>     rol_=
-check_alloc(options);</span><br><span>     if (pull_mode)</span><br><span>@=
-@ -5843,7 +5847,7 @@</span><br><span> </span><br><span> </span><br><span> s=
-tatic bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_route=
-6_option(struct options *options, char *p[], const int msglevel, bool pull_=
-mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_route6_o=
-ption(struct options *options, char *p[], const msglvl_t msglevel, bool pul=
-l_mode)</span><br><span> {</span><br><span>     rol6_check_alloc(options);<=
-/span><br><span>     if (pull_mode)</span><br><span>@@ -5864,7 +5868,7 @@</=
-span><br><span> }</span><br><span> </span><br><span> static bool</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-check_dns_option(struct options =
-*options, char *p[], const int msglevel, bool pull_mode)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+check_dns_option(struct options *optio=
-ns, char *p[], const msglvl_t msglevel, bool pull_mode)</span><br><span> {<=
-/span><br><span>     if (streq(p[1], &quot;search-domains&quot;) &amp;&amp;=
- p[2])</span><br><span>     {</span><br><span>@@ -5984,7 +5988,7 @@</span><=
-br><span>  */</span><br><span> static void</span><br><span> update_option(s=
-truct context *c, struct options *options, char *p[], bool is_inline,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-              const char *f=
-ile, int line, const int level, const int msglevel,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              const char *file, int line,=
- const int level, const msglvl_t msglevel,</span><br><span>               c=
-onst unsigned int permission_mask, unsigned int *option_types_found,</span>=
-<br><span>               struct env_set *es, unsigned int *update_options_f=
-ound)</span><br><span> {</span><br><span>@@ -6169,12 +6173,12 @@</span><br>=
-<span> </span><br><span> static void</span><br><span> add_option(struct opt=
-ions *options, char *p[], bool is_inline, const char *file, int line,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-           const int level,=
- const int msglevel, const unsigned int permission_mask,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+           const int level, const msgl=
-vl_t msglevel, const unsigned int permission_mask,</span><br><span>        =
-    unsigned int *option_types_found, struct env_set *es)</span><br><span> =
-{</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>   =
-  const bool pull_mode =3D BOOL_CAST(permission_mask &amp; OPT_P_PULL_MODE)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int msglevel_fc =
-=3D msglevel_forward_compatible(options, msglevel);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    msglvl_t msglevel_fc =3D msglevel_for=
-ward_compatible(options, msglevel);</span><br><span> </span><br><span>     =
-ASSERT(MAX_PARMS &gt;=3D 7);</span><br><span> </span><br><span>@@ -9869,7 +=
-9873,7 @@</span><br><span>     else</span><br><span>     {</span><br><span>=
-         int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  int msglevel_unknown =3D msglevel_fc;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msglvl_t msglevel_unknown =3D msglevel_fc;</spa=
-n><br><span>         /* Check if an option is in --ignore-unknown-option an=
-d</span><br><span>          * set warning level to non fatal */</span><br><=
-span>         for (i =3D 0; options-&gt;ignore_unknown_option &amp;&amp; op=
-tions-&gt;ignore_unknown_option[i]; i++)</span><br><span>diff --git a/src/o=
-penvpn/options.h b/src/openvpn/options.h</span><br><span>index bb2c052..a73=
-7711 100644</span><br><span>--- a/src/openvpn/options.h</span><br><span>+++=
- b/src/openvpn/options.h</span><br><span>@@ -822,7 +822,7 @@</span><br><spa=
-n>     struct pull_filter *tail;</span><br><span> };</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-void parse_argv(struct opt=
-ions *options, const int argc, char *argv[], const int msglevel,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void parse_argv(struct options=
- *options, const int argc, char *argv[], const msglvl_t msglevel,</span><br=
-><span>                 const unsigned int permission_mask, unsigned int *o=
-ption_types_found,</span><br><span>                 struct env_set *es);</s=
-pan><br><span> </span><br><span>@@ -888,7 +888,7 @@</span><br><span> </span=
-><br><span> void options_detach(struct options *o);</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-void options_server_import(=
-struct options *o, const char *filename, int msglevel,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+void options_server_import(struct option=
-s *o, const char *filename, msglvl_t msglevel,</span><br><span>            =
-                unsigned int permission_mask, unsigned int *option_types_fo=
-und,</span><br><span>                            struct env_set *es);</span=
-><br><span> </span><br><span>@@ -897,13 +897,13 @@</span><br><span> void ro=
-l_check_alloc(struct options *options);</span><br><span> </span><br><span> =
-int parse_line(const char *line, char *p[], const int n, const char *file, =
-const int line_num,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-             int msglevel, struct gc_arena *gc);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+               msglvl_t msglevel, struct gc_ar=
-ena *gc);</span><br><span> </span><br><span> /*</span><br><span>  * parse/p=
-rint topology coding</span><br><span>  */</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-int parse_topology(const char *str, c=
-onst int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-int parse_topology(const char *str, const msglvl_t msglevel);</span><br><sp=
-an> </span><br><span> const char *print_topology(const int topology);</span=
-><br><span> </span><br><span>@@ -917,11 +917,11 @@</span><br><span> </span>=
-<br><span> int auth_retry_get(void);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-bool auth_retry_set(const int msglevel, co=
-nst char *option);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+b=
-ool auth_retry_set(const msglvl_t msglevel, const char *option);</span><br>=
-<span> </span><br><span> const char *auth_retry_print(void);</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void options_strin=
-g_import(struct options *options, const char *config, const int msglevel,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+void options_string_i=
-mport(struct options *options, const char *config, const msglvl_t msglevel,=
-</span><br><span>                            const unsigned int permission_=
-mask, unsigned int *option_types_found,</span><br><span>                   =
-         struct env_set *es);</span><br><span> </span><br><span>diff --git =
-a/src/openvpn/options_util.c b/src/openvpn/options_util.c</span><br><span>i=
-ndex 5740ee5..cb4229e 100644</span><br><span>--- a/src/openvpn/options_util=
-.c</span><br><span>+++ b/src/openvpn/options_util.c</span><br><span>@@ -117=
-,7 +117,7 @@</span><br><span> }</span><br><span> </span><br><span> int</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-positive_atoi(const char *=
-str, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+p=
-ositive_atoi(const char *str, msglvl_t msglevel)</span><br><span> {</span><=
-br><span>     char *endptr;</span><br><span>     long long i =3D strtoll(st=
-r, &amp;endptr, 10);</span><br><span>@@ -132,7 +132,7 @@</span><br><span> }=
-</span><br><span> </span><br><span> bool</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-positive_atoll(const char *str, int64_t *value, const ch=
-ar *name, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+positive_atoll(const char *str, int64_t *value, const char *name, msglv=
-l_t msglevel)</span><br><span> {</span><br><span>     char *endptr;</span><=
-br><span>     long long ll =3D strtoll(str, &amp;endptr, 10);</span><br><sp=
-an>@@ -148,7 +148,7 @@</span><br><span> }</span><br><span> </span><br><span=
-> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-atoi_warn(const =
-char *str, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+atoi_warn(const char *str, msglvl_t msglevel)</span><br><span> {</span=
-><br><span>     char *endptr;</span><br><span>     long long i =3D strtoll(=
-str, &amp;endptr, 10);</span><br><span>@@ -163,7 +163,7 @@</span><br><span>=
- }</span><br><span> </span><br><span> bool</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-atoi_constrained(const char *str, int *value, const ch=
-ar *name, int min, int max, int msglevel)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+atoi_constrained(const char *str, int *value, const c=
-har *name, int min, int max, msglvl_t msglevel)</span><br><span> {</span><b=
-r><span>     ASSERT(min &lt; max);</span><br><span> </span><br><span>diff -=
--git a/src/openvpn/options_util.h b/src/openvpn/options_util.h</span><br><s=
-pan>index 45417d9..1492eef 100644</span><br><span>--- a/src/openvpn/options=
-_util.h</span><br><span>+++ b/src/openvpn/options_util.h</span><br><span>@@=
- -37,7 +37,7 @@</span><br><span>  * Converts a str to a positive number if =
-the string represents a postive</span><br><span>  * integer number. Otherwi=
-se print a warning with msglevel and return 0</span><br><span>  */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-int positive_atoi(const char *=
-str, int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-int positive_atoi(const char *str, msglvl_t msglevel);</span><br><span> </s=
-pan><br><span> /**</span><br><span>  * Converts a str to an integer if the =
-string can be represented as an</span><br><span>@@ -48,13 +48,13 @@</span><=
-br><span>  *</span><br><span>  * @return \c true if the integer has been pa=
-rsed and stored in value, \c false otherwise</span><br><span>  */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-bool positive_atoll(const char =
-*str, int64_t *value, const char *name, int msglevel);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+bool positive_atoll(const char *str, int=
-64_t *value, const char *name, msglvl_t msglevel);</span><br><span> </span>=
-<br><span> /**</span><br><span>  * Converts a str to an integer if the stri=
-ng can be represented as an</span><br><span>  * integer number. Otherwise p=
-rint a warning with \p msglevel and return 0</span><br><span>  */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-int atoi_warn(const char *str, =
-int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int a=
-toi_warn(const char *str, msglvl_t msglevel);</span><br><span> </span><br><=
-span> /**</span><br><span>  * Converts a str to an integer if the string ca=
-n be represented as an</span><br><span>@@ -66,7 +66,7 @@</span><br><span>  =
-* @return \c true if the integer has been parsed and stored in value, \c fa=
-lse otherwise</span><br><span>  */</span><br><span> bool atoi_constrained(c=
-onst char *str, int *value, const char *name, int min, int max,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                      int msgleve=
-l);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-      msglvl_t msglevel);</span><br><span> </span><br><span> /**</span><br>=
-<span>  * Filter an option line by all pull filters.</span><br><span>diff -=
--git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c</span><br><span>in=
-dex 09696db..ca318eb 100644</span><br><span>--- a/src/openvpn/packet_id.c</=
-span><br><span>+++ b/src/openvpn/packet_id.c</span><br><span>@@ -53,15 +53,=
-15 @@</span><br><span> #define SEQ_EXPIRED ((time_t)1)</span><br><span> </s=
-pan><br><span> #ifdef ENABLE_DEBUG</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-static void packet_id_debug_print(int msglevel, const struct p=
-acket_id_rec *p,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic void packet_id_debug_print(msglvl_t msglevel, const struct packet_id_re=
-c *p,</span><br><span>                                   const struct packe=
-t_id_net *pin, const char *message,</span><br><span>                       =
-            packet_id_print_type value);</span><br><span> </span><br><span>=
- #endif /* ENABLE_DEBUG */</span><br><span> </span><br><span> static inline=
- void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-packet_id_debug(=
-int msglevel, const struct packet_id_rec *p, const struct packet_id_net *pi=
-n,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                con=
-st char *message, uint64_t value)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+packet_id_debug(msglvl_t msglevel, const struct packet_id_rec=
- *p,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
- const struct packet_id_net *pin, const char *message, uint64_t value)</spa=
-n><br><span> {</span><br><span> #ifdef ENABLE_DEBUG</span><br><span>     if=
- (unlikely(check_debug_level(msglevel)))</span><br><span>@@ -573,7 +573,8 @=
-@</span><br><span> #ifdef ENABLE_DEBUG</span><br><span> </span><br><span> s=
-tatic void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-packet_id_d=
-ebug_print(int msglevel, const struct packet_id_rec *p, const struct packet=
-_id_net *pin,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+packet=
-_id_debug_print(msglvl_t msglevel, const struct packet_id_rec *p,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                      const s=
-truct packet_id_net *pin,</span><br><span>                       const char=
- *message, packet_id_print_type value)</span><br><span> {</span><br><span> =
-    struct gc_arena gc =3D gc_new();</span><br><span>diff --git a/src/openv=
-pn/pkcs11.c b/src/openvpn/pkcs11.c</span><br><span>index dfc87f6..8a7a320 1=
-00644</span><br><span>--- a/src/openvpn/pkcs11.c</span><br><span>+++ b/src/=
-openvpn/pkcs11.c</span><br><span>@@ -72,10 +72,10 @@</span><br><span> #endi=
-f</span><br><span> };</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-static unsigned</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+static msglvl_t</span><br><span> _pkcs11_msg_pkcs112openvpn(c=
-onst unsigned flags)</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    unsigned openvpn_flags;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    msglvl_t openvpn_flags;</span><br><span> </sp=
-an><br><span>     switch (flags)</span><br><span>     {</span><br><span>@@ =
--112,7 +112,7 @@</span><br><span> }</span><br><span> </span><br><span> stat=
-ic unsigned</span><br><span style=3D"color: hsl(0, 100%, 40%);">-_pkcs11_ms=
-g_openvpn2pkcs11(const unsigned flags)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+_pkcs11_msg_openvpn2pkcs11(const msglvl_t flags)</span><=
-br><span> {</span><br><span>     unsigned pkcs11_flags;</span><br><span> </=
-span><br><span>diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c</sp=
-an><br><span>index ea76a08..a105058 100644</span><br><span>--- a/src/openvp=
-n/plugin.c</span><br><span>+++ b/src/openvpn/plugin.c</span><br><span>@@ -5=
-0,7 +50,7 @@</span><br><span> static struct plugin_common *static_plugin_co=
-mmon =3D NULL; /* GLOBAL */</span><br><span> </span><br><span> static void<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-plugin_show_string_arr=
-ay(int msglevel, const char *name, const char *array[])</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+plugin_show_string_array(msglvl_t msgle=
-vel, const char *name, const char *array[])</span><br><span> {</span><br><s=
-pan>     int i;</span><br><span>     for (i =3D 0; array[i]; ++i)</span><br=
-><span>@@ -63,7 +63,7 @@</span><br><span> }</span><br><span> </span><br><sp=
-an> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-plugin=
-_show_args_env(int msglevel, const char *argv[], const char *envp[])</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+plugin_show_args_env(msglv=
-l_t msglevel, const char *argv[], const char *envp[])</span><br><span> {</s=
-pan><br><span>     if (check_debug_level(msglevel))</span><br><span>     {<=
-/span><br><span>@@ -184,7 +184,7 @@</span><br><span> </span><br><span> #ifn=
-def ENABLE_SMALL</span><br><span> void</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-plugin_option_list_print(const struct plugin_option_list *=
-list, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-plugin_option_list_print(const struct plugin_option_list *list, msglvl_t ms=
-glevel)</span><br><span> {</span><br><span>     int i;</span><br><span>    =
- struct gc_arena gc =3D gc_new();</span><br><span>@@ -995,7 +995,7 @@</span=
-><br><span> </span><br><span> #ifdef ENABLE_DEBUG</span><br><span> void</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-plugin_return_print(const=
- int msglevel, const char *prefix, const struct plugin_return *pr)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+plugin_return_print(const ms=
-glvl_t msglevel, const char *prefix, const struct plugin_return *pr)</span>=
-<br><span> {</span><br><span>     int i;</span><br><span>     msg(msglevel,=
- &quot;PLUGIN_RETURN_PRINT %s&quot;, prefix);</span><br><span>diff --git a/=
-src/openvpn/plugin.h b/src/openvpn/plugin.h</span><br><span>index 63999b6..=
-81d3739 100644</span><br><span>--- a/src/openvpn/plugin.h</span><br><span>+=
-++ b/src/openvpn/plugin.h</span><br><span>@@ -111,7 +111,7 @@</span><br><sp=
-an> bool plugin_option_list_add(struct plugin_option_list *list, char **p, =
-struct gc_arena *gc);</span><br><span> </span><br><span> #ifndef ENABLE_SMA=
-LL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void plugin_option_=
-list_print(const struct plugin_option_list *list, int msglevel);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void plugin_option_list_print(=
-const struct plugin_option_list *list, msglvl_t msglevel);</span><br><span>=
- </span><br><span> #endif</span><br><span> </span><br><span>@@ -136,7 +136,=
-7 @@</span><br><span> void plugin_return_free(struct plugin_return *pr);</s=
-pan><br><span> </span><br><span> #ifdef ENABLE_DEBUG</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void plugin_return_print(const int msglevel=
-, const char *prefix, const struct plugin_return *pr);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+void plugin_return_print(const msglvl_t =
-msglevel, const char *prefix, const struct plugin_return *pr);</span><br><s=
-pan> </span><br><span> #endif</span><br><span> </span><br><span>diff --git =
-a/src/openvpn/pool.c b/src/openvpn/pool.c</span><br><span>index fde6cea..28=
-ddd2c 100644</span><br><span>--- a/src/openvpn/pool.c</span><br><span>+++ b=
-/src/openvpn/pool.c</span><br><span>@@ -114,7 +114,7 @@</span><br><span>  *=
- Verify start/end range</span><br><span>  */</span><br><span> bool</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-ifconfig_pool_verify_range(con=
-st int msglevel, const in_addr_t start, const in_addr_t end)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ifconfig_pool_verify_range(const m=
-sglvl_t msglevel, const in_addr_t start, const in_addr_t end)</span><br><sp=
+<p>cron2 <strong>uploaded patch set #17</strong> to the change originally c=
+reated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1110?usp=3Demail">View Change</a></p><p>The following approvals got out=
+dated and were removed:
+Code-Review+2 by cron2, Code-Review+2 by ordex</p><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Introduce msglvl_t to unify =
+msglevel type handling<br><br>msglevel was definitely unsigned as the first=
+<br>argument to msg(), but many parts of the code<br>had it as signed. So t=
+his produced a LOT of<br>warnings when enabling -Wsign-conversion.<br><br>I=
+ntroduce a msglvl_t typedef and switch all<br>users to it. This includes an=
+y values that<br>are stored in the msglevel field, including<br>debug level=
+ and mute level.<br><br>There is one exception in struct status_output<br>w=
+here -1 is a valid value in the API. Only<br>positive values are translated=
+ into standard<br>message levels.<br><br>Change-Id: Id492cb774c6d022d06bb3c=
+f5fec2a4bdd410e619<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...=
+&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https=
+://gerrit.openvpn.net/c/openvpn/+/1110<br>Message-Id: &lt;20250917170428.33=
+10-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel=
+@lists.sourceforge.net/msg33028.html<br>Signed-off-by: Gert Doering &lt;ger=
+t@...1296...&gt;<br>---<br>M src/openvpn/argv.c<br>M src/openvpn/argv.h<br>=
+M src/openvpn/buffer.c<br>M src/openvpn/clinat.c<br>M src/openvpn/clinat.h<=
+br>M src/openvpn/comp.c<br>M src/openvpn/comp.h<br>M src/openvpn/crypto.c<b=
+r>M src/openvpn/crypto.h<br>M src/openvpn/dco.c<br>M src/openvpn/dco.h<br>M=
+ src/openvpn/dco_freebsd.c<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dc=
+o_win.c<br>M src/openvpn/dns.c<br>M src/openvpn/dns.h<br>M src/openvpn/env_=
+set.c<br>M src/openvpn/env_set.h<br>M src/openvpn/error.c<br>M src/openvpn/=
+error.h<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/open=
+vpn/init.c<br>M src/openvpn/init.h<br>M src/openvpn/manage.c<br>M src/openv=
+pn/manage.h<br>M src/openvpn/mtu.c<br>M src/openvpn/mtu.h<br>M src/openvpn/=
+multi.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/open=
+vpn/options_util.c<br>M src/openvpn/options_util.h<br>M src/openvpn/packet_=
+id.c<br>M src/openvpn/pkcs11.c<br>M src/openvpn/plugin.c<br>M src/openvpn/p=
+lugin.h<br>M src/openvpn/pool.c<br>M src/openvpn/pool.h<br>M src/openvpn/pr=
+oto.c<br>M src/openvpn/push.c<br>M src/openvpn/push.h<br>M src/openvpn/rout=
+e.c<br>M src/openvpn/route.h<br>M src/openvpn/run_command.c<br>M src/openvp=
+n/run_command.h<br>M src/openvpn/sig.c<br>M src/openvpn/sig.h<br>M src/open=
+vpn/socket.c<br>M src/openvpn/socket_util.c<br>M src/openvpn/socket_util.h<=
+br>M src/openvpn/ssl_verify_backend.h<br>M src/openvpn/ssl_verify_mbedtls.c=
+<br>M src/openvpn/ssl_verify_openssl.c<br>M src/openvpn/status.c<br>M src/o=
+penvpn/status.h<br>M src/openvpn/tun.c<br>M src/openvpn/tun.h<br>M tests/un=
+it_tests/openvpn/mock_msg.c<br>M tests/unit_tests/openvpn/mock_msg.h<br>M t=
+ests/unit_tests/openvpn/mock_ssl_dependencies.c<br>M tests/unit_tests/openv=
+pn/test_argv.c<br>M tests/unit_tests/openvpn/test_misc.c<br>M tests/unit_te=
+sts/openvpn/test_pkcs11.c<br>M tests/unit_tests/openvpn/test_pkt.c<br>M tes=
+ts/unit_tests/openvpn/test_push_update_msg.c<br>M tests/unit_tests/openvpn/=
+test_socket.c<br>M tests/unit_tests/openvpn/test_tls_crypt.c<br>M tests/uni=
+t_tests/openvpn/test_user_pass.c<br>69 files changed, 283 insertions(+), 27=
+5 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
+fs/changes/10/1110/17</pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;"><span>diff --git a/src/openvpn/argv.c b/src/openvpn=
+/argv.c</span><br><span>index 903fc0a..79b541a 100644</span><br><span>--- a=
+/src/openvpn/argv.c</span><br><span>+++ b/src/openvpn/argv.c</span><br><spa=
+n>@@ -235,14 +235,14 @@</span><br><span> /**</span><br><span>  *  Write the=
+ arguments stored in a struct argv via the msg() command.</span><br><span> =
+ *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  @param msglev  =
+Integer with the message level used by msg().</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- *  @param a       Valid pointer to the struct argv=
+ with the arguments to write.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  @param msglevel  Integer with the message level used by msg()=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @param a      =
+   Valid pointer to the struct argv with the arguments to write.</span><br>=
+<span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-argv_msg(const int msglev, const struct argv *a)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+argv_msg(const msglvl_t msglevel, c=
+onst struct argv *a)</span><br><span> {</span><br><span>     struct gc_aren=
+a gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ msg(msglev, &quot;%s&quot;, argv_str(a, &amp;gc, 0));</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;%s&quot;, argv_s=
+tr(a, &amp;gc, 0));</span><br><span>     gc_free(&amp;gc);</span><br><span>=
+ }</span><br><span> </span><br><span>@@ -250,16 +250,16 @@</span><br><span>=
+  *  Similar to argv_msg() but prefixes the messages being written with a</=
+span><br><span>  *  given string.</span><br><span>  *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- *  @param msglev  Integer with the message=
+ level used by msg().</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ *  @param a       Valid pointer to the struct argv with the arguments to w=
+rite</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  @param prefix=
+  Valid pointer to the prefix string</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  @param msglevel  Integer with the message level used b=
+y msg().</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @param =
+a         Valid pointer to the struct argv with the arguments to write</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  @param prefix    Val=
+id pointer to the prefix string</span><br><span>  *</span><br><span>  */</s=
+pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ar=
+gv_msg_prefix(const int msglev, const struct argv *a, const char *prefix)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+argv_msg_prefix(const=
+ msglvl_t msglevel, const struct argv *a, const char *prefix)</span><br><sp=
 an> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span=
->     bool ret =3D true;</span><br><span>diff --git a/src/openvpn/pool.h b/=
-src/openvpn/pool.h</span><br><span>index 6cecef0..36e9fca 100644</span><br>=
-<span>--- a/src/openvpn/pool.h</span><br><span>+++ b/src/openvpn/pool.h</sp=
-an><br><span>@@ -78,7 +78,7 @@</span><br><span> </span><br><span> void ifco=
-nfig_pool_free(struct ifconfig_pool *pool);</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-bool ifconfig_pool_verify_range(con=
-st int msglevel, const in_addr_t start, const in_addr_t end);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+bool ifconfig_pool_verify_range(c=
-onst msglvl_t msglevel, const in_addr_t start, const in_addr_t end);</span>=
-<br><span> </span><br><span> ifconfig_pool_handle ifconfig_pool_acquire(str=
-uct ifconfig_pool *pool, in_addr_t *local,</span><br><span>                =
-                            in_addr_t *remote, struct in6_addr *remote_ipv6=
-,</span><br><span>diff --git a/src/openvpn/proto.c b/src/openvpn/proto.c</s=
-pan><br><span>index 34b3378..ab77887 100644</span><br><span>--- a/src/openv=
-pn/proto.c</span><br><span>+++ b/src/openvpn/proto.c</span><br><span>@@ -18=
-3,7 +183,7 @@</span><br><span>             int hlen;</span><br><span>      =
-       int totlen;</span><br><span>             const char *msgstr =3D &quo=
-t;PACKET SIZE INFO&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            unsigned int msglevel =3D D_PACKET_TRUNC_DEBUG;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            msglvl_t msglevel =
-=3D D_PACKET_TRUNC_DEBUG;</span><br><span> </span><br><span>             if=
- (BLEN(&amp;buf) &lt; (int)sizeof(struct openvpn_iphdr))</span><br><span>  =
-           {</span><br><span>diff --git a/src/openvpn/push.c b/src/openvpn/=
-push.c</span><br><span>index 1ea7ed9..60ca25f 100644</span><br><span>--- a/=
-src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</span><br><span=
->@@ -373,8 +373,8 @@</span><br><span>  *</span><br><span>  * @return true o=
-n success, false on failure.</span><br><span>  */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-static bool push_option_fmt(struct gc_arena *gc=
-, struct push_list *push_list, int msglevel,</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                            const char *fmt, ...)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool push_optio=
-n_fmt(struct gc_arena *gc, struct push_list *push_list,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                            msglvl_t ms=
-glevel, const char *fmt, ...)</span><br><span> #ifdef __GNUC__</span><br><s=
-pan> #if __USE_MINGW_ANSI_STDIO</span><br><span>     __attribute__((format(=
-gnu_printf, 4, 5)))</span><br><span>@@ -853,7 +853,7 @@</span><br><span> </=
-span><br><span> static void</span><br><span> push_option_ex(struct gc_arena=
- *gc, struct push_list *push_list, const char *opt, bool enable,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-               int msglevel)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+               msglvl_t=
- msglevel)</span><br><span> {</span><br><span>     if (!string_class(opt, C=
-C_ANY, CC_COMMA))</span><br><span>     {</span><br><span>@@ -881,7 +881,7 @=
-@</span><br><span> }</span><br><span> </span><br><span> void</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-push_option(struct options *o, const=
- char *opt, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+push_option(struct options *o, const char *opt, msglvl_t msglevel)</s=
-pan><br><span> {</span><br><span>     push_option_ex(&amp;o-&gt;gc, &amp;o-=
-&gt;push_list, opt, true, msglevel);</span><br><span> }</span><br><span>@@ =
--902,7 +902,7 @@</span><br><span> }</span><br><span> </span><br><span> void=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-push_options(struct o=
-ptions *o, char **p, int msglevel, struct gc_arena *gc)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+push_options(struct options *o, char **=
-p, msglvl_t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><sp=
-an>     const char **argv =3D make_extended_arg_array(p, false, gc);</span>=
-<br><span>     char *opt =3D print_argv(argv, gc, 0);</span><br><span>@@ -9=
-10,8 +910,8 @@</span><br><span> }</span><br><span> </span><br><span> static=
- bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-push_option_fmt(=
-struct gc_arena *gc, struct push_list *push_list, int msglevel, const char =
-*format,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-   ...)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+push_option_=
-fmt(struct gc_arena *gc, struct push_list *push_list,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                msglvl_t msglevel, const =
-char *format, ...)</span><br><span> {</span><br><span>     va_list arglist;=
-</span><br><span>     char tmp[256] =3D { 0 };</span><br><span>diff --git a=
-/src/openvpn/push.h b/src/openvpn/push.h</span><br><span>index 8ffd0c2..6b3=
-275e 100644</span><br><span>--- a/src/openvpn/push.h</span><br><span>+++ b/=
-src/openvpn/push.h</span><br><span>@@ -99,9 +99,9 @@</span><br><span> </spa=
-n><br><span> void clone_push_list(struct options *o);</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-void push_option(struct o=
-ptions *o, const char *opt, int msglevel);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+void push_option(struct options *o, const char *opt,=
- msglvl_t msglevel);</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-void push_options(struct options *o, char **p, int msgleve=
-l, struct gc_arena *gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+void push_options(struct options *o, char **p, msglvl_t msglevel, stru=
-ct gc_arena *gc);</span><br><span> </span><br><span> void push_reset(struct=
- options *o);</span><br><span> </span><br><span>diff --git a/src/openvpn/ro=
-ute.c b/src/openvpn/route.c</span><br><span>index e504485..aa5ce69 100644</=
-span><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/=
-route.c</span><br><span>@@ -1228,28 +1228,28 @@</span><br><span> }</span><b=
-r><span> </span><br><span> static void</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-print_route_option(const struct route_option *ro, int leve=
-l)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_route_optio=
-n(const struct route_option *ro, msglvl_t msglevel)</span><br><span> {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(level, &quot;  rou=
-te %s/%s/%s/%s&quot;, show_opt(ro-&gt;network), show_opt(ro-&gt;netmask),</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &qu=
-ot;  route %s/%s/%s/%s&quot;, show_opt(ro-&gt;network), show_opt(ro-&gt;net=
-mask),</span><br><span>         show_opt(ro-&gt;gateway), show_opt(ro-&gt;m=
-etric));</span><br><span> }</span><br><span> </span><br><span> void</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-print_route_options(const str=
-uct route_option_list *rol, int level)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+print_route_options(const struct route_option_list *rol,=
- msglvl_t msglevel)</span><br><span> {</span><br><span>     struct route_op=
-tion *ro;</span><br><span>     if (rol-&gt;flags &amp; RG_ENABLE)</span><br=
-><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-msg(level, &quot;  [redirect_default_gateway local=3D%d]&quot;, (rol-&gt;fl=
-ags &amp; RG_LOCAL) !=3D 0);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        msg(msglevel, &quot;  [redirect_default_gateway local=3D%d=
-]&quot;, (rol-&gt;flags &amp; RG_LOCAL) !=3D 0);</span><br><span>     }</sp=
-an><br><span>     for (ro =3D rol-&gt;routes; ro; ro =3D ro-&gt;next)</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    print_route_option(ro, level);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        print_route_option(ro, msglevel);</span><br><span>  =
-   }</span><br><span> }</span><br><span> </span><br><span> void</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-print_default_gateway(const int m=
-sglevel, const struct route_gateway_info *rgi,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+print_default_gateway(const msglvl_t msglevel, c=
-onst struct route_gateway_info *rgi,</span><br><span>                      =
- const struct route_ipv6_gateway_info *rgi6)</span><br><span> {</span><br><=
-span>     struct gc_arena gc =3D gc_new();</span><br><span>@@ -1323,23 +132=
-3,23 @@</span><br><span> #endif /* ifndef ENABLE_SMALL */</span><br><span> =
-</span><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-print_route(const struct route_ipv4 *r, int level)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+print_route(const struct route_ipv4 =
-*r, msglvl_t msglevel)</span><br><span> {</span><br><span>     struct gc_ar=
-ena gc =3D gc_new();</span><br><span>     if (r-&gt;flags &amp; RT_DEFINED)=
-</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        msg(level, &quot;%s&quot;, route_string(r, &amp;gc));</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;%s&=
-quot;, route_string(r, &amp;gc));</span><br><span>     }</span><br><span>  =
-   gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span> =
-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_routes(cons=
-t struct route_list *rl, int level)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+print_routes(const struct route_list *rl, msglvl_t msglevel=
-)</span><br><span> {</span><br><span>     struct route_ipv4 *r;</span><br><=
-span>     for (r =3D rl-&gt;routes; r; r =3D r-&gt;next)</span><br><span>  =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        print_rou=
-te(r, level);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  print_route(r, msglevel);</span><br><span>     }</span><br><span> }</span=
-><br><span> </span><br><span>@@ -3059,18 +3059,18 @@</span><br><span>  * Sh=
-ow current routing table</span><br><span>  */</span><br><span> void</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-show_routes(int msglev)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+show_routes(msglvl_t msgl=
-evel)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_new=
-();</span><br><span> </span><br><span>     const MIB_IPFORWARDTABLE *rt =3D=
- get_windows_routing_table(&amp;gc);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;SYSTEM ROUTING TABLE=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msg=
-level, &quot;SYSTEM ROUTING TABLE&quot;);</span><br><span>     if (rt)</spa=
-n><br><span>     {</span><br><span>         for (DWORD i =3D 0; i &lt; rt-&=
-gt;dwNumEntries; ++i)</span><br><span>         {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            msg(msglev, &quot;%s&quot;, format_r=
-oute_entry(&amp;rt-&gt;table[i], &amp;gc));</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            msg(msglevel, &quot;%s&quot;, format_ro=
-ute_entry(&amp;rt-&gt;table[i], &amp;gc));</span><br><span>         }</span=
-><br><span>     }</span><br><span>     gc_free(&amp;gc);</span><br><span>di=
-ff --git a/src/openvpn/route.h b/src/openvpn/route.h</span><br><span>index =
-9b6a47e..c5006ae 100644</span><br><span>--- a/src/openvpn/route.h</span><br=
-><span>+++ b/src/openvpn/route.h</span><br><span>@@ -356,7 +356,7 @@</span>=
-<br><span> void get_default_gateway_ipv6(struct route_ipv6_gateway_info *rg=
-i, const struct in6_addr *dest,</span><br><span>                           =
-    openvpn_net_ctx_t *ctx);</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-void print_default_gateway(const int msglevel, con=
-st struct route_gateway_info *rgi,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+void print_default_gateway(const msglvl_t msglevel, const st=
-ruct route_gateway_info *rgi,</span><br><span>                            c=
-onst struct route_ipv6_gateway_info *rgi6);</span><br><span> </span><br><sp=
-an> /*</span><br><span>@@ -371,15 +371,15 @@</span><br><span> int test_loca=
-l_addr(const in_addr_t addr, const struct route_gateway_info *rgi);</span><=
-br><span> </span><br><span> #ifndef ENABLE_SMALL</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-void print_route_options(const struct route_opti=
-on_list *rol, int level);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+void print_route_options(const struct route_option_list *rol, msglvl_=
-t msglevel);</span><br><span> </span><br><span> #endif</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-void print_routes(const =
-struct route_list *rl, int level);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+void print_routes(const struct route_list *rl, msglvl_t msgl=
-evel);</span><br><span> </span><br><span> #ifdef _WIN32</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-void show_routes(int ms=
-glev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void show_rou=
-tes(msglvl_t msglevel);</span><br><span> </span><br><span> bool test_routes=
-(const struct route_list *rl, const struct tuntap *tt);</span><br><span> </=
-span><br><span>diff --git a/src/openvpn/run_command.c b/src/openvpn/run_com=
-mand.c</span><br><span>index 4a1ef22..a0c9484 100644</span><br><span>--- a/=
-src/openvpn/run_command.c</span><br><span>+++ b/src/openvpn/run_command.c</=
-span><br><span>@@ -107,7 +107,7 @@</span><br><span> </span><br><span> #ifnd=
-ef WIN32</span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-openvpn_waitpid_check(pid_t pid, const char *msg_prefix, int msgle=
-vel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+openvpn_waitpid=
-_check(pid_t pid, const char *msg_prefix, msglvl_t msglevel)</span><br><spa=
-n> {</span><br><span>     if (pid =3D=3D 0)</span><br><span>     {</span><b=
-r><span>diff --git a/src/openvpn/run_command.h b/src/openvpn/run_command.h<=
-/span><br><span>index afd1b88..234055e 100644</span><br><span>--- a/src/ope=
-nvpn/run_command.h</span><br><span>+++ b/src/openvpn/run_command.h</span><b=
-r><span>@@ -71,13 +71,13 @@</span><br><span>  * This function is currently =
-not implemented for Windows as the helper</span><br><span>  * macros used b=
-y this function are not available.</span><br><span>  *</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * @param pid               pid of the pro=
-cess to be checked</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* @param pid            pid of the process to be checked</span><br><span>  =
-* @param msg_prefix     prefixed of the message that be printed</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- * @param msglevel          msgle=
-vel of the messages to be printed</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * @return                  true if the process is still runnin=
-g, false if</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *        =
-                  an error condition occurred</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * @param msglevel       msglevel of the messages=
- to be printed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @r=
-eturn               true if the process is still running, false if</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *                       an =
-error condition occurred</span><br><span>  */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-bool openvpn_waitpid_check(pid_t pid, const char *m=
-sg_prefix, int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+bool openvpn_waitpid_check(pid_t pid, const char *msg_prefix, msglvl_=
-t msglevel);</span><br><span> </span><br><span> #endif</span><br><span> </s=
-pan><br><span>diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c</span><br>=
-<span>index ecea635..42ad823 100644</span><br><span>--- a/src/openvpn/sig.c=
-</span><br><span>+++ b/src/openvpn/sig.c</span><br><span>@@ -287,7 +287,7 @=
-@</span><br><span> }</span><br><span> </span><br><span> void</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-print_signal(const struct signal_inf=
-o *si, const char *title, int msglevel)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+print_signal(const struct signal_info *si, const char *=
-title, msglvl_t msglevel)</span><br><span> {</span><br><span>     if (si)</=
-span><br><span>     {</span><br><span>diff --git a/src/openvpn/sig.h b/src/=
-openvpn/sig.h</span><br><span>index 7e5dd9f..b5d81fc 100644</span><br><span=
->--- a/src/openvpn/sig.h</span><br><span>+++ b/src/openvpn/sig.h</span><br>=
-<span>@@ -66,7 +66,7 @@</span><br><span> </span><br><span> void restore_sig=
-nal_state(void);</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-void print_signal(const struct signal_info *si, const char *ti=
-tle, int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-void print_signal(const struct signal_info *si, const char *title, msglvl_t=
- msglevel);</span><br><span> </span><br><span> void print_status(struct con=
-text *c, struct status_output *so);</span><br><span> </span><br><span>diff =
---git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index 3=
-06170c..eeb42d1 100644</span><br><span>--- a/src/openvpn/socket.c</span><br=
-><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -78,7 +78,7 @@</span><=
-br><span> static int</span><br><span> get_addr_generic(sa_family_t af, unsi=
-gned int flags, const char *hostname, void *network,</span><br><span>      =
-            unsigned int *netbits, int resolve_retry_seconds, struct signal=
-_info *sig_info,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-            int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                 msglvl_t msglevel)</span><br><span> {</span><br><spa=
-n>     char *endp, *sep, *var_host =3D NULL;</span><br><span>     struct ad=
-drinfo *ai =3D NULL;</span><br><span>@@ -211,7 +211,8 @@</span><br><span> }=
-</span><br><span> </span><br><span> bool</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-get_ipv6_addr(const char *hostname, struct in6_addr *net=
-work, unsigned int *netbits, int msglevel)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+get_ipv6_addr(const char *hostname, struct in6_addr =
-*network, unsigned int *netbits,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+              msglvl_t msglevel)</span><br><span> {</span><br>=
-<span>     if (get_addr_generic(AF_INET6, GETADDR_RESOLVE, hostname, networ=
-k, netbits, 0, NULL, msglevel)</span><br><span>         &lt; 0)</span><br><=
-span>@@ -1516,7 +1517,7 @@</span><br><span> linksock_print_addr(struct link=
-_socket *sock)</span><br><span> {</span><br><span>     struct gc_arena gc =
-=3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cons=
-t int msglevel =3D (sock-&gt;mode =3D=3D LS_MODE_TCP_ACCEPT_FROM) ? D_INIT_=
-MEDIUM : M_INFO;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- const msglvl_t msglevel =3D (sock-&gt;mode =3D=3D LS_MODE_TCP_ACCEPT_FROM)=
- ? D_INIT_MEDIUM : M_INFO;</span><br><span> </span><br><span>     /* print =
-local address */</span><br><span>     if (sock-&gt;bind_local)</span><br><s=
-pan>diff --git a/src/openvpn/socket_util.c b/src/openvpn/socket_util.c</spa=
-n><br><span>index 9b7312d..fa566e7 100644</span><br><span>--- a/src/openvpn=
-/socket_util.c</span><br><span>+++ b/src/openvpn/socket_util.c</span><br><s=
-pan>@@ -541,7 +541,7 @@</span><br><span>     struct addrinfo hints;</span><=
-br><span>     int status;</span><br><span>     struct signal_info sigrec =
-=3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int msg=
-level =3D (flags &amp; GETADDR_FATAL) ? M_FATAL : D_RESOLVE_ERRORS;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    msglvl_t msglevel =3D (=
-flags &amp; GETADDR_FATAL) ? M_FATAL : D_RESOLVE_ERRORS;</span><br><span>  =
-   struct gc_arena gc =3D gc_new();</span><br><span>     const char *print_=
-hostname;</span><br><span>     const char *print_servname;</span><br><span>=
-@@ -604,7 +604,7 @@</span><br><span>         int resolve_retries =3D</span>=
-<br><span>             (flags &amp; GETADDR_TRY_ONCE) ? 1 : ((resolve_retry=
-_seconds + 4) / fail_wait_interval);</span><br><span>         const char *f=
-mt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int level =
-=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msglv=
-l_t level =3D 0;</span><br><span> </span><br><span>         /* this is not =
-a numeric IP, therefore force resolution using the</span><br><span>        =
-  * provided ai_family */</span><br><span>@@ -739,7 +739,7 @@</span><br><sp=
-an> done:</span><br><span>     if (sig_info &amp;&amp; sig_info-&gt;signal_=
-received)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        int level =3D 0;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        msglvl_t level =3D 0;</span><br><span>         if (=
-flags &amp; GETADDR_FATAL_ON_SIGNAL)</span><br><span>         {</span><br><=
-span>             level =3D M_FATAL;</span><br><span>diff --git a/src/openv=
-pn/socket_util.h b/src/openvpn/socket_util.h</span><br><span>index 361edff.=
-.ada52a4 100644</span><br><span>--- a/src/openvpn/socket_util.h</span><br><=
-span>+++ b/src/openvpn/socket_util.h</span><br><span>@@ -142,7 +142,7 @@</s=
-pan><br><span>  * Translate an IPv6 addr or hostname from string form to in=
-6_addr</span><br><span>  */</span><br><span> bool get_ipv6_addr(const char =
-*hostname, struct in6_addr *network, unsigned int *netbits,</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                   int msglevel);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                   msgl=
-vl_t msglevel);</span><br><span> </span><br><span> int openvpn_getaddrinfo(=
-unsigned int flags, const char *hostname, const char *servname,</span><br><=
-span>                         int resolve_retry_seconds, struct signal_info=
- *sig_info, int ai_family,</span><br><span>diff --git a/src/openvpn/ssl_ver=
-ify_backend.h b/src/openvpn/ssl_verify_backend.h</span><br><span>index a055=
-9c9..2bad3eb 100644</span><br><span>--- a/src/openvpn/ssl_verify_backend.h<=
-/span><br><span>+++ b/src/openvpn/ssl_verify_backend.h</span><br><span>@@ -=
-193,8 +193,8 @@</span><br><span>  * @param gc            Garbage collection=
- arena for temp data</span><br><span>  *</span><br><span>  */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-void x509_track_add(const struct x5=
-09_track **ll_head, const char *name, int msglevel,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                    struct gc_arena *gc);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+void x509_track_add(c=
-onst struct x509_track **ll_head, const char *name,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    msglvl_t msglevel, st=
-ruct gc_arena *gc);</span><br><span> </span><br><span> /*</span><br><span> =
- * Save X509 fields to environment, using the naming convention:</span><br>=
-<span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verif=
-y_mbedtls.c</span><br><span>index cfcfb25..3588071 100644</span><br><span>-=
--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl=
-_verify_mbedtls.c</span><br><span>@@ -350,7 +350,7 @@</span><br><span> }</s=
+ style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;%s: %s&quot;, p=
+refix, argv_str(a, &amp;gc, 0));</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    msg(msglevel, &quot;%s: %s&quot;, prefix, argv_str(a, &amp=
+;gc, 0));</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><=
+br><span> </span><br><span>diff --git a/src/openvpn/argv.h b/src/openvpn/ar=
+gv.h</span><br><span>index 056fe31..969d7b1 100644</span><br><span>--- a/sr=
+c/openvpn/argv.h</span><br><span>+++ b/src/openvpn/argv.h</span><br><span>@=
+@ -47,9 +47,9 @@</span><br><span> </span><br><span> struct argv argv_insert=
+_head(const struct argv *a, const char *head);</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-void argv_msg(const int msglev, =
+const struct argv *a);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+void argv_msg(const msglvl_t msglevel, const struct argv *a);</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void argv_msg_=
+prefix(const int msglev, const struct argv *a, const char *prefix);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+void argv_msg_prefix(const =
+msglvl_t msglevel, const struct argv *a, const char *prefix);</span><br><sp=
+an> </span><br><span> void argv_parse_cmd(struct argv *a, const char *s);</=
+span><br><span> </span><br><span>diff --git a/src/openvpn/buffer.c b/src/op=
+envpn/buffer.c</span><br><span>index 0f0d17e..c0b85b2 100644</span><br><spa=
+n>--- a/src/openvpn/buffer.c</span><br><span>+++ b/src/openvpn/buffer.c</sp=
+an><br><span>@@ -1127,7 +1127,7 @@</span><br><span> {</span><br><span>     =
+if (buf &amp;&amp; buf-&gt;len)</span><br><span>     {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        int msglevel =3D D_ALIGN_DEBUG;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msglvl_t msgle=
+vel =3D D_ALIGN_DEBUG;</span><br><span>         const unsigned int u =3D (u=
+nsigned int)BPTR(buf);</span><br><span> </span><br><span>         if (u &am=
+p; (PAYLOAD_ALIGN - 1))</span><br><span>diff --git a/src/openvpn/clinat.c b=
+/src/openvpn/clinat.c</span><br><span>index 48a2057..b49d4bb 100644</span><=
+br><span>--- a/src/openvpn/clinat.c</span><br><span>+++ b/src/openvpn/clina=
+t.c</span><br><span>@@ -47,7 +47,7 @@</span><br><span> }</span><br><span> <=
+/span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+print_client_nat_list(const struct client_nat_option_list *list, int msglev=
+el)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_client_nat=
+_list(const struct client_nat_option_list *list, msglvl_t msglevel)</span><=
+br><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br=
+><span>     int i;</span><br><span>@@ -101,7 +101,7 @@</span><br><span> voi=
+d</span><br><span> add_client_nat_to_option_list(struct client_nat_option_l=
+ist *dest, const char *type,</span><br><span>                              =
+ const char *network, const char *netmask, const char *foreign_network,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
+     int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                             msglvl_t msglevel)</span><br><span> {</span><b=
+r><span>     struct client_nat_entry e;</span><br><span>     bool ok;</span=
+><br><span>@@ -159,7 +159,7 @@</span><br><span> #endif</span><br><span> </s=
+pan><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-print_pkt(struct openvpn_iphdr *iph, const char *prefix, const int dir=
+ection, const int msglevel)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+print_pkt(struct openvpn_iphdr *iph, const char *prefix, const int =
+direction, const msglvl_t msglevel)</span><br><span> {</span><br><span>    =
+ struct gc_arena gc =3D gc_new();</span><br><span> </span><br><span>diff --=
+git a/src/openvpn/clinat.h b/src/openvpn/clinat.h</span><br><span>index abf=
+a0b7..7d787e0 100644</span><br><span>--- a/src/openvpn/clinat.h</span><br><=
+span>+++ b/src/openvpn/clinat.h</span><br><span>@@ -54,11 +54,11 @@</span><=
+br><span> void copy_client_nat_option_list(struct client_nat_option_list *d=
+est,</span><br><span>                                  const struct client_=
+nat_option_list *src);</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-void print_client_nat_list(const struct client_nat_optio=
+n_list *list, int msglevel);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+void print_client_nat_list(const struct client_nat_option_list *li=
+st, msglvl_t msglevel);</span><br><span> </span><br><span> void add_client_=
+nat_to_option_list(struct client_nat_option_list *dest, const char *type,</=
+span><br><span>                                    const char *network, con=
+st char *netmask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                               const char *foreign_network, int msglevel);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+               const char *foreign_network, msglvl_t msglevel);</span><br><=
+span> </span><br><span> void client_nat_transform(const struct client_nat_o=
+ption_list *list, struct buffer *ipbuf,</span><br><span>                   =
+        const int direction);</span><br><span>diff --git a/src/openvpn/comp=
+.c b/src/openvpn/comp.c</span><br><span>index 1a2e775..9d35141 100644</span=
+><br><span>--- a/src/openvpn/comp.c</span><br><span>+++ b/src/openvpn/comp.=
+c</span><br><span>@@ -159,7 +159,7 @@</span><br><span> #endif /* USE_COMP *=
+/</span><br><span> </span><br><span> bool</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-check_compression_settings_valid(struct compress_option=
+s *info, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+check_compression_settings_valid(struct compress_options *info, msglvl_t=
+ msglevel)</span><br><span> {</span><br><span>     /*</span><br><span>     =
+ * We also allow comp-stub-v2 here as it technically allows escaping of</sp=
+an><br><span>diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h</span><br=
+><span>index 0354896..1717029 100644</span><br><span>--- a/src/openvpn/comp=
+.h</span><br><span>+++ b/src/openvpn/comp.h</span><br><span>@@ -84,12 +84,1=
+4 @@</span><br><span>            &amp;&amp; info-&gt;alg !=3D COMP_ALG_UNDE=
+F;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#include &quot;error.h&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Chec=
+ks if the compression settings are valid. Takes into account the</span><br>=
+<span>  * flags of allow-compression and also the whether algorithms are co=
+mpiled</span><br><span>  * in</span><br><span>  */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-bool check_compression_settings_valid(struct c=
+ompress_options *info, int msglevel);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+bool check_compression_settings_valid(struct compress_opt=
+ions *info, msglvl_t msglevel);</span><br><span> </span><br><span> #ifdef U=
+SE_COMP</span><br><span> #include &quot;buffer.h&quot;</span><br><span>diff=
+ --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index =
+4c0f684..0abcd7f 100644</span><br><span>--- a/src/openvpn/crypto.c</span><b=
+r><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -1609,7 +1609,7 @@</s=
+pan><br><span> }</span><br><span> </span><br><span> int</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-ascii2keydirection(int msglevel, const ch=
+ar *str)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ascii2keydi=
+rection(msglvl_t msglevel, const char *str)</span><br><span> {</span><br><s=
+pan>     if (!str)</span><br><span>     {</span><br><span>diff --git a/src/=
+openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>index efd7f60..d69d=
+b59 100644</span><br><span>--- a/src/openvpn/crypto.h</span><br><span>+++ b=
+/src/openvpn/crypto.h</span><br><span>@@ -618,7 +618,7 @@</span><br><span> =
+</span><br><span> void must_have_n_keys(const char *filename, const char *o=
+ption, const struct key2 *key2, int n);</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-int ascii2keydirection(int msglevel, co=
+nst char *str);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int =
+ascii2keydirection(msglvl_t msglevel, const char *str);</span><br><span> </=
+span><br><span> const char *keydirection2ascii(int kd, bool remote, bool hu=
+manreadable);</span><br><span> </span><br><span>diff --git a/src/openvpn/dc=
+o.c b/src/openvpn/dco.c</span><br><span>index 70a8c0a..881459c 100644</span=
+><br><span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c<=
+/span><br><span>@@ -233,7 +233,7 @@</span><br><span> }</span><br><span> </s=
+pan><br><span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-dco_check_option_ce(const struct connection_entry *ce, int msglevel, i=
+nt mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_check_o=
+ption_ce(const struct connection_entry *ce, msglvl_t msglevel, int mode)</s=
+pan><br><span> {</span><br><span>     if (ce-&gt;fragment)</span><br><span>=
+     {</span><br><span>@@ -293,7 +293,7 @@</span><br><span> }</span><br><sp=
+an> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-dco_check_startup_option(int msglevel, const struct options *o)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+dco_check_startup_option(m=
+sglvl_t msglevel, const struct options *o)</span><br><span> {</span><br><sp=
+an>     /* check if no dev name was specified at all. In the case,</span><b=
+r><span>      * later logic will most likely stop OpenVPN, so no need to</s=
+pan><br><span>@@ -430,7 +430,7 @@</span><br><span> }</span><br><span> </spa=
+n><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_=
+check_option(int msglevel, const struct options *o)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+dco_check_option(msglvl_t msglevel, const=
+ struct options *o)</span><br><span> {</span><br><span>     /* At this poin=
+t the ciphers have already been normalised */</span><br><span>     if (o-&g=
+t;enable_ncp_fallback</span><br><span>@@ -480,7 +480,7 @@</span><br><span> =
+}</span><br><span> </span><br><span> bool</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-dco_check_pull_options(int msglevel, const struct optio=
+ns *o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_check_pul=
+l_options(msglvl_t msglevel, const struct options *o)</span><br><span> {</s=
+pan><br><span>     if (!o-&gt;use_peer_id)</span><br><span>     {</span><br=
+><span>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>i=
+ndex 59acb18..a362977 100644</span><br><span>--- a/src/openvpn/dco.h</span>=
+<br><span>+++ b/src/openvpn/dco.h</span><br><span>@@ -55,7 +55,7 @@</span><=
+br><span>  * @param msglevel      level to print messages to</span><br><spa=
+n>  * @return              true if ovpn-dco is available, false otherwise</=
+span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bo=
+ol dco_available(int msglevel);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+bool dco_available(msglvl_t msglevel);</span><br><span> </span>=
+<br><span> </span><br><span> /**</span><br><span>@@ -75,7 +75,7 @@</span><b=
+r><span>  * @param o         the options struct that hold the options</span=
+><br><span>  * @return          true if no conflict was detected, false oth=
+erwise</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-bool dco_check_option(int msglevel, const struct options *o);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+bool dco_check_option(msglv=
+l_t msglevel, const struct options *o);</span><br><span> </span><br><span> =
+/**</span><br><span>  * Check whether the options struct has any further op=
+tion that is not supported</span><br><span>@@ -87,7 +87,7 @@</span><br><spa=
+n>  * @param o         the options struct that hold the options</span><br><=
+span>  * @return          true if no conflict was detected, false otherwise=
+</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+bool dco_check_startup_option(int msglevel, const struct options *o);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+bool dco_check_startup_op=
+tion(msglvl_t msglevel, const struct options *o);</span><br><span> </span><=
+br><span> /**</span><br><span>  * Check whether any of the options pushed b=
+y the server is not supported by</span><br><span>@@ -98,7 +98,7 @@</span><b=
+r><span>  * @param o         the options struct that hold the options</span=
+><br><span>  * @return          true if no conflict was detected, false oth=
+erwise</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-bool dco_check_pull_options(int msglevel, const struct options *o);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool dco_check_pull_o=
+ptions(msglvl_t msglevel, const struct options *o);</span><br><span> </span=
+><br><span> /**</span><br><span>  * Initialize the DCO context</span><br><s=
+pan>@@ -261,7 +261,7 @@</span><br><span> typedef void *dco_context_t;</span=
+><br><span> </span><br><span> static inline bool</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-dco_available(int msglevel)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+dco_available(msglvl_t msglevel)</span><=
+br><span> {</span><br><span>     return false;</span><br><span> }</span><br=
+><span>@@ -273,19 +273,19 @@</span><br><span> }</span><br><span> </span><br=
+><span> static inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-dco_check_option(int msglevel, const struct options *o)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+dco_check_option(msglvl_t msglevel=
+, const struct options *o)</span><br><span> {</span><br><span>     return f=
+alse;</span><br><span> }</span><br><span> </span><br><span> static inline b=
+ool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_startup_=
+option(int msglevel, const struct options *o)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+dco_check_startup_option(msglvl_t msglevel, const=
+ struct options *o)</span><br><span> {</span><br><span>     return false;</=
+span><br><span> }</span><br><span> </span><br><span> static inline bool</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_check_pull_options(in=
+t msglevel, const struct options *o)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+dco_check_pull_options(msglvl_t msglevel, const struct opt=
+ions *o)</span><br><span> {</span><br><span>     return false;</span><br><s=
+pan> }</span><br><span>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn=
+/dco_freebsd.c</span><br><span>index 65303cd..d5ca277 100644</span><br><spa=
+n>--- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_fre=
+ebsd.c</span><br><span>@@ -658,7 +658,7 @@</span><br><span> }</span><br><sp=
+an> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-dco_available(int msglevel)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+dco_available(msglvl_t msglevel)</span><br><span> {</span><br>=
+<span>     struct if_clonereq ifcr;</span><br><span>     char *buf =3D NULL=
+;</span><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_li=
+nux.c</span><br><span>index 40674e7..d8357ca 100644</span><br><span>--- a/s=
+rc/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span>=
+<br><span>@@ -74,7 +74,7 @@</span><br><span>  * @return ID on success, nega=
+tive error code on error</span><br><span>  */</span><br><span> static int</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-resolve_ovpn_netlink_id=
+(int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+resol=
+ve_ovpn_netlink_id(msglvl_t msglevel)</span><br><span> {</span><br><span>  =
+   int ret;</span><br><span>     struct nl_sock *nl_sock =3D nl_socket_allo=
+c();</span><br><span>@@ -1199,7 +1199,7 @@</span><br><span> }</span><br><sp=
+an> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-dco_available(int msglevel)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+dco_available(msglvl_t msglevel)</span><br><span> {</span><br>=
+<span>     if (resolve_ovpn_netlink_id(D_DCO_DEBUG) &lt; 0)</span><br><span=
+>     {</span><br><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dc=
+o_win.c</span><br><span>index 01ba017..2d08ed8 100644</span><br><span>--- a=
+/src/openvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><b=
+r><span>@@ -599,7 +599,7 @@</span><br><span> }</span><br><span> </span><br>=
+<span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_availa=
+ble(int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dc=
+o_available(msglvl_t msglevel)</span><br><span> {</span><br><span>     /* t=
+ry to open device by symbolic name */</span><br><span>     HANDLE h =3D Cre=
+ateFile(&quot;\\\\.\\ovpn-dco&quot;, GENERIC_READ | GENERIC_WRITE, 0, NULL,=
+ OPEN_EXISTING,</span><br><span>diff --git a/src/openvpn/dns.c b/src/openvp=
+n/dns.c</span><br><span>index 5421004..efb888a 100644</span><br><span>--- a=
+/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>=
+@@ -200,7 +200,7 @@</span><br><span> }</span><br><span> </span><br><span> b=
+ool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dns_options_verify=
+(int msglevel, const struct dns_options *o)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+dns_options_verify(msglvl_t msglevel, const struct =
+dns_options *o)</span><br><span> {</span><br><span>     const struct dns_se=
+rver *server =3D o-&gt;servers ? o-&gt;servers : o-&gt;servers_prepull;</sp=
+an><br><span>     while (server)</span><br><span>diff --git a/src/openvpn/d=
+ns.h b/src/openvpn/dns.h</span><br><span>index 6d97b40..6cd98f2 100644</spa=
+n><br><span>--- a/src/openvpn/dns.h</span><br><span>+++ b/src/openvpn/dns.h=
+</span><br><span>@@ -166,7 +166,7 @@</span><br><span>  * @param   o        =
+   Pointer to the DNS options to validate</span><br><span>  * @return      =
+        True if no error was found</span><br><span>  */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-bool dns_options_verify(int msglevel, con=
+st struct dns_options *o);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+bool dns_options_verify(msglvl_t msglevel, const struct dns_options =
+*o);</span><br><span> </span><br><span> /**</span><br><span>  * Makes a dee=
+p copy of the passed DNS options.</span><br><span>diff --git a/src/openvpn/=
+env_set.c b/src/openvpn/env_set.c</span><br><span>index 6c7df8e..2ae71ab 10=
+0644</span><br><span>--- a/src/openvpn/env_set.c</span><br><span>+++ b/src/=
+openvpn/env_set.c</span><br><span>@@ -209,7 +209,7 @@</span><br><span> }</s=
 pan><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-x509_track_add(const struct x509_track **ll_head, const cha=
-r *name, int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+x509_track_add(const struct x509_track **ll_head, const char *name, msgl=
-vl_t msglevel,</span><br><span>                struct gc_arena *gc)</span><=
-br><span> {</span><br><span>     struct x509_track *xt;</span><br><span>dif=
-f --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl=
-.c</span><br><span>index 6de7e2a..0f257e2 100644</span><br><span>--- a/src/=
-openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/openvpn/ssl_verify_o=
-penssl.c</span><br><span>@@ -414,7 +414,7 @@</span><br><span>  */</span><br=
-><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-x509_track_add(const struct x509_track **ll_head, const char *name=
-, int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+x509=
-_track_add(const struct x509_track **ll_head, const char *name, msglvl_t ms=
-glevel,</span><br><span>                struct gc_arena *gc)</span><br><spa=
-n> {</span><br><span>     struct x509_track *xt;</span><br><span>diff --git=
- a/src/openvpn/status.c b/src/openvpn/status.c</span><br><span>index 34e5a2=
-f..cea31f5 100644</span><br><span>--- a/src/openvpn/status.c</span><br><spa=
-n>+++ b/src/openvpn/status.c</span><br><span>@@ -230,14 +230,13 @@</span><b=
-r><span> </span><br><span>         if (so-&gt;msglevel &gt;=3D 0 &amp;&amp;=
- !so-&gt;errors)</span><br><span>         {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            msg(so-&gt;msglevel, &quot;%s&quot;, buf)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg((m=
-sglvl_t)so-&gt;msglevel, &quot;%s&quot;, buf);</span><br><span>         }</=
-span><br><span> </span><br><span>         if (so-&gt;fd &gt;=3D 0 &amp;&amp=
-; !so-&gt;errors)</span><br><span>         {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            int len;</span><br><span>             st=
-rcat(buf, &quot;\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            len =3D strlen(buf);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            size_t len =3D strlen(buf);</span><br><span> =
-            if (len &gt; 0)</span><br><span>             {</span><br><span>=
-                 if (write(so-&gt;fd, buf, len) !=3D len)</span><br><span>d=
-iff --git a/src/openvpn/status.h b/src/openvpn/status.h</span><br><span>ind=
-ex 0c7a869..25e1663 100644</span><br><span>--- a/src/openvpn/status.h</span=
-><br><span>+++ b/src/openvpn/status.h</span><br><span>@@ -53,6 +53,7 @@</sp=
-an><br><span> </span><br><span>     char *filename;</span><br><span>     in=
-t fd;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* NB: -1 =
-is used to indicate that output should only go to the file */</span><br><sp=
-an>     int msglevel;</span><br><span>     const struct virtual_output *vou=
-t;</span><br><span> </span><br><span>diff --git a/src/openvpn/tun.c b/src/o=
-penvpn/tun.c</span><br><span>index ee0733a..9618301 100644</span><br><span>=
---- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><=
-span>@@ -105,9 +105,9 @@</span><br><span> static void netsh_set_dns6_server=
-s(const struct in6_addr *addr_list, const int addr_len,</span><br><span>   =
-                                 DWORD adapter_index);</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-static void netsh_comman=
-d(const struct argv *a, int n, int msglevel);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+static void netsh_command(const struct argv *a, i=
-nt n, msglvl_t msglevel);</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-static void exec_command(const char *prefix, const st=
-ruct argv *a, int n, int msglevel);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+static void exec_command(const char *prefix, const struct a=
-rgv *a, int n, msglvl_t msglevel);</span><br><span> </span><br><span> stati=
-c const char *netsh_get_id(const char *dev_node, struct gc_arena *gc);</spa=
-n><br><span> </span><br><span>@@ -4001,7 +4001,7 @@</span><br><span> }</spa=
-n><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-show_tap_win_adapters(int msglev, int warnlev)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+show_tap_win_adapters(msglvl_t msg=
-level, msglvl_t warnlevel)</span><br><span> {</span><br><span>     struct g=
-c_arena gc =3D gc_new();</span><br><span> </span><br><span>@@ -4018,7 +4018=
-,7 @@</span><br><span>     const struct tap_reg *tap_reg =3D get_tap_reg(&a=
-mp;gc);</span><br><span>     const struct panel_reg *panel_reg =3D get_pane=
-l_reg(&amp;gc);</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    msg(msglev, &quot;Available adapters [name, GUID, driver]:&=
-quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msgl=
-evel, &quot;Available adapters [name, GUID, driver]:&quot;);</span><br><spa=
-n> </span><br><span>     /* loop through each TAP-Windows adapter registry =
-entry */</span><br><span>     for (tr =3D tap_reg; tr !=3D NULL; tr =3D tr-=
-&gt;next)</span><br><span>@@ -4030,7 +4030,7 @@</span><br><span>         {<=
-/span><br><span>             if (!strcmp(tr-&gt;guid, pr-&gt;guid))</span><=
-br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                msg(msglev, &quot;&#39;%s&#39; %s %s&quot;, pr-&gt;name, =
-tr-&gt;guid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         msg(msglevel, &quot;&#39;%s&#39; %s %s&quot;, pr-&gt;name, tr-&gt;=
-guid,</span><br><span>                     print_tun_backend_driver(tr-&gt;=
-windows_driver));</span><br><span>                 ++links;</span><br><span=
->             }</span><br><span>@@ -4045,7 +4045,7 @@</span><br><span>     =
-        /* a TAP adapter exists without a link from the network</span><br><=
-span>              * connections control panel */</span><br><span>         =
-    warn_panel_null =3D true;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            msg(msglev, &quot;[NULL] %s&quot;, tr-&gt;guid);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, =
-&quot;[NULL] %s&quot;, tr-&gt;guid);</span><br><span>         }</span><br><=
-span>     }</span><br><span> </span><br><span>@@ -4064,18 +4064,18 @@</span=
-><br><span>     /* warn on registry inconsistencies */</span><br><span>    =
- if (warn_tap_dup)</span><br><span>     {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        msg(warnlev, &quot;WARNING: Some TAP-Windows ad=
-apters have duplicate GUIDs&quot;);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        msg(warnlevel, &quot;WARNING: Some TAP-Windows adap=
-ters have duplicate GUIDs&quot;);</span><br><span>     }</span><br><span> <=
-/span><br><span>     if (warn_panel_dup)</span><br><span>     {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        msg(warnlev,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(warnlevel,</span><br=
-><span>             &quot;WARNING: Some TAP-Windows adapters have duplicate=
- links from the Network Connections control panel&quot;);</span><br><span> =
-    }</span><br><span> </span><br><span>     if (warn_panel_null)</span><br=
-><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-msg(warnlev,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- msg(warnlevel,</span><br><span>             &quot;WARNING: Some TAP-Window=
-s adapters have no link from the Network Connections control panel&quot;);<=
-/span><br><span>     }</span><br><span> </span><br><span>@@ -4805,31 +4805,=
-31 @@</span><br><span>  * Show info for a single adapter</span><br><span>  =
-*/</span><br><span> static void</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-show_adapter(int msglev, const IP_ADAPTER_INFO *a, struct gc_aren=
-a *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_adapter(=
-msglvl_t msglevel, const IP_ADAPTER_INFO *a, struct gc_arena *gc)</span><br=
-><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msgl=
-ev, &quot;%s&quot;, a-&gt;Description);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    msg(msglev, &quot;  Index =3D %d&quot;, (int)a-&gt;In=
-dex);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, =
-&quot;  GUID =3D %s&quot;, a-&gt;AdapterName);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    msg(msglev, &quot;  IP =3D %s&quot;, format_ip=
-_addr_string(&amp;a-&gt;IpAddressList, gc));</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    msg(msglev, &quot;  MAC =3D %s&quot;, format_hex=
-_ex(a-&gt;Address, a-&gt;AddressLength, 0, 1, &quot;:&quot;, gc));</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;  GATEWA=
-Y =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;GatewayList, gc));</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;%s&=
-quot;, a-&gt;Description);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    msg(msglevel, &quot;  Index =3D %d&quot;, (int)a-&gt;Index);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot=
-;  GUID =3D %s&quot;, a-&gt;AdapterName);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    msg(msglevel, &quot;  IP =3D %s&quot;, format_ip_=
-addr_string(&amp;a-&gt;IpAddressList, gc));</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    msg(msglevel, &quot;  MAC =3D %s&quot;, format_=
-hex_ex(a-&gt;Address, a-&gt;AddressLength, 0, 1, &quot;:&quot;, gc));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot; =
- GATEWAY =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;GatewayList, gc));<=
-/span><br><span>     if (a-&gt;DhcpEnabled)</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        msg(msglev, &quot;  DH=
-CP SERV =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;DhcpServer, gc));</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(msglev, &quo=
-t;  DHCP LEASE OBTAINED =3D %s&quot;, time_string(a-&gt;LeaseObtained, 0, f=
-alse, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ms=
-g(msglev, &quot;  DHCP LEASE EXPIRES  =3D %s&quot;, time_string(a-&gt;Lease=
-Expires, 0, false, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        msg(msglevel, &quot;  DHCP SERV =3D %s&quot;, format_ip_addr_s=
-tring(&amp;a-&gt;DhcpServer, gc));</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        msg(msglevel, &quot;  DHCP LEASE OBTAINED =3D %s&quo=
-t;, time_string(a-&gt;LeaseObtained, 0, false, gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;  DHCP LEASE =
-EXPIRES  =3D %s&quot;, time_string(a-&gt;LeaseExpires, 0, false, gc));</spa=
-n><br><span>     }</span><br><span>     if (a-&gt;HaveWins)</span><br><span=
->     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(ms=
-glev, &quot;  PRI WINS =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;Prima=
-ryWinsServer, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      msg(msglev, &quot;  SEC WINS =3D %s&quot;, format_ip_addr_string(&amp=
-;a-&gt;SecondaryWinsServer, gc));</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        msg(msglevel, &quot;  PRI WINS =3D %s&quot;, format_i=
-p_addr_string(&amp;a-&gt;PrimaryWinsServer, gc));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;  SEC WINS =3D %s=
-&quot;, format_ip_addr_string(&amp;a-&gt;SecondaryWinsServer, gc));</span><=
-br><span>     }</span><br><span> </span><br><span>     {</span><br><span>  =
-       const IP_PER_ADAPTER_INFO *pai =3D get_per_adapter_info(a-&gt;Index,=
- gc);</span><br><span>         if (pai)</span><br><span>         {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            msg(msglev, &quot;=
-  DNS SERV =3D %s&quot;, format_ip_addr_string(&amp;pai-&gt;DnsServerList, =
-gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ms=
-g(msglevel, &quot;  DNS SERV =3D %s&quot;, format_ip_addr_string(&amp;pai-&=
-gt;DnsServerList, gc));</span><br><span>         }</span><br><span>     }</=
-span><br><span> }</span><br><span>@@ -4838,12 +4838,12 @@</span><br><span> =
- * Show current adapter list</span><br><span>  */</span><br><span> void</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-show_adapters(int msglev)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_adapters(msglv=
-l_t msglevel)</span><br><span> {</span><br><span>     struct gc_arena gc =
-=3D gc_new();</span><br><span>     const IP_ADAPTER_INFO *ai =3D get_adapte=
-r_info_list(&amp;gc);</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    msg(msglev, &quot;SYSTEM ADAPTER LIST&quot;);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;SYS=
-TEM ADAPTER LIST&quot;);</span><br><span>     if (ai)</span><br><span>     =
-{</span><br><span>         const IP_ADAPTER_INFO *a;</span><br><span>@@ -48=
-51,7 +4851,7 @@</span><br><span>         /* find index in the linked list *=
-/</span><br><span>         for (a =3D ai; a !=3D NULL; a =3D a-&gt;Next)</s=
-pan><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            show_adapter(msglev, a, &amp;gc);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            show_adapter(msglevel, a, &amp;gc)=
-;</span><br><span>         }</span><br><span>     }</span><br><span>     gc=
-_free(&amp;gc);</span><br><span>@@ -5048,7 +5048,7 @@</span><br><span> }</s=
-pan><br><span> </span><br><span> static void</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-exec_command(const char *prefix, const struct argv *=
-a, int n, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+exec_command(const char *prefix, const struct argv *a, int n, msglvl_t =
-msglevel)</span><br><span> {</span><br><span>     int i;</span><br><span>  =
-   for (i =3D 0; i &lt; n; ++i)</span><br><span>@@ -5069,7 +5069,7 @@</span=
-><br><span> }</span><br><span> </span><br><span> static void</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-netsh_command(const struct argv *a, =
-int n, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+netsh_command(const struct argv *a, int n, msglvl_t msglevel)</span><br><s=
-pan> {</span><br><span>     exec_command(&quot;NETSH&quot;, a, n, msglevel)=
-;</span><br><span> }</span><br><span>diff --git a/src/openvpn/tun.h b/src/o=
-penvpn/tun.h</span><br><span>index 06fc729..6562c22 100644</span><br><span>=
---- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.h</span><br><=
-span>@@ -445,9 +445,9 @@</span><br><span> DWORD adapter_index_of_ip(const I=
-P_ADAPTER_INFO *list, const in_addr_t ip, int *count,</span><br><span>     =
-                      in_addr_t *netmask);</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-void show_tap_win_adapters(int msgle=
-v, int warnlev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
-d show_tap_win_adapters(msglvl_t msglevel, msglvl_t warnlevel);</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void show_adapt=
-ers(int msglev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
-d show_adapters(msglvl_t msglevel);</span><br><span> </span><br><span> void=
- tap_allow_nonadmin_access(const char *dev_node);</span><br><span> </span><=
-br><span>diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_test=
-s/openvpn/mock_msg.c</span><br><span>index 603520b..69d2d1d 100644</span><b=
-r><span>--- a/tests/unit_tests/openvpn/mock_msg.c</span><br><span>+++ b/tes=
-ts/unit_tests/openvpn/mock_msg.c</span><br><span>@@ -38,8 +38,8 @@</span><b=
-r><span> #include &quot;error.h&quot;</span><br><span> #include &quot;mock_=
-msg.h&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-unsigned int x_debug_level =3D 0; /* Default to (almost) no debuggi=
-ng output */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-unsigned =
-int print_x_debug_level =3D 0;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+msglvl_t x_debug_level =3D 0; /* Default to (almost) no debuggin=
-g output */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msglvl_t=
- print_x_debug_level =3D 0;</span><br><span> </span><br><span> bool fatal_e=
-rror_triggered =3D false;</span><br><span> </span><br><span>@@ -47,31 +47,3=
-1 @@</span><br><span> </span><br><span> </span><br><span> void</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-mock_set_debug_level(int level)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+mock_set_debug_level(m=
-sglvl_t level)</span><br><span> {</span><br><span>     x_debug_level =3D le=
-vel;</span><br><span> }</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+msglvl_t</span><br><span> mock_get_debug_level(void)</span><br><span> {=
-</span><br><span>     return x_debug_level;</span><br><span> }</span><br><s=
-pan> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-mock_set_print_debug_level(int level)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+mock_set_print_debug_level(msglvl_t level)</span><b=
-r><span> {</span><br><span>     print_x_debug_level =3D level;</span><br><s=
-pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msglvl_t</spa=
-n><br><span> get_debug_level(void)</span><br><span> {</span><br><span>     =
-return x_debug_level;</span><br><span> }</span><br><span> </span><br><span>=
- void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-x_msg_va(const u=
-nsigned int flags, const char *format, va_list arglist)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+x_msg_va(const msglvl_t flags, const ch=
-ar *format, va_list arglist)</span><br><span> {</span><br><span>     if (fl=
-ags &amp; M_FATAL)</span><br><span>     {</span><br><span>@@ -89,7 +89,7 @@=
-</span><br><span> }</span><br><span> </span><br><span> void</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-x_msg(const unsigned int flags, const=
- char *format, ...)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-x_msg(const msglvl_t flags, const char *format, ...)</span><br><span> {</sp=
-an><br><span>     va_list arglist;</span><br><span>     va_start(arglist, f=
-ormat);</span><br><span>@@ -128,7 +128,7 @@</span><br><span> }</span><br><s=
-pan> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-dont_mute(unsigned int flags)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+dont_mute(msglvl_t flags)</span><br><span> {</span><br><spa=
-n>     return true;</span><br><span> }</span><br><span>diff --git a/tests/u=
-nit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_msg.h</span><b=
-r><span>index f4ebc23..6dddf0b 100644</span><br><span>--- a/tests/unit_test=
-s/openvpn/mock_msg.h</span><br><span>+++ b/tests/unit_tests/openvpn/mock_ms=
-g.h</span><br><span>@@ -28,17 +28,15 @@</span><br><span>  * this function f=
-rom your test driver to increase debug output when you</span><br><span>  * =
-need debug output.</span><br><span>  */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-void mock_set_debug_level(int level);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+void mock_set_debug_level(msglvl_t leve=
-l);</span><br><span> </span><br><span> #define MOCK_MSG_BUF 2048</span><br>=
-<span> </span><br><span> extern bool fatal_error_triggered;</span><br><span=
-> extern char mock_msg_buf[MOCK_MSG_BUF];</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-void mock_set_debug_level(int level);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msglvl_t mock_get_d=
-ebug_level(void);</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-int mock_get_debug_level(void);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-void mock_set_print_debug_level(int level);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+void mock_set_print_debug_level(msglvl_t level);=
-</span><br><span> </span><br><span> #endif /* MOCK_MSG */</span><br><span>d=
-iff --git a/tests/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_t=
-ests/openvpn/mock_ssl_dependencies.c</span><br><span>index 7333c47..f2fa93a=
- 100644</span><br><span>--- a/tests/unit_tests/openvpn/mock_ssl_dependencie=
-s.c</span><br><span>+++ b/tests/unit_tests/openvpn/mock_ssl_dependencies.c<=
-/span><br><span>@@ -38,7 +38,7 @@</span><br><span> </span><br><span> int</s=
-pan><br><span> parse_line(const char *line, char **p, const int n, const ch=
-ar *file, const int line_num,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-           int msglevel, struct gc_arena *gc)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+           msglvl_t msglevel, struct gc_a=
-rena *gc)</span><br><span> {</span><br><span>     /* Dummy function to get =
-the linker happy, should never be called */</span><br><span>     assert_tru=
-e(false);</span><br><span>diff --git a/tests/unit_tests/openvpn/test_argv.c=
- b/tests/unit_tests/openvpn/test_argv.c</span><br><span>index a65857b..a04f=
-abc 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_argv.c</span=
-><br><span>+++ b/tests/unit_tests/openvpn/test_argv.c</span><br><span>@@ -2=
-3,7 +23,7 @@</span><br><span> </span><br><span> int</span><br><span> __wrap=
-_parse_line(const char *line, char **p, const int n, const char *file, cons=
-t int line_num,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-            int msglevel, struct gc_arena *gc)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                  msglvl_t msglevel, struct gc_a=
-rena *gc)</span><br><span> {</span><br><span>     p[0] =3D PATH1 PATH2;</sp=
-an><br><span>     p[1] =3D PARAM1;</span><br><span>diff --git a/tests/unit_=
-tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c</span><br>=
-<span>index 93e2460..dbfdd56 100644</span><br><span>--- a/tests/unit_tests/=
-openvpn/test_misc.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_mis=
-c.c</span><br><span>@@ -339,8 +339,8 @@</span><br><span>     assert_false(v=
-alid_integer(&quot;-2147483653&quot;, false));</span><br><span> </span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int msglev=
-el =3D D_LOW;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int =
-saved_log_level =3D mock_get_debug_level();</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    msglvl_t msglevel =3D D_LOW;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    msglvl_t saved_log_level =3D mock_=
-get_debug_level();</span><br><span>     mock_set_debug_level(D_LOW);</span>=
-<br><span> </span><br><span>     /* check happy path */</span><br><span>dif=
-f --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn=
-/test_pkcs11.c</span><br><span>index 9ba6cfc..d568865 100644</span><br><spa=
-n>--- a/tests/unit_tests/openvpn/test_pkcs11.c</span><br><span>+++ b/tests/=
-unit_tests/openvpn/test_pkcs11.c</span><br><span>@@ -59,7 +59,7 @@</span><b=
-r><span> /* stubs for some unused functions instead of pulling in too many =
-dependencies */</span><br><span> int</span><br><span> parse_line(const char=
- *line, char **p, const int n, const char *file, const int line_num,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-           int msglevel, str=
-uct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-         msglvl_t msglevel, struct gc_arena *gc)</span><br><span> {</span><=
-br><span>     assert_true(0);</span><br><span>     return 0;</span><br><spa=
-n>diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openv=
-pn/test_pkt.c</span><br><span>index 5122766..b6c612b 100644</span><br><span=
->--- a/tests/unit_tests/openvpn/test_pkt.c</span><br><span>+++ b/tests/unit=
-_tests/openvpn/test_pkt.c</span><br><span>@@ -45,7 +45,7 @@</span><br><span=
-> </span><br><span> int</span><br><span> parse_line(const char *line, char =
-**p, const int n, const char *file, const int line_num,</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-           int msglevel, struct gc_arena =
-*gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           msgl=
-vl_t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><span>    =
- /* Dummy function to get the linker happy, should never be called */</span=
-><br><span>     assert_true(false);</span><br><span>diff --git a/tests/unit=
-_tests/openvpn/test_push_update_msg.c b/tests/unit_tests/openvpn/test_push_=
-update_msg.c</span><br><span>index 87329b1..8a5beeb 100644</span><br><span>=
---- a/tests/unit_tests/openvpn/test_push_update_msg.c</span><br><span>+++ b=
-/tests/unit_tests/openvpn/test_push_update_msg.c</span><br><span>@@ -111,7 =
-+111,7 @@</span><br><span> </span><br><span> #ifndef ENABLE_MANAGEMENT</spa=
-n><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-send=
-_control_channel_string(struct context *c, const char *str, int msglevel)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+send_control_channel_=
-string(struct context *c, const char *str, msglvl_t msglevel)</span><br><sp=
-an> {</span><br><span>     return true;</span><br><span> }</span><br><span>=
-@@ -120,7 +120,7 @@</span><br><span> int i;</span><br><span> </span><br><sp=
-an> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-send_control_=
-channel_string(struct context *c, const char *str, int msglevel)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+send_control_channel_string(st=
-ruct context *c, const char *str, msglvl_t msglevel)</span><br><span> {</sp=
-an><br><span>     if (res &amp;&amp; res[i] &amp;&amp; strcmp(res[i], str))=
-</span><br><span>     {</span><br><span>diff --git a/tests/unit_tests/openv=
-pn/test_socket.c b/tests/unit_tests/openvpn/test_socket.c</span><br><span>i=
-ndex 2da2529..7f740ac 100644</span><br><span>--- a/tests/unit_tests/openvpn=
-/test_socket.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_socket.c=
-</span><br><span>@@ -59,7 +59,7 @@</span><br><span> </span><br><span> int</=
-span><br><span> parse_line(const char *line, char **p, const int n, const c=
-har *file, const int line_num,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-           int msglevel, struct gc_arena *gc)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+           msglvl_t msglevel, struct gc_=
-arena *gc)</span><br><span> {</span><br><span>     assert_true(0);</span><b=
-r><span>     return 0;</span><br><span>diff --git a/tests/unit_tests/openvp=
-n/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><s=
-pan>index 532bfcd..44d51fe 100644</span><br><span>--- a/tests/unit_tests/op=
-envpn/test_tls_crypt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_=
-tls_crypt.c</span><br><span>@@ -98,7 +98,7 @@</span><br><span> </span><br><=
-span> int</span><br><span> __wrap_parse_line(const char *line, char **p, co=
-nst int n, const char *file, const int line_num,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                  int msglevel, struct gc_arena =
-*gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-   msglvl_t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><sp=
-an>     p[0] =3D PATH1 PATH2;</span><br><span>     p[1] =3D PARAM1;</span><=
-br><span>diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/uni=
-t_tests/openvpn/test_user_pass.c</span><br><span>index 460b37f..32ec59f 100=
-644</span><br><span>--- a/tests/unit_tests/openvpn/test_user_pass.c</span><=
-br><span>+++ b/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>@@=
- -73,7 +73,7 @@</span><br><span> /* stubs for some unused functions instead=
+, 100%, 40%);">-env_set_print(int msglevel, const struct env_set *es)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+env_set_print(msglvl_t ms=
+glevel, const struct env_set *es)</span><br><span> {</span><br><span>     i=
+f (check_debug_level(msglevel))</span><br><span>     {</span><br><span>diff=
+ --git a/src/openvpn/env_set.h b/src/openvpn/env_set.h</span><br><span>inde=
+x 3973a4e..ddcfa14 100644</span><br><span>--- a/src/openvpn/env_set.h</span=
+><br><span>+++ b/src/openvpn/env_set.h</span><br><span>@@ -85,7 +85,7 @@</s=
+pan><br><span> </span><br><span> const char *env_set_get(const struct env_s=
+et *es, const char *name);</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-void env_set_print(int msglevel, const struct env_se=
+t *es);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void env_set=
+_print(msglvl_t msglevel, const struct env_set *es);</span><br><span> </spa=
+n><br><span> /**</span><br><span>  * Write a struct env_set to a file. Each=
+ item on one line.</span><br><span>diff --git a/src/openvpn/error.c b/src/o=
+penvpn/error.c</span><br><span>index 1b98235..58c2fd1 100644</span><br><spa=
+n>--- a/src/openvpn/error.c</span><br><span>+++ b/src/openvpn/error.c</span=
+><br><span>@@ -48,12 +48,12 @@</span><br><span> #endif</span><br><span> </s=
+pan><br><span> /* Globals */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-unsigned int x_debug_level; /* GLOBAL */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+msglvl_t x_debug_level; /* GLOBAL */</span><br>=
+<span> </span><br><span> /* Mute state */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-static int mute_cutoff;   /* GLOBAL */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-static int mute_count;    /* GLOBAL */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static int mute_categ=
+ory; /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic int mute_cutoff;        /* GLOBAL */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+static int mute_count;         /* GLOBAL */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static msglvl_t mute_category=
+; /* GLOBAL */</span><br><span> </span><br><span> /*</span><br><span>  * Ou=
+tput mode priorities are as follows:</span><br><span>@@ -103,16 +103,14 @@<=
+/span><br><span> bool</span><br><span> set_debug_level(const int level, con=
+st unsigned int flags)</span><br><span> {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    const int ceiling =3D 15;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    if (level &gt;=3D 0 &amp;&amp; level &lt;=3D ceiling)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (level &gt;=3D 0 &amp;&=
+amp; level &lt;=3D M_DEBUG_LEVEL)</span><br><span>     {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        x_debug_level =3D level;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        x_debug_level =3D (=
+msglvl_t)level;</span><br><span>         return true;</span><br><span>     =
+}</span><br><span>     else if (flags &amp; SDL_CONSTRAIN)</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        x_debug=
+_level =3D constrain_int(level, 0, ceiling);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        x_debug_level =3D (msglvl_t)constrain_int(=
+level, 0, M_DEBUG_LEVEL);</span><br><span>         return true;</span><br><=
+span>     }</span><br><span>     return false;</span><br><span>@@ -132,7 +1=
+30,7 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+msglvl_t</span><br><span> get_debug_level(voi=
+d)</span><br><span> {</span><br><span>     return x_debug_level;</span><br>=
+<span>@@ -190,7 +188,7 @@</span><br><span>  * Return a file to print messag=
+es to before syslog is opened.</span><br><span>  */</span><br><span> FILE *=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-msg_fp(const unsigned=
+ int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msg_fp(c=
+onst msglvl_t flags)</span><br><span> {</span><br><span>     FILE *fp =3D m=
+sgfp;</span><br><span>     if (!fp)</span><br><span>@@ -214,7 +212,7 @@</sp=
+an><br><span> int x_msg_line_num; /* GLOBAL */</span><br><span> </span><br>=
+<span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-x_msg(cons=
+t unsigned int flags, const char *format, ...)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+x_msg(const msglvl_t flags, const char *format, =
+...)</span><br><span> {</span><br><span>     va_list arglist;</span><br><sp=
+an>     va_start(arglist, format);</span><br><span>@@ -235,7 +233,7 @@</spa=
+n><br><span> }</span><br><span> </span><br><span> void</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-x_msg_va(const unsigned int flags, const c=
+har *format, va_list arglist)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+x_msg_va(const msglvl_t flags, const char *format, va_list arglis=
+t)</span><br><span> {</span><br><span>     struct gc_arena gc;</span><br><s=
+pan> #if SYSLOG_CAPABILITY</span><br><span>@@ -385,13 +383,13 @@</span><br>=
+<span>  * Apply muting filter.</span><br><span>  */</span><br><span> bool</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-dont_mute(unsigned int =
+flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dont_mute(msg=
+lvl_t flags)</span><br><span> {</span><br><span>     bool ret =3D true;</sp=
+an><br><span>     if (mute_cutoff &gt; 0 &amp;&amp; !(flags &amp; M_NOMUTE)=
+)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        const int mute_level =3D DECODE_MUTE_LEVEL(flags);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        if (mute_level &gt; 0 &amp;=
+&amp; mute_level =3D=3D mute_category)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        const msglvl_t mute_level =3D DECODE_MUTE_LEVEL(=
+flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+mute_level =3D=3D mute_category)</span><br><span>         {</span><br><span=
+>             if (mute_count =3D=3D mute_cutoff)</span><br><span>          =
+   {</span><br><span>@@ -750,7 +748,7 @@</span><br><span>  * Translate msg =
+flags into a string</span><br><span>  */</span><br><span> const char *</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-msg_flags_string(const uns=
+igned int flags, struct gc_arena *gc)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+msg_flags_string(const msglvl_t flags, struct gc_arena *g=
+c)</span><br><span> {</span><br><span>     struct buffer out =3D alloc_buf_=
+gc(16, gc);</span><br><span>     if (flags =3D=3D M_INFO)</span><br><span>d=
+iff --git a/src/openvpn/error.h b/src/openvpn/error.h</span><br><span>index=
+ 8388f82..2913498 100644</span><br><span>--- a/src/openvpn/error.h</span><b=
+r><span>+++ b/src/openvpn/error.h</span><br><span>@@ -74,31 +74,33 @@</span=
+><br><span> #define openvpn_errno() errno</span><br><span> #endif</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef uns=
+igned int msglvl_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span> /*</span><br><span>  * These globals should not be access=
+ed directly,</span><br><span>  * but rather through macros or inline functi=
+ons defined below.</span><br><span>  */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-extern unsigned int x_debug_level;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+extern msglvl_t x_debug_level;</span><br>=
+<span> extern int x_msg_line_num;</span><br><span> </span><br><span> /* msg=
+() flags */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#define M_DEBUG_LEVEL (0x0F) /* debug level mask */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#define M_DEBUG_LEVEL (0x0Fu) /* de=
+bug level mask */</span><br><span> </span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#define M_FATAL    (1 &lt;&lt; 4)  /* exit program */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_NONFATAL (1 &lt;&lt=
+; 5)  /* non-fatal error */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#define M_WARN     (1 &lt;&lt; 6)  /* call syslog with LOG_WARNING */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_DEBUG    (1=
+ &lt;&lt; 7)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define=
+ M_FATAL    (1u &lt;&lt; 4)  /* exit program */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define M_NONFATAL (1u &lt;&lt; 5)  /* non-fata=
+l error */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define M=
+_WARN     (1u &lt;&lt; 6)  /* call syslog with LOG_WARNING */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#define M_DEBUG    (1u &lt;&lt; 7=
+)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#d=
+efine M_ERRNO (1 &lt;&lt; 8)         /* show errno description */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#define M_ERRNO (1u &lt;&lt; =
+8)         /* show errno description */</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#define M_NOMUTE       (1 &lt;&lt; 11) =
+/* don&#39;t do mute processing */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#define M_NOPREFIX     (1 &lt;&lt; 12) /* don&#39;t show date/=
+time prefix */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
+ M_USAGE_SMALL  (1 &lt;&lt; 13) /* fatal options error, call usage_small */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_MSG_VIRT_OU=
+T (1 &lt;&lt; 14) /* output message through msg_status_output callback */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define M_OPTERR       =
+(1 &lt;&lt; 15) /* print &quot;Options error:&quot; prefix */</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#define M_NOLF         (1 &lt;&lt; =
+16) /* don&#39;t print new line */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#define M_NOIPREFIX    (1 &lt;&lt; 17) /* don&#39;t print inst=
+ance prefix */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
+ne M_NOMUTE       (1u &lt;&lt; 11) /* don&#39;t do mute processing */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#define M_NOPREFIX     (1=
+u &lt;&lt; 12) /* don&#39;t show date/time prefix */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define M_USAGE_SMALL  (1u &lt;&lt; 13) /=
+* fatal options error, call usage_small */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#define M_MSG_VIRT_OUT (1u &lt;&lt; 14) /* output me=
+ssage through msg_status_output callback */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#define M_OPTERR       (1u &lt;&lt; 15) /* print &q=
+uot;Options error:&quot; prefix */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#define M_NOLF         (1u &lt;&lt; 16) /* don&#39;t print n=
+ew line */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define M=
+_NOIPREFIX    (1u &lt;&lt; 17) /* don&#39;t print instance prefix */</span>=
+<br><span> </span><br><span> /* flag combinations which are frequently used=
+ */</span><br><span> #define M_ERR    (M_FATAL | M_ERRNO)</span><br><span>@=
+@ -112,7 +114,7 @@</span><br><span>  * A mute level of 0 is always printed.=
+</span><br><span>  */</span><br><span> #define MUTE_LEVEL_SHIFT 24</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define MUTE_LEVEL_MASK  0xFF<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MUTE_LEVEL_M=
+ASK  0xFFu</span><br><span> </span><br><span> #define ENCODE_MUTE_LEVEL(mut=
+e_level) (((mute_level) &amp; MUTE_LEVEL_MASK) &lt;&lt; MUTE_LEVEL_SHIFT)</=
+span><br><span> #define DECODE_MUTE_LEVEL(flags)      (((flags) &gt;&gt; MU=
+TE_LEVEL_SHIFT) &amp; MUTE_LEVEL_MASK)</span><br><span>@@ -135,7 +137,7 @@<=
+/span><br><span>  */</span><br><span> </span><br><span> /** Check muting fi=
+lter */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool dont_mute=
+(unsigned int flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+bool dont_mute(msglvl_t flags);</span><br><span> </span><br><span> /* Mac=
+ro to ensure (and teach static analysis tools) we exit on fatal errors */</=
+span><br><span> #define EXIT_FATAL(flags)      \</span><br><span>@@ -170,7 =
++172,7 @@</span><br><span> #define dmsg(flags, ...)</span><br><span> #endif=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-voi=
+d x_msg(const unsigned int flags, const char *format, ...)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+void x_msg(const msglvl_t flags, con=
+st char *format, ...)</span><br><span> #ifdef __GNUC__</span><br><span> #if=
+ __USE_MINGW_ANSI_STDIO</span><br><span>     __attribute__((format(gnu_prin=
+tf, 2, 3)))</span><br><span>@@ -180,7 +182,7 @@</span><br><span> #endif</sp=
+an><br><span>     ; /* should be called via msg above */</span><br><span> <=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-void x_msg_va(const un=
+signed int flags, const char *format, va_list arglist);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+void x_msg_va(const msglvl_t flags, con=
+st char *format, va_list arglist);</span><br><span> </span><br><span> /*</s=
+pan><br><span>  * Function prototypes</span><br><span>@@ -201,16 +203,16 @@=
+</span><br><span> </span><br><span> bool set_mute_cutoff(const int cutoff);=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int=
+ get_debug_level(void);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+msglvl_t get_debug_level(void);</span><br><span> </span><br><span> int =
+get_mute_cutoff(void);</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-const char *msg_flags_string(const unsigned int flags, s=
+truct gc_arena *gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++const char *msg_flags_string(const msglvl_t flags, struct gc_arena *gc);</=
+span><br><span> </span><br><span> /*</span><br><span>  * File to print mess=
+ages to before syslog is opened.</span><br><span>  */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-FILE *msg_fp(const unsigned int flags);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+FILE *msg_fp(const msgl=
+vl_t flags);</span><br><span> </span><br><span> /* Fatal logic errors */</s=
+pan><br><span> #ifndef ENABLE_SMALL</span><br><span>@@ -254,14 +256,14 @@</=
+span><br><span> /* Inline functions */</span><br><span> </span><br><span> s=
+tatic inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-chec=
+k_debug_level(unsigned int level)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+check_debug_level(msglvl_t level)</span><br><span> {</span><b=
+r><span>     return (level &amp; M_DEBUG_LEVEL) &lt;=3D x_debug_level;</spa=
+n><br><span> }</span><br><span> </span><br><span> /** Return true if flags =
+represent an enabled, not muted log level */</span><br><span> static inline=
+ bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-msg_test(unsigne=
+d int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+msg_tes=
+t(msglvl_t flags)</span><br><span> {</span><br><span>     return check_debu=
+g_level(flags) &amp;&amp; dont_mute(flags);</span><br><span> }</span><br><s=
+pan>@@ -400,8 +402,8 @@</span><br><span> }</span><br><span> </span><br><spa=
+n> /** Convert fatal errors to nonfatal, don&#39;t touch other errors */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline unsigned i=
+nt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-nonfatal(const unsi=
+gned int err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
+ inline msglvl_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+non=
+fatal(const msglvl_t err)</span><br><span> {</span><br><span>     return er=
+r &amp; M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;</span><br><span> }</s=
+pan><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</s=
+pan><br><span>index 5d22fa3..12dd6a7 100644</span><br><span>--- a/src/openv=
+pn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@=
+ -368,7 +368,8 @@</span><br><span> }</span><br><span> </span><br><span> boo=
+l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-send_control_channel=
+_string_dowork(struct tls_session *session, const char *str, int msglevel)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+send_control_channel=
+_string_dowork(struct tls_session *session, const char *str,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                                  =
+ msglvl_t msglevel)</span><br><span> {</span><br><span>     struct gc_arena=
+ gc =3D gc_new();</span><br><span>     bool stat;</span><br><span>@@ -395,7=
+ +396,7 @@</span><br><span> }</span><br><span> </span><br><span> bool</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-send_control_channel_string=
+(struct context *c, const char *str, int msglevel)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+send_control_channel_string(struct context *=
+c, const char *str, msglvl_t msglevel)</span><br><span> {</span><br><span> =
+    if (c-&gt;c2.tls_multi)</span><br><span>     {</span><br><span>diff --g=
+it a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><span>index 79=
+d0f8b..a575faf 100644</span><br><span>--- a/src/openvpn/forward.h</span><br=
+><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -285,7 +285,7 @@</spa=
+n><br><span>  * @param str        - The message to be sent</span><br><span>=
+  * @param msglevel   - Message level to use for logging</span><br><span>  =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool send_control_c=
+hannel_string(struct context *c, const char *str, int msglevel);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+bool send_control_channel_stri=
+ng(struct context *c, const char *str, msglvl_t msglevel);</span><br><span>=
+ </span><br><span> /*</span><br><span>  * Send a string to remote over the =
+TLS control channel.</span><br><span>@@ -303,7 +303,8 @@</span><br><span>  =
+* @param msglevel   - Message level to use for logging</span><br><span>  */=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-boo=
+l send_control_channel_string_dowork(struct tls_session *session, const cha=
+r *str, int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+bool send_control_channel_string_dowork(struct tls_session *session, con=
+st char *str,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                                  msglvl_t msglevel);</span><br><span> </sp=
+an><br><span> </span><br><span> /**</span><br><span>diff --git a/src/openvp=
+n/init.c b/src/openvpn/init.c</span><br><span>index 2821cd4..0d7a2ec 100644=
+</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn=
+/init.c</span><br><span>@@ -4273,7 +4273,7 @@</span><br><span> }</span><br>=
+<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-management_show_net_callback(void *arg, const int msglevel)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+management_show_net_callbac=
+k(void *arg, const msglvl_t msglevel)</span><br><span> {</span><br><span> #=
+ifdef _WIN32</span><br><span>     show_routes(msglevel);</span><br><span>di=
+ff --git a/src/openvpn/init.h b/src/openvpn/init.h</span><br><span>index a8=
+07874..e89615b 100644</span><br><span>--- a/src/openvpn/init.h</span><br><s=
+pan>+++ b/src/openvpn/init.h</span><br><span>@@ -136,7 +136,7 @@</span><br>=
+<span> </span><br><span> void close_management(void);</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-void management_show_net_=
+callback(void *arg, const int msglevel);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+void management_show_net_callback(void *arg, const msg=
+lvl_t msglevel);</span><br><span> </span><br><span> #endif</span><br><span>=
+ </span><br><span>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c<=
+/span><br><span>index 4decdfe..c675e95 100644</span><br><span>--- a/src/ope=
+nvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@=
+ -1475,7 +1475,7 @@</span><br><span>         }</span><br><span>         els=
+e</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            msg(M_CLIENT, &quot;SUCCESS: verb=3D%d&quot;, get_debug_=
+level());</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  msg(M_CLIENT, &quot;SUCCESS: verb=3D%u&quot;, get_debug_level());</span><=
+br><span>         }</span><br><span>     }</span><br><span>     else if (st=
+req(p[0], &quot;mute&quot;))</span><br><span>diff --git a/src/openvpn/manag=
+e.h b/src/openvpn/manage.h</span><br><span>index 7c189ba..bff96d3 100644</s=
+pan><br><span>--- a/src/openvpn/manage.h</span><br><span>+++ b/src/openvpn/=
+manage.h</span><br><span>@@ -176,7 +176,7 @@</span><br><span>     unsigned =
+int flags;</span><br><span> </span><br><span>     void (*status)(void *arg,=
+ const int version, struct status_output *so);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    void (*show_net)(void *arg, const int msglevel=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    void (*show_n=
+et)(void *arg, const msglvl_t msglevel);</span><br><span>     int (*kill_by=
+_cn)(void *arg, const char *common_name);</span><br><span>     int (*kill_b=
+y_addr)(void *arg, const in_addr_t addr, const int port, const int proto);<=
+/span><br><span>     void (*delete_event)(void *arg, event_t event);</span>=
+<br><span>diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c</span><br><spa=
+n>index a419e32..9c1a772 100644</span><br><span>--- a/src/openvpn/mtu.c</sp=
+an><br><span>+++ b/src/openvpn/mtu.c</span><br><span>@@ -187,7 +187,7 @@</s=
+pan><br><span> }</span><br><span> </span><br><span> void</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-frame_print(const struct frame *frame, i=
+nt level, const char *prefix)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+frame_print(const struct frame *frame, msglvl_t msglevel, const c=
+har *prefix)</span><br><span> {</span><br><span>     struct gc_arena gc =3D=
+ gc_new();</span><br><span>     struct buffer out =3D alloc_buf_gc(256, &am=
+p;gc);</span><br><span>@@ -208,7 +208,7 @@</span><br><span>     buf_printf(=
+&amp;out, &quot; ET:%d&quot;, frame-&gt;extra_tun);</span><br><span>     bu=
+f_printf(&amp;out, &quot; ]&quot;);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    msg(level, &quot;%s&quot;, out.data);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &qu=
+ot;%s&quot;, out.data);</span><br><span>     gc_free(&amp;gc);</span><br><s=
+pan> }</span><br><span> </span><br><span>diff --git a/src/openvpn/mtu.h b/s=
+rc/openvpn/mtu.h</span><br><span>index c092461..3bbff6f 100644</span><br><s=
+pan>--- a/src/openvpn/mtu.h</span><br><span>+++ b/src/openvpn/mtu.h</span><=
+br><span>@@ -181,7 +181,7 @@</span><br><span>  * Function prototypes.</span=
+><br><span>  */</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-void frame_print(const struct frame *frame, int level, const ch=
+ar *prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void fr=
+ame_print(const struct frame *frame, msglvl_t msglevel, const char *prefix)=
+;</span><br><span> </span><br><span> void set_mtu_discover_type(socket_desc=
+riptor_t sd, int mtu_type, sa_family_t proto_af);</span><br><span> </span><=
+br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><=
+span>index 6e4cc42..8676a09 100644</span><br><span>--- a/src/openvpn/multi.=
+c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -3316,7 +331=
+6,7 @@</span><br><span>     }</span><br><span>     else</span><br><span>   =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int msglev=
+el =3D D_DCO;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  msglvl_t msglevel =3D D_DCO;</span><br><span>         if (dco-&gt;dco_mes=
+sage_type =3D=3D OVPN_CMD_DEL_PEER</span><br><span>             &amp;&amp; =
+dco-&gt;dco_del_peer_reason =3D=3D OVPN_DEL_PEER_REASON_USERSPACE)</span><b=
+r><span>         {</span><br><span>diff --git a/src/openvpn/options.c b/src=
+/openvpn/options.c</span><br><span>index ae285d9..f1f66b9 100644</span><br>=
+<span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options=
+.c</span><br><span>@@ -1107,7 +1107,7 @@</span><br><span> #endif /* ifndef =
+_WIN32 */</span><br><span> </span><br><span> static in_addr_t</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-get_ip_addr(const char *ip_string, =
+int msglevel, bool *error)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+get_ip_addr(const char *ip_string, msglvl_t msglevel, bool *error)</=
+span><br><span> {</span><br><span>     unsigned int flags =3D GETADDR_HOST_=
+ORDER;</span><br><span>     bool succeeded =3D false;</span><br><span>@@ -1=
+187,7 +1187,7 @@</span><br><span>  * @param   gc          The returned obje=
+ct will be allocated in this gc</span><br><span>  */</span><br><span> stati=
+c struct verify_hash_list *</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-parse_hash_fingerprint(const char *str, int nbytes, int msglevel, str=
+uct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pa=
+rse_hash_fingerprint(const char *str, int nbytes, msglvl_t msglevel, struct=
+ gc_arena *gc)</span><br><span> {</span><br><span>     int i =3D 0;</span><=
+br><span>     const char *cp =3D str;</span><br><span>@@ -1240,7 +1240,8 @@=
+</span><br><span>  * @param   gc          The returned list items will be a=
+llocated in this gc</span><br><span>  */</span><br><span> static struct ver=
+ify_hash_list *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-parse_=
+hash_fingerprint_multiline(const char *str, int nbytes, int msglevel, struc=
+t gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+pars=
+e_hash_fingerprint_multiline(const char *str, int nbytes, msglvl_t msglevel=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+               struct gc_arena *gc)</span><br><span> {</span><br><span>    =
+ struct gc_arena gc_temp =3D gc_new();</span><br><span>     char *lines =3D=
+ string_alloc(str, &amp;gc_temp);</span><br><span>@@ -1329,7 +1330,7 @@</sp=
+an><br><span> #endif /* ifdef _WIN32 */</span><br><span> </span><br><span> =
+static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dhcp_optio=
+n_dns6_parse(const char *parm, struct in6_addr *dns6_list, int *len, int ms=
+glevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dhcp_option_=
+dns6_parse(const char *parm, struct in6_addr *dns6_list, int *len, msglvl_t=
+ msglevel)</span><br><span> {</span><br><span>     struct in6_addr addr;</s=
+pan><br><span>     if (*len &gt;=3D N_DHCP_ADDR)</span><br><span>@@ -1344,7=
+ +1345,7 @@</span><br><span> }</span><br><span> static void</span><br><span=
+> dhcp_option_address_parse(const char *name, const char *parm, in_addr_t *=
+array, int *len,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                     int msglevel)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                          msglvl_t msglevel)</span><br><span=
+> {</span><br><span>     if (*len &gt;=3D N_DHCP_ADDR)</span><br><span>    =
+ {</span><br><span>@@ -1480,7 +1481,8 @@</span><br><span> #endif /* ! ENABL=
+E_SMALL */</span><br><span> </span><br><span> static void</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-option_iroute(struct options *o, const =
+char *network_str, const char *netmask_str, int msglevel)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+option_iroute(struct options *o, cons=
+t char *network_str, const char *netmask_str,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+              msglvl_t msglevel)</span><br><span>=
+ {</span><br><span>     struct iroute *ir;</span><br><span> </span><br><spa=
+n>@@ -1506,7 +1508,7 @@</span><br><span> }</span><br><span> </span><br><spa=
+n> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-option_=
+iroute_ipv6(struct options *o, const char *prefix_str, int msglevel)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+option_iroute_ipv6(struct =
+options *o, const char *prefix_str, msglvl_t msglevel)</span><br><span> {</=
+span><br><span>     struct iroute_ipv6 *ir;</span><br><span> </span><br><sp=
+an>@@ -2063,7 +2065,7 @@</span><br><span> }</span><br><span> </span><br><sp=
+an> static struct local_entry *</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-alloc_local_entry(struct connection_entry *ce, const int msglevel=
+, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+alloc_local_entry(struct connection_entry *ce, const msglvl_t msglevel, =
+struct gc_arena *gc)</span><br><span> {</span><br><span>     struct local_l=
+ist *l =3D alloc_local_list_if_undef(ce, gc);</span><br><span>     struct l=
+ocal_entry *e;</span><br><span>@@ -2104,7 +2106,7 @@</span><br><span> }</sp=
+an><br><span> </span><br><span> static struct connection_entry *</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-alloc_connection_entry(struct op=
+tions *options, const int msglevel)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+alloc_connection_entry(struct options *options, const msglv=
+l_t msglevel)</span><br><span> {</span><br><span>     struct connection_lis=
+t *l =3D alloc_connection_list_if_undef(options);</span><br><span>     stru=
+ct connection_entry *e;</span><br><span>@@ -2140,7 +2142,7 @@</span><br><sp=
+an> }</span><br><span> </span><br><span> static struct remote_entry *</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-alloc_remote_entry(struct o=
+ptions *options, const int msglevel)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+alloc_remote_entry(struct options *options, const msglvl_t=
+ msglevel)</span><br><span> {</span><br><span>     struct remote_list *l =
+=3D alloc_remote_list_if_undef(options);</span><br><span>     struct remote=
+_entry *e;</span><br><span>@@ -2694,7 +2696,7 @@</span><br><span> </span><b=
+r><span>     if (!options-&gt;tls_server &amp;&amp; !options-&gt;tls_client=
+)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        int msglevel =3D M_USAGE;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        msglvl_t msglevel =3D M_USAGE;</span><br><span>   =
+      if (options-&gt;allow_deprecated_insecure_static_crypto)</span><br><s=
+pan>         {</span><br><span>             msglevel =3D M_INFO;</span><br>=
+<span>@@ -4566,8 +4568,9 @@</span><br><span> }</span><br><span> </span><br>=
+<span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-opt=
+ions_warning_safe_scan2(const int msglevel, const int delim, const bool rep=
+ort_inconsistent,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                       const char *p1, const struct buffer *b2_src, const c=
+har *b1_name,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+option=
+s_warning_safe_scan2(const msglvl_t msglevel, const int delim,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                           const=
+ bool report_inconsistent, const char *p1,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                           const struct buffer *b2_s=
+rc, const char *b1_name,</span><br><span>                            const =
+char *b2_name)</span><br><span> {</span><br><span>     /* We will stop send=
+ing &#39;key-method&#39;, &#39;keydir&#39;, &#39;proto&#39; and &#39;tls-au=
+th&#39; in</span><br><span>@@ -4619,9 +4622,9 @@</span><br><span> }</span><=
+br><span> </span><br><span> static void</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-options_warning_safe_scan1(const int msglevel, const int =
+delim, const bool report_inconsistent,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                           const struct buffer *b1_src, co=
+nst struct buffer *b2_src,</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                           const char *b1_name, const char *b2_name)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+options_warning_safe_=
+scan1(const msglvl_t msglevel, const int delim,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                           const bool report_in=
+consistent, const struct buffer *b1_src,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                           const struct buffer *b2_src=
+, const char *b1_name, const char *b2_name)</span><br><span> {</span><br><s=
+pan>     struct gc_arena gc =3D gc_new();</span><br><span>     struct buffe=
+r b =3D *b1_src;</span><br><span>@@ -4637,7 +4640,7 @@</span><br><span> }</=
+span><br><span> </span><br><span> static void</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-options_warning_safe_ml(const int msglevel, char *a=
+ctual, const char *expected, size_t actual_n)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+options_warning_safe_ml(const msglvl_t msglevel, =
+char *actual, const char *expected, size_t actual_n)</span><br><span> {</sp=
+an><br><span>     struct gc_arena gc =3D gc_new();</span><br><span> </span>=
+<br><span>@@ -4729,7 +4732,7 @@</span><br><span>  */</span><br><span> </spa=
+n><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-parse=
+_topology(const char *str, const int msglevel)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+parse_topology(const char *str, const msglvl_t m=
+sglevel)</span><br><span> {</span><br><span>     if (streq(str, &quot;net30=
+&quot;))</span><br><span>     {</span><br><span>@@ -4785,7 +4788,7 @@</span=
+><br><span> }</span><br><span> </span><br><span> bool</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-auth_retry_set(const int msglevel, const ch=
+ar *option)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+auth_ret=
+ry_set(const msglvl_t msglevel, const char *option)</span><br><span> {</spa=
+n><br><span>     if (streq(option, &quot;interact&quot;))</span><br><span> =
+    {</span><br><span>@@ -4942,7 +4945,7 @@</span><br><span> </span><br><sp=
+an> #if 0</span><br><span> static void</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-ping_rec_err(int msglevel)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ping_rec_err(msglvl_t msglevel)</span><br><span> {<=
+/span><br><span>     msg(msglevel, &quot;only one of --ping-exit or --ping-=
+restart options may be specified&quot;);</span><br><span> }</span><br><span=
+>@@ -4966,7 +4969,7 @@</span><br><span> </span><br><span> int</span><br><sp=
+an> parse_line(const char *line, char *p[], const int n, const char *file, =
+const int line_num,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+         int msglevel, struct gc_arena *gc)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+           msglvl_t msglevel, struct gc_arena *gc)<=
+/span><br><span> {</span><br><span>     const int STATE_INITIAL =3D 0;</spa=
+n><br><span>     const int STATE_READING_QUOTED_PARM =3D 1;</span><br><span=
+>@@ -5271,24 +5274,25 @@</span><br><span> }</span><br><span> </span><br><sp=
+an> static void add_option(struct options *options, char *p[], bool is_inli=
+ne, const char *file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                       int line, const int level, const int msglevel,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                       in=
+t line, const int level, const msglvl_t msglevel,</span><br><span>         =
+               const unsigned int permission_mask, unsigned int *option_typ=
+es_found,</span><br><span>                        struct env_set *es);</spa=
+n><br><span> </span><br><span> static void remove_option(struct context *c,=
+ struct options *options, char *p[], bool is_inline,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                          const char *file,=
+ int line, const int msglevel,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                          const char *file, int line, const msgl=
+vl_t msglevel,</span><br><span>                           const unsigned in=
+t permission_mask, unsigned int *option_types_found,</span><br><span>      =
+                     struct env_set *es);</span><br><span> </span><br><span=
+> static void update_option(struct context *c, struct options *options, cha=
+r *p[], bool is_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                          const char *file, int line, const int level, co=
+nst int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                        const char *file, int line, const int level, const =
+msglvl_t msglevel,</span><br><span>                           const unsigne=
+d int permission_mask, unsigned int *option_types_found,</span><br><span>  =
+                         struct env_set *es, unsigned int *update_options_f=
+ound);</span><br><span> </span><br><span> static void</span><br><span> read=
+_config_file(struct options *options, const char *file, int level, const ch=
+ar *top_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+         const int top_line, const int msglevel, const unsigned int permiss=
+ion_mask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+     unsigned int *option_types_found, struct env_set *es)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                 const int top_line,=
+ const msglvl_t msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                 const unsigned int permission_mask, unsigned int *op=
+tion_types_found,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+               struct env_set *es)</span><br><span> {</span><br><span>     =
+const int max_recursive_levels =3D 10;</span><br><span>     FILE *fp;</span=
+><br><span>@@ -5360,7 +5364,7 @@</span><br><span> </span><br><span> static =
+void</span><br><span> read_config_string(const char *prefix, struct options=
+ *options, const char *config,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                   const int msglevel, const unsigned int permissi=
+on_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+        const msglvl_t msglevel, const unsigned int permission_mask,</span>=
+<br><span>                    unsigned int *option_types_found, struct env_=
+set *es)</span><br><span> {</span><br><span>     char line[OPTION_LINE_SIZE=
+];</span><br><span>@@ -5388,7 +5392,7 @@</span><br><span> }</span><br><span=
+> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-parse_argv(struct options *options, const int argc, char *argv[], const =
+int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+parse_=
+argv(struct options *options, const int argc, char *argv[], const msglvl_t =
+msglevel,</span><br><span>            const unsigned int permission_mask, u=
+nsigned int *option_types_found, struct env_set *es)</span><br><span> {</sp=
+an><br><span>     /* usage message */</span><br><span>@@ -5457,7 +5461,7 @@=
+</span><br><span>     char line[OPTION_PARM_SIZE];</span><br><span>     int=
+ line_num =3D 0;</span><br><span>     const char *file =3D &quot;[PUSH-OPTI=
+ONS]&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const =
+int msglevel =3D D_PUSH_ERRORS | M_OPTERR;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    const msglvl_t msglevel =3D D_PUSH_ERRORS | M_OP=
+TERR;</span><br><span>     unsigned int update_options_found =3D 0;</span><=
+br><span> </span><br><span>     while (buf_parse(buf, &#39;,&#39;, line, si=
+zeof(line)))</span><br><span>@@ -5514,7 +5518,7 @@</span><br><span> }</span=
+><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-options_server_import(struct options *o, const char *filename,=
+ int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+optio=
+ns_server_import(struct options *o, const char *filename, msglvl_t msglevel=
+,</span><br><span>                       unsigned int permission_mask, unsi=
+gned int *option_types_found,</span><br><span>                       struct=
+ env_set *es)</span><br><span> {</span><br><span>@@ -5524,7 +5528,7 @@</spa=
+n><br><span> }</span><br><span> </span><br><span> void</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-options_string_import(struct options *opti=
+ons, const char *config, const int msglevel,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+options_string_import(struct options *options, con=
+st char *config, const msglvl_t msglevel,</span><br><span>                 =
+      const unsigned int permission_mask, unsigned int *option_types_found,=
+</span><br><span>                       struct env_set *es)</span><br><span=
+> {</span><br><span>@@ -5543,7 +5547,7 @@</span><br><span> </span><br><span=
+> static bool</span><br><span> verify_permission(const char *name, const ch=
+ar *file, int line, const unsigned int type,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                  const unsigned int allowed, unsign=
+ed int *found, const int msglevel,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                  const unsigned int allowed, unsigned int *=
+found, const msglvl_t msglevel,</span><br><span>                   struct o=
+ptions *options, bool is_inline)</span><br><span> {</span><br><span>     if=
+ (!(type &amp; allowed))</span><br><span>@@ -5595,7 +5599,7 @@</span><br><s=
+pan> #define NM_QUOTE_HINT (1 &lt;&lt; 0)</span><br><span> </span><br><span=
+> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-no_more_=
+than_n_args(const int msglevel, char *p[], const int max, const unsigned in=
+t flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+no_more_tha=
+n_n_args(const msglvl_t msglevel, char *p[], const int max, const unsigned =
+int flags)</span><br><span> {</span><br><span>     const int len =3D string=
+_array_len((const char **)p);</span><br><span> </span><br><span>@@ -5619,8 =
++5623,8 @@</span><br><span>     }</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline int</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-msglevel_forward_compatible(st=
+ruct options *options, const int msglevel)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static inline msglvl_t</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+msglevel_forward_compatible(struct options *optio=
+ns, const msglvl_t msglevel)</span><br><span> {</span><br><span>     return=
+ options-&gt;forward_compatible ? M_WARN : msglevel;</span><br><span> }</sp=
+an><br><span>@@ -5654,10 +5658,11 @@</span><br><span>  */</span><br><span> =
+static void</span><br><span> remove_option(struct context *c, struct option=
+s *options, char *p[], bool is_inline,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-              const char *file, int line, const int msglev=
+el, const unsigned int permission_mask,</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-              unsigned int *option_types_found, struct en=
+v_set *es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+     const char *file, int line, const msglvl_t msglevel,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+              const unsigned int perm=
+ission_mask, unsigned int *option_types_found,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+              struct env_set *es)</span><br><spa=
+n> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int msglevel_=
+fc =3D msglevel_forward_compatible(options, msglevel);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    msglvl_t msglevel_fc =3D msglevel_fo=
+rward_compatible(options, msglevel);</span><br><span> </span><br><span>    =
+ if (streq(p[0], &quot;ifconfig&quot;) &amp;&amp; !p[1])</span><br><span>  =
+   {</span><br><span>@@ -5792,11 +5797,10 @@</span><br><span> #endif</span>=
+<br><span>     else</span><br><span>     {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        int i;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        int msglevel_unknown =3D msglevel_fc;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        msglvl_t msglevel_unknown =
+=3D msglevel_fc;</span><br><span>         /* Check if an option is in --ign=
+ore-unknown-option and</span><br><span>          * set warning level to non=
+ fatal */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        for =
+(i =3D 0; options-&gt;ignore_unknown_option &amp;&amp; options-&gt;ignore_u=
+nknown_option[i]; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        for (int i =3D 0; options-&gt;ignore_unknown_option &amp;&amp; o=
+ptions-&gt;ignore_unknown_option[i]; i++)</span><br><span>         {</span>=
+<br><span>             if (streq(p[0], options-&gt;ignore_unknown_option[i]=
+))</span><br><span>             {</span><br><span>@@ -5815,7 +5819,7 @@</sp=
+an><br><span> </span><br><span> </span><br><span> static bool</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-check_route_option(struct options *=
+options, char *p[], const int msglevel, bool pull_mode)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+check_route_option(struct options *opti=
+ons, char *p[], const msglvl_t msglevel, bool pull_mode)</span><br><span> {=
+</span><br><span>     rol_check_alloc(options);</span><br><span>     if (pu=
+ll_mode)</span><br><span>@@ -5843,7 +5847,7 @@</span><br><span> </span><br>=
+<span> </span><br><span> static bool</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-check_route6_option(struct options *options, char *p[], cons=
+t int msglevel, bool pull_mode)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+check_route6_option(struct options *options, char *p[], const m=
+sglvl_t msglevel, bool pull_mode)</span><br><span> {</span><br><span>     r=
+ol6_check_alloc(options);</span><br><span>     if (pull_mode)</span><br><sp=
+an>@@ -5864,7 +5868,7 @@</span><br><span> }</span><br><span> </span><br><sp=
+an> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_=
+dns_option(struct options *options, char *p[], const int msglevel, bool pul=
+l_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_dns_op=
+tion(struct options *options, char *p[], const msglvl_t msglevel, bool pull=
+_mode)</span><br><span> {</span><br><span>     if (streq(p[1], &quot;search=
+-domains&quot;) &amp;&amp; p[2])</span><br><span>     {</span><br><span>@@ =
+-5984,7 +5988,7 @@</span><br><span>  */</span><br><span> static void</span>=
+<br><span> update_option(struct context *c, struct options *options, char *=
+p[], bool is_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+             const char *file, int line, const int level, const int msgleve=
+l,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              con=
+st char *file, int line, const int level, const msglvl_t msglevel,</span><b=
+r><span>               const unsigned int permission_mask, unsigned int *op=
+tion_types_found,</span><br><span>               struct env_set *es, unsign=
+ed int *update_options_found)</span><br><span> {</span><br><span>@@ -6169,1=
+2 +6173,12 @@</span><br><span> </span><br><span> static void</span><br><spa=
+n> add_option(struct options *options, char *p[], bool is_inline, const cha=
+r *file, int line,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+        const int level, const int msglevel, const unsigned int permission_=
+mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           con=
+st int level, const msglvl_t msglevel, const unsigned int permission_mask,<=
+/span><br><span>            unsigned int *option_types_found, struct env_se=
+t *es)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_ne=
+w();</span><br><span>     const bool pull_mode =3D BOOL_CAST(permission_mas=
+k &amp; OPT_P_PULL_MODE);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    int msglevel_fc =3D msglevel_forward_compatible(options, msglevel);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msglvl_t msglev=
+el_fc =3D msglevel_forward_compatible(options, msglevel);</span><br><span> =
+</span><br><span>     ASSERT(MAX_PARMS &gt;=3D 7);</span><br><span> </span>=
+<br><span>@@ -9869,7 +9873,7 @@</span><br><span>     else</span><br><span> =
+    {</span><br><span>         int i;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        int msglevel_unknown =3D msglevel_fc;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        msglvl_t msglevel_unknown=
+ =3D msglevel_fc;</span><br><span>         /* Check if an option is in --ig=
+nore-unknown-option and</span><br><span>          * set warning level to no=
+n fatal */</span><br><span>         for (i =3D 0; options-&gt;ignore_unknow=
+n_option &amp;&amp; options-&gt;ignore_unknown_option[i]; i++)</span><br><s=
+pan>diff --git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><s=
+pan>index bb2c052..a737711 100644</span><br><span>--- a/src/openvpn/options=
+.h</span><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -822,7 +8=
+22,7 @@</span><br><span>     struct pull_filter *tail;</span><br><span> };<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void=
+ parse_argv(struct options *options, const int argc, char *argv[], const in=
+t msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void par=
+se_argv(struct options *options, const int argc, char *argv[], const msglvl=
+_t msglevel,</span><br><span>                 const unsigned int permission=
+_mask, unsigned int *option_types_found,</span><br><span>                 s=
+truct env_set *es);</span><br><span> </span><br><span>@@ -888,7 +888,7 @@</=
+span><br><span> </span><br><span> void options_detach(struct options *o);</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void =
+options_server_import(struct options *o, const char *filename, int msglevel=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void options_serve=
+r_import(struct options *o, const char *filename, msglvl_t msglevel,</span>=
+<br><span>                            unsigned int permission_mask, unsigne=
+d int *option_types_found,</span><br><span>                            stru=
+ct env_set *es);</span><br><span> </span><br><span>@@ -897,13 +897,13 @@</s=
+pan><br><span> void rol_check_alloc(struct options *options);</span><br><sp=
+an> </span><br><span> int parse_line(const char *line, char *p[], const int=
+ n, const char *file, const int line_num,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-               int msglevel, struct gc_arena *gc);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+               msglvl_t =
+msglevel, struct gc_arena *gc);</span><br><span> </span><br><span> /*</span=
+><br><span>  * parse/print topology coding</span><br><span>  */</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int parse_topol=
+ogy(const char *str, const int msglevel);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+int parse_topology(const char *str, const msglvl_t ms=
+glevel);</span><br><span> </span><br><span> const char *print_topology(cons=
+t int topology);</span><br><span> </span><br><span>@@ -917,11 +917,11 @@</s=
+pan><br><span> </span><br><span> int auth_retry_get(void);</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool auth_retry_set(=
+const int msglevel, const char *option);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+bool auth_retry_set(const msglvl_t msglevel, const cha=
+r *option);</span><br><span> </span><br><span> const char *auth_retry_print=
+(void);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-void options_string_import(struct options *options, const char *config,=
+ const int msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++void options_string_import(struct options *options, const char *config, co=
+nst msglvl_t msglevel,</span><br><span>                            const un=
+signed int permission_mask, unsigned int *option_types_found,</span><br><sp=
+an>                            struct env_set *es);</span><br><span> </span=
+><br><span>diff --git a/src/openvpn/options_util.c b/src/openvpn/options_ut=
+il.c</span><br><span>index 5740ee5..cb4229e 100644</span><br><span>--- a/sr=
+c/openvpn/options_util.c</span><br><span>+++ b/src/openvpn/options_util.c</=
+span><br><span>@@ -117,7 +117,7 @@</span><br><span> }</span><br><span> </sp=
+an><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-posi=
+tive_atoi(const char *str, int msglevel)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+positive_atoi(const char *str, msglvl_t msglevel)</spa=
+n><br><span> {</span><br><span>     char *endptr;</span><br><span>     long=
+ long i =3D strtoll(str, &amp;endptr, 10);</span><br><span>@@ -132,7 +132,7=
+ @@</span><br><span> }</span><br><span> </span><br><span> bool</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-positive_atoll(const char *str, in=
+t64_t *value, const char *name, int msglevel)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+positive_atoll(const char *str, int64_t *value, c=
+onst char *name, msglvl_t msglevel)</span><br><span> {</span><br><span>    =
+ char *endptr;</span><br><span>     long long ll =3D strtoll(str, &amp;endp=
+tr, 10);</span><br><span>@@ -148,7 +148,7 @@</span><br><span> }</span><br><=
+span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-atoi_warn(const char *str, int msglevel)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+atoi_warn(const char *str, msglvl_t msglevel)</s=
+pan><br><span> {</span><br><span>     char *endptr;</span><br><span>     lo=
+ng long i =3D strtoll(str, &amp;endptr, 10);</span><br><span>@@ -163,7 +163=
+,7 @@</span><br><span> }</span><br><span> </span><br><span> bool</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-atoi_constrained(const char *str=
+, int *value, const char *name, int min, int max, int msglevel)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+atoi_constrained(const char *st=
+r, int *value, const char *name, int min, int max, msglvl_t msglevel)</span=
+><br><span> {</span><br><span>     ASSERT(min &lt; max);</span><br><span> <=
+/span><br><span>diff --git a/src/openvpn/options_util.h b/src/openvpn/optio=
+ns_util.h</span><br><span>index 45417d9..1492eef 100644</span><br><span>---=
+ a/src/openvpn/options_util.h</span><br><span>+++ b/src/openvpn/options_uti=
+l.h</span><br><span>@@ -37,7 +37,7 @@</span><br><span>  * Converts a str to=
+ a positive number if the string represents a postive</span><br><span>  * i=
+nteger number. Otherwise print a warning with msglevel and return 0</span><=
+br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int posi=
+tive_atoi(const char *str, int msglevel);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+int positive_atoi(const char *str, msglvl_t msglevel)=
+;</span><br><span> </span><br><span> /**</span><br><span>  * Converts a str=
+ to an integer if the string can be represented as an</span><br><span>@@ -4=
+8,13 +48,13 @@</span><br><span>  *</span><br><span>  * @return \c true if t=
+he integer has been parsed and stored in value, \c false otherwise</span><b=
+r><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool posi=
+tive_atoll(const char *str, int64_t *value, const char *name, int msglevel)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool positive_atol=
+l(const char *str, int64_t *value, const char *name, msglvl_t msglevel);</s=
+pan><br><span> </span><br><span> /**</span><br><span>  * Converts a str to =
+an integer if the string can be represented as an</span><br><span>  * integ=
+er number. Otherwise print a warning with \p msglevel and return 0</span><b=
+r><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int atoi_=
+warn(const char *str, int msglevel);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+int atoi_warn(const char *str, msglvl_t msglevel);</span><=
+br><span> </span><br><span> /**</span><br><span>  * Converts a str to an in=
+teger if the string can be represented as an</span><br><span>@@ -66,7 +66,7=
+ @@</span><br><span>  * @return \c true if the integer has been parsed and =
+stored in value, \c false otherwise</span><br><span>  */</span><br><span> b=
+ool atoi_constrained(const char *str, int *value, const char *name, int min=
+, int max,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+           int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                      msglvl_t msglevel);</span><br><span> </span><br=
+><span> /**</span><br><span>  * Filter an option line by all pull filters.<=
+/span><br><span>diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_i=
+d.c</span><br><span>index 09696db..ca318eb 100644</span><br><span>--- a/src=
+/openvpn/packet_id.c</span><br><span>+++ b/src/openvpn/packet_id.c</span><b=
+r><span>@@ -53,15 +53,15 @@</span><br><span> #define SEQ_EXPIRED ((time_t)1=
+)</span><br><span> </span><br><span> #ifdef ENABLE_DEBUG</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-static void packet_id_debug_print(int ms=
+glevel, const struct packet_id_rec *p,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static void packet_id_debug_print(msglvl_t msglevel, con=
+st struct packet_id_rec *p,</span><br><span>                               =
+    const struct packet_id_net *pin, const char *message,</span><br><span> =
+                                  packet_id_print_type value);</span><br><s=
+pan> </span><br><span> #endif /* ENABLE_DEBUG */</span><br><span> </span><b=
+r><span> static inline void</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-packet_id_debug(int msglevel, const struct packet_id_rec *p, const st=
+ruct packet_id_net *pin,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                const char *message, uint64_t value)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+packet_id_debug(msglvl_t msglevel, cons=
+t struct packet_id_rec *p,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                const struct packet_id_net *pin, const char *message=
+, uint64_t value)</span><br><span> {</span><br><span> #ifdef ENABLE_DEBUG</=
+span><br><span>     if (unlikely(check_debug_level(msglevel)))</span><br><s=
+pan>@@ -573,7 +573,8 @@</span><br><span> #ifdef ENABLE_DEBUG</span><br><spa=
+n> </span><br><span> static void</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-packet_id_debug_print(int msglevel, const struct packet_id_rec *=
+p, const struct packet_id_net *pin,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+packet_id_debug_print(msglvl_t msglevel, const struct packe=
+t_id_rec *p,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+               const struct packet_id_net *pin,</span><br><span>           =
+            const char *message, packet_id_print_type value)</span><br><spa=
+n> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>=
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c</span><br><span>in=
+dex dfc87f6..8a7a320 100644</span><br><span>--- a/src/openvpn/pkcs11.c</spa=
+n><br><span>+++ b/src/openvpn/pkcs11.c</span><br><span>@@ -72,10 +72,10 @@<=
+/span><br><span> #endif</span><br><span> };</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-static unsigned</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+static msglvl_t</span><br><span> _pkcs1=
+1_msg_pkcs112openvpn(const unsigned flags)</span><br><span> {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    unsigned openvpn_flags;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    msglvl_t openvpn_flags;=
+</span><br><span> </span><br><span>     switch (flags)</span><br><span>    =
+ {</span><br><span>@@ -112,7 +112,7 @@</span><br><span> }</span><br><span> =
+</span><br><span> static unsigned</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-_pkcs11_msg_openvpn2pkcs11(const unsigned flags)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+_pkcs11_msg_openvpn2pkcs11(const m=
+sglvl_t flags)</span><br><span> {</span><br><span>     unsigned pkcs11_flag=
+s;</span><br><span> </span><br><span>diff --git a/src/openvpn/plugin.c b/sr=
+c/openvpn/plugin.c</span><br><span>index ea76a08..a105058 100644</span><br>=
+<span>--- a/src/openvpn/plugin.c</span><br><span>+++ b/src/openvpn/plugin.c=
+</span><br><span>@@ -50,7 +50,7 @@</span><br><span> static struct plugin_co=
+mmon *static_plugin_common =3D NULL; /* GLOBAL */</span><br><span> </span><=
+br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+plugin_show_string_array(int msglevel, const char *name, const char *array[=
+])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+plugin_show_strin=
+g_array(msglvl_t msglevel, const char *name, const char *array[])</span><br=
+><span> {</span><br><span>     int i;</span><br><span>     for (i =3D 0; ar=
+ray[i]; ++i)</span><br><span>@@ -63,7 +63,7 @@</span><br><span> }</span><br=
+><span> </span><br><span> static void</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-plugin_show_args_env(int msglevel, const char *argv[], cons=
+t char *envp[])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+plug=
+in_show_args_env(msglvl_t msglevel, const char *argv[], const char *envp[])=
+</span><br><span> {</span><br><span>     if (check_debug_level(msglevel))</=
+span><br><span>     {</span><br><span>@@ -184,7 +184,7 @@</span><br><span> =
+</span><br><span> #ifndef ENABLE_SMALL</span><br><span> void</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-plugin_option_list_print(const struc=
+t plugin_option_list *list, int msglevel)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+plugin_option_list_print(const struct plugin_option_l=
+ist *list, msglvl_t msglevel)</span><br><span> {</span><br><span>     int i=
+;</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>@@ =
+-995,7 +995,7 @@</span><br><span> </span><br><span> #ifdef ENABLE_DEBUG</sp=
+an><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-plu=
+gin_return_print(const int msglevel, const char *prefix, const struct plugi=
+n_return *pr)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+plugin=
+_return_print(const msglvl_t msglevel, const char *prefix, const struct plu=
+gin_return *pr)</span><br><span> {</span><br><span>     int i;</span><br><s=
+pan>     msg(msglevel, &quot;PLUGIN_RETURN_PRINT %s&quot;, prefix);</span><=
+br><span>diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h</span><br=
+><span>index 63999b6..81d3739 100644</span><br><span>--- a/src/openvpn/plug=
+in.h</span><br><span>+++ b/src/openvpn/plugin.h</span><br><span>@@ -111,7 +=
+111,7 @@</span><br><span> bool plugin_option_list_add(struct plugin_option_=
+list *list, char **p, struct gc_arena *gc);</span><br><span> </span><br><sp=
+an> #ifndef ENABLE_SMALL</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-void plugin_option_list_print(const struct plugin_option_list *list, int=
+ msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void plu=
+gin_option_list_print(const struct plugin_option_list *list, msglvl_t msgle=
+vel);</span><br><span> </span><br><span> #endif</span><br><span> </span><br=
+><span>@@ -136,7 +136,7 @@</span><br><span> void plugin_return_free(struct =
+plugin_return *pr);</span><br><span> </span><br><span> #ifdef ENABLE_DEBUG<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-void plugin_return_pri=
+nt(const int msglevel, const char *prefix, const struct plugin_return *pr);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void plugin_return_=
+print(const msglvl_t msglevel, const char *prefix, const struct plugin_retu=
+rn *pr);</span><br><span> </span><br><span> #endif</span><br><span> </span>=
+<br><span>diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c</span><br><s=
+pan>index fde6cea..28ddd2c 100644</span><br><span>--- a/src/openvpn/pool.c<=
+/span><br><span>+++ b/src/openvpn/pool.c</span><br><span>@@ -114,7 +114,7 @=
+@</span><br><span>  * Verify start/end range</span><br><span>  */</span><br=
+><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ifconfig_=
+pool_verify_range(const int msglevel, const in_addr_t start, const in_addr_=
+t end)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ifconfig_pool=
+_verify_range(const msglvl_t msglevel, const in_addr_t start, const in_addr=
+_t end)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_n=
+ew();</span><br><span>     bool ret =3D true;</span><br><span>diff --git a/=
+src/openvpn/pool.h b/src/openvpn/pool.h</span><br><span>index 6cecef0..36e9=
+fca 100644</span><br><span>--- a/src/openvpn/pool.h</span><br><span>+++ b/s=
+rc/openvpn/pool.h</span><br><span>@@ -78,7 +78,7 @@</span><br><span> </span=
+><br><span> void ifconfig_pool_free(struct ifconfig_pool *pool);</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool ifconfig_=
+pool_verify_range(const int msglevel, const in_addr_t start, const in_addr_=
+t end);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool ifconfi=
+g_pool_verify_range(const msglvl_t msglevel, const in_addr_t start, const i=
+n_addr_t end);</span><br><span> </span><br><span> ifconfig_pool_handle ifco=
+nfig_pool_acquire(struct ifconfig_pool *pool, in_addr_t *local,</span><br><=
+span>                                            in_addr_t *remote, struct =
+in6_addr *remote_ipv6,</span><br><span>diff --git a/src/openvpn/proto.c b/s=
+rc/openvpn/proto.c</span><br><span>index 34b3378..ab77887 100644</span><br>=
+<span>--- a/src/openvpn/proto.c</span><br><span>+++ b/src/openvpn/proto.c</=
+span><br><span>@@ -183,7 +183,7 @@</span><br><span>             int hlen;</=
+span><br><span>             int totlen;</span><br><span>             const =
+char *msgstr =3D &quot;PACKET SIZE INFO&quot;;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            unsigned int msglevel =3D D_PACKET_TRU=
+NC_DEBUG;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  msglvl_t msglevel =3D D_PACKET_TRUNC_DEBUG;</span><br><span> </span><br><=
+span>             if (BLEN(&amp;buf) &lt; (int)sizeof(struct openvpn_iphdr)=
+)</span><br><span>             {</span><br><span>diff --git a/src/openvpn/p=
+ush.c b/src/openvpn/push.c</span><br><span>index 1ea7ed9..60ca25f 100644</s=
+pan><br><span>--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/pu=
+sh.c</span><br><span>@@ -373,8 +373,8 @@</span><br><span>  *</span><br><spa=
+n>  * @return true on success, false on failure.</span><br><span>  */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-static bool push_option_fmt=
+(struct gc_arena *gc, struct push_list *push_list, int msglevel,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                            cons=
+t char *fmt, ...)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic bool push_option_fmt(struct gc_arena *gc, struct push_list *push_list,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+         msglvl_t msglevel, const char *fmt, ...)</span><br><span> #ifdef _=
+_GNUC__</span><br><span> #if __USE_MINGW_ANSI_STDIO</span><br><span>     __=
+attribute__((format(gnu_printf, 4, 5)))</span><br><span>@@ -853,7 +853,7 @@=
+</span><br><span> </span><br><span> static void</span><br><span> push_optio=
+n_ex(struct gc_arena *gc, struct push_list *push_list, const char *opt, boo=
+l enable,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+   int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+            msglvl_t msglevel)</span><br><span> {</span><br><span>     if (=
+!string_class(opt, CC_ANY, CC_COMMA))</span><br><span>     {</span><br><spa=
+n>@@ -881,7 +881,7 @@</span><br><span> }</span><br><span> </span><br><span>=
+ void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-push_option(stru=
+ct options *o, const char *opt, int msglevel)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+push_option(struct options *o, const char *opt, m=
+sglvl_t msglevel)</span><br><span> {</span><br><span>     push_option_ex(&a=
+mp;o-&gt;gc, &amp;o-&gt;push_list, opt, true, msglevel);</span><br><span> }=
+</span><br><span>@@ -902,7 +902,7 @@</span><br><span> }</span><br><span> </=
+span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-p=
+ush_options(struct options *o, char **p, int msglevel, struct gc_arena *gc)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+push_options(struct=
+ options *o, char **p, msglvl_t msglevel, struct gc_arena *gc)</span><br><s=
+pan> {</span><br><span>     const char **argv =3D make_extended_arg_array(p=
+, false, gc);</span><br><span>     char *opt =3D print_argv(argv, gc, 0);</=
+span><br><span>@@ -910,8 +910,8 @@</span><br><span> }</span><br><span> </sp=
+an><br><span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-push_option_fmt(struct gc_arena *gc, struct push_list *push_list, int m=
+sglevel, const char *format,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                ...)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+push_option_fmt(struct gc_arena *gc, struct push_list *push_list,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                msglv=
+l_t msglevel, const char *format, ...)</span><br><span> {</span><br><span> =
+    va_list arglist;</span><br><span>     char tmp[256] =3D { 0 };</span><b=
+r><span>diff --git a/src/openvpn/push.h b/src/openvpn/push.h</span><br><spa=
+n>index 8ffd0c2..6b3275e 100644</span><br><span>--- a/src/openvpn/push.h</s=
+pan><br><span>+++ b/src/openvpn/push.h</span><br><span>@@ -99,9 +99,9 @@</s=
+pan><br><span> </span><br><span> void clone_push_list(struct options *o);</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void =
+push_option(struct options *o, const char *opt, int msglevel);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+void push_option(struct options =
+*o, const char *opt, msglvl_t msglevel);</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-void push_options(struct options *o, c=
+har **p, int msglevel, struct gc_arena *gc);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+void push_options(struct options *o, char **p, msg=
+lvl_t msglevel, struct gc_arena *gc);</span><br><span> </span><br><span> vo=
+id push_reset(struct options *o);</span><br><span> </span><br><span>diff --=
+git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index e5044=
+85..aa5ce69 100644</span><br><span>--- a/src/openvpn/route.c</span><br><spa=
+n>+++ b/src/openvpn/route.c</span><br><span>@@ -1228,28 +1228,28 @@</span><=
+br><span> }</span><br><span> </span><br><span> static void</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-print_route_option(const struct route_=
+option *ro, int level)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+print_route_option(const struct route_option *ro, msglvl_t msglevel)</sp=
+an><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ms=
+g(level, &quot;  route %s/%s/%s/%s&quot;, show_opt(ro-&gt;network), show_op=
+t(ro-&gt;netmask),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   msg(msglevel, &quot;  route %s/%s/%s/%s&quot;, show_opt(ro-&gt;network),=
+ show_opt(ro-&gt;netmask),</span><br><span>         show_opt(ro-&gt;gateway=
+), show_opt(ro-&gt;metric));</span><br><span> }</span><br><span> </span><br=
+><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_rou=
+te_options(const struct route_option_list *rol, int level)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+print_route_options(const struct rou=
+te_option_list *rol, msglvl_t msglevel)</span><br><span> {</span><br><span>=
+     struct route_option *ro;</span><br><span>     if (rol-&gt;flags &amp; =
+RG_ENABLE)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        msg(level, &quot;  [redirect_default_gateway local=3D%d=
+]&quot;, (rol-&gt;flags &amp; RG_LOCAL) !=3D 0);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;  [redirect_defaul=
+t_gateway local=3D%d]&quot;, (rol-&gt;flags &amp; RG_LOCAL) !=3D 0);</span>=
+<br><span>     }</span><br><span>     for (ro =3D rol-&gt;routes; ro; ro =
+=3D ro-&gt;next)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        print_route_option(ro, level);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        print_route_option(ro, msgleve=
+l);</span><br><span>     }</span><br><span> }</span><br><span> </span><br><=
+span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_defau=
+lt_gateway(const int msglevel, const struct route_gateway_info *rgi,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+print_default_gateway(cons=
+t msglvl_t msglevel, const struct route_gateway_info *rgi,</span><br><span>=
+                       const struct route_ipv6_gateway_info *rgi6)</span><b=
+r><span> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br>=
+<span>@@ -1323,23 +1323,23 @@</span><br><span> #endif /* ifndef ENABLE_SMAL=
+L */</span><br><span> </span><br><span> static void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-print_route(const struct route_ipv4 *r, int=
+ level)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_route(=
+const struct route_ipv4 *r, msglvl_t msglevel)</span><br><span> {</span><br=
+><span>     struct gc_arena gc =3D gc_new();</span><br><span>     if (r-&gt=
+;flags &amp; RT_DEFINED)</span><br><span>     {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        msg(level, &quot;%s&quot;, route_string(r=
+, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ msg(msglevel, &quot;%s&quot;, route_string(r, &amp;gc));</span><br><span> =
+    }</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><=
+span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-print_routes(const struct route_list *rl, int level)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+print_routes(const struct route_lis=
+t *rl, msglvl_t msglevel)</span><br><span> {</span><br><span>     struct ro=
+ute_ipv4 *r;</span><br><span>     for (r =3D rl-&gt;routes; r; r =3D r-&gt;=
+next)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        print_route(r, level);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        print_route(r, msglevel);</span><br><span>     }<=
+/span><br><span> }</span><br><span> </span><br><span>@@ -3059,18 +3059,18 @=
+@</span><br><span>  * Show current routing table</span><br><span>  */</span=
+><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-show_=
+routes(int msglev)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+how_routes(msglvl_t msglevel)</span><br><span> {</span><br><span>     struc=
+t gc_arena gc =3D gc_new();</span><br><span> </span><br><span>     const MI=
+B_IPFORWARDTABLE *rt =3D get_windows_routing_table(&amp;gc);</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &q=
+uot;SYSTEM ROUTING TABLE&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    msg(msglevel, &quot;SYSTEM ROUTING TABLE&quot;);</span><br=
+><span>     if (rt)</span><br><span>     {</span><br><span>         for (DW=
+ORD i =3D 0; i &lt; rt-&gt;dwNumEntries; ++i)</span><br><span>         {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(msglev, =
+&quot;%s&quot;, format_route_entry(&amp;rt-&gt;table[i], &amp;gc));</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &=
+quot;%s&quot;, format_route_entry(&amp;rt-&gt;table[i], &amp;gc));</span><b=
+r><span>         }</span><br><span>     }</span><br><span>     gc_free(&amp=
+;gc);</span><br><span>diff --git a/src/openvpn/route.h b/src/openvpn/route.=
+h</span><br><span>index 9b6a47e..c5006ae 100644</span><br><span>--- a/src/o=
+penvpn/route.h</span><br><span>+++ b/src/openvpn/route.h</span><br><span>@@=
+ -356,7 +356,7 @@</span><br><span> void get_default_gateway_ipv6(struct rou=
+te_ipv6_gateway_info *rgi, const struct in6_addr *dest,</span><br><span>   =
+                            openvpn_net_ctx_t *ctx);</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-void print_default_gateway=
+(const int msglevel, const struct route_gateway_info *rgi,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+void print_default_gateway(const msg=
+lvl_t msglevel, const struct route_gateway_info *rgi,</span><br><span>     =
+                       const struct route_ipv6_gateway_info *rgi6);</span><=
+br><span> </span><br><span> /*</span><br><span>@@ -371,15 +371,15 @@</span>=
+<br><span> int test_local_addr(const in_addr_t addr, const struct route_gat=
+eway_info *rgi);</span><br><span> </span><br><span> #ifndef ENABLE_SMALL</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-void print_route_options=
+(const struct route_option_list *rol, int level);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+void print_route_options(const struct route_o=
+ption_list *rol, msglvl_t msglevel);</span><br><span> </span><br><span> #en=
+dif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+void print_routes(const struct route_list *rl, int level);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+void print_routes(const struct route=
+_list *rl, msglvl_t msglevel);</span><br><span> </span><br><span> #ifdef _W=
+IN32</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-void show_routes(int msglev);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+void show_routes(msglvl_t msglevel);</span><br><span> </span><br=
+><span> bool test_routes(const struct route_list *rl, const struct tuntap *=
+tt);</span><br><span> </span><br><span>diff --git a/src/openvpn/run_command=
+.c b/src/openvpn/run_command.c</span><br><span>index 4a1ef22..a0c9484 10064=
+4</span><br><span>--- a/src/openvpn/run_command.c</span><br><span>+++ b/src=
+/openvpn/run_command.c</span><br><span>@@ -107,7 +107,7 @@</span><br><span>=
+ </span><br><span> #ifndef WIN32</span><br><span> bool</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-openvpn_waitpid_check(pid_t pid, const cha=
+r *msg_prefix, int msglevel)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+openvpn_waitpid_check(pid_t pid, const char *msg_prefix, msglvl_t =
+msglevel)</span><br><span> {</span><br><span>     if (pid =3D=3D 0)</span><=
+br><span>     {</span><br><span>diff --git a/src/openvpn/run_command.h b/sr=
+c/openvpn/run_command.h</span><br><span>index afd1b88..234055e 100644</span=
+><br><span>--- a/src/openvpn/run_command.h</span><br><span>+++ b/src/openvp=
+n/run_command.h</span><br><span>@@ -71,13 +71,13 @@</span><br><span>  * Thi=
+s function is currently not implemented for Windows as the helper</span><br=
+><span>  * macros used by this function are not available.</span><br><span>=
+  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param pid     =
+          pid of the process to be checked</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @param pid            pid of the process to be ch=
+ecked</span><br><span>  * @param msg_prefix     prefixed of the message tha=
+t be printed</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param=
+ msglevel          msglevel of the messages to be printed</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- * @return                  true if the=
+ process is still running, false if</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- *                          an error condition occurred</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param msglevel       =
+msglevel of the messages to be printed</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * @return               true if the process is still ru=
+nning, false if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
+                     an error condition occurred</span><br><span>  */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-bool openvpn_waitpid_check(=
+pid_t pid, const char *msg_prefix, int msglevel);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+bool openvpn_waitpid_check(pid_t pid, const c=
+har *msg_prefix, msglvl_t msglevel);</span><br><span> </span><br><span> #en=
+dif</span><br><span> </span><br><span>diff --git a/src/openvpn/sig.c b/src/=
+openvpn/sig.c</span><br><span>index ecea635..42ad823 100644</span><br><span=
+>--- a/src/openvpn/sig.c</span><br><span>+++ b/src/openvpn/sig.c</span><br>=
+<span>@@ -287,7 +287,7 @@</span><br><span> }</span><br><span> </span><br><s=
+pan> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_signal=
+(const struct signal_info *si, const char *title, int msglevel)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+print_signal(const struct signa=
+l_info *si, const char *title, msglvl_t msglevel)</span><br><span> {</span>=
+<br><span>     if (si)</span><br><span>     {</span><br><span>diff --git a/=
+src/openvpn/sig.h b/src/openvpn/sig.h</span><br><span>index 7e5dd9f..b5d81f=
+c 100644</span><br><span>--- a/src/openvpn/sig.h</span><br><span>+++ b/src/=
+openvpn/sig.h</span><br><span>@@ -66,7 +66,7 @@</span><br><span> </span><br=
+><span> void restore_signal_state(void);</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-void print_signal(const struct signal_=
+info *si, const char *title, int msglevel);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+void print_signal(const struct signal_info *si, con=
+st char *title, msglvl_t msglevel);</span><br><span> </span><br><span> void=
+ print_status(struct context *c, struct status_output *so);</span><br><span=
+> </span><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c=
+</span><br><span>index 306170c..eeb42d1 100644</span><br><span>--- a/src/op=
+envpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@=
+@ -78,7 +78,7 @@</span><br><span> static int</span><br><span> get_addr_gene=
+ric(sa_family_t af, unsigned int flags, const char *hostname, void *network=
+,</span><br><span>                  unsigned int *netbits, int resolve_retr=
+y_seconds, struct signal_info *sig_info,</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                 int msglevel)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                 msglvl_t msglevel)</span><br=
+><span> {</span><br><span>     char *endp, *sep, *var_host =3D NULL;</span>=
+<br><span>     struct addrinfo *ai =3D NULL;</span><br><span>@@ -211,7 +211=
+,8 @@</span><br><span> }</span><br><span> </span><br><span> bool</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-get_ipv6_addr(const char *hostna=
+me, struct in6_addr *network, unsigned int *netbits, int msglevel)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+get_ipv6_addr(const char *ho=
+stname, struct in6_addr *network, unsigned int *netbits,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+              msglvl_t msglevel)</span=
+><br><span> {</span><br><span>     if (get_addr_generic(AF_INET6, GETADDR_R=
+ESOLVE, hostname, network, netbits, 0, NULL, msglevel)</span><br><span>    =
+     &lt; 0)</span><br><span>@@ -1516,7 +1517,7 @@</span><br><span> linksoc=
+k_print_addr(struct link_socket *sock)</span><br><span> {</span><br><span> =
+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    const int msglevel =3D (sock-&gt;mode =3D=3D LS_MODE_TCP=
+_ACCEPT_FROM) ? D_INIT_MEDIUM : M_INFO;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const msglvl_t msglevel =3D (sock-&gt;mode =3D=3D L=
+S_MODE_TCP_ACCEPT_FROM) ? D_INIT_MEDIUM : M_INFO;</span><br><span> </span><=
+br><span>     /* print local address */</span><br><span>     if (sock-&gt;b=
+ind_local)</span><br><span>diff --git a/src/openvpn/socket_util.c b/src/ope=
+nvpn/socket_util.c</span><br><span>index 9b7312d..fa566e7 100644</span><br>=
+<span>--- a/src/openvpn/socket_util.c</span><br><span>+++ b/src/openvpn/soc=
+ket_util.c</span><br><span>@@ -541,7 +541,7 @@</span><br><span>     struct =
+addrinfo hints;</span><br><span>     int status;</span><br><span>     struc=
+t signal_info sigrec =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    int msglevel =3D (flags &amp; GETADDR_FATAL) ? M_FATAL : D_RE=
+SOLVE_ERRORS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ms=
+glvl_t msglevel =3D (flags &amp; GETADDR_FATAL) ? M_FATAL : D_RESOLVE_ERROR=
+S;</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>  =
+   const char *print_hostname;</span><br><span>     const char *print_servn=
+ame;</span><br><span>@@ -604,7 +604,7 @@</span><br><span>         int resol=
+ve_retries =3D</span><br><span>             (flags &amp; GETADDR_TRY_ONCE) =
+? 1 : ((resolve_retry_seconds + 4) / fail_wait_interval);</span><br><span> =
+        const char *fmt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        int level =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        msglvl_t level =3D 0;</span><br><span> </span><br><span>   =
+      /* this is not a numeric IP, therefore force resolution using the</sp=
+an><br><span>          * provided ai_family */</span><br><span>@@ -739,7 +7=
+39,7 @@</span><br><span> done:</span><br><span>     if (sig_info &amp;&amp;=
+ sig_info-&gt;signal_received)</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        int level =3D 0;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        msglvl_t level =3D 0;</span><b=
+r><span>         if (flags &amp; GETADDR_FATAL_ON_SIGNAL)</span><br><span> =
+        {</span><br><span>             level =3D M_FATAL;</span><br><span>d=
+iff --git a/src/openvpn/socket_util.h b/src/openvpn/socket_util.h</span><br=
+><span>index 361edff..ada52a4 100644</span><br><span>--- a/src/openvpn/sock=
+et_util.h</span><br><span>+++ b/src/openvpn/socket_util.h</span><br><span>@=
+@ -142,7 +142,7 @@</span><br><span>  * Translate an IPv6 addr or hostname f=
+rom string form to in6_addr</span><br><span>  */</span><br><span> bool get_=
+ipv6_addr(const char *hostname, struct in6_addr *network, unsigned int *net=
+bits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+   int msglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                 msglvl_t msglevel);</span><br><span> </span><br><span> int=
+ openvpn_getaddrinfo(unsigned int flags, const char *hostname, const char *=
+servname,</span><br><span>                         int resolve_retry_second=
+s, struct signal_info *sig_info, int ai_family,</span><br><span>diff --git =
+a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h</span=
+><br><span>index a0559c9..2bad3eb 100644</span><br><span>--- a/src/openvpn/=
+ssl_verify_backend.h</span><br><span>+++ b/src/openvpn/ssl_verify_backend.h=
+</span><br><span>@@ -193,8 +193,8 @@</span><br><span>  * @param gc         =
+   Garbage collection arena for temp data</span><br><span>  *</span><br><sp=
+an>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void x509_trac=
+k_add(const struct x509_track **ll_head, const char *name, int msglevel,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    stru=
+ct gc_arena *gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+vo=
+id x509_track_add(const struct x509_track **ll_head, const char *name,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    msgl=
+vl_t msglevel, struct gc_arena *gc);</span><br><span> </span><br><span> /*<=
+/span><br><span>  * Save X509 fields to environment, using the naming conve=
+ntion:</span><br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/=
+openvpn/ssl_verify_mbedtls.c</span><br><span>index cfcfb25..3588071 100644<=
+/span><br><span>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ =
+b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>@@ -350,7 +350,7 @@</spa=
+n><br><span> }</span><br><span> </span><br><span> void</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-x509_track_add(const struct x509_track **l=
+l_head, const char *name, int msglevel,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+x509_track_add(const struct x509_track **ll_head, const=
+ char *name, msglvl_t msglevel,</span><br><span>                struct gc_a=
+rena *gc)</span><br><span> {</span><br><span>     struct x509_track *xt;</s=
+pan><br><span>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/s=
+sl_verify_openssl.c</span><br><span>index 6de7e2a..0f257e2 100644</span><br=
+><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/ope=
+nvpn/ssl_verify_openssl.c</span><br><span>@@ -414,7 +414,7 @@</span><br><sp=
+an>  */</span><br><span> </span><br><span> void</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-x509_track_add(const struct x509_track **ll_head,=
+ const char *name, int msglevel,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+x509_track_add(const struct x509_track **ll_head, const char *=
+name, msglvl_t msglevel,</span><br><span>                struct gc_arena *g=
+c)</span><br><span> {</span><br><span>     struct x509_track *xt;</span><br=
+><span>diff --git a/src/openvpn/status.c b/src/openvpn/status.c</span><br><=
+span>index 34e5a2f..cea31f5 100644</span><br><span>--- a/src/openvpn/status=
+.c</span><br><span>+++ b/src/openvpn/status.c</span><br><span>@@ -230,14 +2=
+30,13 @@</span><br><span> </span><br><span>         if (so-&gt;msglevel &gt=
+;=3D 0 &amp;&amp; !so-&gt;errors)</span><br><span>         {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            msg(so-&gt;msglevel, &qu=
+ot;%s&quot;, buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           msg((msglvl_t)so-&gt;msglevel, &quot;%s&quot;, buf);</span><br><=
+span>         }</span><br><span> </span><br><span>         if (so-&gt;fd &g=
+t;=3D 0 &amp;&amp; !so-&gt;errors)</span><br><span>         {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            int len;</span><br><spa=
+n>             strcat(buf, &quot;\n&quot;);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            len =3D strlen(buf);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            size_t len =3D strlen(buf);<=
+/span><br><span>             if (len &gt; 0)</span><br><span>             {=
+</span><br><span>                 if (write(so-&gt;fd, buf, len) !=3D len)<=
+/span><br><span>diff --git a/src/openvpn/status.h b/src/openvpn/status.h</s=
+pan><br><span>index 0c7a869..25e1663 100644</span><br><span>--- a/src/openv=
+pn/status.h</span><br><span>+++ b/src/openvpn/status.h</span><br><span>@@ -=
+53,6 +53,7 @@</span><br><span> </span><br><span>     char *filename;</span>=
+<br><span>     int fd;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* NB: -1 is used to indicate that output should only go to the file=
+ */</span><br><span>     int msglevel;</span><br><span>     const struct vi=
+rtual_output *vout;</span><br><span> </span><br><span>diff --git a/src/open=
+vpn/tun.c b/src/openvpn/tun.c</span><br><span>index ee0733a..9618301 100644=
+</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/=
+tun.c</span><br><span>@@ -105,9 +105,9 @@</span><br><span> static void nets=
+h_set_dns6_servers(const struct in6_addr *addr_list, const int addr_len,</s=
+pan><br><span>                                    DWORD adapter_index);</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static =
+void netsh_command(const struct argv *a, int n, int msglevel);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+static void netsh_command(const =
+struct argv *a, int n, msglvl_t msglevel);</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-static void exec_command(const char =
+*prefix, const struct argv *a, int n, int msglevel);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void exec_command(const char *pref=
+ix, const struct argv *a, int n, msglvl_t msglevel);</span><br><span> </spa=
+n><br><span> static const char *netsh_get_id(const char *dev_node, struct g=
+c_arena *gc);</span><br><span> </span><br><span>@@ -4001,7 +4001,7 @@</span=
+><br><span> }</span><br><span> </span><br><span> void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-show_tap_win_adapters(int msglev, int warnl=
+ev)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_tap_win_ada=
+pters(msglvl_t msglevel, msglvl_t warnlevel)</span><br><span> {</span><br><=
+span>     struct gc_arena gc =3D gc_new();</span><br><span> </span><br><spa=
+n>@@ -4018,7 +4018,7 @@</span><br><span>     const struct tap_reg *tap_reg =
+=3D get_tap_reg(&amp;gc);</span><br><span>     const struct panel_reg *pane=
+l_reg =3D get_panel_reg(&amp;gc);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;Available adapters [n=
+ame, GUID, driver]:&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    msg(msglevel, &quot;Available adapters [name, GUID, driver]:&qu=
+ot;);</span><br><span> </span><br><span>     /* loop through each TAP-Windo=
+ws adapter registry entry */</span><br><span>     for (tr =3D tap_reg; tr !=
+=3D NULL; tr =3D tr-&gt;next)</span><br><span>@@ -4030,7 +4030,7 @@</span><=
+br><span>         {</span><br><span>             if (!strcmp(tr-&gt;guid, p=
+r-&gt;guid))</span><br><span>             {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                msg(msglev, &quot;&#39;%s&#39; %s %s&=
+quot;, pr-&gt;name, tr-&gt;guid,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                msg(msglevel, &quot;&#39;%s&#39; %s %s&quot;, =
+pr-&gt;name, tr-&gt;guid,</span><br><span>                     print_tun_ba=
+ckend_driver(tr-&gt;windows_driver));</span><br><span>                 ++li=
+nks;</span><br><span>             }</span><br><span>@@ -4045,7 +4045,7 @@</=
+span><br><span>             /* a TAP adapter exists without a link from the=
+ network</span><br><span>              * connections control panel */</span=
+><br><span>             warn_panel_null =3D true;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            msg(msglev, &quot;[NULL] %s&quot;, =
+tr-&gt;guid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      msg(msglevel, &quot;[NULL] %s&quot;, tr-&gt;guid);</span><br><span>  =
+       }</span><br><span>     }</span><br><span> </span><br><span>@@ -4064,=
+18 +4064,18 @@</span><br><span>     /* warn on registry inconsistencies */<=
+/span><br><span>     if (warn_tap_dup)</span><br><span>     {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        msg(warnlev, &quot;WARNING:=
+ Some TAP-Windows adapters have duplicate GUIDs&quot;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        msg(warnlevel, &quot;WARNING: S=
+ome TAP-Windows adapters have duplicate GUIDs&quot;);</span><br><span>     =
+}</span><br><span> </span><br><span>     if (warn_panel_dup)</span><br><spa=
+n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(w=
+arnlev,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(=
+warnlevel,</span><br><span>             &quot;WARNING: Some TAP-Windows ada=
+pters have duplicate links from the Network Connections control panel&quot;=
+);</span><br><span>     }</span><br><span> </span><br><span>     if (warn_p=
+anel_null)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        msg(warnlev,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        msg(warnlevel,</span><br><span>             &quot;WARN=
+ING: Some TAP-Windows adapters have no link from the Network Connections co=
+ntrol panel&quot;);</span><br><span>     }</span><br><span> </span><br><spa=
+n>@@ -4805,31 +4805,31 @@</span><br><span>  * Show info for a single adapte=
+r</span><br><span>  */</span><br><span> static void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-show_adapter(int msglev, const IP_ADAPTER_I=
+NFO *a, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+show_adapter(msglvl_t msglevel, const IP_ADAPTER_INFO *a, struct g=
+c_arena *gc)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    msg(msglev, &quot;%s&quot;, a-&gt;Description);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;  Index =3D %=
+d&quot;, (int)a-&gt;Index);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    msg(msglev, &quot;  GUID =3D %s&quot;, a-&gt;AdapterName);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;  IP =
+=3D %s&quot;, format_ip_addr_string(&amp;a-&gt;IpAddressList, gc));</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;  MAC =
+=3D %s&quot;, format_hex_ex(a-&gt;Address, a-&gt;AddressLength, 0, 1, &quot=
+;:&quot;, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ms=
+g(msglev, &quot;  GATEWAY =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;Ga=
+tewayList, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ msg(msglevel, &quot;%s&quot;, a-&gt;Description);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;  Index =3D %d&quot;=
+, (int)a-&gt;Index);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    msg(msglevel, &quot;  GUID =3D %s&quot;, a-&gt;AdapterName);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;  IP =
+=3D %s&quot;, format_ip_addr_string(&amp;a-&gt;IpAddressList, gc));</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &quot;  M=
+AC =3D %s&quot;, format_hex_ex(a-&gt;Address, a-&gt;AddressLength, 0, 1, &q=
+uot;:&quot;, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   msg(msglevel, &quot;  GATEWAY =3D %s&quot;, format_ip_addr_string(&amp;a=
+-&gt;GatewayList, gc));</span><br><span>     if (a-&gt;DhcpEnabled)</span><=
+br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  msg(msglev, &quot;  DHCP SERV =3D %s&quot;, format_ip_addr_string(&amp;a-=
+&gt;DhcpServer, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        msg(msglev, &quot;  DHCP LEASE OBTAINED =3D %s&quot;, time_string(a=
+-&gt;LeaseObtained, 0, false, gc));</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        msg(msglev, &quot;  DHCP LEASE EXPIRES  =3D %s&quot;,=
+ time_string(a-&gt;LeaseExpires, 0, false, gc));</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;  DHCP SERV =3D %s=
+&quot;, format_ip_addr_string(&amp;a-&gt;DhcpServer, gc));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;  DHCP L=
+EASE OBTAINED =3D %s&quot;, time_string(a-&gt;LeaseObtained, 0, false, gc))=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglev=
+el, &quot;  DHCP LEASE EXPIRES  =3D %s&quot;, time_string(a-&gt;LeaseExpire=
+s, 0, false, gc));</span><br><span>     }</span><br><span>     if (a-&gt;Ha=
+veWins)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        msg(msglev, &quot;  PRI WINS =3D %s&quot;, format_ip_addr_=
+string(&amp;a-&gt;PrimaryWinsServer, gc));</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        msg(msglev, &quot;  SEC WINS =3D %s&quot;, for=
+mat_ip_addr_string(&amp;a-&gt;SecondaryWinsServer, gc));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;  PRI WINS=
+ =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;PrimaryWinsServer, gc));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, =
+&quot;  SEC WINS =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;SecondaryWi=
+nsServer, gc));</span><br><span>     }</span><br><span> </span><br><span>  =
+   {</span><br><span>         const IP_PER_ADAPTER_INFO *pai =3D get_per_ad=
+apter_info(a-&gt;Index, gc);</span><br><span>         if (pai)</span><br><s=
+pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     msg(msglev, &quot;  DNS SERV =3D %s&quot;, format_ip_addr_string(&amp;=
+pai-&gt;DnsServerList, gc));</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            msg(msglevel, &quot;  DNS SERV =3D %s&quot;, format_ip=
+_addr_string(&amp;pai-&gt;DnsServerList, gc));</span><br><span>         }</=
+span><br><span>     }</span><br><span> }</span><br><span>@@ -4838,12 +4838,=
+12 @@</span><br><span>  * Show current adapter list</span><br><span>  */</s=
+pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-sh=
+ow_adapters(int msglev)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+show_adapters(msglvl_t msglevel)</span><br><span> {</span><br><span>   =
+  struct gc_arena gc =3D gc_new();</span><br><span>     const IP_ADAPTER_IN=
+FO *ai =3D get_adapter_info_list(&amp;gc);</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    msg(msglev, &quot;SYSTEM ADAPTER=
+ LIST&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ms=
+g(msglevel, &quot;SYSTEM ADAPTER LIST&quot;);</span><br><span>     if (ai)<=
+/span><br><span>     {</span><br><span>         const IP_ADAPTER_INFO *a;</=
+span><br><span>@@ -4851,7 +4851,7 @@</span><br><span>         /* find index=
+ in the linked list */</span><br><span>         for (a =3D ai; a !=3D NULL;=
+ a =3D a-&gt;Next)</span><br><span>         {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            show_adapter(msglev, a, &amp;gc);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            show_adapter(=
+msglevel, a, &amp;gc);</span><br><span>         }</span><br><span>     }</s=
+pan><br><span>     gc_free(&amp;gc);</span><br><span>@@ -5048,7 +5048,7 @@<=
+/span><br><span> }</span><br><span> </span><br><span> static void</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-exec_command(const char *prefix=
+, const struct argv *a, int n, int msglevel)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+exec_command(const char *prefix, const struct argv=
+ *a, int n, msglvl_t msglevel)</span><br><span> {</span><br><span>     int =
+i;</span><br><span>     for (i =3D 0; i &lt; n; ++i)</span><br><span>@@ -50=
+69,7 +5069,7 @@</span><br><span> }</span><br><span> </span><br><span> stati=
+c void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-netsh_command(c=
+onst struct argv *a, int n, int msglevel)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+netsh_command(const struct argv *a, int n, msglvl_t m=
+sglevel)</span><br><span> {</span><br><span>     exec_command(&quot;NETSH&q=
+uot;, a, n, msglevel);</span><br><span> }</span><br><span>diff --git a/src/=
+openvpn/tun.h b/src/openvpn/tun.h</span><br><span>index 06fc729..6562c22 10=
+0644</span><br><span>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/open=
+vpn/tun.h</span><br><span>@@ -445,9 +445,9 @@</span><br><span> DWORD adapte=
+r_index_of_ip(const IP_ADAPTER_INFO *list, const in_addr_t ip, int *count,<=
+/span><br><span>                           in_addr_t *netmask);</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void show_tap_w=
+in_adapters(int msglev, int warnlev);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+void show_tap_win_adapters(msglvl_t msglevel, msglvl_t wa=
+rnlevel);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-void show_adapters(int msglev);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+void show_adapters(msglvl_t msglevel);</span><br><span> <=
+/span><br><span> void tap_allow_nonadmin_access(const char *dev_node);</spa=
+n><br><span> </span><br><span>diff --git a/tests/unit_tests/openvpn/mock_ms=
+g.c b/tests/unit_tests/openvpn/mock_msg.c</span><br><span>index 603520b..69=
+d2d1d 100644</span><br><span>--- a/tests/unit_tests/openvpn/mock_msg.c</spa=
+n><br><span>+++ b/tests/unit_tests/openvpn/mock_msg.c</span><br><span>@@ -3=
+8,8 +38,8 @@</span><br><span> #include &quot;error.h&quot;</span><br><span>=
+ #include &quot;mock_msg.h&quot;</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-unsigned int x_debug_level =3D 0; /* Default t=
+o (almost) no debugging output */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-unsigned int print_x_debug_level =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+msglvl_t x_debug_level =3D 0; /* Default =
+to (almost) no debugging output */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+msglvl_t print_x_debug_level =3D 0;</span><br><span> </span>=
+<br><span> bool fatal_error_triggered =3D false;</span><br><span> </span><b=
+r><span>@@ -47,31 +47,31 @@</span><br><span> </span><br><span> </span><br><=
+span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mock_set_de=
+bug_level(int level)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++mock_set_debug_level(msglvl_t level)</span><br><span> {</span><br><span>  =
+   x_debug_level =3D level;</span><br><span> }</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+msglvl_t</span><br><span> mock_get_debug_level(v=
+oid)</span><br><span> {</span><br><span>     return x_debug_level;</span><b=
+r><span> }</span><br><span> </span><br><span> void</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-mock_set_print_debug_level(int level)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+mock_set_print_debug_level(m=
+sglvl_t level)</span><br><span> {</span><br><span>     print_x_debug_level =
+=3D level;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+msglvl_t</span><br><span> get_debug_level(void)</span><br><span> =
+{</span><br><span>     return x_debug_level;</span><br><span> }</span><br><=
+span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-x_msg_va(const unsigned int flags, const char *format, va_list argli=
+st)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+x_msg_va(const m=
+sglvl_t flags, const char *format, va_list arglist)</span><br><span> {</spa=
+n><br><span>     if (flags &amp; M_FATAL)</span><br><span>     {</span><br>=
+<span>@@ -89,7 +89,7 @@</span><br><span> }</span><br><span> </span><br><spa=
+n> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-x_msg(const un=
+signed int flags, const char *format, ...)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+x_msg(const msglvl_t flags, const char *format, ...)=
+</span><br><span> {</span><br><span>     va_list arglist;</span><br><span> =
+    va_start(arglist, format);</span><br><span>@@ -128,7 +128,7 @@</span><b=
+r><span> }</span><br><span> </span><br><span> bool</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-dont_mute(unsigned int flags)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+dont_mute(msglvl_t flags)</span><br>=
+<span> {</span><br><span>     return true;</span><br><span> }</span><br><sp=
+an>diff --git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/open=
+vpn/mock_msg.h</span><br><span>index f4ebc23..6dddf0b 100644</span><br><spa=
+n>--- a/tests/unit_tests/openvpn/mock_msg.h</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/mock_msg.h</span><br><span>@@ -28,17 +28,15 @@</span><br><s=
+pan>  * this function from your test driver to increase debug output when y=
+ou</span><br><span>  * need debug output.</span><br><span>  */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-void mock_set_debug_level(int leve=
+l);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void mock_set_de=
+bug_level(msglvl_t level);</span><br><span> </span><br><span> #define MOCK_=
+MSG_BUF 2048</span><br><span> </span><br><span> extern bool fatal_error_tri=
+ggered;</span><br><span> extern char mock_msg_buf[MOCK_MSG_BUF];</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void mock_set_=
+debug_level(int level);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+msglvl_t mock_get_debug_level(void);</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-int mock_get_debug_level(void);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-void mock_set_print_debug_level(int level);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+void mock_set_print_debug=
+_level(msglvl_t level);</span><br><span> </span><br><span> #endif /* MOCK_M=
+SG */</span><br><span>diff --git a/tests/unit_tests/openvpn/mock_ssl_depend=
+encies.c b/tests/unit_tests/openvpn/mock_ssl_dependencies.c</span><br><span=
+>index 7333c47..f2fa93a 100644</span><br><span>--- a/tests/unit_tests/openv=
+pn/mock_ssl_dependencies.c</span><br><span>+++ b/tests/unit_tests/openvpn/m=
+ock_ssl_dependencies.c</span><br><span>@@ -38,7 +38,7 @@</span><br><span> <=
+/span><br><span> int</span><br><span> parse_line(const char *line, char **p=
+, const int n, const char *file, const int line_num,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-           int msglevel, struct gc_arena *g=
+c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           msglvl=
+_t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><span>     /=
+* Dummy function to get the linker happy, should never be called */</span><=
+br><span>     assert_true(false);</span><br><span>diff --git a/tests/unit_t=
+ests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c</span><br><=
+span>index a65857b..a04fabc 100644</span><br><span>--- a/tests/unit_tests/o=
+penvpn/test_argv.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_argv=
+.c</span><br><span>@@ -23,7 +23,7 @@</span><br><span> </span><br><span> int=
+</span><br><span> __wrap_parse_line(const char *line, char **p, const int n=
+, const char *file, const int line_num,</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                  int msglevel, struct gc_arena *gc)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                  msglvl=
+_t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><span>     p=
+[0] =3D PATH1 PATH2;</span><br><span>     p[1] =3D PARAM1;</span><br><span>=
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
+n/test_misc.c</span><br><span>index 93e2460..dbfdd56 100644</span><br><span=
+>--- a/tests/unit_tests/openvpn/test_misc.c</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/test_misc.c</span><br><span>@@ -339,8 +339,8 @@</span><br><=
+span>     assert_false(valid_integer(&quot;-2147483653&quot;, false));</spa=
+n><br><span> </span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    int msglevel =3D D_LOW;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    int saved_log_level =3D mock_get_debug_level();</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    msglvl_t msglevel =3D D=
+_LOW;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msglvl_t s=
+aved_log_level =3D mock_get_debug_level();</span><br><span>     mock_set_de=
+bug_level(D_LOW);</span><br><span> </span><br><span>     /* check happy pat=
+h */</span><br><span>diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/=
+tests/unit_tests/openvpn/test_pkcs11.c</span><br><span>index 9ba6cfc..d5688=
+65 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pkcs11.c</spa=
+n><br><span>+++ b/tests/unit_tests/openvpn/test_pkcs11.c</span><br><span>@@=
+ -59,7 +59,7 @@</span><br><span> /* stubs for some unused functions instead=
  of pulling in too many dependencies */</span><br><span> int</span><br><spa=
 n> parse_line(const char *line, char **p, const int n, const char *file, co=
 nst int line_num,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
        int msglevel, struct gc_arena *gc)</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+           msglvl_t msglevel, struct gc_arena *gc)</s=
 pan><br><span> {</span><br><span>     assert_true(0);</span><br><span>     =
-return 0;</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail">change 1110</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1110?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+return 0;</span><br><span>diff --git a/tests/unit_tests/openvpn/test_pkt.c =
+b/tests/unit_tests/openvpn/test_pkt.c</span><br><span>index 5122766..b6c612=
+b 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pkt.c</span><b=
+r><span>+++ b/tests/unit_tests/openvpn/test_pkt.c</span><br><span>@@ -45,7 =
++45,7 @@</span><br><span> </span><br><span> int</span><br><span> parse_line=
+(const char *line, char **p, const int n, const char *file, const int line_=
+num,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           int ms=
+glevel, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+           msglvl_t msglevel, struct gc_arena *gc)</span><br><span=
+> {</span><br><span>     /* Dummy function to get the linker happy, should =
+never be called */</span><br><span>     assert_true(false);</span><br><span=
+>diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_=
+tests/openvpn/test_push_update_msg.c</span><br><span>index 87329b1..8a5beeb=
+ 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_push_update_msg=
+.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_push_update_msg.c</s=
+pan><br><span>@@ -111,7 +111,7 @@</span><br><span> </span><br><span> #ifnde=
+f ENABLE_MANAGEMENT</span><br><span> bool</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-send_control_channel_string(struct context *c, const ch=
+ar *str, int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+send_control_channel_string(struct context *c, const char *str, msglvl_t=
+ msglevel)</span><br><span> {</span><br><span>     return true;</span><br><=
+span> }</span><br><span>@@ -120,7 +120,7 @@</span><br><span> int i;</span><=
+br><span> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-send_control_channel_string(struct context *c, const char *str, =
+int msglevel)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+send_c=
+ontrol_channel_string(struct context *c, const char *str, msglvl_t msglevel=
+)</span><br><span> {</span><br><span>     if (res &amp;&amp; res[i] &amp;&a=
+mp; strcmp(res[i], str))</span><br><span>     {</span><br><span>diff --git =
+a/tests/unit_tests/openvpn/test_socket.c b/tests/unit_tests/openvpn/test_so=
+cket.c</span><br><span>index 2da2529..7f740ac 100644</span><br><span>--- a/=
+tests/unit_tests/openvpn/test_socket.c</span><br><span>+++ b/tests/unit_tes=
+ts/openvpn/test_socket.c</span><br><span>@@ -59,7 +59,7 @@</span><br><span>=
+ </span><br><span> int</span><br><span> parse_line(const char *line, char *=
+*p, const int n, const char *file, const int line_num,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-           int msglevel, struct gc_arena *=
+gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           msglv=
+l_t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><span>     =
+assert_true(0);</span><br><span>     return 0;</span><br><span>diff --git a=
+/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_=
+tls_crypt.c</span><br><span>index 532bfcd..44d51fe 100644</span><br><span>-=
+-- a/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>+++ b/tests/=
+unit_tests/openvpn/test_tls_crypt.c</span><br><span>@@ -98,7 +98,7 @@</span=
+><br><span> </span><br><span> int</span><br><span> __wrap_parse_line(const =
+char *line, char **p, const int n, const char *file, const int line_num,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                  int ms=
+glevel, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                  msglvl_t msglevel, struct gc_arena *gc)</span><b=
+r><span> {</span><br><span>     p[0] =3D PATH1 PATH2;</span><br><span>     =
+p[1] =3D PARAM1;</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
+_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>in=
+dex 460b37f..32ec59f 100644</span><br><span>--- a/tests/unit_tests/openvpn/=
+test_user_pass.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_user_p=
+ass.c</span><br><span>@@ -73,7 +73,7 @@</span><br><span> /* stubs for some =
+unused functions instead of pulling in too many dependencies */</span><br><=
+span> int</span><br><span> parse_line(const char *line, char **p, const int=
+ n, const char *file, const int line_num,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-           int msglevel, struct gc_arena *gc)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+           msglvl_t msglevel,=
+ struct gc_arena *gc)</span><br><span> {</span><br><span>     assert_true(0=
+);</span><br><span>     return 0;</span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail=
+">change 1110</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1110?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -4530,8 +4537,8 @@ gt; </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---dlby/pvO9xY=--
+--1VllKtja4lk=--
 
