@@ -1,16 +1,10 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 19 Sep 2025 06:32:51 +0000
-In-Reply-To: <gerrit.1758197798000.Iaebc46f9156657128dc52c979202545be8865656@...2715...>
-References: <gerrit.1758197798000.Iaebc46f9156657128dc52c979202545be8865656@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f603fef0102ca133ed3cd907c84da423a6a5a1b4-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4nHPP40YhfE="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: GHA: collect
- more artifacts for mingw builds
+Date: Fri, 19 Sep 2025 09:40:34 +0200 (CEST)
+Message-Id: <202509190740.58J7eYGJ015615@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250918173447.32466-1-gert@...1296...>
+References: <20250918173447.32466-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Validate DNS domain name before
+ powershell invocation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,71 +13,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---4nHPP40YhfE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+So, we received a report that our use of 'wmic.exe' is insafe and could
+be exploited by a malicious server pushing a "suitable" DOMAIN - which
+could not be reproduced by us or by the reporter.  So this was rejected
+as "invalid report" and we did not assign a CVE number.
 
-stipa has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-99?usp=3Demail )
+This said, at about the same time, we integrated a patch that replaces
+use of 'wmic.exe' with a powershell command line (because MS is no longer
+installing wmic.exe by default, and intents to activey remove it in 25H2)
+- and it turns out that the powershell invocation was insecure against
+malicious data sent by the server in a PUSH_REPLY.  This problematic code
+is NOT in any released OpenVPN version (2.6.14 and 2.7_beta1 have wmic.exe),
+so it doesn't get a CVE ID either (CNA rules).
 
-Change subject: GHA: collect more artifacts for mingw builds
-......................................................................
+This patch fixes this (before 2.6.15 release ;-) ) by introducing proper
+positive-list validation of domain names used in powershell calls.  We
+accept UTF8 encoded domain names (= all characters >= 0x80 are allowed),
+because it's needed for some environments, and nothing in there translates
+into a (power-)shell metacharacter.
 
 
-Abandoned
+Tested on a Win10 system I had around, with binaries built on Ubuntu 22.04
+with MinGW.  Running OpenVPN from an elevated cmd prompt does
 
-The master patch applies for 2.6, no need for a separate one.
+  "Failed to set DNS domain 'mooh.com'evil' beause it contains invalid
+   characters"
+
+Running via the iservice, I get an error in OpenVPN log
+
+  "TUN: adding dns domain failed using service: Die Daten sind
+   unzulässig..." (yeah, translations)
+
+and one in Event Log
+
+  "openvpnserv error:
+   Failed to set DNS domain 'mooh.com'evil' because it contains invalid
+   characters"
+
+which is also how it should be.  With a valid domain, it still works :-)
+
+
+Your patch has been applied to the release/2.6 branch.
+
+(In master, the domain related code is sufficiently different to require
+a separate patch)
+
+commit 6c3afe508b15764eea4e5bdcbaed37c02c281d9a (release/2.6)
+Author: Lev Stipakov
+Date:   Thu Sep 18 19:34:40 2025 +0200
+
+     Validate DNS domain name before powershell invocation
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1198
+     Message-Id: <20250918173447.32466-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33071.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1199?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Iaebc46f9156657128dc52c979202545be8865656
-Gerrit-Change-Number: 1199
-Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: abandon
+Gert Doering
 
---4nHPP40YhfE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>stipa <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1199?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap">Abandoned
-
-The master patch applies for 2.6, no need for a separate one.</div><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1199?usp=3Demail=
-">change 1199</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1199?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iaebc46f9156657128dc52c97920=
-2545be8865656 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1199 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
-
-
---4nHPP40YhfE=--
 
