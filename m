@@ -1,10 +1,11 @@
 From: Marek Mietus <mmietus97@...109...>
-Date: Mon, 22 Sep 2025 13:06:19 +0200
-Message-ID: <20250922110622.10368-1-mmietus97@...109...>
+Date: Mon, 22 Sep 2025 13:06:20 +0200
+Message-ID: <20250922110622.10368-2-mmietus97@...109...>
+In-Reply-To: <20250922110622.10368-1-mmietus97@...109...>
+References: <20250922110622.10368-1-mmietus97@...109...>
 MIME-Version: 1.0
-References: <20250922110622.10368-1-mmietus97.ref@...109...>
-Subject: [Openvpn-devel] [PATCH net-next v3 0/3] net: tunnel: introduce
- noref xmit flows for tunnels
+Subject: [Openvpn-devel] [PATCH net-next v3 1/3] net: dst_cache: implement
+ RCU variants for dst_cache helpers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,32 +17,292 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: netdev@...2909..., sd@...2891..., antonio@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net, Marek Mietus <mmietus97@...109...>
 
-Currently, all xmit flows use dst_cache in a way that references
-its dst_entry for each xmitted packet. These atomic operations
-are redundant in some flows.
+Implement RCU variants for existing dst_cache helpers interacting with
+dst_entry.
 
-This patchset introduces new noref xmit helpers and incorporates
-them in the OpenVPN driver. A similar improvement can also be
-applied to other tunnel code in the future. The implementation
-for OpenVPN is a good starting point as it doesn't use the
-udp_tunnel_dst_lookup helper which adds some complexity.
+The new helpers avoid referencing the dst_entry, sparing some unnecessary
+atomic operations. They should only be used in flows that are already
+guaranteed to be inside a RCU read-side critical context.
 
-There are already noref optimizations in both ipv4 and ip6 
-(See __ip_queue_xmit, inet6_csk_xmit). This patchset allows for
-similar optimizations in udp tunnels. Referencing the dst_entry
-is now redundant, as the entire flow is protected under RCU, so
-it is removed.
+Signed-off-by: Marek Mietus <mmietus97@...109...>
+---
+ include/net/dst_cache.h |  54 ++++++++++++++++++
+ net/core/dst_cache.c    | 119 ++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 163 insertions(+), 10 deletions(-)
 
-With this patchset, I was able to observe a 4% decrease in the total
-time for ovpn_udp_send_skb using perf.
-
-Changes in v3:
- - Added implementation for ip6
- - Updated cover letter and commit messages
-
-Link to v2: https://lore.kernel.org/netdev/20250912112420.4394-1-mmietus97@...109.../
+diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
+index 1961699598e2..2c98451469ef 100644
+--- a/include/net/dst_cache.h
++++ b/include/net/dst_cache.h
+@@ -32,6 +32,21 @@ struct dst_entry *dst_cache_get(struct dst_cache *dst_cache);
+  */
+ struct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr);
+ 
++/**
++ * dst_cache_get_ip4_rcu - lookup cache and ipv4 source under RCU
++ * @dst_cache: the cache
++ * @saddr: return value for the retrieved source address
++ *
++ * Perform cache lookup and fetch ipv4 source without taking a
++ * reference on the dst.
++ * Must be called with local BH disabled, and within an rcu read side
++ * critical section.
++ *
++ * Return: Pointer to retrieved rtable if cache is initialized and
++ * cached dst is valid, NULL otherwise.
++ */
++struct rtable *dst_cache_get_ip4_rcu(struct dst_cache *dst_cache, __be32 *saddr);
++
+ /**
+  *	dst_cache_set_ip4 - store the ipv4 dst into the cache
+  *	@dst_cache: the cache
+@@ -43,6 +58,17 @@ struct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr);
+ void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
+ 		       __be32 saddr);
+ 
++/**
++ * dst_cache_steal_ip4 - store the ipv4 dst into the cache and steal its
++ * reference
++ * @dst_cache: the cache
++ * @dst: the entry to be cached whose reference will be stolen
++ * @saddr: the source address to be stored inside the cache
++ *
++ * local BH must be disabled
++ */
++void dst_cache_steal_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
++			 __be32 saddr);
+ #if IS_ENABLED(CONFIG_IPV6)
+ 
+ /**
+@@ -56,6 +82,18 @@ void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
+ void dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
+ 		       const struct in6_addr *saddr);
+ 
++/**
++ * dst_cache_steal_ip6 - store the ipv6 dst into the cache and steal its
++ * reference
++ * @dst_cache: the cache
++ * @dst: the entry to be cached whose reference will be stolen
++ * @saddr: the source address to be stored inside the cache
++ *
++ * local BH must be disabled
++ */
++void dst_cache_steal_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
++			 const struct in6_addr *saddr);
++
+ /**
+  *	dst_cache_get_ip6 - perform cache lookup and fetch ipv6 source address
+  *	@dst_cache: the cache
+@@ -65,6 +103,22 @@ void dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
+  */
+ struct dst_entry *dst_cache_get_ip6(struct dst_cache *dst_cache,
+ 				    struct in6_addr *saddr);
++
++/**
++ * dst_cache_get_ip6_rcu - lookup cache and ipv6 source under RCU
++ * @dst_cache: the cache
++ * @saddr: return value for the retrieved source address
++ *
++ * Perform cache lookup and fetch ipv6 source without taking a
++ * reference on the dst.
++ * Must be called with local BH disabled, and within an rcu read side
++ * critical section.
++ *
++ * Return: Pointer to retrieved dst_entry if cache is initialized and
++ * cached dst is valid, NULL otherwise.
++ */
++struct dst_entry *dst_cache_get_ip6_rcu(struct dst_cache *dst_cache,
++					struct in6_addr *saddr);
+ #endif
+ 
+ /**
+diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
+index 9ab4902324e1..7d00745ac7d3 100644
+--- a/net/core/dst_cache.c
++++ b/net/core/dst_cache.c
+@@ -25,20 +25,27 @@ struct dst_cache_pcpu {
+ 	};
+ };
+ 
+-static void dst_cache_per_cpu_dst_set(struct dst_cache_pcpu *dst_cache,
+-				      struct dst_entry *dst, u32 cookie)
++static void __dst_cache_per_cpu_dst_set(struct dst_cache_pcpu *dst_cache,
++					struct dst_entry *dst, u32 cookie)
+ {
+ 	DEBUG_NET_WARN_ON_ONCE(!in_softirq());
+ 	dst_release(dst_cache->dst);
+-	if (dst)
+-		dst_hold(dst);
+ 
+ 	dst_cache->cookie = cookie;
+ 	dst_cache->dst = dst;
+ }
+ 
+-static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
+-					       struct dst_cache_pcpu *idst)
++static void dst_cache_per_cpu_dst_set(struct dst_cache_pcpu *dst_cache,
++				      struct dst_entry *dst, u32 cookie)
++{
++	if (dst)
++		dst_hold(dst);
++
++	__dst_cache_per_cpu_dst_set(dst_cache, dst, cookie);
++}
++
++static struct dst_entry *__dst_cache_per_cpu_get(struct dst_cache *dst_cache,
++						 struct dst_cache_pcpu *idst)
+ {
+ 	struct dst_entry *dst;
+ 
+@@ -47,14 +54,10 @@ static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
+ 	if (!dst)
+ 		goto fail;
+ 
+-	/* the cache already hold a dst reference; it can't go away */
+-	dst_hold(dst);
+-
+ 	if (unlikely(!time_after(idst->refresh_ts,
+ 				 READ_ONCE(dst_cache->reset_ts)) ||
+ 		     (READ_ONCE(dst->obsolete) && !dst->ops->check(dst, idst->cookie)))) {
+ 		dst_cache_per_cpu_dst_set(idst, NULL, 0);
+-		dst_release(dst);
+ 		goto fail;
+ 	}
+ 	return dst;
+@@ -64,6 +67,18 @@ static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
+ 	return NULL;
+ }
+ 
++static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
++					       struct dst_cache_pcpu *idst)
++{
++	struct dst_entry *dst;
++
++	dst = __dst_cache_per_cpu_get(dst_cache, idst);
++	if (dst)
++		/* the cache already hold a dst reference; it can't go away */
++		dst_hold(dst);
++	return dst;
++}
++
+ struct dst_entry *dst_cache_get(struct dst_cache *dst_cache)
+ {
+ 	struct dst_entry *dst;
+@@ -100,6 +115,28 @@ struct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr)
+ }
+ EXPORT_SYMBOL_GPL(dst_cache_get_ip4);
+ 
++struct rtable *dst_cache_get_ip4_rcu(struct dst_cache *dst_cache, __be32 *saddr)
++{
++	struct dst_cache_pcpu *idst;
++	struct dst_entry *dst;
++
++	if (!dst_cache->cache)
++		return NULL;
++
++	local_lock_nested_bh(&dst_cache->cache->bh_lock);
++	idst = this_cpu_ptr(dst_cache->cache);
++	dst = __dst_cache_per_cpu_get(dst_cache, idst);
++	if (!dst) {
++		local_unlock_nested_bh(&dst_cache->cache->bh_lock);
++		return NULL;
++	}
++
++	*saddr = idst->in_saddr.s_addr;
++	local_unlock_nested_bh(&dst_cache->cache->bh_lock);
++	return dst_rtable(dst);
++}
++EXPORT_SYMBOL_GPL(dst_cache_get_ip4_rcu);
++
+ void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
+ 		       __be32 saddr)
+ {
+@@ -116,6 +153,24 @@ void dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
+ }
+ EXPORT_SYMBOL_GPL(dst_cache_set_ip4);
+ 
++void dst_cache_steal_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,
++			 __be32 saddr)
++{
++	struct dst_cache_pcpu *idst;
++
++	if (!dst_cache->cache) {
++		dst_release(dst);
++		return;
++	}
++
++	local_lock_nested_bh(&dst_cache->cache->bh_lock);
++	idst = this_cpu_ptr(dst_cache->cache);
++	__dst_cache_per_cpu_dst_set(idst, dst, 0);
++	idst->in_saddr.s_addr = saddr;
++	local_unlock_nested_bh(&dst_cache->cache->bh_lock);
++}
++EXPORT_SYMBOL_GPL(dst_cache_steal_ip4);
++
+ #if IS_ENABLED(CONFIG_IPV6)
+ void dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
+ 		       const struct in6_addr *saddr)
+@@ -135,6 +190,26 @@ void dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
+ }
+ EXPORT_SYMBOL_GPL(dst_cache_set_ip6);
+ 
++void dst_cache_steal_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,
++			 const struct in6_addr *saddr)
++{
++	struct dst_cache_pcpu *idst;
++
++	if (!dst_cache->cache) {
++		dst_release(dst);
++		return;
++	}
++
++	local_lock_nested_bh(&dst_cache->cache->bh_lock);
++
++	idst = this_cpu_ptr(dst_cache->cache);
++	__dst_cache_per_cpu_dst_set(idst, dst,
++				    rt6_get_cookie(dst_rt6_info(dst)));
++	idst->in6_saddr = *saddr;
++	local_unlock_nested_bh(&dst_cache->cache->bh_lock);
++}
++EXPORT_SYMBOL_GPL(dst_cache_steal_ip6);
++
+ struct dst_entry *dst_cache_get_ip6(struct dst_cache *dst_cache,
+ 				    struct in6_addr *saddr)
+ {
+@@ -158,6 +233,30 @@ struct dst_entry *dst_cache_get_ip6(struct dst_cache *dst_cache,
+ 	return dst;
+ }
+ EXPORT_SYMBOL_GPL(dst_cache_get_ip6);
++
++struct dst_entry *dst_cache_get_ip6_rcu(struct dst_cache *dst_cache,
++					struct in6_addr *saddr)
++{
++	struct dst_cache_pcpu *idst;
++	struct dst_entry *dst;
++
++	if (!dst_cache->cache)
++		return NULL;
++
++	local_lock_nested_bh(&dst_cache->cache->bh_lock);
++
++	idst = this_cpu_ptr(dst_cache->cache);
++	dst = __dst_cache_per_cpu_get(dst_cache, idst);
++	if (!dst) {
++		local_unlock_nested_bh(&dst_cache->cache->bh_lock);
++		return NULL;
++	}
++
++	*saddr = idst->in6_saddr;
++	local_unlock_nested_bh(&dst_cache->cache->bh_lock);
++	return dst;
++}
++EXPORT_SYMBOL_GPL(dst_cache_get_ip6_rcu);
+ #endif
+ 
+ int dst_cache_init(struct dst_cache *dst_cache, gfp_t gfp)
 -- 
 2.51.0
+
 
