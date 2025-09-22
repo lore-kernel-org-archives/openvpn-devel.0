@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 22 Sep 2025 22:40:53 +0200
-Message-ID: <20250922204059.23226-1-gert@...1296...>
-In-Reply-To: <gerrit.1754490554000.I22b93c807f1be99fab450708f686fce4aa6d5cef@...2715...>
-References: <gerrit.1754490554000.I22b93c807f1be99fab450708f686fce4aa6d5cef@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 22 Sep 2025 20:41:42 +0000
+In-Reply-To: <gerrit.1754490554000.I053ddbb71cc5b9ae16c5a49be833035d943d7eba@...2715...>
+References: <gerrit.1754490554000.I053ddbb71cc5b9ae16c5a49be833035d943d7eba@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3fcb88b401fb24835a4a267443a289873a2061aa-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v8] Handle return type of EVP_MD_size
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="z+584+JHAXE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: ssl: Fix
+ -Wconversion warnings in pem_password_callback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,87 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--z+584+JHAXE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Return type is int, but we often use it in contexts
-where we expect size_t. So just cast it. Nothing else
-to do really.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I22b93c807f1be99fab450708f686fce4aa6d5cef
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1133
----
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1137?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: ssl: Fix -Wconversion warnings in pem_password_callback
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1133
-This mail reflects revision 8 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 9: Code-Review+2
 
-        
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 98fe37f..75af4f5 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1273,7 +1273,7 @@
- 
-     /* We need to make a copy of the key since the OSSL parameters
-      * only reference it */
--    memcpy(ctx->key, key, EVP_MD_size(kt));
-+    memcpy(ctx->key, key, (size_t)EVP_MD_size(kt));
- 
-     /* Lookup/setting of parameters in OpenSSL 3.0 are string based
-      *
-@@ -1282,7 +1282,7 @@
-      * the constness away here.
-      */
-     ctx->params[0] = OSSL_PARAM_construct_utf8_string("digest", (char *)EVP_MD_get0_name(kt), 0);
--    ctx->params[1] = OSSL_PARAM_construct_octet_string("key", ctx->key, EVP_MD_size(kt));
-+    ctx->params[1] = OSSL_PARAM_construct_octet_string("key", ctx->key, (size_t)EVP_MD_size(kt));
-     ctx->params[2] = OSSL_PARAM_construct_end();
- 
-     if (!EVP_MAC_init(ctx->ctx, NULL, 0, ctx->params))
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 6de7e2a..b79b09b 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -341,7 +341,7 @@
- x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
- {
-     const EVP_MD *sha1 = EVP_sha1();
--    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha1), gc);
-+    struct buffer hash = alloc_buf_gc((size_t)EVP_MD_size(sha1), gc);
-     X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
-     ASSERT(buf_inc_len(&hash, EVP_MD_size(sha1)));
-     return hash;
-@@ -351,7 +351,7 @@
- x509_get_sha256_fingerprint(X509 *cert, struct gc_arena *gc)
- {
-     const EVP_MD *sha256 = EVP_sha256();
--    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha256), gc);
-+    struct buffer hash = alloc_buf_gc((size_t)EVP_MD_size(sha256), gc);
-     X509_digest(cert, EVP_sha256(), BPTR(&hash), NULL);
-     ASSERT(buf_inc_len(&hash, EVP_MD_size(sha256)));
-     return hash;
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index 3820808..9541a7c 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -351,7 +351,7 @@
-         }
-     }
- 
--    if (tbslen != EVP_MD_size(EVP_get_digestbyname(mdname)))
-+    if (tbslen != (size_t)EVP_MD_size(EVP_get_digestbyname(mdname)))
-     {
-         msg(M_WARN, "Error: encode_pkcs11: invalid input length <%zu>", tbslen);
-         goto done;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1137?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I053ddbb71cc5b9ae16c5a49be833035d943d7eba
+Gerrit-Change-Number: 1137
+Gerrit-PatchSet: 9
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 22 Sep 2025 20:41:42 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--z+584+JHAXE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1137?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1137?usp=3Demail=
+">change 1137</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1137?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I053ddbb71cc5b9ae16c5a49be83=
+3035d943d7eba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1137 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 22 Sep 2025 20:41:42=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--z+584+JHAXE=--
 
