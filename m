@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 23 Sep 2025 10:06:26 +0000
-In-Reply-To: <gerrit.1754490554000.I22b93c807f1be99fab450708f686fce4aa6d5cef@...2715...>
-References: <gerrit.1754490554000.I22b93c807f1be99fab450708f686fce4aa6d5cef@...2715...>
+Date: Tue, 23 Sep 2025 10:34:13 +0000
+In-Reply-To: <gerrit.1755793268000.Id7a5b2d8dea01bd532f5bcc8abea0e52b00d1169@...2715...>
+References: <gerrit.1755793268000.Id7a5b2d8dea01bd532f5bcc8abea0e52b00d1169@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2948eed7fba97f1a5abb56e4bcadc8697a72559c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <e57342cb64fae5b3745cf936e01ee407cc049f46-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2zq4FEuMzME="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Handle return type
- of EVP_MD_size
+Content-Type: multipart/alternative; boundary="/6/4GXDjiG4="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Clean up conversion
+ warnings related to base64_{en, de}code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,211 +19,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---2zq4FEuMzME=
+--/6/4GXDjiG4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#9) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1133?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1148?usp=3Demail )
 
-
-Change subject: Handle return type of EVP_MD_size
+Change subject: Clean up conversion warnings related to base64_{en,de}code
 ......................................................................
 
-Handle return type of EVP_MD_size
 
-Return type is int, but we often use it in contexts
-where we expect size_t. So just cast it. Nothing else
-to do really.
+Patch Set 3: Code-Review+2
 
-Change-Id: I22b93c807f1be99fab450708f686fce4aa6d5cef
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1133
-Message-Id: <20250922204059.23226-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59237213/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/crypto_openssl.c
-M src/openvpn/ssl_verify_openssl.c
-M src/openvpn/xkey_helper.c
-3 files changed, 5 insertions(+), 5 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/33/1133/9
-
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 1f95fba..2d0265a 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1273,7 +1273,7 @@
-
-     /* We need to make a copy of the key since the OSSL parameters
-      * only reference it */
--    memcpy(ctx->key, key, EVP_MD_size(kt));
-+    memcpy(ctx->key, key, (size_t)EVP_MD_size(kt));
-
-     /* Lookup/setting of parameters in OpenSSL 3.0 are string based
-      *
-@@ -1282,7 +1282,7 @@
-      * the constness away here.
-      */
-     ctx->params[0] =3D OSSL_PARAM_construct_utf8_string("digest", (char *)=
-EVP_MD_get0_name(kt), 0);
--    ctx->params[1] =3D OSSL_PARAM_construct_octet_string("key", ctx->key, =
-EVP_MD_size(kt));
-+    ctx->params[1] =3D OSSL_PARAM_construct_octet_string("key", ctx->key, =
-(size_t)EVP_MD_size(kt));
-     ctx->params[2] =3D OSSL_PARAM_construct_end();
-
-     if (!EVP_MAC_init(ctx->ctx, NULL, 0, ctx->params))
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 7a7b21e..f1b8902 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -341,7 +341,7 @@
- x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
- {
-     const EVP_MD *sha1 =3D EVP_sha1();
--    struct buffer hash =3D alloc_buf_gc(EVP_MD_size(sha1), gc);
-+    struct buffer hash =3D alloc_buf_gc((size_t)EVP_MD_size(sha1), gc);
-     X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
-     ASSERT(buf_inc_len(&hash, EVP_MD_size(sha1)));
-     return hash;
-@@ -351,7 +351,7 @@
- x509_get_sha256_fingerprint(X509 *cert, struct gc_arena *gc)
- {
-     const EVP_MD *sha256 =3D EVP_sha256();
--    struct buffer hash =3D alloc_buf_gc(EVP_MD_size(sha256), gc);
-+    struct buffer hash =3D alloc_buf_gc((size_t)EVP_MD_size(sha256), gc);
-     X509_digest(cert, EVP_sha256(), BPTR(&hash), NULL);
-     ASSERT(buf_inc_len(&hash, EVP_MD_size(sha256)));
-     return hash;
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index 72a24b5..29208a0 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -351,7 +351,7 @@
-         }
-     }
-
--    if (tbslen !=3D EVP_MD_size(EVP_get_digestbyname(mdname)))
-+    if (tbslen !=3D (size_t)EVP_MD_size(EVP_get_digestbyname(mdname)))
-     {
-         msg(M_WARN, "Error: encode_pkcs11: invalid input length <%zu>", tb=
-slen);
-         goto done;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1133?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1148?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I22b93c807f1be99fab450708f686fce4aa6d5cef
-Gerrit-Change-Number: 1133
-Gerrit-PatchSet: 9
+Gerrit-Change-Id: Id7a5b2d8dea01bd532f5bcc8abea0e52b00d1169
+Gerrit-Change-Number: 1148
+Gerrit-PatchSet: 3
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 23 Sep 2025 10:34:13 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---2zq4FEuMzME=
+--/6/4GXDjiG4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #9</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1133?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">Handle return type of EVP_MD_size<br><br>Return type=
- is int, but we often use it in contexts<br>where we expect size_t. So just=
- cast it. Nothing else<br>to do really.<br><br>Change-Id: I22b93c807f1be99f=
-ab450708f686fce4aa6d5cef<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1665...=
-641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL:=
- https://gerrit.openvpn.net/c/openvpn/+/1133<br>Message-Id: &lt;20250922204=
-059.23226-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/m=
-ailman/message/59237213/<br>Signed-off-by: Gert Doering &lt;gert@...1296...=
-&gt;<br>---<br>M src/openvpn/crypto_openssl.c<br>M src/openvpn/ssl_verify_o=
-penssl.c<br>M src/openvpn/xkey_helper.c<br>3 files changed, 5 insertions(+)=
-, 5 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn =
-refs/changes/33/1133/9</pre><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto_openssl.c b/=
-src/openvpn/crypto_openssl.c</span><br><span>index 1f95fba..2d0265a 100644<=
-/span><br><span>--- a/src/openvpn/crypto_openssl.c</span><br><span>+++ b/sr=
-c/openvpn/crypto_openssl.c</span><br><span>@@ -1273,7 +1273,7 @@</span><br>=
-<span> </span><br><span>     /* We need to make a copy of the key since the=
- OSSL parameters</span><br><span>      * only reference it */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    memcpy(ctx-&gt;key, key, EVP_MD=
-_size(kt));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memc=
-py(ctx-&gt;key, key, (size_t)EVP_MD_size(kt));</span><br><span> </span><br>=
-<span>     /* Lookup/setting of parameters in OpenSSL 3.0 are string based<=
-/span><br><span>      *</span><br><span>@@ -1282,7 +1282,7 @@</span><br><sp=
-an>      * the constness away here.</span><br><span>      */</span><br><spa=
-n>     ctx-&gt;params[0] =3D OSSL_PARAM_construct_utf8_string(&quot;digest&=
-quot;, (char *)EVP_MD_get0_name(kt), 0);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    ctx-&gt;params[1] =3D OSSL_PARAM_construct_octet_str=
-ing(&quot;key&quot;, ctx-&gt;key, EVP_MD_size(kt));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ctx-&gt;params[1] =3D OSSL_PARAM_cons=
-truct_octet_string(&quot;key&quot;, ctx-&gt;key, (size_t)EVP_MD_size(kt));<=
-/span><br><span>     ctx-&gt;params[2] =3D OSSL_PARAM_construct_end();</spa=
-n><br><span> </span><br><span>     if (!EVP_MAC_init(ctx-&gt;ctx, NULL, 0, =
-ctx-&gt;params))</span><br><span>diff --git a/src/openvpn/ssl_verify_openss=
-l.c b/src/openvpn/ssl_verify_openssl.c</span><br><span>index 7a7b21e..f1b89=
-02 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br>=
-<span>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -341,7 +341=
-,7 @@</span><br><span> x509_get_sha1_fingerprint(X509 *cert, struct gc_aren=
-a *gc)</span><br><span> {</span><br><span>     const EVP_MD *sha1 =3D EVP_s=
-ha1();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct buff=
-er hash =3D alloc_buf_gc(EVP_MD_size(sha1), gc);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    struct buffer hash =3D alloc_buf_gc((size_=
-t)EVP_MD_size(sha1), gc);</span><br><span>     X509_digest(cert, EVP_sha1()=
-, BPTR(&amp;hash), NULL);</span><br><span>     ASSERT(buf_inc_len(&amp;hash=
-, EVP_MD_size(sha1)));</span><br><span>     return hash;</span><br><span>@@=
- -351,7 +351,7 @@</span><br><span> x509_get_sha256_fingerprint(X509 *cert, =
-struct gc_arena *gc)</span><br><span> {</span><br><span>     const EVP_MD *=
-sha256 =3D EVP_sha256();</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    struct buffer hash =3D alloc_buf_gc(EVP_MD_size(sha256), gc);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer hash =3D=
- alloc_buf_gc((size_t)EVP_MD_size(sha256), gc);</span><br><span>     X509_d=
-igest(cert, EVP_sha256(), BPTR(&amp;hash), NULL);</span><br><span>     ASSE=
-RT(buf_inc_len(&amp;hash, EVP_MD_size(sha256)));</span><br><span>     retur=
-n hash;</span><br><span>diff --git a/src/openvpn/xkey_helper.c b/src/openvp=
-n/xkey_helper.c</span><br><span>index 72a24b5..29208a0 100644</span><br><sp=
-an>--- a/src/openvpn/xkey_helper.c</span><br><span>+++ b/src/openvpn/xkey_h=
-elper.c</span><br><span>@@ -351,7 +351,7 @@</span><br><span>         }</spa=
-n><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    if (tbslen !=3D EVP_MD_size(EVP_get_digestbyname(mdname)=
-))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tbslen !=
-=3D (size_t)EVP_MD_size(EVP_get_digestbyname(mdname)))</span><br><span>    =
- {</span><br><span>         msg(M_WARN, &quot;Error: encode_pkcs11: invalid=
- input length &lt;%zu&gt;&quot;, tbslen);</span><br><span>         goto don=
-e;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1133?usp=3Demail">change 1133</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1133?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1148?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1148?usp=3Demail=
+">change 1148</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1148?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I22b93c807f1be99fab450708f68=
-6fce4aa6d5cef </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1133 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id7a5b2d8dea01bd532f5bcc8abe=
+a0e52b00d1169 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1148 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -232,8 +90,16 @@ nge"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 23 Sep 2025 10:34:13=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---2zq4FEuMzME=--
+--/6/4GXDjiG4=--
 
