@@ -1,10 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 23 Sep 2025 16:08:48 +0200
-Message-ID: <20250923140854.21766-1-gert@...1296...>
-In-Reply-To: <gerrit.1758282060000.I9ce664d073a4e6a6d433e9e6f986a5086dae8aa1@...2715...>
-References: <gerrit.1758282060000.I9ce664d073a4e6a6d433e9e6f986a5086dae8aa1@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 23 Sep 2025 14:25:32 +0000
+References: <gerrit.1758637530000.Ic395b6d1dce510bb4b499c5beba61f033a2a860b@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <e25956b684c63998ff8345f2798fa7d08078d61a-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Enable a subset of -Wextra
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="sZKxG62k/Oo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: Fix bug in
+ error handling when talking to script
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,143 +18,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--sZKxG62k/Oo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Includes fixes for
-  - -Wimplicit-fallthrough=2
-    (=3 is default but requires replacing all
-     fallthrough comments)
-  - -Wmissing-field-initializers
-  - -Wold-style-declaration
-- All other warnings that would need fixes are
-  disabled for now.
+Attention is currently required from: plaisthos.
 
-Change-Id: I9ce664d073a4e6a6d433e9e6f986a5086dae8aa1
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1208?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dns: Fix bug in error handling when talking to script
+......................................................................
+
+dns: Fix bug in error handling when talking to script
+
+Comparing the result of read/write to a size_t value
+is dangerous C. Since ssize_t and size_t have the same
+size ssize_t is promoted to size_t, so -1 becomes
+size_t max value and is not smaller than the expected
+length.
+
+Make sure to compare ssize_t to ssize_t to avoid any
+suprises.
+
+Change-Id: Ic395b6d1dce510bb4b499c5beba61f033a2a860b
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1202
 ---
+M src/openvpn/dns.c
+1 file changed, 5 insertions(+), 6 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1202
-This mail reflects revision 3 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/08/1208/1
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f027b01..fdc0162 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -114,7 +114,14 @@
-     check_and_add_compiler_flag(-Wstrict-prototypes StrictPrototypes)
-     check_and_add_compiler_flag(-Wold-style-definition OldStyleDefinition)
-     # We are not ready for this
--    #add_compile_options(-Wconversion -Wno-sign-conversion -Wsign-compare)
-+    #add_compile_options(-Wconversion -Wno-sign-conversion)
-+    add_compile_options(-Wextra -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter)
-+    # clang doesn't have the different levels but also doesn't include it in -Wextra
-+    check_and_add_compiler_flag(-Wimplicit-fallthrough=2 GCCImplicitFallthrough)
-+    if (WIN32)
-+        # Not sure how to deal with GetProcAddress
-+        add_compile_options(-Wno-cast-function-type)
-+    endif ()
-     if (USE_WERROR)
-         add_compile_options(-Werror)
-     endif ()
-diff --git a/configure.ac b/configure.ac
-index 38b14a1..a5485b0 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1398,6 +1398,13 @@
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wstrict-prototypes])
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wold-style-definition])
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wall])
-+ACL_CHECK_ADD_COMPILE_FLAGS([-Wextra -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter])
-+# clang doesn't have the different levels but also doesn't include it in -Wextra
-+ACL_CHECK_ADD_COMPILE_FLAGS([-Wimplicit-fallthrough=2])
-+if test "${WIN32}" = "yes"; then
-+        # Not sure how to deal with GetProcAddress
-+	ACL_CHECK_ADD_COMPILE_FLAGS([-Wno-cast-function-type])
-+fi
- 
- if test "${enable_pedantic}" = "yes"; then
- 	enable_strict="yes"
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 59bf52b..0922326 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -733,7 +733,7 @@
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index efb888a..2a9e60b 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -642,11 +642,10 @@
+
+         while (1)
+         {
+-            ssize_t rlen, wlen;
+             char path[PATH_MAX];
+
+             /* Block here until parent sends a path */
+-            rlen =3D read(dns_pipe_fd[0], &path, sizeof(path));
++            ssize_t rlen =3D read(dns_pipe_fd[0], &path, sizeof(path));
+             if (rlen < 1)
+             {
+                 if (rlen =3D=3D -1 && errno =3D=3D EINTR)
+@@ -665,8 +664,8 @@
+             /* Unblock parent process */
+             while (1)
+             {
+-                wlen =3D write(ack_pipe_fd[1], &res, sizeof(res));
+-                if ((wlen =3D=3D -1 && errno !=3D EINTR) || wlen < sizeof(=
+res))
++                ssize_t wlen =3D write(ack_pipe_fd[1], &res, sizeof(res));
++                if ((wlen =3D=3D -1 && errno !=3D EINTR) || wlen < (ssize_=
+t)sizeof(res))
                  {
-                     return false;
-                 }
--
-+                /* Intentional [[fallthrough]]; */
-             case 2:
-                 /* after the '=', replace non-printable or shell meta with '_' */
-                 if (!isprint(c) || isspace(c) || c == '$' || c == '(' || c == '`')
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 9618301..c213c4b 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -84,10 +84,10 @@
- 
- #ifdef _WIN32
- 
--const static GUID GUID_DEVCLASS_NET = {
-+static const GUID GUID_DEVCLASS_NET = {
-     0x4d36e972L, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 }
- };
--const static GUID GUID_DEVINTERFACE_NET = {
-+static const GUID GUID_DEVINTERFACE_NET = {
-     0xcac88484, 0x7515, 0x4c03, { 0x82, 0xe6, 0x71, 0xa8, 0x7a, 0xba, 0xc3, 0x61 }
- };
- 
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index b633e77..9731602 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
-@@ -40,11 +40,11 @@
- #endif
- 
- 
--const static GUID GUID_DEVCLASS_NET = {
-+static const GUID GUID_DEVCLASS_NET = {
-     0x4d36e972L, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 }
- };
- 
--const static WCHAR szAdapterRegKeyPathTemplate[] =
-+static const WCHAR szAdapterRegKeyPathTemplate[] =
-     L"SYSTEM\\CurrentControlSet\\Control\\Network\\%ls\\%ls\\Connection";
- #define ADAPTER_REGKEY_PATH_MAX                                                                \
-     (_countof(L"SYSTEM\\CurrentControlSet\\Control\\Network\\") - 1 + 38 + _countof(L"\\") - 1 \
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index b5211cd..1423d46 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -164,7 +164,7 @@
- init_tas_auth(int key_direction)
- {
-     struct tls_auth_standalone tas = { 0 };
--    struct frame frame = { { .headroom = 200, .payload_size = 1400 }, 0 };
-+    struct frame frame = { .buf = { .headroom = 200, .payload_size = 1400 }, 0 };
-     tas.frame = frame;
- 
-     tas.tls_wrap.mode = TLS_WRAP_AUTH;
-@@ -591,7 +591,7 @@
-     enum first_packet_verdict verdict;
- 
-     tas.tls_wrap.mode = TLS_WRAP_NONE;
--    struct frame frame = { { .headroom = 200, .payload_size = 1400 }, 0 };
-+    struct frame frame = { .buf = { .headroom = 200, .payload_size = 1400 }, 0 };
-     tas.frame = frame;
-     tas.workbuf = alloc_buf(1600);
- 
+                     /* Not much we can do about errors but exit */
+                     close(dns_pipe_fd[0]);
+@@ -727,7 +726,7 @@
+         env_set_write_file(dvf, es);
+
+         int wfd =3D updown_runner->fds[1];
+-        size_t dvf_size =3D strlen(dvf) + 1;
++        ssize_t dvf_size =3D strlen(dvf) + 1;
+         while (1)
+         {
+             ssize_t len =3D write(wfd, dvf, dvf_size);
+@@ -746,7 +745,7 @@
+         while (1)
+         {
+             ssize_t len =3D read(rfd, &status, sizeof(status));
+-            if (len < sizeof(status))
++            if (len < (ssize_t)sizeof(status))
+             {
+                 if (len =3D=3D -1 && errno =3D=3D EINTR)
+                 {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1208?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic395b6d1dce510bb4b499c5beba61f033a2a860b
+Gerrit-Change-Number: 1208
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
+
+--sZKxG62k/Oo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1208?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dns: Fix bug in error handling when talking to script<br><br=
+>Comparing the result of read/write to a size_t value<br>is dangerous C. Si=
+nce ssize_t and size_t have the same<br>size ssize_t is promoted to size_t,=
+ so -1 becomes<br>size_t max value and is not smaller than the expected<br>=
+length.<br><br>Make sure to compare ssize_t to ssize_t to avoid any<br>supr=
+ises.<br><br>Change-Id: Ic395b6d1dce510bb4b499c5beba61f033a2a860b<br>Signed=
+-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn=
+/dns.c<br>1 file changed, 5 insertions(+), 6 deletions(-)<br><br></pre><pre=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/08/1208/1</pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
+f --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index efb88=
+8a..2a9e60b 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>=
++++ b/src/openvpn/dns.c</span><br><span>@@ -642,11 +642,10 @@</span><br><sp=
+an> </span><br><span>         while (1)</span><br><span>         {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            ssize_t rlen, wlen=
+;</span><br><span>             char path[PATH_MAX];</span><br><span> </span=
+><br><span>             /* Block here until parent sends a path */</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            rlen =3D read(dns_=
+pipe_fd[0], &amp;path, sizeof(path));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            ssize_t rlen =3D read(dns_pipe_fd[0], &amp;pa=
+th, sizeof(path));</span><br><span>             if (rlen &lt; 1)</span><br>=
+<span>             {</span><br><span>                 if (rlen =3D=3D -1 &a=
+mp;&amp; errno =3D=3D EINTR)</span><br><span>@@ -665,8 +664,8 @@</span><br>=
+<span>             /* Unblock parent process */</span><br><span>           =
+  while (1)</span><br><span>             {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                wlen =3D write(ack_pipe_fd[1], &amp;re=
+s, sizeof(res));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           if ((wlen =3D=3D -1 &amp;&amp; errno !=3D EINTR) || wlen &lt; si=
+zeof(res))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       ssize_t wlen =3D write(ack_pipe_fd[1], &amp;res, sizeof(res));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                if ((wlen=
+ =3D=3D -1 &amp;&amp; errno !=3D EINTR) || wlen &lt; (ssize_t)sizeof(res))<=
+/span><br><span>                 {</span><br><span>                     /* =
+Not much we can do about errors but exit */</span><br><span>               =
+      close(dns_pipe_fd[0]);</span><br><span>@@ -727,7 +726,7 @@</span><br>=
+<span>         env_set_write_file(dvf, es);</span><br><span> </span><br><sp=
+an>         int wfd =3D updown_runner-&gt;fds[1];</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        size_t dvf_size =3D strlen(dvf) + 1;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        ssize_t dvf_si=
+ze =3D strlen(dvf) + 1;</span><br><span>         while (1)</span><br><span>=
+         {</span><br><span>             ssize_t len =3D write(wfd, dvf, dvf=
+_size);</span><br><span>@@ -746,7 +745,7 @@</span><br><span>         while =
+(1)</span><br><span>         {</span><br><span>             ssize_t len =3D=
+ read(rfd, &amp;status, sizeof(status));</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            if (len &lt; sizeof(status))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            if (len &lt; (ssize_t)s=
+izeof(status))</span><br><span>             {</span><br><span>             =
+    if (len =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span>      =
+           {</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1208?usp=3Demail">change 1208</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1208?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic395b6d1dce510bb4b499c5beba=
+61f033a2a860b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1208 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--sZKxG62k/Oo=--
 
