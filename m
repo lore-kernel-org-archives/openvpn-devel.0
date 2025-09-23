@@ -1,11 +1,10 @@
+Date: Tue, 23 Sep 2025 14:42:01 +0200 (CEST)
+Message-Id: <202509231242.58NCg1Vt014862@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 23 Sep 2025 14:20:00 +0200
-Message-ID: <20250923122006.12212-1-gert@...1296...>
-In-Reply-To: <gerrit.1758544032000.I1ce408d4473874d88a348308503527ef7eb8c1ff@...2715...>
-References: <gerrit.1758544032000.I1ce408d4473874d88a348308503527ef7eb8c1ff@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] configure.ac: Make
- ACL_CHECK_ADD_COMPILE_FLAGS append instead of prepend
+In-Reply-To: <20250923103429.1257-1-gert@...1296...>
+References: <20250923103429.1257-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Clean up conversion warnings
+ related to base64_{en, de}code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+This is a bit bigger than "just int", and the functions are not that
+easy to understand... so I stared a bit longer, and also ran all the
+t_server self tests (because there's plugins that use username/password
+and auth-token, so, base64 should better work - it does).
 
-The prepend behavior is surprising. If there is a difference
-in behavior at least make it easy to understand what happens
-why.
+Reference link to sf.net...
 
-Change-Id: I1ce408d4473874d88a348308503527ef7eb8c1ff
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1204
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit f32844b25c3b3b352bad0b250fd8721656ae9bc0
+Author: Frank Lichtenheld
+Date:   Tue Sep 23 12:34:23 2025 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1204
-This mail reflects revision 2 of this Change.
+     Clean up conversion warnings related to base64_{en, de}code
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1148
+     Message-Id: <20250923103429.1257-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59237399/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/configure.ac b/configure.ac
-index a5485b0..c2feeea 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1388,9 +1388,9 @@
- # required for gcc, but some compilers such as clang need it.
- AC_DEFUN([ACL_CHECK_ADD_COMPILE_FLAGS], [
-     old_cflags="$CFLAGS"
--    CFLAGS="$1 -Werror $CFLAGS"
-+    CFLAGS="-Werror $CFLAGS $1"
-     AC_MSG_CHECKING([whether the compiler accepts $1])
--    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])]; CFLAGS="$1 $old_cflags",
-+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM()], [AC_MSG_RESULT([yes])]; CFLAGS="$old_cflags $1",
-         [AC_MSG_RESULT([no]); CFLAGS="$old_cflags"])]
- )
- 
+
+--
+kind regards,
+
+Gert Doering
+
 
