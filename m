@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Sep 2025 20:36:38 +0000
+Date: Wed, 24 Sep 2025 20:36:35 +0000
 In-Reply-To: <gerrit.1758720945000.I09209ccd785cc368b2fcf467a3d211fbd41005c6@...2715...>
 References: <gerrit.1758720945000.I09209ccd785cc368b2fcf467a3d211fbd41005c6@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <153f7a223f4c80ead17e4548d8f1735792453fb8-HTML@...2715...>
+Message-ID: <153f7a223f4c80ead17e4548d8f1735792453fb8-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="v/LFgIk6kXQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="JhgXYMP/Ad0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Validate DNS
  parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---v/LFgIk6kXQ=
+--JhgXYMP/Ad0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-13?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1213?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Validate DNS parameters
 ......................................................................
@@ -86,7 +90,7 @@ M src/openvpn/options.c
 5 files changed, 89 insertions(+), 7 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/1213/2
 
 diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
 index 217f897..1247f11 100644
@@ -320,234 +324,237 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---v/LFgIk6kXQ=
+--JhgXYMP/Ad0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1213?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Validate DNS parameters<br><br>This adds vali=
-dation of following DNS options:<br><br> --dns search-domains<br> --dns ser=
-ver N resolve-domains<br> --dns server N sni<br><br> --dhcp-option DOMAIN<b=
-r> --dhcp-option ADAPTER_DOMAIN_SUFFIX<br> --dhcp-option DOMAIN-SEARCH<br><=
-br>On Linux (and similar platforms), those options are written to a tmp fil=
-e,<br>which is later sourced by a script running as root. Since options are=
-<br>controlled by the server, it is possible for a malicious server to<br>e=
-xecute script injection attack by pushing something like<br><br> --dns sear=
-ch-domains x;id<br><br>in which case &quot;id&quot; command will be execute=
-d as a root.<br><br>On Windows, the value of DOMAIN/ADAPTER_DOMAIN_SUFFIX i=
-s passed to<br>a powershell script. A malicious server could push:<br><br> =
---dhcp-option DOMAIN a&#39;;Restart-Computer&#39;<br><br>and if openvpn is =
-not using DHCP (this is the default, with dco-win driver)<br>and running wi=
-thout interactive service, that powershell command will be<br>executed.<br>=
-<br>Validation is performed in a way that value only contains following<br>=
-symbols:<br><br>  [A-Za-z0-9.-_\x80-\0xff]<br><br>Reported-By: Stanislav Fo=
-rt &lt;disclosure@...2935...&gt;<br>CVE: 2025-10680<br>Change-Id: I09209ccd=
-785cc368b2fcf467a3d211fbd41005c6<br>Signed-off-by: Lev Stipakov &lt;lev@...493...=
-515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL:=
- https://gerrit.openvpn.net/c/openvpn/+/1213<br>Message-Id: &lt;20250924201=
-601.25304-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/m=
-ailman/message/59238367/<br>Signed-off-by: Gert Doering &lt;gert@...1296...=
-&gt;<br>---<br>M src/openvpn/Makefile.am<br>M src/openvpn/dns.c<br>M src/op=
-envpn/dns.h<br>A src/openvpn/domain_helper.h<br>M src/openvpn/options.c<br>=
-5 files changed, 89 insertions(+), 7 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am</span><br=
-><span>index 217f897..1247f11 100644</span><br><span>--- a/src/openvpn/Make=
-file.am</span><br><span>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -6=
-1,6 +61,7 @@</span><br><span> 	dco_win.c dco_win.h \</span><br><span> 	dhcp=
-.c dhcp.h \</span><br><span> 	dns.c dns.h \</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+	domain_helper.h \</span><br><span> 	env_set.c env_=
-set.h \</span><br><span> 	errlevel.h \</span><br><span> 	error.c error.h \<=
-/span><br><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><b=
-r><span>index 2a9e60b..d2ff670 100644</span><br><span>--- a/src/openvpn/dns=
-.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -30,6 +30,7 @=
-@</span><br><span> #include &quot;socket_util.h&quot;</span><br><span> #inc=
-lude &quot;options.h&quot;</span><br><span> #include &quot;run_command.h&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;d=
-omain_helper.h&quot;</span><br><span> </span><br><span> #ifdef _WIN32</span=
-><br><span> #include &quot;win32.h&quot;</span><br><span>@@ -143,7 +144,7 @=
-@</span><br><span>     return true;</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span> dns_domain_list_a=
-ppend(struct dns_domain **entry, char **domains, struct gc_arena *gc)</span=
-><br><span> {</span><br><span>     /* Fast forward to the end of the list *=
-/</span><br><span>@@ -155,11 +156,19 @@</span><br><span>     /* Append all =
-domains to the end of the list */</span><br><span>     while (*domains)</sp=
-an><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        char *domain =3D *domains++;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        if (!validate_domain(domain))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            return false;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span>         ALLOC_OBJ_CLEAR_GC(*entry, s=
-truct dns_domain, gc);</span><br><span>         struct dns_domain *new =3D =
-*entry;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        new-&g=
-t;name =3D *domains++;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        new-&gt;name =3D domain;</span><br><span>         entry =3D &amp=
-;new-&gt;next;</span><br><span>     }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   return true;</span><br><span> }</span><br><span> </span><br><span> bool<=
-/span><br><span>diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h</span><b=
-r><span>index 6cd98f2..3dd7847 100644</span><br><span>--- a/src/openvpn/dns=
-.h</span><br><span>+++ b/src/openvpn/dns.h</span><br><span>@@ -141,13 +141,=
-14 @@</span><br><span> struct dns_server *dns_server_get(struct dns_server =
-**entry, long priority, struct gc_arena *gc);</span><br><span> </span><br><=
-span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Appends D=
-NS domain parameters to a linked list.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * Appends safe DNS domain parameters to a linked list.<=
-/span><br><span>  *</span><br><span>  * @param   entry       Address of the=
- first list entry pointer</span><br><span>  * @param   domains     Address =
-of the first domain parameter</span><br><span>  * @param   gc          The =
-gc the new list items should be allocated in</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * @return              True if domains were appen=
-ded and don&#39;t contain invalid characters</span><br><span>  */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-void dns_domain_list_append(str=
-uct dns_domain **entry, char **domains, struct gc_arena *gc);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+bool dns_domain_list_append(struc=
-t dns_domain **entry, char **domains, struct gc_arena *gc);</span><br><span=
-> </span><br><span> /**</span><br><span>  * Parses a string IPv4 or IPv6 ad=
-dress and optional colon separated port,</span><br><span>diff --git a/src/o=
-penvpn/domain_helper.h b/src/openvpn/domain_helper.h</span><br><span>new fi=
-le mode 100644</span><br><span>index 0000000..f1ecf86</span><br><span>--- /=
-dev/null</span><br><span>+++ b/src/openvpn/domain_helper.h</span><br><span>=
-@@ -0,0 +1,45 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An ap=
-plication to securely tunnel IP networks</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *             over a single UDP port, with support fo=
-r SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
-           session authentication and key exchange,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packet =
-authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *             packet compression.</span><br><span style=3D"color: hsl(120,=
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1213=
+?usp=3Demail">View Change</a></p><p>The following approvals got outdated an=
+d were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Validate DNS parameters<br><br>This adds validation =
+of following DNS options:<br><br> --dns search-domains<br> --dns server N r=
+esolve-domains<br> --dns server N sni<br><br> --dhcp-option DOMAIN<br> --dh=
+cp-option ADAPTER_DOMAIN_SUFFIX<br> --dhcp-option DOMAIN-SEARCH<br><br>On L=
+inux (and similar platforms), those options are written to a tmp file,<br>w=
+hich is later sourced by a script running as root. Since options are<br>con=
+trolled by the server, it is possible for a malicious server to<br>execute =
+script injection attack by pushing something like<br><br> --dns search-doma=
+ins x;id<br><br>in which case &quot;id&quot; command will be executed as a =
+root.<br><br>On Windows, the value of DOMAIN/ADAPTER_DOMAIN_SUFFIX is passe=
+d to<br>a powershell script. A malicious server could push:<br><br> --dhcp-=
+option DOMAIN a&#39;;Restart-Computer&#39;<br><br>and if openvpn is not usi=
+ng DHCP (this is the default, with dco-win driver)<br>and running without i=
+nteractive service, that powershell command will be<br>executed.<br><br>Val=
+idation is performed in a way that value only contains following<br>symbols=
+:<br><br>  [A-Za-z0-9.-_\x80-\0xff]<br><br>Reported-By: Stanislav Fort &lt;=
+disclosure@...2935...&gt;<br>CVE: 2025-10680<br>Change-Id: I09209ccd785cc36=
+8b2fcf467a3d211fbd41005c6<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&=
+gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https:=
+//gerrit.openvpn.net/c/openvpn/+/1213<br>Message-Id: &lt;20250924201601.253=
+04-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/=
+message/59238367/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>---<br>M src/openvpn/Makefile.am<br>M src/openvpn/dns.c<br>M src/openvpn/d=
+ns.h<br>A src/openvpn/domain_helper.h<br>M src/openvpn/options.c<br>5 files=
+ changed, 89 insertions(+), 7 deletions(-)<br><br></pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
+openvpn.net:29418/openvpn refs/changes/13/1213/2</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/o=
+penvpn/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index 217f897.=
+.1247f11 100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><sp=
+an>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -61,6 +61,7 @@</span><b=
+r><span> 	dco_win.c dco_win.h \</span><br><span> 	dhcp.c dhcp.h \</span><br=
+><span> 	dns.c dns.h \</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+	domain_helper.h \</span><br><span> 	env_set.c env_set.h \</span><br><sp=
+an> 	errlevel.h \</span><br><span> 	error.c error.h \</span><br><span>diff =
+--git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index 2a9e60b=
+..d2ff670 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>++=
++ b/src/openvpn/dns.c</span><br><span>@@ -30,6 +30,7 @@</span><br><span> #i=
+nclude &quot;socket_util.h&quot;</span><br><span> #include &quot;options.h&=
+quot;</span><br><span> #include &quot;run_command.h&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#include &quot;domain_helper.h&quot;<=
+/span><br><span> </span><br><span> #ifdef _WIN32</span><br><span> #include =
+&quot;win32.h&quot;</span><br><span>@@ -143,7 +144,7 @@</span><br><span>   =
+  return true;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+bool</span><br><span> dns_domain_list_append(struct dns_do=
+main **entry, char **domains, struct gc_arena *gc)</span><br><span> {</span=
+><br><span>     /* Fast forward to the end of the list */</span><br><span>@=
+@ -155,11 +156,19 @@</span><br><span>     /* Append all domains to the end =
+of the list */</span><br><span>     while (*domains)</span><br><span>     {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        char *domai=
+n =3D *domains++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      if (!validate_domain(domain))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            return false;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span>         ALLOC_OBJ_CLEAR_GC(*entry, struct dns_domain, g=
+c);</span><br><span>         struct dns_domain *new =3D *entry;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        new-&gt;name =3D *domains=
+++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        new-&gt;=
+name =3D domain;</span><br><span>         entry =3D &amp;new-&gt;next;</spa=
+n><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</sp=
+an><br><span> }</span><br><span> </span><br><span> bool</span><br><span>dif=
+f --git a/src/openvpn/dns.h b/src/openvpn/dns.h</span><br><span>index 6cd98=
+f2..3dd7847 100644</span><br><span>--- a/src/openvpn/dns.h</span><br><span>=
++++ b/src/openvpn/dns.h</span><br><span>@@ -141,13 +141,14 @@</span><br><sp=
+an> struct dns_server *dns_server_get(struct dns_server **entry, long prior=
+ity, struct gc_arena *gc);</span><br><span> </span><br><span> /**</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- * Appends DNS domain parameter=
+s to a linked list.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Appends safe DNS domain parameters to a linked list.</span><br><span>  *=
+</span><br><span>  * @param   entry       Address of the first list entry p=
+ointer</span><br><span>  * @param   domains     Address of the first domain=
+ parameter</span><br><span>  * @param   gc          The gc the new list ite=
+ms should be allocated in</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * @return              True if domains were appended and don&#39;t c=
+ontain invalid characters</span><br><span>  */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-void dns_domain_list_append(struct dns_domain **en=
+try, char **domains, struct gc_arena *gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+bool dns_domain_list_append(struct dns_domain **entr=
+y, char **domains, struct gc_arena *gc);</span><br><span> </span><br><span>=
+ /**</span><br><span>  * Parses a string IPv4 or IPv6 address and optional =
+colon separated port,</span><br><span>diff --git a/src/openvpn/domain_helpe=
+r.h b/src/openvpn/domain_helper.h</span><br><span>new file mode 100644</spa=
+n><br><span>index 0000000..f1ecf86</span><br><span>--- /dev/null</span><br>=
+<span>+++ b/src/openvpn/domain_helper.h</span><br><span>@@ -0,0 +1,45 @@</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to secure=
+ly tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *             over a single UDP port, with support for SSL/TLS-based</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             session =
+authentication and key exchange,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *             packet encryption, packet authentication, and</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet=
+ compression.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 =
+Lev Stipakov &lt;lev@...515...&gt;</span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  Copyright (C) 2025 Lev Stipakov &lt;lev@...515...&gt;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *  This program is free software; you can redistribute =
-it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
- it under the terms of the GNU General Public License version 2</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free So=
-ftware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program i=
-s distributed in the hope that it will be useful,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even th=
-e implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Lice=
-nse for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should =
-have received a copy of the GNU General Public License along</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, wri=
-te to the Free Software Foundation, Inc.,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110=
--1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+static inline bool</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+is_allowed_domain_ascii(unsigned char c)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return (c &gt;=3D &#39;A&#39; &amp;&a=
-mp; c &lt;=3D &#39;Z&#39;)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+           || (c &gt;=3D &#39;a&#39; &amp;&amp; c &lt;=3D &#39;z&#39=
-;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           || (c =
-&gt;=3D &#39;0&#39; &amp;&amp; c &lt;=3D &#39;9&#39;)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+           || c =3D=3D &#39;.&#39; || c =
-=3D=3D &#39;-&#39; || c =3D=3D &#39;_&#39; || c &gt;=3D 0x80;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+validate_domain(const char *domain)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    for (const char *ch =3D domain; *ch; ++ch)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        if (!is_allowed_domain_ascii((unsigned char)*ch))</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            return false;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/optio=
-ns.c</span><br><span>index f801743..f35738d 100644</span><br><span>--- a/sr=
-c/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><=
-span>@@ -61,6 +61,7 @@</span><br><span> #include &quot;dco.h&quot;</span><b=
-r><span> #include &quot;options_util.h&quot;</span><br><span> #include &quo=
-t;tun_afunix.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#include &quot;domain_helper.h&quot;</span><br><span> </span><br><span> #i=
-nclude &lt;ctype.h&gt;</span><br><span> </span><br><span>@@ -5877,8 +5878,1=
-2 @@</span><br><span> {</span><br><span>     if (streq(p[1], &quot;search-d=
-omains&quot;) &amp;&amp; p[2])</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        dns_domain_list_append(&amp;options=
--&gt;dns_options.search_domains, &amp;p[2],</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                               &amp;options-&gt;dns_o=
-ptions.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-if (!dns_domain_list_append(&amp;options-&gt;dns_options.search_domains, &a=
-mp;p[2],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-                         &amp;options-&gt;dns_options.gc))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;--dns %s conta=
-in invalid characters&quot;, p[1]);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            return false;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        }</span><br><span>     }</span><br><span>    =
- else if (streq(p[1], &quot;server&quot;) &amp;&amp; p[2] &amp;&amp; p[3] &=
-amp;&amp; p[4])</span><br><span>     {</span><br><span>@@ -5906,7 +5911,11 =
-@@</span><br><span>         }</span><br><span>         else if (streq(p[3],=
- &quot;resolve-domains&quot;))</span><br><span>         {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            dns_domain_list_append(&amp=
-;server-&gt;domains, &amp;p[4], &amp;options-&gt;dns_options.gc);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            if (!dns_domain_l=
-ist_append(&amp;server-&gt;domains, &amp;p[4], &amp;options-&gt;dns_options=
-.gc))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                msg(=
-msglevel, &quot;--dns server %ld: %s contain invalid characters&quot;, prio=
-rity, p[3]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            }</span><br><span>         }</span><br><span>         else i=
-f (streq(p[3], &quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><span>      =
-   {</span><br><span>@@ -5950,6 +5959,11 @@</span><br><span>         }</spa=
-n><br><span>         else if (streq(p[3], &quot;sni&quot;) &amp;&amp; !p[5]=
-)</span><br><span>         {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            if (!validate_domain(p[4]))</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--dns server %ld=
-: %s contains invalid characters&quot;, priority, p[3]);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                return false;</span><b=
+  This program is free software; you can redistribute it and/or modify</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms o=
+f the GNU General Public License version 2</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *  as published by the Free Software Foundation.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed in the =
+hope that it will be useful,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY=
+ or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  GNU General Public License for more details.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy =
+of the GNU General Public License along</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *  with this program; if not, write to the Free Softwa=
+re Foundation, Inc.,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+is_allowed_domain_ascii(unsigned char c)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return (c &gt;=3D &#39;A&#39; &amp;&amp; c &lt;=3D &#39;Z&#=
+39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           || (=
+c &gt;=3D &#39;a&#39; &amp;&amp; c &lt;=3D &#39;z&#39;)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+           || (c &gt;=3D &#39;0&#39; &a=
+mp;&amp; c &lt;=3D &#39;9&#39;)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+           || c =3D=3D &#39;.&#39; || c =3D=3D &#39;-&#39; || c=
+ =3D=3D &#39;_&#39; || c &gt;=3D 0x80;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline bool=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+validate_domain(con=
+st char *domain)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (const char *=
+ch =3D domain; *ch; ++ch)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+if (!is_allowed_domain_ascii((unsigned char)*ch))</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            return false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>di=
+ff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>in=
+dex f801743..f35738d 100644</span><br><span>--- a/src/openvpn/options.c</sp=
+an><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -61,6 +61,7 @@<=
+/span><br><span> #include &quot;dco.h&quot;</span><br><span> #include &quot=
+;options_util.h&quot;</span><br><span> #include &quot;tun_afunix.h&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;domain_=
+helper.h&quot;</span><br><span> </span><br><span> #include &lt;ctype.h&gt;<=
+/span><br><span> </span><br><span>@@ -5877,8 +5878,12 @@</span><br><span> {=
+</span><br><span>     if (streq(p[1], &quot;search-domains&quot;) &amp;&amp=
+; p[2])</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        dns_domain_list_append(&amp;options-&gt;dns_options.search=
+_domains, &amp;p[2],</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                              &amp;options-&gt;dns_options.gc);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (!dns_domain_list_ap=
+pend(&amp;options-&gt;dns_options.search_domains, &amp;p[2],</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                                  =
+  &amp;options-&gt;dns_options.gc))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(msglevel, &quot;--dns %s contain invalid characters&q=
+uot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       }</span><br><span>     }</span><br><span>     else if (streq(p[1], &=
+quot;server&quot;) &amp;&amp; p[2] &amp;&amp; p[3] &amp;&amp; p[4])</span><=
+br><span>     {</span><br><span>@@ -5906,7 +5911,11 @@</span><br><span>    =
+     }</span><br><span>         else if (streq(p[3], &quot;resolve-domains&=
+quot;))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            dns_domain_list_append(&amp;server-&gt;domains, &a=
+mp;p[4], &amp;options-&gt;dns_options.gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            if (!dns_domain_list_append(&amp;server-=
+&gt;domains, &amp;p[4], &amp;options-&gt;dns_options.gc))</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--dns=
+ server %ld: %s contain invalid characters&quot;, priority, p[3]);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                return false=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</spa=
+n><br><span>         }</span><br><span>         else if (streq(p[3], &quot;=
+dnssec&quot;) &amp;&amp; !p[5])</span><br><span>         {</span><br><span>=
+@@ -5950,6 +5959,11 @@</span><br><span>         }</span><br><span>         =
+else if (streq(p[3], &quot;sni&quot;) &amp;&amp; !p[5])</span><br><span>   =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+if (!validate_domain(p[4]))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                msg(msglevel, &quot;--dns server %ld: %s contains invalid=
+ characters&quot;, priority, p[3]);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                return false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            }</span><br><span>             server=
+-&gt;sni =3D p[4];</span><br><span>         }</span><br><span>         else=
+</span><br><span>@@ -8551,11 +8565,23 @@</span><br><span> </span><br><span>=
+         if ((streq(p[1], &quot;DOMAIN&quot;) || streq(p[1], &quot;ADAPTER_=
+DOMAIN_SUFFIX&quot;)) &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>   =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+if (!validate_domain(p[2]))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                msg(msglevel, &quot;--dhcp-option %s contains invalid cha=
+racters&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                goto err;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span>             dhcp-&gt;domain =3D p[2];</span><br><span> =
+            dhcp_optional =3D true;</span><br><span>         }</span><br><s=
+pan>         else if (streq(p[1], &quot;DOMAIN-SEARCH&quot;) &amp;&amp; p[2=
+] &amp;&amp; !p[3])</span><br><span>         {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            if (!validate_domain(p[2]))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quo=
+t;--dhcp-option %s contains invalid characters&quot;, p[1]);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                goto err;</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
-n>             server-&gt;sni =3D p[4];</span><br><span>         }</span><b=
-r><span>         else</span><br><span>@@ -8551,11 +8565,23 @@</span><br><sp=
-an> </span><br><span>         if ((streq(p[1], &quot;DOMAIN&quot;) || streq=
-(p[1], &quot;ADAPTER_DOMAIN_SUFFIX&quot;)) &amp;&amp; p[2] &amp;&amp; !p[3]=
-)</span><br><span>         {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            if (!validate_domain(p[2]))</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--dhcp-option %s=
- contains invalid characters&quot;, p[1]);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                goto err;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span>             dhcp-&gt;domain =3D p[=
-2];</span><br><span>             dhcp_optional =3D true;</span><br><span>  =
-       }</span><br><span>         else if (streq(p[1], &quot;DOMAIN-SEARCH&=
-quot;) &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>         {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!validate_d=
-omain(p[2]))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-   msg(msglevel, &quot;--dhcp-option %s contains invalid characters&quot;, =
-p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-   goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan>             if (dhcp-&gt;domain_search_list_len &lt; N_SEARCH_LIST_LEN=
-)</span><br><span>             {</span><br><span>                 dhcp-&gt;=
-domain_search_list[dhcp-&gt;domain_search_list_len++] =3D p[2];</span><br><=
-span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1213?usp=3Demail">change 1213</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-213?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>             if (=
+dhcp-&gt;domain_search_list_len &lt; N_SEARCH_LIST_LEN)</span><br><span>   =
+          {</span><br><span>                 dhcp-&gt;domain_search_list[dh=
+cp-&gt;domain_search_list_len++] =3D p[2];</span><br><span></span><br></pre=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1213?us=
+p=3Demail">change 1213</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1213?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -565,8 +572,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---v/LFgIk6kXQ=--
+--JhgXYMP/Ad0=--
 
