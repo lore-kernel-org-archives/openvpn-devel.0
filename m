@@ -1,8 +1,8 @@
-Date: Wed, 24 Sep 2025 14:39:32 +0200 (CEST)
-Message-Id: <202509241239.58OCdWSn064539@...2054...>
+Date: Wed, 24 Sep 2025 14:39:36 +0200 (CEST)
+Message-Id: <202509241239.58OCdaBQ064544@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250924081811.22859-1-gert@...1296...>
-References: <20250924081811.22859-1-gert@...1296...>
+In-Reply-To: <20250924122755.14391-1-gert@...1296...>
+References: <20250924122755.14391-1-gert@...1296...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Enable -Wconversion
  -Wno-sign-conversion by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -39,22 +39,24 @@ by fixing one source file after the other, or one group of warnings
 I have stared at the patch, it is long, but does not do anything more
 than push/pop "ignore -Wconversion warnings" (magic), and then enable
 them globally.  BB and GHA say that this does not break any of our
-testbeds either.
-
+testbeds either (v13 *did* break two special cases, namely LibreSSL
+builds on macOS and pkcs11-helper builds - the former has been postponed
+and a #pragma added, the second one has been fixed as it's only in
+the unit test code).
 
 Your patch has been applied to the master branch.
 
-commit 13a156a694573c9edb342b4af36976bceeb4aca2 (master)
+commit 3ac840942b54b7159d993c86842efa16a9abbd98
 Author: Frank Lichtenheld
-Date:   Wed Sep 24 10:18:05 2025 +0200
+Date:   Wed Sep 24 14:27:47 2025 +0200
 
      Enable -Wconversion -Wno-sign-conversion by default
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
      Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1168
-     Message-Id: <20250924081811.22859-1-gert@...1296...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/59237916/
+     Message-Id: <20250924122755.14391-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33181.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
