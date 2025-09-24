@@ -1,8 +1,11 @@
-Date: Wed, 24 Sep 2025 16:52:00 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <aNQFkHw9AE0aF4id@...2685...>
+From: Gert Doering <gert@...1296...>
+Date: Wed, 24 Sep 2025 16:57:09 +0200
+Message-ID: <20250924145715.28701-1-gert@...1296...>
+In-Reply-To: <gerrit.1757601342000.Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f@...2715...>
+References: <gerrit.1757601342000.Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.6.15 released
+Subject: [Openvpn-devel] [PATCH v8] event: Silence conversion warning in
+ tv_to_ms_timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,68 +14,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.6.15.
+From: Frank Lichtenheld <frank@...2641...>
 
-This is a bugfix release.
+The APIs want int (at least on unixy systems), so we
+use int. max_int() protects us against negative values.
 
-Bug fixes:
+Change-Id: Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: MaxF <max@...2606...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1178
+---
 
-* On Windows, do not use "wmic.exe" any longer to set DNS search domain
-  (discontinued by Microsoft), use "powershell" fragment instead.
-* On Windows, logging to the windows event log has been improved
-  (and logging of GetLastError() strings repaired).
-  To make this work, a new "openvpnmsgserv.dll" library is now installed and
-  registered.
-* DNS domain names are now strictly validated with a positive-list of
-  allowed characters (including UTF-8 high-bit-set bytes) before being handed
-  to powershell.
-* Apply more checks to incoming TLS handshake packets before creating new state
-  - namely, verify message ID / acked ID for "valid range for an initial packet".
-  This fixes a problem with clients that float very early but send control
-  channel packet from the pre-float IP (Github: OpenVPN/openvpn#704, backported
-  from 2.7_beta1).
-* Backport handling of client float notifications on FreeBSD 14/STABLE DCO.
-  (FreeBSD: #289303)
-* Update GPL license text to latest version from FSF.
-* On Linux, on interfaces where applicable, OpenVPN explicitly configures the
-  broadcast address again. This was dropped for 2.6.0 "because computers are
-  smart and can do it themselves", but the kernel netlink interface isn't, and
-  will install "0.0.0.0". This does not normally matter, but for broadcast-based
-  applications that get the address to use from "ifconfig", this change repairs
-  functionality.
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Windows MSI changes since 2.6.14-I004:
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1178
+This mail reflects revision 8 of this Change.
 
-* Built against OpenSSL 3.5.3
-* Included openvpn-gui updated to 11.56.0.0
-  * Fix "Cannot open the System Tray Menu with Keyboard"
-    (Github: OpenVPN/openvpn-gui#763)
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-More details can be found in the Changes document:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
-
-(The Changes document also contains a section with work-arounds for
-common problems encountered when using OpenVPN with OpenSSL 3)
-
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community/>
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrepositories>
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/g/OpenVPN/openvpn-release-2.6/>
-
-Regards,
--- 
-  Frank Lichtenheld
+        
+diff --git a/src/openvpn/event.c b/src/openvpn/event.c
+index 2f60b78..ca84d19 100644
+--- a/src/openvpn/event.c
++++ b/src/openvpn/event.c
+@@ -65,11 +65,15 @@
+ #define SELECT_MAX_FDS 256
+ #endif
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
++/** Convert \c timeval value (which is in seconds and microseconds)
++    to a value of milliseconds which is required by multiple polling
++    APIs.
+ 
++    @param tv \c timeval to convert
++
++    @return Milliseconds to wait. Zero if \p tv is zero.
++     Otherwise the return value is always greater than zero.
++*/
+ static inline int
+ tv_to_ms_timeout(const struct timeval *tv)
+ {
+@@ -79,14 +83,11 @@
+     }
+     else
+     {
+-        return max_int(tv->tv_sec * 1000 + (tv->tv_usec + 500) / 1000, 1);
++        /* might overflow but not for practically useful numbers */
++        return max_int((int)(tv->tv_sec * 1000 + (tv->tv_usec + 500) / 1000), 1);
+     }
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #ifdef _WIN32
+ 
+ struct we_set
 
