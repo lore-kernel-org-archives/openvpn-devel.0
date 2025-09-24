@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Sep 2025 13:33:58 +0000
-In-Reply-To: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
-References: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <ae8bb58af7b506f075541f4f02df2372518ca4ea-EmailReplacePatchSet-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 24 Sep 2025 13:35:47 +0000
+References: <gerrit.1758720945000.I09209ccd785cc368b2fcf467a3d211fbd41005c6@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <743aff3a98c4a3592f27ac6956781d5fae498a04-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cxA3FpJ1de0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Review use
- of positive_atoi vs atoi_constrained
+Content-Type: multipart/alternative; boundary="AtSWgl9v3ko="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Validate DNS
+ parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,407 +18,560 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---cxA3FpJ1de0=
+--AtSWgl9v3ko=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos,
+Hello plaisthos, flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1213?usp=3Demail
 
-to look at the new patch set (#5).
+to review the following change.
 
 
-Change subject: options: Review use of positive_atoi vs atoi_constrained
+Change subject: Validate DNS parameters
 ......................................................................
 
-options: Review use of positive_atoi vs atoi_constrained
+Validate DNS parameters
 
-Replace where it is useful.
+This adds validation of following DNS options:
 
-While here also add a missing cast in atoi_constrained.
+ --dns search-domains
+ --dns server N resolve-domains
+ --dns server N sni
 
-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+ --dhcp-option DOMAIN
+ --dhcp-option ADAPTER_DOMAIN_SUFFIX
+ --dhcp-option DOMAIN-SEARCH
+
+On Linux (and similar platforms), those options are written to a tmp file,
+which is later sourced by a script running as root. Since options are
+controlled by the server, it is possible for a malicious server to
+execute script injection attack by pushing something like
+
+ --dns search-domains x;id
+
+in which case "id" command will be executed as a root.
+
+On Windows, the value of DOMAIN/ADAPTER_DOMAIN_SUFFIX is passed to
+a powershell script. A malicious server could push:
+
+ --dhcp-option DOMAIN a';Restart-Computer'
+
+and if openvpn is not using DHCP (this is the default, with dco-win driver)
+and and running without interactive service, that powershell command
+will be executed.
+
+Validation is performed in a way that value only contains following
+symbols:
+
+  [A-Za-z0-9.-_\x80-\0xff]
+
+Reported-By: Stanislav Fort <disclosure@...2935...>
+CVE: 2025-10680
+Change-Id: I09209ccd785cc368b2fcf467a3d211fbd41005c6
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+M src/openvpn/Makefile.am
+M src/openvpn/dns.c
+M src/openvpn/dns.h
+A src/openvpn/domain_helper.h
 M src/openvpn/options.c
-M src/openvpn/options_util.c
-2 files changed, 22 insertions(+), 40 deletions(-)
+5 files changed, 89 insertions(+), 7 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1153/5
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f801743..5192127 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7019,21 +7019,15 @@
-     else if (streq(p[0], "tun-mtu-max") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        int max_mtu =3D positive_atoi(p[1], msglevel);
--        if (max_mtu < 68 || max_mtu > 65536)
--        {
--            msg(msglevel, "--tun-mtu-max value '%s' is invalid", p[1]);
--        }
--        else
--        {
--            options->ce.tun_mtu_max =3D max_mtu;
--        }
-+        atoi_constrained(p[1], &options->ce.tun_mtu_max, p[0], TUN_MTU_MAX=
-_MIN, 65536, msglevel);
-     }
-     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        options->ce.tun_mtu_extra =3D positive_atoi(p[1], msglevel);
--        options->ce.tun_mtu_extra_defined =3D true;
-+        if (atoi_constrained(p[1], &options->ce.tun_mtu_extra, p[0], 0, 65=
-536, msglevel))
-+        {
-+            options->ce.tun_mtu_extra_defined =3D true;
-+        }
-     }
-     else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
-     {
-@@ -7065,11 +7059,8 @@
-     else if (streq(p[0], "fragment") && p[1] && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        options->ce.fragment =3D positive_atoi(p[1], msglevel);
--
--        if (options->ce.fragment < 68)
-+        if (!atoi_constrained(p[1], &options->ce.fragment, p[0], 68, INT_M=
-AX, msglevel))
-         {
--            msg(msglevel, "--fragment needs to be at least 68");
-             goto err;
-         }
-=20
-@@ -7743,12 +7734,14 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
-         if (p[1])
-         {
--            int mssfix =3D positive_atoi(p[1], msglevel);
--            /* can be 0, but otherwise it needs to be high enough so we can
--             * substract room for headers. */
--            if (mssfix !=3D 0 && (mssfix < TLS_CHANNEL_MTU_MIN || mssfix >=
- UINT16_MAX))
-+            int mssfix;
-+            if (!atoi_constrained(p[1], &mssfix, p[0], 0, UINT16_MAX, msgl=
-evel))
-             {
--                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
-+                goto err;
-+            }
-+            if (mssfix !=3D 0 && mssfix < TLS_CHANNEL_MTU_MIN)
-+            {
-+                msg(msglevel, "mssfix needs to be >=3D %d, not %d", TLS_CH=
-ANNEL_MTU_MIN, mssfix);
-                 goto err;
-             }
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/1213/1
 
-@@ -8001,7 +7994,7 @@
-     else if (streq(p[0], "max-routes-per-client") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_INHERIT);
--        options->max_routes_per_client =3D max_int(positive_atoi(p[1], msg=
-level), 1);
-+        atoi_constrained(p[1], &options->max_routes_per_client, p[0], 1, I=
-NT_MAX, msglevel);
-     }
-     else if (streq(p[0], "client-cert-not-required") && !p[1])
-     {
-@@ -9808,8 +9801,6 @@
-     }
-     else if (streq(p[0], "keying-material-exporter") && p[1] && p[2])
-     {
--        int ekm_length =3D positive_atoi(p[2], msglevel);
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 217f897..1247f11 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -61,6 +61,7 @@
+ 	dco_win.c dco_win.h \
+ 	dhcp.c dhcp.h \
+ 	dns.c dns.h \
++	domain_helper.h \
+ 	env_set.c env_set.h \
+ 	errlevel.h \
+ 	error.c error.h \
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 2a9e60b..d2ff670 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -30,6 +30,7 @@
+ #include "socket_util.h"
+ #include "options.h"
+ #include "run_command.h"
++#include "domain_helper.h"
 
-         if (strncmp(p[1], "EXPORTER", 8))
-@@ -9823,14 +9814,14 @@
-             msg(msglevel,
-                 "Keying material exporter label must not be '" EXPORT_KEY_=
-DATA_LABEL "'.");
-         }
--        if (ekm_length < 16 || ekm_length > 4095)
-+
-+        if (!atoi_constrained(p[2], &options->keying_material_exporter_len=
-gth,
-+                              p[0], 16, 4095, msglevel))
-         {
--            msg(msglevel, "Invalid keying material exporter length");
-             goto err;
-         }
-
-         options->keying_material_exporter_label =3D p[1];
--        options->keying_material_exporter_length =3D ekm_length;
-     }
-     else if (streq(p[0], "allow-recursive-routing") && !p[1])
-     {
-@@ -9865,15 +9856,14 @@
-     }
-     else if (streq(p[0], "vlan-pvid") && p[1] && !p[2])
-     {
-+        int vlan_pvid;
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_INSTANCE);
--        options->vlan_pvid =3D positive_atoi(p[1], msglevel);
--        if (options->vlan_pvid < OPENVPN_8021Q_MIN_VID
--            || options->vlan_pvid > OPENVPN_8021Q_MAX_VID)
-+        if (!atoi_constrained(p[1], &vlan_pvid, p[0],
-+                              OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID=
-, msglevel))
-         {
--            msg(msglevel, "the parameter of --vlan-pvid parameters must be=
- >=3D %u and <=3D %u",
--                OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID);
-             goto err;
-         }
-+        options->vlan_pvid =3D (uint16_t)vlan_pvid;
-     }
-     else
-     {
-diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
-index 8a1c083..2eeecb8 100644
---- a/src/openvpn/options_util.c
-+++ b/src/openvpn/options_util.c
-@@ -162,11 +162,6 @@
-     return (int)i;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
- atoi_constrained(const char *str, int *value, const char *name, int min, i=
-nt max, msglvl_t msglevel)
- {
-@@ -194,13 +189,10 @@
-         return false;
-     }
-
--    *value =3D i;
-+    *value =3D (int)i;
+ #ifdef _WIN32
+ #include "win32.h"
+@@ -143,7 +144,7 @@
      return true;
  }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
+-void
++bool
+ dns_domain_list_append(struct dns_domain **entry, char **domains, struct g=
+c_arena *gc)
+ {
+     /* Fast forward to the end of the list */
+@@ -155,11 +156,19 @@
+     /* Append all domains to the end of the list */
+     while (*domains)
+     {
++        char *domain =3D *domains++;
++        if (!validate_domain(domain))
++        {
++            return false;
++        }
++
+         ALLOC_OBJ_CLEAR_GC(*entry, struct dns_domain, gc);
+         struct dns_domain *new =3D *entry;
+-        new->name =3D *domains++;
++        new->name =3D domain;
+         entry =3D &new->next;
+     }
++
++    return true;
+ }
 
- static const char *updatable_options[] =3D { "block-ipv6", "block-outside-=
-dns",
-                                            "dhcp-option", "dns",
+ bool
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index 6cd98f2..3dd7847 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -141,13 +141,14 @@
+ struct dns_server *dns_server_get(struct dns_server **entry, long priority=
+, struct gc_arena *gc);
+
+ /**
+- * Appends DNS domain parameters to a linked list.
++ * Appends safe DNS domain parameters to a linked list.
+  *
+  * @param   entry       Address of the first list entry pointer
+  * @param   domains     Address of the first domain parameter
+  * @param   gc          The gc the new list items should be allocated in
++ * @return              True if domains were appended and don't contain in=
+valid characters
+  */
+-void dns_domain_list_append(struct dns_domain **entry, char **domains, str=
+uct gc_arena *gc);
++bool dns_domain_list_append(struct dns_domain **entry, char **domains, str=
+uct gc_arena *gc);
+
+ /**
+  * Parses a string IPv4 or IPv6 address and optional colon separated port,
+diff --git a/src/openvpn/domain_helper.h b/src/openvpn/domain_helper.h
+new file mode 100644
+index 0000000..f1ecf86
+--- /dev/null
++++ b/src/openvpn/domain_helper.h
+@@ -0,0 +1,45 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2025 Lev Stipakov <lev@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++static inline bool
++is_allowed_domain_ascii(unsigned char c)
++{
++    return (c >=3D 'A' && c <=3D 'Z')
++           || (c >=3D 'a' && c <=3D 'z')
++           || (c >=3D '0' && c <=3D '9')
++           || c =3D=3D '.' || c =3D=3D '-' || c =3D=3D '_' || c >=3D 0x80;
++}
++
++static inline bool
++validate_domain(const char *domain)
++{
++    for (const char *ch =3D domain; *ch; ++ch)
++    {
++        if (!is_allowed_domain_ascii((unsigned char)*ch))
++        {
++            return false;
++        }
++    }
++
++    return true;
++}
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f801743..f35738d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -61,6 +61,7 @@
+ #include "dco.h"
+ #include "options_util.h"
+ #include "tun_afunix.h"
++#include "domain_helper.h"
+
+ #include <ctype.h>
+
+@@ -5877,8 +5878,12 @@
+ {
+     if (streq(p[1], "search-domains") && p[2])
+     {
+-        dns_domain_list_append(&options->dns_options.search_domains, &p[2],
+-                               &options->dns_options.gc);
++        if (!dns_domain_list_append(&options->dns_options.search_domains, =
+&p[2],
++                                    &options->dns_options.gc))
++        {
++            msg(msglevel, "--dns %s contain invalid characters", p[1]);
++            return false;
++        }
+     }
+     else if (streq(p[1], "server") && p[2] && p[3] && p[4])
+     {
+@@ -5906,7 +5911,11 @@
+         }
+         else if (streq(p[3], "resolve-domains"))
+         {
+-            dns_domain_list_append(&server->domains, &p[4], &options->dns_=
+options.gc);
++            if (!dns_domain_list_append(&server->domains, &p[4], &options-=
+>dns_options.gc))
++            {
++                msg(msglevel, "--dns server %ld: %s contain invalid charac=
+ters", priority, p[3]);
++                return false;
++            }
+         }
+         else if (streq(p[3], "dnssec") && !p[5])
+         {
+@@ -5950,6 +5959,11 @@
+         }
+         else if (streq(p[3], "sni") && !p[5])
+         {
++            if (!validate_domain(p[4]))
++            {
++                msg(msglevel, "--dns server %ld: %s contains invalid chara=
+cters", priority, p[3]);
++                return false;
++            }
+             server->sni =3D p[4];
+         }
+         else
+@@ -8551,11 +8565,23 @@
+
+         if ((streq(p[1], "DOMAIN") || streq(p[1], "ADAPTER_DOMAIN_SUFFIX")=
+) && p[2] && !p[3])
+         {
++            if (!validate_domain(p[2]))
++            {
++                msg(msglevel, "--dhcp-option %s contains invalid character=
+s", p[1]);
++                goto err;
++            }
++
+             dhcp->domain =3D p[2];
+             dhcp_optional =3D true;
+         }
+         else if (streq(p[1], "DOMAIN-SEARCH") && p[2] && !p[3])
+         {
++            if (!validate_domain(p[2]))
++            {
++                msg(msglevel, "--dhcp-option %s contains invalid character=
+s", p[1]);
++                goto err;
++            }
++
+             if (dhcp->domain_search_list_len < N_SEARCH_LIST_LEN)
+             {
+                 dhcp->domain_search_list[dhcp->domain_search_list_len++] =
+=3D p[2];
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1213?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
-Gerrit-Change-Number: 1153
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I09209ccd785cc368b2fcf467a3d211fbd41005c6
+Gerrit-Change-Number: 1213
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---cxA3FpJ1de0=
+--AtSWgl9v3ko=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #5</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail">View C=
-hange</a></p><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">options: Review use of positive_atoi vs atoi_constrained<br><br>R=
-eplace where it is useful.<br><br>While here also add a missing cast in ato=
-i_constrained.<br><br>Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde<=
-br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M sr=
-c/openvpn/options.c<br>M src/openvpn/options_util.c<br>2 files changed, 22 =
-insertions(+), 40 deletions(-)<br><br></pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/53/1153/5</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/optio=
-ns.c b/src/openvpn/options.c</span><br><span>index f801743..5192127 100644<=
-/span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openv=
-pn/options.c</span><br><span>@@ -7019,21 +7019,15 @@</span><br><span>     e=
-lse if (streq(p[0], &quot;tun-mtu-max&quot;) &amp;&amp; p[1] &amp;&amp; !p[=
-2])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P=
-_MTU | OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        int max_mtu =3D positive_atoi(p[1], msglevel);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        if (max_mtu &lt; 68 || max_mtu=
- &gt; 65536)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(msgle=
-vel, &quot;--tun-mtu-max value &#39;%s&#39; is invalid&quot;, p[1]);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            options-&gt;ce.tun_mtu_max =3D max_mtu;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        atoi_constrained(p[1], &amp;optio=
-ns-&gt;ce.tun_mtu_max, p[0], TUN_MTU_MAX_MIN, 65536, msglevel);</span><br><=
-span>     }</span><br><span>     else if (streq(p[0], &quot;tun-mtu-extra&q=
-uot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><s=
-pan>         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce.tun_mtu_extr=
-a =3D positive_atoi(p[1], msglevel);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        options-&gt;ce.tun_mtu_extra_defined =3D true;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (atoi_constrai=
-ned(p[1], &amp;options-&gt;ce.tun_mtu_extra, p[0], 0, 65536, msglevel))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            options-&gt;ce.tun_mt=
-u_extra_defined =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span>     }</span><br><span>     else if (streq(=
-p[0], &quot;max-packet-size&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span>=
-<br><span>     {</span><br><span>@@ -7065,11 +7059,8 @@</span><br><span>   =
-  else if (streq(p[0], &quot;fragment&quot;) &amp;&amp; p[1] &amp;&amp; !p[=
-3])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P=
-_MTU | OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        options-&gt;ce.fragment =3D positive_atoi(p[1], msglevel);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        if (options-&gt;ce.fragment &lt; 68)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_cons=
-trained(p[1], &amp;options-&gt;ce.fragment, p[0], 68, INT_MAX, msglevel))</=
-span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            msg(msglevel, &quot;--fragment needs to be at least 68&quot=
-;);</span><br><span>             goto err;</span><br><span>         }</span=
-><br><span> </span><br><span>@@ -7743,12 +7734,14 @@</span><br><span>      =
-   VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);</span><br><span>   =
-      if (p[1])</span><br><span>         {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            int mssfix =3D positive_atoi(p[1], msgleve=
-l);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* can=
- be 0, but otherwise it needs to be high enough so we can</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-             * substract room for heade=
-rs. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if =
-(mssfix !=3D 0 &amp;&amp; (mssfix &lt; TLS_CHANNEL_MTU_MIN || mssfix &gt; U=
-INT16_MAX))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    int mssfix;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        if (!atoi_constrained(p[1], &amp;mssfix, p[0], 0, UINT16_MAX, msgle=
-vel))</span><br><span>             {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                msg(msglevel, &quot;--mssfix value &#39;%s&#=
-39; is invalid&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                goto err;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            if (mssfix !=3D 0 &amp;&amp; mssfix &lt; TLS_CHANNEL_M=
-TU_MIN)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                ms=
-g(msglevel, &quot;mssfix needs to be &gt;=3D %d, not %d&quot;, TLS_CHANNEL_=
-MTU_MIN, mssfix);</span><br><span>                 goto err;</span><br><spa=
-n>             }</span><br><span> </span><br><span>@@ -8001,7 +7994,7 @@</s=
-pan><br><span>     else if (streq(p[0], &quot;max-routes-per-client&quot;) =
-&amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>  =
-       VERIFY_PERMISSION(OPT_P_INHERIT);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        options-&gt;max_routes_per_client =3D max_int(po=
-sitive_atoi(p[1], msglevel), 1);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        atoi_constrained(p[1], &amp;options-&gt;max_routes_per=
-_client, p[0], 1, INT_MAX, msglevel);</span><br><span>     }</span><br><spa=
-n>     else if (streq(p[0], &quot;client-cert-not-required&quot;) &amp;&amp=
-; !p[1])</span><br><span>     {</span><br><span>@@ -9808,8 +9801,6 @@</span=
-><br><span>     }</span><br><span>     else if (streq(p[0], &quot;keying-ma=
-terial-exporter&quot;) &amp;&amp; p[1] &amp;&amp; p[2])</span><br><span>   =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int ekm_le=
-ngth =3D positive_atoi(p[2], msglevel);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL=
-);</span><br><span> </span><br><span>         if (strncmp(p[1], &quot;EXPOR=
-TER&quot;, 8))</span><br><span>@@ -9823,14 +9814,14 @@</span><br><span>    =
-         msg(msglevel,</span><br><span>                 &quot;Keying materi=
-al exporter label must not be &#39;&quot; EXPORT_KEY_DATA_LABEL &quot;&#39;=
-.&quot;);</span><br><span>         }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        if (ekm_length &lt; 16 || ekm_length &gt; 4095)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[2], &amp;=
-options-&gt;keying_material_exporter_length,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                              p[0], 16, 4095, msgl=
-evel))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            msg(msglevel, &quot;Invalid keying material exporte=
-r length&quot;);</span><br><span>             goto err;</span><br><span>   =
-      }</span><br><span> </span><br><span>         options-&gt;keying_mater=
-ial_exporter_label =3D p[1];</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        options-&gt;keying_material_exporter_length =3D ekm_length;<=
-/span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;allo=
-w-recursive-routing&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><=
-br><span>@@ -9865,15 +9856,14 @@</span><br><span>     }</span><br><span>   =
-  else if (streq(p[0], &quot;vlan-pvid&quot;) &amp;&amp; p[1] &amp;&amp; !p=
-[2])</span><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        int vlan_pvid;</span><br><span>         VERIFY_PERMISSION(O=
-PT_P_GENERAL | OPT_P_INSTANCE);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        options-&gt;vlan_pvid =3D positive_atoi(p[1], msglevel);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (options-&g=
-t;vlan_pvid &lt; OPENVPN_8021Q_MIN_VID</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            || options-&gt;vlan_pvid &gt; OPENVPN_8021Q_MA=
-X_VID)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!=
-atoi_constrained(p[1], &amp;vlan_pvid, p[0],</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                              OPENVPN_8021Q_MIN_VI=
-D, OPENVPN_8021Q_MAX_VID, msglevel))</span><br><span>         {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            msg(msglevel, &quot;t=
-he parameter of --vlan-pvid parameters must be &gt;=3D %u and &lt;=3D %u&qu=
-ot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                O=
-PENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID);</span><br><span>             =
-goto err;</span><br><span>         }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        options-&gt;vlan_pvid =3D (uint16_t)vlan_pvid;</sp=
-an><br><span>     }</span><br><span>     else</span><br><span>     {</span>=
-<br><span>diff --git a/src/openvpn/options_util.c b/src/openvpn/options_uti=
-l.c</span><br><span>index 8a1c083..2eeecb8 100644</span><br><span>--- a/src=
-/openvpn/options_util.c</span><br><span>+++ b/src/openvpn/options_util.c</s=
-pan><br><span>@@ -162,11 +162,6 @@</span><br><span>     return (int)i;</spa=
-n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot=
-;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-ndif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>=
- bool</span><br><span> atoi_constrained(const char *str, int *value, const =
-char *name, int min, int max, msglvl_t msglevel)</span><br><span> {</span><=
-br><span>@@ -194,13 +189,10 @@</span><br><span>         return false;</span=
-><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    *value =3D i;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    *value =3D (int)i;</span><br><span>     return true;</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span> </span><br><sp=
-an> static const char *updatable_options[] =3D { &quot;block-ipv6&quot;, &q=
-uot;block-outside-dns&quot;,</span><br><span>                              =
-              &quot;dhcp-option&quot;, &quot;dns&quot;,</span><br><span></s=
-pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/1153?usp=3Demail">change 1153</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1213?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">Validate DNS parameters<br><br>This adds validation of follo=
+wing DNS options:<br><br> --dns search-domains<br> --dns server N resolve-d=
+omains<br> --dns server N sni<br><br> --dhcp-option DOMAIN<br> --dhcp-optio=
+n ADAPTER_DOMAIN_SUFFIX<br> --dhcp-option DOMAIN-SEARCH<br><br>On Linux (an=
+d similar platforms), those options are written to a tmp file,<br>which is =
+later sourced by a script running as root. Since options are<br>controlled =
+by the server, it is possible for a malicious server to<br>execute script i=
+njection attack by pushing something like<br><br> --dns search-domains x;id=
+<br><br>in which case &quot;id&quot; command will be executed as a root.<br=
+><br>On Windows, the value of DOMAIN/ADAPTER_DOMAIN_SUFFIX is passed to<br>=
+a powershell script. A malicious server could push:<br><br> --dhcp-option D=
+OMAIN a&#39;;Restart-Computer&#39;<br><br>and if openvpn is not using DHCP =
+(this is the default, with dco-win driver)<br>and and running without inter=
+active service, that powershell command<br>will be executed.<br><br>Validat=
+ion is performed in a way that value only contains following<br>symbols:<br=
+><br>  [A-Za-z0-9.-_\x80-\0xff]<br><br>Reported-By: Stanislav Fort &lt;disc=
+losure@...2935...&gt;<br>CVE: 2025-10680<br>Change-Id: I09209ccd785cc368b2f=
+cf467a3d211fbd41005c6<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<=
+br>---<br>M src/openvpn/Makefile.am<br>M src/openvpn/dns.c<br>M src/openvpn=
+/dns.h<br>A src/openvpn/domain_helper.h<br>M src/openvpn/options.c<br>5 fil=
+es changed, 89 insertions(+), 7 deletions(-)<br><br></pre><pre style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t.openvpn.net:29418/openvpn refs/changes/13/1213/1</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
+/openvpn/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index 217f89=
+7..1247f11 100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><=
+span>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -61,6 +61,7 @@</span>=
+<br><span> 	dco_win.c dco_win.h \</span><br><span> 	dhcp.c dhcp.h \</span><=
+br><span> 	dns.c dns.h \</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+	domain_helper.h \</span><br><span> 	env_set.c env_set.h \</span><br><=
+span> 	errlevel.h \</span><br><span> 	error.c error.h \</span><br><span>dif=
+f --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index 2a9e6=
+0b..d2ff670 100644</span><br><span>--- a/src/openvpn/dns.c</span><br><span>=
++++ b/src/openvpn/dns.c</span><br><span>@@ -30,6 +30,7 @@</span><br><span> =
+#include &quot;socket_util.h&quot;</span><br><span> #include &quot;options.=
+h&quot;</span><br><span> #include &quot;run_command.h&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#include &quot;domain_helper.h&quot=
+;</span><br><span> </span><br><span> #ifdef _WIN32</span><br><span> #includ=
+e &quot;win32.h&quot;</span><br><span>@@ -143,7 +144,7 @@</span><br><span> =
+    return true;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+bool</span><br><span> dns_domain_list_append(struct dns_do=
+main **entry, char **domains, struct gc_arena *gc)</span><br><span> {</span=
+><br><span>     /* Fast forward to the end of the list */</span><br><span>@=
+@ -155,11 +156,19 @@</span><br><span>     /* Append all domains to the end =
+of the list */</span><br><span>     while (*domains)</span><br><span>     {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        char *domai=
+n =3D *domains++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      if (!validate_domain(domain))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            return false;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span>         ALLOC_OBJ_CLEAR_GC(*entry, struct dns_domain, g=
+c);</span><br><span>         struct dns_domain *new =3D *entry;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        new-&gt;name =3D *domains=
+++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        new-&gt;=
+name =3D domain;</span><br><span>         entry =3D &amp;new-&gt;next;</spa=
+n><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</sp=
+an><br><span> }</span><br><span> </span><br><span> bool</span><br><span>dif=
+f --git a/src/openvpn/dns.h b/src/openvpn/dns.h</span><br><span>index 6cd98=
+f2..3dd7847 100644</span><br><span>--- a/src/openvpn/dns.h</span><br><span>=
++++ b/src/openvpn/dns.h</span><br><span>@@ -141,13 +141,14 @@</span><br><sp=
+an> struct dns_server *dns_server_get(struct dns_server **entry, long prior=
+ity, struct gc_arena *gc);</span><br><span> </span><br><span> /**</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- * Appends DNS domain parameter=
+s to a linked list.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Appends safe DNS domain parameters to a linked list.</span><br><span>  *=
+</span><br><span>  * @param   entry       Address of the first list entry p=
+ointer</span><br><span>  * @param   domains     Address of the first domain=
+ parameter</span><br><span>  * @param   gc          The gc the new list ite=
+ms should be allocated in</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * @return              True if domains were appended and don&#39;t c=
+ontain invalid characters</span><br><span>  */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-void dns_domain_list_append(struct dns_domain **en=
+try, char **domains, struct gc_arena *gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+bool dns_domain_list_append(struct dns_domain **entr=
+y, char **domains, struct gc_arena *gc);</span><br><span> </span><br><span>=
+ /**</span><br><span>  * Parses a string IPv4 or IPv6 address and optional =
+colon separated port,</span><br><span>diff --git a/src/openvpn/domain_helpe=
+r.h b/src/openvpn/domain_helper.h</span><br><span>new file mode 100644</spa=
+n><br><span>index 0000000..f1ecf86</span><br><span>--- /dev/null</span><br>=
+<span>+++ b/src/openvpn/domain_helper.h</span><br><span>@@ -0,0 +1,45 @@</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to secure=
+ly tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *             over a single UDP port, with support for SSL/TLS-based</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             session =
+authentication and key exchange,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *             packet encryption, packet authentication, and</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet=
+ compression.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 =
+Lev Stipakov &lt;lev@...515...&gt;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  This program is free software; you can redistribute it and/or modify</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms o=
+f the GNU General Public License version 2</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *  as published by the Free Software Foundation.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed in the =
+hope that it will be useful,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY=
+ or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  GNU General Public License for more details.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy =
+of the GNU General Public License along</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *  with this program; if not, write to the Free Softwa=
+re Foundation, Inc.,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+is_allowed_domain_ascii(unsigned char c)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return (c &gt;=3D &#39;A&#39; &amp;&amp; c &lt;=3D &#39;Z&#=
+39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           || (=
+c &gt;=3D &#39;a&#39; &amp;&amp; c &lt;=3D &#39;z&#39;)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+           || (c &gt;=3D &#39;0&#39; &a=
+mp;&amp; c &lt;=3D &#39;9&#39;)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+           || c =3D=3D &#39;.&#39; || c =3D=3D &#39;-&#39; || c=
+ =3D=3D &#39;_&#39; || c &gt;=3D 0x80;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline bool=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+validate_domain(con=
+st char *domain)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (const char *=
+ch =3D domain; *ch; ++ch)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+if (!is_allowed_domain_ascii((unsigned char)*ch))</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            return false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>di=
+ff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>in=
+dex f801743..f35738d 100644</span><br><span>--- a/src/openvpn/options.c</sp=
+an><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -61,6 +61,7 @@<=
+/span><br><span> #include &quot;dco.h&quot;</span><br><span> #include &quot=
+;options_util.h&quot;</span><br><span> #include &quot;tun_afunix.h&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;domain_=
+helper.h&quot;</span><br><span> </span><br><span> #include &lt;ctype.h&gt;<=
+/span><br><span> </span><br><span>@@ -5877,8 +5878,12 @@</span><br><span> {=
+</span><br><span>     if (streq(p[1], &quot;search-domains&quot;) &amp;&amp=
+; p[2])</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        dns_domain_list_append(&amp;options-&gt;dns_options.search=
+_domains, &amp;p[2],</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                              &amp;options-&gt;dns_options.gc);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (!dns_domain_list_ap=
+pend(&amp;options-&gt;dns_options.search_domains, &amp;p[2],</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                                  =
+  &amp;options-&gt;dns_options.gc))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(msglevel, &quot;--dns %s contain invalid characters&q=
+uot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       }</span><br><span>     }</span><br><span>     else if (streq(p[1], &=
+quot;server&quot;) &amp;&amp; p[2] &amp;&amp; p[3] &amp;&amp; p[4])</span><=
+br><span>     {</span><br><span>@@ -5906,7 +5911,11 @@</span><br><span>    =
+     }</span><br><span>         else if (streq(p[3], &quot;resolve-domains&=
+quot;))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            dns_domain_list_append(&amp;server-&gt;domains, &a=
+mp;p[4], &amp;options-&gt;dns_options.gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            if (!dns_domain_list_append(&amp;server-=
+&gt;domains, &amp;p[4], &amp;options-&gt;dns_options.gc))</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--dns=
+ server %ld: %s contain invalid characters&quot;, priority, p[3]);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                return false=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</spa=
+n><br><span>         }</span><br><span>         else if (streq(p[3], &quot;=
+dnssec&quot;) &amp;&amp; !p[5])</span><br><span>         {</span><br><span>=
+@@ -5950,6 +5959,11 @@</span><br><span>         }</span><br><span>         =
+else if (streq(p[3], &quot;sni&quot;) &amp;&amp; !p[5])</span><br><span>   =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+if (!validate_domain(p[4]))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                msg(msglevel, &quot;--dns server %ld: %s contains invalid=
+ characters&quot;, priority, p[3]);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                return false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            }</span><br><span>             server=
+-&gt;sni =3D p[4];</span><br><span>         }</span><br><span>         else=
+</span><br><span>@@ -8551,11 +8565,23 @@</span><br><span> </span><br><span>=
+         if ((streq(p[1], &quot;DOMAIN&quot;) || streq(p[1], &quot;ADAPTER_=
+DOMAIN_SUFFIX&quot;)) &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><span>   =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+if (!validate_domain(p[2]))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                msg(msglevel, &quot;--dhcp-option %s contains invalid cha=
+racters&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                goto err;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span>             dhcp-&gt;domain =3D p[2];</span><br><span> =
+            dhcp_optional =3D true;</span><br><span>         }</span><br><s=
+pan>         else if (streq(p[1], &quot;DOMAIN-SEARCH&quot;) &amp;&amp; p[2=
+] &amp;&amp; !p[3])</span><br><span>         {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            if (!validate_domain(p[2]))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quo=
+t;--dhcp-option %s contains invalid characters&quot;, p[1]);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                goto err;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>             if (=
+dhcp-&gt;domain_search_list_len &lt; N_SEARCH_LIST_LEN)</span><br><span>   =
+          {</span><br><span>                 dhcp-&gt;domain_search_list[dh=
+cp-&gt;domain_search_list_len++] =3D p[2];</span><br><span></span><br></pre=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1213?us=
+p=3Demail">change 1213</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1213?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id440917f433aab1a7db608ba04f=
-a95ba47c2ddde </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1153 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I09209ccd785cc368b2fcf467a3d=
+211fbd41005c6 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1213 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---cxA3FpJ1de0=--
+--AtSWgl9v3ko=--
 
