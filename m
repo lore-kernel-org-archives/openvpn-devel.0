@@ -1,9 +1,16 @@
-Message-ID: <2eec0f19-3ebc-4f83-b72d-9f62c817339b@...2108...>
-Date: Wed, 24 Sep 2025 15:15:20 +0200
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 24 Sep 2025 13:16:33 +0000
+In-Reply-To: <gerrit.1758555758000.Iab9e780d9649d7581e5f6aa4b23e72bbed5e145b@...2715...>
+References: <gerrit.1758555758000.Iab9e780d9649d7581e5f6aa4b23e72bbed5e145b@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <dff2433aa8c0ce196cbbcd30e028a6f43c0de1c7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-From: David Sommerseth <dazo+openvpn@...2108...>
-Content-Language: en-US
-Subject: [Openvpn-devel] OpenVPN 3 Linux v26 released
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="KgILovAnH3g="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Make unit tests
+ -Wconversion clean
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,248 +19,265 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-announce@lists.sourceforge.net
-Cc: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-devel <Openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-OpenVPN 3 Linux v26 (Stable release)
+--KgILovAnH3g=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The v26 release is a small bugfix and enhancement release.
+cron2 has uploaded a new patch set (#6) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1205?usp=3Demail )
 
-Please notice the deprecation of openvpn3-autoload.
-
-* Enhancement: Improve user feedback when a VPN profile is not valid
-  Since the OpenVPN 3 Linux v22_dev release, the
-  openvpn3-service-configmgr service has provided an API to validate
-  VPN profiles it manages.  This has been used in the rest of the
-  available tools to check if everything is in order before
-  attempting to start a VPN session.
-
-  When a configuration profile was lacking certain required options,
-  it would fail this validation.  But the feedback to the user was
-  not much helpful and the user would need to check the
-  configuration profile manually.
-
-  With the v26 release, the end user will be provided a list of
-  required configuration options missing.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
 
-* Enhancement: Set route metric value when provided via VPN session
-  Since the very beginning of OpenVPN 3 Linux, the route metric
-  value has been ignored.  This has been improved in the v26 release
-  and the metric values provided in the configuration profile or
-  pushed from the VPN server will now be respected.
-  
+Change subject: Make unit tests -Wconversion clean
+......................................................................
 
-* FEATURE DEPRECATION: openvpn3-autoload
+Make unit tests -Wconversion clean
 
-  The openvpn3-autoload feature was deprecated already in the
-  v20 release.  This feature will be removed in a coming stable
-  release.
+Only trivial problems left after the other patches
+have been merged.
 
-  The replacement is the openvpn3-session@...1685... systemd unit.
-  Please see the openvpn3-systemd man page [1] for more details.
-
-  If you depend on openvpn3-autoload today, please migrate ASAP
-  to the systemd approach.
-
-  [1] <https://codeberg.org/OpenVPN/openvpn3-linux/src/branch/master/docs/man/openvpn3-systemd.8.rst>
-
-
-* Bugfix: Proper parsing of <connection/> tags in OpenVPN configs
-  The internal VPN profile configuration parser did not properly
-  parse configuration files containing <connection>...</connection>
-  tags to configure a remote server.  This has been fixed and both
-  the openvpn3-service-configmgr and the openvpn3 Python module has
-  been updated to support this feature.
+Change-Id: Iab9e780d9649d7581e5f6aa4b23e72bbed5e145b
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1205
+Message-Id: <20250924124154.15963-1-gert@...1296...>
+URL: https://sourceforge.net/p/openvpn/mailman/message/59238128/
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M tests/unit_tests/openvpn/test_crypto.c
+M tests/unit_tests/openvpn/test_ssl.c
+2 files changed, 9 insertions(+), 24 deletions(-)
 
 
-* Bugfix: Proper parsing of semicolon (;) as comment line
-  The openvpn3 Python module did not properly parse configuration
-  files which used semicolon (;) as a comment separator.  This
-  has been improved and both hash (#) and semicolon can now be
-  used for comments in configuration profiles.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/1205/6
 
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index 22e6912..93dfa42 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -674,15 +674,10 @@
+     struct crypto_options co;
+ };
 
-* Bugfix: openvpn3-service-netcfg may stop on route setup errors
-  In some corner cases, when the openvpn3-service-client (VPN
-  client) process called the Network Configuration service
-  (openvpn3-service-netcfg) to establish the VPN network
-  interface, the Network Configuration service could crash
-  and not recover, resulting in the VPN session not being able
-  to be established.  This has been improved and this error
-  situation is now handled and logged properly.
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ static int
+ crypto_test_epoch_setup(void **state)
+ {
+-    int *num_future_keys =3D (int *)*state;
++    uint16_t *num_future_keys =3D (uint16_t *)*state;
+     struct epoch_test_state *data =3D calloc(1, sizeof(struct epoch_test_s=
+tate));
 
+     data->gc =3D gc_new();
+@@ -699,10 +694,6 @@
+     return 0;
+ }
 
-* Bugfix: Background D-Bus calls to systemd-resolved fails
-  On some systems the D-Bus communication between the
-  openvpn3-service-netcfg (NetCfg) process and systemd-resolved
-  could be too slow, resulting in the NetCfg process retrying
-  the D-Bus call.  Due to an incorrect retry logic, the parameters
-  systemd-resolved would need had been released from memory and
-  was no longer accessible.  This has been resolved and the
-  retry logic now behaves as expected.
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static int
+ crypto_test_epoch_teardown(void **state)
+ {
+@@ -906,9 +897,9 @@
+ int
+ main(void)
+ {
+-    int prestate_num13 =3D 13;
+-    int prestate_num16 =3D 16;
+-    int prestate_num32 =3D 32;
++    uint16_t prestate_num13 =3D 13;
++    uint16_t prestate_num16 =3D 16;
++    uint16_t prestate_num32 =3D 32;
 
+     openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
+/test_ssl.c
+index ed40a7d..8dc9b66 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -133,11 +133,6 @@
+     const char *keyfile;
+ } global_state;
 
-* Bugfix: VPN session restart triggers assertion warning in logs
-  When an on-going VPN session is attempted restarted, for example
-  via the openvpn3 session-manage command, the NetCfg service
-  would log an assertion warning in the system logs.  This has
-  been resolved and VPN session restarts will now work as expected.
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ static int
+ init(void **state)
+ {
+@@ -152,17 +147,16 @@
+     {
+         fail_msg("make tmpfile for certificate or key data failed (error =
+=3D %d)", errno);
+     }
+-    assert_int_equal(write(certfd, unittest_cert, strlen(unittest_cert)), =
+strlen(unittest_cert));
+-    assert_int_equal(write(keyfd, unittest_key, strlen(unittest_key)), str=
+len(unittest_key));
++    /* Awkward casts required for MinGW with -O0 only */
++    assert_int_equal(write(certfd, unittest_cert, (unsigned int)strlen(uni=
+ttest_cert)),
++                     strlen(unittest_cert));
++    assert_int_equal(write(keyfd, unittest_key, (unsigned int)strlen(unitt=
+est_key)),
++                     strlen(unittest_key));
+     close(certfd);
+     close(keyfd);
+     return 0;
+ }
 
-
-* Bugfix: OpenVPN 3 AWS-VPC fails changing IPv6 routes
-  Due to a typo in the parameter name used for changing IPv6
-  routes in the AWS VPC service, setting IPv6 routes would result
-  in an error.  This has been resolved in the OpenVPN 3 Core
-  version 3.11.5 release, which OpenVPN 3 Linux v26 has
-  upgraded to.
-
-
-* OpenVPN 3 Core Library update
-  The OpenVPN 3 Core Library has been updated to version 3.11.5,
-  which is contains the fix for the AWS VPC route fix.  It also
-  enables building against Linux 6.16 kernel headers.
-
-
-Known issues:
-
-  - The openvpn3-service-netcfg service does not differentiate between
-    --dns server X resolve-domains and --dns search-domains when using
-    the --resolv-conf mode, which is not as this feature is
-    intended to work.  This was discovered in the v24 release and is
-    on the schedule to be fixed in the next releases.  When this gets
-    fixed, only --dns search-domains will be considered as search
-    domains and --dns server X resolve-domains will enable split-DNS
-    when using --systemd-resolved and otherwise ignored when using
-    --resolv-conf with openvpn3-service-netcfg.
-
-
-Supported Linux distributions
------------------------------
-
-  - Debian: 12, 13[*]
-  - Fedora: 41, 42
-  - Red Hat Enterprise Linux 8, 9, 10[*]
-  - Ubuntu: 22.04, 24.04, 25.05
-
-Installation and getting started instructions can be found here:
-
-  <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
-
-There are in addition other Linux distributions now providing
-OpenVPN 3 Linux packages.  These distributions are primarily
-supported by their respective distribution communities.  We will
-naturally review and apply fixes deemed needed for any
-distributions as they occur.
-
-NOTE: Red Hat Enterprise Linux 10
-  The Fedora Copr repository definition for RHEL+EPEL-10 *may*
-  use a wrong URL.  After doing the 'dnf copr enable' step
-  on RHEL-10, please ensure the URL contains 'rhel+epel' and
-  not just 'epel'.  This is expected to automatically improve
-  with time.
-
-  The stable repositories provided by OpenVPN Inc should not
-  have this issue.
-
-NOTE: Debian 13 (Trixie)
-  Debian 13 is added to the list of supported distribution versions.
-  With Debian 13 there is now also an upstream distribution package
-  as well, openvpn3-client, as well as the GDBus++ library.  The
-  version in the distribution repository is at OpenVPN 3 Linux v24.1.
-  This cannot be upgraded to a newer base line, due to Debian
-  packaging rules.  The package maintainer will apply bug and security
-  fixes as needed.
-
-  If you want to use a newer OpenVPN 3 Linux on Debian 13, you will
-  need to install the third-party repository provided by OpenVPN Inc.
-  This is the same procedure as in Debian 12 and earlier.  With the
-  v26 release, the package has been renamed to 'openvpn3-client' and
-  an upgrade path from the openvpn3 package has been added.  After
-  upgrading to v26, the openvpn3 transitional package can be removed
-  via 'apt autoremove'.
-
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static int
+ cleanup(void **state)
+ {
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1205?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-David Sommerseth
-OpenVPN Inc
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iab9e780d9649d7581e5f6aa4b23e72bbed5e145b
+Gerrit-Change-Number: 1205
+Gerrit-PatchSet: 6
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
+
+--KgILovAnH3g=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #6</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1205?usp=3Demail">View Change</a></p><p>The following approvals got outd=
+ated and were removed:
+Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">Make unit tests -Wconversion clean<br><br>Only trivi=
+al problems left after the other patches<br>have been merged.<br><br>Change=
+-Id: Iab9e780d9649d7581e5f6aa4b23e72bbed5e145b<br>Signed-off-by: Frank Lich=
+tenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1726...=
+...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1205<br>Messa=
+ge-Id: &lt;20250924124154.15963-1-gert@...1296...&gt;<br>URL: https://sourc=
+eforge.net/p/openvpn/mailman/message/59238128/<br>Signed-off-by: Gert Doeri=
+ng &lt;gert@...1296...&gt;<br>---<br>M tests/unit_tests/openvpn/test_crypto=
+.c<br>M tests/unit_tests/openvpn/test_ssl.c<br>2 files changed, 9 insertion=
+s(+), 24 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
+nvpn refs/changes/05/1205/6</pre><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;"><span>diff --git a/tests/unit_tests/openvpn/t=
+est_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><span>index=
+ 22e6912..93dfa42 100644</span><br><span>--- a/tests/unit_tests/openvpn/tes=
+t_crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto.c</sp=
+an><br><span>@@ -674,15 +674,10 @@</span><br><span>     struct crypto_optio=
+ns co;</span><br><span> };</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic i=
+gnored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span> static int</span><br><span> crypto_test_epoch_setup(void **sta=
+te)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    int *num_future_keys =3D (int *)*state;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    uint16_t *num_future_keys =3D (uint16_t *)*sta=
+te;</span><br><span>     struct epoch_test_state *data =3D calloc(1, sizeof=
+(struct epoch_test_state));</span><br><span> </span><br><span>     data-&gt=
+;gc =3D gc_new();</span><br><span>@@ -699,10 +694,6 @@</span><br><span>    =
+ return 0;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static int</span><b=
+r><span> crypto_test_epoch_teardown(void **state)</span><br><span> {</span>=
+<br><span>@@ -906,9 +897,9 @@</span><br><span> int</span><br><span> main(vo=
+id)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    int prestate_num13 =3D 13;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    int prestate_num16 =3D 16;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    int prestate_num32 =3D 32;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    uint16_t prestate_num13 =3D 13;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t prestate_num16 =
+=3D 16;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t=
+ prestate_num32 =3D 32;</span><br><span> </span><br><span>     openvpn_unit=
+_test_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</=
+span><br><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/uni=
+t_tests/openvpn/test_ssl.c</span><br><span>index ed40a7d..8dc9b66 100644</s=
+pan><br><span>--- a/tests/unit_tests/openvpn/test_ssl.c</span><br><span>+++=
+ b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -133,11 +133,6 @@=
+</span><br><span>     const char *keyfile;</span><br><span> } global_state;=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
+ defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static int</s=
+pan><br><span> init(void **state)</span><br><span> {</span><br><span>@@ -15=
+2,17 +147,16 @@</span><br><span>     {</span><br><span>         fail_msg(&q=
+uot;make tmpfile for certificate or key data failed (error =3D %d)&quot;, e=
+rrno);</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    assert_int_equal(write(certfd, unittest_cert, strlen(unittest_c=
+ert)), strlen(unittest_cert));</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    assert_int_equal(write(keyfd, unittest_key, strlen(unittest_ke=
+y)), strlen(unittest_key));</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* Awkward casts required for MinGW with -O0 only */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(write(cer=
+tfd, unittest_cert, (unsigned int)strlen(unittest_cert)),</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                     strlen(unittest_=
+cert));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_i=
+nt_equal(write(keyfd, unittest_key, (unsigned int)strlen(unittest_key)),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                     s=
+trlen(unittest_key));</span><br><span>     close(certfd);</span><br><span> =
+    close(keyfd);</span><br><span>     return 0;</span><br><span> }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined=
+(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span> static int</span><br><span> cleanup(void **state)</span>=
+<br><span> {</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1205?usp=3Demail">change 1205</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1205?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iab9e780d9649d7581e5f6aa4b23=
+e72bbed5e145b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1205 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
----- Source tarballs ---------------------------------------------------
-* OpenVPN 3 Linux v26
-
-  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-26.tar.xz>
-  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-26.tar.xz.asc>
-
-* GDBus++ v3
-
-  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz>
-  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz.asc>
-
----- SHA256 Checksums --------------------------------------------------
-
-80e35615ae913fbdbdda53495b27934a3bbb21d8b15c49a624d4992c15e196e1  openvpn3-linux-26.tar.xz
-474ba43ae9a6f4e8e5488750ed779bf57e7e2efe9bc05d196f65adb83f830eb4  openvpn3-linux-26.tar.xz.asc
-c7a053a13c4eb5811a542b747d5fcdb3a8e58a4a42c7237cc5e2e2ca72e0c94e  gdbuspp-3.tar.xz
-b9cf732d7a347f324d6a5532dc48f80c2815dbf6704c169b4ee97a411506a99b  gdbuspp-3.tar.xz.asc
-
----- git references ----------------------------------------------------
-
-git repositories:
-
- - OpenVPN 3 Linux
-   <https://codeberg.org/OpenVPN/openvpn3-linux> (PRIMARY)
-   <https://gitlab.com/openvpn/openvpn3-linux>   (code-only mirror)
-   <https://github.com/OpenVPN/openvpn3-linux>   (code-only mirror)
-
-   git tag: v26
-   git commit: 42ecc42a782025f8774e907a8c1966524424bcee
-
- - GDBus++
-   <https://codeberg.org/OpenVPN/gdbuspp/>       (PRIMARY)
-   <https://gitlab.com/openvpn/gdbuspp/>         (code-only mirror)
-   <https://github.com/openvpn/gdbuspp/>         (code-only mirror)
-
-   git tag: v3
-   git commit: 96f7fb688ed2dea3f192c63c5fe283dbe4900f16
-
----- Changes from v25 to v26 ---------------------------------------
-
-David Sommerseth (30):
-      build: Add fmt subproject
-      configmgr: Add details when profile validation fails
-      ovpn3cli/config-import: Show warning if imported profile is invalid
-      netcfg/resolved: Ensure glib2 params are available on retries
-      common: Refactor and clean-up core-extensions.hpp
-      common/core-extensions: Move helper functions into OptionListJSON class
-      tests: Parse Access Server meta options in config-export-json-test
-      common: Properly parse <connection/> blocks
-      netcfg: Catch Core library exceptions in method_establish()
-      configmgr: Let <connection/> tags be equivalent to --remote when validating the profile
-      python: Deprecate openvpn3.ConfigParser.SanityCheck()
-      python/openvpn2: Make Configuration.Validate() errors more user friendly
-      python/openvpn2: Add IMPORT_ONLY debug more
-      python: Implement <connection/> tag support in ConfigParser
-      netcfg: Clarify IP address 'prefix' usage
-      netcfg: Split up the NetCfgProxy::Network object construction
-      netcfg: Small clean-up/codestyle fixup for IPAddr, Network and VPNAddress classes
-      netcfg: Add support for route metric when assing VPN routes
-      netcfg/proxy: Add service version check for D-Bus API compatibility
-      python: Semicolon is not accepted by openvpn3.ConfigParser
-      common: Minor cleanups in cmdargparser code
-      netcfg/resolved: Fix g_variant_ref assertion warning on session restarts
-      core: Update to OpenVPN 3 Core Library v3.11.4
-      docs: Minor updates to the coding style guide
-      Code style cleanup
-      git: Update .git-blame-ignore-revs ignoring last code-style changes
-      Quick spellcheck fixes all over project
-      configmgr: Fix auth-user-pass handling regression
-      netcfg: Make logged metric details more user friendly
-      core: Update to OpenVPN 3 Core Library v3.11.5
-
---------------------------------------------------------------------
+--KgILovAnH3g=--
 
