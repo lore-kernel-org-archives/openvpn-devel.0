@@ -1,16 +1,16 @@
 From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Sep 2025 16:18:16 +0000
-In-Reply-To: <gerrit.1756814708000.Ica721a51b00d5314125bcaf5a586e718c5982aef@...2715...>
-References: <gerrit.1756814708000.Ica721a51b00d5314125bcaf5a586e718c5982aef@...2715...>
+Date: Wed, 24 Sep 2025 16:19:00 +0000
+In-Reply-To: <gerrit.1758727613000.Ic971604beb1320d7b9d6121cd8e8519ccc1a7eb9@...2715...>
+References: <gerrit.1758727613000.Ic971604beb1320d7b9d6121cd8e8519ccc1a7eb9@...2715...>
 Reply-To: max@...2606..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d2c1d55ab105e2c40fe556fc553795341388bc13-EmailReviewComments-HTML@...2715...>
+Message-ID: <e53fc03dddcba93c5ca3d643a3bdbc025719a220-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="O5V4hnWFeLE="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: proto: Clean up
- conversion warnings related to checksum macros
+Content-Type: multipart/alternative; boundary="2soRa/NkjyU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: route: Fix a
+ unused-but-set-variable warning on OpenBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,67 +22,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---O5V4hnWFeLE=
+--2soRa/NkjyU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
 MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/1164?usp=3Demail )
+vpn/+/1214?usp=3Demail )
 
-Change subject: proto: Clean up conversion warnings related to checksum mac=
-ros
+Change subject: route: Fix a unused-but-set-variable warning on OpenBSD
 ......................................................................
 
 
-Patch Set 4: Code-Review+2
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1164?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1214?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ica721a51b00d5314125bcaf5a586e718c5982aef
-Gerrit-Change-Number: 1164
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: Ic971604beb1320d7b9d6121cd8e8519ccc1a7eb9
+Gerrit-Change-Number: 1214
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 24 Sep 2025 16:18:16 +0000
+Gerrit-Comment-Date: Wed, 24 Sep 2025 16:19:00 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---O5V4hnWFeLE=
+--2soRa/NkjyU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1164?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1214?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1164?usp=3Demail=
-">change 1164</a>. To unsubscribe, or for help writing mail filters, visit =
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1214?usp=3Demail=
+">change 1214</a>. To unsubscribe, or for help writing mail filters, visit =
 <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
 ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
 action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1164?usp=3Demail"/><meta itempr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1214?usp=3Demail"/><meta itempr=
 op=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ica721a51b00d5314125bcaf5a58=
-6e718c5982aef </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1164 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic971604beb1320d7b9d6121cd8e=
+8519ccc1a7eb9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1214 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
@@ -95,12 +94,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 24 Sep 2025 16:18:16=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 24 Sep 2025 16:19:00=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---O5V4hnWFeLE=--
+--2soRa/NkjyU=--
 
