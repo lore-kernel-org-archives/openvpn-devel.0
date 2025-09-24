@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Sep 2025 12:32:08 +0000
-In-Reply-To: <gerrit.1758637530000.Ic395b6d1dce510bb4b499c5beba61f033a2a860b@...2715...>
-References: <gerrit.1758637530000.Ic395b6d1dce510bb4b499c5beba61f033a2a860b@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2734cda492ae72832778adf241278b6251d46404-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vNewYv0itPQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: Fix bug in
- error handling when talking to script
+Date: Wed, 24 Sep 2025 14:39:32 +0200 (CEST)
+Message-Id: <202509241239.58OCdWSn064539@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250924081811.22859-1-gert@...1296...>
+References: <20250924081811.22859-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Enable -Wconversion
+ -Wno-sign-conversion by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,193 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---vNewYv0itPQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This patch does not change any code - it just turns on extra -Warnings,
+and then turns them off again on a section-by-section basis with pragmas.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-08?usp=3Demail )
+We discussed this in the community meeting, and the intent is
 
-Change subject: dns: Fix bug in error handling when talking to script
-......................................................................
+ - we can turn on -Werror with these warnings enabled
+ - all *new* code that gets written and violates -Wconversion can be
+   fixed on day 1
 
-dns: Fix bug in error handling when talking to script
+if we just turn on the warnings today, without -Werror, it's "500 lines"
+that nobody looks at - so a new warning won't be noticed.  If we do not
+turn on the warnings, nobody will see...
 
-Comparing the result of read/write to a size_t value
-is dangerous C. Since ssize_t and size_t have the same
-size ssize_t is promoted to size_t, so -1 becomes
-size_t max value and is not smaller than the expected
-length.
-
-Make sure to compare ssize_t to ssize_t to avoid any
-suprises.
-
-Change-Id: Ic395b6d1dce510bb4b499c5beba61f033a2a860b
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Heiko Hund <heiko@...515...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1208
-Message-Id: <20250924121901.13532-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59238099/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dns.c
-1 file changed, 5 insertions(+), 6 deletions(-)
+And yes, this is quite a bit future work to get rid of the pragmas again,
+by fixing one source file after the other, or one group of warnings
+(less-than-well defined API calls, like the "msglevel" thing).
 
 
+I have stared at the patch, it is long, but does not do anything more
+than push/pop "ignore -Wconversion warnings" (magic), and then enable
+them globally.  BB and GHA say that this does not break any of our
+testbeds either.
 
 
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index efb888a..2a9e60b 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -642,11 +642,10 @@
+Your patch has been applied to the master branch.
 
-         while (1)
-         {
--            ssize_t rlen, wlen;
-             char path[PATH_MAX];
+commit 13a156a694573c9edb342b4af36976bceeb4aca2 (master)
+Author: Frank Lichtenheld
+Date:   Wed Sep 24 10:18:05 2025 +0200
 
-             /* Block here until parent sends a path */
--            rlen =3D read(dns_pipe_fd[0], &path, sizeof(path));
-+            ssize_t rlen =3D read(dns_pipe_fd[0], &path, sizeof(path));
-             if (rlen < 1)
-             {
-                 if (rlen =3D=3D -1 && errno =3D=3D EINTR)
-@@ -665,8 +664,8 @@
-             /* Unblock parent process */
-             while (1)
-             {
--                wlen =3D write(ack_pipe_fd[1], &res, sizeof(res));
--                if ((wlen =3D=3D -1 && errno !=3D EINTR) || wlen < sizeof(=
-res))
-+                ssize_t wlen =3D write(ack_pipe_fd[1], &res, sizeof(res));
-+                if ((wlen =3D=3D -1 && errno !=3D EINTR) || wlen < (ssize_=
-t)sizeof(res))
-                 {
-                     /* Not much we can do about errors but exit */
-                     close(dns_pipe_fd[0]);
-@@ -727,7 +726,7 @@
-         env_set_write_file(dvf, es);
+     Enable -Wconversion -Wno-sign-conversion by default
 
-         int wfd =3D updown_runner->fds[1];
--        size_t dvf_size =3D strlen(dvf) + 1;
-+        ssize_t dvf_size =3D strlen(dvf) + 1;
-         while (1)
-         {
-             ssize_t len =3D write(wfd, dvf, dvf_size);
-@@ -746,7 +745,7 @@
-         while (1)
-         {
-             ssize_t len =3D read(rfd, &status, sizeof(status));
--            if (len < sizeof(status))
-+            if (len < (ssize_t)sizeof(status))
-             {
-                 if (len =3D=3D -1 && errno =3D=3D EINTR)
-                 {
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1168
+     Message-Id: <20250924081811.22859-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59237916/
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1208?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic395b6d1dce510bb4b499c5beba61f033a2a860b
-Gerrit-Change-Number: 1208
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: d12fk <heiko@...515...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gert Doering
 
---vNewYv0itPQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1208?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">dns: Fix bug in error handling when talking t=
-o script<br><br>Comparing the result of read/write to a size_t value<br>is =
-dangerous C. Since ssize_t and size_t have the same<br>size ssize_t is prom=
-oted to size_t, so -1 becomes<br>size_t max value and is not smaller than t=
-he expected<br>length.<br><br>Make sure to compare ssize_t to ssize_t to av=
-oid any<br>suprises.<br><br>Change-Id: Ic395b6d1dce510bb4b499c5beba61f033a2=
-a860b<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked=
--by: Heiko Hund &lt;heiko@...515...&gt;<br>Gerrit URL: https://gerrit.openv=
-pn.net/c/openvpn/+/1208<br>Message-Id: &lt;20250924121901.13532-1-gert@...1386...=
-296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/592380=
-99/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/=
-openvpn/dns.c<br>1 file changed, 5 insertions(+), 6 deletions(-)<br><br></p=
-re>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index=
- efb888a..2a9e60b 100644</span><br><span>--- a/src/openvpn/dns.c</span><br>=
-<span>+++ b/src/openvpn/dns.c</span><br><span>@@ -642,11 +642,10 @@</span><=
-br><span> </span><br><span>         while (1)</span><br><span>         {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            ssize_t rlen=
-, wlen;</span><br><span>             char path[PATH_MAX];</span><br><span> =
-</span><br><span>             /* Block here until parent sends a path */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            rlen =3D rea=
-d(dns_pipe_fd[0], &amp;path, sizeof(path));</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            ssize_t rlen =3D read(dns_pipe_fd[0], &=
-amp;path, sizeof(path));</span><br><span>             if (rlen &lt; 1)</spa=
-n><br><span>             {</span><br><span>                 if (rlen =3D=3D=
- -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span>@@ -665,8 +664,8 @@</spa=
-n><br><span>             /* Unblock parent process */</span><br><span>     =
-        while (1)</span><br><span>             {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                wlen =3D write(ack_pipe_fd[1], &=
-amp;res, sizeof(res));</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                if ((wlen =3D=3D -1 &amp;&amp; errno !=3D EINTR) || wlen &=
-lt; sizeof(res))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             ssize_t wlen =3D write(ack_pipe_fd[1], &amp;res, sizeof(res));=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if =
-((wlen =3D=3D -1 &amp;&amp; errno !=3D EINTR) || wlen &lt; (ssize_t)sizeof(=
-res))</span><br><span>                 {</span><br><span>                  =
-   /* Not much we can do about errors but exit */</span><br><span>         =
-            close(dns_pipe_fd[0]);</span><br><span>@@ -727,7 +726,7 @@</spa=
-n><br><span>         env_set_write_file(dvf, es);</span><br><span> </span><=
-br><span>         int wfd =3D updown_runner-&gt;fds[1];</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        size_t dvf_size =3D strlen(dvf) +=
- 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ssize_t =
-dvf_size =3D strlen(dvf) + 1;</span><br><span>         while (1)</span><br>=
-<span>         {</span><br><span>             ssize_t len =3D write(wfd, dv=
-f, dvf_size);</span><br><span>@@ -746,7 +745,7 @@</span><br><span>         =
-while (1)</span><br><span>         {</span><br><span>             ssize_t l=
-en =3D read(rfd, &amp;status, sizeof(status));</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            if (len &lt; sizeof(status))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            if (len &lt; (ssi=
-ze_t)sizeof(status))</span><br><span>             {</span><br><span>       =
-          if (len =3D=3D -1 &amp;&amp; errno =3D=3D EINTR)</span><br><span>=
-                 {</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1208?usp=3Demail">change 1208</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1208?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic395b6d1dce510bb4b499c5beba=
-61f033a2a860b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1208 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---vNewYv0itPQ=--
 
