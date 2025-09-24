@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Sep 2025 15:06:06 +0000
-In-Reply-To: <gerrit.1757601342000.Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f@...2715...>
-References: <gerrit.1757601342000.Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <a7f4dea02edb0d0ad70365d52d37e9729b2d6c25-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ySfVIbadDyA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: event: Silence
- conversion warning in tv_to_ms_timeout
+Date: Wed, 24 Sep 2025 17:05:56 +0200 (CEST)
+Message-Id: <202509241505.58OF5uIN077894@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250924145715.28701-1-gert@...1296...>
+References: <20250924145715.28701-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: event: Silence conversion
+ warning in tv_to_ms_timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,174 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---ySfVIbadDyA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Trivial enough... and ACK from MaxF, so not testing anything beyond 
+a quick local compile.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-78?usp=3Demail )
+Your patch has been applied to the master branch.
 
-Change subject: event: Silence conversion warning in tv_to_ms_timeout
-......................................................................
+commit da1d0064ae590213f0245125d6974850fecaa943
+Author: Frank Lichtenheld
+Date:   Wed Sep 24 16:57:09 2025 +0200
 
-event: Silence conversion warning in tv_to_ms_timeout
+     event: Silence conversion warning in tv_to_ms_timeout
 
-The APIs want int (at least on unixy systems), so we
-use int. max_int() protects us against negative values.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: MaxF <max@...2606...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1178
+     Message-Id: <20250924145715.28701-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33193.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: MaxF <max@...2606...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1178
-Message-Id: <20250924145715.28701-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
-193.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/event.c
-1 file changed, 10 insertions(+), 9 deletions(-)
-
-
-
-
-diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-index 2f60b78..ca84d19 100644
---- a/src/openvpn/event.c
-+++ b/src/openvpn/event.c
-@@ -65,11 +65,15 @@
- #define SELECT_MAX_FDS 256
- #endif
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
-+/** Convert \c timeval value (which is in seconds and microseconds)
-+    to a value of milliseconds which is required by multiple polling
-+    APIs.
-
-+    @param tv \c timeval to convert
-+
-+    @return Milliseconds to wait. Zero if \p tv is zero.
-+     Otherwise the return value is always greater than zero.
-+*/
- static inline int
- tv_to_ms_timeout(const struct timeval *tv)
- {
-@@ -79,14 +83,11 @@
-     }
-     else
-     {
--        return max_int(tv->tv_sec * 1000 + (tv->tv_usec + 500) / 1000, 1);
-+        /* might overflow but not for practically useful numbers */
-+        return max_int((int)(tv->tv_sec * 1000 + (tv->tv_usec + 500) / 100=
-0), 1);
-     }
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #ifdef _WIN32
-
- struct we_set
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1178?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie8a242838b6f8b42f36327c33fc62bb5f94ec43f
-Gerrit-Change-Number: 1178
-Gerrit-PatchSet: 9
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gert Doering
 
---ySfVIbadDyA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1178?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">event: Silence conversion warning in tv_to_ms=
-_timeout<br><br>The APIs want int (at least on unixy systems), so we<br>use=
- int. max_int() protects us against negative values.<br><br>Change-Id: Ie8a=
-242838b6f8b42f36327c33fc62bb5f94ec43f<br>Signed-off-by: Frank Lichtenheld &=
-lt;frank@...2641...&gt;<br>Acked-by: MaxF &lt;max@...2606...&gt;<br>Gerrit =
-URL: https://gerrit.openvpn.net/c/openvpn/+/1178<br>Message-Id: &lt;2025092=
-4145715.28701-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/op=
-envpn-devel@lists.sourceforge.net/msg33193.html<br>Signed-off-by: Gert Doer=
-ing &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/event.c<br>1 file chang=
-ed, 10 insertions(+), 9 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/event.c b/src/openvpn/event.c</span><br><span>i=
-ndex 2f60b78..ca84d19 100644</span><br><span>--- a/src/openvpn/event.c</spa=
-n><br><span>+++ b/src/openvpn/event.c</span><br><span>@@ -65,11 +65,15 @@</=
-span><br><span> #define SELECT_MAX_FDS 256</span><br><span> #endif</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
-__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/** Convert \c timeval value (which is=
- in seconds and microseconds)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    to a value of milliseconds which is required by multiple poll=
-ing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    APIs.</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    @par=
-am tv \c timeval to convert</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    @return=
- Milliseconds to wait. Zero if \p tv is zero.</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+     Otherwise the return value is always greater=
- than zero.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*/</span=
-><br><span> static inline int</span><br><span> tv_to_ms_timeout(const struc=
-t timeval *tv)</span><br><span> {</span><br><span>@@ -79,14 +83,11 @@</span=
-><br><span>     }</span><br><span>     else</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        return max_int(tv-&gt;=
-tv_sec * 1000 + (tv-&gt;tv_usec + 500) / 1000, 1);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        /* might overflow but not for practi=
-cally useful numbers */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        return max_int((int)(tv-&gt;tv_sec * 1000 + (tv-&gt;tv_usec + 5=
-00) / 1000), 1);</span><br><span>     }</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__=
-) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span> #ifdef _WIN32</span><br><span> </span><br><span> struct we_set</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1178?usp=3Demail">change 1178</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1178?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie8a242838b6f8b42f36327c33fc=
-62bb5f94ec43f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1178 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---ySfVIbadDyA=--
 
