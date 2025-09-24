@@ -1,15 +1,9 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 24 Sep 2025 13:09:55 +0000
-References: <gerrit.1758719391000.I9ea87531afb553f789289787403900a4758b8e1c@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <7b7693a045b84d8397300e126a8eba320917c933-HTML@...2715...>
+Message-ID: <2eec0f19-3ebc-4f83-b72d-9f62c817339b@...2108...>
+Date: Wed, 24 Sep 2025 15:15:20 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lqroGC7GCeA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_openssl: Use
- uint16_t internally for TLS versions
+From: David Sommerseth <dazo+openvpn@...2108...>
+Content-Language: en-US
+Subject: [Openvpn-devel] OpenVPN 3 Linux v26 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,284 +12,248 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-announce@lists.sourceforge.net
+Cc: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
---lqroGC7GCeA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+OpenVPN 3 Linux v26 (Stable release)
 
-Attention is currently required from: plaisthos.
+The v26 release is a small bugfix and enhancement release.
 
-Hello plaisthos,
+Please notice the deprecation of openvpn3-autoload.
 
-I'd like you to do a code review.
-Please visit
+* Enhancement: Improve user feedback when a VPN profile is not valid
+  Since the OpenVPN 3 Linux v22_dev release, the
+  openvpn3-service-configmgr service has provided an API to validate
+  VPN profiles it manages.  This has been used in the rest of the
+  available tools to check if everything is in order before
+  attempting to start a VPN session.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1212?usp=3Demail
+  When a configuration profile was lacking certain required options,
+  it would fail this validation.  But the feedback to the user was
+  not much helpful and the user would need to check the
+  configuration profile manually.
 
-to review the following change.
-
-
-Change subject: ssl_openssl: Use uint16_t internally for TLS versions
-......................................................................
-
-ssl_openssl: Use uint16_t internally for TLS versions
-
-libressl changed the API for the involved functions. Since
-uint16_t is a true subset of int it should be safe to switch
-to that for all OpenSSL variants.
-
-One trivial drive-by fix in unrelated code to be able
-to enable -Wconversion fully for the file. This just
-adds a cast where the comment says we intend a cast.
-
-Change-Id: I9ea87531afb553f789289787403900a4758b8e1c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/ssl_openssl.c
-1 file changed, 7 insertions(+), 25 deletions(-)
+  With the v26 release, the end user will be provided a list of
+  required configuration options missing.
 
 
+* Enhancement: Set route metric value when provided via VPN session
+  Since the very beginning of OpenVPN 3 Linux, the route metric
+  value has been ignored.  This has been improved in the v26 release
+  and the metric values provided in the configuration profile or
+  pushed from the VPN server will now be respected.
+  
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/12/1212/1
+* FEATURE DEPRECATION: openvpn3-autoload
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 89deeaa..434df7d 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -235,8 +235,8 @@
- }
+  The openvpn3-autoload feature was deprecated already in the
+  v20 release.  This feature will be removed in a coming stable
+  release.
 
- /** Convert internal version number to openssl version number */
--static int
--openssl_tls_version(int ver)
-+static uint16_t
-+openssl_tls_version(unsigned int ver)
- {
-     if (ver =3D=3D TLS_VER_1_0)
-     {
-@@ -272,23 +272,18 @@
-     return 0;
- }
+  The replacement is the openvpn3-session@...1685... systemd unit.
+  Please see the openvpn3-systemd man page [1] for more details.
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static bool
- tls_ctx_set_tls_versions(struct tls_root_ctx *ctx, unsigned int ssl_flags)
- {
--    int tls_ver_min =3D
-+    uint16_t tls_ver_min =3D
-         openssl_tls_version((ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SS=
-LF_TLS_VERSION_MIN_MASK);
--    int tls_ver_max =3D
-+    uint16_t tls_ver_max =3D
-         openssl_tls_version((ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SS=
-LF_TLS_VERSION_MAX_MASK);
+  If you depend on openvpn3-autoload today, please migrate ASAP
+  to the systemd approach.
 
-     if (!tls_ver_min)
-     {
-         /* Enforce at least TLS 1.0 */
--        int cur_min =3D SSL_CTX_get_min_proto_version(ctx->ctx);
-+        uint16_t cur_min =3D (uint16_t)SSL_CTX_get_min_proto_version(ctx->=
-ctx);
-         tls_ver_min =3D cur_min < TLS1_VERSION ? TLS1_VERSION : cur_min;
-     }
+  [1] <https://codeberg.org/OpenVPN/openvpn3-linux/src/branch/master/docs/man/openvpn3-systemd.8.rst>
 
-@@ -387,7 +382,7 @@
-             /* %.*s format specifier expects length of type int, so guaran=
-tee */
-             /* that length is small enough and cast to int. */
-             msg(D_LOW, "No valid translation found for TLS cipher '%.*s'",
--                constrain_int(current_cipher_len, 0, 256), current_cipher);
-+                constrain_int((int)current_cipher_len, 0, 256), current_ci=
-pher);
-         }
-         else
-         {
-@@ -429,10 +424,6 @@
-     }
- }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
- {
-@@ -2522,11 +2513,6 @@
-     msg(D_HANDSHAKE, "%s%s%s%s%s", s1, s2, s3, s4, s5);
- }
+* Bugfix: Proper parsing of <connection/> tags in OpenVPN configs
+  The internal VPN profile configuration parser did not properly
+  parse configuration files containing <connection>...</connection>
+  tags to configure a remote server.  This has been fixed and both
+  the openvpn3-service-configmgr and the openvpn3 Python module has
+  been updated to support this feature.
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- void
- show_available_tls_ciphers_list(const char *cipher_list, const char *tls_c=
-ert_profile, bool tls13)
- {
-@@ -2541,7 +2527,7 @@
- #if defined(TLS1_3_VERSION)
-     if (tls13)
-     {
--        SSL_CTX_set_min_proto_version(tls_ctx.ctx, openssl_tls_version(TLS=
-_VER_1_3));
-+        SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
-         tls_ctx_restrict_ciphers_tls13(&tls_ctx, cipher_list);
-     }
-     else
-@@ -2594,10 +2580,6 @@
-     SSL_CTX_free(tls_ctx.ctx);
- }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /*
-  * Show the Elliptic curves that are available for us to use
-  * in the OpenSSL library.
+* Bugfix: Proper parsing of semicolon (;) as comment line
+  The openvpn3 Python module did not properly parse configuration
+  files which used semicolon (;) as a comment separator.  This
+  has been improved and both hash (#) and semicolon can now be
+  used for comments in configuration profiles.
+
+
+* Bugfix: openvpn3-service-netcfg may stop on route setup errors
+  In some corner cases, when the openvpn3-service-client (VPN
+  client) process called the Network Configuration service
+  (openvpn3-service-netcfg) to establish the VPN network
+  interface, the Network Configuration service could crash
+  and not recover, resulting in the VPN session not being able
+  to be established.  This has been improved and this error
+  situation is now handled and logged properly.
+
+
+* Bugfix: Background D-Bus calls to systemd-resolved fails
+  On some systems the D-Bus communication between the
+  openvpn3-service-netcfg (NetCfg) process and systemd-resolved
+  could be too slow, resulting in the NetCfg process retrying
+  the D-Bus call.  Due to an incorrect retry logic, the parameters
+  systemd-resolved would need had been released from memory and
+  was no longer accessible.  This has been resolved and the
+  retry logic now behaves as expected.
+
+
+* Bugfix: VPN session restart triggers assertion warning in logs
+  When an on-going VPN session is attempted restarted, for example
+  via the openvpn3 session-manage command, the NetCfg service
+  would log an assertion warning in the system logs.  This has
+  been resolved and VPN session restarts will now work as expected.
+
+
+* Bugfix: OpenVPN 3 AWS-VPC fails changing IPv6 routes
+  Due to a typo in the parameter name used for changing IPv6
+  routes in the AWS VPC service, setting IPv6 routes would result
+  in an error.  This has been resolved in the OpenVPN 3 Core
+  version 3.11.5 release, which OpenVPN 3 Linux v26 has
+  upgraded to.
+
+
+* OpenVPN 3 Core Library update
+  The OpenVPN 3 Core Library has been updated to version 3.11.5,
+  which is contains the fix for the AWS VPC route fix.  It also
+  enables building against Linux 6.16 kernel headers.
+
+
+Known issues:
+
+  - The openvpn3-service-netcfg service does not differentiate between
+    --dns server X resolve-domains and --dns search-domains when using
+    the --resolv-conf mode, which is not as this feature is
+    intended to work.  This was discovered in the v24 release and is
+    on the schedule to be fixed in the next releases.  When this gets
+    fixed, only --dns search-domains will be considered as search
+    domains and --dns server X resolve-domains will enable split-DNS
+    when using --systemd-resolved and otherwise ignored when using
+    --resolv-conf with openvpn3-service-netcfg.
+
+
+Supported Linux distributions
+-----------------------------
+
+  - Debian: 12, 13[*]
+  - Fedora: 41, 42
+  - Red Hat Enterprise Linux 8, 9, 10[*]
+  - Ubuntu: 22.04, 24.04, 25.05
+
+Installation and getting started instructions can be found here:
+
+  <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
+
+There are in addition other Linux distributions now providing
+OpenVPN 3 Linux packages.  These distributions are primarily
+supported by their respective distribution communities.  We will
+naturally review and apply fixes deemed needed for any
+distributions as they occur.
+
+NOTE: Red Hat Enterprise Linux 10
+  The Fedora Copr repository definition for RHEL+EPEL-10 *may*
+  use a wrong URL.  After doing the 'dnf copr enable' step
+  on RHEL-10, please ensure the URL contains 'rhel+epel' and
+  not just 'epel'.  This is expected to automatically improve
+  with time.
+
+  The stable repositories provided by OpenVPN Inc should not
+  have this issue.
+
+NOTE: Debian 13 (Trixie)
+  Debian 13 is added to the list of supported distribution versions.
+  With Debian 13 there is now also an upstream distribution package
+  as well, openvpn3-client, as well as the GDBus++ library.  The
+  version in the distribution repository is at OpenVPN 3 Linux v24.1.
+  This cannot be upgraded to a newer base line, due to Debian
+  packaging rules.  The package maintainer will apply bug and security
+  fixes as needed.
+
+  If you want to use a newer OpenVPN 3 Linux on Debian 13, you will
+  need to install the third-party repository provided by OpenVPN Inc.
+  This is the same procedure as in Debian 12 and earlier.  With the
+  v26 release, the package has been renamed to 'openvpn3-client' and
+  an upgrade path from the openvpn3 package has been added.  After
+  upgrading to v26, the openvpn3 transitional package can be removed
+  via 'apt autoremove'.
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1212?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9ea87531afb553f789289787403900a4758b8e1c
-Gerrit-Change-Number: 1212
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
-
---lqroGC7GCeA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1212?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">ssl_openssl: Use uint16_t internally for TLS versions<br><br=
->libressl changed the API for the involved functions. Since<br>uint16_t is =
-a true subset of int it should be safe to switch<br>to that for all OpenSSL=
- variants.<br><br>One trivial drive-by fix in unrelated code to be able<br>=
-to enable -Wconversion fully for the file. This just<br>adds a cast where t=
-he comment says we intend a cast.<br><br>Change-Id: I9ea87531afb553f7892897=
-87403900a4758b8e1c<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...=
-&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 7 insertions(=
-+), 25 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
-pn refs/changes/12/1212/1</pre><pre style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/=
-src/openvpn/ssl_openssl.c</span><br><span>index 89deeaa..434df7d 100644</sp=
-an><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/open=
-vpn/ssl_openssl.c</span><br><span>@@ -235,8 +235,8 @@</span><br><span> }</s=
-pan><br><span> </span><br><span> /** Convert internal version number to ope=
-nssl version number */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openssl_tl=
-s_version(int ver)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic uint16_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+opens=
-sl_tls_version(unsigned int ver)</span><br><span> {</span><br><span>     if=
- (ver =3D=3D TLS_VER_1_0)</span><br><span>     {</span><br><span>@@ -272,23=
- +272,18 @@</span><br><span>     return 0;</span><br><span> }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNU=
-C__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static bool</span><br><sp=
-an> tls_ctx_set_tls_versions(struct tls_root_ctx *ctx, unsigned int ssl_fla=
-gs)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    int tls_ver_min =3D</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    uint16_t tls_ver_min =3D</span><br><span>         openssl_tls_vers=
-ion((ssl_flags &gt;&gt; SSLF_TLS_VERSION_MIN_SHIFT) &amp; SSLF_TLS_VERSION_=
-MIN_MASK);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int tls=
-_ver_max =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uin=
-t16_t tls_ver_max =3D</span><br><span>         openssl_tls_version((ssl_fla=
-gs &gt;&gt; SSLF_TLS_VERSION_MAX_SHIFT) &amp; SSLF_TLS_VERSION_MAX_MASK);</=
-span><br><span> </span><br><span>     if (!tls_ver_min)</span><br><span>   =
-  {</span><br><span>         /* Enforce at least TLS 1.0 */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        int cur_min =3D SSL_CTX_get_m=
-in_proto_version(ctx-&gt;ctx);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        uint16_t cur_min =3D (uint16_t)SSL_CTX_get_min_proto_ver=
-sion(ctx-&gt;ctx);</span><br><span>         tls_ver_min =3D cur_min &lt; TL=
-S1_VERSION ? TLS1_VERSION : cur_min;</span><br><span>     }</span><br><span=
-> </span><br><span>@@ -387,7 +382,7 @@</span><br><span>             /* %.*s=
- format specifier expects length of type int, so guarantee */</span><br><sp=
-an>             /* that length is small enough and cast to int. */</span><b=
-r><span>             msg(D_LOW, &quot;No valid translation found for TLS ci=
-pher &#39;%.*s&#39;&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                constrain_int(current_cipher_len, 0, 256), current_cip=
-her);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-  constrain_int((int)current_cipher_len, 0, 256), current_cipher);</span><b=
-r><span>         }</span><br><span>         else</span><br><span>         {=
-</span><br><span>@@ -429,10 +424,6 @@</span><br><span>     }</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span> void</span><br><span> tls_ctx_restrict_ciphe=
-rs(struct tls_root_ctx *ctx, const char *ciphers)</span><br><span> {</span>=
-<br><span>@@ -2522,11 +2513,6 @@</span><br><span>     msg(D_HANDSHAKE, &quo=
-t;%s%s%s%s%s&quot;, s1, s2, s3, s4, s5);</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC_=
-_) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span> void</span><br><span> show_av=
-ailable_tls_ciphers_list(const char *cipher_list, const char *tls_cert_prof=
-ile, bool tls13)</span><br><span> {</span><br><span>@@ -2541,7 +2527,7 @@</=
-span><br><span> #if defined(TLS1_3_VERSION)</span><br><span>     if (tls13)=
-</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        SSL_CTX_set_min_proto_version(tls_ctx.ctx, openssl_tls_version(TL=
-S_VER_1_3));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);</span><br><spa=
-n>         tls_ctx_restrict_ciphers_tls13(&amp;tls_ctx, cipher_list);</span=
-><br><span>     }</span><br><span>     else</span><br><span>@@ -2594,10 +25=
-80,6 @@</span><br><span>     SSL_CTX_free(tls_ctx.ctx);</span><br><span> }<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if =
-defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span> /*</span><br><span>  * Show the Elliptic curves t=
-hat are available for us to use</span><br><span>  * in the OpenSSL library.=
-</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1212?usp=3Demail">change 1212</a>. To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
-net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1212?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9ea87531afb553f789289787403=
-900a4758b8e1c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1212 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+David Sommerseth
+OpenVPN Inc
 
 
---lqroGC7GCeA=--
+---- Source tarballs ---------------------------------------------------
+* OpenVPN 3 Linux v26
+
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-26.tar.xz>
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-26.tar.xz.asc>
+
+* GDBus++ v3
+
+  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz>
+  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz.asc>
+
+---- SHA256 Checksums --------------------------------------------------
+
+80e35615ae913fbdbdda53495b27934a3bbb21d8b15c49a624d4992c15e196e1  openvpn3-linux-26.tar.xz
+474ba43ae9a6f4e8e5488750ed779bf57e7e2efe9bc05d196f65adb83f830eb4  openvpn3-linux-26.tar.xz.asc
+c7a053a13c4eb5811a542b747d5fcdb3a8e58a4a42c7237cc5e2e2ca72e0c94e  gdbuspp-3.tar.xz
+b9cf732d7a347f324d6a5532dc48f80c2815dbf6704c169b4ee97a411506a99b  gdbuspp-3.tar.xz.asc
+
+---- git references ----------------------------------------------------
+
+git repositories:
+
+ - OpenVPN 3 Linux
+   <https://codeberg.org/OpenVPN/openvpn3-linux> (PRIMARY)
+   <https://gitlab.com/openvpn/openvpn3-linux>   (code-only mirror)
+   <https://github.com/OpenVPN/openvpn3-linux>   (code-only mirror)
+
+   git tag: v26
+   git commit: 42ecc42a782025f8774e907a8c1966524424bcee
+
+ - GDBus++
+   <https://codeberg.org/OpenVPN/gdbuspp/>       (PRIMARY)
+   <https://gitlab.com/openvpn/gdbuspp/>         (code-only mirror)
+   <https://github.com/openvpn/gdbuspp/>         (code-only mirror)
+
+   git tag: v3
+   git commit: 96f7fb688ed2dea3f192c63c5fe283dbe4900f16
+
+---- Changes from v25 to v26 ---------------------------------------
+
+David Sommerseth (30):
+      build: Add fmt subproject
+      configmgr: Add details when profile validation fails
+      ovpn3cli/config-import: Show warning if imported profile is invalid
+      netcfg/resolved: Ensure glib2 params are available on retries
+      common: Refactor and clean-up core-extensions.hpp
+      common/core-extensions: Move helper functions into OptionListJSON class
+      tests: Parse Access Server meta options in config-export-json-test
+      common: Properly parse <connection/> blocks
+      netcfg: Catch Core library exceptions in method_establish()
+      configmgr: Let <connection/> tags be equivalent to --remote when validating the profile
+      python: Deprecate openvpn3.ConfigParser.SanityCheck()
+      python/openvpn2: Make Configuration.Validate() errors more user friendly
+      python/openvpn2: Add IMPORT_ONLY debug more
+      python: Implement <connection/> tag support in ConfigParser
+      netcfg: Clarify IP address 'prefix' usage
+      netcfg: Split up the NetCfgProxy::Network object construction
+      netcfg: Small clean-up/codestyle fixup for IPAddr, Network and VPNAddress classes
+      netcfg: Add support for route metric when assing VPN routes
+      netcfg/proxy: Add service version check for D-Bus API compatibility
+      python: Semicolon is not accepted by openvpn3.ConfigParser
+      common: Minor cleanups in cmdargparser code
+      netcfg/resolved: Fix g_variant_ref assertion warning on session restarts
+      core: Update to OpenVPN 3 Core Library v3.11.4
+      docs: Minor updates to the coding style guide
+      Code style cleanup
+      git: Update .git-blame-ignore-revs ignoring last code-style changes
+      Quick spellcheck fixes all over project
+      configmgr: Fix auth-user-pass handling regression
+      netcfg: Make logged metric details more user friendly
+      core: Update to OpenVPN 3 Core Library v3.11.5
+
+--------------------------------------------------------------------
 
