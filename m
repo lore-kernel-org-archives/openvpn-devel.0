@@ -1,10 +1,11 @@
-Date: Wed, 24 Sep 2025 15:16:22 +0200 (CEST)
-Message-Id: <202509241316.58ODGMJb073746@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20250924124154.15963-1-gert@...1296...>
-References: <20250924124154.15963-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make unit tests -Wconversion
- clean
+Content-Type: multipart/alternative;
+ boundary="------------H3qOS0Ucl3xKxVIeIDz2Mh0u"
+Message-ID: <490b34aa-138e-4be2-91ef-4743fe3f69b6@...2722...>
+Date: Wed, 24 Sep 2025 19:30:25 +0700
+MIME-Version: 1.0
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +14,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-And et voila, the first #ifdef/#pragma set disappears again... and since
-this is unit tests, it's easily testing itself :-)
+This is a multi-part message in MIME format.
+--------------H3qOS0Ucl3xKxVIeIDz2Mh0u
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Your patch has been applied to the master branch.
+Meeting summary for 24 September 2025:
 
-commit 9db98baf657c0aa6f56154019c531535d3d16ded
-Author: Frank Lichtenheld
-Date:   Wed Sep 24 14:41:48 2025 +0200
+  *
 
-     Make unit tests -Wconversion clean
+    *Closed: cve.mitre.org deprecation notice*
+    The MITRE CVE site we are linking to for all CVE record references
+    has a deprecation notice. Instead cve.org is being advised as the
+    site to use from now on.
+    All identified links on main website and community wiki have been
+    updated to the new URL.
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1205
-     Message-Id: <20250924124154.15963-1-gert@...1296...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/59238128/
-     Signed-off-by: Gert Doering <gert@...1296...>
+  *
 
+    *Updated: Release 2.7*
+    For OpenVPN 2.7 beta2 we're working on solving an issue for code
+    that was merged but not released yet.
+    The solution for that is ready, and the tentative release date is
+    now 25 September.
 
---
-kind regards,
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Gert Doering
+Kind regards,
+Johan Draaisma
 
+--------------H3qOS0Ucl3xKxVIeIDz2Mh0u
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 24 September 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Closed:
+            cve.mitre.org deprecation notice</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The MITRE CVE site we are linking to for all CVE record
+          references has a deprecation notice. Instead cve.org is being
+          advised as the site to use from now on.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          All identified links on main website and community wiki have
+          been updated to the new URL.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          For OpenVPN 2.7 beta2 we're working on solving an issue for
+          code that was merged but not released yet.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The solution for that is ready, and the tentative release date
+          is now 25 September.</p>
+      </li>
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------H3qOS0Ucl3xKxVIeIDz2Mh0u--
 
