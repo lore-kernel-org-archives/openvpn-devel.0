@@ -1,10 +1,16 @@
-From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_C7AF659C-E12B-4E60-90D4-B4B648CF699C"
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.600.51.1.1\))
-Message-Id: <010B9529-6C1E-454A-9846-26AC9581AFE9@...2722...>
-Date: Thu, 25 Sep 2025 17:42:01 +0300
-Subject: [Openvpn-devel] OpenVPN 2.7_beta2 released
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 25 Sep 2025 15:26:06 +0000
+In-Reply-To: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
+References: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., lstipakov@...277...
+Message-ID: <1c56376a3bf03740e98d7e718a6f0c18fef979e6-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="asfmQLIgQWM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: support for
+ epoch data channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,127 +19,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_C7AF659C-E12B-4E60-90D4-B4B648CF699C
-Content-Type: text/plain; charset="us-ascii"
+--asfmQLIgQWM=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.7_beta2.
-This is a second beta which includes important bugfixes.
+Attention is currently required from: flichtenheld, stipa.
 
-Feature changes since 2.7_beta1:
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/1219?usp=3Demail )
 
-* greatly improved event log handling for the Windows interactive service -=
- this brings build system
-changes and a new openvpnservmsg.dll
+Change subject: dco-win: support for epoch data channel
+......................................................................
 
-Important bug fixes since 2.7_beta1:
 
-* add proper input sanitation to DNS strings to prevent an attack coming fr=
-om a trusted-but-malicous
-OpenVPN server (CVE-2025-10680, affects unixoid systems with --dns-updown s=
-cripts and windows
-using the built-in powershell call)
-* bugfixes when using multi-socket on windows (properly recognize that TCP =
-server mode does not work
-with DCO, properly handle TCP multi-socket server setups without DCO)
-* bring back configuring of IPv4 broadcast addresses on Linux
-* repair "--dhcp-option DNS" setting in combination with DHCP (TAP) or "--u=
-p" scripts
-(Github: OpenVPN/openvpn#839, OpenVPN/openvpn#840)
+Patch Set 1:
 
-More details can be found in the Changes document:
+(1 comment)
 
-<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+File src/openvpn/dco_win.c:
 
-Source code and Windows installers can be downloaded from our download page:
+http://gerrit.openvpn.net/c/openvpn/+/1219/comment/d4e961ae_4381ffbc :
+PS1, Line 1102:     return dco_get_version(&ver) && ver.Major >=3D 2 && ver=
+.Minor >=3D 8;
+> That sounds wrong. Version 3.1 would this test.
+...would fail this test.
 
-<https://openvpn.net/community-downloads/>
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in th=
-e various
-official Community repositories:
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Kind regards,
-Yuriy Darnobyt=
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
+Gerrit-Change-Number: 1219
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Thu, 25 Sep 2025 15:26:06 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: comment
 
---Apple-Mail=_C7AF659C-E12B-4E60-90D4-B4B648CF699C
-Content-Type: text/html; charset="us-ascii"
+--asfmQLIgQWM=
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
-=3Dus-ascii"></head><body style=3D"overflow-wrap: break-word; -webkit-nbsp-=
-mode: space; line-break: after-white-space;"><div><div><font color=3D"#0000=
-00"><span style=3D"caret-color: rgb(0, 0, 0);">The OpenVPN community projec=
-t team is proud to release OpenVPN 2.7_beta2.</span></font></div><div><font=
- color=3D"#000000">This is a second beta which includes important bugfixes.=
-</font></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0=
-, 0, 0);"><br></span></font></div><div><font color=3D"#000000"><span style=
-=3D"caret-color: rgb(0, 0, 0);">Feature changes since 2.7_beta1:</span></fo=
-nt></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0,=
- 0);"><br></span></font></div><div><font color=3D"#000000"><span style=3D"c=
-aret-color: rgb(0, 0, 0);">* greatly improved event log handling for the Wi=
-ndows interactive service - this brings build system</span></font></div><di=
-v><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">change=
-s and a new openvpnservmsg.dll</span></font></div><div><font color=3D"#0000=
-00"><span style=3D"caret-color: rgb(0, 0, 0);"><br></span></font></div><div=
-><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">Importa=
-nt bug fixes since 2.7_beta1:</span></font></div><div><font color=3D"#00000=
-0"><span style=3D"caret-color: rgb(0, 0, 0);"><br></span></font></div><div>=
-<font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* add pr=
-oper input sanitation to DNS strings to prevent an attack coming from a tru=
-sted-but-malicous</span></font></div><div><font color=3D"#000000"><span sty=
-le=3D"caret-color: rgb(0, 0, 0);">OpenVPN server (CVE-2025-10680, affects u=
-nixoid systems with --dns-updown scripts and windows</span></font></div><di=
-v><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">using =
-the built-in powershell call)</span></font></div><div><font color=3D"#00000=
-0"><span style=3D"caret-color: rgb(0, 0, 0);">* bugfixes when using multi-s=
-ocket on windows (properly recognize that TCP server mode does not work</sp=
-an></font></div><div><font color=3D"#000000"><span style=3D"caret-color: rg=
-b(0, 0, 0);">with DCO, properly handle TCP multi-socket server setups witho=
-ut DCO)</span></font></div><div><font color=3D"#000000"><span style=3D"care=
-t-color: rgb(0, 0, 0);">* bring back configuring of IPv4 broadcast addresse=
-s on Linux</span></font></div><div><font color=3D"#000000"><span style=3D"c=
-aret-color: rgb(0, 0, 0);">* repair "--dhcp-option DNS" setting in combinat=
-ion with DHCP (TAP) or "--up" scripts</span></font></div><div><font color=
-=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">(Github: OpenVPN/op=
-envpn#839, OpenVPN/openvpn#840)</span></font></div></div><br style=3D"caret=
--color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb=
-(0, 0, 0); color: rgb(0, 0, 0);">More details can be found in the Changes d=
-ocument:</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);=
-"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=
-=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"=
-https://github.com/OpenVPN/openvpn/blob/master/Changes.rst">https://github.=
-com/OpenVPN/openvpn/blob/master/Changes.rst</a><span style=3D"caret-color: =
-rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: rg=
-b(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); c=
-olor: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0=
-, 0, 0);">Source code and Windows installers can be downloaded from our dow=
-nload page:</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, =
-0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span st=
-yle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=
-=3D"https://openvpn.net/community-downloads/">https://openvpn.net/community=
--downloads/</a><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0=
-);">&gt;</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);=
-"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=
-=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">Packages for Debian, U=
-buntu, Fedora, RHEL, and openSUSE are available in the various</span><br st=
-yle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"care=
-t-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">official Community repositorie=
-s:</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br =
-style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"ca=
-ret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"https:=
-//community.openvpn.net/Pages/OpenVPN%20software%20repos">https://community=
-.openvpn.net/Pages/OpenVPN%20software%20repos</a><span style=3D"caret-color=
-: rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: =
-rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0);=
- color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb=
-(0, 0, 0);">Kind regards,</span><br style=3D"caret-color: rgb(0, 0, 0); col=
-or: rgb(0, 0, 0);"><font color=3D"#000000">Yuriy Darnobyt</font></body></ht=
-ml>=
+<p> Attention is currently required from: flichtenheld, stipa. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_win.c:</p><ul =
+style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1219/comment/d4e961ae_4381ffbc">Patch Set #1, Line 1102:<=
+/a> <code style=3D"font-family:monospace,monospace">    return dco_get_vers=
+ion(&amp;ver) &amp;&amp; ver.Major &gt;=3D 2 &amp;&amp; ver.Minor &gt;=3D 8=
+;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
+px 0; padding: 0 10px;">That sounds wrong. Version 3.1 would this test.</bl=
+ockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">...=
+would fail this test.</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">change 1219</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1219?usp=3Demail"/><meta itemprop=3D"name" content=3D=
+"View Change"/></div></div>
 
---Apple-Mail=_C7AF659C-E12B-4E60-90D4-B4B648CF699C--
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b=
+7ffaaa5c43080 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1219 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 25 Sep 2025 15:26:06=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--asfmQLIgQWM=--
 
