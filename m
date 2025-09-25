@@ -1,14 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 25 Sep 2025 15:39:56 +0000
+Date: Thu, 25 Sep 2025 15:40:07 +0000
 In-Reply-To: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
 References: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ce3bdf625fd27861fff158a16cb96ca8335ca334-EmailReviewComments-HTML@...2715...>
+Message-ID: <24b85f0462163f94bad35fc3300eb1edf83f719a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RGgECIFBaD8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="dhqOQo6Q/O4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: support for
  epoch data channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RGgECIFBaD8=
+--dhqOQo6Q/O4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -40,11 +40,11 @@ Patch Set 2:
 
 File src/openvpn/dco_win.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1219/comment/7e4f6803_aa700e92 :
+http://gerrit.openvpn.net/c/openvpn/+/1219/comment/35228d79_18dae126 :
 PS1, Line 1102:     return dco_get_version(&ver) && ver.Major >=3D 2 && ver=
 .Minor >=3D 8;
-> ...would fail this test.
-I never thought about v3 but sure you are right. Fixed.
+> I never thought about v3 but sure you are right. Fixed.
+Done
 
 
 
@@ -64,13 +64,14 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 25 Sep 2025 15:39:56 +0000
+Gerrit-Comment-Date: Thu, 25 Sep 2025 15:40:07 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---RGgECIFBaD8=
+--dhqOQo6Q/O4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -80,20 +81,20 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_win.c:</p><ul =
 style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/1219/comment/7e4f6803_aa700e92">Patch Set #1, Line 1102:<=
+n.net/c/openvpn/+/1219/comment/35228d79_18dae126">Patch Set #1, Line 1102:<=
 /a> <code style=3D"font-family:monospace,monospace">    return dco_get_vers=
 ion(&amp;ver) &amp;&amp; ver.Major &gt;=3D 2 &amp;&amp; ver.Minor &gt;=3D 8=
 ;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
-px 0; padding: 0 10px;">...would fail this test.</blockquote></p><p style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">I never thought about v3=
- but sure you are right. Fixed.</p></li></ul></li></ul><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">change 121=
-9</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+px 0; padding: 0 10px;">I never thought about v3 but sure you are right. Fi=
+xed.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1219?usp=3Demail">change 1219</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
+EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
+org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1219?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -113,14 +114,16 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 25 Sep 2025 15:39:56=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 25 Sep 2025 15:40:07=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
 n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---RGgECIFBaD8=--
+--dhqOQo6Q/O4=--
 
