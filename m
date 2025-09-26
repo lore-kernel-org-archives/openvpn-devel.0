@@ -1,16 +1,10 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Sep 2025 17:08:44 +0000
-In-Reply-To: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
-References: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <bbe3dbfdd0f6f62175bf57c74acc615a67e12f86-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gSFpJf3kiKg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Review use
- of positive_atoi vs atoi_constrained
+Date: Fri, 26 Sep 2025 19:11:52 +0200 (CEST)
+Message-Id: <202509261711.58QHBqPX083892@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250926165151.1502-1-gert@...1296...>
+References: <20250926165151.1502-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco_win: In dco_new_key,
+ document size assumptions for the integer casts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---gSFpJf3kiKg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Looks reasonable... especially since there already was a (char) cast for
+both KeyId and KeyLen, it was just missing the right signedness...
 
-Attention is currently required from: flichtenheld, plaisthos.
+Your patch has been applied to the master branch.
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/1153?usp=3Demail )
+commit e77c34370dbe0f894a2a927e18eb9f50a5820954
+Author: Frank Lichtenheld
+Date:   Fri Sep 26 18:51:46 2025 +0200
 
-Change subject: options: Review use of positive_atoi vs atoi_constrained
-......................................................................
+     dco_win: In dco_new_key, document size assumptions for the integer casts
 
-
-Patch Set 5: Code-Review+1
-
-(1 comment)
-
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1153/comment/b09f5803_fa7ecbdd :
-PS5, Line 7997:         atoi_constrained(p[1], &options->max_routes_per_cli=
-ent, p[0], 1, INT_MAX, msglevel);
-This changes the program behavior. Before, it silently corrected max_routes=
-_per_client to 1, now it exits with an error.
-
-Probably a good change, but I'm not sure if you intended this commit to cha=
-nge behavior.
-
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: MaxF <max@...2606...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1221
+     Message-Id: <20250926165151.1502-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33229.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
-Gerrit-Change-Number: 1153
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 26 Sep 2025 17:08:44 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gert Doering
 
---gSFpJf3kiKg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1153/comment/b09f5803_fa7ecbdd">Patch Set #5, Line 79=
-97:</a> <code style=3D"font-family:monospace,monospace">        atoi_constr=
-ained(p[1], &amp;options-&gt;max_routes_per_client, p[0], 1, INT_MAX, msgle=
-vel);</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-This changes the program behavior. Before, it silently corrected max_routes=
-_per_client to 1, now it exits with an error.</p><p style=3D"white-space: p=
-re-wrap; word-wrap: break-word;">Probably a good change, but I&#39;m not su=
-re if you intended this commit to change behavior.</p></li></ul></li></ul><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=
-=3Demail">change 1153</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id440917f433aab1a7db608ba04f=
-a95ba47c2ddde </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1153 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 26 Sep 2025 17:08:44=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---gSFpJf3kiKg=--
 
