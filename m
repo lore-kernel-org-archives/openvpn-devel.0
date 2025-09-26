@@ -1,11 +1,10 @@
+Date: Fri, 26 Sep 2025 19:02:03 +0200 (CEST)
+Message-Id: <202509261702.58QH23ud083275@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 26 Sep 2025 18:51:46 +0200
-Message-ID: <20250926165151.1502-1-gert@...1296...>
-In-Reply-To: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
-References: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dco_win: In dco_new_key,
- document size assumptions for the integer casts
+In-Reply-To: <20250926115415.158817-1-frank@...2641...>
+References: <20250926115415.158817-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: GHA: Dependency updates
+ September 2025
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,80 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Github says that building and fetching artifacts and testing things
+still works, so this must be fine :-)
 
-And make all casts explicit so that compiler doesn't complain.
+Your patch has been applied to the master branch.
 
-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: MaxF <max@...2606...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1221
----
+commit b5ee6fe3b5daea780881b6ff6529937ce6c52c73
+Author: Frank Lichtenheld
+Date:   Fri Sep 26 13:54:15 2025 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     GHA: Dependency updates September 2025
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1221
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1211
+     Message-Id: <20250926115415.158817-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33220.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-MaxF <max@...2606...>
 
-        
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 9e52859..7dd43d6 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -525,11 +525,6 @@
-     return 0;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
-@@ -540,21 +535,23 @@
- 
-     const int nonce_len = 8;
-     size_t key_len = cipher_kt_key_size(ciphername);
-+    ASSERT(key_len <= 32);
- 
-     OVPN_CRYPTO_DATA crypto_data;
-     ZeroMemory(&crypto_data, sizeof(crypto_data));
- 
-     crypto_data.CipherAlg = dco_get_cipher(ciphername);
--    crypto_data.KeyId = keyid;
-+    ASSERT(keyid > 0 && keyid <= UCHAR_MAX);
-+    crypto_data.KeyId = (unsigned char)keyid;
-     crypto_data.PeerId = peerid;
-     crypto_data.KeySlot = slot;
- 
-     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
--    crypto_data.Encrypt.KeyLen = (char)key_len;
-+    crypto_data.Encrypt.KeyLen = (unsigned char)key_len;
-     CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
- 
-     CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
--    crypto_data.Decrypt.KeyLen = (char)key_len;
-+    crypto_data.Decrypt.KeyLen = (unsigned char)key_len;
-     CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
- 
-     ASSERT(crypto_data.CipherAlg > 0);
-@@ -570,10 +567,6 @@
-     return 0;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- int
- dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot)
- {
+--
+kind regards,
+
+Gert Doering
+
 
