@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Sep 2025 20:50:36 +0000
+Date: Fri, 26 Sep 2025 20:50:39 +0000
 In-Reply-To: <gerrit.1758719391000.I9ea87531afb553f789289787403900a4758b8e1c@...2715...>
 References: <gerrit.1758719391000.I9ea87531afb553f789289787403900a4758b8e1c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  max@...2606...
-Message-ID: <63934d2131c53f0b4a1b75451dd0493c919e89cc-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <63934d2131c53f0b4a1b75451dd0493c919e89cc-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Ei/YYzGM/1w="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="UO3186VvLjg="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_openssl: Use
  uint16_t internally for TLS versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, MaxF <max@...2606...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Ei/YYzGM/1w=
+--UO3186VvLjg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1212?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by MaxF
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+12?usp=3Demail )
 
 Change subject: ssl_openssl: Use uint16_t internally for TLS versions
 ......................................................................
@@ -59,7 +55,7 @@ M src/openvpn/ssl_openssl.c
 1 file changed, 7 insertions(+), 25 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/12/1212/3
+
 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
 index 89deeaa..434df7d 100644
@@ -177,114 +173,110 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---Ei/YYzGM/1w=
+--UO3186VvLjg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1212?usp=3Demail">View Change</a></p><p>The following approvals got outd=
-ated and were removed:
-Code-Review+2 by MaxF</p><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">ssl_openssl: Use uint16_t internally for TLS versions=
-<br><br>libressl changed the API for the involved functions. Since<br>uint1=
-6_t is a true subset of int it should be safe to switch<br>to that for all =
-OpenSSL variants.<br><br>One trivial drive-by fix in unrelated code to be a=
-ble<br>to enable -Wconversion fully for the file. This just<br>adds a cast =
-where the comment says we intend a cast.<br><br>Change-Id: I9ea87531afb553f=
-789289787403900a4758b8e1c<br>Signed-off-by: Frank Lichtenheld &lt;frank@...493...=
-2641...&gt;<br>Acked-by: MaxF &lt;max@...2606...&gt;<br>Gerrit URL: https:/=
-/gerrit.openvpn.net/c/openvpn/+/1212<br>Message-Id: &lt;20250924150300.2931=
-8-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/m=
-essage/59238230/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
----<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 7 insertions(+), 25 d=
-eletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/12/1212/3</pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/open=
-vpn/ssl_openssl.c</span><br><span>index 89deeaa..434df7d 100644</span><br><=
-span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_=
-openssl.c</span><br><span>@@ -235,8 +235,8 @@</span><br><span> }</span><br>=
-<span> </span><br><span> /** Convert internal version number to openssl ver=
-sion number */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static =
-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openssl_tls_versio=
-n(int ver)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static ui=
-nt16_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+openssl_tls_v=
-ersion(unsigned int ver)</span><br><span> {</span><br><span>     if (ver =
-=3D=3D TLS_VER_1_0)</span><br><span>     {</span><br><span>@@ -272,23 +272,=
-18 @@</span><br><span>     return 0;</span><br><span> }</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) |=
-| defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span> static bool</span><br><span> tls_=
-ctx_set_tls_versions(struct tls_root_ctx *ctx, unsigned int ssl_flags)</spa=
-n><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int=
- tls_ver_min =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- uint16_t tls_ver_min =3D</span><br><span>         openssl_tls_version((ssl=
-_flags &gt;&gt; SSLF_TLS_VERSION_MIN_SHIFT) &amp; SSLF_TLS_VERSION_MIN_MASK=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int tls_ver_max=
- =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t tl=
-s_ver_max =3D</span><br><span>         openssl_tls_version((ssl_flags &gt;&=
-gt; SSLF_TLS_VERSION_MAX_SHIFT) &amp; SSLF_TLS_VERSION_MAX_MASK);</span><br=
-><span> </span><br><span>     if (!tls_ver_min)</span><br><span>     {</spa=
-n><br><span>         /* Enforce at least TLS 1.0 */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int cur_min =3D SSL_CTX_get_min_pro=
-to_version(ctx-&gt;ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        uint16_t cur_min =3D (uint16_t)SSL_CTX_get_min_proto_version(c=
-tx-&gt;ctx);</span><br><span>         tls_ver_min =3D cur_min &lt; TLS1_VER=
-SION ? TLS1_VERSION : cur_min;</span><br><span>     }</span><br><span> </sp=
-an><br><span>@@ -387,7 +382,7 @@</span><br><span>             /* %.*s forma=
-t specifier expects length of type int, so guarantee */</span><br><span>   =
-          /* that length is small enough and cast to int. */</span><br><spa=
-n>             msg(D_LOW, &quot;No valid translation found for TLS cipher &=
-#39;%.*s&#39;&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-               constrain_int(current_cipher_len, 0, 256), current_cipher);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                cons=
-train_int((int)current_cipher_len, 0, 256), current_cipher);</span><br><spa=
-n>         }</span><br><span>         else</span><br><span>         {</span=
-><br><span>@@ -429,10 +424,6 @@</span><br><span>     }</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if d=
-efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span> void</span><br><span> tls_ctx_restrict_ciphers(str=
-uct tls_root_ctx *ctx, const char *ciphers)</span><br><span> {</span><br><s=
-pan>@@ -2522,11 +2513,6 @@</span><br><span>     msg(D_HANDSHAKE, &quot;%s%s=
-%s%s%s&quot;, s1, s2, s3, s4, s5);</span><br><span> }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || =
-defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pr=
-agma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span> void</span><br><span> show_availabl=
-e_tls_ciphers_list(const char *cipher_list, const char *tls_cert_profile, b=
-ool tls13)</span><br><span> {</span><br><span>@@ -2541,7 +2527,7 @@</span><=
-br><span> #if defined(TLS1_3_VERSION)</span><br><span>     if (tls13)</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    SSL_CTX_set_min_proto_version(tls_ctx.ctx, openssl_tls_version(TLS_VER_=
-1_3));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        SSL_C=
-TX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);</span><br><span>    =
-     tls_ctx_restrict_ciphers_tls13(&amp;tls_ctx, cipher_list);</span><br><=
-span>     }</span><br><span>     else</span><br><span>@@ -2594,10 +2580,6 @=
-@</span><br><span>     SSL_CTX_free(tls_ctx.ctx);</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if define=
-d(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span> /*</span><br><span>  * Show the Elliptic curves that ar=
-e available for us to use</span><br><span>  * in the OpenSSL library.</span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1212?usp=3Demail">change 1212</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1212?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1212?usp=3Demail">View Change</a></p><div styl=
+e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">ssl_openssl: Use uint16_t internally for TLS =
+versions<br><br>libressl changed the API for the involved functions. Since<=
+br>uint16_t is a true subset of int it should be safe to switch<br>to that =
+for all OpenSSL variants.<br><br>One trivial drive-by fix in unrelated code=
+ to be able<br>to enable -Wconversion fully for the file. This just<br>adds=
+ a cast where the comment says we intend a cast.<br><br>Change-Id: I9ea8753=
+1afb553f789289787403900a4758b8e1c<br>Signed-off-by: Frank Lichtenheld &lt;f=
+rank@...2641...&gt;<br>Acked-by: MaxF &lt;max@...2606...&gt;<br>Gerrit URL:=
+ https://gerrit.openvpn.net/c/openvpn/+/1212<br>Message-Id: &lt;20250924150=
+300.29318-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/m=
+ailman/message/59238230/<br>Signed-off-by: Gert Doering &lt;gert@...1296...=
+&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 7 insertions(=
++), 25 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span=
+><br><span>index 89deeaa..434df7d 100644</span><br><span>--- a/src/openvpn/=
+ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><sp=
+an>@@ -235,8 +235,8 @@</span><br><span> }</span><br><span> </span><br><span=
+> /** Convert internal version number to openssl version number */</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-openssl_tls_version(int ver)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+static uint16_t</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+openssl_tls_version(unsigned int ver=
+)</span><br><span> {</span><br><span>     if (ver =3D=3D TLS_VER_1_0)</span=
+><br><span>     {</span><br><span>@@ -272,23 +272,18 @@</span><br><span>   =
+  return 0;</span><br><span> }</span><br><span> </span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pus=
+h</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnost=
+ic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span> static bool</span><br><span> tls_ctx_set_tls_versions(stru=
+ct tls_root_ctx *ctx, unsigned int ssl_flags)</span><br><span> {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    int tls_ver_min =3D</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t tls_ver_min =3D=
+</span><br><span>         openssl_tls_version((ssl_flags &gt;&gt; SSLF_TLS_=
+VERSION_MIN_SHIFT) &amp; SSLF_TLS_VERSION_MIN_MASK);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int tls_ver_max =3D</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    uint16_t tls_ver_max =3D</span><br>=
+<span>         openssl_tls_version((ssl_flags &gt;&gt; SSLF_TLS_VERSION_MAX=
+_SHIFT) &amp; SSLF_TLS_VERSION_MAX_MASK);</span><br><span> </span><br><span=
+>     if (!tls_ver_min)</span><br><span>     {</span><br><span>         /* =
+Enforce at least TLS 1.0 */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        int cur_min =3D SSL_CTX_get_min_proto_version(ctx-&gt;ctx);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint16_t cur_=
+min =3D (uint16_t)SSL_CTX_get_min_proto_version(ctx-&gt;ctx);</span><br><sp=
+an>         tls_ver_min =3D cur_min &lt; TLS1_VERSION ? TLS1_VERSION : cur_=
+min;</span><br><span>     }</span><br><span> </span><br><span>@@ -387,7 +38=
+2,7 @@</span><br><span>             /* %.*s format specifier expects length=
+ of type int, so guarantee */</span><br><span>             /* that length i=
+s small enough and cast to int. */</span><br><span>             msg(D_LOW, =
+&quot;No valid translation found for TLS cipher &#39;%.*s&#39;&quot;,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                constrain_i=
+nt(current_cipher_len, 0, 256), current_cipher);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                constrain_int((int)current_cip=
+her_len, 0, 256), current_cipher);</span><br><span>         }</span><br><sp=
+an>         else</span><br><span>         {</span><br><span>@@ -429,10 +424=
+,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || define=
+d(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma G=
+CC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#end=
+if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> v=
+oid</span><br><span> tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, con=
+st char *ciphers)</span><br><span> {</span><br><span>@@ -2522,11 +2513,6 @@=
+</span><br><span>     msg(D_HANDSHAKE, &quot;%s%s%s%s%s&quot;, s1, s2, s3, =
+s4, s5);</span><br><span> }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic =
+ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span> void</span><br><span> show_available_tls_ciphers_list(const c=
+har *cipher_list, const char *tls_cert_profile, bool tls13)</span><br><span=
+> {</span><br><span>@@ -2541,7 +2527,7 @@</span><br><span> #if defined(TLS1=
+_3_VERSION)</span><br><span>     if (tls13)</span><br><span>     {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        SSL_CTX_set_min_proto_=
+version(tls_ctx.ctx, openssl_tls_version(TLS_VER_1_3));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        SSL_CTX_set_min_proto_version(t=
+ls_ctx.ctx, TLS1_3_VERSION);</span><br><span>         tls_ctx_restrict_ciph=
+ers_tls13(&amp;tls_ctx, cipher_list);</span><br><span>     }</span><br><spa=
+n>     else</span><br><span>@@ -2594,10 +2580,6 @@</span><br><span>     SSL=
+_CTX_free(tls_ctx.ctx);</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__c=
+lang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC di=
+agnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</sp=
+an><br><span>  * Show the Elliptic curves that are available for us to use<=
+/span><br><span>  * in the OpenSSL library.</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1212?u=
+sp=3Demail">change 1212</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1212?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -300,8 +292,8 @@ div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---Ei/YYzGM/1w=--
+--UO3186VvLjg=--
 
