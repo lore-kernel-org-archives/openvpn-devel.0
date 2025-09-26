@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Sep 2025 17:12:09 +0000
-In-Reply-To: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
-References: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <14a852f7444b9bab2451a9a91b1c797f2240d47b-HTML@...2715...>
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Fri, 26 Sep 2025 20:06:00 +0000
+In-Reply-To: <gerrit.1740476988000.Ifc54be34101c0eb0f3dc479a9480d7219628cc76@...2715...>
+References: <gerrit.1740476988000.Ifc54be34101c0eb0f3dc479a9480d7219628cc76@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5a4e6847aa70e5f651894fc28ba2b36dac3ad430-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aCIpRHgAa/M="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_win: In
- dco_new_key, document size assumptions for the integer casts
+Content-Type: multipart/alternative; boundary="7nmsTNTnSsc="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: handle
+ default gateway (net_gateway) and nexthop towards VPN s...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,198 +19,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aCIpRHgAa/M=
+--7nmsTNTnSsc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-21?usp=3Demail )
+mrbff has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/+/90=
+2?usp=3Demail )
 
-Change subject: dco_win: In dco_new_key, document size assumptions for the =
-integer casts
+Change subject: route: handle default gateway (net_gateway) and nexthop tow=
+ards VPN server separately
 ......................................................................
 
-dco_win: In dco_new_key, document size assumptions for the integer casts
 
-And make all casts explicit so that compiler doesn't complain.
-
-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: MaxF <max@...2606...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1221
-Message-Id: <20250926165151.1502-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
-229.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dco_win.c
-1 file changed, 5 insertions(+), 12 deletions(-)
-
-
-
-
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 9e52859..7dd43d6 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -525,11 +525,6 @@
-     return 0;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_sl=
-ot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const u=
-int8_t *decrypt_key,
-@@ -540,21 +535,23 @@
-
-     const int nonce_len =3D 8;
-     size_t key_len =3D cipher_kt_key_size(ciphername);
-+    ASSERT(key_len <=3D 32);
-
-     OVPN_CRYPTO_DATA crypto_data;
-     ZeroMemory(&crypto_data, sizeof(crypto_data));
-
-     crypto_data.CipherAlg =3D dco_get_cipher(ciphername);
--    crypto_data.KeyId =3D keyid;
-+    ASSERT(keyid > 0 && keyid <=3D UCHAR_MAX);
-+    crypto_data.KeyId =3D (unsigned char)keyid;
-     crypto_data.PeerId =3D peerid;
-     crypto_data.KeySlot =3D slot;
-
-     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
--    crypto_data.Encrypt.KeyLen =3D (char)key_len;
-+    crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;
-     CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
-
-     CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
--    crypto_data.Decrypt.KeyLen =3D (char)key_len;
-+    crypto_data.Decrypt.KeyLen =3D (unsigned char)key_len;
-     CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
-
-     ASSERT(crypto_data.CipherAlg > 0);
-@@ -570,10 +567,6 @@
-     return 0;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- int
- dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot)
- {
-
+Abandoned
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/902?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
-Gerrit-Change-Number: 1221
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Change-Id: Ifc54be34101c0eb0f3dc479a9480d7219628cc76
+Gerrit-Change-Number: 902
+Gerrit-PatchSet: 1
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: abandon
 
---aCIpRHgAa/M=
+--7nmsTNTnSsc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">dco_win: In dco_new_key, document size assump=
-tions for the integer casts<br><br>And make all casts explicit so that comp=
-iler doesn&#39;t complain.<br><br>Change-Id: I612bf3b1c56d70a89fc04fad6fe36=
-fd9fadfd258<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br=
->Acked-by: MaxF &lt;max@...2606...&gt;<br>Gerrit URL: https://gerrit.openvp=
-n.net/c/openvpn/+/1221<br>Message-Id: &lt;20250926165151.1502-1-gert@...1826...=
-6...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1768...=
-ge.net/msg33229.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;=
-<br>---<br>M src/openvpn/dco_win.c<br>1 file changed, 5 insertions(+), 12 d=
-eletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><sp=
-an>index 9e52859..7dd43d6 100644</span><br><span>--- a/src/openvpn/dco_win.=
-c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -525,11 +5=
-25,6 @@</span><br><span>     return 0;</span><br><span> }</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__)=
- || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> dco_new_ke=
-y(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,<=
-/span><br><span>             const uint8_t *encrypt_key, const uint8_t *enc=
-rypt_iv, const uint8_t *decrypt_key,</span><br><span>@@ -540,21 +535,23 @@<=
-/span><br><span> </span><br><span>     const int nonce_len =3D 8;</span><br=
-><span>     size_t key_len =3D cipher_kt_key_size(ciphername);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(key_len &lt;=3D 32);<=
-/span><br><span> </span><br><span>     OVPN_CRYPTO_DATA crypto_data;</span>=
-<br><span>     ZeroMemory(&amp;crypto_data, sizeof(crypto_data));</span><br=
-><span> </span><br><span>     crypto_data.CipherAlg =3D dco_get_cipher(ciph=
-ername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_da=
-ta.KeyId =3D keyid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    ASSERT(keyid &gt; 0 &amp;&amp; keyid &lt;=3D UCHAR_MAX);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    crypto_data.KeyId =3D (unsigne=
-d char)keyid;</span><br><span>     crypto_data.PeerId =3D peerid;</span><br=
-><span>     crypto_data.KeySlot =3D slot;</span><br><span> </span><br><span=
->     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    crypto_data.Encrypt.KeyLen =
-=3D (char)key_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;</span><br><span> =
-    CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);</span=
-><br><span> </span><br><span>     CopyMemory(crypto_data.Decrypt.Key, decry=
-pt_key, key_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-crypto_data.Decrypt.KeyLen =3D (char)key_len;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    crypto_data.Decrypt.KeyLen =3D (unsigned char=
-)key_len;</span><br><span>     CopyMemory(crypto_data.Decrypt.NonceTail, de=
-crypt_iv, nonce_len);</span><br><span> </span><br><span>     ASSERT(crypto_=
-data.CipherAlg &gt; 0);</span><br><span>@@ -570,10 +567,6 @@</span><br><spa=
-n>     return 0;</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnosti=
-c pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br=
-><span> dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t=
- slot)</span><br><span> {</span><br><span></span><br></pre><p>To view, visi=
-t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">change=
- 1221</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+<p>mrbff <strong>abandoned</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/902?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/902?usp=3Demail">change 902</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/902?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe=
-36fd9fadfd258 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1221 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+<div style=3D"display:none"> Gerrit-Change-Id: Ifc54be34101c0eb0f3dc479a948=
+0d7219628cc76 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 902 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
 /div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
 
 
---aCIpRHgAa/M=--
+--7nmsTNTnSsc=--
 
