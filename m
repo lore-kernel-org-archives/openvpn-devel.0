@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 26 Sep 2025 16:24:36 +0200
-Message-ID: <20250926142442.20796-1-gert@...1296...>
-In-Reply-To: <gerrit.1758817708000.I473d345d10fc406f76fbdb131c28cc4fc54822fd@...2715...>
-References: <gerrit.1758817708000.I473d345d10fc406f76fbdb131c28cc4fc54822fd@...2715...>
+From: "MaxF (Code Review)" <gerrit@...515...>
+Date: Fri, 26 Sep 2025 15:29:51 +0000
+In-Reply-To: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
+References: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
+Reply-To: max@...2606..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <8d9cd0897a4e219655f2abe1b6054bc8a3da8c1e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dco_linux: Fix -Wconversion warnings
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="7SPsZEo/NoY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_win: In
+ dco_new_key, document size assumptions for the integer casts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,92 +19,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--7SPsZEo/NoY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Combination of using the correct types and some
-unavoidable safe size_t->int casts.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I473d345d10fc406f76fbdb131c28cc4fc54822fd
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1220
----
+MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
+vpn/+/1221?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: dco_win: In dco_new_key, document size assumptions for the =
+integer casts
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1220
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 395a38f..d46fa46 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -62,11 +62,6 @@
- 
- typedef int (*ovpn_nl_cb)(struct nl_msg *msg, void *arg);
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- /**
-  * @brief resolves the netlink ID for ovpn-dco
-  *
-@@ -110,7 +105,7 @@
- }
- 
- static struct nl_msg *
--ovpn_dco_nlmsg_create(dco_context_t *dco, int cmd)
-+ovpn_dco_nlmsg_create(dco_context_t *dco, uint8_t cmd)
- {
-     struct nl_msg *nl_msg = nlmsg_alloc();
-     if (!nl_msg)
-@@ -346,7 +341,7 @@
- 
-     if (!(nlh->nlmsg_flags & NLM_F_CAPPED))
-     {
--        ack_len += err->msg.nlmsg_len - sizeof(*nlh);
-+        ack_len += err->msg.nlmsg_len - (int)sizeof(*nlh);
-     }
- 
-     if (len <= ack_len)
-@@ -360,8 +355,8 @@
-     nla_parse(tb_msg, OVPN_NLMSGERR_ATTR_MAX, attrs, len, NULL);
-     if (tb_msg[NLMSGERR_ATTR_MSG])
-     {
--        len = strnlen((char *)nla_data(tb_msg[NLMSGERR_ATTR_MSG]),
--                      nla_len(tb_msg[NLMSGERR_ATTR_MSG]));
-+        len = (int)strnlen((char *)nla_data(tb_msg[NLMSGERR_ATTR_MSG]),
-+                           nla_len(tb_msg[NLMSGERR_ATTR_MSG]));
-         msg(M_WARN, "kernel error: %*s", len, (char *)nla_data(tb_msg[NLMSGERR_ATTR_MSG]));
-     }
- 
-@@ -606,7 +601,7 @@
-     msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
-         ciphername);
- 
--    const size_t key_len = cipher_kt_key_size(ciphername);
-+    const int key_len = cipher_kt_key_size(ciphername);
-     const int nonce_tail_len = 8;
- 
-     struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_KEY_NEW);
-@@ -1303,8 +1298,4 @@
-     return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
+Gerrit-Change-Number: 1221
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 26 Sep 2025 15:29:51 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--7SPsZEo/NoY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail=
+">change 1221</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe=
+36fd9fadfd258 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1221 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 26 Sep 2025 15:29:51=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--7SPsZEo/NoY=--
 
