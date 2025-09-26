@@ -1,10 +1,15 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 26 Sep 2025 13:54:15 +0200
-Message-Id: <20250926115415.158817-1-frank@...2641...>
-In-Reply-To: <gerrit.1758717755000.I6725b55c9e7bf5410bde09659131590d40bfee4d@...2715...>
-References: <gerrit.1758717755000.I6725b55c9e7bf5410bde09659131590d40bfee4d@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 26 Sep 2025 12:45:31 +0000
+References: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <fa8498f6f3c30d67c59f9a86d7a6527ad4ccb7ba-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] GHA: Dependency updates September 2025
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="CiFh8bj5i0A="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_win: In
+ dco_new_key, document size assumptions for the integer casts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,249 +18,200 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Yuriy Darnobyt <yura.uddr@...277...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-chore(deps): update dependency aws/aws-lc to v1.61.3
-chore(deps): update vcpkg digest to 9c5c2a0
-chore(deps): update github actions
+--CiFh8bj5i0A=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I6725b55c9e7bf5410bde09659131590d40bfee4d
+Attention is currently required from: plaisthos.
+
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco_win: In dco_new_key, document size assumptions for the =
+integer casts
+......................................................................
+
+dco_win: In dco_new_key, document size assumptions for the integer casts
+
+And make all casts explicit so that compiler doesn't complain.
+
+Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1211
 ---
+M src/openvpn/dco_win.c
+1 file changed, 5 insertions(+), 12 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1211
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Yuriy Darnobyt <yura.uddr@...277...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1221/1
 
-        
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index a306670..1cef154 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -14,7 +14,7 @@
-           sudo apt update && sudo apt install -y python3-pip
-           pip3 install pre-commit
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: Run clang-format
-         run: pre-commit run -a --show-diff-on-failure || true
-       - name: Check for changes
-@@ -44,12 +44,12 @@
-       VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
-     steps:
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
--      - uses: lukka/get-cmake@...2897... # v4.0.3
-+        uses: actions/checkout@...2926... # v5.0.0
-+      - uses: lukka/get-cmake@...2927... # v4.1.1
-       - name: Install vcpkg
-         uses: lukka/run-vcpkg@...2815... # v11.5
-         with:
--          vcpkgGitCommitId: f33cc491c85a7d643c5ab6da1667c1458e6d7abf
-+          vcpkgGitCommitId: 9c5c2a0ab75aff5bcd08142525f6ff7f6f7ddeee
-       - name: Install dependencies
-         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
-       - name: configure OpenVPN with cmake
-@@ -77,13 +77,13 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y mingw-w64 unzip build-essential wget python3-docutils man2html-base
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
- 
--      - uses: lukka/get-cmake@...2897... # v4.0.3
-+      - uses: lukka/get-cmake@...2927... # v4.1.1
-       - name: Restore from cache and install vcpkg
-         uses: lukka/run-vcpkg@...2815... # v11.5
-         with:
--          vcpkgGitCommitId: f33cc491c85a7d643c5ab6da1667c1458e6d7abf
-+          vcpkgGitCommitId: 9c5c2a0ab75aff5bcd08142525f6ff7f6f7ddeee
-           vcpkgJsonGlob: '**/mingw/vcpkg.json'
- 
-       - name: Run CMake with vcpkg.json manifest
-@@ -120,9 +120,9 @@
-     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
-     steps:
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: Retrieve mingw unittest
--        uses: actions/download-artifact@...2894... # v4.3.0
-+        uses: actions/download-artifact@...2928... # v5.0.0
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-tests
-           path: unittests
-@@ -164,7 +164,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${PKCS11PKG}
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -194,7 +194,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -234,7 +234,7 @@
-       - name: Install dependencies
-         run: brew install ${{matrix.ssllib}} lzo lz4 man2html cmocka libtool automake autoconf
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: Set environment
-         run: |
-           cat >>$GITHUB_ENV <<EOF;
-@@ -266,8 +266,8 @@
- 
-       runs-on: windows-2025
-       steps:
--      - uses: actions/checkout@...2844... # v4.2.2
--      - uses: lukka/get-cmake@...2897... # v4.0.3
-+      - uses: actions/checkout@...2926... # v5.0.0
-+      - uses: lukka/get-cmake@...2927... # v4.1.1
- 
-       - name: Install rst2html
-         run: python -m pip install --upgrade pip docutils
-@@ -275,7 +275,7 @@
-       - name: Restore artifacts, or setup vcpkg (do not install any package)
-         uses: lukka/run-vcpkg@...2815... # v11.5
-         with:
--          vcpkgGitCommitId: f33cc491c85a7d643c5ab6da1667c1458e6d7abf
-+          vcpkgGitCommitId: 9c5c2a0ab75aff5bcd08142525f6ff7f6f7ddeee
-           vcpkgJsonGlob: '**/windows/vcpkg.json'
- 
-       - name: Run CMake with vcpkg.json manifest (NO TESTS)
-@@ -334,7 +334,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-       - name: "libressl: checkout"
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-         with:
-           path: libressl
-           # versioning=semver-coerced
-@@ -357,7 +357,7 @@
-       - name: "ldconfig"
-         run: sudo ldconfig
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -398,7 +398,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-       - name: "mbedtls: checkout"
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-         with:
-           path: mbedtls
-           submodules: true
-@@ -412,7 +412,7 @@
-         run: sudo make install DESTDIR=/usr
-         working-directory: mbedtls
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -457,13 +457,13 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y gcc golang make liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-       - name: "AWS-LC: checkout"
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-         with:
-           path: aws-lc
-           # versioning=semver-coerced
-           repository: aws/aws-lc
--          ref: v1.55.0
--      - uses: lukka/get-cmake@...2897... # v4.0.3
-+          ref: v1.61.3
-+      - uses: lukka/get-cmake@...2927... # v4.1.1
-       - name: "AWS-LC: build"
-         run: |
-           mkdir build
-@@ -472,7 +472,7 @@
-           ninja install
-         working-directory: aws-lc
-       - name: Checkout OpenVPN
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure with AWS-LC
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
-index 222c57e..e90aa2e 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -13,7 +13,7 @@
-     steps:
-       - name: Check submission cache
-         id: check_submit
--        uses: actions/cache/restore@...2871... # v4.2.3
-+        uses: actions/cache/restore@...2929... # v4.2.4
-         with:
-           path: |
-             cov-int
-@@ -25,7 +25,7 @@
- 
-       - name: Checkout OpenVPN
-         if: steps.check_submit.outputs.cache-hit != 'true'
--        uses: actions/checkout@...2844... # v4.2.2
-+        uses: actions/checkout@...2926... # v5.0.0
- 
-       - name: Download Coverity Build Tool
-         if: steps.check_submit.outputs.cache-hit != 'true'
-@@ -65,7 +65,7 @@
- 
-       - name: Cache submission
-         if: steps.check_submit.outputs.cache-hit != 'true'
--        uses: actions/cache/save@...2871... # v4.2.3
-+        uses: actions/cache/save@...2929... # v4.2.4
-         with:
-           path: |
-             cov-int
-diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml
-index 751258a..eaa7e4c 100644
---- a/.github/workflows/doxygen.yml
-+++ b/.github/workflows/doxygen.yml
-@@ -11,7 +11,7 @@
-     runs-on: ubuntu-24.04
-     if: ${{ github.repository_owner == 'openvpn' || github.event_name == 'workflow_dispatch' }}
-     steps:
--      - uses: actions/checkout@...2844... # v4.2.2
-+      - uses: actions/checkout@...2926... # v5.0.0
-         with:
-           path: openvpn
- 
-@@ -35,7 +35,7 @@
-           touch doc/doxygen/html/.nojekyll
-       - name: Upload static files as artifact
-         id: deployment
--        uses: actions/upload-pages-artifact@...2872... # v3.0.1
-+        uses: actions/upload-pages-artifact@...2930... # v4.0.0
-         with:
-           path: doxygen/doc/doxygen/html/
- 
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 9e52859..7dd43d6 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -525,11 +525,6 @@
+     return 0;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ int
+ dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_sl=
+ot_t slot,
+             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const u=
+int8_t *decrypt_key,
+@@ -540,21 +535,23 @@
+
+     const int nonce_len =3D 8;
+     size_t key_len =3D cipher_kt_key_size(ciphername);
++    ASSERT(key_len <=3D 32);
+
+     OVPN_CRYPTO_DATA crypto_data;
+     ZeroMemory(&crypto_data, sizeof(crypto_data));
+
+     crypto_data.CipherAlg =3D dco_get_cipher(ciphername);
+-    crypto_data.KeyId =3D keyid;
++    ASSERT(keyid > 0 && keyid <=3D UCHAR_MAX);
++    crypto_data.KeyId =3D (unsigned char)keyid;
+     crypto_data.PeerId =3D peerid;
+     crypto_data.KeySlot =3D slot;
+
+     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
+-    crypto_data.Encrypt.KeyLen =3D (char)key_len;
++    crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;
+     CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
+
+     CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
+-    crypto_data.Decrypt.KeyLen =3D (char)key_len;
++    crypto_data.Decrypt.KeyLen =3D (unsigned char)key_len;
+     CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
+
+     ASSERT(crypto_data.CipherAlg > 0);
+@@ -570,10 +567,6 @@
+     return 0;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ int
+ dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot)
+ {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
+Gerrit-Change-Number: 1221
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-MessageType: newchange
+
+--CiFh8bj5i0A=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">V=
+iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">dco_win: In dco_new_key, document size assumptions for the i=
+nteger casts<br><br>And make all casts explicit so that compiler doesn&#39;=
+t complain.<br><br>Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258<br>=
+Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/o=
+penvpn/dco_win.c<br>1 file changed, 5 insertions(+), 12 deletions(-)<br><br=
+></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1221/1<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><b=
+r><span>index 9e52859..7dd43d6 100644</span><br><span>--- a/src/openvpn/dco=
+_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -525,=
+11 +525,6 @@</span><br><span>     return 0;</span><br><span> }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GN=
+UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> dco_=
+new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t =
+slot,</span><br><span>             const uint8_t *encrypt_key, const uint8_=
+t *encrypt_iv, const uint8_t *decrypt_key,</span><br><span>@@ -540,21 +535,=
+23 @@</span><br><span> </span><br><span>     const int nonce_len =3D 8;</sp=
+an><br><span>     size_t key_len =3D cipher_kt_key_size(ciphername);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(key_len &lt;=3D=
+ 32);</span><br><span> </span><br><span>     OVPN_CRYPTO_DATA crypto_data;<=
+/span><br><span>     ZeroMemory(&amp;crypto_data, sizeof(crypto_data));</sp=
+an><br><span> </span><br><span>     crypto_data.CipherAlg =3D dco_get_ciphe=
+r(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cry=
+pto_data.KeyId =3D keyid;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ASSERT(keyid &gt; 0 &amp;&amp; keyid &lt;=3D UCHAR_MAX);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    crypto_data.KeyId =3D (u=
+nsigned char)keyid;</span><br><span>     crypto_data.PeerId =3D peerid;</sp=
+an><br><span>     crypto_data.KeySlot =3D slot;</span><br><span> </span><br=
+><span>     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_data.Encrypt.Ke=
+yLen =3D (char)key_len;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;</span><br><s=
+pan>     CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);<=
+/span><br><span> </span><br><span>     CopyMemory(crypto_data.Decrypt.Key, =
+decrypt_key, key_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    crypto_data.Decrypt.KeyLen =3D (char)key_len;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    crypto_data.Decrypt.KeyLen =3D (unsigned=
+ char)key_len;</span><br><span>     CopyMemory(crypto_data.Decrypt.NonceTai=
+l, decrypt_iv, nonce_len);</span><br><span> </span><br><span>     ASSERT(cr=
+ypto_data.CipherAlg &gt; 0);</span><br><span>@@ -570,10 +567,6 @@</span><br=
+><span>     return 0;</span><br><span> }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cla=
+ng__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diag=
+nostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</spa=
+n><br><span> dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_s=
+lot_t slot)</span><br><span> {</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">c=
+hange 1221</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe=
+36fd9fadfd258 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1221 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--CiFh8bj5i0A=--
 
