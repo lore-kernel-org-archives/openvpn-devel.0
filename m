@@ -1,15 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 26 Sep 2025 12:45:31 +0000
-References: <gerrit.1758890729000.I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <fa8498f6f3c30d67c59f9a86d7a6527ad4ccb7ba-HTML@...2715...>
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Fri, 26 Sep 2025 13:47:10 +0000
+References: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5b7b9be45732de88f129388a99df89db4de8c781-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CiFh8bj5i0A="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_win: In
- dco_new_key, document size assumptions for the integer casts
+Content-Type: multipart/alternative; boundary="0PM/JcO2tNU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: handle
+ default gateway (net_gateway) and nexthop towards VPN s...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,200 +18,231 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CiFh8bj5i0A=
+--0PM/JcO2tNU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos,
+Hello plaisthos, flichtenheld,
 
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail
 
 to review the following change.
 
 
-Change subject: dco_win: In dco_new_key, document size assumptions for the =
-integer casts
+Change subject: route: handle default gateway (net_gateway) and nexthop tow=
+ards VPN server separately
 ......................................................................
 
-dco_win: In dco_new_key, document size assumptions for the integer casts
+route: handle default gateway (net_gateway) and nexthop towards VPN server =
+separately
 
-And make all casts explicit so that compiler doesn't complain.
+Right now there is the assumption that the gateway used for net_gateway is =
+the same used to reach the VPN server.
+However, these two gateways may be different (i.e. when there is a specific=
+ hostroute for the VPN server using a different nexthop).
+For this reason we must adapt init_route_list() to fetch the two gateways s=
+eparately.
 
-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3
+Signed-off-by: Marco Baffo <marco@...2726...>
 ---
-M src/openvpn/dco_win.c
-1 file changed, 5 insertions(+), 12 deletions(-)
+M src/openvpn/route.c
+1 file changed, 14 insertions(+), 6 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1221/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/1222/1
 
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 9e52859..7dd43d6 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -525,11 +525,6 @@
-     return 0;
- }
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 156a99e..29c7d7c 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -624,10 +624,12 @@
+         rl->spec.flags |=3D RTSA_DEFAULT_METRIC;
+     }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_sl=
-ot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const u=
-int8_t *decrypt_key,
-@@ -540,21 +535,23 @@
+-    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
+ote_host : INADDR_ANY, ctx);
+-    if (rl->rgi.flags & RGI_ADDR_DEFINED)
++    struct route_gateway_info ngi;
++
++    get_default_gateway(&ngi, INADDR_ANY, ctx);
++    if (ngi.flags & RGI_ADDR_DEFINED)
+     {
+-        setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
++        setenv_route_addr(es, "net_gateway", ngi.gateway.addr, -1);
+ #if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
+         print_default_gateway(D_ROUTE, &rl->rgi, NULL);
+ #endif
+@@ -637,6 +639,8 @@
+         dmsg(D_ROUTE, "ROUTE: default_gateway=3DUNDEF");
+     }
 
-     const int nonce_len =3D 8;
-     size_t key_len =3D cipher_kt_key_size(ciphername);
-+    ASSERT(key_len <=3D 32);
++    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
+ote_host : INADDR_ANY, ctx);
++
+     if (rl->spec.flags & RTSA_REMOTE_HOST)
+     {
+         rl->spec.remote_host_local =3D test_local_addr(remote_host, &rl->r=
+gi);
+@@ -778,10 +782,12 @@
+     msg(D_ROUTE, "GDG6: remote_host_ipv6=3D%s",
+         remote_host_ipv6 ? print_in6_addr(*remote_host_ipv6, 0, &gc) : "n/=
+a");
 
-     OVPN_CRYPTO_DATA crypto_data;
-     ZeroMemory(&crypto_data, sizeof(crypto_data));
+-    get_default_gateway_ipv6(&rl6->rgi6, remote_host_ipv6, ctx);
+-    if (rl6->rgi6.flags & RGI_ADDR_DEFINED)
++    struct route_ipv6_gateway_info ngi6;
++
++    get_default_gateway_ipv6(&ngi6, NULL, ctx);
++    if (ngi6.flags & RGI_ADDR_DEFINED)
+     {
+-        setenv_str(es, "net_gateway_ipv6", print_in6_addr(rl6->rgi6.gatewa=
+y.addr_ipv6, 0, &gc));
++        setenv_str(es, "net_gateway_ipv6", print_in6_addr(ngi6.gateway.add=
+r_ipv6, 0, &gc));
+ #if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
+         print_default_gateway(D_ROUTE, NULL, &rl6->rgi6);
+ #endif
+@@ -791,6 +797,8 @@
+         dmsg(D_ROUTE, "ROUTE6: default_gateway=3DUNDEF");
+     }
 
-     crypto_data.CipherAlg =3D dco_get_cipher(ciphername);
--    crypto_data.KeyId =3D keyid;
-+    ASSERT(keyid > 0 && keyid <=3D UCHAR_MAX);
-+    crypto_data.KeyId =3D (unsigned char)keyid;
-     crypto_data.PeerId =3D peerid;
-     crypto_data.KeySlot =3D slot;
-
-     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
--    crypto_data.Encrypt.KeyLen =3D (char)key_len;
-+    crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;
-     CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
-
-     CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
--    crypto_data.Decrypt.KeyLen =3D (char)key_len;
-+    crypto_data.Decrypt.KeyLen =3D (unsigned char)key_len;
-     CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
-
-     ASSERT(crypto_data.CipherAlg > 0);
-@@ -570,10 +567,6 @@
-     return 0;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- int
- dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot)
- {
++    get_default_gateway_ipv6(&rl6->rgi6, remote_host_ipv6, ctx);
++
+     if (is_route_parm_defined(remote_endpoint))
+     {
+         if (inet_pton(AF_INET6, remote_endpoint, &rl6->remote_endpoint_ipv=
+6) =3D=3D 1)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258
-Gerrit-Change-Number: 1221
+Gerrit-Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3
+Gerrit-Change-Number: 1222
 Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---CiFh8bj5i0A=
+--0PM/JcO2tNU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">V=
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>mrbff would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail">V=
 iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">dco_win: In dco_new_key, document size assumptions for the i=
-nteger casts<br><br>And make all casts explicit so that compiler doesn&#39;=
-t complain.<br><br>Change-Id: I612bf3b1c56d70a89fc04fad6fe36fd9fadfd258<br>=
-Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/o=
-penvpn/dco_win.c<br>1 file changed, 5 insertions(+), 12 deletions(-)<br><br=
-></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1221/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><b=
-r><span>index 9e52859..7dd43d6 100644</span><br><span>--- a/src/openvpn/dco=
-_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -525,=
-11 +525,6 @@</span><br><span>     return 0;</span><br><span> }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GN=
-UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> dco_=
-new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t =
-slot,</span><br><span>             const uint8_t *encrypt_key, const uint8_=
-t *encrypt_iv, const uint8_t *decrypt_key,</span><br><span>@@ -540,21 +535,=
-23 @@</span><br><span> </span><br><span>     const int nonce_len =3D 8;</sp=
-an><br><span>     size_t key_len =3D cipher_kt_key_size(ciphername);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(key_len &lt;=3D=
- 32);</span><br><span> </span><br><span>     OVPN_CRYPTO_DATA crypto_data;<=
-/span><br><span>     ZeroMemory(&amp;crypto_data, sizeof(crypto_data));</sp=
-an><br><span> </span><br><span>     crypto_data.CipherAlg =3D dco_get_ciphe=
-r(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cry=
-pto_data.KeyId =3D keyid;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    ASSERT(keyid &gt; 0 &amp;&amp; keyid &lt;=3D UCHAR_MAX);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    crypto_data.KeyId =3D (u=
-nsigned char)keyid;</span><br><span>     crypto_data.PeerId =3D peerid;</sp=
-an><br><span>     crypto_data.KeySlot =3D slot;</span><br><span> </span><br=
-><span>     CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_data.Encrypt.Ke=
-yLen =3D (char)key_len;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;</span><br><s=
-pan>     CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);<=
-/span><br><span> </span><br><span>     CopyMemory(crypto_data.Decrypt.Key, =
-decrypt_key, key_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    crypto_data.Decrypt.KeyLen =3D (char)key_len;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    crypto_data.Decrypt.KeyLen =3D (unsigned=
- char)key_len;</span><br><span>     CopyMemory(crypto_data.Decrypt.NonceTai=
-l, decrypt_iv, nonce_len);</span><br><span> </span><br><span>     ASSERT(cr=
-ypto_data.CipherAlg &gt; 0);</span><br><span>@@ -570,10 +567,6 @@</span><br=
-><span>     return 0;</span><br><span> }</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cla=
-ng__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diag=
-nostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</spa=
-n><br><span> dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_s=
-lot_t slot)</span><br><span> {</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail">c=
-hange 1221</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1221?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+ce: pre-wrap;">route: handle default gateway (net_gateway) and nexthop towa=
+rds VPN server separately<br><br>Right now there is the assumption that the=
+ gateway used for net_gateway is the same used to reach the VPN server.<br>=
+However, these two gateways may be different (i.e. when there is a specific=
+ hostroute for the VPN server using a different nexthop).<br>For this reaso=
+n we must adapt init_route_list() to fetch the two gateways separately.<br>=
+<br>Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3<br>Signed-off-by: =
+Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/route.c<br>1 f=
+ile changed, 14 insertions(+), 6 deletions(-)<br><br></pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
+it.openvpn.net:29418/openvpn refs/changes/22/1222/1</pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/sr=
+c/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 156a99e..29c7=
+d7c 100644</span><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/=
+src/openvpn/route.c</span><br><span>@@ -624,10 +624,12 @@</span><br><span> =
+        rl-&gt;spec.flags |=3D RTSA_DEFAULT_METRIC;</span><br><span>     }<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+get_default_gateway(&amp;rl-&gt;rgi, remote_host !=3D IPV4_INVALID_ADDR ? r=
+emote_host : INADDR_ANY, ctx);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    if (rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct route_gateway_info ngi;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway(&amp;ngi, INADDR_=
+ANY, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (n=
+gi.flags &amp; RGI_ADDR_DEFINED)</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        setenv_route_addr(es, &quot;net_g=
+ateway&quot;, rl-&gt;rgi.gateway.addr, -1);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        setenv_route_addr(es, &quot;net_gateway&quo=
+t;, ngi.gateway.addr, -1);</span><br><span> #if defined(ENABLE_DEBUG) &amp;=
+&amp; !defined(ENABLE_SMALL)</span><br><span>         print_default_gateway=
+(D_ROUTE, &amp;rl-&gt;rgi, NULL);</span><br><span> #endif</span><br><span>@=
+@ -637,6 +639,8 @@</span><br><span>         dmsg(D_ROUTE, &quot;ROUTE: defa=
+ult_gateway=3DUNDEF&quot;);</span><br><span>     }</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway(&a=
+mp;rl-&gt;rgi, remote_host !=3D IPV4_INVALID_ADDR ? remote_host : INADDR_AN=
+Y, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span>     if (rl-&gt;spec.flags &amp; RTSA_REMOTE_HOST)</span><br><span>  =
+   {</span><br><span>         rl-&gt;spec.remote_host_local =3D test_local_=
+addr(remote_host, &amp;rl-&gt;rgi);</span><br><span>@@ -778,10 +782,12 @@</=
+span><br><span>     msg(D_ROUTE, &quot;GDG6: remote_host_ipv6=3D%s&quot;,</=
+span><br><span>         remote_host_ipv6 ? print_in6_addr(*remote_host_ipv6=
+, 0, &amp;gc) : &quot;n/a&quot;);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    get_default_gateway_ipv6(&amp;rl6-&gt;r=
+gi6, remote_host_ipv6, ctx);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    if (rl6-&gt;rgi6.flags &amp; RGI_ADDR_DEFINED)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct route_ipv6_gateway_info ng=
+i6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway_ipv6(&amp;n=
+gi6, NULL, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (ngi6.flags &amp; RGI_ADDR_DEFINED)</span><br><span>     {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        setenv_str(es, &quot;net_g=
+ateway_ipv6&quot;, print_in6_addr(rl6-&gt;rgi6.gateway.addr_ipv6, 0, &amp;g=
+c));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        setenv_=
+str(es, &quot;net_gateway_ipv6&quot;, print_in6_addr(ngi6.gateway.addr_ipv6=
+, 0, &amp;gc));</span><br><span> #if defined(ENABLE_DEBUG) &amp;&amp; !defi=
+ned(ENABLE_SMALL)</span><br><span>         print_default_gateway(D_ROUTE, N=
+ULL, &amp;rl6-&gt;rgi6);</span><br><span> #endif</span><br><span>@@ -791,6 =
++797,8 @@</span><br><span>         dmsg(D_ROUTE, &quot;ROUTE6: default_gate=
+way=3DUNDEF&quot;);</span><br><span>     }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    get_default_gateway_ipv6(&amp;=
+rl6-&gt;rgi6, remote_host_ipv6, ctx);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span>     if (is_route_parm_defined(remote_en=
+dpoint))</span><br><span>     {</span><br><span>         if (inet_pton(AF_I=
+NET6, remote_endpoint, &amp;rl6-&gt;remote_endpoint_ipv6) =3D=3D 1)</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1222?usp=3Demail">change 1222</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1222?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I612bf3b1c56d70a89fc04fad6fe=
-36fd9fadfd258 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1221 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I16d90221d0a75193035253817ff=
+195f6da9dc0b3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1222 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---CiFh8bj5i0A=--
+--0PM/JcO2tNU=--
 
