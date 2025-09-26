@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 26 Sep 2025 13:17:26 +0200
-Message-Id: <20250926111726.153603-1-frank@...2641...>
-In-Reply-To: <gerrit.1756814708000.Ica721a51b00d5314125bcaf5a586e718c5982aef@...2715...>
-References: <gerrit.1756814708000.Ica721a51b00d5314125bcaf5a586e718c5982aef@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Fri, 26 Sep 2025 11:40:21 +0000
+In-Reply-To: <gerrit.1758817708000.I473d345d10fc406f76fbdb131c28cc4fc54822fd@...2715...>
+References: <gerrit.1758817708000.I473d345d10fc406f76fbdb131c28cc4fc54822fd@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <7d72094e5b51d318ca8c200749c493b2326d0770-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] proto: Clean up conversion warnings
- related to checksum macros
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="dITr3WqB854="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: Fix
+ -Wconversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,200 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: MaxF <max@...2606...>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-These should not change any behavior, they mostly clarify
-the used types and silence warnings, since these casts are
-deliberate.
+--dITr3WqB854=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Ica721a51b00d5314125bcaf5a586e718c5982aef
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: MaxF <max@...2606...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1164
----
+Attention is currently required from: flichtenheld, plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/1220?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1164
-This mail reflects revision 4 of this Change.
+Change subject: dco_linux: Fix -Wconversion warnings
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-MaxF <max@...2606...>
 
-        
-diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
-index b49d4bb..7751a47 100644
---- a/src/openvpn/clinat.c
-+++ b/src/openvpn/clinat.c
-@@ -185,11 +185,7 @@
-                      const int direction)
- {
-     struct ip_tcp_udp_hdr *h = (struct ip_tcp_udp_hdr *)BPTR(ipbuf);
--    int i;
--    uint32_t addr, *addr_ptr;
--    const uint32_t *from, *to;
--    int accumulate = 0;
--    unsigned int amask;
-+    int32_t accumulate = 0;
-     unsigned int alog = 0;
- 
-     if (check_debug_level(D_CLIENT_NAT))
-@@ -197,8 +193,11 @@
-         print_pkt(&h->ip, "BEFORE", direction, D_CLIENT_NAT);
-     }
- 
--    for (i = 0; i < list->n; ++i)
-+    for (int i = 0; i < list->n; ++i)
-     {
-+        uint32_t addr, *addr_ptr;
-+        const uint32_t *from, *to;
-+        unsigned int amask;
-         const struct client_nat_entry *e = &list->entries[i]; /* current NAT rule */
-         if (e->type ^ direction)
-         {
-diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index e7111a8..10d61d1 100644
---- a/src/openvpn/mss.c
-+++ b/src/openvpn/mss.c
-@@ -130,11 +130,6 @@
-     }
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- /*
-  * change TCP MSS option in SYN/SYN-ACK packets, if present
-  * this is generic for IPv4 and IPv6, as the TCP header is the same
-@@ -143,11 +138,8 @@
- void
- mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
- {
--    int hlen, olen, optlen;
-+    int olen, optlen;
-     uint8_t *opt;
--    uint16_t mssval;
--    int accumulate;
--    struct openvpn_tcphdr *tc;
- 
-     if (BLEN(buf) < (int)sizeof(struct openvpn_tcphdr))
-     {
-@@ -155,8 +147,8 @@
-     }
- 
-     verify_align_4(buf);
--    tc = (struct openvpn_tcphdr *)BPTR(buf);
--    hlen = OPENVPN_TCPH_GET_DOFF(tc->doff_res);
-+    struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *)BPTR(buf);
-+    int hlen = OPENVPN_TCPH_GET_DOFF(tc->doff_res);
- 
-     /* Invalid header length or header without options. */
-     if (hlen <= (int)sizeof(struct openvpn_tcphdr) || hlen > BLEN(buf))
-@@ -171,43 +163,37 @@
-         {
-             break;
-         }
--        else if (*opt == OPENVPN_TCPOPT_NOP)
-+        if (*opt == OPENVPN_TCPOPT_NOP)
-         {
-             optlen = 1;
-+            continue;
-         }
--        else
-+
-+        optlen = *(opt + 1);
-+        if (optlen <= 0 || optlen > olen)
-         {
--            optlen = *(opt + 1);
--            if (optlen <= 0 || optlen > olen)
-+            break;
-+        }
-+        if (*opt == OPENVPN_TCPOPT_MAXSEG)
-+        {
-+            if (optlen != OPENVPN_TCPOLEN_MAXSEG)
-             {
--                break;
-+                continue;
-             }
--            if (*opt == OPENVPN_TCPOPT_MAXSEG)
-+            uint16_t mssval = (uint16_t)(opt[2] << 8) + opt[3];
-+            if (mssval > maxmss)
-             {
--                if (optlen != OPENVPN_TCPOLEN_MAXSEG)
--                {
--                    continue;
--                }
--                mssval = opt[2] << 8;
--                mssval += opt[3];
--                if (mssval > maxmss)
--                {
--                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
--                    accumulate = htons(mssval);
--                    opt[2] = (uint8_t)((maxmss >> 8) & 0xff);
--                    opt[3] = (uint8_t)(maxmss & 0xff);
--                    accumulate -= htons(maxmss);
--                    ADJUST_CHECKSUM(accumulate, tc->check);
--                }
-+                dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
-+                opt[2] = (uint8_t)((maxmss >> 8) & 0xff);
-+                opt[3] = (uint8_t)(maxmss & 0xff);
-+                int32_t accumulate = htons(mssval);
-+                accumulate -= htons(maxmss);
-+                ADJUST_CHECKSUM(accumulate, tc->check);
-             }
-         }
-     }
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static inline size_t
- adjust_payload_max_cbc(const struct key_type *kt, size_t target)
- {
-diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-index 62157fa..94952bd 100644
---- a/src/openvpn/proto.h
-+++ b/src/openvpn/proto.h
-@@ -214,7 +214,7 @@
-  */
- #define ADJUST_CHECKSUM(acc, cksum)                \
-     {                                              \
--        int _acc = acc;                            \
-+        int32_t _acc = acc;                        \
-         _acc += (cksum);                           \
-         if (_acc < 0)                              \
-         {                                          \
-@@ -231,16 +231,16 @@
-         }                                          \
-     }
- 
--#define ADD_CHECKSUM_32(acc, u32) \
--    {                             \
--        acc += (u32) & 0xffff;    \
--        acc += (u32) >> 16;       \
-+#define ADD_CHECKSUM_32(acc, u32)         \
-+    {                                     \
-+        acc += (int32_t)((u32) & 0xffff); \
-+        acc += (int32_t)((u32) >> 16);    \
-     }
- 
--#define SUB_CHECKSUM_32(acc, u32) \
--    {                             \
--        acc -= (u32) & 0xffff;    \
--        acc -= (u32) >> 16;       \
-+#define SUB_CHECKSUM_32(acc, u32)         \
-+    {                                     \
-+        acc -= (int32_t)((u32) & 0xffff); \
-+        acc -= (int32_t)((u32) >> 16);    \
-     }
- 
- /*
+Patch Set 1: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1220?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I473d345d10fc406f76fbdb131c28cc4fc54822fd
+Gerrit-Change-Number: 1220
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 26 Sep 2025 11:40:21 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--dITr3WqB854=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1220?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1220?usp=3Demail=
+">change 1220</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1220?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I473d345d10fc406f76fbdb131c2=
+8cc4fc54822fd </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1220 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 26 Sep 2025 11:40:21=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--dITr3WqB854=--
 
