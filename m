@@ -1,10 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 29 Sep 2025 17:28:41 +0200
-Message-Id: <20250929152841.177424-1-frank@...2641...>
-In-Reply-To: <gerrit.1759135650000.I3b1243461ec9b6e85897f452f78dc4b05f7e126d@...2715...>
-References: <gerrit.1759135650000.I3b1243461ec9b6e85897f452f78dc4b05f7e126d@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dco-win: fix broken ASSERT in dco_new_key
+Date: Mon, 29 Sep 2025 20:50:42 +0200 (CEST)
+Message-Id: <202509291850.58TIogeq025058@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20250929152841.177424-1-frank@...2641...>
+References: <20250929152841.177424-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: fix broken ASSERT in
+ dco_new_key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,48 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+The moment you notice that you have a CI infrastructure that actually
+caught the issue - and the notification went "somewhere"...
 
-Commit
+Your patch has been applied to the master branch.
 
-  e77c343 ("dco_win: In dco_new_key, document size assumptions for the integer casts")
+commit 290a14cd9edf95f07940f63993c290dc045c2a44
+Author: Lev Stipakov
+Date:   Mon Sep 29 17:28:41 2025 +0200
 
-has added an ASSERT on key-id, but didn't take into account that
-key-id 0 is a perfectly valid value and is the first key-id. This
-essentially broke dco-win.
+     dco-win: fix broken ASSERT in dco_new_key
 
-Fix by adjusting ASSERT to >= 0.
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1223
+     Message-Id: <20250929152841.177424-1-frank@...2641...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59240115/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: I3b1243461ec9b6e85897f452f78dc4b05f7e126d
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1223
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+--
+kind regards,
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1223
-This mail reflects revision 1 of this Change.
+Gert Doering
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
-
-        
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 4dd307f..30307de 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -541,7 +541,7 @@
-     ZeroMemory(&crypto_data, sizeof(crypto_data));
- 
-     crypto_data.CipherAlg = dco_get_cipher(ciphername);
--    ASSERT(keyid > 0 && keyid <= UCHAR_MAX);
-+    ASSERT(keyid >= 0 && keyid <= UCHAR_MAX);
-     crypto_data.KeyId = (unsigned char)keyid;
-     crypto_data.PeerId = peerid;
-     crypto_data.KeySlot = slot;
 
