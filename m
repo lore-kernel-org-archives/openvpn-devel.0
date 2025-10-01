@@ -1,11 +1,15 @@
-Content-Type: multipart/alternative;
- boundary="------------6aJPt20C7BMwVpGErs3bSu8D"
-Message-ID: <b473dfff-8cf5-4e5e-80da-4103b3c8982d@...2722...>
-Date: Wed, 1 Oct 2025 19:44:45 +0700
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Wed, 1 Oct 2025 14:15:24 +0000
+References: <gerrit.1759328122000.Ibe78949435bb2f26ad68301e2710321bf37c9486@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <7f2324735af1356299432aee55398ca8d9349e1f-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ZAD0tSgWIr4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE:
+ disabling PUSH_UPDATE server if DCO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,141 +18,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------6aJPt20C7BMwVpGErs3bSu8D
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--ZAD0tSgWIr4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 1 October 2025:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  *
+Hello plaisthos, flichtenheld,
 
-    *Updated: Release 2.7*
-    OpenVPN 2.7 beta2 was released 25 September.
-    It looks like next up will be a beta3, after which a stable release
-    is expected.
+I'd like you to do a code review.
+Please visit
 
-  *
+    http://gerrit.openvpn.net/c/openvpn/+/1245?usp=3Demail
 
-    *New, closed: verify signature page*
-    During the revamp of the community pages on the main openvpn.net
-    website the instructions on how to verify the GPG signature was lost.
-    We brought it back under the community.openvpn.net wiki's downloads
-    page here;https://community.openvpn.net/Downloads/Verify%20signature
+to review the following change.
 
-  *
 
-    *New, closed: gerrit updated*
-    Gerrit review system was updated. If there are any issues please let
-    uddr35 know on IRC.
+Change subject: PUSH_UPDATE: disabling PUSH_UPDATE server if DCO is enabled
+......................................................................
 
-  *
+PUSH_UPDATE: disabling PUSH_UPDATE server if DCO is enabled
 
-    *Updated: wolfSSL license changed from gplv2 to gplv3*
-    The release notes of wolfSSL indicate the license changed to GPLv3.
-    This basically makes wolfSSL incompatible in regards to licensing
-    with OpenVPN.
-    We reached out to WolfSSL and we got back a response indicating that
-    other parties have also expressed similar concerns and an exception
-    may be considered.
-    We are still waiting for a resolution, it has been several weeks
-    now. We reached out again to wolfSSL.
-    If there is no resolution by 15th of October, then we will proceed
-    with our OpenVPN 2.7 release plans without wolfSSL support.
+Change-Id: Ibe78949435bb2f26ad68301e2710321bf37c9486
+Signed-off-by: Marco Baffo <marco@...2726...>
+---
+M src/openvpn/push_util.c
+1 file changed, 16 insertions(+), 1 deletion(-)
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
 
-Kind regards,
-Johan Draaisma
 
---------------6aJPt20C7BMwVpGErs3bSu8D
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/1245/1
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 1 October 2025:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.7</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          OpenVPN 2.7 beta2 was released 25 September.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          It looks like next up will be a beta3, after which a stable
-          release is expected.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New,
-            closed: verify signature page</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          During the revamp of the community pages on the main
-          openvpn.net website the instructions on how to verify the GPG
-          signature was lost.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We brought it back under the community.openvpn.net wiki's
-          downloads page here;<span> </span><a
-href="https://community.openvpn.net/Downloads/Verify%20signature"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://community.openvpn.net/Downloads/Verify%20signature</a></p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New,
-            closed: gerrit updated</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Gerrit review system was updated. If there are any issues
-          please let uddr35 know on IRC.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            wolfSSL license changed from gplv2 to gplv3</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The release notes of wolfSSL indicate the license changed to
-          GPLv3. This basically makes wolfSSL incompatible in regards to
-          licensing with OpenVPN.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We reached out to WolfSSL and we got back a response
-          indicating that other parties have also expressed similar
-          concerns and an exception may be considered.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We are still waiting for a resolution, it has been several
-          weeks now. We reached out again to wolfSSL.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          If there is no resolution by 15th of October, then we will
-          proceed with our OpenVPN 2.7 release plans without wolfSSL
-          support.</p>
-      </li>
-    </ul>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 9138bdb..f765936 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -294,10 +294,17 @@
+         }                                                             \
+     } while (0)
 
---------------6aJPt20C7BMwVpGErs3bSu8D--
+-
+ bool
+ management_callback_send_push_update_broadcast(void *arg, const char *opti=
+ons)
+ {
++    struct multi_context *m =3D arg;
++    if (dco_enabled(&m->top.options))
++    {
++        msg(M_WARN, "WARN: PUSH_UPDATE messages cannot currently be sent w=
+hile DCO is enabled."
++                    " To send a PUSH_UPDATE message, be sure to use the `-=
+-disable-dco` option.");
++        return false;
++    }
++
+     int n_sent =3D send_push_update(arg, NULL, options, UPT_BROADCAST, PUS=
+H_BUNDLE_SIZE);
+
+     RETURN_UPDATE_STATUS(n_sent);
+@@ -306,6 +313,14 @@
+ bool
+ management_callback_send_push_update_by_cid(void *arg, unsigned long cid, =
+const char *options)
+ {
++    struct multi_context *m =3D arg;
++    if (dco_enabled(&m->top.options))
++    {
++        msg(M_WARN, "WARN: PUSH_UPDATE messages cannot currently be sent w=
+hile DCO is enabled."
++                    " To send a PUSH_UPDATE message, be sure to use the `-=
+-disable-dco` option.");
++        return false;
++    }
++
+     int n_sent =3D send_push_update(arg, &cid, options, UPT_BY_CID, PUSH_B=
+UNDLE_SIZE);
+
+     RETURN_UPDATE_STATUS(n_sent);
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1245?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ibe78949435bb2f26ad68301e2710321bf37c9486
+Gerrit-Change-Number: 1245
+Gerrit-PatchSet: 1
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--ZAD0tSgWIr4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>mrbff would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1245?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">PUSH_UPDATE: disabling PUSH_UPDATE server i=
+f DCO is enabled<br><br>Change-Id: Ibe78949435bb2f26ad68301e2710321bf37c948=
+6<br>Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/op=
+envpn/push_util.c<br>1 file changed, 16 insertions(+), 1 deletion(-)<br><br=
+></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/c=
+hanges/45/1245/1</pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;"><span>diff --git a/src/openvpn/push_util.c b/src/openvpn=
+/push_util.c</span><br><span>index 9138bdb..f765936 100644</span><br><span>=
+--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/openvpn/push_util.c=
+</span><br><span>@@ -294,10 +294,17 @@</span><br><span>         }          =
+                                                   \</span><br><span>     }=
+ while (0)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span> bool</span><br><span> management_callback_send_pus=
+h_update_broadcast(void *arg, const char *options)</span><br><span> {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_context =
+*m =3D arg;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+dco_enabled(&amp;m-&gt;top.options))</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        msg(M_WARN, &quot;WARN: PUSH_UPDATE messages cannot currently be=
+ sent while DCO is enabled.&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    &quot; To send a PUSH_UPDATE message, be =
+sure to use the `--disable-dco` option.&quot;);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span>     int n_sent =3D send_push_update(arg, =
+NULL, options, UPT_BROADCAST, PUSH_BUNDLE_SIZE);</span><br><span> </span><b=
+r><span>     RETURN_UPDATE_STATUS(n_sent);</span><br><span>@@ -306,6 +313,1=
+4 @@</span><br><span> bool</span><br><span> management_callback_send_push_u=
+pdate_by_cid(void *arg, unsigned long cid, const char *options)</span><br><=
+span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct m=
+ulti_context *m =3D arg;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (dco_enabled(&amp;m-&gt;top.options))</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        msg(M_WARN, &quot;WARN: PUSH_UPDATE messages cannot=
+ currently be sent while DCO is enabled.&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                    &quot; To send a PUSH_UPDATE=
+ message, be sure to use the `--disable-dco` option.&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span>     int n_sent =3D send_push=
+_update(arg, &amp;cid, options, UPT_BY_CID, PUSH_BUNDLE_SIZE);</span><br><s=
+pan> </span><br><span>     RETURN_UPDATE_STATUS(n_sent);</span><br><span></=
+span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1245?usp=3Demail">change 1245</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3D=
+email">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1245?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibe78949435bb2f26ad68301e271=
+0321bf37c9486 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1245 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--ZAD0tSgWIr4=--
 
