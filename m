@@ -1,16 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 3 Oct 2025 08:16:00 +0000
-In-Reply-To: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
-References: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <02b183b06da94846b72a9f99ae53b817b6767bc5-EmailReplacePatchSet-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri,  3 Oct 2025 12:06:02 +0200
+Message-Id: <20251003100602.375062-1-frank@...2641...>
+In-Reply-To: <gerrit.1758627240000.Ie6b4c41d13544d5ba71d441cc794c7abd12408f3@...2715...>
+References: <gerrit.1758627240000.Ie6b4c41d13544d5ba71d441cc794c7abd12408f3@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kbUgBdbh2X8="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: support for
- epoch data channel
+Subject: [Openvpn-devel] [PATCH v2] platform: Do not assume uid_t/gid_t are
+ signed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,567 +14,329 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: MaxF <max@...2606...>
 
---kbUgBdbh2X8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+uid_t/gid_t are int on many platform but unsigned
+on at least Linux. So rewrite the code in a way that
+does not make any assumptions about the types. Mainly
+this means storing the information whether the value
+is valid in a separate bool and not in the value
+itself.
 
-Attention is currently required from: flichtenheld, plaisthos.
+Note that this changes the return behavior of
+platform_{user,group}_get but a review of the
+callers determined that this makes no actual
+difference.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail
-
-to look at the new patch set (#5).
-
-
-Change subject: dco-win: support for epoch data channel
-......................................................................
-
-dco-win: support for epoch data channel
-
-Starting from 2.8.0, dco-win driver supports
-epoch data channel. This adds missing userspace part.
-
-While on it, fix broken assert introduced in e77c34.
-Key-Id 0 is a perfectly valid.
-
-Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
-Signed-off-by: Lev Stipakov <lev@...515...>
+Change-Id: Ie6b4c41d13544d5ba71d441cc794c7abd12408f3
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: MaxF <max@...2606...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1206
 ---
-M src/openvpn/dco.c
-M src/openvpn/dco.h
-M src/openvpn/dco_freebsd.c
-M src/openvpn/dco_internal.h
-M src/openvpn/dco_linux.c
-M src/openvpn/dco_win.c
-M src/openvpn/ovpn_dco_win.h
-7 files changed, 67 insertions(+), 30 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1219/5
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1206
+This mail reflects revision 2 of this Change.
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 6afc680..8fb4662 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -56,8 +56,9 @@
-                 const char *ciphername)
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
+        
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 5a41a0f..1cb5c63 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1847,25 +1847,26 @@
+ static bool
+ man_verify_unix_peer_uid_gid(struct management *man, const socket_descriptor_t sd)
  {
--    msg(D_DCO_DEBUG, "%s: peer_id=3D%d keyid=3D%d, currently %d keys insta=
-lled", __func__,
--        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed);
-+    bool epoch =3D ks->crypto_options.flags & CO_EPOCH_DATA_KEY_FORMAT;
-+    msg(D_DCO_DEBUG, "%s: peer_id=3D%d keyid=3D%d epoch=3D%d, currently %d=
- keys installed", __func__,
-+        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed, epoch);
-
-     /* Install a key in the PRIMARY slot only when no other key exist.
-      * From that moment on, any new key will be installed in the SECONDARY
-@@ -71,7 +72,7 @@
+-    if (socket_defined(sd) && (man->settings.client_uid != -1 || man->settings.client_gid != -1))
++    if (socket_defined(sd) && (man->settings.user.user_valid || man->settings.group.group_valid))
+     {
+         static const char err_prefix[] =
+             "MANAGEMENT: unix domain socket client connection rejected --";
+-        int uid, gid;
++        uid_t uid;
++        gid_t gid;
+         if (unix_socket_get_peer_uid_gid(man->connection.sd_cli, &uid, &gid))
+         {
+-            if (man->settings.client_uid != -1 && man->settings.client_uid != uid)
++            if (man->settings.user.user_valid && man->settings.user.uid != uid)
+             {
+                 msg(D_MANAGEMENT,
+                     "%s UID of socket peer (%d) doesn't match required value (%d) as given by --management-client-user",
+-                    err_prefix, uid, man->settings.client_uid);
++                    err_prefix, uid, man->settings.user.uid);
+                 return false;
+             }
+-            if (man->settings.client_gid != -1 && man->settings.client_gid != gid)
++            if (man->settings.group.group_valid && man->settings.group.gid != gid)
+             {
+                 msg(D_MANAGEMENT,
+                     "%s GID of socket peer (%d) doesn't match required value (%d) as given by --management-client-group",
+-                    err_prefix, gid, man->settings.client_gid);
++                    err_prefix, gid, man->settings.group.gid);
+                 return false;
+             }
+         }
+@@ -2542,8 +2543,6 @@
+         CLEAR(*ms);
+ 
+         ms->flags = flags;
+-        ms->client_uid = -1;
+-        ms->client_gid = -1;
+ 
+         /*
+          * Get username/password
+@@ -2553,27 +2552,21 @@
+             get_user_pass(&ms->up, pass_file, "Management", GET_USER_PASS_PASSWORD_ONLY);
+         }
+ 
++#if UNIX_SOCK_SUPPORT
+         /*
+          * lookup client UID/GID if specified
+          */
+         if (client_user)
+         {
+-            struct platform_state_user s;
+-            platform_user_get(client_user, &s);
+-            ms->client_uid = platform_state_user_uid(&s);
+-            msg(D_MANAGEMENT, "MANAGEMENT: client_uid=%d", ms->client_uid);
+-            ASSERT(ms->client_uid >= 0);
++            ASSERT(platform_user_get(client_user, &ms->user));
++            msg(D_MANAGEMENT, "MANAGEMENT: client_uid=%d", ms->user.uid);
+         }
+         if (client_group)
+         {
+-            struct platform_state_group s;
+-            platform_group_get(client_group, &s);
+-            ms->client_gid = platform_state_group_gid(&s);
+-            msg(D_MANAGEMENT, "MANAGEMENT: client_gid=%d", ms->client_gid);
+-            ASSERT(ms->client_gid >= 0);
++            ASSERT(platform_group_get(client_group, &ms->group));
++            msg(D_MANAGEMENT, "MANAGEMENT: client_gid=%d", ms->group.gid);
+         }
+ 
+-#if UNIX_SOCK_SUPPORT
+         if (ms->flags & MF_UNIX_SOCK)
+         {
+             sockaddr_unix_init(&ms->local_unix, addr);
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index bff96d3..a31eb06 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -242,14 +242,14 @@
+     struct addrinfo *local;
+ #if UNIX_SOCK_SUPPORT
+     struct sockaddr_un local_unix;
++    struct platform_state_user user;
++    struct platform_state_group group;
+ #endif
+     bool management_over_tunnel;
+     struct user_pass up;
+     int log_history_cache;
+     int echo_buffer_size;
+     int state_buffer_size;
+-    int client_uid;
+-    int client_gid;
+ 
+ /* flags for handling the management interface "signal" command */
+ #define MANSIG_IGNORE_USR1_HUP  (1u << 0)
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 880d14e..a1ffdaf 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -39,7 +39,7 @@
+ 
+ #include "platform.h"
+ 
+-#if _WIN32
++#ifdef _WIN32
+ #include <direct.h>
+ #endif
+ 
+@@ -79,12 +79,10 @@
+ bool
+ platform_user_get(const char *username, struct platform_state_user *state)
+ {
+-    bool ret = false;
+     CLEAR(*state);
+     if (username)
+     {
+ #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
+-        state->uid = -1;
+         const struct passwd *pw = getpwnam(username);
+         if (!pw)
+         {
+@@ -93,23 +91,23 @@
+         else
+         {
+             state->uid = pw->pw_uid;
++            state->user_valid = true;
+         }
+         state->username = username;
+-        ret = true;
+ #else /* if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID) */
+         msg(M_FATAL,
+             "cannot get UID for user %s -- platform lacks getpwname() or setuid() system calls",
+             username);
+ #endif
      }
-
-     int ret =3D dco_new_key(multi->dco, multi->dco_peer_id, ks->key_id, sl=
-ot, encrypt_key, encrypt_iv,
--                          decrypt_key, decrypt_iv, ciphername);
-+                          decrypt_key, decrypt_iv, ciphername, epoch);
-     if ((ret =3D=3D 0) && (multi->dco_keys_installed < 2))
+-    return ret;
++    return state->user_valid;
+ }
+ 
+ static void
+ platform_user_set(const struct platform_state_user *state)
+ {
+ #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
+-    if (state->username && state->uid >= 0)
++    if (state->username && state->user_valid)
      {
-         multi->dco_keys_installed++;
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index a362977..e5e8709 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -251,11 +251,8 @@
-  * Return whether the dco implementation supports the new protocol feature=
-s of
-  * a 64 bit packet counter and AEAD tag at the end.
-  */
--static inline bool
--dco_supports_epoch_data(struct context *c)
+         if (setuid(state->uid))
+         {
+@@ -125,12 +123,10 @@
+ bool
+ platform_group_get(const char *groupname, struct platform_state_group *state)
+ {
+-    bool ret = false;
+     CLEAR(*state);
+     if (groupname)
+     {
+ #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
+-        state->gid = -1;
+         const struct group *gr = getgrnam(groupname);
+         if (!gr)
+         {
+@@ -139,23 +135,23 @@
+         else
+         {
+             state->gid = gr->gr_gid;
++            state->group_valid = true;
+         }
+         state->groupname = groupname;
+-        ret = true;
+ #else /* if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID) */
+         msg(M_FATAL,
+             "cannot get GID for group %s -- platform lacks getgrnam() or setgid() system calls",
+             groupname);
+ #endif
+     }
+-    return ret;
++    return state->group_valid;
+ }
+ 
+ static void
+ platform_group_set(const struct platform_state_group *state)
+ {
+ #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
+-    if (state->groupname && state->gid >= 0)
++    if (state->groupname && state->group_valid)
+     {
+         if (setgid(state->gid))
+         {
+@@ -237,13 +233,13 @@
+      * new_uid/new_gid defaults to -1, which will not make
+      * libcap-ng change the UID/GID unless configured
+      */
+-    if (group_state->groupname && group_state->gid >= 0)
++    if (group_state->groupname && group_state->group_valid)
+     {
+-        new_gid = group_state->gid;
++        new_gid = (int)group_state->gid;
+     }
+-    if (user_state->username && user_state->uid >= 0)
++    if (user_state->username && user_state->user_valid)
+     {
+-        new_uid = user_state->uid;
++        new_uid = (int)user_state->uid;
+     }
+ 
+     /* Prepare capabilities before dropping UID/GID */
+diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+index f1a2b01..0cb25f5 100644
+--- a/src/openvpn/platform.h
++++ b/src/openvpn/platform.h
+@@ -64,9 +64,8 @@
+ #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
+     const char *username;
+     uid_t uid;
+-#else
+-    int dummy;
+ #endif
++    bool user_valid;
+ };
+ 
+ /* Get/Set GID of process */
+@@ -76,9 +75,8 @@
+ #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
+     const char *groupname;
+     gid_t gid;
+-#else
+-    int dummy;
+ #endif
++    bool group_valid;
+ };
+ 
+ bool platform_user_get(const char *username, struct platform_state_user *state);
+@@ -89,28 +87,6 @@
+                              const struct platform_state_group *group_state, struct context *c);
+ 
+ 
+-/*
+- * Extract UID or GID
+- */
+-
+-static inline int
+-platform_state_user_uid(const struct platform_state_user *s)
 -{
--    return false;
+-#if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
+-    return s->uid;
+-#endif
+-    return -1;
 -}
-+bool
-+dco_supports_epoch_data(struct context *c);
- #else  /* if defined(ENABLE_DCO) */
-
- typedef void *dco_context_t;
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index b9f6bc7..947a769 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -487,14 +487,14 @@
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_sl=
-ot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const u=
-int8_t *decrypt_key,
--            const uint8_t *decrypt_iv, const char *ciphername)
-+            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
- {
-     struct ifdrv drv;
-     nvlist_t *nvl, *encrypt_nvl, *decrypt_nvl;
-     int ret;
-
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __fu=
-nc__, slot, keyid, peerid,
--        ciphername);
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, epoch=
- %d", __func__, slot, keyid, peerid,
-+        ciphername, epoch);
-
-     nvl =3D nvlist_create(0);
-
-@@ -876,4 +876,10 @@
-     return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
+-
+-static inline int
+-platform_state_group_gid(const struct platform_state_group *s)
+-{
+-#if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
+-    return s->gid;
+-#endif
+-    return -1;
+-}
+-
+ void platform_chroot(const char *path);
+ 
+ void platform_nice(int niceval);
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 5fcf820..f71d891 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3082,7 +3082,7 @@
  }
-
-+bool
-+dco_supports_epoch_data(struct context *c)
-+{
-+    return false;
-+}
-+
- #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index 86af003..97a7048 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -66,7 +66,7 @@
-
- int dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_ke=
-y_slot_t slot,
-                 const uint8_t *encrypt_key, const uint8_t *encrypt_iv, con=
-st uint8_t *decrypt_key,
--                const uint8_t *decrypt_iv, const char *ciphername);
-+                const uint8_t *decrypt_iv, const char *ciphername, bool ep=
-och);
-
- int dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t sl=
-ot);
-
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index d46fa46..0ae30b1 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -596,10 +596,10 @@
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_sl=
-ot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const u=
-int8_t *decrypt_key,
--            const uint8_t *decrypt_iv, const char *ciphername)
-+            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
+ 
+ bool
+-unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, int *uid, int *gid)
++unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, uid_t *uid, gid_t *gid)
  {
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __fu=
-nc__, slot, keyid, peerid,
--        ciphername);
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, epoch=
- %d", __func__, slot, keyid, peerid,
-+        ciphername, epoch);
-
-     const int key_len =3D cipher_kt_key_size(ciphername);
-     const int nonce_tail_len =3D 8;
-@@ -1298,4 +1298,10 @@
-     return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
- }
-
-+bool
-+dco_supports_epoch_data(struct context *c)
-+{
-+    return false;
-+}
-+
- #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 30307de..ca5eedf 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -528,7 +528,7 @@
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_sl=
-ot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const u=
-int8_t *decrypt_key,
--            const uint8_t *decrypt_iv, const char *ciphername)
-+            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
- {
-     msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __fu=
-nc__, slot, keyid, peerid,
-         ciphername);
-@@ -537,29 +537,42 @@
-     size_t key_len =3D cipher_kt_key_size(ciphername);
-     ASSERT(key_len <=3D 32);
-
--    OVPN_CRYPTO_DATA crypto_data;
-+    OVPN_CRYPTO_DATA_V2 crypto_data;
-     ZeroMemory(&crypto_data, sizeof(crypto_data));
-
--    crypto_data.CipherAlg =3D dco_get_cipher(ciphername);
-+    OVPN_CRYPTO_DATA *v1 =3D &crypto_data.V1;
-+
-+    v1->CipherAlg =3D dco_get_cipher(ciphername);
-     ASSERT(keyid >=3D 0 && keyid <=3D UCHAR_MAX);
--    crypto_data.KeyId =3D (unsigned char)keyid;
--    crypto_data.PeerId =3D peerid;
--    crypto_data.KeySlot =3D slot;
-+    v1->KeyId =3D (unsigned char)keyid;
-+    v1->PeerId =3D peerid;
-+    v1->KeySlot =3D slot;
-
--    CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
--    crypto_data.Encrypt.KeyLen =3D (unsigned char)key_len;
--    CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
-+    /* for epoch we use key material as a seed, no as actual key */
-+    CopyMemory(v1->Encrypt.Key, encrypt_key, epoch ? 32 : key_len);
-+    v1->Encrypt.KeyLen =3D (unsigned char)key_len;
-+    CopyMemory(v1->Encrypt.NonceTail, encrypt_iv, nonce_len);
-
--    CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
--    crypto_data.Decrypt.KeyLen =3D (unsigned char)key_len;
--    CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
-+    CopyMemory(v1->Decrypt.Key, decrypt_key, epoch ? 32 : key_len);
-+    v1->Decrypt.KeyLen =3D (unsigned char)key_len;
-+    CopyMemory(v1->Decrypt.NonceTail, decrypt_iv, nonce_len);
-
--    ASSERT(crypto_data.CipherAlg > 0);
-+    ASSERT(v1->CipherAlg > 0);
-+
-+    DWORD ioctl =3D OVPN_IOCTL_NEW_KEY;
-+    VOID *buf =3D &crypto_data.V1;
-+    DWORD bufSize =3D sizeof(crypto_data.V1);
-+    if (epoch)
-+    {
-+        ioctl =3D OVPN_IOCTL_NEW_KEY_V2;
-+        crypto_data.CryptoOptions |=3D CRYPTO_OPTIONS_EPOCH;
-+        buf =3D &crypto_data;
-+        bufSize =3D sizeof(crypto_data);
-+    }
-
-     DWORD bytes_returned =3D 0;
-
--    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_NEW_KEY, &crypto_data, =
-sizeof(crypto_data), NULL,
--                         0, &bytes_returned, NULL))
-+    if (!DeviceIoControl(dco->tt->hand, ioctl, buf, bufSize, NULL, 0, &byt=
-es_returned, NULL))
-     {
-         msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed");
-         return -1;
-@@ -1076,4 +1089,11 @@
-     gc_free(&gc);
- }
-
-+bool
-+dco_supports_epoch_data(struct context *c)
-+{
-+    OVPN_VERSION ver =3D { 0 };
-+    return dco_get_version(&ver) && ((ver.Major =3D=3D 2 && ver.Minor >=3D=
- 8) || (ver.Major > 2));
-+}
-+
- #endif /* defined(_WIN32) */
-diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
-index 9e1378a..e76770b 100644
---- a/src/openvpn/ovpn_dco_win.h
-+++ b/src/openvpn/ovpn_dco_win.h
-@@ -118,6 +118,13 @@
- 	int PeerId;
- } OVPN_CRYPTO_DATA, * POVPN_CRYPTO_DATA;
-
-+#define CRYPTO_OPTIONS_EPOCH (1<<1)
-+
-+typedef struct _OVPN_CRYPTO_DATA_V2 {
-+    OVPN_CRYPTO_DATA V1;
-+    UINT32 CryptoOptions;
-+} OVPN_CRYPTO_DATA_V2, * POVPN_CRYPTO_DATA_V2;
-+
- typedef struct _OVPN_MP_SET_PEER {
-     int PeerId;
-     LONG KeepaliveInterval;
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
-Gerrit-Change-Number: 1219
-Gerrit-PatchSet: 5
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-
---kbUgBdbh2X8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>stipa <strong>uploaded patch set #5</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">View Change</=
-a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">dco-win: support for epoch data channel<br><br>Starting=
- from 2.8.0, dco-win driver supports<br>epoch data channel. This adds missi=
-ng userspace part.<br><br>While on it, fix broken assert introduced in e77c=
-34.<br>Key-Id 0 is a perfectly valid.<br><br>Change-Id: Ib5ed5969dcd405a47e=
-34ed8479b7ffaaa5c43080<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;=
-<br>---<br>M src/openvpn/dco.c<br>M src/openvpn/dco.h<br>M src/openvpn/dco_=
-freebsd.c<br>M src/openvpn/dco_internal.h<br>M src/openvpn/dco_linux.c<br>M=
- src/openvpn/dco_win.c<br>M src/openvpn/ovpn_dco_win.h<br>7 files changed, =
-67 insertions(+), 30 deletions(-)<br><br></pre><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/19/1219/5</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index 6afc680..=
-8fb4662 100644</span><br><span>--- a/src/openvpn/dco.c</span><br><span>+++ =
-b/src/openvpn/dco.c</span><br><span>@@ -56,8 +56,9 @@</span><br><span>     =
-            const char *ciphername)</span><br><span> </span><br><span> {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &qu=
-ot;%s: peer_id=3D%d keyid=3D%d, currently %d keys installed&quot;, __func__=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        multi-&gt;dc=
-o_peer_id, ks-&gt;key_id, multi-&gt;dco_keys_installed);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    bool epoch =3D ks-&gt;crypto_optio=
-ns.flags &amp; CO_EPOCH_DATA_KEY_FORMAT;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: peer_id=3D%d keyid=3D%d=
- epoch=3D%d, currently %d keys installed&quot;, __func__,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        multi-&gt;dco_peer_id, ks-&gt=
-;key_id, multi-&gt;dco_keys_installed, epoch);</span><br><span> </span><br>=
-<span>     /* Install a key in the PRIMARY slot only when no other key exis=
-t.</span><br><span>      * From that moment on, any new key will be install=
-ed in the SECONDARY</span><br><span>@@ -71,7 +72,7 @@</span><br><span>     =
-}</span><br><span> </span><br><span>     int ret =3D dco_new_key(multi-&gt;=
-dco, multi-&gt;dco_peer_id, ks-&gt;key_id, slot, encrypt_key, encrypt_iv,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
-   decrypt_key, decrypt_iv, ciphername);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                          decrypt_key, decrypt_iv, cip=
-hername, epoch);</span><br><span>     if ((ret =3D=3D 0) &amp;&amp; (multi-=
-&gt;dco_keys_installed &lt; 2))</span><br><span>     {</span><br><span>    =
-     multi-&gt;dco_keys_installed++;</span><br><span>diff --git a/src/openv=
-pn/dco.h b/src/openvpn/dco.h</span><br><span>index a362977..e5e8709 100644<=
-/span><br><span>--- a/src/openvpn/dco.h</span><br><span>+++ b/src/openvpn/d=
-co.h</span><br><span>@@ -251,11 +251,8 @@</span><br><span>  * Return whethe=
-r the dco implementation supports the new protocol features of</span><br><s=
-pan>  * a 64 bit packet counter and AEAD tag at the end.</span><br><span>  =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline bool<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_supports_epoch_dat=
-a(struct context *c)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return false;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+dco_supports_epoch_data(struct context *c);</span><br><s=
-pan> #else  /* if defined(ENABLE_DCO) */</span><br><span> </span><br><span>=
- typedef void *dco_context_t;</span><br><span>diff --git a/src/openvpn/dco_=
-freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span>index b9f6bc7..947a76=
-9 100644</span><br><span>--- a/src/openvpn/dco_freebsd.c</span><br><span>++=
-+ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -487,14 +487,14 @@</span><=
-br><span> int</span><br><span> dco_new_key(dco_context_t *dco, unsigned int=
- peerid, int keyid, dco_key_slot_t slot,</span><br><span>             const=
- uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_ke=
-y,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            const u=
-int8_t *decrypt_iv, const char *ciphername)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            const uint8_t *decrypt_iv, const char *=
-ciphername, bool epoch)</span><br><span> {</span><br><span>     struct ifdr=
-v drv;</span><br><span>     nvlist_t *nvl, *encrypt_nvl, *decrypt_nvl;</spa=
-n><br><span>     int ret;</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: slot %d, key-id %d, pe=
-er-id %d, cipher %s&quot;, __func__, slot, keyid, peerid,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        ciphername);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: slot %d=
-, key-id %d, peer-id %d, cipher %s, epoch %d&quot;, __func__, slot, keyid, =
-peerid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ciph=
-ername, epoch);</span><br><span> </span><br><span>     nvl =3D nvlist_creat=
-e(0);</span><br><span> </span><br><span>@@ -876,4 +876,10 @@</span><br><spa=
-n>     return &quot;none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1=
-305&quot;;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+dco_supports_epoch_data(struct context *c)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    return false;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> #endif /* defined(ENABLE_DCO) &amp;&amp; defined(TARGET_FRE=
-EBSD) */</span><br><span>diff --git a/src/openvpn/dco_internal.h b/src/open=
-vpn/dco_internal.h</span><br><span>index 86af003..97a7048 100644</span><br>=
-<span>--- a/src/openvpn/dco_internal.h</span><br><span>+++ b/src/openvpn/dc=
-o_internal.h</span><br><span>@@ -66,7 +66,7 @@</span><br><span> </span><br>=
-<span> int dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, =
-dco_key_slot_t slot,</span><br><span>                 const uint8_t *encryp=
-t_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                const uint8_t *decr=
-ypt_iv, const char *ciphername);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                const uint8_t *decrypt_iv, const char *ciphern=
-ame, bool epoch);</span><br><span> </span><br><span> int dco_del_key(dco_co=
-ntext_t *dco, unsigned int peerid, dco_key_slot_t slot);</span><br><span> <=
-/span><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linu=
-x.c</span><br><span>index d46fa46..0ae30b1 100644</span><br><span>--- a/src=
-/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><b=
-r><span>@@ -596,10 +596,10 @@</span><br><span> int</span><br><span> dco_new=
-_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slo=
-t,</span><br><span>             const uint8_t *encrypt_key, const uint8_t *=
-encrypt_iv, const uint8_t *decrypt_key,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            const uint8_t *decrypt_iv, const char *cipher=
-name)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            co=
-nst uint8_t *decrypt_iv, const char *ciphername, bool epoch)</span><br><spa=
-n> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEB=
-UG, &quot;%s: slot %d, key-id %d, peer-id %d, cipher %s&quot;, __func__, sl=
-ot, keyid, peerid,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  msg(D_DCO_DEBUG, &quot;%s: slot %d, key-id %d, peer-id %d, cipher %s, epo=
-ch %d&quot;, __func__, slot, keyid, peerid,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        ciphername, epoch);</span><br><span> </span=
-><br><span>     const int key_len =3D cipher_kt_key_size(ciphername);</span=
-><br><span>     const int nonce_tail_len =3D 8;</span><br><span>@@ -1298,4 =
-+1298,10 @@</span><br><span>     return &quot;AES-128-GCM:AES-256-GCM:AES-1=
-92-GCM:CHACHA20-POLY1305&quot;;</span><br><span> }</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+dco_supports_epoch_data(struct context *c=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    return false;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span> #endif /* defined(ENABLE_DCO) &amp;&am=
-p; defined(TARGET_LINUX) */</span><br><span>diff --git a/src/openvpn/dco_wi=
-n.c b/src/openvpn/dco_win.c</span><br><span>index 30307de..ca5eedf 100644</=
-span><br><span>--- a/src/openvpn/dco_win.c</span><br><span>+++ b/src/openvp=
-n/dco_win.c</span><br><span>@@ -528,7 +528,7 @@</span><br><span> int</span>=
-<br><span> dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, =
-dco_key_slot_t slot,</span><br><span>             const uint8_t *encrypt_ke=
-y, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            const uint8_t *decrypt_iv, =
-const char *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            const uint8_t *decrypt_iv, const char *ciphername, bool epo=
-ch)</span><br><span> {</span><br><span>     msg(D_DCO_DEBUG, &quot;%s: slot=
- %d, key-id %d, peer-id %d, cipher %s&quot;, __func__, slot, keyid, peerid,=
-</span><br><span>         ciphername);</span><br><span>@@ -537,29 +537,42 @=
-@</span><br><span>     size_t key_len =3D cipher_kt_key_size(ciphername);</=
-span><br><span>     ASSERT(key_len &lt;=3D 32);</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    OVPN_CRYPTO_DATA crypto_dat=
-a;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_CRYPTO_D=
-ATA_V2 crypto_data;</span><br><span>     ZeroMemory(&amp;crypto_data, sizeo=
-f(crypto_data));</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    crypto_data.CipherAlg =3D dco_get_cipher(ciphername);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_CRYPTO_DATA *v1=
- =3D &amp;crypto_data.V1;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    v1-&gt;Ci=
-pherAlg =3D dco_get_cipher(ciphername);</span><br><span>     ASSERT(keyid &=
-gt;=3D 0 &amp;&amp; keyid &lt;=3D UCHAR_MAX);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    crypto_data.KeyId =3D (unsigned char)keyid;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_data.PeerId =
-=3D peerid;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto=
-_data.KeySlot =3D slot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    v1-&gt;KeyId =3D (unsigned char)keyid;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    v1-&gt;PeerId =3D peerid;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    v1-&gt;KeySlot =3D slot;</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    CopyMemor=
-y(crypto_data.Encrypt.Key, encrypt_key, key_len);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    crypto_data.Encrypt.KeyLen =3D (unsigned ch=
-ar)key_len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    CopyMe=
-mory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* for epoch we use key materia=
-l as a seed, no as actual key */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    CopyMemory(v1-&gt;Encrypt.Key, encrypt_key, epoch ? 32 : k=
-ey_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    v1-&gt;=
-Encrypt.KeyLen =3D (unsigned char)key_len;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    CopyMemory(v1-&gt;Encrypt.NonceTail, encrypt_iv,=
- nonce_len);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_data.Decrypt.K=
-eyLen =3D (unsigned char)key_len;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce=
-_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CopyMemor=
-y(v1-&gt;Decrypt.Key, decrypt_key, epoch ? 32 : key_len);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    v1-&gt;Decrypt.KeyLen =3D (unsign=
-ed char)key_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- CopyMemory(v1-&gt;Decrypt.NonceTail, decrypt_iv, nonce_len);</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(crypto=
-_data.CipherAlg &gt; 0);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    ASSERT(v1-&gt;CipherAlg &gt; 0);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    DWORD ioctl =3D OVPN_IOCTL_NEW_KEY;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    VOID *buf =3D &amp;crypto_data.V1;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    DWORD bufSize =3D sizeof(cryp=
-to_data.V1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-(epoch)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        ioctl =3D OVPN_IOC=
-TL_NEW_KEY_V2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   crypto_data.CryptoOptions |=3D CRYPTO_OPTIONS_EPOCH;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        buf =3D &amp;crypto_data;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        bufSize =3D sizeo=
-f(crypto_data);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span> </span><br><span>     DWORD bytes_returned =3D 0;</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!D=
-eviceIoControl(dco-&gt;tt-&gt;hand, OVPN_IOCTL_NEW_KEY, &amp;crypto_data, s=
-izeof(crypto_data), NULL,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                         0, &amp;bytes_returned, NULL))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(dco-&gt;tt=
--&gt;hand, ioctl, buf, bufSize, NULL, 0, &amp;bytes_returned, NULL))</span>=
-<br><span>     {</span><br><span>         msg(M_ERR, &quot;DeviceIoControl(=
-OVPN_IOCTL_NEW_KEY) failed&quot;);</span><br><span>         return -1;</spa=
-n><br><span>@@ -1076,4 +1089,11 @@</span><br><span>     gc_free(&amp;gc);</=
-span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+dco_supports_epoch_data(struct context *c)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    OVPN_VERSION ver =3D { 0 };</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    return dco_get_version(&amp;ver) &amp;&amp; ((ver.Maj=
-or =3D=3D 2 &amp;&amp; ver.Minor &gt;=3D 8) || (ver.Major &gt; 2));</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* defined(_WIN32) *=
-/</span><br><span>diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovp=
-n_dco_win.h</span><br><span>index 9e1378a..e76770b 100644</span><br><span>-=
--- a/src/openvpn/ovpn_dco_win.h</span><br><span>+++ b/src/openvpn/ovpn_dco_=
-win.h</span><br><span>@@ -118,6 +118,13 @@</span><br><span> 	int PeerId;</s=
-pan><br><span> } OVPN_CRYPTO_DATA, * POVPN_CRYPTO_DATA;</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CRYPTO_OPTION=
-S_EPOCH (1&lt;&lt;1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef struct _OV=
-PN_CRYPTO_DATA_V2 {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    OVPN_CRYPTO_DATA V1;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    UINT32 CryptoOptions;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+} OVPN_CRYPTO_DATA_V2, * POVPN_CRYPTO_DATA_V2;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> typedef struct _OVP=
-N_MP_SET_PEER {</span><br><span>     int PeerId;</span><br><span>     LONG =
-KeepaliveInterval;</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">change 1219</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b=
-7ffaaa5c43080 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1219 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-
-</body></html>=
-
---kbUgBdbh2X8=--
+ #ifdef HAVE_GETPEEREID
+     uid_t u;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index e45981f..2c79a11 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -371,7 +371,7 @@
+ 
+ void socket_delete_unix(const struct sockaddr_un *local);
+ 
+-bool unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, int *uid, int *gid);
++bool unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, uid_t *uid, gid_t *gid);
+ 
+ #endif /* if UNIX_SOCK_SUPPORT */
+ 
 
