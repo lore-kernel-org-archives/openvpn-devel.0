@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri,  3 Oct 2025 12:06:02 +0200
-Message-Id: <20251003100602.375062-1-frank@...2641...>
-In-Reply-To: <gerrit.1758627240000.Ie6b4c41d13544d5ba71d441cc794c7abd12408f3@...2715...>
-References: <gerrit.1758627240000.Ie6b4c41d13544d5ba71d441cc794c7abd12408f3@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 3 Oct 2025 10:25:44 +0000
+In-Reply-To: <gerrit.1759330832000.Icb91d9c560b6f78f16571ac3052cc566d94afe99@...2715...>
+References: <gerrit.1759330832000.Icb91d9c560b6f78f16571ac3052cc566d94afe99@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <85ca04e5413ee9b830382212b4bd34d3787098ea-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] platform: Do not assume uid_t/gid_t are
- signed
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="T7BgL9ggl+w="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_options_parse:
+ Add test for read_config_string
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,329 +19,388 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: MaxF <max@...2606...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-uid_t/gid_t are int on many platform but unsigned
-on at least Linux. So rewrite the code in a way that
-does not make any assumptions about the types. Mainly
-this means storing the information whether the value
-is valid in a separate bool and not in the value
-itself.
+--T7BgL9ggl+w=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Note that this changes the return behavior of
-platform_{user,group}_get but a review of the
-callers determined that this makes no actual
-difference.
+Attention is currently required from: plaisthos.
 
-Change-Id: Ie6b4c41d13544d5ba71d441cc794c7abd12408f3
+Hello plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1247?usp=3Demail
+
+to look at the new patch set (#2).
+
+
+Change subject: test_options_parse: Add test for read_config_string
+......................................................................
+
+test_options_parse: Add test for read_config_string
+
+The <inlineopt> test discovered the issue
+fixed by commit "buffer: Fix buf_parse eating input".
+
+Change-Id: Icb91d9c560b6f78f16571ac3052cc566d94afe99
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: MaxF <max@...2606...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1206
 ---
+M tests/unit_tests/openvpn/test_options_parse.c
+1 file changed, 109 insertions(+), 0 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1206
-This mail reflects revision 2 of this Change.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/1247/2
 
-Acked-by according to Gerrit (reflected above):
-MaxF <max@...2606...>
-
-        
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 5a41a0f..1cb5c63 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -1847,25 +1847,26 @@
- static bool
- man_verify_unix_peer_uid_gid(struct management *man, const socket_descriptor_t sd)
+diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tes=
+ts/openvpn/test_options_parse.c
+index 9472c78..e552dd7 100644
+--- a/tests/unit_tests/openvpn/test_options_parse.c
++++ b/tests/unit_tests/openvpn/test_options_parse.c
+@@ -43,6 +43,9 @@
+                   const unsigned int permission_mask, unsigned int *option=
+_types_found,
+                   struct env_set *es)
  {
--    if (socket_defined(sd) && (man->settings.client_uid != -1 || man->settings.client_gid != -1))
-+    if (socket_defined(sd) && (man->settings.user.user_valid || man->settings.group.group_valid))
-     {
-         static const char err_prefix[] =
-             "MANAGEMENT: unix domain socket client connection rejected --";
--        int uid, gid;
-+        uid_t uid;
-+        gid_t gid;
-         if (unix_socket_get_peer_uid_gid(man->connection.sd_cli, &uid, &gid))
-         {
--            if (man->settings.client_uid != -1 && man->settings.client_uid != uid)
-+            if (man->settings.user.user_valid && man->settings.user.uid != uid)
-             {
-                 msg(D_MANAGEMENT,
-                     "%s UID of socket peer (%d) doesn't match required value (%d) as given by --management-client-user",
--                    err_prefix, uid, man->settings.client_uid);
-+                    err_prefix, uid, man->settings.user.uid);
-                 return false;
-             }
--            if (man->settings.client_gid != -1 && man->settings.client_gid != gid)
-+            if (man->settings.group.group_valid && man->settings.group.gid != gid)
-             {
-                 msg(D_MANAGEMENT,
-                     "%s GID of socket peer (%d) doesn't match required value (%d) as given by --management-client-group",
--                    err_prefix, gid, man->settings.client_gid);
-+                    err_prefix, gid, man->settings.group.gid);
-                 return false;
-             }
-         }
-@@ -2542,8 +2543,6 @@
-         CLEAR(*ms);
- 
-         ms->flags = flags;
--        ms->client_uid = -1;
--        ms->client_gid = -1;
- 
-         /*
-          * Get username/password
-@@ -2553,27 +2552,21 @@
-             get_user_pass(&ms->up, pass_file, "Management", GET_USER_PASS_PASSWORD_ONLY);
-         }
- 
-+#if UNIX_SOCK_SUPPORT
-         /*
-          * lookup client UID/GID if specified
-          */
-         if (client_user)
-         {
--            struct platform_state_user s;
--            platform_user_get(client_user, &s);
--            ms->client_uid = platform_state_user_uid(&s);
--            msg(D_MANAGEMENT, "MANAGEMENT: client_uid=%d", ms->client_uid);
--            ASSERT(ms->client_uid >= 0);
-+            ASSERT(platform_user_get(client_user, &ms->user));
-+            msg(D_MANAGEMENT, "MANAGEMENT: client_uid=%d", ms->user.uid);
-         }
-         if (client_group)
-         {
--            struct platform_state_group s;
--            platform_group_get(client_group, &s);
--            ms->client_gid = platform_state_group_gid(&s);
--            msg(D_MANAGEMENT, "MANAGEMENT: client_gid=%d", ms->client_gid);
--            ASSERT(ms->client_gid >= 0);
-+            ASSERT(platform_group_get(client_group, &ms->group));
-+            msg(D_MANAGEMENT, "MANAGEMENT: client_gid=%d", ms->group.gid);
-         }
- 
--#if UNIX_SOCK_SUPPORT
-         if (ms->flags & MF_UNIX_SOCK)
-         {
-             sockaddr_unix_init(&ms->local_unix, addr);
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index bff96d3..a31eb06 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -242,14 +242,14 @@
-     struct addrinfo *local;
- #if UNIX_SOCK_SUPPORT
-     struct sockaddr_un local_unix;
-+    struct platform_state_user user;
-+    struct platform_state_group group;
- #endif
-     bool management_over_tunnel;
-     struct user_pass up;
-     int log_history_cache;
-     int echo_buffer_size;
-     int state_buffer_size;
--    int client_uid;
--    int client_gid;
- 
- /* flags for handling the management interface "signal" command */
- #define MANSIG_IGNORE_USR1_HUP  (1u << 0)
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 880d14e..a1ffdaf 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -39,7 +39,7 @@
- 
- #include "platform.h"
- 
--#if _WIN32
-+#ifdef _WIN32
- #include <direct.h>
- #endif
- 
-@@ -79,12 +79,10 @@
- bool
- platform_user_get(const char *username, struct platform_state_user *state)
- {
--    bool ret = false;
-     CLEAR(*state);
-     if (username)
-     {
- #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
--        state->uid = -1;
-         const struct passwd *pw = getpwnam(username);
-         if (!pw)
-         {
-@@ -93,23 +91,23 @@
-         else
-         {
-             state->uid = pw->pw_uid;
-+            state->user_valid = true;
-         }
-         state->username = username;
--        ret = true;
- #else /* if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID) */
-         msg(M_FATAL,
-             "cannot get UID for user %s -- platform lacks getpwname() or setuid() system calls",
-             username);
- #endif
-     }
--    return ret;
-+    return state->user_valid;
++    function_called();
++    check_expected(p);
++    check_expected(is_inline);
  }
- 
- static void
- platform_user_set(const struct platform_state_user *state)
- {
- #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
--    if (state->username && state->uid >= 0)
-+    if (state->username && state->user_valid)
-     {
-         if (setuid(state->uid))
-         {
-@@ -125,12 +123,10 @@
- bool
- platform_group_get(const char *groupname, struct platform_state_group *state)
- {
--    bool ret = false;
-     CLEAR(*state);
-     if (groupname)
-     {
- #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
--        state->gid = -1;
-         const struct group *gr = getgrnam(groupname);
-         if (!gr)
-         {
-@@ -139,23 +135,23 @@
-         else
-         {
-             state->gid = gr->gr_gid;
-+            state->group_valid = true;
-         }
-         state->groupname = groupname;
--        ret = true;
- #else /* if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID) */
-         msg(M_FATAL,
-             "cannot get GID for group %s -- platform lacks getgrnam() or setgid() system calls",
-             groupname);
- #endif
-     }
--    return ret;
-+    return state->group_valid;
+
+ void
+@@ -185,11 +188,117 @@
+     gc_free(&gc);
  }
- 
- static void
- platform_group_set(const struct platform_state_group *state)
+
++static void
++read_single_config(struct options *options, const char *config)
++{
++    unsigned int option_types_found =3D 0;
++    struct env_set es;
++    CLEAR(es);
++    read_config_string("test_options_parse", options, config, M_INFO, OPT_=
+P_DEFAULT,
++                       &option_types_found, &es);
++}
++
++union tokens_parameter
++{
++    uintmax_t as_int;
++    void *as_pointer;
++};
++
++static int
++check_tokens(const uintmax_t value, const uintmax_t expected)
++{
++    union tokens_parameter temp;
++    temp.as_int =3D value;
++    const char **p =3D (const char **)temp.as_pointer;
++    temp.as_int =3D expected;
++    const char **expected_p =3D (const char **)temp.as_pointer;
++    for (int i =3D 0; i < MAX_PARMS; i++)
++    {
++        if (!p[i] && !expected_p[i])
++        {
++            return true;
++        }
++        if ((p[i] && !expected_p[i])
++            || (!p[i] && expected_p[i]))
++        {
++            fprintf(stderr, "diff at i=3D%d\n", i);
++            return false;
++        }
++        if (strcmp(p[i], expected_p[i]))
++        {
++            fprintf(stderr, "diff at i=3D%d, p=3D<%s> ep=3D<%s>\n", i, p[i=
+], expected_p[i]);
++            return false;
++        }
++    }
++    fprintf(stderr, "fallthrough");
++    return false;
++}
++
++static void
++test_read_config(void **state)
++{
++    struct options o;
++    CLEAR(o); /* NB: avoiding init_options to limit dependencies */
++    gc_init(&o.gc);
++    gc_init(&o.dns_options.gc);
++    o.gc_owned =3D true;
++
++    char *p_expect_someopt[MAX_PARMS];
++    char *p_expect_otheropt[MAX_PARMS];
++    char *p_expect_inlineopt[MAX_PARMS];
++    CLEAR(p_expect_someopt);
++    CLEAR(p_expect_otheropt);
++    CLEAR(p_expect_inlineopt);
++    p_expect_someopt[0] =3D "someopt";
++    p_expect_someopt[1] =3D "parm1";
++    p_expect_someopt[2] =3D "parm2";
++    p_expect_otheropt[0] =3D "otheropt";
++    p_expect_otheropt[1] =3D "1";
++    p_expect_otheropt[2] =3D "2";
++    p_expect_inlineopt[0] =3D "inlineopt";
++    p_expect_inlineopt[1] =3D "some text\nother text\n";
++
++    /* basic test */
++    expect_function_call(__wrap_add_option);
++    expect_check(__wrap_add_option, p, check_tokens, p_expect_someopt);
++    expect_value(__wrap_add_option, is_inline, 0);
++    expect_function_call(__wrap_add_option);
++    expect_check(__wrap_add_option, p, check_tokens, p_expect_otheropt);
++    expect_value(__wrap_add_option, is_inline, 0);
++    read_single_config(&o, "someopt parm1 parm2\n  otheropt 1 2");
++
++    /* -- gets stripped */
++    expect_function_call(__wrap_add_option);
++    expect_check(__wrap_add_option, p, check_tokens, p_expect_someopt);
++    expect_value(__wrap_add_option, is_inline, 0);
++    expect_function_call(__wrap_add_option);
++    expect_check(__wrap_add_option, p, check_tokens, p_expect_otheropt);
++    expect_value(__wrap_add_option, is_inline, 0);
++    read_single_config(&o, "someopt parm1 parm2\n\t--otheropt 1 2");
++
++    /* inline options */
++    expect_function_call(__wrap_add_option);
++    expect_check(__wrap_add_option, p, check_tokens, p_expect_inlineopt);
++    expect_value(__wrap_add_option, is_inline, 1);
++    read_single_config(&o, "<inlineopt>\nsome text\nother text\n</inlineop=
+t>");
++
++    p_expect_inlineopt[0] =3D "inlineopt";
++    p_expect_inlineopt[1] =3D A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_=
+256 A_TIMES_256 "\n";
++    expect_function_call(__wrap_add_option);
++    expect_check(__wrap_add_option, p, check_tokens, p_expect_inlineopt);
++    expect_value(__wrap_add_option, is_inline, 1);
++    read_single_config(&o, "<inlineopt>\n" A_TIMES_256 A_TIMES_256 A_TIMES=
+_256 A_TIMES_256 A_TIMES_256 "\n</inlineopt>");
++
++    gc_free(&o.gc);
++    gc_free(&o.dns_options.gc);
++}
++
+ int
+ main(void)
  {
- #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
--    if (state->groupname && state->gid >= 0)
-+    if (state->groupname && state->group_valid)
-     {
-         if (setgid(state->gid))
-         {
-@@ -237,13 +233,13 @@
-      * new_uid/new_gid defaults to -1, which will not make
-      * libcap-ng change the UID/GID unless configured
-      */
--    if (group_state->groupname && group_state->gid >= 0)
-+    if (group_state->groupname && group_state->group_valid)
-     {
--        new_gid = group_state->gid;
-+        new_gid = (int)group_state->gid;
-     }
--    if (user_state->username && user_state->uid >= 0)
-+    if (user_state->username && user_state->user_valid)
-     {
--        new_uid = user_state->uid;
-+        new_uid = (int)user_state->uid;
-     }
- 
-     /* Prepare capabilities before dropping UID/GID */
-diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
-index f1a2b01..0cb25f5 100644
---- a/src/openvpn/platform.h
-+++ b/src/openvpn/platform.h
-@@ -64,9 +64,8 @@
- #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
-     const char *username;
-     uid_t uid;
--#else
--    int dummy;
- #endif
-+    bool user_valid;
- };
- 
- /* Get/Set GID of process */
-@@ -76,9 +75,8 @@
- #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
-     const char *groupname;
-     gid_t gid;
--#else
--    int dummy;
- #endif
-+    bool group_valid;
- };
- 
- bool platform_user_get(const char *username, struct platform_state_user *state);
-@@ -89,28 +87,6 @@
-                              const struct platform_state_group *group_state, struct context *c);
- 
- 
--/*
-- * Extract UID or GID
-- */
--
--static inline int
--platform_state_user_uid(const struct platform_state_user *s)
--{
--#if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
--    return s->uid;
--#endif
--    return -1;
--}
--
--static inline int
--platform_state_group_gid(const struct platform_state_group *s)
--{
--#if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
--    return s->gid;
--#endif
--    return -1;
--}
--
- void platform_chroot(const char *path);
- 
- void platform_nice(int niceval);
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 5fcf820..f71d891 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -3082,7 +3082,7 @@
- }
- 
- bool
--unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, int *uid, int *gid)
-+unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, uid_t *uid, gid_t *gid)
- {
- #ifdef HAVE_GETPEEREID
-     uid_t u;
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index e45981f..2c79a11 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -371,7 +371,7 @@
- 
- void socket_delete_unix(const struct sockaddr_un *local);
- 
--bool unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, int *uid, int *gid);
-+bool unix_socket_get_peer_uid_gid(const socket_descriptor_t sd, uid_t *uid, gid_t *gid);
- 
- #endif /* if UNIX_SOCK_SUPPORT */
- 
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test(test_parse_line),
++        cmocka_unit_test(test_read_config),
+     };
+
+     return cmocka_run_group_tests_name("options_parse", tests, NULL, NULL);
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1247?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icb91d9c560b6f78f16571ac3052cc566d94afe99
+Gerrit-Change-Number: 1247
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--T7BgL9ggl+w=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1247?usp=3Demail">View C=
+hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">test_options_parse: Add test for read_config_str=
+ing<br><br>The &lt;inlineopt&gt; test discovered the issue<br>fixed by comm=
+it &quot;buffer: Fix buf_parse eating input&quot;.<br><br>Change-Id: Icb91d=
+9c560b6f78f16571ac3052cc566d94afe99<br>Signed-off-by: Frank Lichtenheld &lt=
+;frank@...2641...&gt;<br>---<br>M tests/unit_tests/openvpn/test_options_par=
+se.c<br>1 file changed, 109 insertions(+), 0 deletions(-)<br><br></pre><pre=
+ class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/1=
+247/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;"><span>diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/=
+tests/unit_tests/openvpn/test_options_parse.c</span><br><span>index 9472c78=
+..e552dd7 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_option=
+s_parse.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_options_parse=
+.c</span><br><span>@@ -43,6 +43,9 @@</span><br><span>                   con=
+st unsigned int permission_mask, unsigned int *option_types_found,</span><b=
+r><span>                   struct env_set *es)</span><br><span> {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    function_called();</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    check_expected(p);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_expected(is_i=
+nline);</span><br><span> }</span><br><span> </span><br><span> void</span><b=
+r><span>@@ -185,11 +188,117 @@</span><br><span>     gc_free(&amp;gc);</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+read_single_config(struct options *options, const char *config)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    unsigned int option_types_found =3D 0;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct env_set es;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(es);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    read_config_string(&=
+quot;test_options_parse&quot;, options, config, M_INFO, OPT_P_DEFAULT,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                       &=
+amp;option_types_found, &amp;es);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+union tokens_parameter<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    uintmax_t as_int;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    void *as_pointer;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+chec=
+k_tokens(const uintmax_t value, const uintmax_t expected)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    union tokens_parameter temp;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    temp.as_int =3D value;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    const char **p =3D (const char=
+ **)temp.as_pointer;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    temp.as_int =3D expected;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    const char **expected_p =3D (const char **)temp.as_pointer;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0=
+; i &lt; MAX_PARMS; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
+f (!p[i] &amp;&amp; !expected_p[i])</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            return true;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if ((p[i] &amp;&amp; !expected_p[i])</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            || (!p[i] &amp;&amp; expected_p[i]))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            fprintf(stderr, &q=
+uot;diff at i=3D%d\n&quot;, i);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            return false;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (strcmp(p[i], expected_p[i]))</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            fprintf(stderr, &quot;diff at i=3D%d, p=3D&l=
+t;%s&gt; ep=3D&lt;%s&gt;\n&quot;, i, p[i], expected_p[i]);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    fprintf(stderr, &quot;fallthrough&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+test_read_config(void **state)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct options o;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    C=
+LEAR(o); /* NB: avoiding init_options to limit dependencies */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    gc_init(&amp;o.gc);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    gc_init(&amp;o.dns_optio=
+ns.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o.gc_own=
+ed =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    char *p_expect_someopt=
+[MAX_PARMS];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cha=
+r *p_expect_otheropt[MAX_PARMS];</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    char *p_expect_inlineopt[MAX_PARMS];</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    CLEAR(p_expect_someopt);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(p_expect_otheropt);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(p_expect_inl=
+ineopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    p_expec=
+t_someopt[0] =3D &quot;someopt&quot;;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    p_expect_someopt[1] =3D &quot;parm1&quot;;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    p_expect_someopt[2] =3D &q=
+uot;parm2&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ p_expect_otheropt[0] =3D &quot;otheropt&quot;;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    p_expect_otheropt[1] =3D &quot;1&quot;;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    p_expect_otheropt[2=
+] =3D &quot;2&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    p_expect_inlineopt[0] =3D &quot;inlineopt&quot;;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    p_expect_inlineopt[1] =3D &quot;some =
+text\nother text\n&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* basic =
+test */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_f=
+unction_call(__wrap_add_option);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    expect_check(__wrap_add_option, p, check_tokens, p_expect_=
+someopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect=
+_value(__wrap_add_option, is_inline, 0);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    expect_function_call(__wrap_add_option);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    expect_check(__wrap_add_o=
+ption, p, check_tokens, p_expect_otheropt);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    expect_value(__wrap_add_option, is_inline, 0);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    read_single_conf=
+ig(&amp;o, &quot;someopt parm1 parm2\n  otheropt 1 2&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* -- gets stripped */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    expect_function_call(__wrap_add_option);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_check(__wr=
+ap_add_option, p, check_tokens, p_expect_someopt);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    expect_value(__wrap_add_option, is_inlin=
+e, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_fu=
+nction_call(__wrap_add_option);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    expect_check(__wrap_add_option, p, check_tokens, p_expect_o=
+theropt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect=
+_value(__wrap_add_option, is_inline, 0);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    read_single_config(&amp;o, &quot;someopt parm1 par=
+m2\n\t--otheropt 1 2&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* inl=
+ine options */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
+xpect_function_call(__wrap_add_option);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    expect_check(__wrap_add_option, p, check_tokens, p_=
+expect_inlineopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   expect_value(__wrap_add_option, is_inline, 1);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    read_single_config(&amp;o, &quot;&lt;inli=
+neopt&gt;\nsome text\nother text\n&lt;/inlineopt&gt;&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    p_expect_inlineopt[0] =3D &quot;inlineopt&quot;;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    p_expect_inlineo=
+pt[1] =3D A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 &quot=
+;\n&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expec=
+t_function_call(__wrap_add_option);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    expect_check(__wrap_add_option, p, check_tokens, p_expe=
+ct_inlineopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
+xpect_value(__wrap_add_option, is_inline, 1);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    read_single_config(&amp;o, &quot;&lt;inlineop=
+t&gt;\n&quot; A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 &=
+quot;\n&lt;/inlineopt&gt;&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    g=
+c_free(&amp;o.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   gc_free(&amp;o.dns_options.gc);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span> int</span><br><span> main(void)</span><br><span> {</span><br=
+><span>     const struct CMUnitTest tests[] =3D {</span><br><span>         =
+cmocka_unit_test(test_parse_line),</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        cmocka_unit_test(test_read_config),</span><br><span>=
+     };</span><br><span> </span><br><span>     return cmocka_run_group_test=
+s_name(&quot;options_parse&quot;, tests, NULL, NULL);</span><br><span></spa=
+n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1247?usp=3Demail">change 1247</a>. To unsubscribe, or for help writing =
+mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dema=
+il">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1247?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icb91d9c560b6f78f16571ac3052=
+cc566d94afe99 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1247 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--T7BgL9ggl+w=--
 
