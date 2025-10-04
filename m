@@ -1,16 +1,11 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Sat, 4 Oct 2025 00:55:37 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sat,  4 Oct 2025 08:15:38 +0200
+Message-ID: <20251004061545.7277-1-gert@...1296...>
 In-Reply-To: <gerrit.1758731785000.Iad717f0ff3c79ae199c8be5f93bc51bf258c68c3@...2715...>
 References: <gerrit.1758731785000.Iad717f0ff3c79ae199c8be5f93bc51bf258c68c3@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1200d063f208ac02e32d7f42f69a651f1e443e43-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="oQO/EpftChg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: crypto_epoch: Clean
- up type handling in ovpn_expand_label()
+Subject: [Openvpn-devel] [PATCH v3] crypto_epoch: Clean up type handling in
+ ovpn_expand_label()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---oQO/EpftChg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+- Add explicit casts where we have checked the value and
+  need to put it into a smaller type.
+- Adapt some types to actual usage.
 
-MaxF has posted comments on this change by flichtenheld. ( http://gerrit.op=
-envpn.net/c/openvpn/+/1218?usp=3Demail )
+Change-Id: Iad717f0ff3c79ae199c8be5f93bc51bf258c68c3
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: MaxF <max@...2606...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1218
+---
 
-Change subject: crypto_epoch: Clean up type handling in ovpn_expand_label()
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1218
+This mail reflects revision 3 of this Change.
 
-Patch Set 3: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1218?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Iad717f0ff3c79ae199c8be5f93bc51bf258c68c3
-Gerrit-Change-Number: 1218
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sat, 04 Oct 2025 00:55:37 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---oQO/EpftChg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1218?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1218?usp=3Demail=
-">change 1218</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1218?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iad717f0ff3c79ae199c8be5f93b=
-c51bf258c68c3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1218 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 04 Oct 2025 00:55:37=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---oQO/EpftChg=--
+        
+diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn/crypto_epoch.c
+index 7026ff8..f34dc8c 100644
+--- a/src/openvpn/crypto_epoch.c
++++ b/src/openvpn/crypto_epoch.c
+@@ -72,14 +72,9 @@
+     hmac_ctx_free(hmac_ctx);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ bool
+ ovpn_expand_label(const uint8_t *secret, size_t secret_len, const uint8_t *label, size_t label_len,
+-                  const uint8_t *context, size_t context_len, uint8_t *out, uint16_t out_len)
++                  const uint8_t *context, size_t context_len, uint8_t *out, int out_len)
+ {
+     if (secret_len != 32 || label_len > 250 || context_len > 255 || label_len < 1)
+     {
+@@ -89,22 +84,23 @@
+          * need need to be in range */
+         return false;
+     }
++    ASSERT(out_len >= 0 && out_len <= UINT16_MAX);
+ 
+     struct gc_arena gc = gc_new();
+     /* 2 byte for the outlen encoded as uint16, 5 bytes for "ovpn ",
+      * 1 byte for context len byte and 1 byte for label len byte */
+     const uint8_t *label_prefix = (const uint8_t *)("ovpn ");
+-    int prefix_len = 5;
++    uint8_t prefix_len = 5;
+ 
+-    int hkdf_label_len = 2 + prefix_len + 1 + label_len + 1 + context_len;
++    size_t hkdf_label_len = 2 + prefix_len + 1 + label_len + 1 + context_len;
+     struct buffer hkdf_label = alloc_buf_gc(hkdf_label_len, &gc);
+ 
+-    buf_write_u16(&hkdf_label, out_len);
+-    buf_write_u8(&hkdf_label, prefix_len + label_len);
++    buf_write_u16(&hkdf_label, (uint16_t)out_len);
++    buf_write_u8(&hkdf_label, prefix_len + (uint8_t)label_len);
+     buf_write(&hkdf_label, label_prefix, prefix_len);
+     buf_write(&hkdf_label, label, label_len);
+ 
+-    buf_write_u8(&hkdf_label, context_len);
++    buf_write_u8(&hkdf_label, (uint8_t)context_len);
+     if (context_len > 0)
+     {
+         buf_write(&hkdf_label, context, context_len);
+@@ -168,10 +164,6 @@
+     key->epoch = epoch_key->epoch;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static void
+ epoch_init_send_key_ctx(struct crypto_options *co)
+ {
+diff --git a/src/openvpn/crypto_epoch.h b/src/openvpn/crypto_epoch.h
+index 33ca741..a6fa116 100644
+--- a/src/openvpn/crypto_epoch.h
++++ b/src/openvpn/crypto_epoch.h
+@@ -60,7 +60,7 @@
+  */
+ bool ovpn_expand_label(const uint8_t *secret, size_t secret_len, const uint8_t *label,
+                        size_t label_len, const uint8_t *context, size_t context_len, uint8_t *out,
+-                       uint16_t out_len);
++                       int out_len);
+ 
+ /**
+  * Generate a data channel key pair from the epoch key
 
