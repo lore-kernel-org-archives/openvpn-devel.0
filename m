@@ -1,10 +1,16 @@
-Date: Mon, 6 Oct 2025 18:56:49 +0200 (CEST)
-Message-Id: <202510061656.596GunaB089582@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251006145844.27794-1-gert@...1296...>
-References: <20251006145844.27794-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Allowing installing FreeBSD
- routes with interface instead of next-hop
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 6 Oct 2025 16:57:13 +0000
+In-Reply-To: <gerrit.1758030602000.I88e16e15fad065cb310d38f09924053efc3a6ce5@...2715...>
+References: <gerrit.1758030602000.I88e16e15fad065cb310d38f09924053efc3a6ce5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <cc3511965b2516e3ac77653ecf2c4ac4ef9e1775-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="htTEc6cmQ0I="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allowing installing
+ FreeBSD routes with interface instead of next-hop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +19,273 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-There is not much to test here, as the "new code" is only used for a
-case not yet supported by the rest of the code (--ifconfig-push IPs
-outside --server subnet, with DCO, on FreeBSD).  Patch for that is
-in gerrit #1192, but that needs more testing.
+--htTEc6cmQ0I=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The code in question is currently only excercised at all for --iroute
-on FreeBSD DCO -> tested there, works.
+cron2 has uploaded a new patch set (#5) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1193?usp=3Demail )
 
-At a future point in time (after 2.7.0 release) I think I/we should remove
-the TARGET_FREEBSD parts from route.c, and use networking_freebsd.c
-instead (adding what is missing, namely "fe80::1%em0" gateways with
-embedded NIC).
 
-As discussed in IRC, I have amended the comment a bit, and then a bit more,
-to make it easier to understand what is happening and when it's needed.  No
-actual code change.
+Change subject: Allowing installing FreeBSD routes with interface instead o=
+f next-hop
+......................................................................
 
-Your patch has been applied to the master branch.
+Allowing installing FreeBSD routes with interface instead of next-hop
 
-commit cbcfb9ab3ea90e1d09e5783bdb3bbd18ac0328d1
-Author: Arne Schwabe
-Date:   Mon Oct 6 16:58:37 2025 +0200
+This matches the Linux behaviour of the net_route add/delete commands
 
-     Allowing installing FreeBSD routes with interface instead of next-hop
+Change-Id: I88e16e15fad065cb310d38f09924053efc3a6ce5
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1193
+Message-Id: <20251006145844.27794-1-gert@...1296...>
+URL: https://sourceforge.net/p/openvpn/mailman/message/59242876/
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/networking_freebsd.c
+1 file changed, 40 insertions(+), 11 deletions(-)
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1193
-     Message-Id: <20251006145844.27794-1-gert@...1296...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/59242876/
-     Signed-off-by: Gert Doering <gert@...1296...>
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1193/5
+
+diff --git a/src/openvpn/networking_freebsd.c b/src/openvpn/networking_free=
+bsd.c
+index b47444c..04051a6 100644
+--- a/src/openvpn/networking_freebsd.c
++++ b/src/openvpn/networking_freebsd.c
+@@ -15,17 +15,31 @@
+     char buf1[INET_ADDRSTRLEN], buf2[INET_ADDRSTRLEN];
+     in_addr_t _dst, _gw;
+     struct argv argv =3D argv_new();
+-    bool status;
++
++    ASSERT(gw || iface);
+
+     _dst =3D ntohl(*dst);
+-    _gw =3D ntohl(*gw);
+
+-    argv_printf(&argv, "%s %s -net %s/%d %s -fib %d", ROUTE_PATH, op,
+-                inet_ntop(AF_INET, &_dst, buf1, sizeof(buf1)), prefixlen,
+-                inet_ntop(AF_INET, &_gw, buf2, sizeof(buf2)), table);
++    /* if we have a gateway (GW !=3D NULL) install route to gateway IP
++     * if not, install "connected" route to interface
++     * (needed to make 'ifconfig-push IPs outside server subnet' work)
++     */
++    if (gw)
++    {
++        _gw =3D ntohl(*gw);
++        argv_printf(&argv, "%s %s -net %s/%d %s -fib %d", ROUTE_PATH, op,
++                    inet_ntop(AF_INET, &_dst, buf1, sizeof(buf1)), prefixl=
+en,
++                    inet_ntop(AF_INET, &_gw, buf2, sizeof(buf2)), table);
++    }
++    else
++    {
++        argv_printf(&argv, "%s %s -net %s/%d -iface %s -fib %d", ROUTE_PAT=
+H, op,
++                    inet_ntop(AF_INET, &_dst, buf1, sizeof(buf1)), prefixl=
+en,
++                    iface, table);
++    }
+
+     argv_msg(M_INFO, &argv);
+-    status =3D openvpn_execve_check(&argv, NULL, 0, "ERROR: FreeBSD route =
+command failed");
++    bool status =3D openvpn_execve_check(&argv, NULL, 0, "ERROR: FreeBSD r=
+oute command failed");
+
+     argv_free(&argv);
+
+@@ -38,14 +52,29 @@
+ {
+     char buf1[INET6_ADDRSTRLEN], buf2[INET6_ADDRSTRLEN];
+     struct argv argv =3D argv_new();
+-    bool status;
+
+-    argv_printf(&argv, "%s -6 %s -net %s/%d %s -fib %d", ROUTE_PATH, op,
+-                inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)), prefixlen,
+-                inet_ntop(AF_INET6, gw, buf2, sizeof(buf2)), table);
++    ASSERT(gw || iface);
++
++    /* if we have a gateway (GW !=3D NULL) install route to gateway IP
++     * if not, install "connected" route to interface
++     * (needed to make 'ifconfig-push IPs outside server subnet' work)
++     */
++    if (gw)
++    {
++        argv_printf(&argv, "%s -6 %s -net %s/%d %s -fib %d", ROUTE_PATH, o=
+p,
++                    inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)), prefixle=
+n,
++                    inet_ntop(AF_INET6, gw, buf2, sizeof(buf2)), table);
++    }
++    else
++    {
++        argv_printf(&argv, "%s -6 %s -net %s/%d -iface %s -fib %d", ROUTE_=
+PATH, op,
++                    inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)), prefixle=
+n,
++                    iface, table);
++    }
++
+
+     argv_msg(M_INFO, &argv);
+-    status =3D openvpn_execve_check(&argv, NULL, 0, "ERROR: FreeBSD route =
+command failed");
++    bool status =3D openvpn_execve_check(&argv, NULL, 0, "ERROR: FreeBSD r=
+oute command failed");
+
+     argv_free(&argv);
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1193?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I88e16e15fad065cb310d38f09924053efc3a6ce5
+Gerrit-Change-Number: 1193
+Gerrit-PatchSet: 5
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--htTEc6cmQ0I=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #5</strong> to the change originally created by plaisthos.<=
+/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1193?usp=3Demail">Vi=
+ew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">Allowing installing FreeBSD routes with inte=
+rface instead of next-hop<br><br>This matches the Linux behaviour of the ne=
+t_route add/delete commands<br><br>Change-Id: I88e16e15fad065cb310d38f09924=
+053efc3a6ce5<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Gerr=
+it URL: https://gerrit.openvpn.net/c/openvpn/+/1193<br>Message-Id: &lt;2025=
+1006145844.27794-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/op=
+envpn/mailman/message/59242876/<br>Signed-off-by: Gert Doering &lt;gert@...493...=
+1296...&gt;<br>---<br>M src/openvpn/networking_freebsd.c<br>1 file changed,=
+ 40 insertions(+), 11 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/93/1193/5</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/networking_freebsd.c b/src/openvpn/networking_freebsd.c</=
+span><br><span>index b47444c..04051a6 100644</span><br><span>--- a/src/open=
+vpn/networking_freebsd.c</span><br><span>+++ b/src/openvpn/networking_freeb=
+sd.c</span><br><span>@@ -15,17 +15,31 @@</span><br><span>     char buf1[INE=
+T_ADDRSTRLEN], buf2[INET_ADDRSTRLEN];</span><br><span>     in_addr_t _dst, =
+_gw;</span><br><span>     struct argv argv =3D argv_new();</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    bool status;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    ASSERT(gw || iface);</span><br><span> </span><br><span> =
+    _dst =3D ntohl(*dst);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    _gw =3D ntohl(*gw);</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    argv_printf(&amp;argv, &quot;%s %s -net %s/%d %=
+s -fib %d&quot;, ROUTE_PATH, op,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                inet_ntop(AF_INET, &amp;_dst, buf1, sizeof(buf1)=
+), prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        inet_ntop(AF_INET, &amp;_gw, buf2, sizeof(buf2)), table);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    /* if we have a gateway (=
+GW !=3D NULL) install route to gateway IP</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+     * if not, install &quot;connected&quot; route to=
+ interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * (n=
+eeded to make &#39;ifconfig-push IPs outside server subnet&#39; work)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (gw)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        _gw =3D ntohl(*gw);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s %s -net %s/=
+%d %s -fib %d&quot;, ROUTE_PATH, op,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    inet_ntop(AF_INET, &amp;_dst, buf1, si=
+zeof(buf1)), prefixlen,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    inet_ntop(AF_INET, &amp;_gw, buf2, sizeof(buf2)), t=
+able);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s %s -net %s/%=
+d -iface %s -fib %d&quot;, ROUTE_PATH, op,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                    inet_ntop(AF_INET, &amp;_dst, bu=
+f1, sizeof(buf1)), prefixlen,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                    iface, table);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>     argv_=
+msg(M_INFO, &amp;argv);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    status =3D openvpn_execve_check(&amp;argv, NULL, 0, &quot;ERROR: Free=
+BSD route command failed&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    bool status =3D openvpn_execve_check(&amp;argv, NULL, 0, &=
+quot;ERROR: FreeBSD route command failed&quot;);</span><br><span> </span><b=
+r><span>     argv_free(&amp;argv);</span><br><span> </span><br><span>@@ -38=
+,14 +52,29 @@</span><br><span> {</span><br><span>     char buf1[INET6_ADDRS=
+TRLEN], buf2[INET6_ADDRSTRLEN];</span><br><span>     struct argv argv =3D a=
+rgv_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool st=
+atus;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    argv_printf(&amp;argv, &quot;%s -6 %s -net %s/%d %s -fib %d&quot;, RO=
+UTE_PATH, op,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)), prefixlen,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                inet_ntop(AF_INE=
+T6, gw, buf2, sizeof(buf2)), table);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    ASSERT(gw || iface);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* if we have a gateway (GW !=3D NULL) install route to gateway IP</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * if not, instal=
+l &quot;connected&quot; route to interface</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+     * (needed to make &#39;ifconfig-push IPs outsid=
+e server subnet&#39; work)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (gw)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;ar=
+gv, &quot;%s -6 %s -net %s/%d %s -fib %d&quot;, ROUTE_PATH, op,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                    inet_ntop(A=
+F_INET6, dst, buf1, sizeof(buf1)), prefixlen,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                    inet_ntop(AF_INET6, gw, buf2,=
+ sizeof(buf2)), table);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quo=
+t;%s -6 %s -net %s/%d -iface %s -fib %d&quot;, ROUTE_PATH, op,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                    inet_ntop(AF=
+_INET6, dst, buf1, sizeof(buf1)), prefixlen,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                    iface, table);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> </span><br><span>     argv_msg(=
+M_INFO, &amp;argv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  status =3D openvpn_execve_check(&amp;argv, NULL, 0, &quot;ERROR: FreeBSD =
+route command failed&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    bool status =3D openvpn_execve_check(&amp;argv, NULL, 0, &quot=
+;ERROR: FreeBSD route command failed&quot;);</span><br><span> </span><br><s=
+pan>     argv_free(&amp;argv);</span><br><span> </span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+193?usp=3Demail">change 1193</a>. To unsubscribe, or for help writing mail =
+filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1193=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I88e16e15fad065cb310d38f0992=
+4053efc3a6ce5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1193 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--htTEc6cmQ0I=--
 
