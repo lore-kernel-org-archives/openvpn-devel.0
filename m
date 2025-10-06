@@ -1,13 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 6 Oct 2025 15:17:29 +0000
+Date: Mon, 6 Oct 2025 15:55:29 +0000
+In-Reply-To: <gerrit.1759763846000.I20205ebd06bbf7cbee8c9be93f399961f5b74fcc@...2715...>
 References: <gerrit.1759763846000.I20205ebd06bbf7cbee8c9be93f399961f5b74fcc@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <8e3c751d1256abe79d23a9dba874cbb4c491eaa9-HTML@...2715...>
+Message-ID: <d95a8cfd0f8450bf7aef7f85e0015879ea1db7b1-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Owb9PPdwmXM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vmDyOJEEsgg="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: sitnl: Clean up type
  handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Owb9PPdwmXM=
+--vmDyOJEEsgg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,12 +30,11 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: sitnl: Clean up type handling
@@ -52,14 +52,13 @@ Change-Id: I20205ebd06bbf7cbee8c9be93f399961f5b74fcc
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
 M src/openvpn/networking_sitnl.c
-1 file changed, 42 insertions(+), 46 deletions(-)
+1 file changed, 45 insertions(+), 49 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/1251/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/1251/2
 
 diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index 1815faf..da9381b 100644
+index 1815faf..bb1ec6a 100644
 --- a/src/openvpn/networking_sitnl.c
 +++ b/src/openvpn/networking_sitnl.c
 @@ -59,9 +59,9 @@
@@ -264,7 +263,7 @@ int prefixlen)
 -    req.i.ifa_family =3D af_family;
 +    ASSERT(af_family <=3D UINT8_MAX);
 +    req.i.ifa_family =3D (uint8_t)af_family;
-=20
+
      switch (af_family)
      {
 @@ -797,7 +794,8 @@
@@ -293,21 +292,28 @@ ar type)
  {
      struct sitnl_route_req req;
      int ret =3D -1, size;
-@@ -917,11 +915,13 @@
+@@ -917,15 +915,17 @@
      req.n.nlmsg_type =3D cmd;
      req.n.nlmsg_flags =3D NLM_F_REQUEST | flags;
 
 -    req.r.rtm_family =3D af_family;
+-    req.r.rtm_scope =3D scope;
 +    ASSERT(af_family <=3D UCHAR_MAX);
 +    req.r.rtm_family =3D (unsigned char)af_family;
-     req.r.rtm_scope =3D scope;
++    req.r.rtm_scope =3D (unsigned char)scope;
      req.r.rtm_protocol =3D protocol;
      req.r.rtm_type =3D type;
 -    req.r.rtm_dst_len =3D prefixlen;
 +    ASSERT(prefixlen >=3D 0 && prefixlen <=3D UCHAR_MAX);
 +    req.r.rtm_dst_len =3D (unsigned char)prefixlen;
 
-     if (table < 256)
+-    if (table < 256)
++    if (table <=3D UCHAR_MAX)
+     {
+-        req.r.rtm_table =3D table;
++        req.r.rtm_table =3D (unsigned char)table;
+     }
+     else
      {
 @@ -1348,7 +1348,7 @@
  }
@@ -358,51 +364,51 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I20205ebd06bbf7cbee8c9be93f399961f5b74fcc
 Gerrit-Change-Number: 1251
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---Owb9PPdwmXM=
+--vmDyOJEEsgg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">sitnl: Clean up type handling<br><br>- Make=
- some type casts explicit. Due to the types used<br>  in our networking API=
- and the netlink APIs respectively<br>  this can&#39;t be avoided.<br>- In =
-many cases just use correct types from the start, e.g.<br>  where we use co=
-nstants anyway.<br><br>Change-Id: I20205ebd06bbf7cbee8c9be93f399961f5b74fcc=
-<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M s=
-rc/openvpn/networking_sitnl.c<br>1 file changed, 42 insertions(+), 46 delet=
-ions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
-openvpn refs/changes/51/1251/1</pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/networking_=
-sitnl.c b/src/openvpn/networking_sitnl.c</span><br><span>index 1815faf..da9=
-381b 100644</span><br><span>--- a/src/openvpn/networking_sitnl.c</span><br>=
-<span>+++ b/src/openvpn/networking_sitnl.c</span><br><span>@@ -59,9 +59,9 @=
-@</span><br><span>         _nest;                                          =
-\</span><br><span>     })</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#define SITNL_NEST_END(_msg, _nest)                  =
-                    \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    {                                                                    \<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        _nest-&gt;rta_=
-len =3D (void *)sitnl_nlmsg_tail(_msg) - (void *)_nest; \</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#define SITNL_NEST_END(_msg, _nest)  =
-                                                      \</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {                                  =
-                                                    \</span><br><span style=
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail">View C=
+hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">sitnl: Clean up type handling<br><br>- Make some=
+ type casts explicit. Due to the types used<br>  in our networking API and =
+the netlink APIs respectively<br>  this can&#39;t be avoided.<br>- In many =
+cases just use correct types from the start, e.g.<br>  where we use constan=
+ts anyway.<br><br>Change-Id: I20205ebd06bbf7cbee8c9be93f399961f5b74fcc<br>S=
+igned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/op=
+envpn/networking_sitnl.c<br>1 file changed, 45 insertions(+), 49 deletions(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/51/1251/2</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/networking_sitnl=
+.c b/src/openvpn/networking_sitnl.c</span><br><span>index 1815faf..bb1ec6a =
+100644</span><br><span>--- a/src/openvpn/networking_sitnl.c</span><br><span=
+>+++ b/src/openvpn/networking_sitnl.c</span><br><span>@@ -59,9 +59,9 @@</sp=
+an><br><span>         _nest;                                          \</sp=
+an><br><span>     })</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#define SITNL_NEST_END(_msg, _nest)                       =
+               \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+                                                                    \</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        _nest-&gt;rta_len =
+=3D (void *)sitnl_nlmsg_tail(_msg) - (void *)_nest; \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define SITNL_NEST_END(_msg, _nest)      =
+                                                  \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {                                    =
+                                                  \</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        _nest-&gt;rta_len =3D (unsigned s=
 hort)((void *)sitnl_nlmsg_tail(_msg) - (void *)_nest); \</span><br><span>  =
    }</span><br><span> </span><br><span> /* This function was originally imp=
@@ -569,62 +575,69 @@ nt metric,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
 =3D"color: hsl(120, 100%, 40%);">+                enum rt_scope_t scope, un=
 signed char protocol, unsigned char type)</span><br><span> {</span><br><spa=
 n>     struct sitnl_route_req req;</span><br><span>     int ret =3D -1, siz=
-e;</span><br><span>@@ -917,11 +915,13 @@</span><br><span>     req.n.nlmsg_t=
+e;</span><br><span>@@ -917,15 +915,17 @@</span><br><span>     req.n.nlmsg_t=
 ype =3D cmd;</span><br><span>     req.n.nlmsg_flags =3D NLM_F_REQUEST | fla=
 gs;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    req.r.rtm_family =3D af_family;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ASSERT(af_family &lt;=3D UCHAR_MAX);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    req.r.rtm_family =3D (unsigned cha=
-r)af_family;</span><br><span>     req.r.rtm_scope =3D scope;</span><br><spa=
-n>     req.r.rtm_protocol =3D protocol;</span><br><span>     req.r.rtm_type=
- =3D type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    req.r.r=
-tm_dst_len =3D prefixlen;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    ASSERT(prefixlen &gt;=3D 0 &amp;&amp; prefixlen &lt;=3D UCHAR_MAX=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    req.r.rtm_dst=
-_len =3D (unsigned char)prefixlen;</span><br><span> </span><br><span>     i=
-f (table &lt; 256)</span><br><span>     {</span><br><span>@@ -1348,7 +1348,=
-7 @@</span><br><span> }</span><br><span> </span><br><span> static int</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-sitnl_parse_rtattr_flags(st=
-ruct rtattr *tb[], int max, struct rtattr *rta, int len,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+sitnl_parse_rtattr_flags(struct rtattr=
- *tb[], size_t max, struct rtattr *rta, size_t len,</span><br><span>       =
-                   unsigned short flags)</span><br><span> {</span><br><span=
->     unsigned short type;</span><br><span>@@ -1369,14 +1369,14 @@</span><b=
-r><span> </span><br><span>     if (len)</span><br><span>     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;%s: %d =
-bytes not parsed! (rta_len=3D%d)&quot;, __func__, len, rta-&gt;rta_len);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_ROUTE, &=
-quot;%s: %zu bytes not parsed! (rta_len=3D%u)&quot;, __func__, len, rta-&gt=
-;rta_len);</span><br><span>     }</span><br><span> </span><br><span>     re=
-turn 0;</span><br><span> }</span><br><span> </span><br><span> static int</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-sitnl_parse_rtattr(struc=
-t rtattr *tb[], int max, struct rtattr *rta, int len)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+sitnl_parse_rtattr(struct rtattr *tb[], s=
-ize_t max, struct rtattr *rta, size_t len)</span><br><span> {</span><br><sp=
-an>     return sitnl_parse_rtattr_flags(tb, max, rta, len, 0);</span><br><s=
-pan> }</span><br><span>@@ -1474,10 +1474,6 @@</span><br><span>     return s=
-itnl_send(&amp;req.n, 0, 0, NULL, NULL);</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC_=
-_) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span> #endif /* !ENABLE_SITNL */</span><br><span> </span><br><span> #e=
-ndif /* TARGET_LINUX */</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail">change 1=
-251</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
-scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail"/><meta it=
-emprop=3D"name" content=3D"View Change"/></div></div>
+    req.r.rtm_family =3D af_family;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    req.r.rtm_scope =3D scope;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    ASSERT(af_family &lt;=3D UCHAR_MAX);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    req.r.rtm_family =3D (uns=
+igned char)af_family;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    req.r.rtm_scope =3D (unsigned char)scope;</span><br><span>     req.r.=
+rtm_protocol =3D protocol;</span><br><span>     req.r.rtm_type =3D type;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    req.r.rtm_dst_len =
+=3D prefixlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    A=
+SSERT(prefixlen &gt;=3D 0 &amp;&amp; prefixlen &lt;=3D UCHAR_MAX);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    req.r.rtm_dst_len =3D (u=
+nsigned char)prefixlen;</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (table &lt; 256)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (table &lt;=3D UCHAR_MAX)</span><br><span>  =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        req.r.rtm=
+_table =3D table;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      req.r.rtm_table =3D (unsigned char)table;</span><br><span>     }</spa=
+n><br><span>     else</span><br><span>     {</span><br><span>@@ -1348,7 +13=
+48,7 @@</span><br><span> }</span><br><span> </span><br><span> static int</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-sitnl_parse_rtattr_flags=
+(struct rtattr *tb[], int max, struct rtattr *rta, int len,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+sitnl_parse_rtattr_flags(struct rta=
+ttr *tb[], size_t max, struct rtattr *rta, size_t len,</span><br><span>    =
+                      unsigned short flags)</span><br><span> {</span><br><s=
+pan>     unsigned short type;</span><br><span>@@ -1369,14 +1369,14 @@</span=
+><br><span> </span><br><span>     if (len)</span><br><span>     {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;%s: =
+%d bytes not parsed! (rta_len=3D%d)&quot;, __func__, len, rta-&gt;rta_len);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_ROUTE=
+, &quot;%s: %zu bytes not parsed! (rta_len=3D%u)&quot;, __func__, len, rta-=
+&gt;rta_len);</span><br><span>     }</span><br><span> </span><br><span>    =
+ return 0;</span><br><span> }</span><br><span> </span><br><span> static int=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-sitnl_parse_rtattr(st=
+ruct rtattr *tb[], int max, struct rtattr *rta, int len)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+sitnl_parse_rtattr(struct rtattr *tb[]=
+, size_t max, struct rtattr *rta, size_t len)</span><br><span> {</span><br>=
+<span>     return sitnl_parse_rtattr_flags(tb, max, rta, len, 0);</span><br=
+><span> }</span><br><span>@@ -1474,10 +1474,6 @@</span><br><span>     retur=
+n sitnl_send(&amp;req.n, 0, 0, NULL, NULL);</span><br><span> }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GN=
+UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span> #endif /* !ENABLE_SITNL */</span><br><span> </span><br><span>=
+ #endif /* TARGET_LINUX */</span><br><span></span><br></pre><p>To view, vis=
+it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail">chang=
+e 1251</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I20205ebd06bbf7cbee8c9be93f3=
 99961f5b74fcc </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1251 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -636,5 +649,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---Owb9PPdwmXM=--
+--vmDyOJEEsgg=--
 
