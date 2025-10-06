@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 6 Oct 2025 16:06:59 +0000
-In-Reply-To: <gerrit.1757607620000.I73c46ac630834a8cf8894aaa2dcc429fbedd3db7@...2715...>
-References: <gerrit.1757607620000.I73c46ac630834a8cf8894aaa2dcc429fbedd3db7@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, max@...2606...
-Message-ID: <6e76c066bad70a63261ec7549e8541aad4ccd486-EmailReplacePatchSet-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 6 Oct 2025 16:24:52 +0000
+In-Reply-To: <gerrit.1759751916000.I1aeed74dedf6dd5f559f4eb5cc84645f149ba788@...2715...>
+References: <gerrit.1759751916000.I1aeed74dedf6dd5f559f4eb5cc84645f149ba788@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <d457c3ed48a9092dbad3f3943c5c4d815c825da7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aPo06h+Iahc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: vlan: Limit
- -Wconversion override to GCC 10 and older
+Content-Type: multipart/alternative; boundary="bSbYI6q4zgg="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: COPYING: Remove
+ licenses for software bundled in the Windows client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,153 +19,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, MaxF <max@...2606...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aPo06h+Iahc=
+--bSbYI6q4zgg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld.
 
-Hello MaxF, plaisthos,
+plaisthos has posted comments on this change by flichtenheld. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1249?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail
-
-to look at the new patch set (#10).
-
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
-
-
-Change subject: vlan: Limit -Wconversion override to GCC 10 and older
+Change subject: COPYING: Remove licenses for software bundled in the Window=
+s client
 ......................................................................
 
-vlan: Limit -Wconversion override to GCC 10 and older
 
-Only Debian 11 complains about this. This way we know
-we can remove this at some point.
+Patch Set 1:
 
-Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db7
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/vlan.c
-1 file changed, 3 insertions(+), 2 deletions(-)
+(1 comment)
 
+File COPYING:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1179/10
+http://gerrit.openvpn.net/c/openvpn/+/1249/comment/c6a04e52_68f4d2b5?usp=3D=
+email :
+PS1, Line 88:   Markus F.X.J. Oberhumer
+I feel we need to keep this part as it is a special exception granted by th=
+e author of LZO.
 
-diff --git a/src/openvpn/vlan.c b/src/openvpn/vlan.c
-index 3da470a..7a9fdaa 100644
---- a/src/openvpn/vlan.c
-+++ b/src/openvpn/vlan.c
-@@ -43,7 +43,8 @@
-     return ntohs(hdr->pcp_cfi_vid & OPENVPN_8021Q_MASK_VID);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
-+/* old GCC complains about ~OPENVPN_8021Q_MASK_VID being "int" */
-+#if defined(__GNUC__) && __GNUC__ < 11
- #pragma GCC diagnostic push
- #pragma GCC diagnostic ignored "-Wconversion"
- #endif
-@@ -61,7 +62,7 @@
-         (hdr->pcp_cfi_vid & ~OPENVPN_8021Q_MASK_VID) | (htons(vid) & OPENV=
-PN_8021Q_MASK_VID);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
-+#if defined(__GNUC__) && __GNUC__ < 11
- #pragma GCC diagnostic pop
- #endif
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1249?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db7
-Gerrit-Change-Number: 1179
-Gerrit-PatchSet: 10
+Gerrit-Change-Id: I1aeed74dedf6dd5f559f4eb5cc84645f149ba788
+Gerrit-Change-Number: 1249
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: MaxF <max@...2606...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 06 Oct 2025 16:24:52 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
---aPo06h+Iahc=
+--bSbYI6q4zgg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #10</strong> to this change.</p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail">View =
-Change</a></p><p>The change is no longer submittable: checks~ChecksSubmitRu=
-le is unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">vlan: Limit -Wconversion override t=
-o GCC 10 and older<br><br>Only Debian 11 complains about this. This way we =
-know<br>we can remove this at some point.<br><br>Change-Id: I73c46ac630834a=
-8cf8894aaa2dcc429fbedd3db7<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1186...=
-.2641...&gt;<br>---<br>M src/openvpn/vlan.c<br>1 file changed, 3 insertions=
-(+), 2 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
-n.net:29418/openvpn refs/changes/79/1179/10</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
-n/vlan.c b/src/openvpn/vlan.c</span><br><span>index 3da470a..7a9fdaa 100644=
-</span><br><span>--- a/src/openvpn/vlan.c</span><br><span>+++ b/src/openvpn=
-/vlan.c</span><br><span>@@ -43,7 +43,8 @@</span><br><span>     return ntohs=
-(hdr-&gt;pcp_cfi_vid &amp; OPENVPN_8021Q_MASK_VID);</span><br><span> }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defi=
-ned(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/* old GCC complains about ~OPENVPN_8021Q_MASK_VID being &q=
-uot;int&quot; */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
- defined(__GNUC__) &amp;&amp; __GNUC__ &lt; 11</span><br><span> #pragma GCC=
- diagnostic push</span><br><span> #pragma GCC diagnostic ignored &quot;-Wco=
-nversion&quot;</span><br><span> #endif</span><br><span>@@ -61,7 +62,7 @@</s=
-pan><br><span>         (hdr-&gt;pcp_cfi_vid &amp; ~OPENVPN_8021Q_MASK_VID) =
-| (htons(vid) &amp; OPENVPN_8021Q_MASK_VID);</span><br><span> }</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__G=
-NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#if defined(__GNUC__) &amp;&amp; __GNUC__ &lt; 11</span><br><span>=
- #pragma GCC diagnostic pop</span><br><span> #endif</span><br><span> </span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1179?usp=3Demail">change 1179</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1179?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+rently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1249?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File COPYING:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1249/comment/c6a04e52_68f4d2b5?usp=3Demail">Patch Set #1, Line 88:</a> =
+<code style=3D"font-family:monospace,monospace">  Markus F.X.J. Oberhumer</=
+code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: bre=
+ak-word;">I feel we need to keep this part as it is a special exception gra=
+nted by the author of LZO.</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1249?usp=3Demail">change 1249</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1249?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I73c46ac630834a8cf8894aaa2dc=
-c429fbedd3db7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1179 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1aeed74dedf6dd5f559f4eb5cc8=
+4645f149ba788 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1249 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 06 Oct 2025 16:24:52=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---aPo06h+Iahc=--
+--bSbYI6q4zgg=--
 
