@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 6 Oct 2025 20:40:56 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon,  6 Oct 2025 22:41:09 +0200
+Message-ID: <20251006204118.26237-1-gert@...1296...>
 In-Reply-To: <gerrit.1754655145000.Ia2f374476c87855bba6c0f9d3e2f28a5fe62a152@...2715...>
 References: <gerrit.1754655145000.Ia2f374476c87855bba6c0f9d3e2f28a5fe62a152@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ed5075ae126565fcca876ceb77569a0ff72c5f86-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z+nPsIuNM6E="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Review CMocka
- assertion usage
+Subject: [Openvpn-devel] [PATCH v3] Review CMocka assertion usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,190 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Z+nPsIuNM6E=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Replace some assert_true calls with more specific
+assertions. This should improve reporting in case
+of problems and also just makes the code nicer.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1141?usp=3Demail )
+Change-Id: Ia2f374476c87855bba6c0f9d3e2f28a5fe62a152
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1141
+---
 
-Change subject: Review CMocka assertion usage
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1141
+This mail reflects revision 3 of this Change.
 
-Patch Set 3: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1141?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia2f374476c87855bba6c0f9d3e2f28a5fe62a152
-Gerrit-Change-Number: 1141
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 06 Oct 2025 20:40:56 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---Z+nPsIuNM6E=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1141?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1141?usp=3Demail=
-">change 1141</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1141?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia2f374476c87855bba6c0f9d3e2=
-f28a5fe62a152 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1141 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 06 Oct 2025 20:40:56=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---Z+nPsIuNM6E=--
+        
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
+index a2a10ea..68e4693 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -286,9 +286,9 @@
+     strcpy(ctx->up.password, ctx->multi.auth_token);
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), AUTH_TOKEN_HMAC_OK);
+ 
+-    assert_int_not_equal(0, memcmp(ctx->multi.auth_token_initial + strlen(SESSION_ID_PREFIX),
+-                                   token_sessiona + strlen(SESSION_ID_PREFIX),
+-                                   AUTH_TOKEN_SESSION_ID_BASE64_LEN));
++    assert_memory_not_equal(ctx->multi.auth_token_initial + strlen(SESSION_ID_PREFIX),
++                            token_sessiona + strlen(SESSION_ID_PREFIX),
++                            AUTH_TOKEN_SESSION_ID_BASE64_LEN);
+ 
+     /* The first token is valid but should trigger the invalid response since
+      * the session id is not the same */
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c
+index 0eacbab..ec71bc3 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -82,9 +82,9 @@
+ 
+     now = 5010;
+     assert_true(packet_id_write(&data->pis, &data->test_buf, false, false));
+-    assert_true(data->pis.id == 1);
+-    assert_true(data->test_buf_data.buf_id == htonl(1));
+-    assert_true(data->test_buf_data.buf_time == 0);
++    assert_int_equal(data->pis.id, 1);
++    assert_int_equal(data->test_buf_data.buf_id, htonl(1));
++    assert_int_equal(data->test_buf_data.buf_time, 0);
+ }
+ 
+ static void
+@@ -96,8 +96,8 @@
+     assert_true(packet_id_write(&data->pis, &data->test_buf, true, false));
+     assert_int_equal(data->pis.id, 1);
+     assert_int_equal(data->pis.time, now);
+-    assert_true(data->test_buf_data.buf_id == htonl(1));
+-    assert_true(data->test_buf_data.buf_time == htonl((uint32_t)now));
++    assert_int_equal(data->test_buf_data.buf_id, htonl(1));
++    assert_int_equal(data->test_buf_data.buf_time, htonl((uint32_t)now));
+ }
+ 
+ static void
+@@ -108,9 +108,9 @@
+     data->test_buf.offset = sizeof(packet_id_type);
+     now = 5010;
+     assert_true(packet_id_write(&data->pis, &data->test_buf, false, true));
+-    assert_true(data->pis.id == 1);
+-    assert_true(data->test_buf_data.buf_id == htonl(1));
+-    assert_true(data->test_buf_data.buf_time == 0);
++    assert_int_equal(data->pis.id, 1);
++    assert_int_equal(data->test_buf_data.buf_id, htonl(1));
++    assert_int_equal(data->test_buf_data.buf_time, 0);
+ }
+ 
+ static void
+@@ -123,8 +123,8 @@
+     assert_true(packet_id_write(&data->pis, &data->test_buf, true, true));
+     assert_int_equal(data->pis.id, 1);
+     assert_int_equal(data->pis.time, now);
+-    assert_true(data->test_buf_data.buf_id == htonl(1));
+-    assert_true(data->test_buf_data.buf_time == htonl((uint32_t)now));
++    assert_int_equal(data->test_buf_data.buf_id, htonl(1));
++    assert_int_equal(data->test_buf_data.buf_time, htonl((uint32_t)now));
+ }
+ 
+ static void
+@@ -156,8 +156,8 @@
+ 
+     assert_int_equal(data->pis.id, 1);
+     assert_int_equal(data->pis.time, now);
+-    assert_true(data->test_buf_data.buf_id == htonl(1));
+-    assert_true(data->test_buf_data.buf_time == htonl((uint32_t)now));
++    assert_int_equal(data->test_buf_data.buf_id, htonl(1));
++    assert_int_equal(data->test_buf_data.buf_time, htonl((uint32_t)now));
+ }
+ 
+ static void
+diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
+index 463b394..48adb96 100644
+--- a/tests/unit_tests/openvpn/test_provider.c
++++ b/tests/unit_tests/openvpn/test_provider.c
+@@ -287,9 +287,9 @@
+     for (size_t i = 0; i < _countof(pubkeys); i++)
+     {
+         pubkey = load_pubkey(pubkeys[i]);
+-        assert_true(pubkey != NULL);
++        assert_non_null(pubkey);
+         EVP_PKEY *privkey = xkey_load_management_key(NULL, pubkey);
+-        assert_true(privkey != NULL);
++        assert_non_null(privkey);
+ 
+         management->settings.flags = MF_EXTERNAL_KEY | MF_EXTERNAL_KEY_PSSPAD;
+ 
+@@ -384,11 +384,11 @@
+     for (size_t i = 0; i < _countof(pubkeys); i++)
+     {
+         pubkey = load_pubkey(pubkeys[i]);
+-        assert_true(pubkey != NULL);
++        assert_non_null(pubkey);
+ 
+         EVP_PKEY *privkey =
+             xkey_load_generic_key(NULL, (void *)dummy, pubkey, xkey_sign, xkey_free);
+-        assert_true(privkey != NULL);
++        assert_non_null(privkey);
+ 
+         xkey_sign_called = 0;
+         xkey_free_called = 0;
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 950ce26..6fe64b2 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -487,9 +487,8 @@
+     assert_true(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2, &unwrap_metadata,
+                                                wrapped_client_key, &ctx->server_keys.decrypt));
+ 
+-    assert_true(0
+-                == memcmp(ctx->client_key2.keys, unwrapped_client_key2.keys,
+-                          sizeof(ctx->client_key2.keys)));
++    assert_memory_equal(ctx->client_key2.keys, unwrapped_client_key2.keys,
++                        sizeof(ctx->client_key2.keys));
+ }
+ 
+ /**
+@@ -511,9 +510,8 @@
+     assert_true(tls_crypt_v2_unwrap_client_key(&unwrapped_client_key2, &unwrap_metadata, ctx->wkc,
+                                                &ctx->server_keys.decrypt));
+ 
+-    assert_true(0
+-                == memcmp(ctx->client_key2.keys, unwrapped_client_key2.keys,
+-                          sizeof(ctx->client_key2.keys)));
++    assert_memory_equal(ctx->client_key2.keys, unwrapped_client_key2.keys,
++                        sizeof(ctx->client_key2.keys));
+     assert_true(buf_equal(&ctx->metadata, &unwrap_metadata));
+ 
+     struct tls_wrap_ctx wrap_ctx = {
+@@ -563,8 +561,8 @@
+                                                 ctx->wkc, &ctx->server_keys.decrypt));
+ 
+     const struct key2 zero = { 0 };
+-    assert_true(0 == memcmp(&unwrapped_client_key2, &zero, sizeof(zero)));
+-    assert_true(0 == BLEN(&ctx->unwrapped_metadata));
++    assert_memory_equal(&unwrapped_client_key2, &zero, sizeof(zero));
++    assert_int_equal(0, BLEN(&ctx->unwrapped_metadata));
+ }
+ 
+ /**
+@@ -587,8 +585,8 @@
+                                                 ctx->wkc, &ctx->server_keys.decrypt));
+ 
+     const struct key2 zero = { 0 };
+-    assert_true(0 == memcmp(&unwrapped_client_key2, &zero, sizeof(zero)));
+-    assert_true(0 == BLEN(&ctx->unwrapped_metadata));
++    assert_memory_equal(&unwrapped_client_key2, &zero, sizeof(zero));
++    assert_int_equal(0, BLEN(&ctx->unwrapped_metadata));
+ }
+ 
+ static void
 
