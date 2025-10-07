@@ -1,17 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 7 Oct 2025 16:41:32 +0000
-In-Reply-To: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
-References: <gerrit.1757957943000.Ief1495b52ea81cac35d78e40264372d3869423f1@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <8b1670bd5543374ac6d9777e63fab4a01601f831-HTML@...2715...>
+Date: Tue, 7 Oct 2025 16:47:57 +0000
+In-Reply-To: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
+References: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <97f7fd470ca503dde11a19c5d304e7270aa2e8a5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GoDSzBQu/oA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow
- route_ipv6_match_host to be used outside of route.c
+Content-Type: multipart/alternative; boundary="2kcmE0bnIDc="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE server:
+ remove old IP(s) from vhash after sending a messa...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,263 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: d12fk <heiko@...515...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GoDSzBQu/oA=
+--2kcmE0bnIDc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/11=
-91?usp=3Demail )
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-Change subject: Allow route_ipv6_match_host to be used outside of route.c
+cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1253?usp=3Demail )
+
+Change subject: PUSH_UPDATE server: remove old IP(s) from vhash after sendi=
+ng a message containing ifconfig(-ipv6)
 ......................................................................
 
-Allow route_ipv6_match_host to be used outside of route.c
 
-Also adjust style a bit to C99
+Patch Set 1: Code-Review-1
 
-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1191
-Message-Id: <20251007160826.4614-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59243387/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/route.c
-M src/openvpn/route.h
-2 files changed, 23 insertions(+), 14 deletions(-)
+(2 comments)
+
+Patchset:
+
+PS1:
+code duplication
 
 
+File src/openvpn/push_util.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/f66e2fcf_a5816c90?usp=3D=
+email :
+PS1, Line 90: }
+This is code duplication of the finest sort - please do not do that. This f=
+unction is practically identical to `process_incoming_push_update()`, excep=
+t for the "throw signal" branch.  Please do not do that.
+
+If you want to make clear that this is not "incoming" only, rename it to `p=
+rocess_push_update()`.
 
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 05a0c8f..0044794 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -710,25 +710,20 @@
-     return ret;
- }
-
--/* check whether an IPv6 host address is covered by a given route_ipv6
-- * (not the most beautiful implementation in the world, but portable and
-- * "good enough")
-- */
--static bool
--route_ipv6_match_host(const struct route_ipv6 *r6, const struct in6_addr *=
-host)
-+bool
-+ipv6_net_contains_host(const struct in6_addr *network, unsigned int bits, =
-const struct in6_addr *host)
- {
--    unsigned int bits =3D r6->netbits;
--    int i;
--    unsigned int mask;
--
-+    /* not the most beautiful implementation in the world, but portable and
-+     * "good enough" */
-     if (bits > 128)
-     {
-         return false;
-     }
-
-+    int i;
-     for (i =3D 0; bits >=3D 8; i++, bits -=3D 8)
-     {
--        if (r6->network.s6_addr[i] !=3D host->s6_addr[i])
-+        if (network->s6_addr[i] !=3D host->s6_addr[i])
-         {
-             return false;
-         }
-@@ -739,9 +734,9 @@
-         return true;
-     }
-
--    mask =3D 0xff << (8 - bits);
-+    unsigned int mask =3D 0xff << (8 - bits);
-
--    if ((r6->network.s6_addr[i] & mask) =3D=3D (host->s6_addr[i] & mask))
-+    if ((network->s6_addr[i] & mask) =3D=3D (host->s6_addr[i] & mask))
-     {
-         return true;
-     }
-@@ -830,7 +825,8 @@
-                  * avoiding routing loops, so ignore this part and let
-                  * need_remote_ipv6_route always evaluate to false
-                  */
--                if (remote_host_ipv6 && route_ipv6_match_host(r6, remote_h=
-ost_ipv6))
-+                if (remote_host_ipv6
-+                    && ipv6_net_contains_host(&r6->network, r6->netbits, r=
-emote_host_ipv6))
-                 {
-                     need_remote_ipv6_route =3D true;
-                     msg(D_ROUTE,
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index c5006ae..54fa137 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -426,4 +426,17 @@
-     return rl && BOOL_CAST(rl->iflags & RL_DID_REDIRECT_DEFAULT_GATEWAY);
- }
-
-+
-+/**
-+ * check whether an IPv6 host address is covered by a given network/bits
-+ * @param network the network address
-+ * @param bits the network mask
-+ * @param host the host address to be checked if it is contained by the ne=
-twork
-+ *
-+ * @return true if the host address is covered by the network with the giv=
-en
-+ *         network mask by bits
-+ */
-+bool
-+ipv6_net_contains_host(const struct in6_addr *network, unsigned int bits, =
-const struct in6_addr *host);
-+
- #endif /* ifndef ROUTE_H */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264372d3869423f1
-Gerrit-Change-Number: 1191
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde98702a9801616a5f
+Gerrit-Change-Number: 1253
+Gerrit-PatchSet: 1
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Tue, 07 Oct 2025 16:47:57 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---GoDSzBQu/oA=
+--2kcmE0bnIDc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1191?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Allow route_ipv6_match_host to be used outside o=
-f route.c<br><br>Also adjust style a bit to C99<br><br>Change-Id: Ief1495b5=
-2ea81cac35d78e40264372d3869423f1<br>Signed-off-by: Arne Schwabe &lt;arne@...1186...=
-.1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit UR=
-L: https://gerrit.openvpn.net/c/openvpn/+/1191<br>Message-Id: &lt;202510071=
-60826.4614-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/=
-mailman/message/59243387/<br>Signed-off-by: Gert Doering &lt;gert@...2132...=
-.&gt;<br>---<br>M src/openvpn/route.c<br>M src/openvpn/route.h<br>2 files c=
-hanged, 23 insertions(+), 14 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>i=
-ndex 05a0c8f..0044794 100644</span><br><span>--- a/src/openvpn/route.c</spa=
-n><br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -710,25 +710,20 @@=
-</span><br><span>     return ret;</span><br><span> }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-/* check whether an IPv6 h=
-ost address is covered by a given route_ipv6</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- * (not the most beautiful implementation in the wor=
-ld, but portable and</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-* &quot;good enough&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static bool</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-route_ipv6_match_host(c=
-onst struct route_ipv6 *r6, const struct in6_addr *host)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ipv6_net_contains_host(const struct in6_addr *network=
-, unsigned int bits, const struct in6_addr *host)</span><br><span> {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int bits =3D r6=
--&gt;netbits;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int =
-i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int ma=
-sk;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    /* not the most beautiful impleme=
-ntation in the world, but portable and</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+     * &quot;good enough&quot; */</span><br><span>     i=
-f (bits &gt; 128)</span><br><span>     {</span><br><span>         return fa=
-lse;</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    int i;</span><br><span>     for (i =3D 0; bit=
-s &gt;=3D 8; i++, bits -=3D 8)</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (r6-&gt;network.s6_addr[i] !=3D =
-host-&gt;s6_addr[i])</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        if (network-&gt;s6_addr[i] !=3D host-&gt;s6_addr[i])</span><br><sp=
-an>         {</span><br><span>             return false;</span><br><span>  =
-       }</span><br><span>@@ -739,9 +734,9 @@</span><br><span>         retur=
-n true;</span><br><span>     }</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    mask =3D 0xff &lt;&lt; (8 - bits);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int mask =3D 0xf=
-f &lt;&lt; (8 - bits);</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if ((r6-&gt;network.s6_addr[i] &amp; mask) =3D=3D (h=
-ost-&gt;s6_addr[i] &amp; mask))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    if ((network-&gt;s6_addr[i] &amp; mask) =3D=3D (host-&gt;s6=
-_addr[i] &amp; mask))</span><br><span>     {</span><br><span>         retur=
-n true;</span><br><span>     }</span><br><span>@@ -830,7 +825,8 @@</span><b=
-r><span>                  * avoiding routing loops, so ignore this part and=
- let</span><br><span>                  * need_remote_ipv6_route always eval=
-uate to false</span><br><span>                  */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                if (remote_host_ipv6 &amp;&amp=
-; route_ipv6_match_host(r6, remote_host_ipv6))</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                if (remote_host_ipv6</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                    &amp;&amp; =
-ipv6_net_contains_host(&amp;r6-&gt;network, r6-&gt;netbits, remote_host_ipv=
-6))</span><br><span>                 {</span><br><span>                    =
- need_remote_ipv6_route =3D true;</span><br><span>                     msg(=
-D_ROUTE,</span><br><span>diff --git a/src/openvpn/route.h b/src/openvpn/rou=
-te.h</span><br><span>index c5006ae..54fa137 100644</span><br><span>--- a/sr=
-c/openvpn/route.h</span><br><span>+++ b/src/openvpn/route.h</span><br><span=
->@@ -426,4 +426,17 @@</span><br><span>     return rl &amp;&amp; BOOL_CAST(r=
-l-&gt;iflags &amp; RL_DID_REDIRECT_DEFAULT_GATEWAY);</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * check whether an IPv6 host address is=
- covered by a given network/bits</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param network the network address</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * @param bits the network mask</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * @param host the host address =
-to be checked if it is contained by the network</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * @return true if the host address is covered by the network wi=
-th the given</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
-    network mask by bits</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ipv6_net_contains_host(con=
-st struct in6_addr *network, unsigned int bits, const struct in6_addr *host=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- #endif /* ifndef ROUTE_H */</span><br><span></span><br></pre><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail">cha=
-nge 1191</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1191?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, mrbff, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1253?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">code dupli=
+cation</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/o=
+penvpn/push_util.c:</p><ul style=3D"list-style: none; padding: 0;"><li styl=
+e=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1253/comment/f66e2fcf_a5816c90=
+?usp=3Demail">Patch Set #1, Line 90:</a> <code style=3D"font-family:monospa=
+ce,monospace">}</code></p><p class=3D"blocks" style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">This is code duplication of the finest sort - pl=
+ease do not do that. This function is practically identical to `process_inc=
+oming_push_update()`, except for the &quot;throw signal&quot; branch.  Plea=
+se do not do that.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; w=
+ord-wrap: break-word;">If you want to make clear that this is not &quot;inc=
+oming&quot; only, rename it to `process_push_update()`.</p></li></ul></li><=
+/ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253=
+?usp=3Demail">change 1253</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ief1495b52ea81cac35d78e40264=
-372d3869423f1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1191 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde987=
+02a9801616a5f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1253 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 07 Oct 2025 16:47:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---GoDSzBQu/oA=--
+--2kcmE0bnIDc=--
 
