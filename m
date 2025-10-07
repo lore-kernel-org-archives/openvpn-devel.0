@@ -1,16 +1,10 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 7 Oct 2025 12:18:08 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue,  7 Oct 2025 14:27:41 +0200
+Message-ID: <20251007122747.16064-1-gert@...1296...>
 In-Reply-To: <gerrit.1759763846000.I20205ebd06bbf7cbee8c9be93f399961f5b74fcc@...2715...>
 References: <gerrit.1759763846000.I20205ebd06bbf7cbee8c9be93f399961f5b74fcc@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <9d162a89341704ab8b249d1a9b7723ce8bc8ae9e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ncjDgT6VuWw="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: sitnl: Clean up type
- handling
+Subject: [Openvpn-devel] [PATCH v5] sitnl: Clean up type handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,105 +13,309 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---ncjDgT6VuWw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+- Make some type casts explicit. Due to the types used
+  in our networking API and the netlink APIs respectively
+  this can't be avoided.
+- In many cases just use correct types from the start, e.g.
+  where we use constants anyway.
 
-ordex has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1251?usp=3Demail )
+Change-Id: I20205ebd06bbf7cbee8c9be93f399961f5b74fcc
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1251
+---
 
-Change subject: sitnl: Clean up type handling
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1251
+This mail reflects revision 5 of this Change.
 
-Patch Set 5: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
-(1 comment)
-
-Patchset:
-
-PS5:
-we have added more ASSERTS, but they should all trigger during development.
-At least now, we have all types properly inherited.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I20205ebd06bbf7cbee8c9be93f399961f5b74fcc
-Gerrit-Change-Number: 1251
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 07 Oct 2025 12:18:08 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---ncjDgT6VuWw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1251?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">we have add=
-ed more ASSERTS, but they should all trigger during development.<br>At leas=
-t now, we have all types properly inherited.</p></li></ul></li></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demai=
-l">change 1251</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
-p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
- itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
-op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1251?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I20205ebd06bbf7cbee8c9be93f3=
-99961f5b74fcc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1251 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 07 Oct 2025 12:18:08=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---ncjDgT6VuWw=--
+        
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index 1815faf..b3adb16 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -59,9 +59,9 @@
+         _nest;                                          \
+     })
+ 
+-#define SITNL_NEST_END(_msg, _nest)                                      \
+-    {                                                                    \
+-        _nest->rta_len = (void *)sitnl_nlmsg_tail(_msg) - (void *)_nest; \
++#define SITNL_NEST_END(_msg, _nest)                                                        \
++    {                                                                                      \
++        _nest->rta_len = (unsigned short)((void *)sitnl_nlmsg_tail(_msg) - (void *)_nest); \
+     }
+ 
+ /* This function was originally implemented as a macro, but compiling with
+@@ -131,29 +131,24 @@
+     inet_address_t gw;
+ };
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ /**
+  * Helper function used to easily add attributes to a rtnl message
+  */
+ static int
+-sitnl_addattr(struct nlmsghdr *n, int maxlen, int type, const void *data, int alen)
++sitnl_addattr(struct nlmsghdr *n, size_t maxlen, unsigned short type, const void *data, size_t alen)
+ {
+-    int len = RTA_LENGTH(alen);
+-    struct rtattr *rta;
++    size_t len = RTA_LENGTH(alen);
+ 
+-    if ((int)(NLMSG_ALIGN(n->nlmsg_len) + RTA_ALIGN(len)) > maxlen)
++    if ((NLMSG_ALIGN(n->nlmsg_len) + RTA_ALIGN(len)) > maxlen)
+     {
+-        msg(M_WARN, "%s: rtnl: message exceeded bound of %d", __func__, maxlen);
++        msg(M_WARN, "%s: rtnl: message exceeded bound of %zu", __func__, maxlen);
+         return -EMSGSIZE;
+     }
+ 
+-    rta = sitnl_nlmsg_tail(n);
++    struct rtattr *rta = sitnl_nlmsg_tail(n);
+     rta->rta_type = type;
+-    rta->rta_len = len;
++    ASSERT(len <= USHRT_MAX);
++    rta->rta_len = (unsigned short)len;
+ 
+     if (!data)
+     {
+@@ -252,11 +247,10 @@
+ sitnl_send(struct nlmsghdr *payload, pid_t peer, unsigned int groups, sitnl_parse_reply_cb cb,
+            void *arg_cb)
+ {
+-    int len, rem_len, fd, ret, rcv_len;
++    int fd, ret;
+     struct sockaddr_nl nladdr;
+     struct nlmsgerr *err;
+     struct nlmsghdr *h;
+-    unsigned int seq;
+     char buf[1024 * 16];
+     struct iovec iov = {
+         .iov_base = payload,
+@@ -275,7 +269,11 @@
+     nladdr.nl_pid = peer;
+     nladdr.nl_groups = groups;
+ 
+-    payload->nlmsg_seq = seq = time(NULL);
++    /* NB: We currently do not verify seq and pid on answers.
++     * If we ever want to start with that we probably need to come up
++     * with something better than "seconds since epoch"...
++     */
++    payload->nlmsg_seq = (uint32_t)time(NULL);
+ 
+     /* no need to send reply */
+     if (!cb)
+@@ -290,16 +288,14 @@
+         return -errno;
+     }
+ 
+-    ret = sitnl_bind(fd, 0);
+-    if (ret < 0)
++    if (sitnl_bind(fd, 0) < 0)
+     {
+         msg(M_WARN | M_ERRNO, "%s: can't bind rtnl socket", __func__);
+         ret = -errno;
+         goto out;
+     }
+ 
+-    ret = sendmsg(fd, &nlmsg, 0);
+-    if (ret < 0)
++    if (sendmsg(fd, &nlmsg, 0) < 0)
+     {
+         msg(M_WARN | M_ERRNO, "%s: rtnl: error on sendmsg()", __func__);
+         ret = -errno;
+@@ -318,8 +314,8 @@
+          */
+         msg(D_RTNL, "%s: checking for received messages", __func__);
+         iov.iov_len = sizeof(buf);
+-        rcv_len = recvmsg(fd, &nlmsg, 0);
+-        msg(D_RTNL, "%s: rtnl: received %d bytes", __func__, rcv_len);
++        ssize_t rcv_len = recvmsg(fd, &nlmsg, 0);
++        msg(D_RTNL, "%s: rtnl: received %zd bytes", __func__, rcv_len);
+         if (rcv_len < 0)
+         {
+             if ((errno == EINTR) || (errno == EAGAIN))
+@@ -350,8 +346,8 @@
+         h = (struct nlmsghdr *)buf;
+         while (rcv_len >= (int)sizeof(*h))
+         {
+-            len = h->nlmsg_len;
+-            rem_len = len - sizeof(*h);
++            uint32_t len = h->nlmsg_len;
++            ssize_t rem_len = len - sizeof(*h);
+ 
+             if ((rem_len < 0) || (len > rcv_len))
+             {
+@@ -361,7 +357,7 @@
+                     ret = -EIO;
+                     goto out;
+                 }
+-                msg(M_WARN, "%s: malformed message: len=%d", __func__, len);
++                msg(M_WARN, "%s: malformed message: len=%u", __func__, len);
+                 ret = -EIO;
+                 goto out;
+             }
+@@ -388,7 +384,7 @@
+             if (h->nlmsg_type == NLMSG_ERROR)
+             {
+                 err = (struct nlmsgerr *)NLMSG_DATA(h);
+-                if (rem_len < (int)sizeof(struct nlmsgerr))
++                if (rem_len < sizeof(struct nlmsgerr))
+                 {
+                     msg(M_WARN, "%s: ERROR truncated", __func__);
+                     ret = -EIO;
+@@ -443,7 +439,7 @@
+ 
+         if (rcv_len)
+         {
+-            msg(M_WARN, "%s: rtnl: %d not parsed bytes", __func__, rcv_len);
++            msg(M_WARN, "%s: rtnl: %zd not parsed bytes", __func__, rcv_len);
+             ret = -1;
+             goto out;
+         }
+@@ -456,7 +452,7 @@
+ 
+ typedef struct
+ {
+-    int addr_size;
++    size_t addr_size;
+     inet_address_t gw;
+     char iface[IFNAMSIZ];
+     bool default_only;
+@@ -469,7 +465,7 @@
+     route_res_t *res = arg;
+     struct rtmsg *r = NLMSG_DATA(n);
+     struct rtattr *rta = RTM_RTA(r);
+-    int len = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
++    size_t len = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
+     unsigned int table, ifindex = 0;
+     void *gw = NULL;
+ 
+@@ -547,7 +543,8 @@
+     req.n.nlmsg_type = RTM_GETROUTE;
+     req.n.nlmsg_flags = NLM_F_REQUEST;
+ 
+-    req.r.rtm_family = af_family;
++    ASSERT(af_family <= UCHAR_MAX);
++    req.r.rtm_family = (unsigned char)af_family;
+ 
+     switch (af_family)
+     {
+@@ -761,7 +758,7 @@
+ }
+ 
+ static int
+-sitnl_addr_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
++sitnl_addr_set(uint16_t cmd, uint16_t flags, int ifindex, sa_family_t af_family,
+                const inet_address_t *local, const inet_address_t *remote, int prefixlen)
+ {
+     struct sitnl_addr_req req;
+@@ -775,7 +772,8 @@
+     req.n.nlmsg_flags = NLM_F_REQUEST | flags;
+ 
+     req.i.ifa_index = ifindex;
+-    req.i.ifa_family = af_family;
++    ASSERT(af_family <= UINT8_MAX);
++    req.i.ifa_family = (uint8_t)af_family;
+ 
+     switch (af_family)
+     {
+@@ -797,7 +795,8 @@
+     {
+         prefixlen = size * 8;
+     }
+-    req.i.ifa_prefixlen = prefixlen;
++    ASSERT(prefixlen <= UINT8_MAX);
++    req.i.ifa_prefixlen = (uint8_t)prefixlen;
+ 
+     if (remote)
+     {
+@@ -890,9 +889,9 @@
+ }
+ 
+ static int
+-sitnl_route_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family, const void *dst,
++sitnl_route_set(uint16_t cmd, uint16_t flags, int ifindex, sa_family_t af_family, const void *dst,
+                 int prefixlen, const void *gw, enum rt_class_t table, int metric,
+-                enum rt_scope_t scope, int protocol, int type)
++                enum rt_scope_t scope, unsigned char protocol, unsigned char type)
+ {
+     struct sitnl_route_req req;
+     int ret = -1, size;
+@@ -917,15 +916,17 @@
+     req.n.nlmsg_type = cmd;
+     req.n.nlmsg_flags = NLM_F_REQUEST | flags;
+ 
+-    req.r.rtm_family = af_family;
+-    req.r.rtm_scope = scope;
++    ASSERT(af_family <= UCHAR_MAX);
++    req.r.rtm_family = (unsigned char)af_family;
++    req.r.rtm_scope = (unsigned char)scope;
+     req.r.rtm_protocol = protocol;
+     req.r.rtm_type = type;
+-    req.r.rtm_dst_len = prefixlen;
++    ASSERT(prefixlen >= 0 && prefixlen <= UCHAR_MAX);
++    req.r.rtm_dst_len = (unsigned char)prefixlen;
+ 
+-    if (table < 256)
++    if (table <= UCHAR_MAX)
+     {
+-        req.r.rtm_table = table;
++        req.r.rtm_table = (unsigned char)table;
+     }
+     else
+     {
+@@ -1348,7 +1349,7 @@
+ }
+ 
+ static int
+-sitnl_parse_rtattr_flags(struct rtattr *tb[], int max, struct rtattr *rta, int len,
++sitnl_parse_rtattr_flags(struct rtattr *tb[], size_t max, struct rtattr *rta, size_t len,
+                          unsigned short flags)
+ {
+     unsigned short type;
+@@ -1369,14 +1370,14 @@
+ 
+     if (len)
+     {
+-        msg(D_ROUTE, "%s: %d bytes not parsed! (rta_len=%d)", __func__, len, rta->rta_len);
++        msg(D_ROUTE, "%s: %zu bytes not parsed! (rta_len=%u)", __func__, len, rta->rta_len);
+     }
+ 
+     return 0;
+ }
+ 
+ static int
+-sitnl_parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len)
++sitnl_parse_rtattr(struct rtattr *tb[], size_t max, struct rtattr *rta, size_t len)
+ {
+     return sitnl_parse_rtattr_flags(tb, max, rta, len, 0);
+ }
+@@ -1474,10 +1475,6 @@
+     return sitnl_send(&req.n, 0, 0, NULL, NULL);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #endif /* !ENABLE_SITNL */
+ 
+ #endif /* TARGET_LINUX */
 
