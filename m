@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 7 Oct 2025 20:17:40 +0000
+Date: Tue, 7 Oct 2025 20:17:42 +0000
 In-Reply-To: <gerrit.1759239739000.I937105abeb5e8f796bf6bbe8432972adb60b3e2a@...2715...>
 References: <gerrit.1759239739000.I937105abeb5e8f796bf6bbe8432972adb60b3e2a@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <45c700056c580c0b5e36bb1b22f8b3310632401c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <45c700056c580c0b5e36bb1b22f8b3310632401c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="42A/DmPMwUM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Q3avMf+QkD8="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: unit_tests: Remove
  useless wrapping for argv/buffer tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---42A/DmPMwUM=
+--Q3avMf+QkD8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1243?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+43?usp=3Demail )
 
 Change subject: unit_tests: Remove useless wrapping for argv/buffer tests
 ......................................................................
@@ -56,7 +52,7 @@ M tests/unit_tests/openvpn/test_argv.c
 3 files changed, 10 insertions(+), 14 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/43/1243/3
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index be66357..aeef480 100644
@@ -164,7 +160,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1243?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I937105abeb5e8f796bf6bbe8432972adb60b3e2a
@@ -175,117 +171,113 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---42A/DmPMwUM=
+--Q3avMf+QkD8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1243?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">unit_tests: Remove useless wrapping=
- for argv/buffer tests<br><br>If not using mock() or check_expected(), and<=
-br>not linking the original function, then there<br>is no need for wrapping=
- support.<br><br>Change-Id: I937105abeb5e8f796bf6bbe8432972adb60b3e2a<br>Si=
-gned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert D=
-oering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/=
-openvpn/+/1243<br>Message-Id: &lt;20251007185217.19381-1-gert@...1296...&gt=
-;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59243508/<br>Si=
-gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.tx=
-t<br>M tests/unit_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/t=
-est_argv.c<br>3 files changed, 10 insertions(+), 14 deletions(-)<br><br></p=
-re><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chang=
-es/43/1243/3</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br=
-><span>index be66357..aeef480 100644</span><br><span>--- a/CMakeLists.txt</=
-span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -654,6 +654,7 @@</sp=
-an><br><span>     endif ()</span><br><span> </span><br><span>     set(unit_=
-tests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;=
-test_argv&quot;</span><br><span>         &quot;test_auth_token&quot;</span>=
-<br><span>         &quot;test_buffer&quot;</span><br><span>         &quot;t=
-est_crypto&quot;</span><br><span>@@ -684,7 +685,6 @@</span><br><span>     #=
- Clang-cl (which is also MSVC) is wrongly detected to support wrap</span><b=
-r><span>     if (NOT MSVC AND &quot;${LD_SUPPORTS_WRAP}&quot;)</span><br><s=
-pan>         list(APPEND unit_tests</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            &quot;test_argv&quot;</span><br><span>           =
-  &quot;test_tls_crypt&quot;</span><br><span>             )</span><br><span=
->     endif ()</span><br><span>@@ -887,13 +887,10 @@</span><br><span>      =
-   src/openvpn/list.c</span><br><span>         )</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    if (TARGET test_argv)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        target_link_option=
-s(test_argv PRIVATE -Wl,--wrap=3Dparse_line)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        target_sources(test_argv PRIVATE</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            tests/unit_tests/open=
-vpn/mock_get_random.c</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            src/openvpn/argv.c</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            )</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ta=
-rget_sources(test_argv PRIVATE</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        tests/unit_tests/openvpn/mock_get_random.c</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/argv.c</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span>=
- </span><br><span>     if (TARGET test_cryptoapi)</span><br><span>         =
-target_sources(test_cryptoapi PRIVATE</span><br><span>diff --git a/tests/un=
-it_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><=
-br><span>index ec8cc69..f7b1bc8 100644</span><br><span>--- a/tests/unit_tes=
-ts/openvpn/Makefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makef=
-ile.am</span><br><span>@@ -4,12 +4,11 @@</span><br><span> </span><br><span>=
- AM_TESTSUITE_SUMMARY_HEADER =3D &#39; for $(PACKAGE_STRING) Unit-Tests&#39=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-te=
-st_binaries =3D crypto_testdriver packet_id_testdriver auth_token_testdrive=
-r \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_binaries =
-=3D argv_testdriver buffer_testdriver crypto_testdriver packet_id_testdrive=
-r auth_token_testdriver \</span><br><span> 	ncp_testdriver misc_testdriver =
-pkt_testdriver ssl_testdriver \</span><br><span> 	user_pass_testdriver push=
-_update_msg_testdriver provider_testdriver socket_testdriver</span><br><spa=
-n> </span><br><span> if HAVE_LD_WRAP_SUPPORT</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-test_binaries +=3D argv_testdriver buffer_testdriver=
-</span><br><span> if !WIN32</span><br><span> test_binaries +=3D tls_crypt_t=
-estdriver</span><br><span> endif</span><br><span>@@ -36,7 +35,7 @@</span><b=
-r><span> endif</span><br><span> </span><br><span> argv_testdriver_CFLAGS  =
-=3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-argv_testdriver_LDFLAGS =
-=3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn -Wl,--wrap=3Dparse_line</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+argv_testdriver_LDFLAGS =
-=3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn</span><br><span> argv_testdr=
-iver_SOURCES =3D test_argv.c \</span><br><span> 	mock_msg.c mock_msg.h test=
-_common.h \</span><br><span> 	mock_get_random.c \</span><br><span>@@ -46,7 =
-+45,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/argv.c</span><br><span=
-> </span><br><span> buffer_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openv=
-pn -I$(top_srcdir)/src/compat @TEST_CFLAGS@</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-buffer_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_=
-srcdir)/src/openvpn -Wl,--wrap=3Dparse_line</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+buffer_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(to=
-p_srcdir)/src/openvpn</span><br><span> buffer_testdriver_SOURCES =3D test_b=
-uffer.c \</span><br><span> 	mock_msg.c mock_msg.h test_common.h \</span><br=
-><span> 	mock_get_random.c \</span><br><span>diff --git a/tests/unit_tests/=
-openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c</span><br><span>=
-index a04fabc..25c0371 100644</span><br><span>--- a/tests/unit_tests/openvp=
-n/test_argv.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_argv.c</s=
-pan><br><span>@@ -22,8 +22,8 @@</span><br><span> #define SCRIPT_CMD &quot;\=
-&quot;&quot; PATH1 PATH2 &quot;\&quot;&quot; PARAM1 &quot;\&quot;&quot; PAR=
-AM2 &quot;\&quot;&quot;</span><br><span> </span><br><span> int</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-__wrap_parse_line(const char *line=
-, char **p, const int n, const char *file, const int line_num,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                  msglvl_t msgleve=
-l, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+parse_line(const char *line, char **p, const int n, const char *file, c=
-onst int line_num,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-          msglvl_t msglevel, struct gc_arena *gc)</span><br><span> {</span>=
-<br><span>     p[0] =3D PATH1 PATH2;</span><br><span>     p[1] =3D PARAM1;<=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1243?usp=3Demail">change 1243</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1243?usp=3Demail"/><meta itemprop=3D"name" content=3D=
-"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1243?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">unit_tests: Remove useless wrapping for argv/buf=
+fer tests<br><br>If not using mock() or check_expected(), and<br>not linkin=
+g the original function, then there<br>is no need for wrapping support.<br>=
+<br>Change-Id: I937105abeb5e8f796bf6bbe8432972adb60b3e2a<br>Signed-off-by: =
+Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;ge=
+rt@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/124=
+3<br>Message-Id: &lt;20251007185217.19381-1-gert@...1296...&gt;<br>URL: htt=
+ps://sourceforge.net/p/openvpn/mailman/message/59243508/<br>Signed-off-by: =
+Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M tests/=
+unit_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_argv.c<br=
+>3 files changed, 10 insertions(+), 14 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index be663=
+57..aeef480 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -654,6 +654,7 @@</span><br><span>     =
+endif ()</span><br><span> </span><br><span>     set(unit_tests</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        &quot;test_argv&quot;</s=
+pan><br><span>         &quot;test_auth_token&quot;</span><br><span>        =
+ &quot;test_buffer&quot;</span><br><span>         &quot;test_crypto&quot;</=
+span><br><span>@@ -684,7 +685,6 @@</span><br><span>     # Clang-cl (which i=
+s also MSVC) is wrongly detected to support wrap</span><br><span>     if (N=
+OT MSVC AND &quot;${LD_SUPPORTS_WRAP}&quot;)</span><br><span>         list(=
+APPEND unit_tests</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        &quot;test_argv&quot;</span><br><span>             &quot;test_tls_c=
+rypt&quot;</span><br><span>             )</span><br><span>     endif ()</sp=
+an><br><span>@@ -887,13 +887,10 @@</span><br><span>         src/openvpn/lis=
+t.c</span><br><span>         )</span><br><span> </span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    if (TARGET test_argv)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        target_link_options(test_argv PRIVA=
+TE -Wl,--wrap=3Dparse_line)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        target_sources(test_argv PRIVATE</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            tests/unit_tests/openvpn/mock_get_rand=
+om.c</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            src/o=
+penvpn/argv.c</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    )</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    endif ()</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_sources(test=
+_argv PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  tests/unit_tests/openvpn/mock_get_random.c</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        src/openvpn/argv.c</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span> </span><br><sp=
+an>     if (TARGET test_cryptoapi)</span><br><span>         target_sources(=
+test_cryptoapi PRIVATE</span><br><span>diff --git a/tests/unit_tests/openvp=
+n/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>index =
+ec8cc69..f7b1bc8 100644</span><br><span>--- a/tests/unit_tests/openvpn/Make=
+file.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span><b=
+r><span>@@ -4,12 +4,11 @@</span><br><span> </span><br><span> AM_TESTSUITE_S=
+UMMARY_HEADER =3D &#39; for $(PACKAGE_STRING) Unit-Tests&#39;</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-test_binaries =3D=
+ crypto_testdriver packet_id_testdriver auth_token_testdriver \</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+test_binaries =3D argv_testdriv=
+er buffer_testdriver crypto_testdriver packet_id_testdriver auth_token_test=
+driver \</span><br><span> 	ncp_testdriver misc_testdriver pkt_testdriver ss=
+l_testdriver \</span><br><span> 	user_pass_testdriver push_update_msg_testd=
+river provider_testdriver socket_testdriver</span><br><span> </span><br><sp=
+an> if HAVE_LD_WRAP_SUPPORT</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-test_binaries +=3D argv_testdriver buffer_testdriver</span><br><span>=
+ if !WIN32</span><br><span> test_binaries +=3D tls_crypt_testdriver</span><=
+br><span> endif</span><br><span>@@ -36,7 +35,7 @@</span><br><span> endif</s=
+pan><br><span> </span><br><span> argv_testdriver_CFLAGS  =3D -I$(top_srcdir=
+)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-argv_testdriver_LDFLAGS =3D @TEST_LDFLAGS@=
+ -L$(top_srcdir)/src/openvpn -Wl,--wrap=3Dparse_line</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+argv_testdriver_LDFLAGS =3D @TEST_LDFLAGS=
+@ -L$(top_srcdir)/src/openvpn</span><br><span> argv_testdriver_SOURCES =3D =
+test_argv.c \</span><br><span> 	mock_msg.c mock_msg.h test_common.h \</span=
+><br><span> 	mock_get_random.c \</span><br><span>@@ -46,7 +45,7 @@</span><b=
+r><span> 	$(top_srcdir)/src/openvpn/argv.c</span><br><span> </span><br><spa=
+n> buffer_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir=
+)/src/compat @TEST_CFLAGS@</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-buffer_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openv=
+pn -Wl,--wrap=3Dparse_line</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+buffer_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/ope=
+nvpn</span><br><span> buffer_testdriver_SOURCES =3D test_buffer.c \</span><=
+br><span> 	mock_msg.c mock_msg.h test_common.h \</span><br><span> 	mock_get=
+_random.c \</span><br><span>diff --git a/tests/unit_tests/openvpn/test_argv=
+.c b/tests/unit_tests/openvpn/test_argv.c</span><br><span>index a04fabc..25=
+c0371 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_argv.c</sp=
+an><br><span>+++ b/tests/unit_tests/openvpn/test_argv.c</span><br><span>@@ =
+-22,8 +22,8 @@</span><br><span> #define SCRIPT_CMD &quot;\&quot;&quot; PATH=
+1 PATH2 &quot;\&quot;&quot; PARAM1 &quot;\&quot;&quot; PARAM2 &quot;\&quot;=
+&quot;</span><br><span> </span><br><span> int</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-__wrap_parse_line(const char *line, char **p, const=
+ int n, const char *file, const int line_num,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                  msglvl_t msglevel, struct gc_aren=
+a *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+parse_line(co=
+nst char *line, char **p, const int n, const char *file, const int line_num=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           msglvl_=
+t msglevel, struct gc_arena *gc)</span><br><span> {</span><br><span>     p[=
+0] =3D PATH1 PATH2;</span><br><span>     p[1] =3D PARAM1;</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1243?usp=3Demail">change 1243</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1243?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I937105abeb5e8f796bf6bbe8432=
@@ -303,5 +295,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---42A/DmPMwUM=--
+--Q3avMf+QkD8=--
 
