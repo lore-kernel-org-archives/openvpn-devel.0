@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 10:44:06 +0000
+Date: Wed, 8 Oct 2025 10:44:04 +0000
 In-Reply-To: <gerrit.1759330832000.I3724660bf0f8336ee58c172acfb7c4f38e457393@...2715...>
 References: <gerrit.1759330832000.I3724660bf0f8336ee58c172acfb7c4f38e457393@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <fca1534d4da6db887bbc2a24fbe86630a82de687-HTML@...2715...>
+Message-ID: <fca1534d4da6db887bbc2a24fbe86630a82de687-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="69mFTfuwtP4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="gq4xzZXLzxE="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: Fix
  buf_parse eating input
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---69mFTfuwtP4=
+--gq4xzZXLzxE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-46?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2, Code-Review+2 by plaisthos
+
 
 Change subject: buffer: Fix buf_parse eating input
 ......................................................................
@@ -59,7 +63,7 @@ M tests/unit_tests/openvpn/test_buffer.c
 3 files changed, 73 insertions(+), 7 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1246/2
 
 diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
 index c0b85b2..28de00f 100644
@@ -100,7 +104,7 @@ index 1405667..148cee0 100644
 +++ b/src/openvpn/buffer.h
 @@ -771,7 +771,7 @@
  }
-
+=20
  static inline int
 -buf_read_u8(struct buffer *buf)
 +buf_peek_u8(struct buffer *buf)
@@ -207,7 +211,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I3724660bf0f8336ee58c172acfb7c4f38e457393
@@ -218,167 +222,171 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---69mFTfuwtP4=
+--gq4xzZXLzxE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1246?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">buffer: Fix buf_parse eating input<br><br>When p=
-arsing a &quot;line&quot; that is longer than the<br>available line buffer,=
- then buf_parse was<br>eating up to 2 characters. It advanced past<br>them =
-but they were not part of the output.<br><br>This can lead to unexpected re=
-sults if buf_parse<br>is used in a while loop on unrestricted input,<br>lik=
-e e.g. when reading configs (see in_src_get()<br>used for check_inline_file=
-_via_buf()).<br><br>Change-Id: I3724660bf0f8336ee58c172acfb7c4f38e457393<br=
->Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Ger=
-t Doering &lt;gert@...1296...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvp=
-n@...1227...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1246=
-<br>Message-Id: &lt;20251008103001.7696-1-gert@...1296...&gt;<br>URL: https=
-://sourceforge.net/p/openvpn/mailman/message/59243829/<br>Signed-off-by: Ge=
-rt Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/buffer.c<br>M sr=
-c/openvpn/buffer.h<br>M tests/unit_tests/openvpn/test_buffer.c<br>3 files c=
-hanged, 73 insertions(+), 7 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><span=
->index c0b85b2..28de00f 100644</span><br><span>--- a/src/openvpn/buffer.c</=
-span><br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -832,19 +832,2=
-4 @@</span><br><span> </span><br><span>     do</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        c =3D buf_read_u8(b=
-uf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c =3D b=
-uf_peek_u8(buf);</span><br><span>         if (c &lt; 0)</span><br><span>   =
-      {</span><br><span>             eol =3D true;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            line[n] =3D 0;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span>  =
-       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c=
- &lt;=3D 0 || c =3D=3D delim)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        if (c =3D=3D delim)</span><br><span>         {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            c =3D 0;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            buf_advance(buf, 1)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            line[n=
-] =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- break;</span><br><span>         }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        if (n &gt;=3D size)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        if (n &gt;=3D (size - 1))</span><br><span>    =
-     {</span><br><span>             break;</span><br><span>         }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_advance(buf, =
-1);</span><br><span>         line[n++] =3D (char)c;</span><br><span>     } =
-while (c);</span><br><span> </span><br><span>diff --git a/src/openvpn/buffe=
-r.h b/src/openvpn/buffer.h</span><br><span>index 1405667..148cee0 100644</s=
-pan><br><span>--- a/src/openvpn/buffer.h</span><br><span>+++ b/src/openvpn/=
-buffer.h</span><br><span>@@ -771,7 +771,7 @@</span><br><span> }</span><br><=
-span> </span><br><span> static inline int</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-buf_read_u8(struct buffer *buf)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+buf_peek_u8(struct buffer *buf)</span><br=
-><span> {</span><br><span>     int ret;</span><br><span>     if (BLEN(buf) =
-&lt; 1)</span><br><span>@@ -779,7 +779,17 @@</span><br><span>         retur=
-n -1;</span><br><span>     }</span><br><span>     ret =3D *BPTR(buf);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_advance(buf, 1);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+static inline int</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+buf_read_u8(struct buffer *buf)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    int ret =3D buf_peek_u8(buf);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (ret &gt;=3D 0)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        buf_advance(buf, 1);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span>     return ret;</span><br><span> }</=
-span><br><span> </span><br><span>diff --git a/tests/unit_tests/openvpn/test=
-_buffer.c b/tests/unit_tests/openvpn/test_buffer.c</span><br><span>index c8=
-6c19e..92c4c65 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_b=
-uffer.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_buffer.c</span>=
-<br><span>@@ -450,6 +450,56 @@</span><br><span>     gc_free(&amp;gc);</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* for building long texts */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#define A_TIMES_256 &quot;AAAAAAAAAAAAAAAAAAAAAAAAAAA=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2, Code-Review+2 by plaisthos</p><pre class=3D"blocks"=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">buffer:=
+ Fix buf_parse eating input<br><br>When parsing a &quot;line&quot; that is =
+longer than the<br>available line buffer, then buf_parse was<br>eating up t=
+o 2 characters. It advanced past<br>them but they were not part of the outp=
+ut.<br><br>This can lead to unexpected results if buf_parse<br>is used in a=
+ while loop on unrestricted input,<br>like e.g. when reading configs (see i=
+n_src_get()<br>used for check_inline_file_via_buf()).<br><br>Change-Id: I37=
+24660bf0f8336ee58c172acfb7c4f38e457393<br>Signed-off-by: Frank Lichtenheld =
+&lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<=
+br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Gerrit URL: ht=
+tps://gerrit.openvpn.net/c/openvpn/+/1246<br>Message-Id: &lt;20251008103001=
+.7696-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailm=
+an/message/59243829/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;=
+<br>---<br>M src/openvpn/buffer.c<br>M src/openvpn/buffer.h<br>M tests/unit=
+_tests/openvpn/test_buffer.c<br>3 files changed, 73 insertions(+), 7 deleti=
+ons(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/46/1246/2</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffer.c b/s=
+rc/openvpn/buffer.c</span><br><span>index c0b85b2..28de00f 100644</span><br=
+><span>--- a/src/openvpn/buffer.c</span><br><span>+++ b/src/openvpn/buffer.=
+c</span><br><span>@@ -832,19 +832,24 @@</span><br><span> </span><br><span> =
+    do</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        c =3D buf_read_u8(buf);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        c =3D buf_peek_u8(buf);</span><br><span>       =
+  if (c &lt; 0)</span><br><span>         {</span><br><span>             eol=
+ =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   line[n] =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          break;</span><br><span>         }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        if (c &lt;=3D 0 || c =3D=3D delim)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (c =3D=3D delim)</s=
+pan><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            c =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            buf_advance(buf, 1);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            line[n] =3D 0;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            break;</span><br><span>         }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (n &gt;=3D size)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (n &gt;=
+=3D (size - 1))</span><br><span>         {</span><br><span>             bre=
+ak;</span><br><span>         }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        buf_advance(buf, 1);</span><br><span>         line[n++] =
+=3D (char)c;</span><br><span>     } while (c);</span><br><span> </span><br>=
+<span>diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h</span><br><s=
+pan>index 1405667..148cee0 100644</span><br><span>--- a/src/openvpn/buffer.=
+h</span><br><span>+++ b/src/openvpn/buffer.h</span><br><span>@@ -771,7 +771=
+,7 @@</span><br><span> }</span><br><span> </span><br><span> static inline i=
+nt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-buf_read_u8(struct =
+buffer *buf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+buf_pee=
+k_u8(struct buffer *buf)</span><br><span> {</span><br><span>     int ret;</=
+span><br><span>     if (BLEN(buf) &lt; 1)</span><br><span>@@ -779,7 +779,17=
+ @@</span><br><span>         return -1;</span><br><span>     }</span><br><s=
+pan>     ret =3D *BPTR(buf);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    buf_advance(buf, 1);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+buf_read_u8(struct buffer *buf)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    int ret =3D buf_peek_u8(buf);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret &gt;=3D 0)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        buf_advance(buf, 1);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>   =
+  return ret;</span><br><span> }</span><br><span> </span><br><span>diff --g=
+it a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test=
+_buffer.c</span><br><span>index c86c19e..92c4c65 100644</span><br><span>---=
+ a/tests/unit_tests/openvpn/test_buffer.c</span><br><span>+++ b/tests/unit_=
+tests/openvpn/test_buffer.c</span><br><span>@@ -450,6 +450,56 @@</span><br>=
+<span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+/* for building long texts */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define A_TIMES_256=
+ &quot;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-AAAO&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+test_buffer_parse(void **state)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D allo=
-c_buf_gc(1024, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    char line[512];</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    bool status;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const char test1[] =3D A_TIMES_256 &quot;EOL\n&quot; A_TIMES_256 &quo=
-t;EOF&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* line buffer bigger =
-than actual line */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    assert_int_equal(buf_write(&amp;buf, test1, sizeof(test1)), true);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    status =3D buf_parse=
-(&amp;buf, &#39;\n&#39;, line, sizeof(line));</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    assert_int_equal(status, true);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(line, A_T=
-IMES_256 &quot;EOL&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    status =3D buf_parse(&amp;buf, &#39;\n&#39;, line, sizeof(line))=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equ=
-al(status, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  assert_string_equal(line, A_TIMES_256 &quot;EOF&quot;);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    /* line buffer exactly same size as actual line + te=
-rminating \0 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-buf_reset_len(&amp;buf);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_int_equal(buf_write(&amp;buf, test1, sizeof(test1)), true);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    status =3D buf_=
-parse(&amp;buf, &#39;\n&#39;, line, 260);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_int_equal(status, true);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(line, A_TIMES=
-_256 &quot;EOL&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    status =3D buf_parse(&amp;buf, &#39;\n&#39;, line, 260);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(status, tr=
-ue);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_stri=
-ng_equal(line, A_TIMES_256 &quot;EOF&quot;);</span><br><span style=3D"color=
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO&quot;</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    /* line buffer smaller than actual line */</span><br><span style=
+%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_buff=
+er_parse(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_a=
+rena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct buffer buf =3D alloc_buf_gc(1024, &amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    char line[512];</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    bool status;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const char test1[] =3D A_TIMES_256 &q=
+uot;EOL\n&quot; A_TIMES_256 &quot;EOF&quot;;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /* line buffer bigger than actual line */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(buf_write(&amp;buf, =
+test1, sizeof(test1)), true);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    status =3D buf_parse(&amp;buf, &#39;\n&#39;, line, sizeof(lin=
+e));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_=
+equal(status, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_string_equal(line, A_TIMES_256 &quot;EOL&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    status =3D buf_parse(&amp;buf,=
+ &#39;\n&#39;, line, sizeof(line));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    assert_int_equal(status, true);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(line, A_TIMES_256=
+ &quot;EOF&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* line buffer e=
+xactly same size as actual line + terminating \0 */</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    buf_reset_len(&amp;buf);</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(buf_write(&=
 amp;buf, test1, sizeof(test1)), true);</span><br><span style=3D"color: hsl(=
 120, 100%, 40%);">+    status =3D buf_parse(&amp;buf, &#39;\n&#39;, line, 2=
-57);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_=
+60);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_=
 equal(status, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    assert_string_equal(line, A_TIMES_256);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    status =3D buf_parse(&amp;buf, &#39;\n&#39;, l=
-ine, 257);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_int_equal(status, true);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    assert_string_equal(line, &quot;EOL&quot;);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    status =3D buf_parse(&amp;buf, &#39;=
-\n&#39;, line, 257);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    assert_int_equal(status, true);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_string_equal(line, A_TIMES_256);</span><br><spa=
++    assert_string_equal(line, A_TIMES_256 &quot;EOL&quot;);</span><br><spa=
 n style=3D"color: hsl(120, 100%, 40%);">+    status =3D buf_parse(&amp;buf,=
- &#39;\n&#39;, line, 257);</span><br><span style=3D"color: hsl(120, 100%, 4=
+ &#39;\n&#39;, line, 260);</span><br><span style=3D"color: hsl(120, 100%, 4=
 0%);">+    assert_int_equal(status, true);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_string_equal(line, &quot;EOF&quot;);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span> int</span><br><span> main(void)</span><=
-br><span> {</span><br><span>@@ -478,7 +528,8 @@</span><br><span>         cm=
-ocka_unit_test(test_character_class),</span><br><span>         cmocka_unit_=
-test(test_character_string_mod_buf),</span><br><span>         cmocka_unit_t=
-est(test_snprintf),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      cmocka_unit_test(test_buffer_chomp)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        cmocka_unit_test(test_buffer_chomp),</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(tes=
-t_buffer_parse)</span><br><span>     };</span><br><span> </span><br><span> =
-    return cmocka_run_group_tests_name(&quot;buffer&quot;, tests, NULL, NUL=
-L);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1246?usp=3Demail">change 1246</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"ht=
-tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1246?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+hsl(120, 100%, 40%);">+    assert_string_equal(line, A_TIMES_256 &quot;EOF&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    /* line buffer smaller than=
+ actual line */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+buf_reset_len(&amp;buf);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_int_equal(buf_write(&amp;buf, test1, sizeof(test1)), true);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    status =3D buf_=
+parse(&amp;buf, &#39;\n&#39;, line, 257);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    assert_int_equal(status, true);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(line, A_TIMES=
+_256);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    status =
+=3D buf_parse(&amp;buf, &#39;\n&#39;, line, 257);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    assert_int_equal(status, true);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(line,=
+ &quot;EOL&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   status =3D buf_parse(&amp;buf, &#39;\n&#39;, line, 257);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(status, true);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_e=
+qual(line, A_TIMES_256);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    status =3D buf_parse(&amp;buf, &#39;\n&#39;, line, 257);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(status, =
+true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_st=
+ring_equal(line, &quot;EOF&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> in=
+t</span><br><span> main(void)</span><br><span> {</span><br><span>@@ -478,7 =
++528,8 @@</span><br><span>         cmocka_unit_test(test_character_class),<=
+/span><br><span>         cmocka_unit_test(test_character_string_mod_buf),</=
+span><br><span>         cmocka_unit_test(test_snprintf),</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        cmocka_unit_test(test_buffer_cho=
+mp)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_u=
+nit_test(test_buffer_chomp),</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        cmocka_unit_test(test_buffer_parse)</span><br><span>     }=
+;</span><br><span> </span><br><span>     return cmocka_run_group_tests_name=
+(&quot;buffer&quot;, tests, NULL, NULL);</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1246?usp=
+=3Demail">change 1246</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I3724660bf0f8336ee58c172acfb=
@@ -396,5 +404,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---69mFTfuwtP4=--
+--gq4xzZXLzxE=--
 
