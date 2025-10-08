@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 12:21:35 +0000
-In-Reply-To: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
-References: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <57f084a3c0b5688a68bc16a3b2e7f9805e049846-EmailReviewComments-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 8 Oct 2025 12:33:30 +0000
+In-Reply-To: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
+References: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., lstipakov@...277...
+Message-ID: <3ba59ac2b5cb90fabccb70e1cf40ced97968aa50-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="h6UckgScCH0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE server:
- check IV_PROTO before sending the message to the ...
+Content-Type: multipart/alternative; boundary="wZHNdUjiOX0="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: support for
+ epoch data channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,130 +19,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---h6UckgScCH0=
+--wZHNdUjiOX0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mrbff, ordex, plaisthos.
+Attention is currently required from: flichtenheld, stipa.
 
-cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1255?usp=3Demail )
+plaisthos has posted comments on this change by stipa. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1219?usp=3Demail )
 
-Change subject: PUSH_UPDATE server: check IV_PROTO before sending the messa=
-ge to the client
+Change subject: dco-win: support for epoch data channel
 ......................................................................
 
 
-Patch Set 1:
+Patch Set 5: Code-Review+2
 
 (1 comment)
 
-File src/openvpn/push_util.c:
+File src/openvpn/dco_win.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1255/comment/1b73c2df_7d09cc66?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1219/comment/e49f28e4_b0ce5ad2?usp=3D=
 email :
-PS1, Line 252:             gc_free(&gc);
-> yeah, it is unrelated, but a patch only for this?
-I'l leave it in, and mention it in the commit message
-
-"while at it, fix a gc_arena mem leak in one of the error paths"
+PS5, Line 551:     /* for epoch we use key material as a seed, no as actual=
+ key */
+typo: not as actual key
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7c28da72be11c7efbed3068fbfc65f2959227bec
-Gerrit-Change-Number: 1255
-Gerrit-PatchSet: 1
-Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
+Gerrit-Change-Number: 1219
+Gerrit-PatchSet: 5
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Wed, 08 Oct 2025 12:21:35 +0000
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Wed, 08 Oct 2025 12:33:30 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Comment-In-Reply-To: mrbff <marco@...2726...>
+Gerrit-Has-Labels: Yes
 
---h6UckgScCH0=
+--wZHNdUjiOX0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, mrbff, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</p><u=
-l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1255/comment/1b73c2df_7d09cc66?usp=3Demail">Patch Set #=
-1, Line 252:</a> <code style=3D"font-family:monospace,monospace">          =
-  gc_free(&amp;gc);</code></p><p><blockquote style=3D"border-left: 1px soli=
-d #aaa; margin: 10px 0; padding: 0 10px;">yeah, it is unrelated, but a patc=
-h only for this?</blockquote></p><p class=3D"blocks" style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">I&#39;l leave it in, and mention it in th=
-e commit message</p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">&quot;while at it, fix a gc_arena mem leak in one of t=
-he error paths&quot;</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">change 1255</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
+rently required from: flichtenheld, stipa. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_win.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1219/comment/e49f28e4_b0ce5ad2?usp=3Demail">Patch Set=
+ #5, Line 551:</a> <code style=3D"font-family:monospace,monospace">    /* f=
+or epoch we use key material as a seed, no as actual key */</code></p><p cl=
+ass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">typo=
+: not as actual key</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">change 1219</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7c28da72be11c7efbed3068fbfc=
-65f2959227bec </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1255 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b=
+7ffaaa5c43080 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1219 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 12:21:35=
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 12:33:30=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: mrbff &lt;marco@...2804...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---h6UckgScCH0=--
+--wZHNdUjiOX0=--
 
