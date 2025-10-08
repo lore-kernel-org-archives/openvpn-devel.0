@@ -1,10 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  8 Oct 2025 14:37:51 +0200
-Message-ID: <20251008123757.18670-1-gert@...1296...>
-In-Reply-To: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
-References: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 8 Oct 2025 12:58:20 +0000
+References: <gerrit.1759928297000.I59a49696acd665d43b21e5c23f24b86c15989cd6@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <22c1b75eabc1c6dbd1a94427a50c11ab17bd6d0e-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] dco-win: support for epoch data channel
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="M1opaeYDlxY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: test_options_parse:
+ Do not use uintmax_t instead of LargestIntegralType
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,250 +18,171 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--M1opaeYDlxY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Starting from 2.8.0, dco-win driver supports
-epoch data channel. This adds missing userspace part.
+Attention is currently required from: plaisthos.
 
-While on it, fix broken assert introduced in e77c34.
-Key-Id 0 is a perfectly valid.
+Hello plaisthos,
 
-Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1219
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail
+
+to review the following change.
+
+
+Change subject: test_options_parse: Do not use uintmax_t instead of Largest=
+IntegralType
+......................................................................
+
+test_options_parse: Do not use uintmax_t instead of LargestIntegralType
+
+At least on OpenBSD it seems that uintmax_t maps
+to unsigned long long always, but LargestIntegralType
+is unsigned long. So if we have a version of cmocka.h
+that defines LargestIntegralType then respect that.
+
+Change-Id: I59a49696acd665d43b21e5c23f24b86c15989cd6
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M tests/unit_tests/openvpn/test_options_parse.c
+1 file changed, 13 insertions(+), 2 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1219
-This mail reflects revision 5 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/1256/1
 
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 6afc680..8fb4662 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -56,8 +56,9 @@
-                 const char *ciphername)
- 
- {
--    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d, currently %d keys installed", __func__,
--        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed);
-+    bool epoch = ks->crypto_options.flags & CO_EPOCH_DATA_KEY_FORMAT;
-+    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d epoch=%d, currently %d keys installed", __func__,
-+        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed, epoch);
- 
-     /* Install a key in the PRIMARY slot only when no other key exist.
-      * From that moment on, any new key will be installed in the SECONDARY
-@@ -71,7 +72,7 @@
-     }
- 
-     int ret = dco_new_key(multi->dco, multi->dco_peer_id, ks->key_id, slot, encrypt_key, encrypt_iv,
--                          decrypt_key, decrypt_iv, ciphername);
-+                          decrypt_key, decrypt_iv, ciphername, epoch);
-     if ((ret == 0) && (multi->dco_keys_installed < 2))
-     {
-         multi->dco_keys_installed++;
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index a362977..e5e8709 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -251,11 +251,8 @@
-  * Return whether the dco implementation supports the new protocol features of
-  * a 64 bit packet counter and AEAD tag at the end.
-  */
--static inline bool
--dco_supports_epoch_data(struct context *c)
--{
--    return false;
--}
-+bool
-+dco_supports_epoch_data(struct context *c);
- #else  /* if defined(ENABLE_DCO) */
- 
- typedef void *dco_context_t;
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index b9f6bc7..947a769 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -487,14 +487,14 @@
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
--            const uint8_t *decrypt_iv, const char *ciphername)
-+            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
- {
-     struct ifdrv drv;
-     nvlist_t *nvl, *encrypt_nvl, *decrypt_nvl;
-     int ret;
- 
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
--        ciphername);
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, epoch %d", __func__, slot, keyid, peerid,
-+        ciphername, epoch);
- 
-     nvl = nvlist_create(0);
- 
-@@ -876,4 +876,10 @@
-     return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
+diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tes=
+ts/openvpn/test_options_parse.c
+index e552dd7..0ae37f5 100644
+--- a/tests/unit_tests/openvpn/test_options_parse.c
++++ b/tests/unit_tests/openvpn/test_options_parse.c
+@@ -198,14 +198,25 @@
+                        &option_types_found, &es);
  }
- 
-+bool
-+dco_supports_epoch_data(struct context *c)
-+{
-+    return false;
-+}
+
++/* compat with various versions of cmocka.h
++ * Older versions have LargestIntegralType. Newer
++ * versions use uintmax_t. But LargestIntegralType
++ * is not guaranteed to be equal to uintmax_t, so
++ * we can't use that unconditionally. So we only use
++ * it if cmocka.h does not define LargestIntegralType.
++ */
++#ifndef LargestIntegralType
++#define LargestIntegralType uintmax_t
++#endif
 +
- #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index 86af003..97a7048 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -66,7 +66,7 @@
- 
- int dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
-                 const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
--                const uint8_t *decrypt_iv, const char *ciphername);
-+                const uint8_t *decrypt_iv, const char *ciphername, bool epoch);
- 
- int dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot);
- 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index d46fa46..0ae30b1 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -596,10 +596,10 @@
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
--            const uint8_t *decrypt_iv, const char *ciphername)
-+            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
+ union tokens_parameter
  {
--    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
--        ciphername);
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, epoch %d", __func__, slot, keyid, peerid,
-+        ciphername, epoch);
- 
-     const int key_len = cipher_kt_key_size(ciphername);
-     const int nonce_tail_len = 8;
-@@ -1298,4 +1298,10 @@
-     return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
- }
- 
-+bool
-+dco_supports_epoch_data(struct context *c)
-+{
-+    return false;
-+}
-+
- #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 30307de..ca5eedf 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -528,7 +528,7 @@
- int
- dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
-             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
--            const uint8_t *decrypt_iv, const char *ciphername)
-+            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
+-    uintmax_t as_int;
++    LargestIntegralType as_int;
+     void *as_pointer;
+ };
+
+ static int
+-check_tokens(const uintmax_t value, const uintmax_t expected)
++check_tokens(const LargestIntegralType value, const LargestIntegralType ex=
+pected)
  {
-     msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
-         ciphername);
-@@ -537,29 +537,42 @@
-     size_t key_len = cipher_kt_key_size(ciphername);
-     ASSERT(key_len <= 32);
- 
--    OVPN_CRYPTO_DATA crypto_data;
-+    OVPN_CRYPTO_DATA_V2 crypto_data;
-     ZeroMemory(&crypto_data, sizeof(crypto_data));
- 
--    crypto_data.CipherAlg = dco_get_cipher(ciphername);
-+    OVPN_CRYPTO_DATA *v1 = &crypto_data.V1;
-+
-+    v1->CipherAlg = dco_get_cipher(ciphername);
-     ASSERT(keyid >= 0 && keyid <= UCHAR_MAX);
--    crypto_data.KeyId = (unsigned char)keyid;
--    crypto_data.PeerId = peerid;
--    crypto_data.KeySlot = slot;
-+    v1->KeyId = (unsigned char)keyid;
-+    v1->PeerId = peerid;
-+    v1->KeySlot = slot;
- 
--    CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
--    crypto_data.Encrypt.KeyLen = (unsigned char)key_len;
--    CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
-+    /* for epoch we use key material as a seed, no as actual key */
-+    CopyMemory(v1->Encrypt.Key, encrypt_key, epoch ? 32 : key_len);
-+    v1->Encrypt.KeyLen = (unsigned char)key_len;
-+    CopyMemory(v1->Encrypt.NonceTail, encrypt_iv, nonce_len);
- 
--    CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
--    crypto_data.Decrypt.KeyLen = (unsigned char)key_len;
--    CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
-+    CopyMemory(v1->Decrypt.Key, decrypt_key, epoch ? 32 : key_len);
-+    v1->Decrypt.KeyLen = (unsigned char)key_len;
-+    CopyMemory(v1->Decrypt.NonceTail, decrypt_iv, nonce_len);
- 
--    ASSERT(crypto_data.CipherAlg > 0);
-+    ASSERT(v1->CipherAlg > 0);
-+
-+    DWORD ioctl = OVPN_IOCTL_NEW_KEY;
-+    VOID *buf = &crypto_data.V1;
-+    DWORD bufSize = sizeof(crypto_data.V1);
-+    if (epoch)
-+    {
-+        ioctl = OVPN_IOCTL_NEW_KEY_V2;
-+        crypto_data.CryptoOptions |= CRYPTO_OPTIONS_EPOCH;
-+        buf = &crypto_data;
-+        bufSize = sizeof(crypto_data);
-+    }
- 
-     DWORD bytes_returned = 0;
- 
--    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_NEW_KEY, &crypto_data, sizeof(crypto_data), NULL,
--                         0, &bytes_returned, NULL))
-+    if (!DeviceIoControl(dco->tt->hand, ioctl, buf, bufSize, NULL, 0, &bytes_returned, NULL))
-     {
-         msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed");
-         return -1;
-@@ -1076,4 +1089,11 @@
-     gc_free(&gc);
- }
- 
-+bool
-+dco_supports_epoch_data(struct context *c)
-+{
-+    OVPN_VERSION ver = { 0 };
-+    return dco_get_version(&ver) && ((ver.Major == 2 && ver.Minor >= 8) || (ver.Major > 2));
-+}
-+
- #endif /* defined(_WIN32) */
-diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
-index 9e1378a..e76770b 100644
---- a/src/openvpn/ovpn_dco_win.h
-+++ b/src/openvpn/ovpn_dco_win.h
-@@ -118,6 +118,13 @@
- 	int PeerId;
- } OVPN_CRYPTO_DATA, * POVPN_CRYPTO_DATA;
- 
-+#define CRYPTO_OPTIONS_EPOCH (1<<1)
-+
-+typedef struct _OVPN_CRYPTO_DATA_V2 {
-+    OVPN_CRYPTO_DATA V1;
-+    UINT32 CryptoOptions;
-+} OVPN_CRYPTO_DATA_V2, * POVPN_CRYPTO_DATA_V2;
-+
- typedef struct _OVPN_MP_SET_PEER {
-     int PeerId;
-     LONG KeepaliveInterval;
+     union tokens_parameter temp;
+     temp.as_int =3D value;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I59a49696acd665d43b21e5c23f24b86c15989cd6
+Gerrit-Change-Number: 1256
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--M1opaeYDlxY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">test_options_parse: Do not use uintmax_t in=
+stead of LargestIntegralType<br><br>At least on OpenBSD it seems that uintm=
+ax_t maps<br>to unsigned long long always, but LargestIntegralType<br>is un=
+signed long. So if we have a version of cmocka.h<br>that defines LargestInt=
+egralType then respect that.<br><br>Change-Id: I59a49696acd665d43b21e5c23f2=
+4b86c15989cd6<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<=
+br>---<br>M tests/unit_tests/openvpn/test_options_parse.c<br>1 file changed=
+, 13 insertions(+), 2 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/56/1256/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tests/open=
+vpn/test_options_parse.c</span><br><span>index e552dd7..0ae37f5 100644</spa=
+n><br><span>--- a/tests/unit_tests/openvpn/test_options_parse.c</span><br><=
+span>+++ b/tests/unit_tests/openvpn/test_options_parse.c</span><br><span>@@=
+ -198,14 +198,25 @@</span><br><span>                        &amp;option_typ=
+es_found, &amp;es);</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+/* compat with various versions of cmo=
+cka.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Older versi=
+ons have LargestIntegralType. Newer</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * versions use uintmax_t. But LargestIntegralType</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * is not guaranteed to be e=
+qual to uintmax_t, so</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * we can&#39;t use that unconditionally. So we only use</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * it if cmocka.h does not define La=
+rgestIntegralType.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef LargestIn=
+tegralType</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define L=
+argestIntegralType uintmax_t</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span> union tokens_parameter</span><br><span> {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    uintmax_t as_int;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    LargestIntegralType as_int;</span><=
+br><span>     void *as_pointer;</span><br><span> };</span><br><span> </span=
+><br><span> static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-check_tokens(const uintmax_t value, const uintmax_t expected)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+check_tokens(const LargestIntegr=
+alType value, const LargestIntegralType expected)</span><br><span> {</span>=
+<br><span>     union tokens_parameter temp;</span><br><span>     temp.as_in=
+t =3D value;</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail">change 1256</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
+ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
+temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I59a49696acd665d43b21e5c23f2=
+4b86c15989cd6 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1256 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--M1opaeYDlxY=--
 
