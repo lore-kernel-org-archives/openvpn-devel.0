@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 10:03:31 +0000
-In-Reply-To: <gerrit.1759239739000.I95032d2539d994abf69fc17319ed1a429c3bb948@...2715...>
-References: <gerrit.1759239739000.I95032d2539d994abf69fc17319ed1a429c3bb948@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a95061681ec15b27846a911d2fdd87632ec91506-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed,  8 Oct 2025 12:03:39 +0200
+Message-ID: <20251008100344.4907-1-gert@...1296...>
+In-Reply-To: <gerrit.1759328122000.Ibe78949435bb2f26ad68301e2710321bf37c9486@...2715...>
+References: <gerrit.1759328122000.Ibe78949435bb2f26ad68301e2710321bf37c9486@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jEDvw4THU2M="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_options_parse:
- Start new UT for options_parse.c
+Subject: [Openvpn-devel] [PATCH v7] PUSH_UPDATE: disabling PUSH_UPDATE
+ server and client if DCO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,105 +14,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---jEDvw4THU2M=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Marco Baffo <marco@...2726...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+The PUSH_UPDATE currently doesn't work with DCO.
+For example, in server, if a new ifconfig is sent, the DCO
+doesn't receive the new peer address and the connection drops.
+Similarly in the client when a PUSH_UPDATE is received, the tun is
+closed and reopened but the DCO doesn't receive the peer info.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1244?usp=3Demail )
+Change-Id: Ibe78949435bb2f26ad68301e2710321bf37c9486
+Signed-off-by: Marco Baffo <marco@...2726...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1245
+Message-Id: <20251008083046.27209-1-gert@...1296...>
+URL: https://sourceforge.net/p/openvpn/mailman/message/59243711/
+Signed-off-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1245
+---
 
-Change subject: test_options_parse: Start new UT for options_parse.c
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1245
+This mail reflects revision 7 of this Change.
 
-Patch Set 3:
+Acked-by according to Gerrit (reflected above):
 
-(1 comment)
-
-Patchset:
-
-PS3:
-Still confused about the necessity of `__wrap_*` here, but decided to move =
-on and let this not block me for now.  If it turns out to be needed, fine, =
-and if not, a followup patch can remove it.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1244?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I95032d2539d994abf69fc17319ed1a429c3bb948
-Gerrit-Change-Number: 1244
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 08 Oct 2025 10:03:31 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-
---jEDvw4THU2M=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1244?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1244?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Still confused =
-about the necessity of `__wrap_*` here, but decided to move on and let this=
- not block me for now.  If it turns out to be needed, fine, and if not, a f=
-ollowup patch can remove it.</p></li></ul></li></ul><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1244?usp=3Demail">change 1244</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1244?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I95032d2539d994abf69fc17319e=
-d1a429c3bb948 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1244 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 10:03:31=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-
-</body></html>=
-
---jEDvw4THU2M=--
+        
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index e7fc50c..0c8eb84 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -1112,6 +1112,12 @@
+     }
+     else if (honor_received_options && buf_string_compare_advance(&buf, push_update_cmd))
+     {
++        if (dco_enabled(&c->options))
++        {
++            msg(M_WARN, "WARN: PUSH_UPDATE messages cannot currently be processed in client mode while DCO is enabled, ignoring."
++                        " To be able to process PUSH_UPDATE messages, be sure to use the --disable-dco option.");
++            return PUSH_MSG_ERROR;
++        }
+         return process_incoming_push_update(c, permission_mask, option_types_found, &buf, false);
+     }
+     else
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 9138bdb..f306104 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -191,6 +191,13 @@
+ int
+ send_push_update(struct multi_context *m, const void *target, const char *msg, const push_update_type type, const int push_bundle_size)
+ {
++    if (dco_enabled(&m->top.options))
++    {
++        msg(M_WARN, "WARN: PUSH_UPDATE messages cannot currently be sent while DCO is enabled."
++                    " To send a PUSH_UPDATE message, be sure to use the --disable-dco option.");
++        return 0;
++    }
++
+     if (!msg || !*msg || !m
+         || (!target && type != UPT_BROADCAST))
+     {
+@@ -294,7 +301,6 @@
+         }                                                             \
+     } while (0)
+ 
+-
+ bool
+ management_callback_send_push_update_broadcast(void *arg, const char *options)
+ {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 34036f2..567560f 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1926,8 +1926,12 @@
+         /* support for exit notify via control channel */
+         iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
+ 
+-        /* support push-updates */
+-        iv_proto |= IV_PROTO_PUSH_UPDATE;
++        /* currently push-update is not supported when DCO is enabled */
++        if (!session->opt->dco_enabled)
++        {
++            /* support push-updates */
++            iv_proto |= IV_PROTO_PUSH_UPDATE;
++        }
+ 
+         if (session->opt->pull)
+         {
+diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c
+index 8a5beeb..6e49f14 100644
+--- a/tests/unit_tests/openvpn/test_push_update_msg.c
++++ b/tests/unit_tests/openvpn/test_push_update_msg.c
+@@ -465,6 +465,7 @@
+     m->instances = calloc(1, sizeof(struct multi_instance *));
+     struct multi_instance *mi = calloc(1, sizeof(struct multi_instance));
+     *(m->instances) = mi;
++    m->top.options.disable_dco = true;
+     *state = m;
+     return 0;
+ }
 
