@@ -1,11 +1,10 @@
+Date: Wed, 8 Oct 2025 15:40:32 +0200 (CEST)
+Message-Id: <202510081340.598DeWDw088357@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  8 Oct 2025 15:33:31 +0200
-Message-ID: <20251008133338.23652-1-gert@...1296...>
-In-Reply-To: <gerrit.1759928297000.I59a49696acd665d43b21e5c23f24b86c15989cd6@...2715...>
-References: <gerrit.1759928297000.I59a49696acd665d43b21e5c23f24b86c15989cd6@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] test_options_parse: Do not use uintmax_t
- instead of LargestIntegralType
+In-Reply-To: <20251008133338.23652-1-gert@...1296...>
+References: <20251008133338.23652-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: test_options_parse: Do not use
+ uintmax_t instead of LargestIntegralType
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Explanation makes sense, code change appeases the loud complaints from
+OpenBSD BB with -Werror.  In it goes :-)
 
-At least on OpenBSD it seems that uintmax_t maps
-to unsigned long long always, but LargestIntegralType
-is unsigned long. So if we have a version of cmocka.h
-that defines LargestIntegralType then respect that.
+Your patch has been applied to the master branch.
 
-Change-Id: I59a49696acd665d43b21e5c23f24b86c15989cd6
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1256
----
+commit 5b8e0563f950aa5d246f32785afffd8824d9f9ab
+Author: Frank Lichtenheld
+Date:   Wed Oct 8 15:33:31 2025 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     test_options_parse: Do not use uintmax_t instead of LargestIntegralType
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1256
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1256
+     Message-Id: <20251008133338.23652-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59243971/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tests/openvpn/test_options_parse.c
-index e552dd7..0ae37f5 100644
---- a/tests/unit_tests/openvpn/test_options_parse.c
-+++ b/tests/unit_tests/openvpn/test_options_parse.c
-@@ -198,14 +198,25 @@
-                        &option_types_found, &es);
- }
- 
-+/* compat with various versions of cmocka.h
-+ * Older versions have LargestIntegralType. Newer
-+ * versions use uintmax_t. But LargestIntegralType
-+ * is not guaranteed to be equal to uintmax_t, so
-+ * we can't use that unconditionally. So we only use
-+ * it if cmocka.h does not define LargestIntegralType.
-+ */
-+#ifndef LargestIntegralType
-+#define LargestIntegralType uintmax_t
-+#endif
-+
- union tokens_parameter
- {
--    uintmax_t as_int;
-+    LargestIntegralType as_int;
-     void *as_pointer;
- };
- 
- static int
--check_tokens(const uintmax_t value, const uintmax_t expected)
-+check_tokens(const LargestIntegralType value, const LargestIntegralType expected)
- {
-     union tokens_parameter temp;
-     temp.as_int = value;
+--
+kind regards,
+
+Gert Doering
+
 
