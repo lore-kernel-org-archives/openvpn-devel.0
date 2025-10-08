@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 16:53:52 +0000
-References: <gerrit.1759942426000.Id08524661aa5bcc5cd42f27a1aacc636e2b2b004@...2715...>
+Date: Wed, 8 Oct 2025 16:53:51 +0000
+References: <gerrit.1759942426000.I4a5c46f321709c83a4a921366630fb8e02834701@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <7b3a5e16442fbc9b7de2059ab1ad9ecf951c46cb-HTML@...2715...>
+Message-ID: <b091c177c19f6c506abe07cb60c8fe6ee940137b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FmDRQ6cwZk4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: options_util: Fix
- conversion warning in atoi_constrained
+Content-Type: multipart/alternative; boundary="GsVEQJV242o="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: lzo: Fix conversion
+ warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---FmDRQ6cwZk4=
+--GsVEQJV242o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,137 +32,143 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1261?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1260?usp=3Demail
 
 to review the following change.
 
 
-Change subject: options_util: Fix conversion warning in atoi_constrained
+Change subject: lzo: Fix conversion warning
 ......................................................................
 
-options_util: Fix conversion warning in atoi_constrained
+lzo: Fix conversion warning
 
-The whole purpose of the function is to make sure
-that cast is safe.
+We already have an assert ensuring the value is sane,
+so just add the cast.
 
-Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b004
+Change-Id: I4a5c46f321709c83a4a921366630fb8e02834701
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/options_util.c
+M src/openvpn/lzo.c
 1 file changed, 1 insertion(+), 10 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/1261/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1260/1
 
-diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
-index 8a1c083..eba7d39 100644
---- a/src/openvpn/options_util.c
-+++ b/src/openvpn/options_util.c
-@@ -162,11 +162,6 @@
-     return (int)i;
+diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
+index 8daaec0..8307b59 100644
+--- a/src/openvpn/lzo.c
++++ b/src/openvpn/lzo.c
+@@ -72,11 +72,6 @@
+     *header =3D NO_COMPRESS_BYTE;
  }
-
+=20
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- bool
- atoi_constrained(const char *str, int *value, const char *name, int min, i=
-nt max, msglvl_t msglevel)
- {
-@@ -194,14 +189,10 @@
-         return false;
-     }
+ static void
+ lzo_decompress(struct buffer *buf, struct buffer work, struct compress_con=
+text *compctx,
+                const struct frame *frame)
+@@ -107,7 +102,7 @@
+         }
 
--    *value =3D i;
-+    *value =3D (int)i;
-     return true;
+         ASSERT(buf_safe(&work, zlen));
+-        work.len =3D zlen;
++        work.len =3D (int)zlen;
+
+         dmsg(D_COMP, "LZO decompress %d -> %d", buf->len, work.len);
+         compctx->pre_decompress +=3D buf->len;
+@@ -126,10 +121,6 @@
+     }
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- static const char *updatable_options[] =3D { "block-ipv6", "block-outside-=
-dns",
-                                            "dhcp-option", "dns",
-                                            "ifconfig", "ifconfig-ipv6",
+ const struct compress_alg lzo_alg =3D { "lzo", lzo_compress_init, lzo_comp=
+ress_uninit, lzo_compress,
+                                       lzo_decompress };
+ #endif /* ENABLE_LZO */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1261?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1260?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b004
-Gerrit-Change-Number: 1261
+Gerrit-Change-Id: I4a5c46f321709c83a4a921366630fb8e02834701
+Gerrit-Change-Number: 1260
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---FmDRQ6cwZk4=
+--GsVEQJV242o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1261?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1260?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">options_util: Fix conversion warning in ato=
-i_constrained<br><br>The whole purpose of the function is to make sure<br>t=
-hat cast is safe.<br><br>Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b0=
-04<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M=
- src/openvpn/options_util.c<br>1 file changed, 1 insertion(+), 10 deletions=
-(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mono=
-space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
-vpn refs/changes/61/1261/1</pre><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options_util.c =
-b/src/openvpn/options_util.c</span><br><span>index 8a1c083..eba7d39 100644<=
-/span><br><span>--- a/src/openvpn/options_util.c</span><br><span>+++ b/src/=
-openvpn/options_util.c</span><br><span>@@ -162,11 +162,6 @@</span><br><span=
->     return (int)i;</span><br><span> }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clan=
-g__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagn=
-ostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC=
- diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span> bool</span><br><span> atoi_constrained(const char=
- *str, int *value, const char *name, int min, int max, msglvl_t msglevel)</=
-span><br><span> {</span><br><span>@@ -194,14 +189,10 @@</span><br><span>   =
-      return false;</span><br><span>     }</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    *value =3D i;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    *value =3D (int)i;</span><br><span=
->     return true;</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang_=
-_)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnos=
-tic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static cons=
-t char *updatable_options[] =3D { &quot;block-ipv6&quot;, &quot;block-outsi=
-de-dns&quot;,</span><br><span>                                            &=
-quot;dhcp-option&quot;, &quot;dns&quot;,</span><br><span>                  =
-                          &quot;ifconfig&quot;, &quot;ifconfig-ipv6&quot;,<=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1261?usp=3Demail">change 1261</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1261?usp=3Demail"/><meta itemprop=3D"name" content=3D=
-"View Change"/></div></div>
+ospace; white-space: pre-wrap;">lzo: Fix conversion warning<br><br>We alrea=
+dy have an assert ensuring the value is sane,<br>so just add the cast.<br><=
+br>Change-Id: I4a5c46f321709c83a4a921366630fb8e02834701<br>Signed-off-by: F=
+rank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/lzo.c<br>=
+1 file changed, 1 insertion(+), 10 deletions(-)<br><br></pre><pre class=3D"=
+blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1260/1</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c</span><br><span>inde=
+x 8daaec0..8307b59 100644</span><br><span>--- a/src/openvpn/lzo.c</span><br=
+><span>+++ b/src/openvpn/lzo.c</span><br><span>@@ -72,11 +72,6 @@</span><br=
+><span>     *header =3D NO_COMPRESS_BYTE;</span><br><span> }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC=
+__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span> static void</span><br><span>=
+ lzo_decompress(struct buffer *buf, struct buffer work, struct compress_con=
+text *compctx,</span><br><span>                const struct frame *frame)</=
+span><br><span>@@ -107,7 +102,7 @@</span><br><span>         }</span><br><sp=
+an> </span><br><span>         ASSERT(buf_safe(&amp;work, zlen));</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        work.len =3D zlen;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        work.len =3D (int=
+)zlen;</span><br><span> </span><br><span>         dmsg(D_COMP, &quot;LZO de=
+compress %d -&gt; %d&quot;, buf-&gt;len, work.len);</span><br><span>       =
+  compctx-&gt;pre_decompress +=3D buf-&gt;len;</span><br><span>@@ -126,10 +=
+121,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || def=
+ined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragm=
+a GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+> const struct compress_alg lzo_alg =3D { &quot;lzo&quot;, lzo_compress_ini=
+t, lzo_compress_uninit, lzo_compress,</span><br><span>                     =
+                  lzo_decompress };</span><br><span> #endif /* ENABLE_LZO *=
+/</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1260?usp=3Demail">change 1260</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
+://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1260?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id08524661aa5bcc5cd42f27a1aa=
-cc636e2b2b004 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1261 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4a5c46f321709c83a4a92136663=
+0fb8e02834701 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1260 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -175,5 +181,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---FmDRQ6cwZk4=--
+--GsVEQJV242o=--
 
