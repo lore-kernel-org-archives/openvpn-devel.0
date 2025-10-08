@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  8 Oct 2025 12:55:01 +0200
-Message-ID: <20251008105507.9997-1-gert@...1296...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 8 Oct 2025 10:55:57 +0000
 In-Reply-To: <gerrit.1757607620000.I73c46ac630834a8cf8894aaa2dcc429fbedd3db7@...2715...>
 References: <gerrit.1757607620000.I73c46ac630834a8cf8894aaa2dcc429fbedd3db7@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ max@...2606...
+Message-ID: <44d35e80664d312255553d37891ffdcf1a979d23-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v11] vlan: Remove -Wconversion override
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="k5QzZJnhfuY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: vlan: Remove
+ -Wconversion override
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,56 +20,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--k5QzZJnhfuY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Only Debian 11 (GCC 10) complains about this.
-We decided not to add work-arounds for GCC 10
-and older and instead accept that they do not
-build -Werror clean.
+Attention is currently required from: MaxF, flichtenheld, plaisthos.
 
-Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db7
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1179
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1179?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: vlan: Remove -Wconversion override
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1179
-This mail reflects revision 11 of this Change.
 
-Acked-by according to Gerrit (reflected above):
+Patch Set 11: Code-Review+2
 
-        
-diff --git a/src/openvpn/vlan.c b/src/openvpn/vlan.c
-index 3da470a..a6a6e93 100644
---- a/src/openvpn/vlan.c
-+++ b/src/openvpn/vlan.c
-@@ -43,11 +43,6 @@
-     return ntohs(hdr->pcp_cfi_vid & OPENVPN_8021Q_MASK_VID);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- /*
-  * Set the VLAN Identifier (VID) in an IEEE 802.1Q header.
-  *
-@@ -61,10 +56,6 @@
-         (hdr->pcp_cfi_vid & ~OPENVPN_8021Q_MASK_VID) | (htons(vid) & OPENVPN_8021Q_MASK_VID);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /*
-  * vlan_decapsulate - remove 802.1q header and return VID
-  *
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I73c46ac630834a8cf8894aaa2dcc429fbedd3db7
+Gerrit-Change-Number: 1179
+Gerrit-PatchSet: 11
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: MaxF <max@...2606...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Wed, 08 Oct 2025 10:55:57 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--k5QzZJnhfuY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: MaxF, flichtenheld, plaisthos. </p>
+<p>Patch set 11:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail">=
+View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demai=
+l">change 1179</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1179?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I73c46ac630834a8cf8894aaa2dc=
+c429fbedd3db7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1179 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 11 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 10:55:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--k5QzZJnhfuY=--
 
