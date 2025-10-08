@@ -1,14 +1,15 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 12:03:01 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 8 Oct 2025 12:10:48 +0000
 In-Reply-To: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
 References: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d8c05c3eb0bdb4c146f8072c555a21718132d615-EmailReviewComments-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <9a98bbf86e6349bb82a60d6e4413867d738a43df-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XiL0iC6cp30="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="nLU9SBlHuEI="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE server:
  check IV_PROTO before sending the message to the ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,13 +23,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XiL0iC6cp30=
+--nLU9SBlHuEI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-ordex has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
 net/c/openvpn/+/1255?usp=3Demail )
 
 Change subject: PUSH_UPDATE server: check IV_PROTO before sending the messa=
@@ -36,38 +37,29 @@ ge to the client
 ......................................................................
 
 
-Patch Set 1: Code-Review-2
+Patch Set 1:
 
-(3 comments)
+(2 comments)
 
 File src/openvpn/push_util.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1255/comment/af9bdc8d_7673d872?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1255/comment/c4b5cab5_f39d3a8a?usp=3D=
+email :
+PS1, Line 199:     }
+this cannot be NULL - but if you doubt your own callers, make it in an `ASS=
+ERT(mi)`.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/1255/comment/df6efcad_2cdada10?usp=3D=
 email :
 PS1, Line 204:         msg(M_CLIENT, "ERROR: Peer ID: %u does not support p=
 ush-update",
-I'd remove the "ERROR:" label - this is just an information that we have un=
-supported clients connected and they won't receive the message.
-
-maybe something: "PUSH_UPDATE: not sending message to unsupported peer with=
- ID %u"?
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1255/comment/352256e9_45e6f7bc?usp=3D=
-email :
-PS1, Line 205:             mi->context.c2.tls_multi ? mi->context.c2.tls_mu=
-lti->peer_id : UINT32_MAX);
-you just dereferenced "tls_multi" a few lines above, therefore it must be n=
-on-NULL at this point.
-If you believe it can be NULL, this check should happen earlier on. But can=
- it really happen? I am not sure.
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1255/comment/ac206d3c_e8cbc84e?usp=3D=
-email :
-PS1, Line 252:             gc_free(&gc);
-am I wrong or this is totally unrelated?
-It still seems a valid fix, but please submit it in its own patch.
+> I'd remove the "ERROR:" label - this is just an information that we have =
+unsupported clients connect [=E2=80=A6]
+For the "I want *this* one client" case, an ERROR is valid, for the "send t=
+o all" it's a bit excessive ("there are 400 clients connected, only 2 of th=
+em are new enough to receive this, so 398 error messages").  So maybe movin=
+g the `msg()` call to `UPD_BY_CID` case in send_push_update()?
 
 
 
@@ -86,59 +78,52 @@ Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Wed, 08 Oct 2025 12:03:01 +0000
+Gerrit-Comment-Date: Wed, 08 Oct 2025 12:10:48 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: ordex <antonio@...2726...>
 
---XiL0iC6cp30=
+--nLU9SBlHuEI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, mrbff, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">V=
-iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push_util.c:<=
-/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
-ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1255/comment/af9bdc8d_7673d872?usp=3Demail">Patch =
-Set #1, Line 204:</a> <code style=3D"font-family:monospace,monospace">     =
-   msg(M_CLIENT, &quot;ERROR: Peer ID: %u does not support push-update&quot=
-;,</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">I&#39;d remove the &quot;ERROR:&quot; label - this is just an=
- information that we have unsupported clients connected and they won&#39;t =
-receive the message.</p><p class=3D"blocks" style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">maybe something: &quot;PUSH_UPDATE: not sending me=
-ssage to unsupported peer with ID %u&quot;?</p></li><li style=3D"margin: 0;=
- padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/1255/comment/352256e9_45e6f7bc?usp=3Demail">P=
-atch Set #1, Line 205:</a> <code style=3D"font-family:monospace,monospace">=
-            mi-&gt;context.c2.tls_multi ? mi-&gt;context.c2.tls_multi-&gt;p=
-eer_id : UINT32_MAX);</code></p><p class=3D"blocks" style=3D"white-space: p=
-re-wrap; word-wrap: break-word;">you just dereferenced &quot;tls_multi&quot=
-; a few lines above, therefore it must be non-NULL at this point.<br>If you=
- believe it can be NULL, this check should happen earlier on. But can it re=
-ally happen? I am not sure.</p></li><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1255/comment/ac206d3c_e8cbc84e?usp=3Demail">Patch Set #1, Lin=
-e 252:</a> <code style=3D"font-family:monospace,monospace">            gc_f=
-ree(&amp;gc);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">am I wrong or this is totally unrelated?<br>It sti=
-ll seems a valid fix, but please submit it in its own patch.</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1255?usp=3Demail">change 1255</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/12=
-55?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">View =
+Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</p><=
+ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
+ 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1255/comment/c4b5cab5_f39d3a8a?usp=3Demail">Patch Set =
+#1, Line 199:</a> <code style=3D"font-family:monospace,monospace">    }</co=
+de></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">this cannot be NULL - but if you doubt your own callers, make it in=
+ an `ASSERT(mi)`.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1255/comment/df6efcad_2cdada10?usp=3Demail">Patch Set #1, Line 204:</a>=
+ <code style=3D"font-family:monospace,monospace">        msg(M_CLIENT, &quo=
+t;ERROR: Peer ID: %u does not support push-update&quot;,</code></p><p><bloc=
+kquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10p=
+x;">I&#39;d remove the &quot;ERROR:&quot; label - this is just an informati=
+on that we have unsupported clients connect [=E2=80=A6]</blockquote></p><p =
+class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Fo=
+r the &quot;I want *this* one client&quot; case, an ERROR is valid, for the=
+ &quot;send to all&quot; it&#39;s a bit excessive (&quot;there are 400 clie=
+nts connected, only 2 of them are new enough to receive this, so 398 error =
+messages&quot;).  So maybe moving the `msg()` call to `UPD_BY_CID` case in =
+send_push_update()?</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">change 1255</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -155,6 +140,7 @@ iv>
 gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
@@ -163,12 +149,14 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 12:03:01=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 12:10:48=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
 
 </body></html>=
 
---XiL0iC6cp30=--
+--nLU9SBlHuEI=--
 
