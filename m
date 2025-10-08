@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 10:33:32 +0000
-In-Reply-To: <gerrit.1759330832000.I3724660bf0f8336ee58c172acfb7c4f38e457393@...2715...>
-References: <gerrit.1759330832000.I3724660bf0f8336ee58c172acfb7c4f38e457393@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., gert@...1296...
-Message-ID: <ac3a1215a9adf0f13a9ed1d146687cf46b395c8e-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="26oaBRMvOlE="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: Fix
- buf_parse eating input
+Date: Wed, 8 Oct 2025 12:43:57 +0200 (CEST)
+Message-Id: <202510081043.598Ahvvq081573@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251008103001.7696-1-gert@...1296...>
+References: <20251008103001.7696-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: buffer: Fix buf_parse eating
+ input
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,86 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---26oaBRMvOlE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+So - stared at code, typical "we have a character here that we can not
+handle right now, oops, where is did it disappear to?" thing, and the
+peek() fix makes sense.  Also, tested against #1247, which fails without
+this patch, and succeeds afterwards.  BB is happy as well, and we get
+a new UT test...
 
-Attention is currently required from: flichtenheld.
+Recorded the second +2 in gerrit here in the commit, the mail does not
+show it due to "fingers too fast" timing :) - but gerrit has it.
 
-plaisthos has posted comments on this change by flichtenheld. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1246?usp=3Demail )
+Your patch has been applied to the master branch.
 
-Change subject: buffer: Fix buf_parse eating input
-......................................................................
+commit f5a2e2319bc7c3cce7f5cdccae44b9bae3e33375
+Author: Frank Lichtenheld
+Date:   Wed Oct 8 12:29:55 2025 +0200
 
+     buffer: Fix buf_parse eating input
 
-Patch Set 1: Code-Review+2
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1246
+     Message-Id: <20251008103001.7696-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59243829/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3724660bf0f8336ee58c172acfb7c4f38e457393
-Gerrit-Change-Number: 1246
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 08 Oct 2025 10:33:32 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gert Doering
 
---26oaBRMvOlE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail=
-">change 1246</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1246?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3724660bf0f8336ee58c172acfb=
-7c4f38e457393 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1246 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 10:33:32=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---26oaBRMvOlE=--
 
