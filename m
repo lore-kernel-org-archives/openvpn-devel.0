@@ -1,11 +1,10 @@
+Date: Wed, 8 Oct 2025 11:14:11 +0200 (CEST)
+Message-Id: <202510080914.5989EBaI078106@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  8 Oct 2025 10:30:41 +0200
-Message-ID: <20251008083046.27209-1-gert@...1296...>
-In-Reply-To: <gerrit.1759328122000.Ibe78949435bb2f26ad68301e2710321bf37c9486@...2715...>
-References: <gerrit.1759328122000.Ibe78949435bb2f26ad68301e2710321bf37c9486@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] PUSH_UPDATE: disabling PUSH_UPDATE
- server and client if DCO is enabled
+In-Reply-To: <20251008083046.27209-1-gert@...1296...>
+References: <20251008083046.27209-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: PUSH_UPDATE: disabling
+ PUSH_UPDATE server and client if DCO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,104 +15,70 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Marco Baffo <marco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Marco Baffo <marco@...2726...>
+So, to wrap up the discussions we had on IRC about this patch, and the
+underlying issue - basically, our current implementation of PUSH_UPDATE
+is incompatible with DCO, for different reasons
 
-The PUSH_UPDATE currently doesn't work with DCO.
-For example, in server, if a new ifconfig is sent, the DCO
-doesn't receive the new peer address and the connection drops.
-Similarly in the client when a PUSH_UPDATE is received, the tun is
-closed and reopened but the DCO doesn't receive the peer info.
+ - on the server, if PUSH_UDPATE sends new "ifconfig" or "ifconfig-ipv6"
+   addresses for the client, DCO needs to be told ("vpn-ip" attribute of
+   the in-kernel peer) - and this code is not there yet.  Also, we might
+   need to remove + reinstall iroutes, as those are "in the normal routing
+   system, with the client vpn-ip next-hop" (on Linux and FreeBSD), which
+   we do not have any code for, either.
 
-Change-Id: Ibe78949435bb2f26ad68301e2710321bf37c9486
-Signed-off-by: Marco Baffo <marco@...2726...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1245
----
-
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1245
-This mail reflects revision 6 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
-
-        
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index e7fc50c..0c8eb84 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -1112,6 +1112,12 @@
-     }
-     else if (honor_received_options && buf_string_compare_advance(&buf, push_update_cmd))
-     {
-+        if (dco_enabled(&c->options))
-+        {
-+            msg(M_WARN, "WARN: PUSH_UPDATE messages cannot currently be processed in client mode while DCO is enabled, ignoring."
-+                        " To be able to process PUSH_UPDATE messages, be sure to use the --disable-dco option.");
-+            return PUSH_MSG_ERROR;
-+        }
-         return process_incoming_push_update(c, permission_mask, option_types_found, &buf, false);
-     }
-     else
-diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
-index 9138bdb..f306104 100644
---- a/src/openvpn/push_util.c
-+++ b/src/openvpn/push_util.c
-@@ -191,6 +191,13 @@
- int
- send_push_update(struct multi_context *m, const void *target, const char *msg, const push_update_type type, const int push_bundle_size)
- {
-+    if (dco_enabled(&m->top.options))
-+    {
-+        msg(M_WARN, "WARN: PUSH_UPDATE messages cannot currently be sent while DCO is enabled."
-+                    " To send a PUSH_UPDATE message, be sure to use the --disable-dco option.");
-+        return 0;
-+    }
-+
-     if (!msg || !*msg || !m
-         || (!target && type != UPT_BROADCAST))
-     {
-@@ -294,7 +301,6 @@
-         }                                                             \
-     } while (0)
+ - on the client, we current close + reopen the tun device on PUSH_UPDATE
+   reception - which is the most simple implementation (as compared to
+   "calculate the delta needed, and update the config").  Alas, this does
+   not work with DCO either - here, we have no problem with "vpn-ip",
+   as this does not matter in client/p2p mode - but here, we have KEYS
+   to address. "Close and reopen tun" = "there is no key material in
+   kernel for this (new) DCO peer", and thus, no packets pass.
  
--
- bool
- management_callback_send_push_update_broadcast(void *arg, const char *options)
- {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 34036f2..567560f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1926,8 +1926,12 @@
-         /* support for exit notify via control channel */
-         iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
- 
--        /* support push-updates */
--        iv_proto |= IV_PROTO_PUSH_UPDATE;
-+        /* currently push-update is not supported when DCO is enabled */
-+        if (!session->opt->dco_enabled)
-+        {
-+            /* support push-updates */
-+            iv_proto |= IV_PROTO_PUSH_UPDATE;
-+        }
- 
-         if (session->opt->pull)
-         {
-diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c
-index 8a5beeb..6e49f14 100644
---- a/tests/unit_tests/openvpn/test_push_update_msg.c
-+++ b/tests/unit_tests/openvpn/test_push_update_msg.c
-@@ -465,6 +465,7 @@
-     m->instances = calloc(1, sizeof(struct multi_instance *));
-     struct multi_instance *mi = calloc(1, sizeof(struct multi_instance));
-     *(m->instances) = mi;
-+    m->top.options.disable_dco = true;
-     *state = m;
-     return 0;
- }
+   For the client side, we do not really need to worry about DCO handling,
+   *if* we can do the ip address / route updates in an incremental way - but
+   this is more complex.  So for 2.7.0, we decided to go with "if DCO
+   is active, the client will signal 'no support for PUSH_UPDATE' and
+   also refuse incoming messages (from a server that does not check the
+   IV_ bits) with a clear message".  Afterwards, the necessary changes
+   for incremental updates get looked at.
+
+   For the server side, there is another patch coming that improves
+   learning/forgetting vpn IP addresses in the userland hash - and a
+   future patch could build on that, and update the information in DCO
+   with the new peer data.  But this is also no priority for 2.7.0
+   (as we consider PUSH_UPDATE server side to be more of a "work in 
+   progress" thing).  It does work without DCO.
+
+
+Thus, for now, refuse PUSH_UPDATE functionality on both ends if DCO is
+active on the local end.
+
+I have not tested this beyond what the BBs do (= unit tests are now
+fixed and pass).  The actual PUSH_UPDATE code is the same, it is just
+not reachable "if (dco)".
+
+Your patch has been applied to the master branch.
+
+commit 373178b32dfa8f272cb9322b5f0092b03c3c61c2
+Author: Marco Baffo
+Date:   Wed Oct 8 10:30:41 2025 +0200
+
+     PUSH_UPDATE: disabling PUSH_UPDATE server and client if DCO is enabled
+
+     Signed-off-by: Marco Baffo <marco@...2726...>
+     Acked-by: Antonio Quartulli <antonio@...2726...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1245
+     Message-Id: <20251008083046.27209-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59243711/
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
