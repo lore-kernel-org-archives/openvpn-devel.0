@@ -1,5 +1,5 @@
-Date: Wed, 8 Oct 2025 12:47:35 +0200 (CEST)
-Message-Id: <202510081047.598AlZhZ081890@...2054...>
+Date: Wed, 8 Oct 2025 12:47:39 +0200 (CEST)
+Message-Id: <202510081047.598AldMN081895@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <20251008100222.4610-1-gert@...1296...>
 References: <20251008100222.4610-1-gert@...1296...>
@@ -30,7 +30,7 @@ test_options_parse.c:288: note: Expected parameter declared here
 
 Your patch has been applied to the master branch.
 
-commit c9494e3ead87c83e08cfd505c2d2c5eebce066db
+commit 775488b81c493382625c368a71f06d009f826a35
 Author: Frank Lichtenheld
 Date:   Wed Oct 8 12:02:16 2025 +0200
 
@@ -40,7 +40,7 @@ Date:   Wed Oct 8 12:02:16 2025 +0200
      Acked-by: Gert Doering <gert@...1296...>
      Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1247
      Message-Id: <20251008100222.4610-1-gert@...1296...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20251008100222.4610-1-gert@...1296...
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59243809/
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
