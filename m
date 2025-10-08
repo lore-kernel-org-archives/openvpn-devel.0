@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 16:24:26 +0000
+Date: Wed, 8 Oct 2025 16:24:24 +0000
 In-Reply-To: <gerrit.1759937374000.I60df1e61ed89be52e9d032b5b49133a784f9811e@...2715...>
 References: <gerrit.1759937374000.I60df1e61ed89be52e9d032b5b49133a784f9811e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6cde8893d037f8b861bdba0076c9a16f63133a19-HTML@...2715...>
+Message-ID: <6cde8893d037f8b861bdba0076c9a16f63133a19-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8Ydj/d28Ldo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2bp+F+1q0Ns="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_options_parse:
  Remove --wrap
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8Ydj/d28Ldo=
+--2bp+F+1q0Ns=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-58?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1258?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: test_options_parse: Remove --wrap
 ......................................................................
@@ -58,7 +62,7 @@ M tests/unit_tests/openvpn/test_options_parse.c
 3 files changed, 38 insertions(+), 51 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/1258/2
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 37bfc03..9511bda 100644
@@ -127,7 +131,7 @@ t_testdriver
  endif
 @@ -192,11 +191,7 @@
  endif
-
+=20
  options_parse_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_s=
 rcdir)/src/compat @TEST_CFLAGS@
 -options_parse_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/op=
@@ -271,7 +275,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1258?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I60df1e61ed89be52e9d032b5b49133a784f9811e
@@ -282,224 +286,229 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8Ydj/d28Ldo=
+--2bp+F+1q0Ns=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1258?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">test_options_parse: Remove --wrap<br><br>After r=
-emoving --wrap from some other tests in<br>a previous commit I got confused=
- here myself.<br>--wrap is really only needed when you have the<br>original=
- function linked in. Somehow I thought<br>the call ordering and mocking log=
-ic needed this.<br><br>But this is wrong, so no need to use --wrap here<br>=
-since we currently do not link any of those<br>functions.<br><br>Change-Id:=
- I60df1e61ed89be52e9d032b5b49133a784f9811e<br>Signed-off-by: Frank Lichtenh=
-eld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&=
-gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1258<br>Message-I=
-d: &lt;20251008161357.5679-1-gert@...1296...&gt;<br>URL: https://sourceforg=
-e.net/p/openvpn/mailman/message/59244071/<br>Signed-off-by: Gert Doering &l=
-t;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M tests/unit_tests/open=
-vpn/Makefile.am<br>M tests/unit_tests/openvpn/test_options_parse.c<br>3 fil=
-es changed, 38 insertions(+), 51 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index 37bfc=
-03..9511bda 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
- b/CMakeLists.txt</span><br><span>@@ -660,6 +660,7 @@</span><br><span>     =
-    &quot;test_crypto&quot;</span><br><span>         &quot;test_misc&quot;<=
-/span><br><span>         &quot;test_ncp&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        &quot;test_options_parse&quot;</span><br>=
-<span>         &quot;test_packet_id&quot;</span><br><span>         &quot;te=
-st_pkt&quot;</span><br><span>         &quot;test_provider&quot;</span><br><=
-span>@@ -685,7 +686,6 @@</span><br><span>     # Clang-cl (which is also MSV=
-C) is wrongly detected to support wrap</span><br><span>     if (NOT MSVC AN=
-D &quot;${LD_SUPPORTS_WRAP}&quot;)</span><br><span>         list(APPEND uni=
-t_tests</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &q=
-uot;test_options_parse&quot;</span><br><span>             &quot;test_tls_cr=
-ypt&quot;</span><br><span>             )</span><br><span>     endif ()</spa=
-n><br><span>@@ -827,19 +827,11 @@</span><br><span>         src/compat/compa=
-t-strsep.c</span><br><span>         )</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (TARGET test_options_parse)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        target_link_options(=
-test_options_parse PRIVATE</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            -Wl,--wrap=3Dadd_option</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            -Wl,--wrap=3Dremove_option</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            -Wl,--wrap=3Dupdate_option<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    -Wl,--wrap=3Dusag=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_sources=
-(test_options_parse PRIVATE</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        tests/unit_tests/openvpn/mock_get_random.c</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/options_parse.c<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/=
-options_util.c</span><br><span>         )</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        target_sources(test_options_parse PRIVATE</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            tests/unit_test=
-s/openvpn/mock_get_random.c</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            src/openvpn/options_parse.c</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            src/openvpn/options_util.c</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        )</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    endif ()</span><br><span> </span><br><span=
->     target_sources(test_packet_id PRIVATE</span><br><span>         tests/=
-unit_tests/openvpn/mock_get_random.c</span><br><span>diff --git a/tests/uni=
-t_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><b=
-r><span>index 8e94665..05c0ea5 100644</span><br><span>--- a/tests/unit_test=
-s/openvpn/Makefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefi=
-le.am</span><br><span>@@ -5,11 +5,10 @@</span><br><span> AM_TESTSUITE_SUMMA=
-RY_HEADER =3D &#39; for $(PACKAGE_STRING) Unit-Tests&#39;</span><br><span> =
-</span><br><span> test_binaries =3D argv_testdriver buffer_testdriver crypt=
-o_testdriver packet_id_testdriver auth_token_testdriver \</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-	ncp_testdriver misc_testdriver pkt_tes=
-tdriver ssl_testdriver \</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+	ncp_testdriver misc_testdriver options_parse_testdriver pkt_testdrive=
-r ssl_testdriver \</span><br><span> 	user_pass_testdriver push_update_msg_t=
-estdriver provider_testdriver socket_testdriver</span><br><span> </span><br=
-><span> if HAVE_LD_WRAP_SUPPORT</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-test_binaries +=3D options_parse_testdriver</span><br><span> if !=
-WIN32</span><br><span> test_binaries +=3D tls_crypt_testdriver</span><br><s=
-pan> endif</span><br><span>@@ -192,11 +191,7 @@</span><br><span> endif</spa=
-n><br><span> </span><br><span> options_parse_testdriver_CFLAGS  =3D -I$(top=
-_srcdir)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-options_parse_testdriver_LDFLAGS =
-=3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn \</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dadd_option \</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dupdate_option \</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dremove_option \</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dusage</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+options_parse_testdriver_LD=
-FLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn</span><br><span> optio=
-ns_parse_testdriver_SOURCES =3D test_options_parse.c \</span><br><span> 	mo=
-ck_msg.c mock_msg.h test_common.h \</span><br><span> 	mock_get_random.c \</=
-span><br><span>diff --git a/tests/unit_tests/openvpn/test_options_parse.c b=
-/tests/unit_tests/openvpn/test_options_parse.c</span><br><span>index 0ae37f=
-5..59a3f6d 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_optio=
-ns_parse.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_options_pars=
-e.c</span><br><span>@@ -38,10 +38,10 @@</span><br><span> #include &quot;moc=
-k_msg.h&quot;</span><br><span> </span><br><span> void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-__wrap_add_option(struct options *options, =
-char *p[], bool is_inline, const char *file,</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                  int line, const int level, const m=
-sglvl_t msglevel,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-              const unsigned int permission_mask, unsigned int *option_type=
-s_found,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-     struct env_set *es)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+add_option(struct options *options, char *p[], bool is_inline, const c=
-har *file,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-  int line, const int level, const msglvl_t msglevel,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+           const unsigned int permission_=
-mask, unsigned int *option_types_found,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+           struct env_set *es)</span><br><span> {</span=
-><br><span>     function_called();</span><br><span>     check_expected(p);<=
-/span><br><span>@@ -49,23 +49,23 @@</span><br><span> }</span><br><span> </s=
-pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-__=
-wrap_remove_option(struct context *c, struct options *options, char *p[], b=
-ool is_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-              const char *file, int line, const msglvl_t msglevel,</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                     const uns=
-igned int permission_mask, unsigned int *option_types_found,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                     struct env_set =
-*es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+remove_option(s=
-truct context *c, struct options *options, char *p[], bool is_inline,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+              const char =
-*file, int line, const msglvl_t msglevel,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+              const unsigned int permission_mask, uns=
-igned int *option_types_found,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+              struct env_set *es)</span><br><span> {</span><br><=
-span> }</span><br><span> </span><br><span> void</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-__wrap_update_option(struct context *c, struct op=
-tions *options, char *p[], bool is_inline,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                     const char *file, int line, const=
- int level, const msglvl_t msglevel,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                     const unsigned int permission_mask, uns=
-igned int *option_types_found,</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                     struct env_set *es, unsigned int *update_opti=
-ons_found)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+update_op=
-tion(struct context *c, struct options *options, char *p[], bool is_inline,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              const=
- char *file, int line, const int level, const msglvl_t msglevel,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+              const unsigned i=
-nt permission_mask, unsigned int *option_types_found,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+              struct env_set *es, unsigne=
-d int *update_options_found)</span><br><span> {</span><br><span> }</span><b=
-r><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-__wrap_usage(void)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+usage(void)</span><br><span> {</span><br><span> }</span><br><span>=
- </span><br><span>@@ -270,34 +270,34 @@</span><br><span>     p_expect_inlin=
-eopt[1] =3D &quot;some text\nother text\n&quot;;</span><br><span> </span><b=
-r><span>     /* basic test */</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    expect_function_call(__wrap_add_option);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    expect_check(__wrap_add_option, p, chec=
-k_tokens, p_expect_someopt);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    expect_value(__wrap_add_option, is_inline, 0);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    expect_function_call(__wrap_add_opt=
-ion);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_check=
-(__wrap_add_option, p, check_tokens, p_expect_otheropt);</span><br><span st=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1258?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">test_options_parse: Remove --wrap<b=
+r><br>After removing --wrap from some other tests in<br>a previous commit I=
+ got confused here myself.<br>--wrap is really only needed when you have th=
+e<br>original function linked in. Somehow I thought<br>the call ordering an=
+d mocking logic needed this.<br><br>But this is wrong, so no need to use --=
+wrap here<br>since we currently do not link any of those<br>functions.<br><=
+br>Change-Id: I60df1e61ed89be52e9d032b5b49133a784f9811e<br>Signed-off-by: F=
+rank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;ger=
+t@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1258=
+<br>Message-Id: &lt;20251008161357.5679-1-gert@...1296...&gt;<br>URL: https=
+://sourceforge.net/p/openvpn/mailman/message/59244071/<br>Signed-off-by: Ge=
+rt Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M tests/un=
+it_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_options_par=
+se.c<br>3 files changed, 38 insertions(+), 51 deletions(-)<br><br></pre><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/=
+1258/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span=
+>index 37bfc03..9511bda 100644</span><br><span>--- a/CMakeLists.txt</span><=
+br><span>+++ b/CMakeLists.txt</span><br><span>@@ -660,6 +660,7 @@</span><br=
+><span>         &quot;test_crypto&quot;</span><br><span>         &quot;test=
+_misc&quot;</span><br><span>         &quot;test_ncp&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        &quot;test_options_parse&quot=
+;</span><br><span>         &quot;test_packet_id&quot;</span><br><span>     =
+    &quot;test_pkt&quot;</span><br><span>         &quot;test_provider&quot;=
+</span><br><span>@@ -685,7 +686,6 @@</span><br><span>     # Clang-cl (which=
+ is also MSVC) is wrongly detected to support wrap</span><br><span>     if =
+(NOT MSVC AND &quot;${LD_SUPPORTS_WRAP}&quot;)</span><br><span>         lis=
+t(APPEND unit_tests</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          &quot;test_options_parse&quot;</span><br><span>             &quot=
+;test_tls_crypt&quot;</span><br><span>             )</span><br><span>     e=
+ndif ()</span><br><span>@@ -827,19 +827,11 @@</span><br><span>         src/=
+compat/compat-strsep.c</span><br><span>         )</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    if (TARGET test_options_p=
+arse)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        target_l=
+ink_options(test_options_parse PRIVATE</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            -Wl,--wrap=3Dadd_option</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            -Wl,--wrap=3Dremove_option</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            -Wl,--wrap=3Du=
+pdate_option</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    -Wl,=
+--wrap=3Dusage</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    t=
+arget_sources(test_options_parse PRIVATE</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        tests/unit_tests/openvpn/mock_get_random.c</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/opt=
+ions_parse.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ src/openvpn/options_util.c</span><br><span>         )</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        target_sources(test_options_parse =
+PRIVATE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            te=
+sts/unit_tests/openvpn/mock_get_random.c</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            src/openvpn/options_parse.c</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            src/openvpn/options_util.c=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        )</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    endif ()</span><br><span> </s=
+pan><br><span>     target_sources(test_packet_id PRIVATE</span><br><span>  =
+       tests/unit_tests/openvpn/mock_get_random.c</span><br><span>diff --gi=
+t a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefil=
+e.am</span><br><span>index 8e94665..05c0ea5 100644</span><br><span>--- a/te=
+sts/unit_tests/openvpn/Makefile.am</span><br><span>+++ b/tests/unit_tests/o=
+penvpn/Makefile.am</span><br><span>@@ -5,11 +5,10 @@</span><br><span> AM_TE=
+STSUITE_SUMMARY_HEADER =3D &#39; for $(PACKAGE_STRING) Unit-Tests&#39;</spa=
+n><br><span> </span><br><span> test_binaries =3D argv_testdriver buffer_tes=
+tdriver crypto_testdriver packet_id_testdriver auth_token_testdriver \</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-	ncp_testdriver misc_testd=
+river pkt_testdriver ssl_testdriver \</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+	ncp_testdriver misc_testdriver options_parse_testdriver =
+pkt_testdriver ssl_testdriver \</span><br><span> 	user_pass_testdriver push=
+_update_msg_testdriver provider_testdriver socket_testdriver</span><br><spa=
+n> </span><br><span> if HAVE_LD_WRAP_SUPPORT</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-test_binaries +=3D options_parse_testdriver</span><b=
+r><span> if !WIN32</span><br><span> test_binaries +=3D tls_crypt_testdriver=
+</span><br><span> endif</span><br><span>@@ -192,11 +191,7 @@</span><br><spa=
+n> endif</span><br><span> </span><br><span> options_parse_testdriver_CFLAGS=
+  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-options_parse_testdriv=
+er_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn \</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dadd_option \</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dupdate_option \</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dremove_opt=
+ion \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	-Wl,--wrap=3Dus=
+age</span><br><span style=3D"color: hsl(120, 100%, 40%);">+options_parse_te=
+stdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn</span><br><=
+span> options_parse_testdriver_SOURCES =3D test_options_parse.c \</span><br=
+><span> 	mock_msg.c mock_msg.h test_common.h \</span><br><span> 	mock_get_r=
+andom.c \</span><br><span>diff --git a/tests/unit_tests/openvpn/test_option=
+s_parse.c b/tests/unit_tests/openvpn/test_options_parse.c</span><br><span>i=
+ndex 0ae37f5..59a3f6d 100644</span><br><span>--- a/tests/unit_tests/openvpn=
+/test_options_parse.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_o=
+ptions_parse.c</span><br><span>@@ -38,10 +38,10 @@</span><br><span> #includ=
+e &quot;mock_msg.h&quot;</span><br><span> </span><br><span> void</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-__wrap_add_option(struct options=
+ *options, char *p[], bool is_inline, const char *file,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                  int line, const int lev=
+el, const msglvl_t msglevel,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                  const unsigned int permission_mask, unsigned int *=
+option_types_found,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                struct env_set *es)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+add_option(struct options *options, char *p[], bool is_inli=
+ne, const char *file,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+           int line, const int level, const msglvl_t msglevel,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+           const unsigned int =
+permission_mask, unsigned int *option_types_found,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+           struct env_set *es)</span><br><sp=
+an> {</span><br><span>     function_called();</span><br><span>     check_ex=
+pected(p);</span><br><span>@@ -49,23 +49,23 @@</span><br><span> }</span><br=
+><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-__wrap_remove_option(struct context *c, struct options *options, c=
+har *p[], bool is_inline,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                     const char *file, int line, const msglvl_t msgleve=
+l,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+  const unsigned int permission_mask, unsigned int *option_types_found,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                     stru=
+ct env_set *es)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+remo=
+ve_option(struct context *c, struct options *options, char *p[], bool is_in=
+line,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+const char *file, int line, const msglvl_t msglevel,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              const unsigned int permissi=
+on_mask, unsigned int *option_types_found,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+              struct env_set *es)</span><br><span> {=
+</span><br><span> }</span><br><span> </span><br><span> void</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-__wrap_update_option(struct context *=
+c, struct options *options, char *p[], bool is_inline,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                     const char *file, int=
+ line, const int level, const msglvl_t msglevel,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                     const unsigned int permissi=
+on_mask, unsigned int *option_types_found,</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                     struct env_set *es, unsigned int =
+*update_options_found)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+update_option(struct context *c, struct options *options, char *p[], boo=
+l is_inline,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+       const char *file, int line, const int level, const msglvl_t msglevel=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              cons=
+t unsigned int permission_mask, unsigned int *option_types_found,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+              struct env_set =
+*es, unsigned int *update_options_found)</span><br><span> {</span><br><span=
+> }</span><br><span> </span><br><span> void</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-__wrap_usage(void)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+usage(void)</span><br><span> {</span><br><span> }</spa=
+n><br><span> </span><br><span>@@ -270,34 +270,34 @@</span><br><span>     p_=
+expect_inlineopt[1] =3D &quot;some text\nother text\n&quot;;</span><br><spa=
+n> </span><br><span>     /* basic test */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    expect_function_call(__wrap_add_option);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    expect_check(__wrap_add_opti=
+on, p, check_tokens, p_expect_someopt);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    expect_value(__wrap_add_option, is_inline, 0);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_function_call(__w=
+rap_add_option);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e=
+xpect_check(__wrap_add_option, p, check_tokens, p_expect_otheropt);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wrap_add_o=
+ption, is_inline, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    expect_function_call(add_option);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    expect_check(add_option, p, check_tokens, p_expect_=
+someopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect=
+_value(add_option, is_inline, 0);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    expect_function_call(add_option);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    expect_check(add_option, p, check_tok=
+ens, p_expect_otheropt);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    expect_value(add_option, is_inline, 0);</span><br><span>     read_=
+single_config(&amp;o, &quot;someopt parm1 parm2\n  otheropt 1 2&quot;);</sp=
+an><br><span> </span><br><span>     /* -- gets stripped */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    expect_function_call(__wrap_add_op=
+tion);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_chec=
+k(__wrap_add_option, p, check_tokens, p_expect_someopt);</span><br><span st=
 yle=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wrap_add_option, is_i=
-nline, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expec=
-t_function_call(add_option);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    expect_check(add_option, p, check_tokens, p_expect_someopt);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_value(add_=
-option, is_inline, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    expect_function_call(add_option);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    expect_check(add_option, p, check_tokens, p_expect=
-_otheropt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expe=
-ct_value(add_option, is_inline, 0);</span><br><span>     read_single_config=
-(&amp;o, &quot;someopt parm1 parm2\n  otheropt 1 2&quot;);</span><br><span>=
- </span><br><span>     /* -- gets stripped */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    expect_function_call(__wrap_add_option);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_check(__wrap_add_=
-option, p, check_tokens, p_expect_someopt);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    expect_value(__wrap_add_option, is_inline, 0);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_function_call=
-(__wrap_add_option);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   expect_check(__wrap_add_option, p, check_tokens, p_expect_otheropt);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wrap_a=
-dd_option, is_inline, 0);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    expect_function_call(add_option);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    expect_check(add_option, p, check_tokens, p_exp=
-ect_someopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ex=
-pect_value(add_option, is_inline, 0);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    expect_function_call(add_option);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    expect_check(add_option, p, check_t=
-okens, p_expect_otheropt);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    expect_value(add_option, is_inline, 0);</span><br><span>     rea=
-d_single_config(&amp;o, &quot;someopt parm1 parm2\n\t--otheropt 1 2&quot;);=
-</span><br><span> </span><br><span>     /* inline options */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    expect_function_call(__wrap_add_=
-option);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_ch=
-eck(__wrap_add_option, p, check_tokens, p_expect_inlineopt);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wrap_add_option, =
-is_inline, 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-xpect_function_call(add_option);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    expect_check(add_option, p, check_tokens, p_expect_inlineo=
-pt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_valu=
-e(add_option, is_inline, 1);</span><br><span>     read_single_config(&amp;o=
-, &quot;&lt;inlineopt&gt;\nsome text\nother text\n&lt;/inlineopt&gt;&quot;)=
-;</span><br><span> </span><br><span>     p_expect_inlineopt[0] =3D &quot;in=
-lineopt&quot;;</span><br><span>     p_expect_inlineopt[1] =3D A_TIMES_256 A=
-_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 &quot;\n&quot;;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    expect_function_call(__wrap_ad=
-d_option);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_=
-check(__wrap_add_option, p, check_tokens, p_expect_inlineopt);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wrap_add_option=
-, is_inline, 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- expect_function_call(add_option);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    expect_check(add_option, p, check_tokens, p_expect_inlin=
-eopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_va=
-lue(add_option, is_inline, 1);</span><br><span>     read_single_config(&amp=
-;o, &quot;&lt;inlineopt&gt;\n&quot; A_TIMES_256 A_TIMES_256 A_TIMES_256 A_T=
-IMES_256 A_TIMES_256 &quot;\n&lt;/inlineopt&gt;&quot;);</span><br><span> </=
-span><br><span>     gc_free(&amp;o.gc);</span><br><span></span><br></pre><p=
->To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1258?usp=
-=3Demail">change 1258</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1258?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+nline, 0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_=
+function_call(__wrap_add_option);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    expect_check(__wrap_add_option, p, check_tokens, p_expect_o=
+theropt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_v=
+alue(__wrap_add_option, is_inline, 0);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    expect_function_call(add_option);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    expect_check(add_option, p, check_=
+tokens, p_expect_someopt);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    expect_value(add_option, is_inline, 0);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    expect_function_call(add_option);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_check(add_optio=
+n, p, check_tokens, p_expect_otheropt);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    expect_value(add_option, is_inline, 0);</span><br><=
+span>     read_single_config(&amp;o, &quot;someopt parm1 parm2\n\t--otherop=
+t 1 2&quot;);</span><br><span> </span><br><span>     /* inline options */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_function_cal=
+l(__wrap_add_option);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    expect_check(__wrap_add_option, p, check_tokens, p_expect_inlineopt);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wrap=
+_add_option, is_inline, 1);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    expect_function_call(add_option);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    expect_check(add_option, p, check_tokens, p_e=
+xpect_inlineopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  expect_value(add_option, is_inline, 1);</span><br><span>     read_single_=
+config(&amp;o, &quot;&lt;inlineopt&gt;\nsome text\nother text\n&lt;/inlineo=
+pt&gt;&quot;);</span><br><span> </span><br><span>     p_expect_inlineopt[0]=
+ =3D &quot;inlineopt&quot;;</span><br><span>     p_expect_inlineopt[1] =3D =
+A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 A_TIMES_256 &quot;\n&quot;;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_function_c=
+all(__wrap_add_option);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    expect_check(__wrap_add_option, p, check_tokens, p_expect_inlineopt);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    expect_value(__wr=
+ap_add_option, is_inline, 1);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    expect_function_call(add_option);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    expect_check(add_option, p, check_tokens, p=
+_expect_inlineopt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    expect_value(add_option, is_inline, 1);</span><br><span>     read_singl=
+e_config(&amp;o, &quot;&lt;inlineopt&gt;\n&quot; A_TIMES_256 A_TIMES_256 A_=
+TIMES_256 A_TIMES_256 A_TIMES_256 &quot;\n&lt;/inlineopt&gt;&quot;);</span>=
+<br><span> </span><br><span>     gc_free(&amp;o.gc);</span><br><span></span=
+><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1258?usp=3Demail">change 1258</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demai=
+l">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
+tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1258?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I60df1e61ed89be52e9d032b5b49=
@@ -517,5 +526,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---8Ydj/d28Ldo=--
+--2bp+F+1q0Ns=--
 
