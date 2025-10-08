@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 13:40:55 +0000
-In-Reply-To: <gerrit.1759928297000.I59a49696acd665d43b21e5c23f24b86c15989cd6@...2715...>
-References: <gerrit.1759928297000.I59a49696acd665d43b21e5c23f24b86c15989cd6@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <18988882db6eda0b73057e8c981b9c2e87322870-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed,  8 Oct 2025 16:28:41 +0200
+Message-ID: <20251008142846.28486-1-gert@...1296...>
+In-Reply-To: <gerrit.1756814708000.Ica721a51b00d5314125bcaf5a586e718c5982aef@...2715...>
+References: <gerrit.1756814708000.Ica721a51b00d5314125bcaf5a586e718c5982aef@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iBdRHoS/a/0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: test_options_parse:
- Do not use uintmax_t instead of LargestIntegralType
+Subject: [Openvpn-devel] [PATCH v4] proto: Clean up conversion warnings
+ related to checksum macros
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,167 +14,201 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---iBdRHoS/a/0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-56?usp=3Demail )
+These should not change any behavior, they mostly clarify
+the used types and silence warnings, since these casts are
+deliberate.
 
-Change subject: test_options_parse: Do not use uintmax_t instead of Largest=
-IntegralType
-......................................................................
-
-test_options_parse: Do not use uintmax_t instead of LargestIntegralType
-
-At least on OpenBSD it seems that uintmax_t maps
-to unsigned long long always, but LargestIntegralType
-is unsigned long. So if we have a version of cmocka.h
-that defines LargestIntegralType then respect that.
-
-Change-Id: I59a49696acd665d43b21e5c23f24b86c15989cd6
+Change-Id: Ica721a51b00d5314125bcaf5a586e718c5982aef
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1256
-Message-Id: <20251008133338.23652-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59243971/
-Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: MaxF <max@...2606...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1164
 ---
-M tests/unit_tests/openvpn/test_options_parse.c
-1 file changed, 13 insertions(+), 2 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1164
+This mail reflects revision 4 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tes=
-ts/openvpn/test_options_parse.c
-index e552dd7..0ae37f5 100644
---- a/tests/unit_tests/openvpn/test_options_parse.c
-+++ b/tests/unit_tests/openvpn/test_options_parse.c
-@@ -198,14 +198,25 @@
-                        &option_types_found, &es);
+        
+diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
+index b49d4bb..7751a47 100644
+--- a/src/openvpn/clinat.c
++++ b/src/openvpn/clinat.c
+@@ -185,11 +185,7 @@
+                      const int direction)
+ {
+     struct ip_tcp_udp_hdr *h = (struct ip_tcp_udp_hdr *)BPTR(ipbuf);
+-    int i;
+-    uint32_t addr, *addr_ptr;
+-    const uint32_t *from, *to;
+-    int accumulate = 0;
+-    unsigned int amask;
++    int32_t accumulate = 0;
+     unsigned int alog = 0;
+ 
+     if (check_debug_level(D_CLIENT_NAT))
+@@ -197,8 +193,11 @@
+         print_pkt(&h->ip, "BEFORE", direction, D_CLIENT_NAT);
+     }
+ 
+-    for (i = 0; i < list->n; ++i)
++    for (int i = 0; i < list->n; ++i)
+     {
++        uint32_t addr, *addr_ptr;
++        const uint32_t *from, *to;
++        unsigned int amask;
+         const struct client_nat_entry *e = &list->entries[i]; /* current NAT rule */
+         if (e->type ^ direction)
+         {
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index e7111a8..10d61d1 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -130,11 +130,6 @@
+     }
  }
-
-+/* compat with various versions of cmocka.h
-+ * Older versions have LargestIntegralType. Newer
-+ * versions use uintmax_t. But LargestIntegralType
-+ * is not guaranteed to be equal to uintmax_t, so
-+ * we can't use that unconditionally. So we only use
-+ * it if cmocka.h does not define LargestIntegralType.
-+ */
-+#ifndef LargestIntegralType
-+#define LargestIntegralType uintmax_t
-+#endif
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ /*
+  * change TCP MSS option in SYN/SYN-ACK packets, if present
+  * this is generic for IPv4 and IPv6, as the TCP header is the same
+@@ -143,11 +138,8 @@
+ void
+ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
+ {
+-    int hlen, olen, optlen;
++    int olen, optlen;
+     uint8_t *opt;
+-    uint16_t mssval;
+-    int accumulate;
+-    struct openvpn_tcphdr *tc;
+ 
+     if (BLEN(buf) < (int)sizeof(struct openvpn_tcphdr))
+     {
+@@ -155,8 +147,8 @@
+     }
+ 
+     verify_align_4(buf);
+-    tc = (struct openvpn_tcphdr *)BPTR(buf);
+-    hlen = OPENVPN_TCPH_GET_DOFF(tc->doff_res);
++    struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *)BPTR(buf);
++    int hlen = OPENVPN_TCPH_GET_DOFF(tc->doff_res);
+ 
+     /* Invalid header length or header without options. */
+     if (hlen <= (int)sizeof(struct openvpn_tcphdr) || hlen > BLEN(buf))
+@@ -171,43 +163,37 @@
+         {
+             break;
+         }
+-        else if (*opt == OPENVPN_TCPOPT_NOP)
++        if (*opt == OPENVPN_TCPOPT_NOP)
+         {
+             optlen = 1;
++            continue;
+         }
+-        else
 +
- union tokens_parameter
++        optlen = *(opt + 1);
++        if (optlen <= 0 || optlen > olen)
+         {
+-            optlen = *(opt + 1);
+-            if (optlen <= 0 || optlen > olen)
++            break;
++        }
++        if (*opt == OPENVPN_TCPOPT_MAXSEG)
++        {
++            if (optlen != OPENVPN_TCPOLEN_MAXSEG)
+             {
+-                break;
++                continue;
+             }
+-            if (*opt == OPENVPN_TCPOPT_MAXSEG)
++            uint16_t mssval = (uint16_t)(opt[2] << 8) + opt[3];
++            if (mssval > maxmss)
+             {
+-                if (optlen != OPENVPN_TCPOLEN_MAXSEG)
+-                {
+-                    continue;
+-                }
+-                mssval = opt[2] << 8;
+-                mssval += opt[3];
+-                if (mssval > maxmss)
+-                {
+-                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
+-                    accumulate = htons(mssval);
+-                    opt[2] = (uint8_t)((maxmss >> 8) & 0xff);
+-                    opt[3] = (uint8_t)(maxmss & 0xff);
+-                    accumulate -= htons(maxmss);
+-                    ADJUST_CHECKSUM(accumulate, tc->check);
+-                }
++                dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
++                opt[2] = (uint8_t)((maxmss >> 8) & 0xff);
++                opt[3] = (uint8_t)(maxmss & 0xff);
++                int32_t accumulate = htons(mssval);
++                accumulate -= htons(maxmss);
++                ADJUST_CHECKSUM(accumulate, tc->check);
+             }
+         }
+     }
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static inline size_t
+ adjust_payload_max_cbc(const struct key_type *kt, size_t target)
  {
--    uintmax_t as_int;
-+    LargestIntegralType as_int;
-     void *as_pointer;
- };
-
- static int
--check_tokens(const uintmax_t value, const uintmax_t expected)
-+check_tokens(const LargestIntegralType value, const LargestIntegralType ex=
-pected)
- {
-     union tokens_parameter temp;
-     temp.as_int =3D value;
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I59a49696acd665d43b21e5c23f24b86c15989cd6
-Gerrit-Change-Number: 1256
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---iBdRHoS/a/0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1256?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">test_options_parse: Do not use uintmax_t instead=
- of LargestIntegralType<br><br>At least on OpenBSD it seems that uintmax_t =
-maps<br>to unsigned long long always, but LargestIntegralType<br>is unsigne=
-d long. So if we have a version of cmocka.h<br>that defines LargestIntegral=
-Type then respect that.<br><br>Change-Id: I59a49696acd665d43b21e5c23f24b86c=
-15989cd6<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Ac=
-ked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.=
-openvpn.net/c/openvpn/+/1256<br>Message-Id: &lt;20251008133338.23652-1-gert=
-@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/5=
-9243971/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M=
- tests/unit_tests/openvpn/test_options_parse.c<br>1 file changed, 13 insert=
-ions(+), 2 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_=
-tests/openvpn/test_options_parse.c</span><br><span>index e552dd7..0ae37f5 1=
-00644</span><br><span>--- a/tests/unit_tests/openvpn/test_options_parse.c</=
-span><br><span>+++ b/tests/unit_tests/openvpn/test_options_parse.c</span><b=
-r><span>@@ -198,14 +198,25 @@</span><br><span>                        &amp;=
-option_types_found, &amp;es);</span><br><span> }</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* compat with various versi=
-ons of cmocka.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * O=
-lder versions have LargestIntegralType. Newer</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * versions use uintmax_t. But LargestIntegralTyp=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * is not guarante=
-ed to be equal to uintmax_t, so</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * we can&#39;t use that unconditionally. So we only use</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * it if cmocka.h does not=
- define LargestIntegralType.</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef=
- LargestIntegralType</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#define LargestIntegralType uintmax_t</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> union tokens_parameter</span><br><span> {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    uintmax_t as_int;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    LargestIntegralType as_in=
-t;</span><br><span>     void *as_pointer;</span><br><span> };</span><br><sp=
-an> </span><br><span> static int</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-check_tokens(const uintmax_t value, const uintmax_t expected)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+check_tokens(const Lar=
-gestIntegralType value, const LargestIntegralType expected)</span><br><span=
-> {</span><br><span>     union tokens_parameter temp;</span><br><span>     =
-temp.as_int =3D value;</span><br><span></span><br></pre><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail">change 12=
-56</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1256?usp=3Demail"/><meta itemp=
-rop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I59a49696acd665d43b21e5c23f2=
-4b86c15989cd6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1256 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---iBdRHoS/a/0=--
+diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
+index 62157fa..94952bd 100644
+--- a/src/openvpn/proto.h
++++ b/src/openvpn/proto.h
+@@ -214,7 +214,7 @@
+  */
+ #define ADJUST_CHECKSUM(acc, cksum)                \
+     {                                              \
+-        int _acc = acc;                            \
++        int32_t _acc = acc;                        \
+         _acc += (cksum);                           \
+         if (_acc < 0)                              \
+         {                                          \
+@@ -231,16 +231,16 @@
+         }                                          \
+     }
+ 
+-#define ADD_CHECKSUM_32(acc, u32) \
+-    {                             \
+-        acc += (u32) & 0xffff;    \
+-        acc += (u32) >> 16;       \
++#define ADD_CHECKSUM_32(acc, u32)         \
++    {                                     \
++        acc += (int32_t)((u32) & 0xffff); \
++        acc += (int32_t)((u32) >> 16);    \
+     }
+ 
+-#define SUB_CHECKSUM_32(acc, u32) \
+-    {                             \
+-        acc -= (u32) & 0xffff;    \
+-        acc -= (u32) >> 16;       \
++#define SUB_CHECKSUM_32(acc, u32)         \
++    {                                     \
++        acc -= (int32_t)((u32) & 0xffff); \
++        acc -= (int32_t)((u32) >> 16);    \
+     }
+ 
+ /*
 
