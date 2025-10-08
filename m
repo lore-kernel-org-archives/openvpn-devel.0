@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 8 Oct 2025 12:33:30 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed,  8 Oct 2025 14:37:51 +0200
+Message-ID: <20251008123757.18670-1-gert@...1296...>
 In-Reply-To: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
 References: <gerrit.1758811182000.Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <3ba59ac2b5cb90fabccb70e1cf40ced97968aa50-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wZHNdUjiOX0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco-win: support for
- epoch data channel
+Subject: [Openvpn-devel] [PATCH v5] dco-win: support for epoch data channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +13,250 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---wZHNdUjiOX0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: flichtenheld, stipa.
+Starting from 2.8.0, dco-win driver supports
+epoch data channel. This adds missing userspace part.
 
-plaisthos has posted comments on this change by stipa. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1219?usp=3Demail )
+While on it, fix broken assert introduced in e77c34.
+Key-Id 0 is a perfectly valid.
 
-Change subject: dco-win: support for epoch data channel
-......................................................................
+Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1219
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 5: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1219
+This mail reflects revision 5 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-File src/openvpn/dco_win.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1219/comment/e49f28e4_b0ce5ad2?usp=3D=
-email :
-PS5, Line 551:     /* for epoch we use key material as a seed, no as actual=
- key */
-typo: not as actual key
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b7ffaaa5c43080
-Gerrit-Change-Number: 1219
-Gerrit-PatchSet: 5
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Wed, 08 Oct 2025 12:33:30 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---wZHNdUjiOX0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, stipa. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_win.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1219/comment/e49f28e4_b0ce5ad2?usp=3Demail">Patch Set=
- #5, Line 551:</a> <code style=3D"font-family:monospace,monospace">    /* f=
-or epoch we use key material as a seed, no as actual key */</code></p><p cl=
-ass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">typo=
-: not as actual key</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail">change 1219</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1219?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib5ed5969dcd405a47e34ed8479b=
-7ffaaa5c43080 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1219 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 08 Oct 2025 12:33:30=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---wZHNdUjiOX0=--
+        
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 6afc680..8fb4662 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -56,8 +56,9 @@
+                 const char *ciphername)
+ 
+ {
+-    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d, currently %d keys installed", __func__,
+-        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed);
++    bool epoch = ks->crypto_options.flags & CO_EPOCH_DATA_KEY_FORMAT;
++    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d epoch=%d, currently %d keys installed", __func__,
++        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed, epoch);
+ 
+     /* Install a key in the PRIMARY slot only when no other key exist.
+      * From that moment on, any new key will be installed in the SECONDARY
+@@ -71,7 +72,7 @@
+     }
+ 
+     int ret = dco_new_key(multi->dco, multi->dco_peer_id, ks->key_id, slot, encrypt_key, encrypt_iv,
+-                          decrypt_key, decrypt_iv, ciphername);
++                          decrypt_key, decrypt_iv, ciphername, epoch);
+     if ((ret == 0) && (multi->dco_keys_installed < 2))
+     {
+         multi->dco_keys_installed++;
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index a362977..e5e8709 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -251,11 +251,8 @@
+  * Return whether the dco implementation supports the new protocol features of
+  * a 64 bit packet counter and AEAD tag at the end.
+  */
+-static inline bool
+-dco_supports_epoch_data(struct context *c)
+-{
+-    return false;
+-}
++bool
++dco_supports_epoch_data(struct context *c);
+ #else  /* if defined(ENABLE_DCO) */
+ 
+ typedef void *dco_context_t;
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index b9f6bc7..947a769 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -487,14 +487,14 @@
+ int
+ dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
+             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
+-            const uint8_t *decrypt_iv, const char *ciphername)
++            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
+ {
+     struct ifdrv drv;
+     nvlist_t *nvl, *encrypt_nvl, *decrypt_nvl;
+     int ret;
+ 
+-    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
+-        ciphername);
++    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, epoch %d", __func__, slot, keyid, peerid,
++        ciphername, epoch);
+ 
+     nvl = nvlist_create(0);
+ 
+@@ -876,4 +876,10 @@
+     return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
+ }
+ 
++bool
++dco_supports_epoch_data(struct context *c)
++{
++    return false;
++}
++
+ #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
+diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
+index 86af003..97a7048 100644
+--- a/src/openvpn/dco_internal.h
++++ b/src/openvpn/dco_internal.h
+@@ -66,7 +66,7 @@
+ 
+ int dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
+                 const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
+-                const uint8_t *decrypt_iv, const char *ciphername);
++                const uint8_t *decrypt_iv, const char *ciphername, bool epoch);
+ 
+ int dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot);
+ 
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index d46fa46..0ae30b1 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -596,10 +596,10 @@
+ int
+ dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
+             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
+-            const uint8_t *decrypt_iv, const char *ciphername)
++            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
+ {
+-    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
+-        ciphername);
++    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s, epoch %d", __func__, slot, keyid, peerid,
++        ciphername, epoch);
+ 
+     const int key_len = cipher_kt_key_size(ciphername);
+     const int nonce_tail_len = 8;
+@@ -1298,4 +1298,10 @@
+     return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
+ }
+ 
++bool
++dco_supports_epoch_data(struct context *c)
++{
++    return false;
++}
++
+ #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 30307de..ca5eedf 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -528,7 +528,7 @@
+ int
+ dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,
+             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, const uint8_t *decrypt_key,
+-            const uint8_t *decrypt_iv, const char *ciphername)
++            const uint8_t *decrypt_iv, const char *ciphername, bool epoch)
+ {
+     msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s", __func__, slot, keyid, peerid,
+         ciphername);
+@@ -537,29 +537,42 @@
+     size_t key_len = cipher_kt_key_size(ciphername);
+     ASSERT(key_len <= 32);
+ 
+-    OVPN_CRYPTO_DATA crypto_data;
++    OVPN_CRYPTO_DATA_V2 crypto_data;
+     ZeroMemory(&crypto_data, sizeof(crypto_data));
+ 
+-    crypto_data.CipherAlg = dco_get_cipher(ciphername);
++    OVPN_CRYPTO_DATA *v1 = &crypto_data.V1;
++
++    v1->CipherAlg = dco_get_cipher(ciphername);
+     ASSERT(keyid >= 0 && keyid <= UCHAR_MAX);
+-    crypto_data.KeyId = (unsigned char)keyid;
+-    crypto_data.PeerId = peerid;
+-    crypto_data.KeySlot = slot;
++    v1->KeyId = (unsigned char)keyid;
++    v1->PeerId = peerid;
++    v1->KeySlot = slot;
+ 
+-    CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
+-    crypto_data.Encrypt.KeyLen = (unsigned char)key_len;
+-    CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
++    /* for epoch we use key material as a seed, no as actual key */
++    CopyMemory(v1->Encrypt.Key, encrypt_key, epoch ? 32 : key_len);
++    v1->Encrypt.KeyLen = (unsigned char)key_len;
++    CopyMemory(v1->Encrypt.NonceTail, encrypt_iv, nonce_len);
+ 
+-    CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
+-    crypto_data.Decrypt.KeyLen = (unsigned char)key_len;
+-    CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
++    CopyMemory(v1->Decrypt.Key, decrypt_key, epoch ? 32 : key_len);
++    v1->Decrypt.KeyLen = (unsigned char)key_len;
++    CopyMemory(v1->Decrypt.NonceTail, decrypt_iv, nonce_len);
+ 
+-    ASSERT(crypto_data.CipherAlg > 0);
++    ASSERT(v1->CipherAlg > 0);
++
++    DWORD ioctl = OVPN_IOCTL_NEW_KEY;
++    VOID *buf = &crypto_data.V1;
++    DWORD bufSize = sizeof(crypto_data.V1);
++    if (epoch)
++    {
++        ioctl = OVPN_IOCTL_NEW_KEY_V2;
++        crypto_data.CryptoOptions |= CRYPTO_OPTIONS_EPOCH;
++        buf = &crypto_data;
++        bufSize = sizeof(crypto_data);
++    }
+ 
+     DWORD bytes_returned = 0;
+ 
+-    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_NEW_KEY, &crypto_data, sizeof(crypto_data), NULL,
+-                         0, &bytes_returned, NULL))
++    if (!DeviceIoControl(dco->tt->hand, ioctl, buf, bufSize, NULL, 0, &bytes_returned, NULL))
+     {
+         msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed");
+         return -1;
+@@ -1076,4 +1089,11 @@
+     gc_free(&gc);
+ }
+ 
++bool
++dco_supports_epoch_data(struct context *c)
++{
++    OVPN_VERSION ver = { 0 };
++    return dco_get_version(&ver) && ((ver.Major == 2 && ver.Minor >= 8) || (ver.Major > 2));
++}
++
+ #endif /* defined(_WIN32) */
+diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
+index 9e1378a..e76770b 100644
+--- a/src/openvpn/ovpn_dco_win.h
++++ b/src/openvpn/ovpn_dco_win.h
+@@ -118,6 +118,13 @@
+ 	int PeerId;
+ } OVPN_CRYPTO_DATA, * POVPN_CRYPTO_DATA;
+ 
++#define CRYPTO_OPTIONS_EPOCH (1<<1)
++
++typedef struct _OVPN_CRYPTO_DATA_V2 {
++    OVPN_CRYPTO_DATA V1;
++    UINT32 CryptoOptions;
++} OVPN_CRYPTO_DATA_V2, * POVPN_CRYPTO_DATA_V2;
++
+ typedef struct _OVPN_MP_SET_PEER {
+     int PeerId;
+     LONG KeepaliveInterval;
 
