@@ -1,17 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Oct 2025 17:33:46 +0000
-In-Reply-To: <gerrit.1759751230000.I9b099924286f9bccb6833e1e40606abe72714bbb@...2715...>
-References: <gerrit.1759751230000.I9b099924286f9bccb6833e1e40606abe72714bbb@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
+Date: Thu, 9 Oct 2025 18:28:40 +0000
+In-Reply-To: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
+References: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <f489697b1d47464e25ceb99d654d97c47522e6c1-EmailReplacePatchSet-HTML@...2715...>
+ antonio@...2726...
+Message-ID: <856a350d08ef582ef87b1a44440e98c1ca5e4494-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aKdy5xkDLDk="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Preserve
- ifconfig(_ipv6)_local across reconnect
+Content-Type: multipart/alternative; boundary="SMRl56ItCdM="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE server:
+ check IV_PROTO before sending the message to the ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,198 +20,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aKdy5xkDLDk=
+--SMRl56ItCdM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1248?usp=3Demail )
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
+cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1255?usp=3Demail )
 
-Change subject: Preserve ifconfig(_ipv6)_local across reconnect
+Change subject: PUSH_UPDATE server: check IV_PROTO before sending the messa=
+ge to the client
 ......................................................................
 
-Preserve ifconfig(_ipv6)_local across reconnect
 
-Turns out that ifconfig_(ipv6)_local options are set once
-and are not reset on a reconnect.
-
-Consider following scenario:
-
- - connect first time, server pushes ifconfig-ipv6
- - add a ipv6 network route because ifconfig_ipv6_local is set
- - reconnect, server doesn't push ifconfig-ipv6
-
-Because of ifconfig_ipv6_local is not reset and holds the value
-set by the first connect, client adds a ipv6 network route -
-but this is wrong, since ipv6 wasn't pushed this time by the server.
-
-Fix by saving/restoring ifconfig(_ipv6)_local in a
-struct options_pre_connect along with other options which
-preserves the initial values until --pull modifications
-are applied.
-
-Github: OpenVPN/openvpn#850
-Change-Id: I9b099924286f9bccb6833e1e40606abe72714bbb
-Signed-off-by: Lev Stipakov <lev@...515...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1248
-Message-Id: <20251009171916.12811-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59244523/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/options.c
-M src/openvpn/options.h
-2 files changed, 9 insertions(+), 0 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/48/1248/3
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f2e6dec..fabcc1e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3143,6 +3143,9 @@
-         o->pre_connect->client_nat_defined =3D true;
-     }
-
-+    o->pre_connect->ifconfig_local =3D o->ifconfig_local;
-+    o->pre_connect->ifconfig_ipv6_local =3D o->ifconfig_ipv6_local;
-+
-     o->pre_connect->route_default_gateway =3D o->route_default_gateway;
-     o->pre_connect->route_ipv6_default_gateway =3D o->route_ipv6_default_g=
-ateway;
-
-@@ -3193,6 +3196,9 @@
-             o->routes_ipv6 =3D NULL;
-         }
-
-+        o->ifconfig_local =3D pp->ifconfig_local;
-+        o->ifconfig_ipv6_local =3D pp->ifconfig_ipv6_local;
-+
-         o->route_default_gateway =3D pp->route_default_gateway;
-         o->route_ipv6_default_gateway =3D pp->route_ipv6_default_gateway;
-
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index f038975..6ecf4f8 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -64,6 +64,9 @@
-     bool tuntap_options_defined;
-     struct tuntap_options tuntap_options;
-
-+    const char *ifconfig_local;
-+    const char *ifconfig_ipv6_local;
-+
-     bool routes_defined;
-     struct route_option_list *routes;
+Patch Set 2: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1248?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9b099924286f9bccb6833e1e40606abe72714bbb
-Gerrit-Change-Number: 1248
-Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Change-Id: I7c28da72be11c7efbed3068fbfc65f2959227bec
+Gerrit-Change-Number: 1255
+Gerrit-PatchSet: 2
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Thu, 09 Oct 2025 18:28:40 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---aKdy5xkDLDk=
+--SMRl56ItCdM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by stipa.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1248?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Preserve ifconfig(_ipv6)_local across reconnect<=
-br><br>Turns out that ifconfig_(ipv6)_local options are set once<br>and are=
- not reset on a reconnect.<br><br>Consider following scenario:<br><br> - co=
-nnect first time, server pushes ifconfig-ipv6<br> - add a ipv6 network rout=
-e because ifconfig_ipv6_local is set<br> - reconnect, server doesn&#39;t pu=
-sh ifconfig-ipv6<br><br>Because of ifconfig_ipv6_local is not reset and hol=
-ds the value<br>set by the first connect, client adds a ipv6 network route =
--<br>but this is wrong, since ipv6 wasn&#39;t pushed this time by the serve=
-r.<br><br>Fix by saving/restoring ifconfig(_ipv6)_local in a<br>struct opti=
-ons_pre_connect along with other options which<br>preserves the initial val=
-ues until --pull modifications<br>are applied.<br><br>Github: OpenVPN/openv=
-pn#850<br>Change-Id: I9b099924286f9bccb6833e1e40606abe72714bbb<br>Signed-of=
-f-by: Lev Stipakov &lt;lev@...515...&gt;<br>Gerrit URL: https://gerrit.open=
-vpn.net/c/openvpn/+/1248<br>Message-Id: &lt;20251009171916.12811-1-gert@...493...=
-1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59244=
-523/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src=
-/openvpn/options.c<br>M src/openvpn/options.h<br>2 files changed, 9 inserti=
-ons(+), 0 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
-nvpn.net:29418/openvpn refs/changes/48/1248/3</pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/open=
-vpn/options.c b/src/openvpn/options.c</span><br><span>index f2e6dec..fabcc1=
-e 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/=
-src/openvpn/options.c</span><br><span>@@ -3143,6 +3143,9 @@</span><br><span=
->         o-&gt;pre_connect-&gt;client_nat_defined =3D true;</span><br><spa=
-n>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    o-&gt;pre_connect-&gt;ifconfig_local =3D o-&gt;ifconfig_local;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o-&gt;pre_connect=
--&gt;ifconfig_ipv6_local =3D o-&gt;ifconfig_ipv6_local;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     o-&gt;pre_connect=
--&gt;route_default_gateway =3D o-&gt;route_default_gateway;</span><br><span=
->     o-&gt;pre_connect-&gt;route_ipv6_default_gateway =3D o-&gt;route_ipv6=
-_default_gateway;</span><br><span> </span><br><span>@@ -3193,6 +3196,9 @@</=
-span><br><span>             o-&gt;routes_ipv6 =3D NULL;</span><br><span>   =
-      }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        o-&gt;ifconfig_local =3D pp-&gt;ifconfig_local;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;ifconfig_ipv6_local=
- =3D pp-&gt;ifconfig_ipv6_local;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>         o-&gt;route_default_gateway =3D pp-&=
-gt;route_default_gateway;</span><br><span>         o-&gt;route_ipv6_default=
-_gateway =3D pp-&gt;route_ipv6_default_gateway;</span><br><span> </span><br=
-><span>diff --git a/src/openvpn/options.h b/src/openvpn/options.h</span><br=
-><span>index f038975..6ecf4f8 100644</span><br><span>--- a/src/openvpn/opti=
-ons.h</span><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -64,6 =
-+64,9 @@</span><br><span>     bool tuntap_options_defined;</span><br><span>=
-     struct tuntap_options tuntap_options;</span><br><span> </span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    const char *ifconfig_local;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *ifconf=
-ig_ipv6_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span>     bool routes_defined;</span><br><span>     struct route_opt=
-ion_list *routes;</span><br><span> </span><br><span></span><br></pre><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1248?usp=3Dema=
-il">change 1248</a>. To unsubscribe, or for help writing mail filters, visi=
-t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1248?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, mrbff, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail=
+">change 1255</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9b099924286f9bccb6833e1e406=
-06abe72714bbb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1248 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7c28da72be11c7efbed3068fbfc=
+65f2959227bec </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1255 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Oct 2025 18:28:40=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---aKdy5xkDLDk=--
+--SMRl56ItCdM=--
 
