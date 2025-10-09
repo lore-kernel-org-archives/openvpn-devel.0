@@ -1,15 +1,15 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Oct 2025 11:21:47 +0000
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Thu, 9 Oct 2025 11:45:08 +0000
 In-Reply-To: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
 References: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227..., marco@...2726...,
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <7cca2fe11d69a8b45262c7b935c19cfc2ab8a630-EmailReviewComments-HTML@...2715...>
+ antonio@...2726..., gert@...1296...
+Message-ID: <a735034dede54016d05f22fadee443e4cd243f4c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mPPZx7f1Wis="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2G2PRuU0n4U="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE server:
  check IV_PROTO before sending the message to the ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,16 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mPPZx7f1Wis=
+--2G2PRuU0n4U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, mrbff, plaisthos.
+Attention is currently required from: cron2, flichtenheld, ordex, plaisthos.
 
-ordex has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+mrbff has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
 net/c/openvpn/+/1255?usp=3Demail )
 
 Change subject: PUSH_UPDATE server: check IV_PROTO before sending the messa=
@@ -37,18 +36,23 @@ ge to the client
 ......................................................................
 
 
-Patch Set 2: Code-Review-2
+Patch Set 2:
 
 (1 comment)
 
 File src/openvpn/push_util.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1255/comment/9f86880a_824507c6?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1255/comment/b02c6dcb_0391bff1?usp=3D=
 email :
 PS2, Line 294:             msg(M_CLIENT, "ERROR: Peer ID: %u has not been u=
 pdated", curr_mi->context.c2.tls_multi->peer_id);
-I thought we wanted to print a message only in the BY_ID command, no? Here =
-it's the broadcast branch.
+> I thought we wanted to print a message only in the BY_ID command, no? Her=
+e it's the broadcast branch [=E2=80=A6]
+this is unrelated to the new patch, the error message was already, here, bu=
+t it is not triggered by the presence or not of the IV_PROTO_PUSH_UPDATE. I=
+t's just in case there is another generic problem, it should not happen nor=
+mally. I just removed the inline statement since I assert that tls_multi is=
+ not NULL (in support_push_update()).
 
 
 
@@ -72,38 +76,43 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Thu, 09 Oct 2025 11:21:47 +0000
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Thu, 09 Oct 2025 11:45:08 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: ordex <antonio@...2726...>
 
---mPPZx7f1Wis=
+--2G2PRuU0n4U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, mrbff, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</=
-p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
-ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1255/comment/9f86880a_824507c6?usp=3Demail">Patch S=
-et #2, Line 294:</a> <code style=3D"font-family:monospace,monospace">      =
-      msg(M_CLIENT, &quot;ERROR: Peer ID: %u has not been updated&quot;, cu=
-rr_mi-&gt;context.c2.tls_multi-&gt;peer_id);</code></p><p class=3D"blocks" =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">I thought we wanted=
- to print a message only in the BY_ID command, no? Here it&#39;s the broadc=
-ast branch.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1255?usp=3Demail">change 1255</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
-://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
-http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+rently required from: cron2, flichtenheld, ordex, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</p><u=
+l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
+0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1255/comment/b02c6dcb_0391bff1?usp=3Demail">Patch Set #=
+2, Line 294:</a> <code style=3D"font-family:monospace,monospace">          =
+  msg(M_CLIENT, &quot;ERROR: Peer ID: %u has not been updated&quot;, curr_m=
+i-&gt;context.c2.tls_multi-&gt;peer_id);</code></p><p><blockquote style=3D"=
+border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I thought we=
+ wanted to print a message only in the BY_ID command, no? Here it&#39;s the=
+ broadcast branch [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"=
+white-space: pre-wrap; word-wrap: break-word;">this is unrelated to the new=
+ patch, the error message was already, here, but it is not triggered by the=
+ presence or not of the IV_PROTO_PUSH_UPDATE. It&#39;s just in case there i=
+s another generic problem, it should not happen normally. I just removed th=
+e inline statement since I assert that tls_multi is not NULL (in support_pu=
+sh_update()).</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">change 1255</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -129,14 +138,16 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Oct 2025 11:21:47=
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Oct 2025 11:45:08=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
 
 </body></html>=
 
---mPPZx7f1Wis=--
+--2G2PRuU0n4U=--
 
