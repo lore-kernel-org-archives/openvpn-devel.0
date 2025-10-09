@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Oct 2025 11:50:25 +0000
+Date: Thu, 9 Oct 2025 11:52:59 +0000
 In-Reply-To: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
 References: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <59b410a40d2c20e62a051cb53c4b03fcd2c15202-EmailReviewComments-HTML@...2715...>
+Message-ID: <015af5ba593c30dc93ce51e298e25d100459c641-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BB32Mcz9teY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="LA1EKhRoGF4="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE server:
  check IV_PROTO before sending the message to the ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,11 +23,11 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---BB32Mcz9teY=
+--LA1EKhRoGF4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: cron2, flichtenheld, mrbff, plaisthos.
 
 ordex has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
 net/c/openvpn/+/1255?usp=3Demail )
@@ -37,7 +37,15 @@ ge to the client
 ......................................................................
 
 
-Patch Set 2: -Code-Review
+Patch Set 2: Code-Review+1
+
+(1 comment)
+
+Patchset:
+
+PS2:
+ok, this looks good to me
+
 
 
 --
@@ -60,27 +68,34 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 09 Oct 2025 11:50:25 +0000
-Gerrit-HasComments: No
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Thu, 09 Oct 2025 11:52:59 +0000
+Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---BB32Mcz9teY=
+--LA1EKhRoGF4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos. </p>
+rently required from: cron2, flichtenheld, mrbff, plaisthos. </p>
 <p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">View C=
-hange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">cha=
-nge 1255</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1255?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">ok, this lo=
+oks good to me</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/1255?usp=3Demail">change 1255</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -106,12 +121,14 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Oct 2025 11:50:25=
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Oct 2025 11:52:59=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---BB32Mcz9teY=--
+--LA1EKhRoGF4=--
 
