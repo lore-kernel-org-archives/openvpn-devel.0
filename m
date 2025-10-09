@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Oct 2025 20:59:38 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu,  9 Oct 2025 22:59:46 +0200
+Message-ID: <20251009205951.32301-1-gert@...1296...>
 In-Reply-To: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
 References: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- max@...2606...
-Message-ID: <f00db36100a18754db7b6380fc86c301cee3868d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+gWfhYzSODY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: options: Review use
- of positive_atoi vs atoi_constrained
+Subject: [Openvpn-devel] [PATCH v6] options: Review use of positive_atoi vs
+ atoi_constrained
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,125 +14,150 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---+gWfhYzSODY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: MaxF, flichtenheld, plaisthos.
+Replace where it is useful.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1153?usp=3Demail )
+While here also add a missing cast in atoi_constrained.
 
-Change subject: options: Review use of positive_atoi vs atoi_constrained
-......................................................................
+Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1153
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 6: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1153
+This mail reflects revision 6 of this Change.
 
-(1 comment)
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1153/comment/18e489ea_91e53016?usp=3D=
-email :
-PS5, Line 7997:         atoi_constrained(p[1], &options->max_routes_per_cli=
-ent, p[0], 1, INT_MAX, msglevel);
-> This changes the program behavior. [=E2=80=A6]
-I think this is acceptable.  There might be a config somewhere that has `ma=
-x-routes-per-client 0` in it, auto-upgraded to `1`, but it does not make an=
-y sense whatsoever... "do not use options you do not understand".
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
-Gerrit-Change-Number: 1153
-Gerrit-PatchSet: 6
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Thu, 09 Oct 2025 20:59:38 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: MaxF <max@...2606...>
-
---+gWfhYzSODY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: MaxF, flichtenheld, plaisthos. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1153/comment/18e489ea_91e53016?usp=3Demail">Patch Set=
- #5, Line 7997:</a> <code style=3D"font-family:monospace,monospace">       =
- atoi_constrained(p[1], &amp;options-&gt;max_routes_per_client, p[0], 1, IN=
-T_MAX, msglevel);</code></p><p><blockquote style=3D"border-left: 1px solid =
-#aaa; margin: 10px 0; padding: 0 10px;">This changes the program behavior. =
-[=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I think this is acceptable.  There might be a =
-config somewhere that has `max-routes-per-client 0` in it, auto-upgraded to=
- `1`, but it does not make any sense whatsoever... &quot;do not use options=
- you do not understand&quot;.</p></li></ul></li></ul><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail">change 1153<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1153?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id440917f433aab1a7db608ba04f=
-a95ba47c2ddde </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1153 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Oct 2025 20:59:38=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
-t; </div>
-
-</body></html>=
-
---+gWfhYzSODY=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f2e6dec..e6e0b6f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6415,21 +6415,15 @@
+     else if (streq(p[0], "tun-mtu-max") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
+-        int max_mtu = positive_atoi(p[1], msglevel);
+-        if (max_mtu < 68 || max_mtu > 65536)
+-        {
+-            msg(msglevel, "--tun-mtu-max value '%s' is invalid", p[1]);
+-        }
+-        else
+-        {
+-            options->ce.tun_mtu_max = max_mtu;
+-        }
++        atoi_constrained(p[1], &options->ce.tun_mtu_max, p[0], TUN_MTU_MAX_MIN, 65536, msglevel);
+     }
+     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
+-        options->ce.tun_mtu_extra = positive_atoi(p[1], msglevel);
+-        options->ce.tun_mtu_extra_defined = true;
++        if (atoi_constrained(p[1], &options->ce.tun_mtu_extra, p[0], 0, 65536, msglevel))
++        {
++            options->ce.tun_mtu_extra_defined = true;
++        }
+     }
+     else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
+     {
+@@ -6461,11 +6455,8 @@
+     else if (streq(p[0], "fragment") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
+-        options->ce.fragment = positive_atoi(p[1], msglevel);
+-
+-        if (options->ce.fragment < 68)
++        if (!atoi_constrained(p[1], &options->ce.fragment, p[0], 68, INT_MAX, msglevel))
+         {
+-            msg(msglevel, "--fragment needs to be at least 68");
+             goto err;
+         }
+ 
+@@ -7139,12 +7130,14 @@
+         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
+         if (p[1])
+         {
+-            int mssfix = positive_atoi(p[1], msglevel);
+-            /* can be 0, but otherwise it needs to be high enough so we can
+-             * substract room for headers. */
+-            if (mssfix != 0 && (mssfix < TLS_CHANNEL_MTU_MIN || mssfix > UINT16_MAX))
++            int mssfix;
++            if (!atoi_constrained(p[1], &mssfix, p[0], 0, UINT16_MAX, msglevel))
+             {
+-                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
++                goto err;
++            }
++            if (mssfix != 0 && mssfix < TLS_CHANNEL_MTU_MIN)
++            {
++                msg(msglevel, "mssfix needs to be >= %d, not %d", TLS_CHANNEL_MTU_MIN, mssfix);
+                 goto err;
+             }
+ 
+@@ -7397,7 +7390,7 @@
+     else if (streq(p[0], "max-routes-per-client") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_INHERIT);
+-        options->max_routes_per_client = max_int(positive_atoi(p[1], msglevel), 1);
++        atoi_constrained(p[1], &options->max_routes_per_client, p[0], 1, INT_MAX, msglevel);
+     }
+     else if (streq(p[0], "client-cert-not-required") && !p[1])
+     {
+@@ -9216,8 +9209,6 @@
+     }
+     else if (streq(p[0], "keying-material-exporter") && p[1] && p[2])
+     {
+-        int ekm_length = positive_atoi(p[2], msglevel);
+-
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+ 
+         if (strncmp(p[1], "EXPORTER", 8))
+@@ -9231,14 +9222,14 @@
+             msg(msglevel,
+                 "Keying material exporter label must not be '" EXPORT_KEY_DATA_LABEL "'.");
+         }
+-        if (ekm_length < 16 || ekm_length > 4095)
++
++        if (!atoi_constrained(p[2], &options->keying_material_exporter_length,
++                              p[0], 16, 4095, msglevel))
+         {
+-            msg(msglevel, "Invalid keying material exporter length");
+             goto err;
+         }
+ 
+         options->keying_material_exporter_label = p[1];
+-        options->keying_material_exporter_length = ekm_length;
+     }
+     else if (streq(p[0], "allow-recursive-routing") && !p[1])
+     {
+@@ -9273,15 +9264,14 @@
+     }
+     else if (streq(p[0], "vlan-pvid") && p[1] && !p[2])
+     {
++        int vlan_pvid;
+         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_INSTANCE);
+-        options->vlan_pvid = positive_atoi(p[1], msglevel);
+-        if (options->vlan_pvid < OPENVPN_8021Q_MIN_VID
+-            || options->vlan_pvid > OPENVPN_8021Q_MAX_VID)
++        if (!atoi_constrained(p[1], &vlan_pvid, p[0],
++                              OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID, msglevel))
+         {
+-            msg(msglevel, "the parameter of --vlan-pvid parameters must be >= %u and <= %u",
+-                OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID);
+             goto err;
+         }
++        options->vlan_pvid = (uint16_t)vlan_pvid;
+     }
+     else
+     {
 
