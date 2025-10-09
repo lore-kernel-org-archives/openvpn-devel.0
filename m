@@ -1,15 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Oct 2025 14:53:15 +0000
-In-Reply-To: <gerrit.1759942426000.Id08524661aa5bcc5cd42f27a1aacc636e2b2b004@...2715...>
-References: <gerrit.1759942426000.Id08524661aa5bcc5cd42f27a1aacc636e2b2b004@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5080f068cd8698f364b7c67ceb89e24dc04c7bd7-HTML@...2715...>
+Date: Thu, 9 Oct 2025 16:52:56 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <aOfMSG1vCAcERw8D@...1296...>
+References: <20251008170202.10333-1-gert@...1296...>
+ <202510091450.599EoMbS040917@...2054...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="FpyzF+Ivy88D+YZ5"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="B1788fh5hqY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: options_util: Fix
+In-Reply-To: <202510091450.599EoMbS040917@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: options_util: Fix
  conversion warning in atoi_constrained
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,158 +18,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---B1788fh5hqY=
-Content-Type: text/plain; charset="UTF-8"
+--FpyzF+Ivy88D+YZ5
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-61?usp=3Demail )
+Hi,
 
-Change subject: options_util: Fix conversion warning in atoi_constrained
-......................................................................
+On Thu, Oct 09, 2025 at 04:50:22PM +0200, Gert Doering wrote:
+> Trivial and definitely save :-) not tested beyond "BB all green".
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit 5ec23295f03bec3e241f65363bcd0f5b0b2afde6
+> Author: Frank Lichtenheld
+> Date:   Wed Oct 8 19:01:57 2025 +0200
 
-options_util: Fix conversion warning in atoi_constrained
+Or not...  wrong mail archive URL, corrected, did not adjust the mail.
 
-The whole purpose of the function is to make sure
-that cast is safe.
+This is what I will push now:
 
-Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b004
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1261
-Message-Id: <20251008170202.10333-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59244107/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/options_util.c
-1 file changed, 1 insertion(+), 10 deletions(-)
+commit 8fd8c4fa5d6c113925ebf42d47d9e8d3f292309f (HEAD -> master)
+Author: Frank Lichtenheld <frank@...2641...>
+Date:   Wed Oct 8 19:01:57 2025 +0200
 
+    options_util: Fix conversion warning in atoi_constrained
+=20=20=20=20
+    The whole purpose of the function is to make sure
+    that cast is safe.
+=20=20=20=20
+    Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b004
+    Signed-off-by: Frank Lichtenheld <frank@...2641...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1261
+    Message-Id: <20251008170202.10333-1-gert@...1296...>
+    URL: https://sourceforge.net/p/openvpn/mailman/message/59244107/
+    Signed-off-by: Gert Doering <gert@...1296...>
 
+(same commit, different URL: in the message -> different ID)
 
+sorry,
 
-diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
-index 8a1c083..eba7d39 100644
---- a/src/openvpn/options_util.c
-+++ b/src/openvpn/options_util.c
-@@ -162,11 +162,6 @@
-     return (int)i;
- }
+gert
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
- atoi_constrained(const char *str, int *value, const char *name, int min, i=
-nt max, msglvl_t msglevel)
- {
-@@ -194,14 +189,10 @@
-         return false;
-     }
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
--    *value =3D i;
-+    *value =3D (int)i;
-     return true;
- }
+Gert Doering - Munich, Germany                             gert@...1296...
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static const char *updatable_options[] =3D { "block-ipv6", "block-outside-=
-dns",
-                                            "dhcp-option", "dns",
-                                            "ifconfig", "ifconfig-ipv6",
+--FpyzF+Ivy88D+YZ5
+Content-Type: application/pgp-signature; name=signature.asc
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1261?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+-----BEGIN PGP SIGNATURE-----
 
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b004
-Gerrit-Change-Number: 1261
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+iQGcBAEBAgAGBQJo58xIAAoJEB2Cnv7KVigSk1MMAKxilkVe0ze9FS56N7DPKjdR
++iXugVfx8Ar3wUpfc95U0XZsHepd6HvvPtFACjD2XyZ5ZZqsTlfWhBKOVtwxdeVE
+JLbUdLB4roCR2v/O8z2LzdTHbdsJzbxpkNaZDkJZTlqLDD4blNPlODMoP4ovPKyg
+z9BaP3jvzrlQHtbka4OTrBNMG9fHVhxa1yKgBo0ATheojqQSd+/dySIk7rE6zJnq
+vUhr4UHB/+qbM9BzgYNuHkCD+wUxJjd89QOPZ/8HhWAkDdhaZGpmYYKrYGCTzKkO
+bj5KpyBECEqx58+ZxNXSeq+aVsVAMKIkPopa4M3odwMEeKujU3uK3KrXzF8tW3IW
+SEvS1AtQtyQ49S0HIXb5yGyunhOy/1GzuceWk05pqfaJTDmauHRtJcvXiaq0Hz6b
+xOKV3aExgZIRxFnN9sygw9P5sTZ0omFIstnZF8qHLRi6P6m3BudARzU4DqgIqpF7
+SnCjlxUfHxFFWx7u1l7PrZqhdJ0zJ2jl5JiD14ORmQ==
+=ifoq
+-----END PGP SIGNATURE-----
 
---B1788fh5hqY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1261?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">options_util: Fix conversion warning in atoi_con=
-strained<br><br>The whole purpose of the function is to make sure<br>that c=
-ast is safe.<br><br>Change-Id: Id08524661aa5bcc5cd42f27a1aacc636e2b2b004<br=
->Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Ger=
-t Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net=
-/c/openvpn/+/1261<br>Message-Id: &lt;20251008170202.10333-1-gert@...1296...=
-&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59244107/<br=
->Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvp=
-n/options_util.c<br>1 file changed, 1 insertion(+), 10 deletions(-)<br><br>=
-</pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c</sp=
-an><br><span>index 8a1c083..eba7d39 100644</span><br><span>--- a/src/openvp=
-n/options_util.c</span><br><span>+++ b/src/openvpn/options_util.c</span><br=
-><span>@@ -162,11 +162,6 @@</span><br><span>     return (int)i;</span><br><=
-span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconv=
-ersion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</=
-span><br><span> atoi_constrained(const char *str, int *value, const char *n=
-ame, int min, int max, msglvl_t msglevel)</span><br><span> {</span><br><spa=
-n>@@ -194,14 +189,10 @@</span><br><span>         return false;</span><br><s=
-pan>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    *value =3D i;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    *value =3D (int)i;</span><br><span>     return true;</span><br><sp=
-an> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span> static const char *updatable_options[] =3D =
-{ &quot;block-ipv6&quot;, &quot;block-outside-dns&quot;,</span><br><span>  =
-                                          &quot;dhcp-option&quot;, &quot;dn=
-s&quot;,</span><br><span>                                            &quot;=
-ifconfig&quot;, &quot;ifconfig-ipv6&quot;,</span><br><span></span><br></pre=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1261?us=
-p=3Demail">change 1261</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1261?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id08524661aa5bcc5cd42f27a1aa=
-cc636e2b2b004 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1261 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---B1788fh5hqY=--
+--FpyzF+Ivy88D+YZ5--
 
