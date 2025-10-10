@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Oct 2025 22:49:21 +0000
-References: <gerrit.1760136547000.I30a50826350ac3176443cf3bf16d3972609723a2@...2715...>
+Date: Fri, 10 Oct 2025 22:49:17 +0000
+References: <gerrit.1760136547000.I62a8f62b9c0938cfcb99d184b07034515c076303@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <f53e8e7b85e5a2057c6ada4dd12db693c5bd9344-HTML@...2715...>
+Message-ID: <ea28a00ab9f7c328b8e5ce0dd311df2c5434cf00-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3Ag45k8iCbw="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dhcp: Clean up type
- handling of write_dhcp_*
+Content-Type: multipart/alternative; boundary="7oSTbA6Iiu0="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move
+ build_dhcp_options_string from tun to dhcp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3Ag45k8iCbw=
+--7oSTbA6Iiu0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,387 +32,1025 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail
 
 to review the following change.
 
 
-Change subject: dhcp: Clean up type handling of write_dhcp_*
+Change subject: Move build_dhcp_options_string from tun to dhcp
 ......................................................................
 
-dhcp: Clean up type handling of write_dhcp_*
+Move build_dhcp_options_string from tun to dhcp
 
-Use more appropriate types. Add casts where
-necessary but ensure that they are safe.
+Seems suitably related and tun.c is one of the
+huge ones.
 
-Change-Id: I30a50826350ac3176443cf3bf16d3972609723a2
+In preparation of adding UTs for the code.
+
+Change-Id: I62a8f62b9c0938cfcb99d184b07034515c076303
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
 M src/openvpn/dhcp.c
-M src/openvpn/options.c
-M src/openvpn/tun.h
-3 files changed, 21 insertions(+), 32 deletions(-)
+M src/openvpn/dhcp.h
+M src/openvpn/tun.c
+3 files changed, 207 insertions(+), 196 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/1268/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/1265/1
 
 diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
-index 0893ec7..a34bfca 100644
+index 850a4b6..653127d 100644
 --- a/src/openvpn/dhcp.c
 +++ b/src/openvpn/dhcp.c
-@@ -188,18 +188,13 @@
+@@ -185,3 +185,203 @@
+     }
+     return 0;
+ }
++
++#if defined(_WIN32)
++
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
++/*
++ * Convert DHCP options from the command line / config file
++ * into a raw DHCP-format options string.
++ */
++
++static void
++write_dhcp_u8(struct buffer *buf, const int type, const int data, bool *er=
+ror)
++{
++    if (!buf_safe(buf, 3))
++    {
++        *error =3D true;
++        msg(M_WARN, "write_dhcp_u8: buffer overflow building DHCP options"=
+);
++        return;
++    }
++    buf_write_u8(buf, type);
++    buf_write_u8(buf, 1);
++    buf_write_u8(buf, data);
++}
++
++static void
++write_dhcp_u32_array(struct buffer *buf, const int type, const uint32_t *d=
+ata,
++                     const unsigned int len, bool *error)
++{
++    if (len > 0)
++    {
++        int i;
++        const int size =3D len * sizeof(uint32_t);
++
++        if (!buf_safe(buf, 2 + size))
++        {
++            *error =3D true;
++            msg(M_WARN, "write_dhcp_u32_array: buffer overflow building DH=
+CP options");
++            return;
++        }
++        if (size < 1 || size > 255)
++        {
++            *error =3D true;
++            msg(M_WARN, "write_dhcp_u32_array: size (%d) must be > 0 and <=
+=3D 255", size);
++            return;
++        }
++        buf_write_u8(buf, type);
++        buf_write_u8(buf, size);
++        for (i =3D 0; i < len; ++i)
++        {
++            buf_write_u32(buf, data[i]);
++        }
++    }
++}
++
++static void
++write_dhcp_str(struct buffer *buf, const int type, const char *str, bool *=
+error)
++{
++    const int len =3D strlen(str);
++    if (!buf_safe(buf, 2 + len))
++    {
++        *error =3D true;
++        msg(M_WARN, "write_dhcp_str: buffer overflow building DHCP options=
+");
++        return;
++    }
++    if (len < 1 || len > 255)
++    {
++        *error =3D true;
++        msg(M_WARN, "write_dhcp_str: string '%s' must be > 0 bytes and <=
+=3D 255 bytes", str);
++        return;
++    }
++    buf_write_u8(buf, type);
++    buf_write_u8(buf, len);
++    buf_write(buf, str, len);
++}
++
++/*
++ * RFC3397 states that multiple searchdomains are encoded as follows:
++ *  - at start the length of the entire option is given
++ *  - each subdomain is preceded by its length
++ *  - each searchdomain is separated by a NUL character
++ * e.g. if you want "openvpn.net" and "duckduckgo.com" then you end up with
++ *  0x1D  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00
++ */
++static void
++write_dhcp_search_str(struct buffer *buf, const int type, const char *cons=
+t *str_array,
++                      int array_len, bool *error)
++{
++    char tmp_buf[256];
++    int i;
++    int len =3D 0;
++    int label_length_pos;
++
++    for (i =3D 0; i < array_len; i++)
++    {
++        const char *ptr =3D str_array[i];
++
++        if (strlen(ptr) + len + 1 > sizeof(tmp_buf))
++        {
++            *error =3D true;
++            msg(M_WARN, "write_dhcp_search_str: temp buffer overflow build=
+ing DHCP options");
++            return;
++        }
++        /* Loop over all subdomains separated by a dot and replace the dot
++         * with the length of the subdomain */
++
++        /* label_length_pos points to the byte to be replaced by the length
++         * of the following domain label */
++        label_length_pos =3D len++;
++
++        while (true)
++        {
++            if (*ptr =3D=3D '.' || *ptr =3D=3D '\0')
++            {
++                tmp_buf[label_length_pos] =3D (len - label_length_pos) - 1;
++                label_length_pos =3D len;
++                if (*ptr =3D=3D '\0')
++                {
++                    break;
++                }
++            }
++            tmp_buf[len++] =3D *ptr++;
++        }
++        /* And close off with an extra NUL char */
++        tmp_buf[len++] =3D 0;
++    }
++
++    if (!buf_safe(buf, 2 + len))
++    {
++        *error =3D true;
++        msg(M_WARN, "write_search_dhcp_str: buffer overflow building DHCP =
+options");
++        return;
++    }
++    if (len > 255)
++    {
++        *error =3D true;
++        msg(M_WARN, "write_dhcp_search_str: search domain string must be <=
+=3D 255 bytes");
++        return;
++    }
++
++    buf_write_u8(buf, type);
++    buf_write_u8(buf, len);
++    buf_write(buf, tmp_buf, len);
++}
++
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic pop
++#endif
++
++bool
++build_dhcp_options_string(struct buffer *buf, const struct tuntap_options =
+*o)
++{
++    bool error =3D false;
++    if (o->domain)
++    {
++        write_dhcp_str(buf, 15, o->domain, &error);
++    }
++
++    if (o->netbios_scope)
++    {
++        write_dhcp_str(buf, 47, o->netbios_scope, &error);
++    }
++
++    if (o->netbios_node_type)
++    {
++        write_dhcp_u8(buf, 46, o->netbios_node_type, &error);
++    }
++
++    write_dhcp_u32_array(buf, 6, (uint32_t *)o->dns, o->dns_len, &error);
++    write_dhcp_u32_array(buf, 44, (uint32_t *)o->wins, o->wins_len, &error=
+);
++    write_dhcp_u32_array(buf, 42, (uint32_t *)o->ntp, o->ntp_len, &error);
++    write_dhcp_u32_array(buf, 45, (uint32_t *)o->nbdd, o->nbdd_len, &error=
+);
++
++    if (o->domain_search_list_len > 0)
++    {
++        write_dhcp_search_str(buf, 119, o->domain_search_list, o->domain_s=
+earch_list_len, &error);
++    }
++
++    /* the MS DHCP server option 'Disable Netbios-over-TCP/IP
++     * is implemented as vendor option 001, value 002.
++     * A value of 001 means 'leave NBT alone' which is the default */
++    if (o->disable_nbt)
++    {
++        if (!buf_safe(buf, 8))
++        {
++            msg(M_WARN, "build_dhcp_options_string: buffer overflow buildi=
+ng DHCP options");
++            return false;
++        }
++        buf_write_u8(buf, 43);
++        buf_write_u8(buf, 6); /* total length field */
++        buf_write_u8(buf, 0x001);
++        buf_write_u8(buf, 4); /* length of the vendor specified field */
++        buf_write_u32(buf, 0x002);
++    }
++    return !error;
++}
++
++#endif /* defined(_WIN32) */
+diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h
+index af5c2c4..8e15a39 100644
+--- a/src/openvpn/dhcp.h
++++ b/src/openvpn/dhcp.h
+@@ -84,4 +84,10 @@
 
- #if defined(_WIN32) || defined(DHCP_UNIT_TEST)
+ in_addr_t dhcp_extract_router_msg(struct buffer *ipbuf);
+
++#if defined(_WIN32)
++#include "tun.h"
++
++bool build_dhcp_options_string(struct buffer *buf, const struct tuntap_opt=
+ions *o);
++#endif
++
+ #endif /* ifndef DHCP_H */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index e35f889..097b9e8 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -45,6 +45,7 @@
+ #include "win32.h"
+ #include "wfp_block.h"
+ #include "networking.h"
++#include "dhcp.h"
+
+ #include "memdbg.h"
+
+@@ -5554,202 +5555,6 @@
+     return ret;
+ }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- /*
-  * Convert DHCP options from the command line / config file
-  * into a raw DHCP-format options string.
-  */
-
- static void
+-/*
+- * Convert DHCP options from the command line / config file
+- * into a raw DHCP-format options string.
+- */
+-
+-static void
 -write_dhcp_u8(struct buffer *buf, const int type, const int data, bool *er=
 ror)
-+write_dhcp_u8(struct buffer *buf, const uint8_t type, const uint8_t data, =
-bool *error)
- {
-     if (!buf_safe(buf, 3))
-     {
-@@ -213,13 +208,12 @@
- }
-
- static void
+-{
+-    if (!buf_safe(buf, 3))
+-    {
+-        *error =3D true;
+-        msg(M_WARN, "write_dhcp_u8: buffer overflow building DHCP options"=
+);
+-        return;
+-    }
+-    buf_write_u8(buf, type);
+-    buf_write_u8(buf, 1);
+-    buf_write_u8(buf, data);
+-}
+-
+-static void
 -write_dhcp_u32_array(struct buffer *buf, const int type, const uint32_t *d=
 ata,
-+write_dhcp_u32_array(struct buffer *buf, const uint8_t type, const uint32_=
-t *data,
-                      const unsigned int len, bool *error)
- {
-     if (len > 0)
-     {
+-                     const unsigned int len, bool *error)
+-{
+-    if (len > 0)
+-    {
 -        int i;
 -        const int size =3D len * sizeof(uint32_t);
-+        const size_t size =3D len * sizeof(uint32_t);
-
-         if (!buf_safe(buf, 2 + size))
-         {
-@@ -230,12 +224,12 @@
-         if (size < 1 || size > 255)
-         {
-             *error =3D true;
+-
+-        if (!buf_safe(buf, 2 + size))
+-        {
+-            *error =3D true;
+-            msg(M_WARN, "write_dhcp_u32_array: buffer overflow building DH=
+CP options");
+-            return;
+-        }
+-        if (size < 1 || size > 255)
+-        {
+-            *error =3D true;
 -            msg(M_WARN, "write_dhcp_u32_array: size (%d) must be > 0 and <=
 =3D 255", size);
-+            msg(M_WARN, "write_dhcp_u32_array: size (%zu) must be > 0 and =
-<=3D 255", size);
-             return;
-         }
-         buf_write_u8(buf, type);
+-            return;
+-        }
+-        buf_write_u8(buf, type);
 -        buf_write_u8(buf, size);
 -        for (i =3D 0; i < len; ++i)
-+        buf_write_u8(buf, (uint8_t)size);
-+        for (unsigned int i =3D 0; i < len; ++i)
-         {
-             buf_write_u32(buf, data[i]);
-         }
-@@ -243,9 +237,9 @@
- }
-
- static void
+-        {
+-            buf_write_u32(buf, data[i]);
+-        }
+-    }
+-}
+-
+-static void
 -write_dhcp_str(struct buffer *buf, const int type, const char *str, bool *=
 error)
-+write_dhcp_str(struct buffer *buf, const uint8_t type, const char *str, bo=
-ol *error)
- {
+-{
 -    const int len =3D strlen(str);
-+    const size_t len =3D strlen(str);
-     if (!buf_safe(buf, 2 + len))
-     {
-         *error =3D true;
-@@ -259,7 +253,7 @@
-         return;
-     }
-     buf_write_u8(buf, type);
+-    if (!buf_safe(buf, 2 + len))
+-    {
+-        *error =3D true;
+-        msg(M_WARN, "write_dhcp_str: buffer overflow building DHCP options=
+");
+-        return;
+-    }
+-    if (len < 1 || len > 255)
+-    {
+-        *error =3D true;
+-        msg(M_WARN, "write_dhcp_str: string '%s' must be > 0 bytes and <=
+=3D 255 bytes", str);
+-        return;
+-    }
+-    buf_write_u8(buf, type);
 -    buf_write_u8(buf, len);
-+    buf_write_u8(buf, (uint8_t)len);
-     buf_write(buf, str, len);
- }
-
-@@ -272,15 +266,14 @@
-  *  0x1D  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00
-  */
- static void
+-    buf_write(buf, str, len);
+-}
+-
+-/*
+- * RFC3397 states that multiple searchdomains are encoded as follows:
+- *  - at start the length of the entire option is given
+- *  - each subdomain is preceded by its length
+- *  - each searchdomain is separated by a NUL character
+- * e.g. if you want "openvpn.net" and "duckduckgo.com" then you end up with
+- *  0x1D  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00
+- */
+-static void
 -write_dhcp_search_str(struct buffer *buf, const int type, const char *cons=
 t *str_array,
-+write_dhcp_search_str(struct buffer *buf, const uint8_t type, const char *=
-const *str_array,
-                       int array_len, bool *error)
- {
-     char tmp_buf[256];
+-                      int array_len, bool *error)
+-{
+-    char tmp_buf[256];
 -    int i;
 -    int len =3D 0;
 -    int label_length_pos;
-+    size_t len =3D 0;
-+    size_t label_length_pos;
-
+-
 -    for (i =3D 0; i < array_len; i++)
-+    for (int i =3D 0; i < array_len; i++)
-     {
-         const char *ptr =3D str_array[i];
-
-@@ -301,7 +294,8 @@
-         {
-             if (*ptr =3D=3D '.' || *ptr =3D=3D '\0')
-             {
+-    {
+-        const char *ptr =3D str_array[i];
+-
+-        if (strlen(ptr) + len + 1 > sizeof(tmp_buf))
+-        {
+-            *error =3D true;
+-            msg(M_WARN, "write_dhcp_search_str: temp buffer overflow build=
+ing DHCP options");
+-            return;
+-        }
+-        /* Loop over all subdomains separated by a dot and replace the dot
+-         * with the length of the subdomain */
+-
+-        /* label_length_pos points to the byte to be replaced by the length
+-         * of the following domain label */
+-        label_length_pos =3D len++;
+-
+-        while (true)
+-        {
+-            if (*ptr =3D=3D '.' || *ptr =3D=3D '\0')
+-            {
 -                tmp_buf[label_length_pos] =3D (len - label_length_pos) - 1;
-+                /* cast is protected by sizeof(tmp_buf) */
-+                tmp_buf[label_length_pos] =3D (char)(len - label_length_po=
-s - 1);
-                 label_length_pos =3D len;
-                 if (*ptr =3D=3D '\0')
-                 {
-@@ -328,14 +322,10 @@
-     }
-
-     buf_write_u8(buf, type);
+-                label_length_pos =3D len;
+-                if (*ptr =3D=3D '\0')
+-                {
+-                    break;
+-                }
+-            }
+-            tmp_buf[len++] =3D *ptr++;
+-        }
+-        /* And close off with an extra NUL char */
+-        tmp_buf[len++] =3D 0;
+-    }
+-
+-    if (!buf_safe(buf, 2 + len))
+-    {
+-        *error =3D true;
+-        msg(M_WARN, "write_search_dhcp_str: buffer overflow building DHCP =
+options");
+-        return;
+-    }
+-    if (len > 255)
+-    {
+-        *error =3D true;
+-        msg(M_WARN, "write_dhcp_search_str: search domain string must be <=
+=3D 255 bytes");
+-        return;
+-    }
+-
+-    buf_write_u8(buf, type);
 -    buf_write_u8(buf, len);
-+    buf_write_u8(buf, (uint8_t)len);
-     buf_write(buf, tmp_buf, len);
- }
-
+-    buf_write(buf, tmp_buf, len);
+-}
+-
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- bool
- build_dhcp_options_string(struct buffer *buf, const struct tuntap_options =
+-static bool
+-build_dhcp_options_string(struct buffer *buf, const struct tuntap_options =
 *o)
+-{
+-    bool error =3D false;
+-    if (o->domain)
+-    {
+-        write_dhcp_str(buf, 15, o->domain, &error);
+-    }
+-
+-    if (o->netbios_scope)
+-    {
+-        write_dhcp_str(buf, 47, o->netbios_scope, &error);
+-    }
+-
+-    if (o->netbios_node_type)
+-    {
+-        write_dhcp_u8(buf, 46, o->netbios_node_type, &error);
+-    }
+-
+-    write_dhcp_u32_array(buf, 6, (uint32_t *)o->dns, o->dns_len, &error);
+-    write_dhcp_u32_array(buf, 44, (uint32_t *)o->wins, o->wins_len, &error=
+);
+-    write_dhcp_u32_array(buf, 42, (uint32_t *)o->ntp, o->ntp_len, &error);
+-    write_dhcp_u32_array(buf, 45, (uint32_t *)o->nbdd, o->nbdd_len, &error=
+);
+-
+-    if (o->domain_search_list_len > 0)
+-    {
+-        write_dhcp_search_str(buf, 119, o->domain_search_list, o->domain_s=
+earch_list_len, &error);
+-    }
+-
+-    /* the MS DHCP server option 'Disable Netbios-over-TCP/IP
+-     * is implemented as vendor option 001, value 002.
+-     * A value of 001 means 'leave NBT alone' which is the default */
+-    if (o->disable_nbt)
+-    {
+-        if (!buf_safe(buf, 8))
+-        {
+-            msg(M_WARN, "build_dhcp_options_string: buffer overflow buildi=
+ng DHCP options");
+-            return false;
+-        }
+-        buf_write_u8(buf, 43);
+-        buf_write_u8(buf, 6); /* total length field */
+-        buf_write_u8(buf, 0x001);
+-        buf_write_u8(buf, 4); /* length of the vendor specified field */
+-        buf_write_u32(buf, 0x002);
+-    }
+-    return !error;
+-}
+-
+ static void
+ fork_dhcp_action(struct tuntap *tt)
  {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f2e6dec..a0f5743 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1322,7 +1322,7 @@
-     SHOW_BOOL(dhcp_pre_release);
-     SHOW_STR(domain);
-     SHOW_STR(netbios_scope);
--    SHOW_INT(netbios_node_type);
-+    SHOW_UNSIGNED(netbios_node_type);
-     SHOW_BOOL(disable_nbt);
-
-     show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
-@@ -8002,7 +8002,7 @@
-                 msg(msglevel, "--dhcp-option NBT: parameter (%d) must be 1=
-, 2, 4, or 8", t);
-                 goto err;
-             }
--            o->netbios_node_type =3D t;
-+            o->netbios_node_type =3D (uint8_t)t;
-             o->dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;
-         }
-         else if (streq(p[1], "WINS") && p[2] && !p[3])
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 741798d..e13f99f 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -104,11 +104,10 @@
-
-     const char *netbios_scope; /* NBS (47) */
-
--    int netbios_node_type;     /* NBT 1,2,4,8 (46) */
-+    uint8_t netbios_node_type; /* NBT 1,2,4,8 (46) */
-
--#define N_DHCP_ADDR                     \
--    4 /* Max # of addresses allowed for \
--       * DNS, WINS, etc. */
-+/* Max # of addresses allowed for  DNS, WINS, etc. */
-+#define N_DHCP_ADDR 4
-
-     /* DNS (6) */
-     in_addr_t dns[N_DHCP_ADDR];
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I30a50826350ac3176443cf3bf16d3972609723a2
-Gerrit-Change-Number: 1268
+Gerrit-Change-Id: I62a8f62b9c0938cfcb99d184b07034515c076303
+Gerrit-Change-Number: 1265
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---3Ag45k8iCbw=
+--7oSTbA6Iiu0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">dhcp: Clean up type handling of write_dhcp_=
-*<br><br>Use more appropriate types. Add casts where<br>necessary but ensur=
-e that they are safe.<br><br>Change-Id: I30a50826350ac3176443cf3bf16d397260=
-9723a2<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<=
-br>M src/openvpn/dhcp.c<br>M src/openvpn/options.c<br>M src/openvpn/tun.h<b=
-r>3 files changed, 21 insertions(+), 32 deletions(-)<br><br></pre><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/1268/1=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c</span><br><sp=
-an>index 0893ec7..a34bfca 100644</span><br><span>--- a/src/openvpn/dhcp.c</=
-span><br><span>+++ b/src/openvpn/dhcp.c</span><br><span>@@ -188,18 +188,13 =
-@@</span><br><span> </span><br><span> #if defined(_WIN32) || defined(DHCP_U=
-NIT_TEST)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wco=
-nversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</=
-span><br><span>  * Convert DHCP options from the command line / config file=
-</span><br><span>  * into a raw DHCP-format options string.</span><br><span=
->  */</span><br><span> </span><br><span> static void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-write_dhcp_u8(struct buffer *buf, const int=
- type, const int data, bool *error)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+write_dhcp_u8(struct buffer *buf, const uint8_t type, const=
- uint8_t data, bool *error)</span><br><span> {</span><br><span>     if (!bu=
-f_safe(buf, 3))</span><br><span>     {</span><br><span>@@ -213,13 +208,12 @=
-@</span><br><span> }</span><br><span> </span><br><span> static void</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-write_dhcp_u32_array(struct b=
-uffer *buf, const int type, const uint32_t *data,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+write_dhcp_u32_array(struct buffer *buf, cons=
-t uint8_t type, const uint32_t *data,</span><br><span>                     =
- const unsigned int len, bool *error)</span><br><span> {</span><br><span>  =
-   if (len &gt; 0)</span><br><span>     {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        int i;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        const int size =3D len * sizeof(uint32_t);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        const size_t size =3D l=
-en * sizeof(uint32_t);</span><br><span> </span><br><span>         if (!buf_=
-safe(buf, 2 + size))</span><br><span>         {</span><br><span>@@ -230,12 =
-+224,12 @@</span><br><span>         if (size &lt; 1 || size &gt; 255)</span=
-><br><span>         {</span><br><span>             *error =3D true;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_WARN, &quot=
-;write_dhcp_u32_array: size (%d) must be &gt; 0 and &lt;=3D 255&quot;, size=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M=
-_WARN, &quot;write_dhcp_u32_array: size (%zu) must be &gt; 0 and &lt;=3D 25=
-5&quot;, size);</span><br><span>             return;</span><br><span>      =
-   }</span><br><span>         buf_write_u8(buf, type);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        buf_write_u8(buf, size);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt; le=
-n; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_=
-write_u8(buf, (uint8_t)size);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        for (unsigned int i =3D 0; i &lt; len; ++i)</span><br><sp=
-an>         {</span><br><span>             buf_write_u32(buf, data[i]);</sp=
-an><br><span>         }</span><br><span>@@ -243,9 +237,9 @@</span><br><span=
-> }</span><br><span> </span><br><span> static void</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-write_dhcp_str(struct buffer *buf, const int t=
-ype, const char *str, bool *error)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+write_dhcp_str(struct buffer *buf, const uint8_t type, const=
- char *str, bool *error)</span><br><span> {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    const int len =3D strlen(str);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    const size_t len =3D strlen(str);<=
-/span><br><span>     if (!buf_safe(buf, 2 + len))</span><br><span>     {</s=
-pan><br><span>         *error =3D true;</span><br><span>@@ -259,7 +253,7 @@=
-</span><br><span>         return;</span><br><span>     }</span><br><span>  =
-   buf_write_u8(buf, type);</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    buf_write_u8(buf, len);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    buf_write_u8(buf, (uint8_t)len);</span><br><span>     buf=
-_write(buf, str, len);</span><br><span> }</span><br><span> </span><br><span=
->@@ -272,15 +266,14 @@</span><br><span>  *  0x1D  0x7 openvpn 0x3 net 0x00 =
-0x0A duckduckgo 0x3 com 0x00</span><br><span>  */</span><br><span> static v=
-oid</span><br><span style=3D"color: hsl(0, 100%, 40%);">-write_dhcp_search_=
-str(struct buffer *buf, const int type, const char *const *str_array,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+write_dhcp_search_str(str=
-uct buffer *buf, const uint8_t type, const char *const *str_array,</span><b=
-r><span>                       int array_len, bool *error)</span><br><span>=
- {</span><br><span>     char tmp_buf[256];</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    int len =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    int label_length_pos;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    size_t len =3D 0;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    size_t label_length_pos;</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; array_len;=
- i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i=
- =3D 0; i &lt; array_len; i++)</span><br><span>     {</span><br><span>     =
-    const char *ptr =3D str_array[i];</span><br><span> </span><br><span>@@ =
--301,7 +294,8 @@</span><br><span>         {</span><br><span>             if=
- (*ptr =3D=3D &#39;.&#39; || *ptr =3D=3D &#39;\0&#39;)</span><br><span>    =
-         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-     tmp_buf[label_length_pos] =3D (len - label_length_pos) - 1;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                /* cast is pro=
-tected by sizeof(tmp_buf) */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                tmp_buf[label_length_pos] =3D (char)(len - label_l=
-ength_pos - 1);</span><br><span>                 label_length_pos =3D len;<=
-/span><br><span>                 if (*ptr =3D=3D &#39;\0&#39;)</span><br><s=
-pan>                 {</span><br><span>@@ -328,14 +322,10 @@</span><br><spa=
-n>     }</span><br><span> </span><br><span>     buf_write_u8(buf, type);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write_u8(buf, le=
-n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write_u8=
-(buf, (uint8_t)len);</span><br><span>     buf_write(buf, tmp_buf, len);</sp=
-an><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> build_dhcp_=
-options_string(struct buffer *buf, const struct tuntap_options *o)</span><b=
-r><span> {</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn=
-/options.c</span><br><span>index f2e6dec..a0f5743 100644</span><br><span>--=
-- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span=
-><br><span>@@ -1322,7 +1322,7 @@</span><br><span>     SHOW_BOOL(dhcp_pre_re=
-lease);</span><br><span>     SHOW_STR(domain);</span><br><span>     SHOW_ST=
-R(netbios_scope);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-SHOW_INT(netbios_node_type);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    SHOW_UNSIGNED(netbios_node_type);</span><br><span>     SHOW_BO=
-OL(disable_nbt);</span><br><span> </span><br><span>     show_dhcp_option_ad=
-drs(&quot;DNS&quot;, o-&gt;dns, o-&gt;dns_len);</span><br><span>@@ -8002,7 =
-+8002,7 @@</span><br><span>                 msg(msglevel, &quot;--dhcp-opti=
-on NBT: parameter (%d) must be 1, 2, 4, or 8&quot;, t);</span><br><span>   =
-              goto err;</span><br><span>             }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            o-&gt;netbios_node_type =3D t;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            o-&gt;n=
-etbios_node_type =3D (uint8_t)t;</span><br><span>             o-&gt;dhcp_op=
-tions |=3D DHCP_OPTIONS_DHCP_REQUIRED;</span><br><span>         }</span><br=
-><span>         else if (streq(p[1], &quot;WINS&quot;) &amp;&amp; p[2] &amp=
-;&amp; !p[3])</span><br><span>diff --git a/src/openvpn/tun.h b/src/openvpn/=
-tun.h</span><br><span>index 741798d..e13f99f 100644</span><br><span>--- a/s=
-rc/openvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.h</span><br><span>@@=
- -104,11 +104,10 @@</span><br><span> </span><br><span>     const char *netb=
-ios_scope; /* NBS (47) */</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    int netbios_node_type;     /* NBT 1,2,4,8 (46) */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t netbios=
-_node_type; /* NBT 1,2,4,8 (46) */</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define N_DHCP_ADDR                     \</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    4 /* Max # of addre=
-sses allowed for \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-    * DNS, WINS, etc. */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/* Max # of addresses allowed for  DNS, WINS, etc. */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define N_DHCP_ADDR 4</span><br><spa=
-n> </span><br><span>     /* DNS (6) */</span><br><span>     in_addr_t dns[N=
-_DHCP_ADDR];</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail">change 1268</a>. To=
- unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
-rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
-ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
-temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail"/><meta itemprop=3D"nam=
-e" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">Move build_dhcp_options_string from tun to =
+dhcp<br><br>Seems suitably related and tun.c is one of the<br>huge ones.<br=
+><br>In preparation of adding UTs for the code.<br><br>Change-Id: I62a8f62b=
+9c0938cfcb99d184b07034515c076303<br>Signed-off-by: Frank Lichtenheld &lt;fr=
+ank@...2641...&gt;<br>---<br>M src/openvpn/dhcp.c<br>M src/openvpn/dhcp.h<b=
+r>M src/openvpn/tun.c<br>3 files changed, 207 insertions(+), 196 deletions(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/65/1265/1</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dhcp.c b/src/ope=
+nvpn/dhcp.c</span><br><span>index 850a4b6..653127d 100644</span><br><span>-=
+-- a/src/openvpn/dhcp.c</span><br><span>+++ b/src/openvpn/dhcp.c</span><br>=
+<span>@@ -185,3 +185,203 @@</span><br><span>     }</span><br><span>     ret=
+urn 0;</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_=
+WIN32)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined=
+(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma =
+GCC diagnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Convert DH=
+CP options from the command line / config file</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * into a raw DHCP-format options string.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+write_dhcp_u8(struct buffer *buf, const int type, const int data, bo=
+ol *error)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!buf_safe(buf, 3))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        *error =3D true;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;wri=
+te_dhcp_u8: buffer overflow building DHCP options&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    buf_write_u8(buf, type);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    buf_write_u8(buf, 1);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    buf_write_u8(buf, data);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+w=
+rite_dhcp_u32_array(struct buffer *buf, const int type, const uint32_t *dat=
+a,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+    const unsigned int len, bool *error)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    if (len &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int=
+ i;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const in=
+t size =3D len * sizeof(uint32_t);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (!buf_safe(buf, 2 + size))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            *error =3D true;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            msg(M_WARN, &quot;write_dhcp_u32_array: buffer ove=
+rflow building DHCP options&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            return;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        if (size &lt; 1 || size &gt; 255)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            *error =3D true;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;write_dhcp_u32_arr=
+ay: size (%d) must be &gt; 0 and &lt;=3D 255&quot;, size);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            return;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        buf_write_u8(buf, type);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        buf_write_u8(buf, size);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (i =3D 0=
+; i &lt; len; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ buf_write_u32(buf, data[i]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+write_dhcp_str(struct buffer *buf, const int type, const ch=
+ar *str, bool *error)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const int le=
+n =3D strlen(str);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (!buf_safe(buf, 2 + len))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      *error =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        msg(M_WARN, &quot;write_dhcp_str: buffer overflow building DHCP =
+options&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (len &lt; 1 || =
+len &gt; 255)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *error =3D t=
+rue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_W=
+ARN, &quot;write_dhcp_str: string &#39;%s&#39; must be &gt; 0 bytes and &lt=
+;=3D 255 bytes&quot;, str);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_wr=
+ite_u8(buf, type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   buf_write_u8(buf, len);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    buf_write(buf, str, len);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * RFC3397 states that multiple searc=
+hdomains are encoded as follows:</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *  - at start the length of the entire option is given</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - each subdomain is pr=
+eceded by its length</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  - each searchdomain is separated by a NUL character</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * e.g. if you want &quot;openvpn.net&=
+quot; and &quot;duckduckgo.com&quot; then you end up with</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  0x1D  0x7 openvpn 0x3 net 0x00 0x=
+0A duckduckgo 0x3 com 0x00</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static vo=
+id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+write_dhcp_search=
+_str(struct buffer *buf, const int type, const char *const *str_array,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                      in=
+t array_len, bool *error)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char tmp=
+_buf[256];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int i=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int len =3D 0;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int label_lengt=
+h_pos;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; array_l=
+en; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char *ptr =
+=3D str_array[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (strlen(pt=
+r) + len + 1 &gt; sizeof(tmp_buf))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            *error =3D true;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            msg(M_WARN, &quot;write_dhcp_search_str: temp buf=
+fer overflow building DHCP options&quot;);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            return;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        /* Loop over all subdomains separated by a dot and rep=
+lace the dot</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+  * with the length of the subdomain */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        /* label_length_pos points to the byte to be replaced by the lengt=
+h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * of the =
+following domain label */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        label_length_pos =3D len++;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        while (true)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      if (*ptr =3D=3D &#39;.&#39; || *ptr =3D=3D &#39;\0&#39;)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                tmp_buf[label_length_p=
+os] =3D (len - label_length_pos) - 1;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                label_length_pos =3D len;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                if (*ptr =3D=3D &#3=
+9;\0&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+         break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+tmp_buf[len++] =3D *ptr++;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     /* And close off with an extra NUL char */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        tmp_buf[len++] =3D 0;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (!buf_safe(buf, 2 + len))</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        *error =3D true;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        msg(M_WARN, &quot;write_search_dhcp_str: buffer overflow b=
+uilding DHCP options&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (l=
+en &gt; 255)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *error =3D tr=
+ue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WA=
+RN, &quot;write_dhcp_search_str: search domain string must be &lt;=3D 255 b=
+ytes&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    buf_write_u8(buf, type);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    buf_write_u8(buf, len);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write(buf, tmp_buf,=
+ len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+build_dhcp_options_string(struct buffer *buf, const struct tuntap_=
+options *o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    bool error =3D false;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;domain=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_str(buf, 15, =
+o-&gt;domain, &amp;error);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;netbios_scop=
+e)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_str(buf, 47,=
+ o-&gt;netbios_scope, &amp;error);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;netb=
+ios_node_type)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_=
+u8(buf, 46, o-&gt;netbios_node_type, &amp;error);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ write_dhcp_u32_array(buf, 6, (uint32_t *)o-&gt;dns, o-&gt;dns_len, &amp;er=
+ror);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp=
+_u32_array(buf, 44, (uint32_t *)o-&gt;wins, o-&gt;wins_len, &amp;error);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_u32_arr=
+ay(buf, 42, (uint32_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;error);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_u32_array(buf, 45=
+, (uint32_t *)o-&gt;nbdd, o-&gt;nbdd_len, &amp;error);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (o-&gt;domain_search_list_len &gt; 0)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        write_dhcp_search_str(buf, 119, o-&gt;do=
+main_search_list, o-&gt;domain_search_list_len, &amp;error);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* the MS DHCP server option &#39;Disable Netbios-over-TCP/IP</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * is implemented=
+ as vendor option 001, value 002.</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+     * A value of 001 means &#39;leave NBT alone&#39; which i=
+s the default */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (o-&gt;disable_nbt)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
+ (!buf_safe(buf, 8))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   msg(M_WARN, &quot;build_dhcp_options_string: buffer overflow building DH=
+CP options&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           return false;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   buf_write_u8(buf, 43);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        buf_write_u8(buf, 6); /* total length field */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        buf_write_u8(buf, 0x001);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_write_u8=
+(buf, 4); /* length of the vendor specified field */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        buf_write_u32(buf, 0x002);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    return !error;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif /* defined(_WIN32) */</span><br><span>diff --git a/src/openvpn/dhcp.h b=
+/src/openvpn/dhcp.h</span><br><span>index af5c2c4..8e15a39 100644</span><br=
+><span>--- a/src/openvpn/dhcp.h</span><br><span>+++ b/src/openvpn/dhcp.h</s=
+pan><br><span>@@ -84,4 +84,10 @@</span><br><span> </span><br><span> in_addr=
+_t dhcp_extract_router_msg(struct buffer *ipbuf);</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;tun.h&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+bool build_dhcp_options_string(struct b=
+uffer *buf, const struct tuntap_options *o);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span> #endif /* ifndef DHCP_H */</span><br><span>di=
+ff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index e35f=
+889..097b9e8 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span=
+>+++ b/src/openvpn/tun.c</span><br><span>@@ -45,6 +45,7 @@</span><br><span>=
+ #include &quot;win32.h&quot;</span><br><span> #include &quot;wfp_block.h&q=
+uot;</span><br><span> #include &quot;networking.h&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &quot;dhcp.h&quot;</span><br><=
+span> </span><br><span> #include &quot;memdbg.h&quot;</span><br><span> </sp=
+an><br><span>@@ -5554,202 +5555,6 @@</span><br><span>     return ret;</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;=
+-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">- * Convert DHCP options from the command line / config fil=
+e</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * into a raw DHCP-f=
+ormat options string.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-write_dhcp_u8(struct buffer *buf, const int type,=
+ const int data, bool *error)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!buf=
+_safe(buf, 3))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        *error =3D true=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, =
+&quot;write_dhcp_u8: buffer overflow building DHCP options&quot;);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    buf_write_u8(buf, type);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    buf_write_u8(buf, 1);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    buf_write_u8(buf, data);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-write_dh=
+cp_u32_array(struct buffer *buf, const int type, const uint32_t *data,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                     const=
+ unsigned int len, bool *error)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (le=
+n &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        const int size =3D len * si=
+zeof(uint32_t);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!buf_safe(buf, =
+2 + size))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            *error =3D =
+true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(=
+M_WARN, &quot;write_dhcp_u32_array: buffer overflow building DHCP options&q=
+uot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ret=
+urn;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        if (size &lt; 1 || si=
+ze &gt; 255)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            *error =
+=3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+msg(M_WARN, &quot;write_dhcp_u32_array: size (%d) must be &gt; 0 and &lt;=
+=3D 255&quot;, size);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf_wr=
+ite_u8(buf, type);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     buf_write_u8(buf, size);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        for (i =3D 0; i &lt; len; ++i)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            buf_write_u32(buf, data[i]);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-write_dhcp_str(struct buffer *buf, const int ty=
+pe, const char *str, bool *error)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cons=
+t int len =3D strlen(str);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (!buf_safe(buf, 2 + len))</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        *error =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        msg(M_WARN, &quot;write_dhcp_str: buffer overflow building DHCP =
+options&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (len &lt; 1 || len &g=
+t; 255)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        *error =3D true;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;w=
+rite_dhcp_str: string &#39;%s&#39; must be &gt; 0 bytes and &lt;=3D 255 byt=
+es&quot;, str);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write_u8(buf, type);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write_u8(buf,=
+ len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write(b=
+uf, str, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">- * RFC3397 states that multiple searchdomains are encoded as follow=
+s:</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  - at start the =
+length of the entire option is given</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">- *  - each subdomain is preceded by its length</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- *  - each searchdomain is separate=
+d by a NUL character</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+* e.g. if you want &quot;openvpn.net&quot; and &quot;duckduckgo.com&quot; t=
+hen you end up with</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+  0x1D  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-write_dhcp_search_str(struct buffer *buf, const int type, const=
+ char *const *str_array,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                      int array_len, bool *error)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    char tmp_buf[256];</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    int len =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   int label_length_pos;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; =
+i &lt; array_len; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const c=
+har *ptr =3D str_array[i];</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (strl=
+en(ptr) + len + 1 &gt; sizeof(tmp_buf))</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            *error =3D true;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            msg(M_WARN, &quot;write_dhcp_search_str: temp buff=
+er overflow building DHCP options&quot;);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            return;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        /* Loop over all subdomains separated by a dot and replace th=
+e dot</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * with =
+the length of the subdomain */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* l=
+abel_length_pos points to the byte to be replaced by the length</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-         * of the following domai=
+n label */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        lab=
+el_length_pos =3D len++;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        while (tru=
+e)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            if (*ptr =3D=3D &#3=
+9;.&#39; || *ptr =3D=3D &#39;\0&#39;)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                tmp_buf[label_length_pos] =3D (len - label_length_p=
+os) - 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   label_length_pos =3D len;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                if (*ptr =3D=3D &#39;\0&#39;)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                    break;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            tmp_buf[len++] =3D *ptr++;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        /* And close off with an extra NUL char *=
+/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tmp_buf[len+=
++] =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (!buf_safe(buf, 2 + len))</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        *error =3D true;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;write_search_dhcp_str: bu=
+ffer overflow building DHCP options&quot;);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        return;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    if (len &gt; 255)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        *error =
+=3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(=
+M_WARN, &quot;write_dhcp_search_str: search domain string must be &lt;=3D 2=
+55 bytes&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    buf_write_u8(buf, type);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    buf_write_u8(buf, len);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    buf_write(buf, tmp_buf, len);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-build_dh=
+cp_options_string(struct buffer *buf, const struct tuntap_options *o)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    bool error =3D false;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;domain)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        write_dhcp_str(buf, 15, o-&gt;domain, &amp;error);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (o-&gt;netbios_scope)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        write_dhcp_str(buf, 47, o-&gt;netbios_scope, &amp;error);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    if (o-&gt;netbios_node_type)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        write_dhcp_u8(buf, 46, o-&gt;netbios_node_type, &amp;error=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    write_dhcp_u32_array(buf, 6, (uint32_t *)o-&gt;dns, =
+o-&gt;dns_len, &amp;error);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    write_dhcp_u32_array(buf, 44, (uint32_t *)o-&gt;wins, o-&gt;wins_=
+len, &amp;error);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+write_dhcp_u32_array(buf, 42, (uint32_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;er=
+ror);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    write_dhcp_u=
+32_array(buf, 45, (uint32_t *)o-&gt;nbdd, o-&gt;nbdd_len, &amp;error);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    if (o-&gt;domain_search_list_len &gt; 0)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        write_dhcp_search_str(buf, 119, =
+o-&gt;domain_search_list, o-&gt;domain_search_list_len, &amp;error);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    /* the MS DHCP server option &#39;Disable Netbios-over-TCP/I=
+P</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * is implemente=
+d as vendor option 001, value 002.</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-     * A value of 001 means &#39;leave NBT alone&#39; which is=
+ the default */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (o-&gt;disable_nbt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!buf_=
+safe(buf, 8))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_WA=
+RN, &quot;build_dhcp_options_string: buffer overflow building DHCP options&=
+quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            re=
+turn false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf_write_u8(b=
+uf, 43);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf_w=
+rite_u8(buf, 6); /* total length field */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        buf_write_u8(buf, 0x001);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        buf_write_u8(buf, 4); /* length of =
+the vendor specified field */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        buf_write_u32(buf, 0x002);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    return !error;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+static void</span><br><span> fork_dhcp_action(struct tuntap *tt)</span><br>=
+<span> {</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail">change 1265</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I30a50826350ac3176443cf3bf16=
-d3972609723a2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1268 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I62a8f62b9c0938cfcb99d184b07=
+034515c076303 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1265 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -425,5 +1063,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---3Ag45k8iCbw=--
+--7oSTbA6Iiu0=--
 
