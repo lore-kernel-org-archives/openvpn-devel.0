@@ -1,10 +1,10 @@
-Date: Fri, 10 Oct 2025 11:56:12 +0200 (CEST)
-Message-Id: <202510100956.59A9uCBM078443@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251010094753.2825-1-gert@...1296...>
-References: <20251010094753.2825-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: console: Simplify
- query_user_add interface
+Date: Fri, 10 Oct 2025 11:57:00 +0200
+Message-ID: <20251010095706.3779-1-gert@...1296...>
+In-Reply-To: <gerrit.1759942426000.I977bab08cb614c2d59c34ceebc112f3add9bd168@...2715...>
+References: <gerrit.1759942426000.I977bab08cb614c2d59c34ceebc112f3add9bd168@...2715...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v1] socks: Fix conversion warnings with MinGW
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +15,109 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Yeah, having a "prompt_len" field in there for the unlikely case of having
-a prompt that is not 0-terminated, and then all the backends just do not
-use this at all - functions should have been named ..._ex(), to be prepared
-for all eventualities...
+From: Frank Lichtenheld <frank@...2641...>
 
-Stared at code, change was less intrusive than I expected when seeing
-"oh, so many files", and is very straightforward.
+The winsock2 APIs are a bit weird at times...
 
-Smoke-tested with a corp VPN profile which has a crypted privkey plus
-username + password, and that all still works.
+Change-Id: I977bab08cb614c2d59c34ceebc112f3add9bd168
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1262
+---
 
-Your patch has been applied to the master branch.
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-commit aea7727f2de8c4f34d71a8c14756bdf395cb5f2f
-Author: Frank Lichtenheld
-Date:   Fri Oct 10 11:47:44 2025 +0200
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1262
+This mail reflects revision 1 of this Change.
 
-     console: Simplify query_user_add interface
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1216
-     Message-Id: <20251010094753.2825-1-gert@...1296...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/59244794/
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+        
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 85bbde5..1a75daf 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -80,11 +80,6 @@
+     free(sp);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ static bool
+ socks_proxy_recv_char(char *c, const char *name, socket_descriptor_t sd,
+                       struct event_timeout *server_poll_timeout,
+@@ -98,7 +93,8 @@
+     tv.tv_sec = get_server_poll_remaining_time(server_poll_timeout);
+     tv.tv_usec = 0;
+ 
+-    const int status = select(sd + 1, &reads, NULL, NULL, &tv);
++    /* NB: first argument ignored on Windows where socket_descriptor_t != int */
++    const int status = select((int)sd + 1, &reads, NULL, NULL, &tv);
+ 
+     get_signal(signal_received);
+     if (*signal_received)
+@@ -139,10 +135,7 @@
+                              volatile int *signal_received)
+ {
+     char to_send[516];
+-    char buf[2];
+-    int len = 0;
+     struct user_pass creds;
+-    ssize_t size;
+     bool ret = false;
+ 
+     CLEAR(creds);
+@@ -161,9 +154,10 @@
+ 
+     int sret = snprintf(to_send, sizeof(to_send), "\x01%c%s%c%s", (int)strlen(creds.username),
+                         creds.username, (int)strlen(creds.password), creds.password);
+-    ASSERT(sret <= sizeof(to_send));
++    ASSERT(sret >= 0 && sret <= sizeof(to_send));
+ 
+-    size = send(sd, to_send, strlen(to_send), MSG_NOSIGNAL);
++    /* NB: int because Windows APIs */
++    ssize_t size = send(sd, to_send, (int)strlen(to_send), MSG_NOSIGNAL);
+ 
+     if (size != strlen(to_send))
+     {
+@@ -172,6 +166,8 @@
+         goto cleanup;
+     }
+ 
++    int len = 0;
++    char buf[2];
+     while (len < 2)
+     {
+         char c;
+@@ -419,8 +415,10 @@
+     buf[5 + len + 1] = (char)(port & 0xff);
+ 
+     {
+-        const ssize_t size = send(sd, buf, 5 + len + 2, MSG_NOSIGNAL);
+-        if ((int)size != 5 + (int)len + 2)
++        /* int because Windows APIs */
++        int send_len = 5 + (int)len + 2;
++        const ssize_t size = send(sd, buf, send_len, MSG_NOSIGNAL);
++        if (size != send_len)
+         {
+             msg(D_LINK_ERRORS | M_ERRNO,
+                 "establish_socks_proxy_passthru: TCP port write failed on send()");
+@@ -443,10 +441,6 @@
+     return;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ void
+ establish_socks_proxy_udpassoc(struct socks_proxy_info *p,
+                                socket_descriptor_t ctrl_sd, /* already open to proxy */
 
