@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Oct 2025 09:56:21 +0000
+Date: Fri, 10 Oct 2025 09:56:24 +0000
 In-Reply-To: <gerrit.1758731785000.I04542e678f81d5d4a853b4370d9b8adc4dac1212@...2715...>
 References: <gerrit.1758731785000.I04542e678f81d5d4a853b4370d9b8adc4dac1212@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cc6fae79d12e8e60d1eaf7f5e6a84325a66ecacd-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <cc6fae79d12e8e60d1eaf7f5e6a84325a66ecacd-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RvyagjsQ7Qo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="xK0XOLmftjw="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: console: Simplify
  query_user_add interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RvyagjsQ7Qo=
+--xK0XOLmftjw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#6) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1216?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+16?usp=3Demail )
 
 Change subject: console: Simplify query_user_add interface
 ......................................................................
@@ -59,7 +55,7 @@ M src/openvpn/pkcs11.c
 5 files changed, 16 insertions(+), 41 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1216/6
+
 
 diff --git a/src/openvpn/console.c b/src/openvpn/console.c
 index bdceaf2..3cb23b3 100644
@@ -228,7 +224,7 @@ SER_PASS_LEN, false))
 text);
                      buf_set_write(&packed_resp, (uint8_t *)up->password, U=
 SER_PASS_LEN);
-
+=20
 -                    if (!query_user_SINGLE(BSTR(&challenge), BLEN(&challen=
 ge), response,
 +                    if (!query_user_SINGLE(BSTR(&challenge), response,
@@ -296,7 +292,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1216?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I04542e678f81d5d4a853b4370d9b8adc4dac1212
@@ -307,30 +303,26 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RvyagjsQ7Qo=
+--xK0XOLmftjw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #6</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1216?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">console: Simplify query_user_add in=
-terface<br><br>- Removes unused field prompt_len<br>- Change field reponse_=
-len to int since that<br>  is what the code actually expects. Most callers<=
-br>  user a constant either way.<br><br>Change-Id: I04542e678f81d5d4a853b43=
-70d9b8adc4dac1212<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
-gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https:=
-//gerrit.openvpn.net/c/openvpn/+/1216<br>Message-Id: &lt;20251010094753.282=
-5-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/m=
-essage/59244794/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
----<br>M src/openvpn/console.c<br>M src/openvpn/console.h<br>M src/openvpn/=
-console_builtin.c<br>M src/openvpn/misc.c<br>M src/openvpn/pkcs11.c<br>5 fi=
-les changed, 16 insertions(+), 41 deletions(-)<br><br></pre><pre class=3D"b=
-locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1216/6</pre>=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1216?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">console: Simplify query_user_add interface<br><b=
+r>- Removes unused field prompt_len<br>- Change field reponse_len to int si=
+nce that<br>  is what the code actually expects. Most callers<br>  user a c=
+onstant either way.<br><br>Change-Id: I04542e678f81d5d4a853b4370d9b8adc4dac=
+1212<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-=
+by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.open=
+vpn.net/c/openvpn/+/1216<br>Message-Id: &lt;20251010094753.2825-1-gert@...1386...=
+296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/592447=
+94/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/=
+openvpn/console.c<br>M src/openvpn/console.h<br>M src/openvpn/console_built=
+in.c<br>M src/openvpn/misc.c<br>M src/openvpn/pkcs11.c<br>5 files changed, =
+16 insertions(+), 41 deletions(-)<br><br></pre>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/src/openvpn/console.c b/src/openvpn/console.c</span><br><sp=
 an>index bdceaf2..3cb23b3 100644</span><br><span>--- a/src/openvpn/console.=
@@ -513,7 +505,7 @@ p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
 l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1216?usp=3Demail"/><meta i=
 temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I04542e678f81d5d4a853b4370d9=
@@ -531,5 +523,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---RvyagjsQ7Qo=--
+--xK0XOLmftjw=--
 
