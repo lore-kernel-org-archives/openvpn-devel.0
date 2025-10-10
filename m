@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Oct 2025 14:20:24 +0000
-In-Reply-To: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
-References: <gerrit.1759923063000.I7c28da72be11c7efbed3068fbfc65f2959227bec@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <fa3fabe2a35b9bee28dc598b29fb75d6884bd392-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Jj/txbUL3DI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: PUSH_UPDATE server:
- check IV_PROTO before sending the message to the ...
+Date: Fri, 10 Oct 2025 16:30:29 +0200 (CEST)
+Message-Id: <202510101430.59AEUT5L087578@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251010142002.27308-1-gert@...1296...>
+References: <20251010142002.27308-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: PUSH_UPDATE server: bug-fix,
+ reset buffer after processing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,111 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Marco Baffo <marco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Jj/txbUL3DI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Discovered the problem while testing #1255 with multiple clients online
+at the same time, with different capabilities - and it only sent anything
+to the very first (capable) client, and then "empty string" because
+the buffer in msgs[i] was buf_advance()'d and it shouldn't have been...
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+So this fixes things by doing a shallow copy to a temp "buffer", which
+is safe as long as no writes to the memory is done - reading & advancing
+the pointers is fine (we discussed various approaches on IRC, as can
+be seen in v1/v3/v4 in gerrit ;-) - and a "make documentation for this
+API" issue also appeared...).
 
-cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1255?usp=3Demail )
+Tested this + #1255, and now things behave correctly.
 
-Change subject: PUSH_UPDATE server: check IV_PROTO before sending the messa=
-ge to the client
-......................................................................
+Your patch has been applied to the master branch.
 
+commit 107f80b8e3102cca3a2cc008d37895f96ec2f17c
+Author: Marco Baffo
+Date:   Fri Oct 10 16:19:56 2025 +0200
 
-Patch Set 2:
+     PUSH_UPDATE server: bug-fix, reset buffer after processing
 
-(1 comment)
-
-Patchset:
-
-PS2:
-with the bugfix from #1264, this works
-
+     Signed-off-by: Marco Baffo <marco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1264
+     Message-Id: <20251010142002.27308-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59244933/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7c28da72be11c7efbed3068fbfc65f2959227bec
-Gerrit-Change-Number: 1255
-Gerrit-PatchSet: 2
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Fri, 10 Oct 2025 14:20:24 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gert Doering
 
---Jj/txbUL3DI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, mrbff, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1255?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">with the bugfix=
- from #1264, this works</p></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail">change 1255</a>. T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
-type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1255?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7c28da72be11c7efbed3068fbfc=
-65f2959227bec </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1255 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 10 Oct 2025 14:20:24=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-
-</body></html>=
-
---Jj/txbUL3DI=--
 
