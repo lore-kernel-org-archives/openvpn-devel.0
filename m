@@ -1,14 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Oct 2025 07:56:33 +0000
+Date: Fri, 10 Oct 2025 07:58:38 +0000
 In-Reply-To: <gerrit.1759942426000.I977bab08cb614c2d59c34ceebc112f3add9bd168@...2715...>
 References: <gerrit.1759942426000.I977bab08cb614c2d59c34ceebc112f3add9bd168@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <57a042c45942fbfe77c6b430f3ca47bfc22f8c02-EmailReviewComments-HTML@...2715...>
+Message-ID: <f753c5d737a91c7362608246af0ef486c30e3170-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BceOa/kl1ds="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="bk719iAxdQ8="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: socks: Fix
  conversion warnings with MinGW
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---BceOa/kl1ds=
+--bk719iAxdQ8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,7 +35,20 @@ Change subject: socks: Fix conversion warnings with MinGW
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 1:
+
+(1 comment)
+
+Patchset:
+
+PS1:
+I checked the Winsock API and indeed type conversion looks correct.
+
+I was a bit puzzled by "NB" in comment (what is that?) but not too much to =
+not to ack it.
+
+I didn't test it - only compiled with msvc cl/clang.
+
 
 
 --
@@ -55,27 +68,36 @@ Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 10 Oct 2025 07:56:33 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Fri, 10 Oct 2025 07:58:38 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
---BceOa/kl1ds=
+--bk719iAxdQ8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1262?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1262?usp=3Demail=
-">change 1262</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1262?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1262?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1262?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I checked the W=
+insock API and indeed type conversion looks correct.</p><p class=3D"blocks"=
+ style=3D"white-space: pre-wrap; word-wrap: break-word;">I was a bit puzzle=
+d by &quot;NB&quot; in comment (what is that?) but not too much to not to a=
+ck it.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: br=
+eak-word;">I didn&#39;t test it - only compiled with msvc cl/clang.</p></li=
+></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1262?usp=3Demail">change 1262</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1262?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -96,12 +118,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 10 Oct 2025 07:56:33=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 10 Oct 2025 07:58:38=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---BceOa/kl1ds=--
+--bk719iAxdQ8=--
 
