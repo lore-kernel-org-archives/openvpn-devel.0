@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu,  9 Oct 2025 22:59:46 +0200
-Message-ID: <20251009205951.32301-1-gert@...1296...>
-In-Reply-To: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
-References: <gerrit.1755877911000.Id440917f433aab1a7db608ba04fa95ba47c2ddde@...2715...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Fri, 10 Oct 2025 02:20:36 +0000
+References: <gerrit.1760062834000.Ic6fd6ba676b4741da7811ffc7c9688d4673465f8@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <9582fd3bfee02c1ba145193e4097a1211802c21e-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] options: Review use of positive_atoi vs
- atoi_constrained
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="A7RtlZreHtM="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix PIN cache time
+ in test_pkcs11.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,150 +18,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--A7RtlZreHtM=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Replace where it is useful.
+Attention is currently required from: flichtenheld, plaisthos.
 
-While here also add a missing cast in atoi_constrained.
+Hello plaisthos, flichtenheld,
 
-Change-Id: Id440917f433aab1a7db608ba04fa95ba47c2ddde
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1153
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1263?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Fix PIN cache time in test_pkcs11.c
+......................................................................
+
+Fix PIN cache time in test_pkcs11.c
+
+Github: closes OpenVPN/openvpn#861
+
+Change-Id: Ic6fd6ba676b4741da7811ffc7c9688d4673465f8
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
+M tests/unit_tests/openvpn/test_pkcs11.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1153
-This mail reflects revision 6 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/1263/1
 
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f2e6dec..e6e0b6f 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6415,21 +6415,15 @@
-     else if (streq(p[0], "tun-mtu-max") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        int max_mtu = positive_atoi(p[1], msglevel);
--        if (max_mtu < 68 || max_mtu > 65536)
--        {
--            msg(msglevel, "--tun-mtu-max value '%s' is invalid", p[1]);
--        }
--        else
--        {
--            options->ce.tun_mtu_max = max_mtu;
--        }
-+        atoi_constrained(p[1], &options->ce.tun_mtu_max, p[0], TUN_MTU_MAX_MIN, 65536, msglevel);
-     }
-     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        options->ce.tun_mtu_extra = positive_atoi(p[1], msglevel);
--        options->ce.tun_mtu_extra_defined = true;
-+        if (atoi_constrained(p[1], &options->ce.tun_mtu_extra, p[0], 0, 65536, msglevel))
-+        {
-+            options->ce.tun_mtu_extra_defined = true;
-+        }
-     }
-     else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
-     {
-@@ -6461,11 +6455,8 @@
-     else if (streq(p[0], "fragment") && p[1] && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
--        options->ce.fragment = positive_atoi(p[1], msglevel);
--
--        if (options->ce.fragment < 68)
-+        if (!atoi_constrained(p[1], &options->ce.fragment, p[0], 68, INT_MAX, msglevel))
-         {
--            msg(msglevel, "--fragment needs to be at least 68");
-             goto err;
-         }
- 
-@@ -7139,12 +7130,14 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
-         if (p[1])
-         {
--            int mssfix = positive_atoi(p[1], msglevel);
--            /* can be 0, but otherwise it needs to be high enough so we can
--             * substract room for headers. */
--            if (mssfix != 0 && (mssfix < TLS_CHANNEL_MTU_MIN || mssfix > UINT16_MAX))
-+            int mssfix;
-+            if (!atoi_constrained(p[1], &mssfix, p[0], 0, UINT16_MAX, msglevel))
-             {
--                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
-+                goto err;
-+            }
-+            if (mssfix != 0 && mssfix < TLS_CHANNEL_MTU_MIN)
-+            {
-+                msg(msglevel, "mssfix needs to be >= %d, not %d", TLS_CHANNEL_MTU_MIN, mssfix);
-                 goto err;
-             }
- 
-@@ -7397,7 +7390,7 @@
-     else if (streq(p[0], "max-routes-per-client") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_INHERIT);
--        options->max_routes_per_client = max_int(positive_atoi(p[1], msglevel), 1);
-+        atoi_constrained(p[1], &options->max_routes_per_client, p[0], 1, INT_MAX, msglevel);
-     }
-     else if (streq(p[0], "client-cert-not-required") && !p[1])
-     {
-@@ -9216,8 +9209,6 @@
-     }
-     else if (streq(p[0], "keying-material-exporter") && p[1] && p[2])
-     {
--        int ekm_length = positive_atoi(p[2], msglevel);
--
-         VERIFY_PERMISSION(OPT_P_GENERAL);
- 
-         if (strncmp(p[1], "EXPORTER", 8))
-@@ -9231,14 +9222,14 @@
-             msg(msglevel,
-                 "Keying material exporter label must not be '" EXPORT_KEY_DATA_LABEL "'.");
-         }
--        if (ekm_length < 16 || ekm_length > 4095)
-+
-+        if (!atoi_constrained(p[2], &options->keying_material_exporter_length,
-+                              p[0], 16, 4095, msglevel))
-         {
--            msg(msglevel, "Invalid keying material exporter length");
-             goto err;
-         }
- 
-         options->keying_material_exporter_label = p[1];
--        options->keying_material_exporter_length = ekm_length;
-     }
-     else if (streq(p[0], "allow-recursive-routing") && !p[1])
-     {
-@@ -9273,15 +9264,14 @@
-     }
-     else if (streq(p[0], "vlan-pvid") && p[1] && !p[2])
-     {
-+        int vlan_pvid;
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_INSTANCE);
--        options->vlan_pvid = positive_atoi(p[1], msglevel);
--        if (options->vlan_pvid < OPENVPN_8021Q_MIN_VID
--            || options->vlan_pvid > OPENVPN_8021Q_MAX_VID)
-+        if (!atoi_constrained(p[1], &vlan_pvid, p[0],
-+                              OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID, msglevel))
-         {
--            msg(msglevel, "the parameter of --vlan-pvid parameters must be >= %u and <= %u",
--                OPENVPN_8021Q_MIN_VID, OPENVPN_8021Q_MAX_VID);
-             goto err;
-         }
-+        options->vlan_pvid = (uint16_t)vlan_pvid;
-     }
-     else
-     {
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/open=
+vpn/test_pkcs11.c
+index a4ba088..01cbf96 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -320,7 +320,7 @@
+     /* set default propq as we do in ssl_openssl.c */
+     EVP_set_default_properties(tls_libctx, "?provider!=3Dovpn.xkey");
+ #endif
+-    pkcs11_initialize(true, 0); /* protected auth enabled, pin-cache =3D 0=
+ */
++    pkcs11_initialize(true, 60); /* protected auth enabled, pin-cache =3D =
+60s */
+     pkcs11_addProvider(SOFTHSM2_MODULE_PATH, false, 0, false);
+     return 0;
+ }
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1263?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic6fd6ba676b4741da7811ffc7c9688d4673465f8
+Gerrit-Change-Number: 1263
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--A7RtlZreHtM=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>selvanair would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1263?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Fix PIN cache time in test_pkcs11.c<br><br>=
+Github: closes OpenVPN/openvpn#861<br><br>Change-Id: Ic6fd6ba676b4741da7811=
+ffc7c9688d4673465f8<br>Signed-off-by: Selva Nair &lt;selva.nair@...277...&g=
+t;<br>---<br>M tests/unit_tests/openvpn/test_pkcs11.c<br>1 file changed, 1 =
+insertion(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t.openvpn.net:29418/openvpn refs/changes/63/1263/1</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/tes=
+ts/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.=
+c</span><br><span>index a4ba088..01cbf96 100644</span><br><span>--- a/tests=
+/unit_tests/openvpn/test_pkcs11.c</span><br><span>+++ b/tests/unit_tests/op=
+envpn/test_pkcs11.c</span><br><span>@@ -320,7 +320,7 @@</span><br><span>   =
+  /* set default propq as we do in ssl_openssl.c */</span><br><span>     EV=
+P_set_default_properties(tls_libctx, &quot;?provider!=3Dovpn.xkey&quot;);</=
+span><br><span> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    pkcs11_initialize(true, 0); /* protected auth enabled, pin-cache =3D 0=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    pkcs11_initi=
+alize(true, 60); /* protected auth enabled, pin-cache =3D 60s */</span><br>=
+<span>     pkcs11_addProvider(SOFTHSM2_MODULE_PATH, false, 0, false);</span=
+><br><span>     return 0;</span><br><span> }</span><br><span></span><br></p=
+re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1263?=
+usp=3Demail">change 1263</a>. To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1263?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic6fd6ba676b4741da7811ffc7c9=
+688d4673465f8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1263 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--A7RtlZreHtM=--
 
