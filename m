@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 11 Oct 2025 11:49:08 +0000
-In-Reply-To: <gerrit.1758706218000.Ib3458a9ed2eb38e00184c4a92659b83b97fe476c@...2715...>
-References: <gerrit.1758706218000.Ib3458a9ed2eb38e00184c4a92659b83b97fe476c@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <97b81865ea07c259b56a051cad5e1d20318ffdd4-EmailReplacePatchSet-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NppB03pl29U="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: redirect-gateway:
- only redirect traffic through TUN if address famili...
+Date: Sat, 11 Oct 2025 14:50:49 +0200 (CEST)
+Message-Id: <202510111250.59BConjL095846@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251011114448.14501-1-gert@...1296...>
+References: <20251011114448.14501-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make recursive routing check
+ more fine-grained
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,143 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---NppB03pl29U=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Stared at code, and tested on Linux.  Under "normal operations" (that
+is "packets are directed into the tunnel by routing") this does not 
+make a difference, except logging with source ip+port as well
 
-cron2 has uploaded a new patch set (#5) to the change originally created by=
- mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail )
+Old:
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+2025-10-11 12:52:06 us=938009 Recursive routing detected, drop tun packet to [AF_INET6]2607:fc50:1001:5200::4:51194
 
+New:
 
-Change subject: redirect-gateway: only redirect traffic through TUN if addr=
-ess families match
-......................................................................
+2025-10-11 12:49:11 us=326313 Recursive routing detected, packet dropped fd00:abcd:194:2::1029:38264 -> [AF_INET6]2607:fc50:1001:5200::4:51194
+2025-10-11 12:50:45 us=97213 Recursive routing detected, packet dropped 10.194.20.170:40119 -> [AF_INET]199.102.77.82:51194
 
-redirect-gateway: only redirect traffic through TUN if address families mat=
-ch
-
-Adds a check in do_init_route_ipv6_list() to add default routes toward the =
-TUN
-only if the TUN has IPv6 addresses.
-
-Github: fixes OpenVPN/openvpn#850
-Github: see also OpenVPN/openvpn#863
-
-Change-Id: Ib3458a9ed2eb38e00184c4a92659b83b97fe476c
-Signed-off-by: mrbff <marco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1210
-Message-Id: <20251011111417.11802-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59245295/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/init.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+(by application of overlapping --route/--route-ipv6, and removing the
+ipv6 host route while OpenVPN was running)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/1210/5
+I did not test more advanced scenarios "do ip rule to send non-openvpn
+traffic into the tunnel, so the target host can be pinged via tunnel
+without triggering the recursion check" - we don't set up things that
+way today, but it might become relevant for future Linux "ip rule"
+VPN redirections.
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index f8a0fee..aaa0573 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1523,7 +1523,7 @@
 
-     /* redirect (IPv6) gateway to VPN?  if yes, add a few more specifics
-      */
--    if (options->routes_ipv6->flags & RG_REROUTE_GW)
-+    if (options->routes_ipv6->flags & RG_REROUTE_GW && options->ifconfig_i=
-pv6_local)
-     {
-         char *opt_list[] =3D { "::/3", "2000::/4", "3000::/4", "fc00::/7",=
- NULL };
-         int i;
+Your patch has been applied to the master branch.
+
+commit cf2d18de8b9d75a235dba8e84674361cf64b1489
+Author: Lev Stipakov
+Date:   Sat Oct 11 13:44:42 2025 +0200
+
+     Make recursive routing check more fine-grained
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/903
+     Message-Id: <20251011114448.14501-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59245301/
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib3458a9ed2eb38e00184c4a92659b83b97fe476c
-Gerrit-Change-Number: 1210
-Gerrit-PatchSet: 5
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gert Doering
 
---NppB03pl29U=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #5</strong> to the change originally created by mrbff.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">redirect-gateway: only redirect tra=
-ffic through TUN if address families match<br><br>Adds a check in do_init_r=
-oute_ipv6_list() to add default routes toward the TUN<br>only if the TUN ha=
-s IPv6 addresses.<br><br>Github: fixes OpenVPN/openvpn#850<br>Github: see a=
-lso OpenVPN/openvpn#863<br><br>Change-Id: Ib3458a9ed2eb38e00184c4a92659b83b=
-97fe476c<br>Signed-off-by: mrbff &lt;marco@...2726...&gt;<br>Acked-by: Gert=
- Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/=
-c/openvpn/+/1210<br>Message-Id: &lt;20251011111417.11802-1-gert@...1296...&=
-gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59245295/<br>=
-Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn=
-/init.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre =
-class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/12=
-10/5</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br=
-><span>index f8a0fee..aaa0573 100644</span><br><span>--- a/src/openvpn/init=
-.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -1523,7 +152=
-3,7 @@</span><br><span> </span><br><span>     /* redirect (IPv6) gateway to=
- VPN?  if yes, add a few more specifics</span><br><span>      */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;routes_ipv6-=
-&gt;flags &amp; RG_REROUTE_GW)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (options-&gt;routes_ipv6-&gt;flags &amp; RG_REROUTE_GW &a=
-mp;&amp; options-&gt;ifconfig_ipv6_local)</span><br><span>     {</span><br>=
-<span>         char *opt_list[] =3D { &quot;::/3&quot;, &quot;2000::/4&quot=
-;, &quot;3000::/4&quot;, &quot;fc00::/7&quot;, NULL };</span><br><span>    =
-     int i;</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail">change 1210</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib3458a9ed2eb38e00184c4a9265=
-9b83b97fe476c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1210 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---NppB03pl29U=--
 
