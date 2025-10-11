@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 11 Oct 2025 11:49:11 +0000
+Date: Sat, 11 Oct 2025 11:49:08 +0000
 In-Reply-To: <gerrit.1758706218000.Ib3458a9ed2eb38e00184c4a92659b83b97fe476c@...2715...>
 References: <gerrit.1758706218000.Ib3458a9ed2eb38e00184c4a92659b83b97fe476c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <97b81865ea07c259b56a051cad5e1d20318ffdd4-HTML@...2715...>
+Message-ID: <97b81865ea07c259b56a051cad5e1d20318ffdd4-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qbip6arGs3E="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="NppB03pl29U="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: redirect-gateway:
  only redirect traffic through TUN if address famili...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qbip6arGs3E=
+--NppB03pl29U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-10?usp=3Demail )
+cron2 has uploaded a new patch set (#5) to the change originally created by=
+ mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: redirect-gateway: only redirect traffic through TUN if addr=
 ess families match
@@ -55,7 +59,7 @@ M src/openvpn/init.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/1210/5
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
 index f8a0fee..aaa0573 100644
@@ -78,7 +82,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib3458a9ed2eb38e00184c4a92659b83b97fe476c
@@ -90,47 +94,50 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qbip6arGs3E=
+--NppB03pl29U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1210?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">redirect-gateway: only redirect traffic through =
-TUN if address families match<br><br>Adds a check in do_init_route_ipv6_lis=
-t() to add default routes toward the TUN<br>only if the TUN has IPv6 addres=
-ses.<br><br>Github: fixes OpenVPN/openvpn#850<br>Github: see also OpenVPN/o=
-penvpn#863<br><br>Change-Id: Ib3458a9ed2eb38e00184c4a92659b83b97fe476c<br>S=
-igned-off-by: mrbff &lt;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt;=
-gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1=
-210<br>Message-Id: &lt;20251011111417.11802-1-gert@...1296...&gt;<br>URL: h=
-ttps://sourceforge.net/p/openvpn/mailman/message/59245295/<br>Signed-off-by=
-: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/init.c<br>1 =
-file changed, 1 insertion(+), 1 deletion(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>ind=
-ex f8a0fee..aaa0573 100644</span><br><span>--- a/src/openvpn/init.c</span><=
-br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -1523,7 +1523,7 @@</sp=
-an><br><span> </span><br><span>     /* redirect (IPv6) gateway to VPN?  if =
-yes, add a few more specifics</span><br><span>      */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;routes_ipv6-&gt;flags =
-&amp; RG_REROUTE_GW)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (options-&gt;routes_ipv6-&gt;flags &amp; RG_REROUTE_GW &amp;&amp; o=
-ptions-&gt;ifconfig_ipv6_local)</span><br><span>     {</span><br><span>    =
-     char *opt_list[] =3D { &quot;::/3&quot;, &quot;2000::/4&quot;, &quot;3=
-000::/4&quot;, &quot;fc00::/7&quot;, NULL };</span><br><span>         int i=
-;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1210?usp=3Demail">change 1210</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
-://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
-http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1210?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #5</strong> to the change originally created by mrbff.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail">View C=
+hange</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">redirect-gateway: only redirect tra=
+ffic through TUN if address families match<br><br>Adds a check in do_init_r=
+oute_ipv6_list() to add default routes toward the TUN<br>only if the TUN ha=
+s IPv6 addresses.<br><br>Github: fixes OpenVPN/openvpn#850<br>Github: see a=
+lso OpenVPN/openvpn#863<br><br>Change-Id: Ib3458a9ed2eb38e00184c4a92659b83b=
+97fe476c<br>Signed-off-by: mrbff &lt;marco@...2726...&gt;<br>Acked-by: Gert=
+ Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/=
+c/openvpn/+/1210<br>Message-Id: &lt;20251011111417.11802-1-gert@...1296...&=
+gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59245295/<br>=
+Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn=
+/init.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre =
+class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/12=
+10/5</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
+wrap;"><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br=
+><span>index f8a0fee..aaa0573 100644</span><br><span>--- a/src/openvpn/init=
+.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -1523,7 +152=
+3,7 @@</span><br><span> </span><br><span>     /* redirect (IPv6) gateway to=
+ VPN?  if yes, add a few more specifics</span><br><span>      */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;routes_ipv6-=
+&gt;flags &amp; RG_REROUTE_GW)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (options-&gt;routes_ipv6-&gt;flags &amp; RG_REROUTE_GW &a=
+mp;&amp; options-&gt;ifconfig_ipv6_local)</span><br><span>     {</span><br>=
+<span>         char *opt_list[] =3D { &quot;::/3&quot;, &quot;2000::/4&quot=
+;, &quot;3000::/4&quot;, &quot;fc00::/7&quot;, NULL };</span><br><span>    =
+     int i;</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail">change 1210</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1210?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ib3458a9ed2eb38e00184c4a9265=
@@ -150,5 +157,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---qbip6arGs3E=--
+--NppB03pl29U=--
 
