@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 11 Oct 2025 08:20:30 +0000
-In-Reply-To: <gerrit.1760136547000.Ie41101bd00d038fa6fb906f3d30d44bf65788b96@...2715...>
-References: <gerrit.1760136547000.Ie41101bd00d038fa6fb906f3d30d44bf65788b96@...2715...>
+Date: Sat, 11 Oct 2025 08:21:50 +0000
+In-Reply-To: <gerrit.1760136547000.I62a8f62b9c0938cfcb99d184b07034515c076303@...2715...>
+References: <gerrit.1760136547000.I62a8f62b9c0938cfcb99d184b07034515c076303@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <12532f9ad6b352e206186bcdc57a18a39cc3c4d9-EmailReviewComments-HTML@...2715...>
+Message-ID: <f37e86182d3c456bee4e8b951944f28f4837cdd1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="O6/61pvidUg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dhcp: Replace DHCP
- Option types with defines
+Content-Type: multipart/alternative; boundary="MHXz0GjhyKs="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move
+ build_dhcp_options_string from tun to dhcp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +22,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---O6/61pvidUg=
+--MHXz0GjhyKs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
 cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1266?usp=3Demail )
+penvpn.net/c/openvpn/+/1265?usp=3Demail )
 
-Change subject: dhcp: Replace DHCP Option types with defines
+Change subject: Move build_dhcp_options_string from tun to dhcp
 ......................................................................
 
 
@@ -39,15 +39,15 @@ Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie41101bd00d038fa6fb906f3d30d44bf65788b96
-Gerrit-Change-Number: 1266
+Gerrit-Change-Id: I62a8f62b9c0938cfcb99d184b07034515c076303
+Gerrit-Change-Number: 1265
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
@@ -55,11 +55,11 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sat, 11 Oct 2025 08:20:30 +0000
+Gerrit-Comment-Date: Sat, 11 Oct 2025 08:21:50 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---O6/61pvidUg=
+--MHXz0GjhyKs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -67,22 +67,22 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: flichtenheld, plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail=
-">change 1266</a>. To unsubscribe, or for help writing mail filters, visit =
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail=
+">change 1265</a>. To unsubscribe, or for help writing mail filters, visit =
 <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
 ><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
 itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail"/>=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1265?usp=3Demail"/>=
 <meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie41101bd00d038fa6fb906f3d30=
-d44bf65788b96 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1266 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I62a8f62b9c0938cfcb99d184b07=
+034515c076303 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1265 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -96,12 +96,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 11 Oct 2025 08:20:30=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 11 Oct 2025 08:21:50=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---O6/61pvidUg=--
+--MHXz0GjhyKs=--
 
