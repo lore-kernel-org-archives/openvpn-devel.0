@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 11 Oct 2025 08:41:04 +0000
+Date: Sat, 11 Oct 2025 08:41:07 +0000
 In-Reply-To: <gerrit.1760136547000.Ie41101bd00d038fa6fb906f3d30d44bf65788b96@...2715...>
 References: <gerrit.1760136547000.Ie41101bd00d038fa6fb906f3d30d44bf65788b96@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2542533be1b579775ecad78d32fac0eb5e2c30fa-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <2542533be1b579775ecad78d32fac0eb5e2c30fa-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LAO8CiCqFIc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vOv4k8j/p6o="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dhcp: Replace DHCP
  Option types with defines
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LAO8CiCqFIc=
+--vOv4k8j/p6o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+66?usp=3Demail )
 
 Change subject: dhcp: Replace DHCP Option types with defines
 ......................................................................
@@ -55,7 +51,7 @@ M src/openvpn/dhcp.h
 2 files changed, 22 insertions(+), 13 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/1266/2
+
 
 diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
 index 653127d..56f03f2 100644
@@ -150,7 +146,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ie41101bd00d038fa6fb906f3d30d44bf65788b96
@@ -161,115 +157,111 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LAO8CiCqFIc=
+--vOv4k8j/p6o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">dhcp: Replace DHCP Option types wit=
-h defines<br><br>Just nicer. Verified against<br>https://www.iana.org/assig=
-nments/bootp-dhcp-parameters/bootp-dhcp-parameters.xhtml<br><br>Change-Id: =
-Ie41101bd00d038fa6fb906f3d30d44bf65788b96<br>Signed-off-by: Frank Lichtenhe=
-ld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&g=
-t;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1266<br>Message-Id=
-: &lt;20251011082232.27602-1-gert@...1296...&gt;<br>URL: https://sourceforg=
-e.net/p/openvpn/mailman/message/59245241/<br>Signed-off-by: Gert Doering &l=
-t;gert@...1296...&gt;<br>---<br>M src/openvpn/dhcp.c<br>M src/openvpn/dhcp.=
-h<br>2 files changed, 22 insertions(+), 13 deletions(-)<br><br></pre><pre c=
-lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/126=
-6/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c</span><br>=
-<span>index 653127d..56f03f2 100644</span><br><span>--- a/src/openvpn/dhcp.=
-c</span><br><span>+++ b/src/openvpn/dhcp.c</span><br><span>@@ -342,27 +342,=
-27 @@</span><br><span>     bool error =3D false;</span><br><span>     if (o=
--&gt;domain)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        write_dhcp_str(buf, 15, o-&gt;domain, &amp;error);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_str=
-(buf, DHCP_DOMAIN_NAME, o-&gt;domain, &amp;error);</span><br><span>     }</=
-span><br><span> </span><br><span>     if (o-&gt;netbios_scope)</span><br><s=
-pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        wri=
-te_dhcp_str(buf, 47, o-&gt;netbios_scope, &amp;error);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_str(buf, DHCP_NETBIOS=
-_SCOPE, o-&gt;netbios_scope, &amp;error);</span><br><span>     }</span><br>=
-<span> </span><br><span>     if (o-&gt;netbios_node_type)</span><br><span> =
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        write_dh=
-cp_u8(buf, 46, o-&gt;netbios_node_type, &amp;error);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_u8(buf, DHCP_NETBIOS_N=
-ODE_TYPE, o-&gt;netbios_node_type, &amp;error);</span><br><span>     }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    writ=
-e_dhcp_u32_array(buf, 6, (uint32_t *)o-&gt;dns, o-&gt;dns_len, &amp;error);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    write_dhcp_u32_ar=
-ray(buf, 44, (uint32_t *)o-&gt;wins, o-&gt;wins_len, &amp;error);</span><br=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1266?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">dhcp: Replace DHCP Option types with defines<br>=
+<br>Just nicer. Verified against<br>https://www.iana.org/assignments/bootp-=
+dhcp-parameters/bootp-dhcp-parameters.xhtml<br><br>Change-Id: Ie41101bd00d0=
+38fa6fb906f3d30d44bf65788b96<br>Signed-off-by: Frank Lichtenheld &lt;frank@=
+...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit =
+URL: https://gerrit.openvpn.net/c/openvpn/+/1266<br>Message-Id: &lt;2025101=
+1082232.27602-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openv=
+pn/mailman/message/59245241/<br>Signed-off-by: Gert Doering &lt;gert@...1826...=
+6...&gt;<br>---<br>M src/openvpn/dhcp.c<br>M src/openvpn/dhcp.h<br>2 files =
+changed, 22 insertions(+), 13 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c</span><br><span>ind=
+ex 653127d..56f03f2 100644</span><br><span>--- a/src/openvpn/dhcp.c</span><=
+br><span>+++ b/src/openvpn/dhcp.c</span><br><span>@@ -342,27 +342,27 @@</sp=
+an><br><span>     bool error =3D false;</span><br><span>     if (o-&gt;doma=
+in)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        write_dhcp_str(buf, 15, o-&gt;domain, &amp;error);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        write_dhcp_str(buf, DHC=
+P_DOMAIN_NAME, o-&gt;domain, &amp;error);</span><br><span>     }</span><br>=
+<span> </span><br><span>     if (o-&gt;netbios_scope)</span><br><span>     =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        write_dhcp_s=
+tr(buf, 47, o-&gt;netbios_scope, &amp;error);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        write_dhcp_str(buf, DHCP_NETBIOS_SCOPE, o=
+-&gt;netbios_scope, &amp;error);</span><br><span>     }</span><br><span> </=
+span><br><span>     if (o-&gt;netbios_node_type)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        write_dhcp_u8(buf=
+, 46, o-&gt;netbios_node_type, &amp;error);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        write_dhcp_u8(buf, DHCP_NETBIOS_NODE_TYPE, =
+o-&gt;netbios_node_type, &amp;error);</span><br><span>     }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    write_dhcp_u32=
+_array(buf, 6, (uint32_t *)o-&gt;dns, o-&gt;dns_len, &amp;error);</span><br=
 ><span style=3D"color: hsl(0, 100%, 40%);">-    write_dhcp_u32_array(buf, 4=
-2, (uint32_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;error);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    write_dhcp_u32_array(buf, 45, (uint32_t=
- *)o-&gt;nbdd, o-&gt;nbdd_len, &amp;error);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    write_dhcp_u32_array(buf, DHCP_DOMAIN_SERVER, (=
-uint32_t *)o-&gt;dns, o-&gt;dns_len, &amp;error);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    write_dhcp_u32_array(buf, DHCP_NETBIOS_DO=
-MAIN_SERVER, (uint32_t *)o-&gt;wins, o-&gt;wins_len, &amp;error);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_u32_array(buf,=
- DHCP_NTP_SERVER, (uint32_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;error);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_u32_array(b=
-uf, DHCP_NETBIOS_DIST_SERVER, (uint32_t *)o-&gt;nbdd, o-&gt;nbdd_len, &amp;=
-error);</span><br><span> </span><br><span>     if (o-&gt;domain_search_list=
-_len &gt; 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        write_dhcp_search_str(buf, 119, o-&gt;domain_search_l=
-ist, o-&gt;domain_search_list_len, &amp;error);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        write_dhcp_search_str(buf, DHCP_DOMAIN_=
-SEARCH, o-&gt;domain_search_list, o-&gt;domain_search_list_len, &amp;error)=
-;</span><br><span>     }</span><br><span> </span><br><span>     /* the MS D=
-HCP server option &#39;Disable Netbios-over-TCP/IP</span><br><span>@@ -375,=
-7 +375,7 @@</span><br><span>             msg(M_WARN, &quot;build_dhcp_optio=
-ns_string: buffer overflow building DHCP options&quot;);</span><br><span>  =
-           return false;</span><br><span>         }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        buf_write_u8(buf, 43);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        buf_write_u8(buf, DHCP_V=
-ENDOR);</span><br><span>         buf_write_u8(buf, 6); /* total length fiel=
-d */</span><br><span>         buf_write_u8(buf, 0x001);</span><br><span>   =
-      buf_write_u8(buf, 4); /* length of the vendor specified field */</spa=
-n><br><span>diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h</span><br>=
-<span>index 8e15a39..3fcd2b6 100644</span><br><span>--- a/src/openvpn/dhcp.=
-h</span><br><span>+++ b/src/openvpn/dhcp.h</span><br><span>@@ -30,10 +30,19=
- @@</span><br><span> #pragma pack(1)</span><br><span> </span><br><span> /* =
-DHCP Option types */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-define DHCP_PAD      0</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#define DHCP_ROUTER   3</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#define DHCP_MSG_TYPE 53 /* message type (u8) */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define DHCP_END      255</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#define DHCP_PAD                   0<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_ROUTER =
-               3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine DHCP_DOMAIN_SERVER         6</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#define DHCP_DOMAIN_NAME           15</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define DHCP_NTP_SERVER            42</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_VENDOR    =
-            43</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
-ne DHCP_NETBIOS_DOMAIN_SERVER 44</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#define DHCP_NETBIOS_DIST_SERVER   45</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define DHCP_NETBIOS_NODE_TYPE     46</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_NETBIOS_SCOPE=
-         47</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
-DHCP_MSG_TYPE              53</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#define DHCP_DOMAIN_SEARCH         119</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#define DHCP_END                   255</span><=
-br><span> </span><br><span> /* DHCP Messages types */</span><br><span> #def=
-ine DHCPDISCOVER 1</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail">change 1266</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1266?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+4, (uint32_t *)o-&gt;wins, o-&gt;wins_len, &amp;error);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    write_dhcp_u32_array(buf, 42, (uint32=
+_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;error);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    write_dhcp_u32_array(buf, 45, (uint32_t *)o-&gt;n=
+bdd, o-&gt;nbdd_len, &amp;error);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    write_dhcp_u32_array(buf, DHCP_DOMAIN_SERVER, (uint32_t *=
+)o-&gt;dns, o-&gt;dns_len, &amp;error);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    write_dhcp_u32_array(buf, DHCP_NETBIOS_DOMAIN_SERVE=
+R, (uint32_t *)o-&gt;wins, o-&gt;wins_len, &amp;error);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_u32_array(buf, DHCP_NTP_=
+SERVER, (uint32_t *)o-&gt;ntp, o-&gt;ntp_len, &amp;error);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_u32_array(buf, DHCP_N=
+ETBIOS_DIST_SERVER, (uint32_t *)o-&gt;nbdd, o-&gt;nbdd_len, &amp;error);</s=
+pan><br><span> </span><br><span>     if (o-&gt;domain_search_list_len &gt; =
+0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        write_dhcp_search_str(buf, 119, o-&gt;domain_search_list, o-&gt=
+;domain_search_list_len, &amp;error);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        write_dhcp_search_str(buf, DHCP_DOMAIN_SEARCH, o-=
+&gt;domain_search_list, o-&gt;domain_search_list_len, &amp;error);</span><b=
+r><span>     }</span><br><span> </span><br><span>     /* the MS DHCP server=
+ option &#39;Disable Netbios-over-TCP/IP</span><br><span>@@ -375,7 +375,7 @=
+@</span><br><span>             msg(M_WARN, &quot;build_dhcp_options_string:=
+ buffer overflow building DHCP options&quot;);</span><br><span>            =
+ return false;</span><br><span>         }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        buf_write_u8(buf, 43);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        buf_write_u8(buf, DHCP_VENDOR);</spa=
+n><br><span>         buf_write_u8(buf, 6); /* total length field */</span><=
+br><span>         buf_write_u8(buf, 0x001);</span><br><span>         buf_wr=
+ite_u8(buf, 4); /* length of the vendor specified field */</span><br><span>=
+diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h</span><br><span>index =
+8e15a39..3fcd2b6 100644</span><br><span>--- a/src/openvpn/dhcp.h</span><br>=
+<span>+++ b/src/openvpn/dhcp.h</span><br><span>@@ -30,10 +30,19 @@</span><b=
+r><span> #pragma pack(1)</span><br><span> </span><br><span> /* DHCP Option =
+types */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define DHCP_=
+PAD      0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define DHC=
+P_ROUTER   3</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define D=
+HCP_MSG_TYPE 53 /* message type (u8) */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#define DHCP_END      255</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#define DHCP_PAD                   0</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_ROUTER               =
+ 3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_DOMA=
+IN_SERVER         6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#define DHCP_DOMAIN_NAME           15</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#define DHCP_NTP_SERVER            42</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#define DHCP_VENDOR                43</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_NETBIOS_=
+DOMAIN_SERVER 44</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
+fine DHCP_NETBIOS_DIST_SERVER   45</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#define DHCP_NETBIOS_NODE_TYPE     46</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define DHCP_NETBIOS_SCOPE         47</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define DHCP_MSG_TYPE  =
+            53</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
+ne DHCP_DOMAIN_SEARCH         119</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#define DHCP_END                   255</span><br><span> </spa=
+n><br><span> /* DHCP Messages types */</span><br><span> #define DHCPDISCOVE=
+R 1</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1266?usp=3Demail">change 1266</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1266?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ie41101bd00d038fa6fb906f3d30=
@@ -287,5 +279,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---LAO8CiCqFIc=--
+--vOv4k8j/p6o=--
 
