@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 12 Oct 2025 12:55:11 +0000
+Date: Sun, 12 Oct 2025 12:59:34 +0000
 In-Reply-To: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
 References: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <d32e1e2d27f0422711138304a71ab28d7c4a7710-EmailReviewComments-HTML@...2715...>
+Message-ID: <a406f07d985e65b5e0771505f5b020b549e6253e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sxeN0UWrCgE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="OtlmqA1Nmj8="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Install host routes
  for ifconfig-push routes when DCO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: d12fk <heiko@...515...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---sxeN0UWrCgE=
+--OtlmqA1Nmj8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,58 +37,33 @@ abled
 ......................................................................
 
 
-Patch Set 8: Code-Review-2
+Patch Set 8:
 
-(5 comments)
+(1 comment)
 
 Patchset:
 
 PS8:
-this got broken during review / respin...  conceptually I have nothing to c=
-omplain, but the MR_ONLINK_ADDR vs. MR_ONLINK_DCO_ADDR needs to be fixed.  =
-Admittedly I do not understand why it compiles at all (!?)...
+Ah, it compiles because that particular test instance had `configure --disa=
+ble-dco`.  If configured without that, compilation bombs in the expected way
 
 ```
-$ git grep MR_ONLINK
-src/openvpn/dco.c:    if (addr->type & MR_ONLINK_DCO_ADDR)
-src/openvpn/dco.c:        if (addr->type & MR_ONLINK_ADDR)
-src/openvpn/dco.c:        if (addr->type & MR_ONLINK_ADDR)
-src/openvpn/mroute.h:#define MR_ONLINK_DCO_ADDR 64
-src/openvpn/multi.c:        addr.type |=3D MR_ONLINK_DCO_ADDR;
-src/openvpn/multi.c:        addr.type |=3D MR_ONLINK_DCO_ADDR;
+  CC       dco.o
+dco.c: In function 'dco_install_iroute':
+dco.c:683:26: error: 'MR_ONLINK_ADDR' undeclared (first use in this functio=
+n); did you mean 'MR_ONLINK_DCO_ADDR'?
+  683 |         if (addr->type & MR_ONLINK_ADDR)
+      |                          ^~~~~~~~~~~~~~
+      |                          MR_ONLINK_DCO_ADDR
+dco.c:683:26: note: each undeclared identifier is reported only once for ea=
+ch function it appears in
+dco.c: In function 'dco_delete_iroutes':
+dco.c:744:13: error: implicit declaration of function 'dco_win_del_iroute_i=
+pv4' [-Wimplicit-function-declaration]
+  744 |             dco_win_del_iroute_ipv4(&c->c1.tuntap->dco, mi->context=
+.c2.push_ifconfig_local, 32);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~
 ```
-
-so MR_ONLINK_ADDR is referenced, but not defined anywhere - and it still co=
-mpiles.  Huh.
-
-
-File src/openvpn/dco.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/785dfadb_41bb07c6?usp=3D=
-email :
-PS8, Line 686:
-This got broken in patch iterations - initially everything was `MR_ONLINK_A=
-DDR` and then the define got changed to `MR_ONLINK_DCO_ADDR` but the "not w=
-in32" platform was not adjusted?
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/c26431d1_ead0937a?usp=3D=
-email :
-PS8, Line 700:         if (addr->type & MR_ONLINK_ADDR)
-_DCO_
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/b9ffbe40_0e0e1234?usp=3D=
-email :
-PS8, Line 745:         }
-this looks wrong.  The !not WIN32 code calls `dco_win_`?
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1192/comment/6e19a3ae_10206ebe?usp=3D=
-email :
-PS8, Line 771:         }
-This is asymmetric to IPv4 - I guess this is from early tests, and the `dco=
-_win_del...()` think needs to go out?
 
 
 
@@ -112,70 +87,45 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Sun, 12 Oct 2025 12:55:11 +0000
+Gerrit-Comment-Date: Sun, 12 Oct 2025 12:59:34 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 
---sxeN0UWrCgE=
+--OtlmqA1Nmj8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, ordex, plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">V=
-iew Change</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1192?tab=3Dcomments&amp;usp=3Demail">Patch Set #8:</a> </p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">this got b=
-roken during review / respin...  conceptually I have nothing to complain, b=
-ut the MR_ONLINK_ADDR vs. MR_ONLINK_DCO_ADDR needs to be fixed.  Admittedly=
- I do not understand why it compiles at all (!?)...</p><p class=3D"blocks" =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>$ git grep M=
-R_ONLINK<br>src/openvpn/dco.c:    if (addr-&gt;type &amp; MR_ONLINK_DCO_ADD=
-R)<br>src/openvpn/dco.c:        if (addr-&gt;type &amp; MR_ONLINK_ADDR)<br>=
-src/openvpn/dco.c:        if (addr-&gt;type &amp; MR_ONLINK_ADDR)<br>src/op=
-envpn/mroute.h:#define MR_ONLINK_DCO_ADDR 64<br>src/openvpn/multi.c:       =
- addr.type |=3D MR_ONLINK_DCO_ADDR;<br>src/openvpn/multi.c:        addr.typ=
-e |=3D MR_ONLINK_DCO_ADDR;<br>```</p><p class=3D"blocks" style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">so MR_ONLINK_ADDR is referenced, but =
-not defined anywhere - and it still compiles.  Huh.</p></li></ul></li><li s=
-tyle=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco.c:</p><ul style=3D"=
-list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
-"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1192/comment/785dfadb_41bb07c6?usp=3Demail">Patch Set #8, Line 686=
-:</a> <code style=3D"font-family:monospace,monospace"></code></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This go=
-t broken in patch iterations - initially everything was `MR_ONLINK_ADDR` an=
-d then the define got changed to `MR_ONLINK_DCO_ADDR` but the &quot;not win=
-32&quot; platform was not adjusted?</p></li><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1192/comment/c26431d1_ead0937a?usp=3Demail">Patch Set=
- #8, Line 700:</a> <code style=3D"font-family:monospace,monospace">        =
-if (addr-&gt;type &amp; MR_ONLINK_ADDR)</code></p><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">_DCO_</p></li><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1192/comment/b9ffbe40_0e0e1234?=
-usp=3Demail">Patch Set #8, Line 745:</a> <code style=3D"font-family:monospa=
-ce,monospace">        }</code></p><p class=3D"blocks" style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">this looks wrong.  The !not WIN32 code c=
-alls `dco_win_`?</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1192/comment/6e19a3ae_10206ebe?usp=3Demail">Patch Set #8, Line 771:</a> =
-<code style=3D"font-family:monospace,monospace">        }</code></p><p clas=
-s=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This i=
-s asymmetric to IPv4 - I guess this is from early tests, and the `dco_win_d=
-el...()` think needs to go out?</p></li></ul></li></ul><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">change 119=
-2</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1192?tab=3Dcomments&amp;usp=3Demail">Patch Set #8:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Ah, it compiles=
+ because that particular test instance had `configure --disable-dco`.  If c=
+onfigured without that, compilation bombs in the expected way</p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">```<br>  CC       dco.o<br>dco.c: In function &#39;dco_install_iroute&#=
+39;:<br>dco.c:683:26: error: &#39;MR_ONLINK_ADDR&#39; undeclared (first use=
+ in this function); did you mean &#39;MR_ONLINK_DCO_ADDR&#39;?<br>  683 |  =
+       if (addr-&gt;type &amp; MR_ONLINK_ADDR)<br>      |                  =
+        ^~~~~~~~~~~~~~<br>      |                          MR_ONLINK_DCO_AD=
+DR<br>dco.c:683:26: note: each undeclared identifier is reported only once =
+for each function it appears in<br>dco.c: In function &#39;dco_delete_irout=
+es&#39;:<br>dco.c:744:13: error: implicit declaration of function &#39;dco_=
+win_del_iroute_ipv4&#39; [-Wimplicit-function-declaration]<br>  744 |      =
+       dco_win_del_iroute_ipv4(&amp;c-&gt;c1.tuntap-&gt;dco, mi-&gt;context=
+.c2.push_ifconfig_local, 32);<br>      |             ^~~~~~~~~~~~~~~~~~~~~~=
+~<br>```</pre></li></ul></li></ul><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/1192?usp=3Demail">change 1192</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1192?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -202,12 +152,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
 &gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 12 Oct 2025 12:55:11=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 12 Oct 2025 12:59:34=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---sxeN0UWrCgE=--
+--OtlmqA1Nmj8=--
 
