@@ -1,17 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 11 Oct 2025 12:51:17 +0000
-In-Reply-To: <gerrit.1741271846000.I6841e2f2a85275254a04e2d8ae3defe4420db8f6@...2715...>
-References: <gerrit.1741271846000.I6841e2f2a85275254a04e2d8ae3defe4420db8f6@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <85c8def9355a028b14d79b890271a10bd8b46dfe-HTML@...2715...>
+Date: Sun, 12 Oct 2025 11:18:28 +0000
+In-Reply-To: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
+References: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <1388712bcbe7e8b8a132d486dc09adab3aba8e12-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iooa6+mtjF0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Make recursive
- routing check more fine-grained
+Content-Type: multipart/alternative; boundary="Mwz3bjxAOPU="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: PUSH_UPDATE server:
+ remove old IP(s) from vhash after sending a messa...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,411 +19,252 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
+To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iooa6+mtjF0=
+--Mwz3bjxAOPU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/90=
-3?usp=3Demail )
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-Change subject: Make recursive routing check more fine-grained
+cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1253?usp=3Demail )
+
+Change subject: PUSH_UPDATE server: remove old IP(s) from vhash after sendi=
+ng a message containing ifconfig(-ipv6)
 ......................................................................
 
-Make recursive routing check more fine-grained
 
-The existing recursive routing check drops TUN packets
-if their address matches the remote. While this works in
-most cases, a more fine-grained check is preferable for
-complex routing rules.
+Patch Set 3: Code-Review-1
 
-Since we only need to drop traffic originating from OpenVPN,
-all of the following values must match between the packet
-and the link:
+(7 comments)
 
- - IP protocol
- - Transport protocol (TCP/UDP)
- - Destination address
- - Destination port
+Patchset:
 
-GitHub: #699
+PS3:
+I like this latest version, and it should work nicely.
 
-Change-Id: I6841e2f2a85275254a04e2d8ae3defe4420db8f6
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/903
-Message-Id: <20251011114448.14501-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59245301/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/forward.c
-1 file changed, 55 insertions(+), 29 deletions(-)
+There might be a missing `free()` - this needs to be checked.  While at it,=
+ I've found a few other things that could use a bit of polishing.
 
 
+File src/openvpn/multi.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/723a899a_4779f06b?usp=3D=
+email :
+PS3, Line 4296:     msg(D_MULTI_LOW, "MULTI: Remove: %s -> %s", mroute_addr=
+_print(&r->addr, &gc), multi_instance_string(mi, false, &gc));
+this is too much logging ;-)
+
+I'd remove one of them, and change the other to include something like `MUL=
+TI: multi_unlearn_addr(): DEL %s` so it's clear it's not the normal "MULTI:=
+ DEL" path.
+
+Also, if we want to be totally fancy, we could use the mi prefix code here
+
+```
+set_prefix(mi);
+msg(...)  // no multi_instance_string() needed, as that's handled by msg_se=
+t_prefix()
+clear_prefix();
+```
+
+as for the message level, I'd use `D_MULTI_LOW` (as that is used by multi.c=
+ for the "Learn" message).
 
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index f342958..79a6fc7 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1391,73 +1391,99 @@
- static void
- drop_if_recursive_routing(struct context *c, struct buffer *buf)
- {
--    bool drop =3D false;
--    struct openvpn_sockaddr tun_sa;
--    int ip_hdr_offset =3D 0;
--
-     if (c->c2.to_link_addr =3D=3D NULL) /* no remote addr known */
-     {
-         return;
-     }
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/80047d20_27d7418e?usp=3D=
+email :
+PS3, Line 4301:
+we might have a memleak here.  I looked at the code in "multi.c" that delet=
+es mroutes (check_stale_routes(), multi_reap_range()), and those call `mult=
+i_route_del(r)` to do
 
--    tun_sa =3D c->c2.to_link_addr->dest;
-+    struct openvpn_sockaddr *link_addr =3D &c->c2.to_link_addr->dest;
-+    struct link_socket_info *lsi =3D get_link_socket_info(c);
-+    uint16_t link_port =3D atoi(c->c2.link_sockets[0]->remote_port);
+```
+    route_quota_dec(mi);
+    multi_instance_dec_refcount(mi);
+    free(route);
+```
 
--    int proto_ver =3D get_tun_ip_ver(TUNNEL_TYPE(c->c1.tuntap), &c->c2.buf=
-, &ip_hdr_offset);
-+    int ip_hdr_offset =3D 0;
-+    int tun_ip_ver =3D get_tun_ip_ver(TUNNEL_TYPE(c->c1.tuntap), &c->c2.bu=
-f, &ip_hdr_offset);
+so you have the first two here, but not the `free()` - not 100% sure if thi=
+s is required, but it smells like it.
 
--    if (proto_ver =3D=3D 4)
-+    if (tun_ip_ver =3D=3D 4)
-     {
--        /* make sure we got whole IP header */
--        if (BLEN(buf) < ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offset=
-))
-+        /* make sure we got whole IP header and TCP/UDP src/dst ports */
-+        if (BLEN(buf) < ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offset=
- + sizeof(uint16_t) * 2))
-         {
-             return;
-         }
+(`hash_remove_by_value()` seems to not do anything about the thing pointed =
+to)
 
-         /* skip ipv4 packets for ipv6 tun */
--        if (tun_sa.addr.sa.sa_family !=3D AF_INET)
-+        if (link_addr->addr.sa.sa_family !=3D AF_INET)
-         {
-             return;
-         }
+Maybe just calling `multi_route_del(r)` here is the right thing (after the =
+hash_remove_by_value() call, to avoid a use-after-free)?
 
-         struct openvpn_iphdr *pip =3D (struct openvpn_iphdr *)(BPTR(buf) +=
- ip_hdr_offset);
 
--        /* drop packets with same dest addr as gateway */
--        if (memcmp(&tun_sa.addr.in4.sin_addr.s_addr, &pip->daddr, sizeof(p=
-ip->daddr)) =3D=3D 0)
-+        /* skip if tun protocol doesn't match link protocol */
-+        if ((lsi->proto =3D=3D PROTO_TCP && pip->protocol !=3D OPENVPN_IPP=
-ROTO_TCP)
-+            || (lsi->proto =3D=3D PROTO_UDP && pip->protocol !=3D OPENVPN_=
-IPPROTO_UDP))
-         {
--            drop =3D true;
-+            return;
-+        }
-+
-+
-+        /* drop packets with same dest addr and port as remote */
-+        uint8_t *l4_hdr =3D (uint8_t *)pip + sizeof(struct openvpn_iphdr);
-+
-+        /* TCP and UDP ports are at the same place in the header, and othe=
-r protocols
-+         * can not happen here due to the lsi->proto check above */
-+        uint16_t src_port =3D ntohs(*(uint16_t *)l4_hdr);
-+        uint16_t dst_port =3D ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t=
-)));
-+        if ((memcmp(&link_addr->addr.in4.sin_addr.s_addr, &pip->daddr, siz=
-eof(pip->daddr)) =3D=3D 0) && (link_port =3D=3D dst_port))
-+        {
-+            c->c2.buf.len =3D 0;
-+
-+            struct gc_arena gc =3D gc_new();
-+            msg(D_LOW, "Recursive routing detected, packet dropped %s:%" P=
-RIu16 " -> %s",
-+                print_in_addr_t(pip->saddr, IA_NET_ORDER, &gc),
-+                src_port,
-+                print_link_socket_actual(c->c2.to_link_addr, &gc));
-+            gc_free(&gc);
-         }
-     }
--    else if (proto_ver =3D=3D 6)
-+    else if (tun_ip_ver =3D=3D 6)
-     {
--        /* make sure we got whole IPv6 header */
--        if (BLEN(buf) < ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offs=
-et))
-+        /* make sure we got whole IPv6 header and TCP/UDP src/dst ports */
-+        if (BLEN(buf) < ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offs=
-et + sizeof(uint16_t) * 2))
-         {
-             return;
-         }
-=20
-         /* skip ipv6 packets for ipv4 tun */
--        if (tun_sa.addr.sa.sa_family !=3D AF_INET6)
-+        if (link_addr->addr.sa.sa_family !=3D AF_INET6)
-         {
-             return;
-         }
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/f301c3e7_e77a6296?usp=3D=
+email :
+PS3, Line 4320:     ASSERT(mroute_extract_openvpn_sockaddr(&addr, &remote_s=
+i, false));
+This works, but feels more clumsy than needed - looking through mroute.c, I=
+ find
 
-         struct openvpn_ipv6hdr *pip6 =3D (struct openvpn_ipv6hdr *)(BPTR(b=
-uf) + ip_hdr_offset);
+`mroute_get_in_addr_t(struct mroute_addr *out, const in_addr_t in, int mask=
+)`
 
--        /* drop packets with same dest addr as gateway */
--        if (OPENVPN_IN6_ARE_ADDR_EQUAL(&tun_sa.addr.in6.sin6_addr, &pip6->=
-daddr))
-+        /* skip if tun protocol doesn't match link protocol */
-+        if ((lsi->proto =3D=3D PROTO_TCP && pip6->nexthdr !=3D OPENVPN_IPP=
-ROTO_TCP)
-+            || (lsi->proto =3D=3D PROTO_UDP && pip6->nexthdr !=3D OPENVPN_=
-IPPROTO_UDP))
-         {
--            drop =3D true;
-+            return;
-         }
--    }
+which should do the same with less lines of intermediate structure filling =
+:-)  (have not tested this, just compared code)
 
--    if (drop)
--    {
--        struct gc_arena gc =3D gc_new();
-+        /* drop packets with same dest addr and port as remote */
-+        uint8_t *l4_hdr =3D (uint8_t *)pip6 + sizeof(struct openvpn_ipv6hd=
-r);
-+        uint16_t src_port =3D ntohs(*(uint16_t *)l4_hdr);
-+        uint16_t dst_port =3D ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t=
-)));
-+        if ((OPENVPN_IN6_ARE_ADDR_EQUAL(&link_addr->addr.in6.sin6_addr, &p=
-ip6->daddr)) && (link_port =3D=3D dst_port))
-+        {
-+            c->c2.buf.len =3D 0;
 
--        c->c2.buf.len =3D 0;
--
--        msg(D_LOW, "Recursive routing detected, drop tun packet to %s",
--            print_link_socket_actual(c->c2.to_link_addr, &gc));
--        gc_free(&gc);
-+            struct gc_arena gc =3D gc_new();
-+            msg(D_LOW, "Recursive routing detected, packet dropped %s:%" P=
-RIu16 " -> %s",
-+                print_in6_addr(pip6->saddr, IA_NET_ORDER, &gc),
-+                src_port,
-+                print_link_socket_actual(c->c2.to_link_addr, &gc));
-+            gc_free(&gc);
-+        }
-     }
- }
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/8290fc03_3b80051e?usp=3D=
+email :
+PS3, Line 4339:
+`mroute_get_in6_addr(&addr, a6, 0)` does this for you
+
+
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/cbc56eb6_41bab12b?usp=3D=
+email :
+PS3, Line 4366:             old_addr.s_addr =3D ntohl(mi->context.c2.push_i=
+fconfig_local);
+we could just do `in_addr_t old_addr =3D ...` here and save the detour via =
+`struct in_addr`?
+
+
+File src/openvpn/push_util.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/07ab8769_ed9bfa83?usp=3D=
+email :
+PS3, Line 158:     memset(&o, 0, sizeof(struct options));
+please use `CLEAR(o);` for that.  It does exactly the same, but we use it i=
+n this situation so it's clear "this is not just a random memset() but to 0=
+-initialize the options struct".
+
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/903?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6841e2f2a85275254a04e2d8ae3defe4420db8f6
-Gerrit-Change-Number: 903
-Gerrit-PatchSet: 5
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde98702a9801616a5f
+Gerrit-Change-Number: 1253
+Gerrit-PatchSet: 3
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Sun, 12 Oct 2025 11:18:28 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---iooa6+mtjF0=
+--Mwz3bjxAOPU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/903?usp=3Demail">View Change</a></p><div style=3D"white-space:pre-=
-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">Make recursive routing check more fine-grained<br=
-><br>The existing recursive routing check drops TUN packets<br>if their add=
-ress matches the remote. While this works in<br>most cases, a more fine-gra=
-ined check is preferable for<br>complex routing rules.<br><br>Since we only=
- need to drop traffic originating from OpenVPN,<br>all of the following val=
-ues must match between the packet<br>and the link:<br><br> - IP protocol<br=
-> - Transport protocol (TCP/UDP)<br> - Destination address<br> - Destinatio=
-n port<br><br>GitHub: #699<br><br>Change-Id: I6841e2f2a85275254a04e2d8ae3de=
-fe4420db8f6<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-b=
-y: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openv=
-pn.net/c/openvpn/+/903<br>Message-Id: &lt;20251011114448.14501-1-gert@...1711...=
-96...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/5924530=
-1/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/o=
-penvpn/forward.c<br>1 file changed, 55 insertions(+), 29 deletions(-)<br><b=
-r></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
-an>index f342958..79a6fc7 100644</span><br><span>--- a/src/openvpn/forward.=
-c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -1391,73 +=
-1391,99 @@</span><br><span> static void</span><br><span> drop_if_recursive_=
-routing(struct context *c, struct buffer *buf)</span><br><span> {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    bool drop =3D false;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    struct openvpn_sockaddr =
-tun_sa;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ip_hdr=
-_offset =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span>     if (c-&gt;c2.to_link_addr =3D=3D NULL) /* no remote addr kno=
-wn */</span><br><span>     {</span><br><span>         return;</span><br><sp=
-an>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    tun_sa =3D c-&gt;c2.to_link_addr-&gt;dest;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct openvpn_sockaddr *link_addr =
-=3D &amp;c-&gt;c2.to_link_addr-&gt;dest;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    struct link_socket_info *lsi =3D get_link_socket_i=
-nfo(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t=
- link_port =3D atoi(c-&gt;c2.link_sockets[0]-&gt;remote_port);</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int proto_ve=
-r =3D get_tun_ip_ver(TUNNEL_TYPE(c-&gt;c1.tuntap), &amp;c-&gt;c2.buf, &amp;=
-ip_hdr_offset);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-int ip_hdr_offset =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    int tun_ip_ver =3D get_tun_ip_ver(TUNNEL_TYPE(c-&gt;c1.tuntap), &a=
-mp;c-&gt;c2.buf, &amp;ip_hdr_offset);</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (proto_ver =3D=3D 4)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (tun_ip_ver =3D=3D 4)</spa=
-n><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     /* make sure we got whole IP header */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        if (BLEN(buf) &lt; ((int)sizeof(struct openvp=
-n_iphdr) + ip_hdr_offset))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        /* make sure we got whole IP header and TCP/UDP src/dst port=
-s */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (BLE=
-N(buf) &lt; ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offset + sizeof(uin=
-t16_t) * 2))</span><br><span>         {</span><br><span>             return=
-;</span><br><span>         }</span><br><span> </span><br><span>         /* =
-skip ipv4 packets for ipv6 tun */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        if (tun_sa.addr.sa.sa_family !=3D AF_INET)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        if (link_addr-&gt;addr.s=
-a.sa_family !=3D AF_INET)</span><br><span>         {</span><br><span>      =
-       return;</span><br><span>         }</span><br><span> </span><br><span=
->         struct openvpn_iphdr *pip =3D (struct openvpn_iphdr *)(BPTR(buf) =
-+ ip_hdr_offset);</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        /* drop packets with same dest addr as gateway */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (memcmp(&amp;t=
-un_sa.addr.in4.sin_addr.s_addr, &amp;pip-&gt;daddr, sizeof(pip-&gt;daddr)) =
-=3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
- skip if tun protocol doesn&#39;t match link protocol */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        if ((lsi-&gt;proto =3D=3D PROT=
-O_TCP &amp;&amp; pip-&gt;protocol !=3D OPENVPN_IPPROTO_TCP)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            || (lsi-&gt;proto =3D=
-=3D PROTO_UDP &amp;&amp; pip-&gt;protocol !=3D OPENVPN_IPPROTO_UDP))</span>=
-<br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           drop =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            return;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* drop packets with same dest ad=
-dr and port as remote */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        uint8_t *l4_hdr =3D (uint8_t *)pip + sizeof(struct openvpn_iph=
-dr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        /* TCP and UDP ports are a=
-t the same place in the header, and other protocols</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+         * can not happen here due to the=
- lsi-&gt;proto check above */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        uint16_t src_port =3D ntohs(*(uint16_t *)l4_hdr);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        uint16_t dst_port =
-=3D ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t)));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if ((memcmp(&amp;link_addr-&gt;ad=
-dr.in4.sin_addr.s_addr, &amp;pip-&gt;daddr, sizeof(pip-&gt;daddr)) =3D=3D 0=
-) &amp;&amp; (link_port =3D=3D dst_port))</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            c-&gt;c2.buf.len =3D 0;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            struct gc_arena gc =3D gc_new();</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            msg(D_LOW, &quot;Recursive ro=
-uting detected, packet dropped %s:%&quot; PRIu16 &quot; -&gt; %s&quot;,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                print_i=
-n_addr_t(pip-&gt;saddr, IA_NET_ORDER, &amp;gc),</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                src_port,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                print_link_socket_actual(=
-c-&gt;c2.to_link_addr, &amp;gc));</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            gc_free(&amp;gc);</span><br><span>         }</spa=
-n><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- else if (proto_ver =3D=3D 6)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    else if (tun_ip_ver =3D=3D 6)</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        /* make sure we got wh=
-ole IPv6 header */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     if (BLEN(buf) &lt; ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offse=
-t))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* make =
-sure we got whole IPv6 header and TCP/UDP src/dst ports */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if (BLEN(buf) &lt; ((int)siz=
-eof(struct openvpn_ipv6hdr) + ip_hdr_offset + sizeof(uint16_t) * 2))</span>=
-<br><span>         {</span><br><span>             return;</span><br><span> =
-        }</span><br><span> </span><br><span>         /* skip ipv6 packets f=
-or ipv4 tun */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- if (tun_sa.addr.sa.sa_family !=3D AF_INET6)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        if (link_addr-&gt;addr.sa.sa_family !=3D A=
-F_INET6)</span><br><span>         {</span><br><span>             return;</s=
-pan><br><span>         }</span><br><span> </span><br><span>         struct =
-openvpn_ipv6hdr *pip6 =3D (struct openvpn_ipv6hdr *)(BPTR(buf) + ip_hdr_off=
-set);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        /* drop packets with same dest addr as gateway */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        if (OPENVPN_IN6_ARE_ADDR_EQUA=
-L(&amp;tun_sa.addr.in6.sin6_addr, &amp;pip6-&gt;daddr))</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        /* skip if tun protocol doesn&#=
-39;t match link protocol */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if ((lsi-&gt;proto =3D=3D PROTO_TCP &amp;&amp; pip6-&gt;nex=
-thdr !=3D OPENVPN_IPPROTO_TCP)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            || (lsi-&gt;proto =3D=3D PROTO_UDP &amp;&amp; pip6-&=
-gt;nexthdr !=3D OPENVPN_IPPROTO_UDP))</span><br><span>         {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            drop =3D true;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            return;</span=
-><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    if (drop)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct gc_aren=
-a gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       /* drop packets with same dest addr and port as remote */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        uint8_t *l4_hdr =3D (u=
-int8_t *)pip6 + sizeof(struct openvpn_ipv6hdr);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        uint16_t src_port =3D ntohs(*(uint16_t =
-*)l4_hdr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        u=
-int16_t dst_port =3D ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t)));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if ((OPENVPN_IN6_=
-ARE_ADDR_EQUAL(&amp;link_addr-&gt;addr.in6.sin6_addr, &amp;pip6-&gt;daddr))=
- &amp;&amp; (link_port =3D=3D dst_port))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            c-&gt;c2.buf.len =3D 0;</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        c-&gt;c2.buf.len =3D 0;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(D_LOW, &quot;Recursive routing =
-detected, drop tun packet to %s&quot;,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            print_link_socket_actual(c-&gt;c2.to_link_addr=
-, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        g=
-c_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            msg(D_LOW, &quot;Recursive routing detect=
-ed, packet dropped %s:%&quot; PRIu16 &quot; -&gt; %s&quot;,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                print_in6_addr(pip6=
--&gt;saddr, IA_NET_ORDER, &amp;gc),</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                src_port,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                print_link_socket_actual(c-&gt;c2.to_=
-link_addr, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        }</span><br><span>     }</span><br><span> }</span><br><=
-span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/903?usp=3Demail">change 903</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/903?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, mrbff, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">V=
+iew Change</a></p><p>7 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1253?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I like thi=
+s latest version, and it should work nicely.</p><p class=3D"blocks" style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">There might be a missing=
+ `free()` - this needs to be checked.  While at it, I&#39;ve found a few ot=
+her things that could use a bit of polishing.</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul style=3D"li=
+st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
+<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1253/comment/723a899a_4779f06b?usp=3Demail">Patch Set #3, Line 4296:=
+</a> <code style=3D"font-family:monospace,monospace">    msg(D_MULTI_LOW, &=
+quot;MULTI: Remove: %s -&gt; %s&quot;, mroute_addr_print(&amp;r-&gt;addr, &=
+amp;gc), multi_instance_string(mi, false, &amp;gc));</code></p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">this is too=
+ much logging ;-)</p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
+rd-wrap: break-word;">I&#39;d remove one of them, and change the other to i=
+nclude something like `MULTI: multi_unlearn_addr(): DEL %s` so it&#39;s cle=
+ar it&#39;s not the normal &quot;MULTI: DEL&quot; path.</p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Also, if we wan=
+t to be totally fancy, we could use the mi prefix code here</p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>set_=
+prefix(mi);<br>msg(...)  // no multi_instance_string() needed, as that&#39;=
+s handled by msg_set_prefix()<br>clear_prefix();<br>```</p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">as for the mess=
+age level, I&#39;d use `D_MULTI_LOW` (as that is used by multi.c for the &q=
+uot;Learn&quot; message).</p></li><li style=3D"margin: 0; padding: 0 0 0 16=
+px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/1253/comment/80047d20_27d7418e?usp=3Demail">Patch Set #3, Line =
+4301:</a> <code style=3D"font-family:monospace,monospace"></code></p><p cla=
+ss=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">we mi=
+ght have a memleak here.  I looked at the code in &quot;multi.c&quot; that =
+deletes mroutes (check_stale_routes(), multi_reap_range()), and those call =
+`multi_route_del(r)` to do</p><pre class=3D"blocks" style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">```<br>    route_quota_dec(mi);=
+<br>    multi_instance_dec_refcount(mi);<br>    free(route);<br>```</pre><p=
+ class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">s=
+o you have the first two here, but not the `free()` - not 100% sure if this=
+ is required, but it smells like it.</p><p class=3D"blocks" style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">(`hash_remove_by_value()` seems to=
+ not do anything about the thing pointed to)</p><p class=3D"blocks" style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Maybe just calling `mult=
+i_route_del(r)` here is the right thing (after the hash_remove_by_value() c=
+all, to avoid a use-after-free)?</p></li><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1253/comment/f301c3e7_e77a6296?usp=3Demail">Patch Set #3=
+, Line 4320:</a> <code style=3D"font-family:monospace,monospace">    ASSERT=
+(mroute_extract_openvpn_sockaddr(&amp;addr, &amp;remote_si, false));</code>=
+</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">This works, but feels more clumsy than needed - looking through mroute=
+.c, I find</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">`mroute_get_in_addr_t(struct mroute_addr *out, const in_addr=
+_t in, int mask)`</p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
+rd-wrap: break-word;">which should do the same with less lines of intermedi=
+ate structure filling :-)  (have not tested this, just compared code)</p></=
+li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom:=
+ 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253/comment/8290fc=
+03_3b80051e?usp=3Demail">Patch Set #3, Line 4339:</a> <code style=3D"font-f=
+amily:monospace,monospace"></code></p><p class=3D"blocks" style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">`mroute_get_in6_addr(&amp;addr, a6, =
+0)` does this for you</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"=
+><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1253/comment/cbc56eb6_41bab12b?usp=3Demail">Patch Set #3, Line 4366=
+:</a> <code style=3D"font-family:monospace,monospace">            old_addr.=
+s_addr =3D ntohl(mi-&gt;context.c2.push_ifconfig_local);</code></p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">we coul=
+d just do `in_addr_t old_addr =3D ...` here and save the detour via `struct=
+ in_addr`?</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File s=
+rc/openvpn/push_util.c:</p><ul style=3D"list-style: none; padding: 0;"><li =
+style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;">=
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253/comment/07ab8769_ed9b=
+fa83?usp=3Demail">Patch Set #3, Line 158:</a> <code style=3D"font-family:mo=
+nospace,monospace">    memset(&amp;o, 0, sizeof(struct options));</code></p=
+><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">please use `CLEAR(o);` for that.  It does exactly the same, but we use it=
+ in this situation so it&#39;s clear &quot;this is not just a random memset=
+() but to 0-initialize the options struct&quot;.</p></li></ul></li></ul><p>=
+To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3D=
+email">change 1253</a>. To unsubscribe, or for help writing mail filters, v=
+isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6841e2f2a85275254a04e2d8ae3=
-defe4420db8f6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 903 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde987=
+02a9801616a5f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1253 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -433,8 +273,18 @@ defe4420db8f6 </div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 12 Oct 2025 11:18:28=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---iooa6+mtjF0=--
+--Mwz3bjxAOPU=--
 
