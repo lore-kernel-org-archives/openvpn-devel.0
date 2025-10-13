@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Oct 2025 14:49:02 +0000
+Date: Mon, 13 Oct 2025 14:49:09 +0000
 In-Reply-To: <gerrit.1721311407000.Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1@...2715...>
 References: <gerrit.1721311407000.Id1ec0c6e4c391604ec5dbb8b7122f2e47ad186d1@...2715...>
 Reply-To: arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <ce08f5790f9abf84718650a03c7727ccd2fa2af2-EmailReviewComments-HTML@...2715...>
+Message-ID: <705816912e118250810bfb3faf38732caddfeb2b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2qi+5k23IZk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="cJzvSnV9HfQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: copied
  'gateway_needed' logic from add_route_ipv6 to add_route
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: mrbff <marco@...2726...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---2qi+5k23IZk=
+--cJzvSnV9HfQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,28 +37,7 @@ Change subject: route: copied 'gateway_needed' logic from add_route_ipv6 to=
 ......................................................................
 
 
-Patch Set 11:
-
-(2 comments)
-
-Patchset:
-
-PS11:
-This changes the logic of adding routes on all platforms in a very drastic =
-way. This requires at least a note in Changes.rst to call this different de=
-fault behaviour out.
-
-
-File src/openvpn/route.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/677/comment/3706b988_994b1a63?usp=3De=
-mail :
-PS11, Line 1606:             gateway_needed =3D true;
-Sure but why is the gateway needed in this case?
-
- And why is this always the vpn server special route? For me this is not ob=
-vious and I would like some comment describing the reason here.
-
+Patch Set 11: Code-Review-1
 
 
 --
@@ -80,41 +59,25 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Mon, 13 Oct 2025 14:49:02 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Comment-Date: Mon, 13 Oct 2025 14:49:09 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---2qi+5k23IZk=
+--cJzvSnV9HfQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: cron2, flichtenheld, mrbff. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-677?tab=3Dcomments&amp;usp=3Demail">Patch Set #11:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This changes th=
-e logic of adding routes on all platforms in a very drastic way. This requi=
-res at least a note in Changes.rst to call this different default behaviour=
- out.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/op=
-envpn/route.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"=
-margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/677/comment/3706b988_994b1a63?usp=
-=3Demail">Patch Set #11, Line 1606:</a> <code style=3D"font-family:monospac=
-e,monospace">            gateway_needed =3D true;</code></p><p class=3D"blo=
-cks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Sure but why i=
-s the gateway needed in this case?</p><pre class=3D"blocks" style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"> And why is this always=
- the vpn server special route? For me this is not obvious and I would like =
-some comment describing the reason here.</pre></li></ul></li></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail">=
-change 677</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><d=
-iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+<p>Patch set 11:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail"=
+>change 677</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
 =3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/677?usp=3Demail"/><m=
 eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
@@ -140,12 +103,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Oct 2025 14:49:02=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Oct 2025 14:49:09=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---2qi+5k23IZk=--
+--cJzvSnV9HfQ=--
 
