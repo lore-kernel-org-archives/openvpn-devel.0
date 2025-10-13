@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Oct 2025 12:38:35 +0000
-In-Reply-To: <gerrit.1760136547000.I08e50030b1b692d351509f541e5c0b03b5170615@...2715...>
-References: <gerrit.1760136547000.I08e50030b1b692d351509f541e5c0b03b5170615@...2715...>
+Date: Mon, 13 Oct 2025 12:38:43 +0000
+References: <gerrit.1760359115000.Ia836e3c05a868a7e8419c2bb2f547d968260783c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <ff6c40dd04982651e2c7816c55dfd60ed9f8474f-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <7460e871659885c2ddc8a54eeea89f28f7ae8912-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3Xl8mHj+ft0="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_dhcp: Start a
- dhcp helper functions UT
+Content-Type: multipart/alternative; boundary="bH8T5wE7+DA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: win32: Change some
+ APIs to use DWORD instead of size_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,651 +21,377 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3Xl8mHj+ft0=
+--bH8T5wE7+DA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
-Hello cron2, plaisthos,
+Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1269?usp=3Demail
 
-to look at the new patch set (#4).
+to review the following change.
 
 
-Change subject: test_dhcp: Start a dhcp helper functions UT
+Change subject: win32: Change some APIs to use DWORD instead of size_t
 ......................................................................
 
-test_dhcp: Start a dhcp helper functions UT
+win32: Change some APIs to use DWORD instead of size_t
 
-Use extra define to allow testing code only
-used on Windows but not actually dependent
-on Windows.
+This is what the Win32 APIs use. Since we put static
+integers into this (e.g. sizeof()) this doesn't
+result in new conversion warnings at the caller sites.
 
-Change-Id: I08e50030b1b692d351509f541e5c0b03b5170615
+Change-Id: Ia836e3c05a868a7e8419c2bb2f547d968260783c
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M CMakeLists.txt
-M src/openvpn/dhcp.c
-M src/openvpn/dhcp.h
-M src/openvpn/tun.h
-M tests/unit_tests/openvpn/Makefile.am
-M tests/unit_tests/openvpn/mock_msg.h
-A tests/unit_tests/openvpn/test_dhcp.c
-7 files changed, 155 insertions(+), 4 deletions(-)
+M src/openvpn/route.c
+M src/openvpn/win32.c
+M src/openvpn/win32.h
+M tests/unit_tests/openvpn/test_user_pass.c
+4 files changed, 20 insertions(+), 24 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/1267/4
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9e0b46e..b773dcb 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -658,6 +658,7 @@
-         "test_auth_token"
-         "test_buffer"
-         "test_crypto"
-+        "test_dhcp"
-         "test_misc"
-         "test_ncp"
-         "test_options_parse"
-@@ -910,6 +911,11 @@
-             )
-     endif ()
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1269/1
 
-+    target_compile_definitions(test_dhcp PRIVATE DHCP_UNIT_TEST)
-+    target_sources(test_dhcp PRIVATE
-+        tests/unit_tests/openvpn/mock_get_random.c
-+        )
-+
-     if (TARGET test_networking)
-         target_link_options(test_networking PRIVATE -Wl,--wrap=3Dparse_lin=
-e)
-         target_compile_options(test_networking PRIVATE -UNDEBUG)
-diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
-index 56f03f2..0893ec7 100644
---- a/src/openvpn/dhcp.c
-+++ b/src/openvpn/dhcp.c
-@@ -186,7 +186,7 @@
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 0044794..fde460a 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2840,7 +2840,7 @@
+
+ /* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR o=
+n error */
+ static int
+-do_route_service(const bool add, const route_message_t *rt, const size_t s=
+ize, HANDLE pipe)
++do_route_service(const bool add, const route_message_t *rt, const DWORD si=
+ze, HANDLE pipe)
+ {
+     int ret =3D RTA_ERROR;
+     ack_message_t ack;
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index eac2352..3c11ec3 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1418,13 +1418,8 @@
+     return (const char *)out.data;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ bool
+-send_msg_iservice(HANDLE pipe, const void *data, size_t size, ack_message_=
+t *ack,
++send_msg_iservice(HANDLE pipe, const void *data, DWORD size, ack_message_t=
+ *ack,
+                   const char *context)
+ {
+     struct gc_arena gc =3D gc_new();
+@@ -1527,7 +1522,8 @@
+
+     while (expire >=3D now)
+     {
+-        DWORD status =3D WaitForSingleObject(win32_signal.in.read, (expire=
+ - now) * 1000);
++        DWORD wait_ms =3D (DWORD)((expire - now) * 1000);
++        DWORD status =3D WaitForSingleObject(win32_signal.in.read, wait_ms=
+);
+         if ((status =3D=3D WAIT_OBJECT_0 && win32_signal_get(&win32_signal=
+)) || status =3D=3D WAIT_TIMEOUT)
+         {
+             return;
+@@ -1539,7 +1535,7 @@
+         {
+             if (expire > now)
+             {
+-                Sleep((expire - now) * 1000);
++                Sleep((DWORD)((expire - now) * 1000));
+             }
+             return;
+         }
+@@ -1602,7 +1598,7 @@
+ }
+
+ bool
+-protect_buffer_win32(char *buf, size_t len)
++protect_buffer_win32(char *buf, DWORD len)
+ {
+     bool ret;
+     if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)
+@@ -1620,7 +1616,7 @@
+ }
+
+ bool
+-unprotect_buffer_win32(char *buf, size_t len)
++unprotect_buffer_win32(char *buf, DWORD len)
+ {
+     bool ret;
+     if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)
+@@ -1637,8 +1633,4 @@
+     return ret;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index ff3145a..07a58d8 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -301,12 +301,14 @@
+  */
+ const char *win32_version_string(struct gc_arena *gc);
+
+-/*
+- * Send the |size| bytes in buffer |data| to the interactive service |pipe|
+- * and read the result in |ack|. Returns false on communication error.
+- * The string in |context| is used to prefix error messages.
++/**
++ * Send the \p size bytes in buffer \p data to the interactive service \p =
+pipe
++ * and read the result in \p ack.
++ * The string in \p context is used to prefix error messages.
++ *
++ * @return true on success, false on communication error
+  */
+-bool send_msg_iservice(HANDLE pipe, const void *data, size_t size, ack_mes=
+sage_t *ack,
++bool send_msg_iservice(HANDLE pipe, const void *data, DWORD size, ack_mess=
+age_t *ack,
+                        const char *context);
+
+ /*
+@@ -350,7 +352,7 @@
+  * - len   number of bytes to encrypt -- must be a multiple of
+  *         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16
+  */
+-bool protect_buffer_win32(char *buf, size_t len);
++bool protect_buffer_win32(char *buf, DWORD len);
+
+ /**
+  * Decrypt a previously encrypted region of memory using CryptUnProtectMem=
+ory()
+@@ -360,7 +362,7 @@
+  * - len   number of bytes to encrypt -- must be a multiple of
+  *         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16
+  */
+-bool unprotect_buffer_win32(char *buf, size_t len);
++bool unprotect_buffer_win32(char *buf, DWORD len);
+
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
+penvpn/test_user_pass.c
+index f5dddd6..abe223c 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -79,17 +79,19 @@
      return 0;
  }
 
--#if defined(_WIN32)
-+#if defined(_WIN32) || defined(DHCP_UNIT_TEST)
++#ifdef _WIN32
+ bool
+-protect_buffer_win32(char *buf, size_t len)
++protect_buffer_win32(char *buf, DWORD len)
+ {
+     return true;
+ }
 
- #if defined(__GNUC__) || defined(__clang__)
- #pragma GCC diagnostic push
-diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h
-index 3fcd2b6..2ad31a6 100644
---- a/src/openvpn/dhcp.h
-+++ b/src/openvpn/dhcp.h
-@@ -93,7 +93,7 @@
-
- in_addr_t dhcp_extract_router_msg(struct buffer *ipbuf);
-
--#if defined(_WIN32)
-+#if defined(_WIN32) || defined(DHCP_UNIT_TEST)
- #include "tun.h"
-
- bool build_dhcp_options_string(struct buffer *buf, const struct tuntap_opt=
-ions *o);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 6562c22..741798d 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -59,7 +59,7 @@
- #define DCO_WIN_REFERENCE_STRING "ovpn-dco"
- #endif
-
--#if defined(_WIN32) || defined(TARGET_ANDROID)
-+#if defined(_WIN32) || defined(TARGET_ANDROID) || defined(DHCP_UNIT_TEST)
-
- #define TUN_ADAPTER_INDEX_INVALID ((DWORD)-1)
-
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
-n/Makefile.am
-index 50f4a11..17aa0ce 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -6,7 +6,7 @@
-
- AM_TESTS_ENVIRONMENT =3D export LSAN_OPTIONS=3Dsuppressions=3D$(srcdir)/in=
-put/leak_suppr.txt;
-
--test_binaries =3D argv_testdriver buffer_testdriver crypto_testdriver pack=
-et_id_testdriver auth_token_testdriver \
-+test_binaries =3D argv_testdriver buffer_testdriver crypto_testdriver dhcp=
-_testdriver packet_id_testdriver auth_token_testdriver \
- 	ncp_testdriver misc_testdriver options_parse_testdriver pkt_testdriver ss=
-l_testdriver \
- 	user_pass_testdriver push_update_msg_testdriver provider_testdriver socke=
-t_testdriver
-
-@@ -72,6 +72,15 @@
- 	$(top_srcdir)/src/openvpn/win32-util.c \
- 	$(top_srcdir)/src/openvpn/mss.c
-
-+dhcp_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/sr=
-c/compat @TEST_CFLAGS@ -DDHCP_UNIT_TEST
-+dhcp_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn
-+dhcp_testdriver_SOURCES =3D test_dhcp.c \
-+	mock_msg.c mock_msg.h test_common.h \
-+	mock_get_random.c \
-+	$(top_srcdir)/src/openvpn/platform.c \
-+	$(top_srcdir)/src/openvpn/buffer.c \
-+	$(top_srcdir)/src/openvpn/win32-util.c
-+
- ssl_testdriver_CFLAGS  =3D \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
-envpn \
- 	@TEST_CFLAGS@
-diff --git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn=
-/mock_msg.h
-index c6321dc..62afde5 100644
---- a/tests/unit_tests/openvpn/mock_msg.h
-+++ b/tests/unit_tests/openvpn/mock_msg.h
-@@ -23,6 +23,8 @@
- #ifndef MOCK_MSG_H
- #define MOCK_MSG_H
-
-+#include "error.h"
-+
- /**
-  * Mock debug level defaults to 0, which gives clean(-ish) test reports.  =
-Call
-  * this function from your test driver to increase debug output when you
-diff --git a/tests/unit_tests/openvpn/test_dhcp.c b/tests/unit_tests/openvp=
-n/test_dhcp.c
-new file mode 100644
-index 0000000..729ca58
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_dhcp.c
-@@ -0,0 +1,134 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2025 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
+ bool
+-unprotect_buffer_win32(char *buf, size_t len)
++unprotect_buffer_win32(char *buf, DWORD len)
+ {
+     return true;
+ }
 +#endif
-+
-+#include "syshead.h"
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <stdarg.h>
-+#include <string.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+#include "test_common.h"
-+#include "mock_msg.h"
-+
-+#include "dhcp.c"
-+
-+uint16_t
-+ip_checksum(const sa_family_t af, const uint8_t *payload, const int len_pa=
-yload,
-+            const uint8_t *src_addr, const uint8_t *dest_addr, const int p=
-roto)
-+{
-+    return 0;
-+}
-+const char *
-+print_in_addr_t(in_addr_t addr, unsigned int flags, struct gc_arena *gc)
-+{
-+    return "dummy";
-+}
-+
-+static void
-+test_write_dhcp_search_str(void **state)
-+{
-+    struct gc_arena gc =3D gc_new();
-+    struct buffer out_buf =3D alloc_buf_gc(512, &gc);
-+    struct buffer clear_buf =3D alloc_buf_gc(512, &gc);
-+    buf_clear(&clear_buf);
-+    bool error =3D false;
-+
-+#define LONGDOMAIN "a-reaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaally-long-domain"
-+    const char *search_list[] =3D {
-+        "openvpn.net",
-+        "openvpn.org",
-+        LONGDOMAIN,
-+        "subdomain." LONGDOMAIN ".top123",  /* maximum length */
-+        "subdomain-" LONGDOMAIN "-top123",  /* maximum length */
-+        "subdomain." LONGDOMAIN ".top1234", /* too long */
-+        "sub..tld",                         /* invalid */
-+    };
-+    const unsigned char output_1[28] =3D "\x77\x1a\x07openvpn\x03net\x00\x=
-07openvpn\x03org";
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list, 2, &e=
-rror);
-+    assert_memory_equal(BPTR(&out_buf), output_1, sizeof(output_1));
-+    assert_false(error);
-+
-+    /* buf too small */
-+    struct buffer small_buf =3D alloc_buf_gc(sizeof(output_1) - 1, &gc);
-+    buf_clear(&small_buf);
-+    write_dhcp_search_str(&small_buf, DHCP_DOMAIN_SEARCH, search_list, 2, =
-&error);
-+    assert_memory_equal(BPTR(&small_buf), BPTR(&clear_buf), buf_forward_ca=
-pacity_total(&small_buf));
-+    assert_true(error);
-+    error =3D false;
-+
-+    const unsigned char output_2[0xEC + 3 + 1] =3D "\x77\xEE\xEC" LONGDOMA=
-IN;
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 2, 1=
-, &error);
-+    assert_memory_equal(BPTR(&out_buf), output_2, sizeof(output_2));
-+    assert_false(error);
-+
-+    const unsigned char output_3[0xEC + 3 + 10 + 7 + 1] =3D "\x77\xFF\x09s=
-ubdomain\xEC" LONGDOMAIN "\x06top123";
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 3, 1=
-, &error);
-+    assert_memory_equal(BPTR(&out_buf), output_3, sizeof(output_3));
-+    assert_false(error);
-+
-+    const unsigned char output_4[0xEC + 3 + 10 + 7 + 1] =3D "\x77\xFF\xFDs=
-ubdomain-" LONGDOMAIN "-top123";
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 4, 1=
-, &error);
-+    assert_memory_equal(BPTR(&out_buf), output_4, sizeof(output_4));
-+    assert_false(error);
-+
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 5, 1=
-, &error);
-+    assert_memory_equal(BPTR(&out_buf), BPTR(&clear_buf), buf_forward_capa=
-city_total(&clear_buf));
-+    assert_true(error);
-+    error =3D false;
-+
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list, 3, &e=
-rror);
-+    assert_memory_equal(BPTR(&out_buf), BPTR(&clear_buf), buf_forward_capa=
-city_total(&clear_buf));
-+    assert_true(error);
-+    error =3D false;
-+
-+    /* FIXME: should probably throw an error instead adding that \x00 ? */
-+    const char output_5[12] =3D "\x77\x0a\x03sub\x00\x03tld";
-+    buf_clear(&out_buf);
-+    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 6, 1=
-, &error);
-+    assert_memory_equal(BPTR(&out_buf), output_5, sizeof(output_5));
-+    assert_false(error);
-+
-+    gc_free(&gc);
-+}
-+
-+int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] =3D {
-+        cmocka_unit_test(test_write_dhcp_search_str),
-+    };
-+
-+    return cmocka_run_group_tests_name("dhcp", tests, NULL, NULL);
-+}
+
+ /* tooling */
+ static void
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1269?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I08e50030b1b692d351509f541e5c0b03b5170615
-Gerrit-Change-Number: 1267
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: Ia836e3c05a868a7e8419c2bb2f547d968260783c
+Gerrit-Change-Number: 1269
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 
---3Xl8mHj+ft0=
+--bH8T5wE7+DA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #4</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">test_dhcp: Start a dhcp helper functions UT<br><=
-br>Use extra define to allow testing code only<br>used on Windows but not a=
-ctually dependent<br>on Windows.<br><br>Change-Id: I08e50030b1b692d351509f5=
-41e5c0b03b5170615<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
-gt;<br>---<br>M CMakeLists.txt<br>M src/openvpn/dhcp.c<br>M src/openvpn/dhc=
-p.h<br>M src/openvpn/tun.h<br>M tests/unit_tests/openvpn/Makefile.am<br>M t=
-ests/unit_tests/openvpn/mock_msg.h<br>A tests/unit_tests/openvpn/test_dhcp.=
-c<br>7 files changed, 155 insertions(+), 4 deletions(-)<br><br></pre><pre c=
-lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/126=
-7/4</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>in=
-dex 9e0b46e..b773dcb 100644</span><br><span>--- a/CMakeLists.txt</span><br>=
-<span>+++ b/CMakeLists.txt</span><br><span>@@ -658,6 +658,7 @@</span><br><s=
-pan>         &quot;test_auth_token&quot;</span><br><span>         &quot;tes=
-t_buffer&quot;</span><br><span>         &quot;test_crypto&quot;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        &quot;test_dhcp&quot;</=
-span><br><span>         &quot;test_misc&quot;</span><br><span>         &quo=
-t;test_ncp&quot;</span><br><span>         &quot;test_options_parse&quot;</s=
-pan><br><span>@@ -910,6 +911,11 @@</span><br><span>             )</span><br=
-><span>     endif ()</span><br><span> </span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    target_compile_definitions(test_dhcp PRIVATE DHCP_UN=
-IT_TEST)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_=
-sources(test_dhcp PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        tests/unit_tests/openvpn/mock_get_random.c</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span>     if (TARGET test_networking=
-)</span><br><span>         target_link_options(test_networking PRIVATE -Wl,=
---wrap=3Dparse_line)</span><br><span>         target_compile_options(test_n=
-etworking PRIVATE -UNDEBUG)</span><br><span>diff --git a/src/openvpn/dhcp.c=
- b/src/openvpn/dhcp.c</span><br><span>index 56f03f2..0893ec7 100644</span><=
-br><span>--- a/src/openvpn/dhcp.c</span><br><span>+++ b/src/openvpn/dhcp.c<=
-/span><br><span>@@ -186,7 +186,7 @@</span><br><span>     return 0;</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#if defined(_WIN32)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#if defined(_WIN32) || defined(DHCP_UNIT_TEST)</span><br><span> </sp=
-an><br><span> #if defined(__GNUC__) || defined(__clang__)</span><br><span> =
-#pragma GCC diagnostic push</span><br><span>diff --git a/src/openvpn/dhcp.h=
- b/src/openvpn/dhcp.h</span><br><span>index 3fcd2b6..2ad31a6 100644</span><=
-br><span>--- a/src/openvpn/dhcp.h</span><br><span>+++ b/src/openvpn/dhcp.h<=
-/span><br><span>@@ -93,7 +93,7 @@</span><br><span> </span><br><span> in_add=
-r_t dhcp_extract_router_msg(struct buffer *ipbuf);</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || defin=
-ed(DHCP_UNIT_TEST)</span><br><span> #include &quot;tun.h&quot;</span><br><s=
-pan> </span><br><span> bool build_dhcp_options_string(struct buffer *buf, c=
-onst struct tuntap_options *o);</span><br><span>diff --git a/src/openvpn/tu=
-n.h b/src/openvpn/tun.h</span><br><span>index 6562c22..741798d 100644</span=
-><br><span>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.h<=
-/span><br><span>@@ -59,7 +59,7 @@</span><br><span> #define DCO_WIN_REFERENC=
-E_STRING &quot;ovpn-dco&quot;</span><br><span> #endif</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32) || de=
-fined(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#if defined(_WIN32) || defined(TARGET_ANDROID) || defined(DHCP_UNIT_TEST)=
-</span><br><span> </span><br><span> #define TUN_ADAPTER_INDEX_INVALID ((DWO=
-RD)-1)</span><br><span> </span><br><span>diff --git a/tests/unit_tests/open=
-vpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>inde=
-x 50f4a11..17aa0ce 100644</span><br><span>--- a/tests/unit_tests/openvpn/Ma=
-kefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span>=
-<br><span>@@ -6,7 +6,7 @@</span><br><span> </span><br><span> AM_TESTS_ENVIR=
-ONMENT =3D export LSAN_OPTIONS=3Dsuppressions=3D$(srcdir)/input/leak_suppr.=
-txt;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--test_binaries =3D argv_testdriver buffer_testdriver crypto_testdriver pack=
-et_id_testdriver auth_token_testdriver \</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+test_binaries =3D argv_testdriver buffer_testdriver cr=
-ypto_testdriver dhcp_testdriver packet_id_testdriver auth_token_testdriver =
-\</span><br><span> 	ncp_testdriver misc_testdriver options_parse_testdriver=
- pkt_testdriver ssl_testdriver \</span><br><span> 	user_pass_testdriver pus=
-h_update_msg_testdriver provider_testdriver socket_testdriver</span><br><sp=
-an> </span><br><span>@@ -72,6 +72,15 @@</span><br><span> 	$(top_srcdir)/src=
-/openvpn/win32-util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/mss.c</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+dhc=
-p_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/co=
-mpat @TEST_CFLAGS@ -DDHCP_UNIT_TEST</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+dhcp_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/=
-src/openvpn</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dhcp_tes=
-tdriver_SOURCES =3D test_dhcp.c \</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+	mock_msg.c mock_msg.h test_common.h \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	mock_get_random.c \</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/platform.c \<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/o=
-penvpn/buffer.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$=
-(top_srcdir)/src/openvpn/win32-util.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span> ssl_testdriver_CFLAGS  =3D \</span><br>=
-<span> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/=
-src/openvpn \</span><br><span> 	@TEST_CFLAGS@</span><br><span>diff --git a/=
-tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_msg.h</=
-span><br><span>index c6321dc..62afde5 100644</span><br><span>--- a/tests/un=
-it_tests/openvpn/mock_msg.h</span><br><span>+++ b/tests/unit_tests/openvpn/=
-mock_msg.h</span><br><span>@@ -23,6 +23,8 @@</span><br><span> #ifndef MOCK_=
-MSG_H</span><br><span> #define MOCK_MSG_H</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#include &quot;error.h&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</spa=
-n><br><span>  * Mock debug level defaults to 0, which gives clean(-ish) tes=
-t reports.  Call</span><br><span>  * this function from your test driver to=
- increase debug output when you</span><br><span>diff --git a/tests/unit_tes=
-ts/openvpn/test_dhcp.c b/tests/unit_tests/openvpn/test_dhcp.c</span><br><sp=
-an>new file mode 100644</span><br><span>index 0000000..729ca58</span><br><s=
-pan>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_dhcp.=
-c</span><br><span>@@ -0,0 +1,134 @@</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  OpenVPN -- An application to securely tunnel IP networks</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP po=
-rt, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *             session authentication and key exchange,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet en=
-cryption, packet authentication, and</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *             packet compression.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  Copyright (C) 2025 OpenVPN Inc &lt;sales@...515...&gt;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; y=
-ou can redistribute it and/or modify</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  it under the terms of the GNU General Public License v=
-ersion 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as publ=
-ished by the Free Software Foundation.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  This program is distributed in the hope that it will be useful,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRA=
-NTY; without even the implied warranty of</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPO=
-SE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU=
- General Public License for more details.</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *  You should have received a copy of the GNU General Public License =
-along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this =
-program; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#include &quot;config.h&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;s=
-yshead.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdio.h&gt;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdlib=
-.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;=
-stdarg.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#includ=
-e &lt;string.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-include &lt;setjmp.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#include &lt;cmocka.h&gt;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include=
- &quot;test_common.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#include &quot;mock_msg.h&quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#include &quot;dhcp.c&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+uint16_t</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ip_checksum(const sa_f=
-amily_t af, const uint8_t *payload, const int len_payload,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            const uint8_t *src_addr,=
- const uint8_t *dest_addr, const int proto)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+print_in_addr_t(in_addr_t=
- addr, unsigned int flags, struct gc_arena *gc)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    return &quot;dummy&quot;;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+test_write_dhcp_search_st=
-r(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc=
- =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-truct buffer out_buf =3D alloc_buf_gc(512, &amp;gc);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct buffer clear_buf =3D alloc_buf=
-_gc(512, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   buf_clear(&amp;clear_buf);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    bool error =3D false;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine LONGDOMAIN &quot;a-reaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaally-long-domain&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    const char *search_list[] =3D {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        &quot;openvpn.net&quot;,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;openvpn.org&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        LONGD=
-OMAIN,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot=
-;subdomain.&quot; LONGDOMAIN &quot;.top123&quot;,  /* maximum length */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;subdomain=
--&quot; LONGDOMAIN &quot;-top123&quot;,  /* maximum length */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        &quot;subdomain.&quot; LO=
-NGDOMAIN &quot;.top1234&quot;, /* too long */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        &quot;sub..tld&quot;,                    =
-     /* invalid */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const unsi=
-gned char output_1[28] =3D &quot;\x77\x1a\x07openvpn\x03net\x00\x07openvpn\=
-x03org&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bu=
-f_clear(&amp;out_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    write_dhcp_search_str(&amp;out_buf, DHCP_DOMAIN_SEARCH, search_list,=
- 2, &amp;error);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- assert_memory_equal(BPTR(&amp;out_buf), output_1, sizeof(output_1));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(error);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* buf too small */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct buffer small_buf =3D all=
-oc_buf_gc(sizeof(output_1) - 1, &amp;gc);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    buf_clear(&amp;small_buf);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;small_buf,=
- DHCP_DOMAIN_SEARCH, search_list, 2, &amp;error);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;small_buf),=
- BPTR(&amp;clear_buf), buf_forward_capacity_total(&amp;small_buf));</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(error);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    error =3D false;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const unsigned char output_2[0xEC + 3=
- + 1] =3D &quot;\x77\xEE\xEC&quot; LONGDOMAIN;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;out_buf,=
- DHCP_DOMAIN_SEARCH, search_list + 2, 1, &amp;error);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;out_buf=
-), output_2, sizeof(output_2));</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    assert_false(error);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  const unsigned char output_3[0xEC + 3 + 10 + 7 + 1] =3D &quot;\x77\xFF\x0=
-9subdomain\xEC&quot; LONGDOMAIN &quot;\x06top123&quot;;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp=
-;out_buf, DHCP_DOMAIN_SEARCH, search_list + 3, 1, &amp;error);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&am=
-p;out_buf), output_3, sizeof(output_3));</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    assert_false(error);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    const unsigned char output_4[0xEC + 3 + 10 + 7 + 1] =3D &quot;\x=
-77\xFF\xFDsubdomain-&quot; LONGDOMAIN &quot;-top123&quot;;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&=
-amp;out_buf, DHCP_DOMAIN_SEARCH, search_list + 4, 1, &amp;error);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(=
-&amp;out_buf), output_4, sizeof(output_4));</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    assert_false(error);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    buf_clear(&amp;out_buf);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    write_dhcp_search_str(&amp;out_buf, DHCP_DOMAIN_SEAR=
-CH, search_list + 5, 1, &amp;error);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;out_buf), BPTR(&amp;clea=
-r_buf), buf_forward_capacity_total(&amp;clear_buf));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_true(error);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    error =3D false;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;out_buf, DHCP_D=
-OMAIN_SEARCH, search_list, 3, &amp;error);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;out_buf), BPTR(&am=
-p;clear_buf), buf_forward_capacity_total(&amp;clear_buf));</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    assert_true(error);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    error =3D false;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* FIXME: should probably throw an error inste=
-ad adding that \x00 ? */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    const char output_5[12] =3D &quot;\x77\x0a\x03sub\x00\x03tld&quot;=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_clear(&amp=
-;out_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    write=
-_dhcp_search_str(&amp;out_buf, DHCP_DOMAIN_SEARCH, search_list + 6, 1, &amp=
-;error);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-memory_equal(BPTR(&amp;out_buf), output_5, sizeof(output_5));</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_false(error);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+main(void)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    const struct CMUnitTest tests[] =3D {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(tes=
-t_write_dhcp_search_str),</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    return cmocka_run_grou=
-p_tests_name(&quot;dhcp&quot;, tests, NULL, NULL);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail"=
->change 1267</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1269?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">win32: Change some APIs to use DWORD instea=
+d of size_t<br><br>This is what the Win32 APIs use. Since we put static<br>=
+integers into this (e.g. sizeof()) this doesn&#39;t<br>result in new conver=
+sion warnings at the caller sites.<br><br>Change-Id: Ia836e3c05a868a7e8419c=
+2bb2f547d968260783c<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2723...=
+.&gt;<br>---<br>M src/openvpn/route.c<br>M src/openvpn/win32.c<br>M src/ope=
+nvpn/win32.h<br>M tests/unit_tests/openvpn/test_user_pass.c<br>4 files chan=
+ged, 20 insertions(+), 24 deletions(-)<br><br></pre><pre class=3D"blocks" s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1269/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 004=
+4794..fde460a 100644</span><br><span>--- a/src/openvpn/route.c</span><br><s=
+pan>+++ b/src/openvpn/route.c</span><br><span>@@ -2840,7 +2840,7 @@</span><=
+br><span> </span><br><span> /* Returns RTA_SUCCESS on success, RTA_EEXIST i=
+f route exists, RTA_ERROR on error */</span><br><span> static int</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-do_route_service(const bool add=
+, const route_message_t *rt, const size_t size, HANDLE pipe)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+do_route_service(const bool add, c=
+onst route_message_t *rt, const DWORD size, HANDLE pipe)</span><br><span> {=
+</span><br><span>     int ret =3D RTA_ERROR;</span><br><span>     ack_messa=
+ge_t ack;</span><br><span>diff --git a/src/openvpn/win32.c b/src/openvpn/wi=
+n32.c</span><br><span>index eac2352..3c11ec3 100644</span><br><span>--- a/s=
+rc/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br><spa=
+n>@@ -1418,13 +1418,8 @@</span><br><span>     return (const char *)out.data=
+;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored=
+ &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-send_msg_i=
+service(HANDLE pipe, const void *data, size_t size, ack_message_t *ack,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+send_msg_iservice(HANDL=
+E pipe, const void *data, DWORD size, ack_message_t *ack,</span><br><span> =
+                  const char *context)</span><br><span> {</span><br><span> =
+    struct gc_arena gc =3D gc_new();</span><br><span>@@ -1527,7 +1522,8 @@<=
+/span><br><span> </span><br><span>     while (expire &gt;=3D now)</span><br=
+><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+DWORD status =3D WaitForSingleObject(win32_signal.in.read, (expire - now) *=
+ 1000);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        DWOR=
+D wait_ms =3D (DWORD)((expire - now) * 1000);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        DWORD status =3D WaitForSingleObject(win3=
+2_signal.in.read, wait_ms);</span><br><span>         if ((status =3D=3D WAI=
+T_OBJECT_0 &amp;&amp; win32_signal_get(&amp;win32_signal)) || status =3D=3D=
+ WAIT_TIMEOUT)</span><br><span>         {</span><br><span>             retu=
+rn;</span><br><span>@@ -1539,7 +1535,7 @@</span><br><span>         {</span>=
+<br><span>             if (expire &gt; now)</span><br><span>             {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                Sleep(=
+(expire - now) * 1000);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                Sleep((DWORD)((expire - now) * 1000));</span><br><span>=
+             }</span><br><span>             return;</span><br><span>       =
+  }</span><br><span>@@ -1602,7 +1598,7 @@</span><br><span> }</span><br><spa=
+n> </span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-protect_buffer_win32(char *buf, size_t len)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+protect_buffer_win32(char *buf, DWORD len)</spa=
+n><br><span> {</span><br><span>     bool ret;</span><br><span>     if (len =
+% CRYPTPROTECTMEMORY_BLOCK_SIZE)</span><br><span>@@ -1620,7 +1616,7 @@</spa=
+n><br><span> }</span><br><span> </span><br><span> bool</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-unprotect_buffer_win32(char *buf, size_t l=
+en)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unprotect_buffer=
+_win32(char *buf, DWORD len)</span><br><span> {</span><br><span>     bool r=
+et;</span><br><span>     if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)</span><br=
+><span>@@ -1637,8 +1633,4 @@</span><br><span>     return ret;</span><br><sp=
+an> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span> #endif /* ifdef _WIN32 */</span><br><span>d=
+iff --git a/src/openvpn/win32.h b/src/openvpn/win32.h</span><br><span>index=
+ ff3145a..07a58d8 100644</span><br><span>--- a/src/openvpn/win32.h</span><b=
+r><span>+++ b/src/openvpn/win32.h</span><br><span>@@ -301,12 +301,14 @@</sp=
+an><br><span>  */</span><br><span> const char *win32_version_string(struct =
+gc_arena *gc);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Send =
+the |size| bytes in buffer |data| to the interactive service |pipe|</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">- * and read the result in |ac=
+k|. Returns false on communication error.</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">- * The string in |context| is used to prefix error mess=
+ages.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * Send the \p size bytes in b=
+uffer \p data to the interactive service \p pipe</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * and read the result in \p ack.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * The string in \p context is u=
+sed to prefix error messages.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @ret=
+urn true on success, false on communication error</span><br><span>  */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-bool send_msg_iservice(HAN=
+DLE pipe, const void *data, size_t size, ack_message_t *ack,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+bool send_msg_iservice(HANDLE pipe=
+, const void *data, DWORD size, ack_message_t *ack,</span><br><span>       =
+                 const char *context);</span><br><span> </span><br><span> /=
+*</span><br><span>@@ -350,7 +352,7 @@</span><br><span>  * - len   number of=
+ bytes to encrypt -- must be a multiple of</span><br><span>  *         CRYP=
+TPROTECTMEMORY_BLOCK_SIZE =3D 16</span><br><span>  */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-bool protect_buffer_win32(char *buf, size_t=
+ len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool protect_=
+buffer_win32(char *buf, DWORD len);</span><br><span> </span><br><span> /**<=
+/span><br><span>  * Decrypt a previously encrypted region of memory using C=
+ryptUnProtectMemory()</span><br><span>@@ -360,7 +362,7 @@</span><br><span> =
+ * - len   number of bytes to encrypt -- must be a multiple of</span><br><s=
+pan>  *         CRYPTPROTECTMEMORY_BLOCK_SIZE =3D 16</span><br><span>  */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool unprotect_buffer_w=
+in32(char *buf, size_t len);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+bool unprotect_buffer_win32(char *buf, DWORD len);</span><br><span=
+> </span><br><span> #endif /* ifndef OPENVPN_WIN32_H */</span><br><span> #e=
+ndif /* ifdef _WIN32 */</span><br><span>diff --git a/tests/unit_tests/openv=
+pn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c</span><br><=
+span>index f5dddd6..abe223c 100644</span><br><span>--- a/tests/unit_tests/o=
+penvpn/test_user_pass.c</span><br><span>+++ b/tests/unit_tests/openvpn/test=
+_user_pass.c</span><br><span>@@ -79,17 +79,19 @@</span><br><span>     retur=
+n 0;</span><br><span> }</span><br><span> </span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span> bool</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-protect_buffer_win32(char *buf, size_t =
+len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+protect_buffer_=
+win32(char *buf, DWORD len)</span><br><span> {</span><br><span>     return =
+true;</span><br><span> }</span><br><span> </span><br><span> bool</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-unprotect_buffer_win32(char *buf=
+, size_t len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unprot=
+ect_buffer_win32(char *buf, DWORD len)</span><br><span> {</span><br><span> =
+    return true;</span><br><span> }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#endif</span><br><span> </span><br><span> /* tooling */</sp=
+an><br><span> static void</span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1269?usp=3Demail">change=
+ 1269</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1269?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I08e50030b1b692d351509f541e5=
-c0b03b5170615 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1267 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia836e3c05a868a7e8419c2bb2f5=
+47d968260783c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1269 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 
 </body></html>=
 
---3Xl8mHj+ft0=--
+--bH8T5wE7+DA=--
 
