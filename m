@@ -1,10 +1,16 @@
-Date: Mon, 13 Oct 2025 18:02:23 +0200 (CEST)
-Message-Id: <202510131602.59DG2NMN083066@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251013154758.21695-1-gert@...1296...>
-References: <20251013154758.21695-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: test_dhcp: Start a dhcp helper
- functions UT
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 13 Oct 2025 16:02:45 +0000
+In-Reply-To: <gerrit.1760136547000.I08e50030b1b692d351509f541e5c0b03b5170615@...2715...>
+References: <gerrit.1760136547000.I08e50030b1b692d351509f541e5c0b03b5170615@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <96f4c809a942a436f376e6834d62cc6355c76304-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="sy5b8+Jcg20="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_dhcp: Start a
+ dhcp helper functions UT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +19,654 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-UTs are welcome, it passes all the tests on all platforms now, so in it
-goes ;-) - the extra #ifdef is unavoidable, as we normally don't build
-the code tested here on non-WIN32 platforms...
+--sy5b8+Jcg20=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+cron2 has uploaded a new patch set (#5) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail )
 
-commit d78ebd4b8c11e3fb2ed8ceac56d955d7a9dffb13
-Author: Frank Lichtenheld
-Date:   Mon Oct 13 17:47:53 2025 +0200
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-     test_dhcp: Start a dhcp helper functions UT
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1267
-     Message-Id: <20251013154758.21695-1-gert@...1296...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/59246199/
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change subject: test_dhcp: Start a dhcp helper functions UT
+......................................................................
 
+test_dhcp: Start a dhcp helper functions UT
+
+Use extra define to allow testing code only
+used on Windows but not actually dependent
+on Windows.
+
+Change-Id: I08e50030b1b692d351509f541e5c0b03b5170615
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1267
+Message-Id: <20251013154758.21695-1-gert@...1296...>
+URL: https://sourceforge.net/p/openvpn/mailman/message/59246199/
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M CMakeLists.txt
+M src/openvpn/dhcp.c
+M src/openvpn/dhcp.h
+M src/openvpn/tun.h
+M tests/unit_tests/openvpn/Makefile.am
+M tests/unit_tests/openvpn/mock_msg.h
+A tests/unit_tests/openvpn/test_dhcp.c
+7 files changed, 155 insertions(+), 4 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/1267/5
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9e0b46e..b773dcb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -658,6 +658,7 @@
+         "test_auth_token"
+         "test_buffer"
+         "test_crypto"
++        "test_dhcp"
+         "test_misc"
+         "test_ncp"
+         "test_options_parse"
+@@ -910,6 +911,11 @@
+             )
+     endif ()
+
++    target_compile_definitions(test_dhcp PRIVATE DHCP_UNIT_TEST)
++    target_sources(test_dhcp PRIVATE
++        tests/unit_tests/openvpn/mock_get_random.c
++        )
++
+     if (TARGET test_networking)
+         target_link_options(test_networking PRIVATE -Wl,--wrap=3Dparse_lin=
+e)
+         target_compile_options(test_networking PRIVATE -UNDEBUG)
+diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
+index 56f03f2..0893ec7 100644
+--- a/src/openvpn/dhcp.c
++++ b/src/openvpn/dhcp.c
+@@ -186,7 +186,7 @@
+     return 0;
+ }
+
+-#if defined(_WIN32)
++#if defined(_WIN32) || defined(DHCP_UNIT_TEST)
+
+ #if defined(__GNUC__) || defined(__clang__)
+ #pragma GCC diagnostic push
+diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h
+index 3fcd2b6..2ad31a6 100644
+--- a/src/openvpn/dhcp.h
++++ b/src/openvpn/dhcp.h
+@@ -93,7 +93,7 @@
+
+ in_addr_t dhcp_extract_router_msg(struct buffer *ipbuf);
+
+-#if defined(_WIN32)
++#if defined(_WIN32) || defined(DHCP_UNIT_TEST)
+ #include "tun.h"
+
+ bool build_dhcp_options_string(struct buffer *buf, const struct tuntap_opt=
+ions *o);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 6562c22..741798d 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -59,7 +59,7 @@
+ #define DCO_WIN_REFERENCE_STRING "ovpn-dco"
+ #endif
+
+-#if defined(_WIN32) || defined(TARGET_ANDROID)
++#if defined(_WIN32) || defined(TARGET_ANDROID) || defined(DHCP_UNIT_TEST)
+
+ #define TUN_ADAPTER_INDEX_INVALID ((DWORD)-1)
+
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
+n/Makefile.am
+index 50f4a11..17aa0ce 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -6,7 +6,7 @@
+
+ AM_TESTS_ENVIRONMENT =3D export LSAN_OPTIONS=3Dsuppressions=3D$(srcdir)/in=
+put/leak_suppr.txt;
+
+-test_binaries =3D argv_testdriver buffer_testdriver crypto_testdriver pack=
+et_id_testdriver auth_token_testdriver \
++test_binaries =3D argv_testdriver buffer_testdriver crypto_testdriver dhcp=
+_testdriver packet_id_testdriver auth_token_testdriver \
+ 	ncp_testdriver misc_testdriver options_parse_testdriver pkt_testdriver ss=
+l_testdriver \
+ 	user_pass_testdriver push_update_msg_testdriver provider_testdriver socke=
+t_testdriver
+
+@@ -72,6 +72,15 @@
+ 	$(top_srcdir)/src/openvpn/win32-util.c \
+ 	$(top_srcdir)/src/openvpn/mss.c
+
++dhcp_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/sr=
+c/compat @TEST_CFLAGS@ -DDHCP_UNIT_TEST
++dhcp_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn
++dhcp_testdriver_SOURCES =3D test_dhcp.c \
++	mock_msg.c mock_msg.h test_common.h \
++	mock_get_random.c \
++	$(top_srcdir)/src/openvpn/platform.c \
++	$(top_srcdir)/src/openvpn/buffer.c \
++	$(top_srcdir)/src/openvpn/win32-util.c
++
+ ssl_testdriver_CFLAGS  =3D \
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
+envpn \
+ 	@TEST_CFLAGS@
+diff --git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn=
+/mock_msg.h
+index c6321dc..62afde5 100644
+--- a/tests/unit_tests/openvpn/mock_msg.h
++++ b/tests/unit_tests/openvpn/mock_msg.h
+@@ -23,6 +23,8 @@
+ #ifndef MOCK_MSG_H
+ #define MOCK_MSG_H
+
++#include "error.h"
++
+ /**
+  * Mock debug level defaults to 0, which gives clean(-ish) test reports.  =
+Call
+  * this function from your test driver to increase debug output when you
+diff --git a/tests/unit_tests/openvpn/test_dhcp.c b/tests/unit_tests/openvp=
+n/test_dhcp.c
+new file mode 100644
+index 0000000..729ca58
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_dhcp.c
+@@ -0,0 +1,134 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2025 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "syshead.h"
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdarg.h>
++#include <string.h>
++#include <setjmp.h>
++#include <cmocka.h>
++
++#include "test_common.h"
++#include "mock_msg.h"
++
++#include "dhcp.c"
++
++uint16_t
++ip_checksum(const sa_family_t af, const uint8_t *payload, const int len_pa=
+yload,
++            const uint8_t *src_addr, const uint8_t *dest_addr, const int p=
+roto)
++{
++    return 0;
++}
++const char *
++print_in_addr_t(in_addr_t addr, unsigned int flags, struct gc_arena *gc)
++{
++    return "dummy";
++}
++
++static void
++test_write_dhcp_search_str(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++    struct buffer out_buf =3D alloc_buf_gc(512, &gc);
++    struct buffer clear_buf =3D alloc_buf_gc(512, &gc);
++    buf_clear(&clear_buf);
++    bool error =3D false;
++
++#define LONGDOMAIN "a-reaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+aaaaaaaaaaaaaaaaally-long-domain"
++    const char *search_list[] =3D {
++        "openvpn.net",
++        "openvpn.org",
++        LONGDOMAIN,
++        "subdomain." LONGDOMAIN ".top123",  /* maximum length */
++        "subdomain-" LONGDOMAIN "-top123",  /* maximum length */
++        "subdomain." LONGDOMAIN ".top1234", /* too long */
++        "sub..tld",                         /* invalid */
++    };
++    const unsigned char output_1[28] =3D "\x77\x1a\x07openvpn\x03net\x00\x=
+07openvpn\x03org";
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list, 2, &e=
+rror);
++    assert_memory_equal(BPTR(&out_buf), output_1, sizeof(output_1));
++    assert_false(error);
++
++    /* buf too small */
++    struct buffer small_buf =3D alloc_buf_gc(sizeof(output_1) - 1, &gc);
++    buf_clear(&small_buf);
++    write_dhcp_search_str(&small_buf, DHCP_DOMAIN_SEARCH, search_list, 2, =
+&error);
++    assert_memory_equal(BPTR(&small_buf), BPTR(&clear_buf), buf_forward_ca=
+pacity_total(&small_buf));
++    assert_true(error);
++    error =3D false;
++
++    const unsigned char output_2[0xEC + 3 + 1] =3D "\x77\xEE\xEC" LONGDOMA=
+IN;
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 2, 1=
+, &error);
++    assert_memory_equal(BPTR(&out_buf), output_2, sizeof(output_2));
++    assert_false(error);
++
++    const unsigned char output_3[0xEC + 3 + 10 + 7 + 1] =3D "\x77\xFF\x09s=
+ubdomain\xEC" LONGDOMAIN "\x06top123";
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 3, 1=
+, &error);
++    assert_memory_equal(BPTR(&out_buf), output_3, sizeof(output_3));
++    assert_false(error);
++
++    const unsigned char output_4[0xEC + 3 + 10 + 7 + 1] =3D "\x77\xFF\xFDs=
+ubdomain-" LONGDOMAIN "-top123";
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 4, 1=
+, &error);
++    assert_memory_equal(BPTR(&out_buf), output_4, sizeof(output_4));
++    assert_false(error);
++
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 5, 1=
+, &error);
++    assert_memory_equal(BPTR(&out_buf), BPTR(&clear_buf), buf_forward_capa=
+city_total(&clear_buf));
++    assert_true(error);
++    error =3D false;
++
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list, 3, &e=
+rror);
++    assert_memory_equal(BPTR(&out_buf), BPTR(&clear_buf), buf_forward_capa=
+city_total(&clear_buf));
++    assert_true(error);
++    error =3D false;
++
++    /* FIXME: should probably throw an error instead adding that \x00 ? */
++    const char output_5[12] =3D "\x77\x0a\x03sub\x00\x03tld";
++    buf_clear(&out_buf);
++    write_dhcp_search_str(&out_buf, DHCP_DOMAIN_SEARCH, search_list + 6, 1=
+, &error);
++    assert_memory_equal(BPTR(&out_buf), output_5, sizeof(output_5));
++    assert_false(error);
++
++    gc_free(&gc);
++}
++
++int
++main(void)
++{
++    const struct CMUnitTest tests[] =3D {
++        cmocka_unit_test(test_write_dhcp_search_str),
++    };
++
++    return cmocka_run_group_tests_name("dhcp", tests, NULL, NULL);
++}
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I08e50030b1b692d351509f541e5c0b03b5170615
+Gerrit-Change-Number: 1267
+Gerrit-PatchSet: 5
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--sy5b8+Jcg20=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #5</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1267?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">test_dhcp: Start a dhcp helper func=
+tions UT<br><br>Use extra define to allow testing code only<br>used on Wind=
+ows but not actually dependent<br>on Windows.<br><br>Change-Id: I08e50030b1=
+b692d351509f541e5c0b03b5170615<br>Signed-off-by: Frank Lichtenheld &lt;fran=
+k@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerri=
+t URL: https://gerrit.openvpn.net/c/openvpn/+/1267<br>Message-Id: &lt;20251=
+013154758.21695-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/ope=
+nvpn/mailman/message/59246199/<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
+296...&gt;<br>---<br>M CMakeLists.txt<br>M src/openvpn/dhcp.c<br>M src/open=
+vpn/dhcp.h<br>M src/openvpn/tun.h<br>M tests/unit_tests/openvpn/Makefile.am=
+<br>M tests/unit_tests/openvpn/mock_msg.h<br>A tests/unit_tests/openvpn/tes=
+t_dhcp.c<br>7 files changed, 155 insertions(+), 4 deletions(-)<br><br></pre=
+><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
+/67/1267/5</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><=
+span>index 9e0b46e..b773dcb 100644</span><br><span>--- a/CMakeLists.txt</sp=
+an><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -658,6 +658,7 @@</span=
+><br><span>         &quot;test_auth_token&quot;</span><br><span>         &q=
+uot;test_buffer&quot;</span><br><span>         &quot;test_crypto&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;test_dhcp&=
+quot;</span><br><span>         &quot;test_misc&quot;</span><br><span>      =
+   &quot;test_ncp&quot;</span><br><span>         &quot;test_options_parse&q=
+uot;</span><br><span>@@ -910,6 +911,11 @@</span><br><span>             )</s=
+pan><br><span>     endif ()</span><br><span> </span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    target_compile_definitions(test_dhcp PRIVATE =
+DHCP_UNIT_TEST)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+target_sources(test_dhcp PRIVATE</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        tests/unit_tests/openvpn/mock_get_random.c</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (TARGET test_net=
+working)</span><br><span>         target_link_options(test_networking PRIVA=
+TE -Wl,--wrap=3Dparse_line)</span><br><span>         target_compile_options=
+(test_networking PRIVATE -UNDEBUG)</span><br><span>diff --git a/src/openvpn=
+/dhcp.c b/src/openvpn/dhcp.c</span><br><span>index 56f03f2..0893ec7 100644<=
+/span><br><span>--- a/src/openvpn/dhcp.c</span><br><span>+++ b/src/openvpn/=
+dhcp.c</span><br><span>@@ -186,7 +186,7 @@</span><br><span>     return 0;</=
+span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#if defined(_WIN32)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#if defined(_WIN32) || defined(DHCP_UNIT_TEST)</span><br><spa=
+n> </span><br><span> #if defined(__GNUC__) || defined(__clang__)</span><br>=
+<span> #pragma GCC diagnostic push</span><br><span>diff --git a/src/openvpn=
+/dhcp.h b/src/openvpn/dhcp.h</span><br><span>index 3fcd2b6..2ad31a6 100644<=
+/span><br><span>--- a/src/openvpn/dhcp.h</span><br><span>+++ b/src/openvpn/=
+dhcp.h</span><br><span>@@ -93,7 +93,7 @@</span><br><span> </span><br><span>=
+ in_addr_t dhcp_extract_router_msg(struct buffer *ipbuf);</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) |=
+| defined(DHCP_UNIT_TEST)</span><br><span> #include &quot;tun.h&quot;</span=
+><br><span> </span><br><span> bool build_dhcp_options_string(struct buffer =
+*buf, const struct tuntap_options *o);</span><br><span>diff --git a/src/ope=
+nvpn/tun.h b/src/openvpn/tun.h</span><br><span>index 6562c22..741798d 10064=
+4</span><br><span>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn=
+/tun.h</span><br><span>@@ -59,7 +59,7 @@</span><br><span> #define DCO_WIN_R=
+EFERENCE_STRING &quot;ovpn-dco&quot;</span><br><span> #endif</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32=
+) || defined(TARGET_ANDROID)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if defined(_WIN32) || defined(TARGET_ANDROID) || defined(DHCP_UNI=
+T_TEST)</span><br><span> </span><br><span> #define TUN_ADAPTER_INDEX_INVALI=
+D ((DWORD)-1)</span><br><span> </span><br><span>diff --git a/tests/unit_tes=
+ts/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><sp=
+an>index 50f4a11..17aa0ce 100644</span><br><span>--- a/tests/unit_tests/ope=
+nvpn/Makefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am=
+</span><br><span>@@ -6,7 +6,7 @@</span><br><span> </span><br><span> AM_TEST=
+S_ENVIRONMENT =3D export LSAN_OPTIONS=3Dsuppressions=3D$(srcdir)/input/leak=
+_suppr.txt;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-test_binaries =3D argv_testdriver buffer_testdriver crypto_testdriv=
+er packet_id_testdriver auth_token_testdriver \</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+test_binaries =3D argv_testdriver buffer_testdr=
+iver crypto_testdriver dhcp_testdriver packet_id_testdriver auth_token_test=
+driver \</span><br><span> 	ncp_testdriver misc_testdriver options_parse_tes=
+tdriver pkt_testdriver ssl_testdriver \</span><br><span> 	user_pass_testdri=
+ver push_update_msg_testdriver provider_testdriver socket_testdriver</span>=
+<br><span> </span><br><span>@@ -72,6 +72,15 @@</span><br><span> 	$(top_srcd=
+ir)/src/openvpn/win32-util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/=
+mss.c</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+dhcp_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)=
+/src/compat @TEST_CFLAGS@ -DDHCP_UNIT_TEST</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+dhcp_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_s=
+rcdir)/src/openvpn</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
+hcp_testdriver_SOURCES =3D test_dhcp.c \</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+	mock_msg.c mock_msg.h test_common.h \</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+	mock_get_random.c \</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/platfor=
+m.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)=
+/src/openvpn/buffer.c \</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+	$(top_srcdir)/src/openvpn/win32-util.c</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span> ssl_testdriver_CFLAGS  =3D \</spa=
+n><br><span> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_sr=
+cdir)/src/openvpn \</span><br><span> 	@TEST_CFLAGS@</span><br><span>diff --=
+git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_m=
+sg.h</span><br><span>index c6321dc..62afde5 100644</span><br><span>--- a/te=
+sts/unit_tests/openvpn/mock_msg.h</span><br><span>+++ b/tests/unit_tests/op=
+envpn/mock_msg.h</span><br><span>@@ -23,6 +23,8 @@</span><br><span> #ifndef=
+ MOCK_MSG_H</span><br><span> #define MOCK_MSG_H</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;error.h&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*=
+*</span><br><span>  * Mock debug level defaults to 0, which gives clean(-is=
+h) test reports.  Call</span><br><span>  * this function from your test dri=
+ver to increase debug output when you</span><br><span>diff --git a/tests/un=
+it_tests/openvpn/test_dhcp.c b/tests/unit_tests/openvpn/test_dhcp.c</span><=
+br><span>new file mode 100644</span><br><span>index 0000000..729ca58</span>=
+<br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test=
+_dhcp.c</span><br><span>@@ -0,0 +1,134 @@</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  OpenVPN -- An application to securely tunnel IP networks</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a single =
+UDP port, with support for SSL/TLS-based</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *             session authentication and key exchange=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             pac=
+ket encryption, packet authentication, and</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *             packet compression.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  Copyright (C) 2025 OpenVPN Inc &lt;sales@...515...=
+&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free softwar=
+e; you can redistribute it and/or modify</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  it under the terms of the GNU General Public Licen=
+se version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as =
+published by the Free Software Foundation.</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *  This program is distributed in the hope that it will be useful,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY W=
+ARRANTY; without even the implied warranty of</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR P=
+URPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+ GNU General Public License for more details.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *  You should have received a copy of the GNU General Public Lice=
+nse along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with t=
+his program; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#include &quot;config.h&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &qu=
+ot;syshead.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdio.h=
+&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;st=
+dlib.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include =
+&lt;stdarg.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#in=
+clude &lt;string.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#include &lt;setjmp.h&gt;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#include &lt;cmocka.h&gt;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
+lude &quot;test_common.h&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#include &quot;mock_msg.h&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#include &quot;dhcp.c&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+uint16_=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ip_checksum(const =
+sa_family_t af, const uint8_t *payload, const int len_payload,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            const uint8_t *src_a=
+ddr, const uint8_t *dest_addr, const int proto)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_in_addr_t(in_ad=
+dr_t addr, unsigned int flags, struct gc_arena *gc)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return &quot;dummy&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_write_dhcp_sea=
+rch_str(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_ar=
+ena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    struct buffer out_buf =3D alloc_buf_gc(512, &amp;gc);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    struct buffer clear_buf =3D allo=
+c_buf_gc(512, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    buf_clear(&amp;clear_buf);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    bool error =3D false;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#define LONGDOMAIN &quot;a-reaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
+aaaaaaaaaaaaaaaaaaaaaaally-long-domain&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const char *search_list[] =3D {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        &quot;openvpn.net&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;openvpn=
+.org&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+LONGDOMAIN,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+&quot;subdomain.&quot; LONGDOMAIN &quot;.top123&quot;,  /* maximum length *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;subd=
+omain-&quot; LONGDOMAIN &quot;-top123&quot;,  /* maximum length */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;subdomain.&quo=
+t; LONGDOMAIN &quot;.top1234&quot;, /* too long */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        &quot;sub..tld&quot;,               =
+          /* invalid */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
+ unsigned char output_1[28] =3D &quot;\x77\x1a\x07openvpn\x03net\x00\x07ope=
+nvpn\x03org&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   buf_clear(&amp;out_buf);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    write_dhcp_search_str(&amp;out_buf, DHCP_DOMAIN_SEARCH, search_=
+list, 2, &amp;error);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_memory_equal(BPTR(&amp;out_buf), output_1, sizeof(output_1));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(err=
+or);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* buf too small */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer small_buf =
+=3D alloc_buf_gc(sizeof(output_1) - 1, &amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    buf_clear(&amp;small_buf);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;smal=
+l_buf, DHCP_DOMAIN_SEARCH, search_list, 2, &amp;error);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;small=
+_buf), BPTR(&amp;clear_buf), buf_forward_capacity_total(&amp;small_buf));</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(error=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    error =3D fal=
+se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    const unsigned char output_2[0x=
+EC + 3 + 1] =3D &quot;\x77\xEE\xEC&quot; LONGDOMAIN;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;o=
+ut_buf, DHCP_DOMAIN_SEARCH, search_list + 2, 1, &amp;error);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;=
+out_buf), output_2, sizeof(output_2));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_false(error);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    const unsigned char output_3[0xEC + 3 + 10 + 7 + 1] =3D &quot;\x77=
+\xFF\x09subdomain\xEC&quot; LONGDOMAIN &quot;\x06top123&quot;;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_s=
+tr(&amp;out_buf, DHCP_DOMAIN_SEARCH, search_list + 3, 1, &amp;error);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(B=
+PTR(&amp;out_buf), output_3, sizeof(output_3));</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    assert_false(error);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const unsigned char output_4[0xEC + 3 + 10 + 7 + 1] =3D =
+&quot;\x77\xFF\xFDsubdomain-&quot; LONGDOMAIN &quot;-top123&quot;;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_sear=
+ch_str(&amp;out_buf, DHCP_DOMAIN_SEARCH, search_list + 4, 1, &amp;error);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equ=
+al(BPTR(&amp;out_buf), output_4, sizeof(output_4));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_false(error);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;out_buf, DHCP_D=
+OMAIN_SEARCH, search_list + 5, 1, &amp;error);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;out_buf), BPTR=
+(&amp;clear_buf), buf_forward_capacity_total(&amp;clear_buf));</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_true(error);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    error =3D false;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    buf_clear(&amp;out_buf);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    write_dhcp_search_str(&amp;out_bu=
+f, DHCP_DOMAIN_SEARCH, search_list, 3, &amp;error);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;out_buf=
+), BPTR(&amp;clear_buf), buf_forward_capacity_total(&amp;clear_buf));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(error);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    error =3D false;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    /* FIXME: should probably throw an =
+error instead adding that \x00 ? */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const char output_5[12] =3D &quot;\x77\x0a\x03sub\x00\x=
+03tld&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf=
+_clear(&amp;out_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    write_dhcp_search_str(&amp;out_buf, DHCP_DOMAIN_SEARCH, search_list +=
+ 6, 1, &amp;error);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_memory_equal(BPTR(&amp;out_buf), output_5, sizeof(output_5));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(error=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+main(void)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    const struct CMUnitTest tests[] =3D=
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_un=
+it_test(test_write_dhcp_search_str),</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    };</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return cmoc=
+ka_run_group_tests_name(&quot;dhcp&quot;, tests, NULL, NULL);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1267?u=
+sp=3Demail">change 1267</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1267?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I08e50030b1b692d351509f541e5=
+c0b03b5170615 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1267 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--sy5b8+Jcg20=--
 
