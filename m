@@ -1,10 +1,10 @@
-Date: Mon, 13 Oct 2025 17:37:40 +0200 (CEST)
-Message-Id: <202510131537.59DFbe6W081652@...2054...>
+Date: Mon, 13 Oct 2025 17:44:38 +0200 (CEST)
+Message-Id: <202510131544.59DFictl082201@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251006144249.23672-2-lists@...2941...>
-References: <20251006144249.23672-2-lists@...2941...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc: Fix hyperlinks in
- openvpn(8)
+In-Reply-To: <20251006144249.23672-3-lists@...2941...>
+References: <20251006144249.23672-3-lists@...2941...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc: HTTPS upgrades and URL
+ fixes throughout the tree
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,20 +18,19 @@ Content-Transfer-Encoding: 8bit
 To: Christian Kujau <github@...2941...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.6 branch
-(documentation updates are always worthy a backport).
+Your patch has been applied to the master branch and release/2.6.
 
-commit 3199fcebd3b3dd3f207d8cab7693d5eac3bdc64d (master)
-commit a53b49ebb38e232c21b329bf997828ad589eb471 (release/2.6)
+commit 8c53b12ae6a4cf96dc65ff9c5323af862d07b1b2 (master)
+commit ca1e6321652a46df5a68e50456303c7f2751a29c (release/2.6)
 Author: Christian Kujau
-Date:   Mon Oct 6 16:42:47 2025 +0200
+Date:   Mon Oct 6 16:42:48 2025 +0200
 
-     doc: Fix hyperlinks in openvpn(8)
+     doc: HTTPS upgrades and URL fixes throughout the tree
 
      Signed-off-by: Christian Kujau <github@...2941...>
      Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20251006144249.23672-2-lists@...2941...>
-     URL: https://sourceforge.net/p/openvpn/mailman/message/59242864/
+     Message-Id: <20251006144249.23672-3-lists@...2941...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59242866/
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
