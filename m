@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 13 Oct 2025 18:22:15 +0200
-Message-ID: <20251013162221.2156-1-gert@...1296...>
-In-Reply-To: <gerrit.1760359115000.Ia836e3c05a868a7e8419c2bb2f547d968260783c@...2715...>
-References: <gerrit.1760359115000.Ia836e3c05a868a7e8419c2bb2f547d968260783c@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 13 Oct 2025 16:22:58 +0000
+In-Reply-To: <gerrit.1760359115000.I5e6cb3a287a2e8e1584036307b4c21bb68050c6a@...2715...>
+References: <gerrit.1760359115000.I5e6cb3a287a2e8e1584036307b4c21bb68050c6a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b68f834d347da17af668816747d922c991a5d110-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] win32: Change some APIs to use DWORD
- instead of size_t
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="XVxOYln0lPw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: schedule: Fix
+ conversion warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,176 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--XVxOYln0lPw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This is what the Win32 APIs use. Since we put static
-integers into this (e.g. sizeof()) this doesn't
-result in new conversion warnings at the caller sites.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: Ia836e3c05a868a7e8419c2bb2f547d968260783c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1269
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1270?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: schedule: Fix conversion warning
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1269
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 0044794..fde460a 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2840,7 +2840,7 @@
- 
- /* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
--do_route_service(const bool add, const route_message_t *rt, const size_t size, HANDLE pipe)
-+do_route_service(const bool add, const route_message_t *rt, const DWORD size, HANDLE pipe)
- {
-     int ret = RTA_ERROR;
-     ack_message_t ack;
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index eac2352..3c11ec3 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1418,13 +1418,8 @@
-     return (const char *)out.data;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
--send_msg_iservice(HANDLE pipe, const void *data, size_t size, ack_message_t *ack,
-+send_msg_iservice(HANDLE pipe, const void *data, DWORD size, ack_message_t *ack,
-                   const char *context)
- {
-     struct gc_arena gc = gc_new();
-@@ -1527,7 +1522,8 @@
- 
-     while (expire >= now)
-     {
--        DWORD status = WaitForSingleObject(win32_signal.in.read, (expire - now) * 1000);
-+        DWORD wait_ms = (DWORD)((expire - now) * 1000);
-+        DWORD status = WaitForSingleObject(win32_signal.in.read, wait_ms);
-         if ((status == WAIT_OBJECT_0 && win32_signal_get(&win32_signal)) || status == WAIT_TIMEOUT)
-         {
-             return;
-@@ -1539,7 +1535,7 @@
-         {
-             if (expire > now)
-             {
--                Sleep((expire - now) * 1000);
-+                Sleep((DWORD)((expire - now) * 1000));
-             }
-             return;
-         }
-@@ -1602,7 +1598,7 @@
- }
- 
- bool
--protect_buffer_win32(char *buf, size_t len)
-+protect_buffer_win32(char *buf, DWORD len)
- {
-     bool ret;
-     if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)
-@@ -1620,7 +1616,7 @@
- }
- 
- bool
--unprotect_buffer_win32(char *buf, size_t len)
-+unprotect_buffer_win32(char *buf, DWORD len)
- {
-     bool ret;
-     if (len % CRYPTPROTECTMEMORY_BLOCK_SIZE)
-@@ -1637,8 +1633,4 @@
-     return ret;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #endif /* ifdef _WIN32 */
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index ff3145a..07a58d8 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -301,12 +301,14 @@
-  */
- const char *win32_version_string(struct gc_arena *gc);
- 
--/*
-- * Send the |size| bytes in buffer |data| to the interactive service |pipe|
-- * and read the result in |ack|. Returns false on communication error.
-- * The string in |context| is used to prefix error messages.
-+/**
-+ * Send the \p size bytes in buffer \p data to the interactive service \p pipe
-+ * and read the result in \p ack.
-+ * The string in \p context is used to prefix error messages.
-+ *
-+ * @return true on success, false on communication error
-  */
--bool send_msg_iservice(HANDLE pipe, const void *data, size_t size, ack_message_t *ack,
-+bool send_msg_iservice(HANDLE pipe, const void *data, DWORD size, ack_message_t *ack,
-                        const char *context);
- 
- /*
-@@ -350,7 +352,7 @@
-  * - len   number of bytes to encrypt -- must be a multiple of
-  *         CRYPTPROTECTMEMORY_BLOCK_SIZE = 16
-  */
--bool protect_buffer_win32(char *buf, size_t len);
-+bool protect_buffer_win32(char *buf, DWORD len);
- 
- /**
-  * Decrypt a previously encrypted region of memory using CryptUnProtectMemory()
-@@ -360,7 +362,7 @@
-  * - len   number of bytes to encrypt -- must be a multiple of
-  *         CRYPTPROTECTMEMORY_BLOCK_SIZE = 16
-  */
--bool unprotect_buffer_win32(char *buf, size_t len);
-+bool unprotect_buffer_win32(char *buf, DWORD len);
- 
- #endif /* ifndef OPENVPN_WIN32_H */
- #endif /* ifdef _WIN32 */
-diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
-index f5dddd6..abe223c 100644
---- a/tests/unit_tests/openvpn/test_user_pass.c
-+++ b/tests/unit_tests/openvpn/test_user_pass.c
-@@ -79,17 +79,19 @@
-     return 0;
- }
- 
-+#ifdef _WIN32
- bool
--protect_buffer_win32(char *buf, size_t len)
-+protect_buffer_win32(char *buf, DWORD len)
- {
-     return true;
- }
- 
- bool
--unprotect_buffer_win32(char *buf, size_t len)
-+unprotect_buffer_win32(char *buf, DWORD len)
- {
-     return true;
- }
-+#endif
- 
- /* tooling */
- static void
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1270?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I5e6cb3a287a2e8e1584036307b4c21bb68050c6a
+Gerrit-Change-Number: 1270
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 13 Oct 2025 16:22:58 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--XVxOYln0lPw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1270?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1270?usp=3Demail=
+">change 1270</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1270?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5e6cb3a287a2e8e1584036307b4=
+c21bb68050c6a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1270 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Oct 2025 16:22:58=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--XVxOYln0lPw=--
 
