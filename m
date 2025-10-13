@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Oct 2025 16:17:47 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 13 Oct 2025 18:17:53 +0200
+Message-ID: <20251013161759.1656-1-gert@...1296...>
 In-Reply-To: <gerrit.1760136547000.I30a50826350ac3176443cf3bf16d3972609723a2@...2715...>
 References: <gerrit.1760136547000.I30a50826350ac3176443cf3bf16d3972609723a2@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <73acec39ab34ba18ed84db9b51830ad062e2b44c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PdxHQpRyV0U="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dhcp: Clean up type
- handling of write_dhcp_*
+Subject: [Openvpn-devel] [PATCH v4] dhcp: Clean up type handling of
+ write_dhcp_*
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---PdxHQpRyV0U=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Use more appropriate types. Add casts where
+necessary but ensure that they are safe.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1268?usp=3Demail )
+Change-Id: I30a50826350ac3176443cf3bf16d3972609723a2
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1268
+---
 
-Change subject: dhcp: Clean up type handling of write_dhcp_*
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1268
+This mail reflects revision 4 of this Change.
 
-Patch Set 4: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I30a50826350ac3176443cf3bf16d3972609723a2
-Gerrit-Change-Number: 1268
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 13 Oct 2025 16:17:47 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---PdxHQpRyV0U=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail=
-">change 1268</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1268?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I30a50826350ac3176443cf3bf16=
-d3972609723a2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1268 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Oct 2025 16:17:47=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---PdxHQpRyV0U=--
+        
+diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
+index 0893ec7..a34bfca 100644
+--- a/src/openvpn/dhcp.c
++++ b/src/openvpn/dhcp.c
+@@ -188,18 +188,13 @@
+ 
+ #if defined(_WIN32) || defined(DHCP_UNIT_TEST)
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ /*
+  * Convert DHCP options from the command line / config file
+  * into a raw DHCP-format options string.
+  */
+ 
+ static void
+-write_dhcp_u8(struct buffer *buf, const int type, const int data, bool *error)
++write_dhcp_u8(struct buffer *buf, const uint8_t type, const uint8_t data, bool *error)
+ {
+     if (!buf_safe(buf, 3))
+     {
+@@ -213,13 +208,12 @@
+ }
+ 
+ static void
+-write_dhcp_u32_array(struct buffer *buf, const int type, const uint32_t *data,
++write_dhcp_u32_array(struct buffer *buf, const uint8_t type, const uint32_t *data,
+                      const unsigned int len, bool *error)
+ {
+     if (len > 0)
+     {
+-        int i;
+-        const int size = len * sizeof(uint32_t);
++        const size_t size = len * sizeof(uint32_t);
+ 
+         if (!buf_safe(buf, 2 + size))
+         {
+@@ -230,12 +224,12 @@
+         if (size < 1 || size > 255)
+         {
+             *error = true;
+-            msg(M_WARN, "write_dhcp_u32_array: size (%d) must be > 0 and <= 255", size);
++            msg(M_WARN, "write_dhcp_u32_array: size (%zu) must be > 0 and <= 255", size);
+             return;
+         }
+         buf_write_u8(buf, type);
+-        buf_write_u8(buf, size);
+-        for (i = 0; i < len; ++i)
++        buf_write_u8(buf, (uint8_t)size);
++        for (unsigned int i = 0; i < len; ++i)
+         {
+             buf_write_u32(buf, data[i]);
+         }
+@@ -243,9 +237,9 @@
+ }
+ 
+ static void
+-write_dhcp_str(struct buffer *buf, const int type, const char *str, bool *error)
++write_dhcp_str(struct buffer *buf, const uint8_t type, const char *str, bool *error)
+ {
+-    const int len = strlen(str);
++    const size_t len = strlen(str);
+     if (!buf_safe(buf, 2 + len))
+     {
+         *error = true;
+@@ -259,7 +253,7 @@
+         return;
+     }
+     buf_write_u8(buf, type);
+-    buf_write_u8(buf, len);
++    buf_write_u8(buf, (uint8_t)len);
+     buf_write(buf, str, len);
+ }
+ 
+@@ -272,15 +266,14 @@
+  *  0x1D  0x7 openvpn 0x3 net 0x00 0x0A duckduckgo 0x3 com 0x00
+  */
+ static void
+-write_dhcp_search_str(struct buffer *buf, const int type, const char *const *str_array,
++write_dhcp_search_str(struct buffer *buf, const uint8_t type, const char *const *str_array,
+                       int array_len, bool *error)
+ {
+     char tmp_buf[256];
+-    int i;
+-    int len = 0;
+-    int label_length_pos;
++    size_t len = 0;
++    size_t label_length_pos;
+ 
+-    for (i = 0; i < array_len; i++)
++    for (int i = 0; i < array_len; i++)
+     {
+         const char *ptr = str_array[i];
+ 
+@@ -301,7 +294,8 @@
+         {
+             if (*ptr == '.' || *ptr == '\0')
+             {
+-                tmp_buf[label_length_pos] = (len - label_length_pos) - 1;
++                /* cast is protected by sizeof(tmp_buf) */
++                tmp_buf[label_length_pos] = (char)(len - label_length_pos - 1);
+                 label_length_pos = len;
+                 if (*ptr == '\0')
+                 {
+@@ -328,14 +322,10 @@
+     }
+ 
+     buf_write_u8(buf, type);
+-    buf_write_u8(buf, len);
++    buf_write_u8(buf, (uint8_t)len);
+     buf_write(buf, tmp_buf, len);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ bool
+ build_dhcp_options_string(struct buffer *buf, const struct tuntap_options *o)
+ {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index fec17b4..c0d8fe6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1322,7 +1322,7 @@
+     SHOW_BOOL(dhcp_pre_release);
+     SHOW_STR(domain);
+     SHOW_STR(netbios_scope);
+-    SHOW_INT(netbios_node_type);
++    SHOW_UNSIGNED(netbios_node_type);
+     SHOW_BOOL(disable_nbt);
+ 
+     show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
+@@ -8001,7 +8001,7 @@
+                 msg(msglevel, "--dhcp-option NBT: parameter (%d) must be 1, 2, 4, or 8", t);
+                 goto err;
+             }
+-            o->netbios_node_type = t;
++            o->netbios_node_type = (uint8_t)t;
+             o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+         else if (streq(p[1], "WINS") && p[2] && !p[3])
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 741798d..e13f99f 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -104,11 +104,10 @@
+ 
+     const char *netbios_scope; /* NBS (47) */
+ 
+-    int netbios_node_type;     /* NBT 1,2,4,8 (46) */
++    uint8_t netbios_node_type; /* NBT 1,2,4,8 (46) */
+ 
+-#define N_DHCP_ADDR                     \
+-    4 /* Max # of addresses allowed for \
+-       * DNS, WINS, etc. */
++/* Max # of addresses allowed for  DNS, WINS, etc. */
++#define N_DHCP_ADDR 4
+ 
+     /* DNS (6) */
+     in_addr_t dns[N_DHCP_ADDR];
 
