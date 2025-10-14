@@ -1,15 +1,15 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Oct 2025 11:33:58 +0000
-References: <gerrit.1760441635000.I54b11a5540fb236580a3b80c6d1e8678b24bd852@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <7337e2584def18d0e2039fc1410aa060a6ee1abf-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 14 Oct 2025 11:34:01 +0000
+References: <gerrit.1760441637000.Ia713a2ecfcad7032863867630a0c306ff9f90385@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <6a6d9422beb71ba935a1ef5f9dc09d4855036a60-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8m+qQRRjN4Y="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Silence unhelpful
- compiler truncation warning with bigger buffer
+Content-Type: multipart/alternative; boundary="npqmLaIDxBY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: init: Fix
+ datav2_enabled check in options import
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,154 +18,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8m+qQRRjN4Y=
+--npqmLaIDxBY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
-Hello flichtenheld,
+Hello plaisthos,
 
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1272?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1273?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Silence unhelpful compiler truncation warning with bigger b=
-uffer
+Change subject: init: Fix datav2_enabled check in options import
 ......................................................................
 
-Silence unhelpful compiler truncation warning with bigger buffer
+init: Fix datav2_enabled check in options import
 
-On the more recent mingw compilers (homebrew mingw 13.0.0, GCC 15.2.0) the
-compiler complains about a potential truncation in these two places.
+peer_id is unsigned, so the previous check was partly
+useless. Instead check use_peer_id.
 
-  src/openvpn/tun.c:3806:57:
-  error: '%s' directive output may be truncated writing up
-  to 255 bytes into a region of size 178
-  [-Werror=3Dformat-truncation=3D]
-
-This not very helpful but just increasing the buffer sizes makes the warning
-go away.
-
-Change-Id: I54b11a5540fb236580a3b80c6d1e8678b24bd852
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Change-Id: Ia713a2ecfcad7032863867630a0c306ff9f90385
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/tun.c
+M src/openvpn/init.c
 1 file changed, 2 insertions(+), 2 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/1272/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/1273/1
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 06b7ae5..fc06b16 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3784,7 +3784,7 @@
-     while (true)
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index aaa0573..aa2611d 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2728,8 +2728,8 @@
+
+     /* Ensure that for epoch data format is only enabled if also data v2
+      * is enabled */
+-    bool epoch_data =3D (c->options.imported_protocol_flags & CO_EPOCH_DAT=
+A_KEY_FORMAT);
+-    bool datav2_enabled =3D (c->options.peer_id >=3D 0 && c->options.peer_=
+id < MAX_PEER_ID);
++    bool epoch_data =3D c->options.imported_protocol_flags & CO_EPOCH_DATA=
+_KEY_FORMAT;
++    bool datav2_enabled =3D c->options.use_peer_id && c->options.peer_id <=
+ MAX_PEER_ID;
+
+     if (epoch_data && !datav2_enabled)
      {
-         char enum_name[256];
--        char unit_string[256];
-+        char unit_string[512];
-         HKEY unit_key;
-         char component_id_string[] =3D "ComponentId";
-         char component_id[256];
-@@ -3895,7 +3895,7 @@
-     while (true)
-     {
-         char enum_name[256];
--        char connection_string[256];
-+        char connection_string[512];
-         HKEY connection_key;
-         WCHAR name_data[256];
-         DWORD name_type;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1272?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1273?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I54b11a5540fb236580a3b80c6d1e8678b24bd852
-Gerrit-Change-Number: 1272
+Gerrit-Change-Id: Ia713a2ecfcad7032863867630a0c306ff9f90385
+Gerrit-Change-Number: 1273
 Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---8m+qQRRjN4Y=
+--npqmLaIDxBY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1272?usp=3Demail">V=
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1273?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Silence unhelpful compiler truncation warni=
-ng with bigger buffer<br><br>On the more recent mingw compilers (homebrew m=
-ingw 13.0.0, GCC 15.2.0) the<br>compiler complains about a potential trunca=
-tion in these two places.<br><br>  src/openvpn/tun.c:3806:57:<br>  error: &=
-#39;%s&#39; directive output may be truncated writing up<br>  to 255 bytes =
-into a region of size 178<br>  [-Werror=3Dformat-truncation=3D]<br><br>This=
- not very helpful but just increasing the buffer sizes makes the warning<br=
->go away.<br><br>Change-Id: I54b11a5540fb236580a3b80c6d1e8678b24bd852<br>Si=
-gned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/t=
-un.c<br>1 file changed, 2 insertions(+), 2 deletions(-)<br><br></pre><pre c=
-lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/127=
-2/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><s=
-pan>index 06b7ae5..fc06b16 100644</span><br><span>--- a/src/openvpn/tun.c</=
-span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -3784,7 +3784,7 @=
-@</span><br><span>     while (true)</span><br><span>     {</span><br><span>=
-         char enum_name[256];</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        char unit_string[256];</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        char unit_string[512];</span><br><span>         =
-HKEY unit_key;</span><br><span>         char component_id_string[] =3D &quo=
-t;ComponentId&quot;;</span><br><span>         char component_id[256];</span=
-><br><span>@@ -3895,7 +3895,7 @@</span><br><span>     while (true)</span><b=
-r><span>     {</span><br><span>         char enum_name[256];</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        char connection_string[256];=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        char connec=
-tion_string[512];</span><br><span>         HKEY connection_key;</span><br><=
-span>         WCHAR name_data[256];</span><br><span>         DWORD name_typ=
-e;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1272?usp=3Demail">change 1272</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1272?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">init: Fix datav2_enabled check in options i=
+mport<br><br>peer_id is unsigned, so the previous check was partly<br>usele=
+ss. Instead check use_peer_id.<br><br>Change-Id: Ia713a2ecfcad7032863867630=
+a0c306ff9f90385<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt=
+;<br>---<br>M src/openvpn/init.c<br>1 file changed, 2 insertions(+), 2 dele=
+tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418=
+/openvpn refs/changes/73/1273/1</pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/init.c b/s=
+rc/openvpn/init.c</span><br><span>index aaa0573..aa2611d 100644</span><br><=
+span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</spa=
+n><br><span>@@ -2728,8 +2728,8 @@</span><br><span> </span><br><span>     /*=
+ Ensure that for epoch data format is only enabled if also data v2</span><b=
+r><span>      * is enabled */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    bool epoch_data =3D (c-&gt;options.imported_protocol_flags &amp=
+; CO_EPOCH_DATA_KEY_FORMAT);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    bool datav2_enabled =3D (c-&gt;options.peer_id &gt;=3D 0 &amp;&a=
+mp; c-&gt;options.peer_id &lt; MAX_PEER_ID);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    bool epoch_data =3D c-&gt;options.imported_pro=
+tocol_flags &amp; CO_EPOCH_DATA_KEY_FORMAT;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    bool datav2_enabled =3D c-&gt;options.use_peer_=
+id &amp;&amp; c-&gt;options.peer_id &lt; MAX_PEER_ID;</span><br><span> </sp=
+an><br><span>     if (epoch_data &amp;&amp; !datav2_enabled)</span><br><spa=
+n>     {</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1273?usp=3Demail">change 1273</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1273?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I54b11a5540fb236580a3b80c6d1=
-e8678b24bd852 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1272 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia713a2ecfcad7032863867630a0=
+c306ff9f90385 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1273 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---8m+qQRRjN4Y=--
+--npqmLaIDxBY=--
 
