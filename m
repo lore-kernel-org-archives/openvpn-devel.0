@@ -1,15 +1,15 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 14 Oct 2025 12:31:29 +0000
+Date: Tue, 14 Oct 2025 12:36:03 +0000
 In-Reply-To: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
 References: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <c3bea092b6d6a37d6cf59aa458d87a9bfdc1e1c9-EmailReviewComments-HTML@...2715...>
+Message-ID: <d834dc1164de048bd6e0f12967cb41a8c87c1189-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nfePQ64EoiA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="pEAQlbOyGbE="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE server:
  remove old IP(s) from vhash after sending a messa...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nfePQ64EoiA=
+--pEAQlbOyGbE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -39,27 +39,17 @@ ng a message containing ifconfig(-ipv6)
 
 Patch Set 6:
 
-(2 comments)
+(1 comment)
 
-File src/openvpn/push_util.c:
+File src/openvpn/multi.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1253/comment/ffcc2b41_1a82ecae?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/88c29763_372fcfb0?usp=3D=
 email :
-PS6, Line 165:     o.ifconfig_local =3D canary;
-in other parts of the code we use having a bool named like `$option_defined=
-` (in this case it would be `o.ifconfig_local_defined`) which is set to `tr=
-ue` when the option is present, but the value is ambiguous.
-
-May it make sense to do the same here instead of going the "canary" logic w=
-hich would be unique to this piece of code?
-
-@gert@...1296... any opinion?
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1253/comment/fdd76947_101b92fc?usp=3D=
-email :
-PS6, Line 166:     o.ifconfig_ipv6_local =3D canary;
-same for this obviously.
+PS5, Line 4390:             mi->context.c2.push_ifconfig_local =3D htonl(ne=
+w_addr.s_addr);
+something is weird here. if we are calling ntohl(s_addr) a few lines above,=
+ we can't just call htonl(s_addr) here.... @marco@...2726... you said you p=
+rinted the values *byte by byte*?
 
 
 
@@ -84,45 +74,35 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Tue, 14 Oct 2025 12:31:29 +0000
+Gerrit-Comment-Date: Tue, 14 Oct 2025 12:36:03 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 
---nfePQ64EoiA=
+--pEAQlbOyGbE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: cron2, flichtenheld, mrbff, plaisthos. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">View =
-Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1253/comment/ffcc2b41_1a82ecae?usp=3Demail">Patch Set =
-#6, Line 165:</a> <code style=3D"font-family:monospace,monospace">    o.ifc=
-onfig_local =3D canary;</code></p><p class=3D"blocks" style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">in other parts of the code we use having=
- a bool named like `$option_defined` (in this case it would be `o.ifconfig_=
-local_defined`) which is set to `true` when the option is present, but the =
-value is ambiguous.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">May it make sense to do the same here instead of go=
-ing the &quot;canary&quot; logic which would be unique to this piece of cod=
-e?</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">@gert@...1296... any opinion?</p></li><li style=3D"margin: 0; paddin=
-g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1253/comment/fdd76947_101b92fc?usp=3Demail">Patch Se=
-t #6, Line 166:</a> <code style=3D"font-family:monospace,monospace">    o.i=
-fconfig_ipv6_local =3D canary;</code></p><p class=3D"blocks" style=3D"white=
--space: pre-wrap; word-wrap: break-word;">same for this obviously.</p></li>=
-</ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1253?usp=3Demail">change 1253</a>. To unsubscribe, or for help writi=
-ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3D=
-email">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1253?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1253/comment/88c29763_372fcfb0?usp=3Demail">Patch Set #5, L=
+ine 4390:</a> <code style=3D"font-family:monospace,monospace">            m=
+i-&gt;context.c2.push_ifconfig_local =3D htonl(new_addr.s_addr);</code></p>=
+<p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;"=
+>something is weird here. if we are calling ntohl(s_addr) a few lines above=
+, we can&#39;t just call htonl(s_addr) here.... @marco@...2726... you said =
+you printed the values *byte by byte*?</p></li></ul></li></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">cha=
+nge 1253</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -151,12 +131,12 @@ div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 14 Oct 2025 12:31:29=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 14 Oct 2025 12:36:03=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---nfePQ64EoiA=--
+--pEAQlbOyGbE=--
 
