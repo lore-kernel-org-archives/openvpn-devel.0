@@ -1,15 +1,15 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Oct 2025 07:25:26 +0000
-References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
+Date: Wed, 15 Oct 2025 07:25:27 +0000
+References: <gerrit.1760513121000.I61f9d9bb26112eac0c0a47cb9d17982b075887ff@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <11ff4f4bf16ddc43aadead1650f215c82a5884be-HTML@...2715...>
+Message-ID: <f091f966baa5649426ef4d8526d071665a7fdef8-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7oq4K9MX4j0="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco-freebsd: store
- peer stats directly in c2
+Content-Type: multipart/alternative; boundary="6quThxN4SPk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: remove
+ dco_read/write_bytes from dco_context_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7oq4K9MX4j0=
+--6quThxN4SPk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,59 +32,106 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail
 
 to review the following change.
 
 
-Change subject: dco-freebsd: store peer stats directly in c2
+Change subject: dco: remove dco_read/write_bytes from dco_context_t
 ......................................................................
 
-dco-freebsd: store peer stats directly in c2
+dco: remove dco_read/write_bytes from dco_context_t
 
-The dco_context_t structure includes a reference to the general context
-structure c, which allows us to store dco_read_bytes and dco_write_bytes
-directly as c2 fields. This aligns the FreeBSD implementation with how
-we handle DCO peer stats on Linux and Windows.
+Remove dco_read_bytes and dco_write_bytes from all dco_context_t
+structures, as peer statistics are now stored directly in the
+corresponding c2 fields across all DCO interfaces.
 
-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
+Change-Id: I61f9d9bb26112eac0c0a47cb9d17982b075887ff
 Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
-M src/openvpn/dco_freebsd.c
-1 file changed, 2 insertions(+), 2 deletions(-)
+M src/openvpn/dco_freebsd.h
+M src/openvpn/dco_linux.h
+M src/openvpn/dco_win.h
+M src/openvpn/multi.c
+4 files changed, 0 insertions(+), 11 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/1275/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1276/1
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index b9f6bc7..5791257 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -621,8 +621,8 @@
-             {
-                 const nvlist_t *bytes =3D nvlist_get_nvlist(nvl, "bytes");
+diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
+index 2f486f0..0797b82 100644
+--- a/src/openvpn/dco_freebsd.h
++++ b/src/openvpn/dco_freebsd.h
+@@ -59,8 +59,6 @@
+     int dco_message_peer_id;
+     int dco_del_peer_reason;
+     struct sockaddr_storage dco_float_peer_ss;
+-    uint64_t dco_read_bytes;
+-    uint64_t dco_write_bytes;
 
--                dco->dco_read_bytes =3D nvlist_get_number(bytes, "in");
--                dco->dco_write_bytes =3D nvlist_get_number(bytes, "out");
-+                dco->c->c2.dco_read_bytes =3D nvlist_get_number(bytes, "in=
-");
-+                dco->c->c2.dco_write_bytes =3D nvlist_get_number(bytes, "o=
-ut");
-             }
+     struct context *c;
+ } dco_context_t;
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 310d433..efd5b27 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -81,8 +81,6 @@
+     int dco_message_key_id;
+     int dco_del_peer_reason;
+     struct sockaddr_storage dco_float_peer_ss;
+-    uint64_t dco_read_bytes;
+-    uint64_t dco_write_bytes;
+ } dco_context_t;
 
-             dco->dco_message_type =3D OVPN_CMD_DEL_PEER;
+ #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
+diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
+index 4f3f028..02b8389 100644
+--- a/src/openvpn/dco_win.h
++++ b/src/openvpn/dco_win.h
+@@ -55,9 +55,6 @@
+     int dco_del_peer_reason;
+     struct sockaddr_storage dco_float_peer_ss;
+
+-    uint64_t dco_read_bytes;
+-    uint64_t dco_write_bytes;
+-
+     struct context *c;
+ };
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2863ff1..053c54d 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3266,8 +3266,6 @@
+      * installed, and we do not need to clean up the state in the kernel */
+     mi->context.c2.tls_multi->dco_peer_id =3D -1;
+     mi->context.sig->signal_text =3D reason;
+-    mi->context.c2.dco_read_bytes =3D dco->dco_read_bytes;
+-    mi->context.c2.dco_write_bytes =3D dco->dco_write_bytes;
+     multi_signal_instance(m, mi, SIGTERM);
+ }
+
+@@ -3337,8 +3335,6 @@
+     dco->dco_message_type =3D 0;
+     dco->dco_message_peer_id =3D -1;
+     dco->dco_del_peer_reason =3D -1;
+-    dco->dco_read_bytes =3D 0;
+-    dco->dco_write_bytes =3D 0;
+     return ret > 0;
+ }
+ #endif /* if defined(ENABLE_DCO) */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
-Gerrit-Change-Number: 1275
+Gerrit-Change-Id: I61f9d9bb26112eac0c0a47cb9d17982b075887ff
+Gerrit-Change-Number: 1276
 Gerrit-PatchSet: 1
 Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -93,7 +140,7 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---7oq4K9MX4j0=
+--6quThxN4SPk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -101,48 +148,78 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: flichtenheld, plaisthos. </p>
 <p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
 g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">dco-freebsd: store peer stats directly in c=
-2<br><br>The dco_context_t structure includes a reference to the general co=
-ntext<br>structure c, which allows us to store dco_read_bytes and dco_write=
-_bytes<br>directly as c2 fields. This aligns the FreeBSD implementation wit=
-h how<br>we handle DCO peer stats on Linux and Windows.<br><br>Change-Id: I=
-53dd40fabdeacb9dca843e28fdd3b357711c5a84<br>Signed-off-by: Ralf Lici &lt;ra=
-lf@...2726...&gt;<br>---<br>M src/openvpn/dco_freebsd.c<br>1 file changed, =
-2 insertions(+), 2 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
-errit.openvpn.net:29418/openvpn refs/changes/75/1275/1</pre><pre style=3D"f=
-ont-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a=
-/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span>inde=
-x b9f6bc7..5791257 100644</span><br><span>--- a/src/openvpn/dco_freebsd.c</=
-span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -621,8 +6=
-21,8 @@</span><br><span>             {</span><br><span>                 con=
-st nvlist_t *bytes =3D nvlist_get_nvlist(nvl, &quot;bytes&quot;);</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-   dco-&gt;dco_read_bytes =3D nvlist_get_number(bytes, &quot;in&quot;);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                dco-&gt;d=
-co_write_bytes =3D nvlist_get_number(bytes, &quot;out&quot;);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                dco-&gt;c-&gt;c2.=
-dco_read_bytes =3D nvlist_get_number(bytes, &quot;in&quot;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                dco-&gt;c-&gt;c2.d=
-co_write_bytes =3D nvlist_get_number(bytes, &quot;out&quot;);</span><br><sp=
-an>             }</span><br><span> </span><br><span>             dco-&gt;dc=
-o_message_type =3D OVPN_CMD_DEL_PEER;</span><br><span></span><br></pre><p>T=
-o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3De=
-mail">change 1275</a>. To unsubscribe, or for help writing mail filters, vi=
-sit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">dco: remove dco_read/write_bytes from dco_c=
+ontext_t<br><br>Remove dco_read_bytes and dco_write_bytes from all dco_cont=
+ext_t<br>structures, as peer statistics are now stored directly in the<br>c=
+orresponding c2 fields across all DCO interfaces.<br><br>Change-Id: I61f9d9=
+bb26112eac0c0a47cb9d17982b075887ff<br>Signed-off-by: Ralf Lici &lt;ralf@...493...=
+2726...&gt;<br>---<br>M src/openvpn/dco_freebsd.h<br>M src/openvpn/dco_linu=
+x.h<br>M src/openvpn/dco_win.h<br>M src/openvpn/multi.c<br>4 files changed,=
+ 0 insertions(+), 11 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/76/1276/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h</span><br><span=
+>index 2f486f0..0797b82 100644</span><br><span>--- a/src/openvpn/dco_freebs=
+d.h</span><br><span>+++ b/src/openvpn/dco_freebsd.h</span><br><span>@@ -59,=
+8 +59,6 @@</span><br><span>     int dco_message_peer_id;</span><br><span>  =
+   int dco_del_peer_reason;</span><br><span>     struct sockaddr_storage dc=
+o_float_peer_ss;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    u=
+int64_t dco_read_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    uint64_t dco_write_bytes;</span><br><span> </span><br><span>     stru=
+ct context *c;</span><br><span> } dco_context_t;</span><br><span>diff --git=
+ a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h</span><br><span>index =
+310d433..efd5b27 100644</span><br><span>--- a/src/openvpn/dco_linux.h</span=
+><br><span>+++ b/src/openvpn/dco_linux.h</span><br><span>@@ -81,8 +81,6 @@<=
+/span><br><span>     int dco_message_key_id;</span><br><span>     int dco_d=
+el_peer_reason;</span><br><span>     struct sockaddr_storage dco_float_peer=
+_ss;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64_t dco_=
+read_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64=
+_t dco_write_bytes;</span><br><span> } dco_context_t;</span><br><span> </sp=
+an><br><span> #endif /* defined(ENABLE_DCO) &amp;&amp; defined(TARGET_LINUX=
+) */</span><br><span>diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_w=
+in.h</span><br><span>index 4f3f028..02b8389 100644</span><br><span>--- a/sr=
+c/openvpn/dco_win.h</span><br><span>+++ b/src/openvpn/dco_win.h</span><br><=
+span>@@ -55,9 +55,6 @@</span><br><span>     int dco_del_peer_reason;</span>=
+<br><span>     struct sockaddr_storage dco_float_peer_ss;</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64_t dco_read=
+_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64_t d=
+co_write_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span>     struct context *c;</span><br><span> };</span><br><span> </s=
+pan><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span>=
+<br><span>index 2863ff1..053c54d 100644</span><br><span>--- a/src/openvpn/m=
+ulti.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -3266,8=
+ +3266,6 @@</span><br><span>      * installed, and we do not need to clean =
+up the state in the kernel */</span><br><span>     mi-&gt;context.c2.tls_mu=
+lti-&gt;dco_peer_id =3D -1;</span><br><span>     mi-&gt;context.sig-&gt;sig=
+nal_text =3D reason;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   mi-&gt;context.c2.dco_read_bytes =3D dco-&gt;dco_read_bytes;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    mi-&gt;context.c2.dco_write_b=
+ytes =3D dco-&gt;dco_write_bytes;</span><br><span>     multi_signal_instanc=
+e(m, mi, SIGTERM);</span><br><span> }</span><br><span> </span><br><span>@@ =
+-3337,8 +3335,6 @@</span><br><span>     dco-&gt;dco_message_type =3D 0;</sp=
+an><br><span>     dco-&gt;dco_message_peer_id =3D -1;</span><br><span>     =
+dco-&gt;dco_del_peer_reason =3D -1;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    dco-&gt;dco_read_bytes =3D 0;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    dco-&gt;dco_write_bytes =3D 0;</span><br><spa=
+n>     return ret &gt; 0;</span><br><span> }</span><br><span> #endif /* if =
+defined(ENABLE_DCO) */</span><br><span></span><br></pre><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail">change 12=
+76</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
+http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div items=
+cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
+"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail"/><meta itemp=
+rop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd=
-3b357711c5a84 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1275 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I61f9d9bb26112eac0c0a47cb9d1=
+7982b075887ff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1276 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
@@ -159,5 +236,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---7oq4K9MX4j0=--
+--6quThxN4SPk=--
 
