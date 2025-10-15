@@ -1,15 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Oct 2025 10:51:05 +0000
-References: <gerrit.1760525463000.I70620aca638847168f06b0fb23cc04bd279d7df9@...2715...>
+Date: Wed, 15 Oct 2025 10:56:17 +0000
+In-Reply-To: <gerrit.1760523707000.If91d14f31368a93182bcf23b1d82b06ea94381d8@...2715...>
+References: <gerrit.1760523707000.If91d14f31368a93182bcf23b1d82b06ea94381d8@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <037d099af3d70f7b1b0118a16a53c60288215525-HTML@...2715...>
+Message-ID: <3248645bab9bf1f6b52cd60c6d3bb3c9d29227b0-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7YWOt6uXspM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: proxy: factor out
- recv_char code common with socks proxy
+Content-Type: multipart/alternative; boundary="tEu+2/lEBoQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: Wrap winsock
+ functions to avoid common conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7YWOt6uXspM=
+--tEu+2/lEBoQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,659 +30,475 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1278?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1277?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
-Change subject: proxy: factor out recv_char code common with socks proxy
+Change subject: socket: Wrap winsock functions to avoid common conversion w=
+arnings
 ......................................................................
 
-proxy: factor out recv_char code common with socks proxy
+socket: Wrap winsock functions to avoid common conversion warnings
 
-Change-Id: I70620aca638847168f06b0fb23cc04bd279d7df9
+Before I had done those at the call site but we have
+several very similar issues with multiple occurrences.
+So handle them together.
+
+Change-Id: If91d14f31368a93182bcf23b1d82b06ea94381d8
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
 M src/openvpn/proxy.c
-M src/openvpn/proxy.h
+M src/openvpn/socket.c
+M src/openvpn/socket.h
 M src/openvpn/socks.c
-3 files changed, 65 insertions(+), 94 deletions(-)
+4 files changed, 51 insertions(+), 25 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1278/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1277/2
 
 diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index dfe1e59..4205991 100644
+index 02554ba..dfe1e59 100644
 --- a/src/openvpn/proxy.c
 +++ b/src/openvpn/proxy.c
-@@ -57,6 +57,50 @@
+@@ -54,11 +54,6 @@
+ }
+
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
  /* cached proxy username/password */
  static struct user_pass static_proxy_user_pass;
 
-+bool
-+proxy_recv_char(uint8_t *c, const char *name, socket_descriptor_t sd,
-+                struct timeval *timeout, volatile int *signal_received)
-+{
-+    fd_set reads;
-+    FD_ZERO(&reads);
-+    openvpn_fd_set(sd, &reads);
-+
-+    const int status =3D openvpn_select(sd + 1, &reads, NULL, NULL, timeou=
-t);
-+
-+    get_signal(signal_received);
-+    if (*signal_received)
-+    {
-+        return false;
-+    }
-+
-+    /* timeout? */
-+    if (status =3D=3D 0)
-+    {
-+        msg(D_LINK_ERRORS | M_ERRNO, "%s: TCP port read timeout expired", =
-name);
-+        return false;
-+    }
-+
-+    /* error */
-+    if (status < 0)
-+    {
-+        msg(D_LINK_ERRORS | M_ERRNO, "%s: TCP port read failed on select()=
-", name);
-+        return false;
-+    }
-+
-+    /* read single char */
-+    const ssize_t size =3D recv(sd, (void *)c, 1, MSG_NOSIGNAL);
-+
-+    /* error? */
-+    if (size !=3D 1)
-+    {
-+        msg(D_LINK_ERRORS | M_ERRNO, "%s: TCP port read failed on recv()",=
- name);
-+        return false;
-+    }
-+
-+    return true;
-+}
-+
-+
- static bool
- recv_line(socket_descriptor_t sd, char *buf, int len, const int timeout_se=
-c, const bool verbose,
-           struct buffer *lookahead, volatile int *signal_received)
-@@ -72,9 +116,6 @@
-
-     while (true)
-     {
--        int status;
--        ssize_t size;
--        fd_set reads;
-         struct timeval tv;
-         uint8_t c;
-
-@@ -83,50 +124,12 @@
-             ASSERT(buf_init(&la, 0));
-         }
-
--        FD_ZERO(&reads);
--        openvpn_fd_set(sd, &reads);
+@@ -93,7 +88,7 @@
          tv.tv_sec =3D timeout_sec;
          tv.tv_usec =3D 0;
 
--        status =3D openvpn_select(sd + 1, &reads, NULL, NULL, &tv);
--
--        get_signal(signal_received);
--        if (*signal_received)
-+        if (!proxy_recv_char(&c, "recv_line", sd, &tv, signal_received))
-         {
--            goto error;
--        }
--
--        /* timeout? */
--        if (status =3D=3D 0)
--        {
--            if (verbose)
--            {
--                msg(D_LINK_ERRORS | M_ERRNO, "recv_line: TCP port read tim=
-eout expired");
--            }
--            goto error;
--        }
--
--        /* error */
--        if (status < 0)
--        {
--            if (verbose)
--            {
--                msg(D_LINK_ERRORS | M_ERRNO, "recv_line: TCP port read fai=
-led on select()");
--            }
--            goto error;
--        }
--
--        /* read single char */
--        size =3D recv(sd, (void *)&c, 1, MSG_NOSIGNAL);
--
--        /* error? */
--        if (size !=3D 1)
--        {
--            if (verbose)
--            {
--                msg(D_LINK_ERRORS | M_ERRNO, "recv_line: TCP port read fai=
-led on recv()");
--            }
--            goto error;
-+            return false;
-         }
+-        status =3D select(sd + 1, &reads, NULL, NULL, &tv);
++        status =3D openvpn_select(sd + 1, &reads, NULL, NULL, &tv);
 
- #if 0
-@@ -179,9 +182,6 @@
-     }
+         get_signal(signal_received);
+         if (*signal_received)
+@@ -192,7 +187,7 @@
+ static bool
+ send_line(socket_descriptor_t sd, const char *buf)
+ {
+-    const ssize_t size =3D send(sd, buf, strlen(buf), MSG_NOSIGNAL);
++    const ssize_t size =3D openvpn_send(sd, buf, strlen(buf), MSG_NOSIGNAL=
+);
+     if (size !=3D (ssize_t)strlen(buf))
+     {
+         msg(D_LINK_ERRORS | M_ERRNO, "send_line: TCP port write failed on =
+send()");
+@@ -903,7 +898,7 @@
 
-     return true;
+                 if (opaque)
+                 {
+-                    const int len =3D strlen(opaque) + 16;
++                    const size_t len =3D strlen(opaque) + 16;
+                     opaque_kv =3D gc_malloc(len, false, &gc);
+                     snprintf(opaque_kv, len, ", opaque=3D\"%s\"", opaque);
+                 }
+@@ -1068,7 +1063,3 @@
+     gc_free(&gc);
+     return ret;
+ }
 -
--error:
--    return false;
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index f71d891..40a86fb 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -849,6 +849,10 @@
+     gc_free(&gc);
  }
 
- static bool
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index be16d83..3bfa687 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -80,6 +80,9 @@
-
- void http_proxy_close(struct http_proxy_info *hp);
-
-+bool proxy_recv_char(uint8_t *c, const char *name, socket_descriptor_t sd,
-+                     struct timeval *timeout, volatile int *signal_receive=
-d);
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic pop
++#endif
 +
- bool establish_http_proxy_passthru(struct http_proxy_info *p,
-                                    socket_descriptor_t sd, /* already open=
- to proxy */
-                                    const char *host,       /* openvpn serv=
-er remote */
+ static socket_descriptor_t
+ socket_listen_accept(socket_descriptor_t sd, struct link_socket_actual *ac=
+t,
+                      const char *remote_dynamic, const struct addrinfo *lo=
+cal, bool do_listen,
+@@ -873,7 +877,7 @@
+         tv.tv_sec =3D 0;
+         tv.tv_usec =3D 0;
+
+-        status =3D select(sd + 1, &reads, NULL, NULL, &tv);
++        status =3D openvpn_select(sd + 1, &reads, NULL, NULL, &tv);
+
+         get_signal(signal_received);
+         if (*signal_received)
+@@ -979,7 +983,7 @@
+             msg(M_NONFATAL | M_ERRNO, "Setting IPV6_V6ONLY=3D%d failed", v=
+6only);
+         }
+     }
+-    if (bind(sd, cur->ai_addr, cur->ai_addrlen))
++    if (openvpn_bind(sd, cur->ai_addr, cur->ai_addrlen))
+     {
+         msg(M_FATAL | M_ERRNO, "%s: Socket bind failed on local address %s=
+", prefix,
+             print_sockaddr_ex(local->ai_addr, ":", PS_SHOW_PORT, &gc));
+@@ -1026,7 +1030,7 @@
+             tv.tv_sec =3D (connect_timeout > 0) ? 1 : 0;
+             tv.tv_usec =3D 0;
+
+-            status =3D select(sd + 1, NULL, &writes, NULL, &tv);
++            status =3D openvpn_select(sd + 1, NULL, &writes, NULL, &tv);
+ #endif
+             if (signal_received)
+             {
+@@ -1183,6 +1187,11 @@
+     }
+ }
+
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
+ static void
+ resolve_bind_local(struct link_socket *sock, const sa_family_t af)
+ {
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 2c79a11..e986c9c 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -291,9 +291,38 @@
+     sh.is_handle ? SetLastError(ERROR_INVALID_FUNCTION) : WSASetLastError(=
+WSAEINVAL);
+ }
+
++/* winsock(2).h uses slightly different types so to avoid conversion
++   errors we wrap these functions on Windows */
++
++static inline int
++openvpn_select(socket_descriptor_t nfds, fd_set *readfds, fd_set *writefds,
++               fd_set *exceptfds, struct timeval *timeout)
++{
++    (void)nfds; /* first argument ignored on Windows */
++    return select(0, readfds, writefds, exceptfds, timeout);
++}
++
++static inline ssize_t
++openvpn_send(socket_descriptor_t sockfd, const void *buf, size_t len, int =
+flags)
++{
++    ASSERT(len <=3D INT_MAX);
++    return send(sockfd, buf, (int)len, flags);
++}
++
++static inline int
++openvpn_bind(socket_descriptor_t sockfd, const struct sockaddr *addr, size=
+_t addrlen)
++{
++    ASSERT(addrlen <=3D INT_MAX);
++    return bind(sockfd, addr, (int)addrlen);
++}
++
+ #else /* ifdef _WIN32 */
+
+ #define openvpn_close_socket(s) close(s)
++#define openvpn_select(nfds, readfds, writefds, exceptfds, timeout) \
++    select(nfds, readfds, writefds, exceptfds, timeout)
++#define openvpn_send(sockfd, buf, len, flags) send(sockfd, buf, len, flags)
++#define openvpn_bind(sockfd, addr, addrlen)   bind(sockfd, addr, addrlen)
+
+ #endif /* ifdef _WIN32 */
+
 diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index 37c50f5..1293872 100644
+index 6467baf..d383ef7 100644
 --- a/src/openvpn/socks.c
 +++ b/src/openvpn/socks.c
-@@ -81,7 +81,7 @@
- }
-
- static bool
--socks_proxy_recv_char(char *c, const char *name, socket_descriptor_t sd,
-+socks_proxy_recv_char(uint8_t *c, const char *name, socket_descriptor_t sd,
-                       struct event_timeout *server_poll_timeout,
-                       volatile int *signal_received)
- {
-@@ -93,39 +93,7 @@
+@@ -93,8 +93,7 @@
      tv.tv_sec =3D get_server_poll_remaining_time(server_poll_timeout);
      tv.tv_usec =3D 0;
 
--    const int status =3D openvpn_select(sd + 1, &reads, NULL, NULL, &tv);
--
--    get_signal(signal_received);
--    if (*signal_received)
--    {
--        return false;
--    }
--
--    /* timeout? */
--    if (status =3D=3D 0)
--    {
--        msg(D_LINK_ERRORS | M_ERRNO, "%s: TCP port read timeout expired", =
-name);
--        return false;
--    }
--
--    /* error */
--    if (status < 0)
--    {
--        msg(D_LINK_ERRORS | M_ERRNO, "%s: TCP port read failed on select()=
-", name);
--        return false;
--    }
--
--    /* read single char */
--    const ssize_t size =3D recv(sd, c, 1, MSG_NOSIGNAL);
--
--    /* error? */
--    if (size !=3D 1)
--    {
--        msg(D_LINK_ERRORS | M_ERRNO, "%s: TCP port read failed on recv()",=
- name);
--        return false;
--    }
--
--    return true;
-+    return proxy_recv_char(c, name, sd, &tv, signal_received);
- }
+-    /* NB: first argument ignored on Windows where socket_descriptor_t !=
+=3D int */
+-    const int status =3D select((int)sd + 1, &reads, NULL, NULL, &tv);
++    const int status =3D openvpn_select(sd + 1, &reads, NULL, NULL, &tv);
 
- static bool
-@@ -165,10 +133,10 @@
-     }
+     get_signal(signal_received);
+     if (*signal_received)
+@@ -156,10 +155,9 @@
+                         creds.username, (int)strlen(creds.password), creds=
+.password);
+     ASSERT(sret >=3D 0 && sret <=3D sizeof(to_send));
 
-     int len =3D 0;
--    char buf[2];
-+    uint8_t buf[2];
-     while (len < 2)
+-    /* NB: int because Windows APIs */
+-    ssize_t size =3D send(sd, to_send, (int)strlen(to_send), MSG_NOSIGNAL);
++    ssize_t size =3D openvpn_send(sd, to_send, strlen(to_send), MSG_NOSIGN=
+AL);
+
+-    if (size !=3D strlen(to_send))
++    if (size !=3D (ssize_t)strlen(to_send))
      {
--        char c;
-+        uint8_t c;
-
-         if (!socks_proxy_recv_char(&c, __func__, sd, server_poll_timeout, =
-signal_received))
-         {
-@@ -196,12 +164,12 @@
- socks_handshake(struct socks_proxy_info *p, socket_descriptor_t sd,
-                 struct event_timeout *server_poll_timeout, volatile int *s=
-ignal_received)
- {
--    char buf[2];
-+    uint8_t buf[2];
-     int len =3D 0;
-     ssize_t size;
-
-     /* VER =3D 5, NMETHODS =3D 1, METHODS =3D [0 (no auth)] */
--    char method_sel[3] =3D { 0x05, 0x01, 0x00 };
-+    uint8_t method_sel[3] =3D { 0x05, 0x01, 0x00 };
-     if (p->authfile[0])
+         msg(D_LINK_ERRORS | M_ERRNO,
+             "socks_username_password_auth: TCP port write failed on send()=
+");
+@@ -208,7 +206,7 @@
      {
          method_sel[2] =3D 0x02; /* METHODS =3D [2 (plain login)] */
-@@ -215,7 +183,7 @@
-
-     while (len < 2)
-     {
--        char c;
-+        uint8_t c;
-
-         if (!socks_proxy_recv_char(&c, __func__, sd, server_poll_timeout, =
-signal_received))
-         {
-@@ -226,7 +194,7 @@
      }
-
-     /* VER =3D=3D 5 */
--    if (buf[0] !=3D '\x05')
-+    if (buf[0] !=3D 5)
+-    size =3D send(sd, method_sel, sizeof(method_sel), MSG_NOSIGNAL);
++    size =3D openvpn_send(sd, method_sel, sizeof(method_sel), MSG_NOSIGNAL=
+);
+     if (size !=3D sizeof(method_sel))
      {
-         msg(D_LINK_ERRORS, "socks_handshake: Socks proxy returned bad stat=
-us");
-         return false;
-@@ -273,7 +241,7 @@
- recv_socks_reply(socket_descriptor_t sd, struct openvpn_sockaddr *addr,
-                  struct event_timeout *server_poll_timeout, volatile int *=
-signal_received)
- {
--    char atyp =3D '\0';
-+    uint8_t atyp =3D 0;
-     int alen =3D 0;
-     int len =3D 0;
-     char buf[270]; /* 4 + alen(max 256) + 2 */
-@@ -287,7 +255,7 @@
+         msg(D_LINK_ERRORS | M_ERRNO, "socks_handshake: TCP port write fail=
+ed on send()");
+@@ -415,10 +413,9 @@
+     buf[5 + len + 1] =3D (char)(port & 0xff);
 
-     while (len < 4 + alen + 2)
      {
--        char c;
-+        uint8_t c;
-
-         if (!socks_proxy_recv_char(&c, __func__, sd, server_poll_timeout, =
-signal_received))
+-        /* int because Windows APIs */
+-        int send_len =3D 5 + (int)len + 2;
+-        const ssize_t size =3D send(sd, buf, send_len, MSG_NOSIGNAL);
+-        if (size !=3D send_len)
++        size_t send_len =3D 5 + len + 2;
++        const ssize_t size =3D openvpn_send(sd, buf, send_len, MSG_NOSIGNA=
+L);
++        if (size !=3D (ssize_t)send_len)
          {
-@@ -303,18 +271,18 @@
-         {
-             switch (atyp)
-             {
--                case '\x01': /* IP V4 */
-+                case 1: /* IP V4 */
-                     alen =3D 4;
-                     break;
-
--                case '\x03': /* DOMAINNAME */
-+                case 3: /* DOMAINNAME */
-                     /* RFC 1928, section 5: 1 byte length, <n> bytes name,
-                      * so the total "address length" is (length+1)
-                      */
--                    alen =3D (unsigned char)c + 1;
-+                    alen =3D c + 1;
-                     break;
-
--                case '\x04': /* IP V6 */
-+                case 4: /* IP V6 */
-                     alen =3D 16;
-                     break;
-
-@@ -333,14 +301,14 @@
-     }
-
-     /* VER =3D=3D 5 && REP =3D=3D 0 (succeeded) */
--    if (buf[0] !=3D '\x05' || buf[1] !=3D '\x00')
-+    if (buf[0] !=3D 5 || buf[1] !=3D 0)
-     {
-         msg(D_LINK_ERRORS, "recv_socks_reply: Socks proxy returned bad rep=
-ly");
-         return false;
-     }
-
-     /* ATYP =3D=3D 1 (IP V4 address) */
--    if (atyp =3D=3D '\x01' && addr !=3D NULL)
-+    if (atyp =3D=3D 1 && addr !=3D NULL)
-     {
-         memcpy(&addr->addr.in4.sin_addr, buf + 4, sizeof(addr->addr.in4.si=
-n_addr));
-         memcpy(&addr->addr.in4.sin_port, buf + 8, sizeof(addr->addr.in4.si=
-n_port));
+             msg(D_LINK_ERRORS | M_ERRNO,
+                 "establish_socks_proxy_passthru: TCP port write failed on =
+send()");
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1278?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1277?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I70620aca638847168f06b0fb23cc04bd279d7df9
-Gerrit-Change-Number: 1278
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: If91d14f31368a93182bcf23b1d82b06ea94381d8
+Gerrit-Change-Number: 1277
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---7YWOt6uXspM=
+--tEu+2/lEBoQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1278?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">proxy: factor out recv_char code common wit=
-h socks proxy<br><br>Change-Id: I70620aca638847168f06b0fb23cc04bd279d7df9<b=
-r>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src=
-/openvpn/proxy.c<br>M src/openvpn/proxy.h<br>M src/openvpn/socks.c<br>3 fil=
-es changed, 65 insertions(+), 94 deletions(-)<br><br></pre><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1278/1</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>in=
-dex dfe1e59..4205991 100644</span><br><span>--- a/src/openvpn/proxy.c</span=
-><br><span>+++ b/src/openvpn/proxy.c</span><br><span>@@ -57,6 +57,50 @@</sp=
-an><br><span> /* cached proxy username/password */</span><br><span> static =
-struct user_pass static_proxy_user_pass;</span><br><span> </span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+proxy_recv_char(uint8_t *c, const char *name, socke=
-t_descriptor_t sd,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               struct timeval *timeout, volatile int *signal_received)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    fd_set reads;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    FD_ZERO(&amp;reads);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    openvpn_fd_set(sd, &amp;reads);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    const int status =3D openvpn_select=
-(sd + 1, &amp;reads, NULL, NULL, timeout);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    get_signal(signal_received);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (*signal_received)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* timeout? */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (status =3D=3D 0=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(D_LINK_ERRORS | M_ER=
-RNO, &quot;%s: TCP port read timeout expired&quot;, name);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    /* error */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (status &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- msg(D_LINK_ERRORS | M_ERRNO, &quot;%s: TCP port read failed on select()&qu=
-ot;, name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* read single char */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const ssize_t size =3D recv(=
-sd, (void *)c, 1, MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- error? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (s=
-ize !=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_LINK_ERR=
-ORS | M_ERRNO, &quot;%s: TCP port read failed on recv()&quot;, name);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> sta=
-tic bool</span><br><span> recv_line(socket_descriptor_t sd, char *buf, int =
-len, const int timeout_sec, const bool verbose,</span><br><span>           =
-struct buffer *lookahead, volatile int *signal_received)</span><br><span>@@=
- -72,9 +116,6 @@</span><br><span> </span><br><span>     while (true)</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   int status;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- ssize_t size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- fd_set reads;</span><br><span>         struct timeval tv;</span><br><span>=
-         uint8_t c;</span><br><span> </span><br><span>@@ -83,50 +124,12 @@<=
-/span><br><span>             ASSERT(buf_init(&amp;la, 0));</span><br><span>=
-         }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        FD_ZERO(&amp;reads);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        openvpn_fd_set(sd, &amp;reads);</span><br><span>     =
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1277?usp=3Demail">View C=
+hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">socket: Wrap winsock functions to avoid common c=
+onversion warnings<br><br>Before I had done those at the call site but we h=
+ave<br>several very similar issues with multiple occurrences.<br>So handle =
+them together.<br><br>Change-Id: If91d14f31368a93182bcf23b1d82b06ea94381d8<=
+br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M sr=
+c/openvpn/proxy.c<br>M src/openvpn/socket.c<br>M src/openvpn/socket.h<br>M =
+src/openvpn/socks.c<br>4 files changed, 51 insertions(+), 25 deletions(-)<b=
+r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
+efs/changes/77/1277/2</pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;"><span>diff --git a/src/openvpn/proxy.c b/src/openvp=
+n/proxy.c</span><br><span>index 02554ba..dfe1e59 100644</span><br><span>---=
+ a/src/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><br>=
+<span>@@ -54,11 +54,6 @@</span><br><span> }</span><br><span> </span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNU=
+C__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* cached proxy username/=
+password */</span><br><span> static struct user_pass static_proxy_user_pass=
+;</span><br><span> </span><br><span>@@ -93,7 +88,7 @@</span><br><span>     =
     tv.tv_sec =3D timeout_sec;</span><br><span>         tv.tv_usec =3D 0;</=
 span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   status =3D openvpn_select(sd + 1, &amp;reads, NULL, NULL, &amp;tv);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        get_signal(signal_received);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        if (*signal_received)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!proxy_rec=
-v_char(&amp;c, &quot;recv_line&quot;, sd, &amp;tv, signal_received))</span>=
-<br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           goto error;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        /* timeout? */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        if (status =3D=3D 0)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            if (verbose)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                msg(D_LINK_ERRORS | M_ERR=
-NO, &quot;recv_line: TCP port read timeout expired&quot;);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            goto error;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       /* error */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     if (status &lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  if (verbose)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
- msg(D_LINK_ERRORS | M_ERRNO, &quot;recv_line: TCP port read failed on sele=
-ct()&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto =
-error;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        /* read single char */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        size =3D recv(sd, (void *)&amp;=
-c, 1, MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* error? */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (size !=3D 1=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            if (verbose)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                msg(D_LINK_ERRORS | M=
-_ERRNO, &quot;recv_line: TCP port read failed on recv()&quot;);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            goto error;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><=
-span>         }</span><br><span> </span><br><span> #if 0</span><br><span>@@=
- -179,9 +182,6 @@</span><br><span>     }</span><br><span> </span><br><span>=
-     return true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-error:</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    return false;</span><br><span> }</sp=
-an><br><span> </span><br><span> static bool</span><br><span>diff --git a/sr=
-c/openvpn/proxy.h b/src/openvpn/proxy.h</span><br><span>index be16d83..3bfa=
-687 100644</span><br><span>--- a/src/openvpn/proxy.h</span><br><span>+++ b/=
-src/openvpn/proxy.h</span><br><span>@@ -80,6 +80,9 @@</span><br><span> </sp=
-an><br><span> void http_proxy_close(struct http_proxy_info *hp);</span><br>=
-<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool proxy_r=
-ecv_char(uint8_t *c, const char *name, socket_descriptor_t sd,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                     struct time=
-val *timeout, volatile int *signal_received);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span> bool establish_http_proxy_passt=
-hru(struct http_proxy_info *p,</span><br><span>                            =
-        socket_descriptor_t sd, /* already open to proxy */</span><br><span=
->                                    const char *host,       /* openvpn ser=
-ver remote */</span><br><span>diff --git a/src/openvpn/socks.c b/src/openvp=
-n/socks.c</span><br><span>index 37c50f5..1293872 100644</span><br><span>---=
- a/src/openvpn/socks.c</span><br><span>+++ b/src/openvpn/socks.c</span><br>=
-<span>@@ -81,7 +81,7 @@</span><br><span> }</span><br><span> </span><br><spa=
-n> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-socks_p=
-roxy_recv_char(char *c, const char *name, socket_descriptor_t sd,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+socks_proxy_recv_char(uint8_t=
- *c, const char *name, socket_descriptor_t sd,</span><br><span>            =
-           struct event_timeout *server_poll_timeout,</span><br><span>     =
-                  volatile int *signal_received)</span><br><span> {</span><=
-br><span>@@ -93,39 +93,7 @@</span><br><span>     tv.tv_sec =3D get_server_p=
-oll_remaining_time(server_poll_timeout);</span><br><span>     tv.tv_usec =
-=3D 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    const int status =3D openvpn_select(sd + 1, &amp;reads, NULL, NULL, =
-&amp;tv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    get_signal(signal_received);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (*signal_receiv=
-ed)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    /* timeout? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    if (status =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(=
-D_LINK_ERRORS | M_ERRNO, &quot;%s: TCP port read timeout expired&quot;, nam=
-e);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return fal=
-se;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    /* error */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    if (status &lt; 0)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       msg(D_LINK_ERRORS | M_ERRNO, &quot;%s: TCP port read failed on selec=
-t()&quot;, name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    /* read single char */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    const ssize_t size =3D recv(sd, =
-c, 1, MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* error? */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (size !=3D 1)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(D_LINK_ERRORS | M_ERRNO, &quot;=
-%s: TCP port read failed on recv()&quot;, name);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return=
- true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return pr=
-oxy_recv_char(c, name, sd, &amp;tv, signal_received);</span><br><span> }</s=
-pan><br><span> </span><br><span> static bool</span><br><span>@@ -165,10 +13=
-3,10 @@</span><br><span>     }</span><br><span> </span><br><span>     int l=
-en =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char buf=
-[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t buf=
-[2];</span><br><span>     while (len &lt; 2)</span><br><span>     {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        char c;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        uint8_t c;</span><br><spa=
-n> </span><br><span>         if (!socks_proxy_recv_char(&amp;c, __func__, s=
-d, server_poll_timeout, signal_received))</span><br><span>         {</span>=
-<br><span>@@ -196,12 +164,12 @@</span><br><span> socks_handshake(struct soc=
-ks_proxy_info *p, socket_descriptor_t sd,</span><br><span>                 =
-struct event_timeout *server_poll_timeout, volatile int *signal_received)</=
-span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-char buf[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uin=
-t8_t buf[2];</span><br><span>     int len =3D 0;</span><br><span>     ssize=
-_t size;</span><br><span> </span><br><span>     /* VER =3D 5, NMETHODS =3D =
-1, METHODS =3D [0 (no auth)] */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    char method_sel[3] =3D { 0x05, 0x01, 0x00 };</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    uint8_t method_sel[3] =3D { 0x05=
-, 0x01, 0x00 };</span><br><span>     if (p-&gt;authfile[0])</span><br><span=
->     {</span><br><span>         method_sel[2] =3D 0x02; /* METHODS =3D [2 =
-(plain login)] */</span><br><span>@@ -215,7 +183,7 @@</span><br><span> </sp=
-an><br><span>     while (len &lt; 2)</span><br><span>     {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        char c;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        uint8_t c;</span><br><span> </spa=
-n><br><span>         if (!socks_proxy_recv_char(&amp;c, __func__, sd, serve=
-r_poll_timeout, signal_received))</span><br><span>         {</span><br><spa=
-n>@@ -226,7 +194,7 @@</span><br><span>     }</span><br><span> </span><br><s=
-pan>     /* VER =3D=3D 5 */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    if (buf[0] !=3D &#39;\x05&#39;)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (buf[0] !=3D 5)</span><br><span>     {</span><=
-br><span>         msg(D_LINK_ERRORS, &quot;socks_handshake: Socks proxy ret=
-urned bad status&quot;);</span><br><span>         return false;</span><br><=
-span>@@ -273,7 +241,7 @@</span><br><span> recv_socks_reply(socket_descripto=
-r_t sd, struct openvpn_sockaddr *addr,</span><br><span>                  st=
-ruct event_timeout *server_poll_timeout, volatile int *signal_received)</sp=
-an><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ch=
-ar atyp =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    uint8_t atyp =3D 0;</span><br><span>     int alen =3D 0;</span><b=
-r><span>     int len =3D 0;</span><br><span>     char buf[270]; /* 4 + alen=
-(max 256) + 2 */</span><br><span>@@ -287,7 +255,7 @@</span><br><span> </spa=
-n><br><span>     while (len &lt; 4 + alen + 2)</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        char c;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        uint8_t c;</span><br><s=
-pan> </span><br><span>         if (!socks_proxy_recv_char(&amp;c, __func__,=
- sd, server_poll_timeout, signal_received))</span><br><span>         {</spa=
-n><br><span>@@ -303,18 +271,18 @@</span><br><span>         {</span><br><spa=
-n>             switch (atyp)</span><br><span>             {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                case &#39;\x01&#39;: =
-/* IP V4 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        case 1: /* IP V4 */</span><br><span>                     alen =3D 4=
-;</span><br><span>                     break;</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                case &#39;\x03&#3=
-9;: /* DOMAINNAME */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                case 3: /* DOMAINNAME */</span><br><span>                 =
-    /* RFC 1928, section 5: 1 byte length, &lt;n&gt; bytes name,</span><br>=
-<span>                      * so the total &quot;address length&quot; is (l=
-ength+1)</span><br><span>                      */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                    alen =3D (unsigned char)c +=
- 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-    alen =3D c + 1;</span><br><span>                     break;</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
- case &#39;\x04&#39;: /* IP V6 */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                case 4: /* IP V6 */</span><br><span>         =
-            alen =3D 16;</span><br><span>                     break;</span>=
-<br><span> </span><br><span>@@ -333,14 +301,14 @@</span><br><span>     }</s=
-pan><br><span> </span><br><span>     /* VER =3D=3D 5 &amp;&amp; REP =3D=3D =
-0 (succeeded) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-f (buf[0] !=3D &#39;\x05&#39; || buf[1] !=3D &#39;\x00&#39;)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (buf[0] !=3D 5 || buf[1] !=
-=3D 0)</span><br><span>     {</span><br><span>         msg(D_LINK_ERRORS, &=
-quot;recv_socks_reply: Socks proxy returned bad reply&quot;);</span><br><sp=
-an>         return false;</span><br><span>     }</span><br><span> </span><b=
-r><span>     /* ATYP =3D=3D 1 (IP V4 address) */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    if (atyp =3D=3D &#39;\x01&#39; &amp;&amp; ad=
-dr !=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- (atyp =3D=3D 1 &amp;&amp; addr !=3D NULL)</span><br><span>     {</span><br=
-><span>         memcpy(&amp;addr-&gt;addr.in4.sin_addr, buf + 4, sizeof(add=
-r-&gt;addr.in4.sin_addr));</span><br><span>         memcpy(&amp;addr-&gt;ad=
-dr.in4.sin_port, buf + 8, sizeof(addr-&gt;addr.in4.sin_port));</span><br><s=
-pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1278?usp=3Demail">change 1278</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?=
-usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
-EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
-org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1278?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
-"/></div></div>
+   status =3D select(sd + 1, &amp;reads, NULL, NULL, &amp;tv);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        status =3D openvpn_selec=
+t(sd + 1, &amp;reads, NULL, NULL, &amp;tv);</span><br><span> </span><br><sp=
+an>         get_signal(signal_received);</span><br><span>         if (*sign=
+al_received)</span><br><span>@@ -192,7 +187,7 @@</span><br><span> static bo=
+ol</span><br><span> send_line(socket_descriptor_t sd, const char *buf)</spa=
+n><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    con=
+st ssize_t size =3D send(sd, buf, strlen(buf), MSG_NOSIGNAL);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    const ssize_t size =3D openvp=
+n_send(sd, buf, strlen(buf), MSG_NOSIGNAL);</span><br><span>     if (size !=
+=3D (ssize_t)strlen(buf))</span><br><span>     {</span><br><span>         m=
+sg(D_LINK_ERRORS | M_ERRNO, &quot;send_line: TCP port write failed on send(=
+)&quot;);</span><br><span>@@ -903,7 +898,7 @@</span><br><span> </span><br><=
+span>                 if (opaque)</span><br><span>                 {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                    const in=
+t len =3D strlen(opaque) + 16;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                    const size_t len =3D strlen(opaque) + 16;</s=
+pan><br><span>                     opaque_kv =3D gc_malloc(len, false, &amp=
+;gc);</span><br><span>                     snprintf(opaque_kv, len, &quot;,=
+ opaque=3D\&quot;%s\&quot;&quot;, opaque);</span><br><span>                =
+ }</span><br><span>@@ -1068,7 +1063,3 @@</span><br><span>     gc_free(&amp;=
+gc);</span><br><span>     return ret;</span><br><span> }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>diff --git =
+a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index f71d891=
+..40a86fb 100644</span><br><span>--- a/src/openvpn/socket.c</span><br><span=
+>+++ b/src/openvpn/socket.c</span><br><span>@@ -849,6 +849,10 @@</span><br>=
+<span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defi=
+ned(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
+ma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span> static socket_descriptor_t</span><br><span> socket_listen_accept(soc=
+ket_descriptor_t sd, struct link_socket_actual *act,</span><br><span>      =
+                const char *remote_dynamic, const struct addrinfo *local, b=
+ool do_listen,</span><br><span>@@ -873,7 +877,7 @@</span><br><span>        =
+ tv.tv_sec =3D 0;</span><br><span>         tv.tv_usec =3D 0;</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        status =3D=
+ select(sd + 1, &amp;reads, NULL, NULL, &amp;tv);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        status =3D openvpn_select(sd + 1, &am=
+p;reads, NULL, NULL, &amp;tv);</span><br><span> </span><br><span>         g=
+et_signal(signal_received);</span><br><span>         if (*signal_received)<=
+/span><br><span>@@ -979,7 +983,7 @@</span><br><span>             msg(M_NONF=
+ATAL | M_ERRNO, &quot;Setting IPV6_V6ONLY=3D%d failed&quot;, v6only);</span=
+><br><span>         }</span><br><span>     }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    if (bind(sd, cur-&gt;ai_addr, cur-&gt;ai_addrlen=
+))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (openvpn_b=
+ind(sd, cur-&gt;ai_addr, cur-&gt;ai_addrlen))</span><br><span>     {</span>=
+<br><span>         msg(M_FATAL | M_ERRNO, &quot;%s: Socket bind failed on l=
+ocal address %s&quot;, prefix,</span><br><span>             print_sockaddr_=
+ex(local-&gt;ai_addr, &quot;:&quot;, PS_SHOW_PORT, &amp;gc));</span><br><sp=
+an>@@ -1026,7 +1030,7 @@</span><br><span>             tv.tv_sec =3D (connec=
+t_timeout &gt; 0) ? 1 : 0;</span><br><span>             tv.tv_usec =3D 0;</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       status =3D select(sd + 1, NULL, &amp;writes, NULL, &amp;tv);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            status =3D open=
+vpn_select(sd + 1, NULL, &amp;writes, NULL, &amp;tv);</span><br><span> #end=
+if</span><br><span>             if (signal_received)</span><br><span>      =
+       {</span><br><span>@@ -1183,6 +1187,11 @@</span><br><span>     }</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored=
+ &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span> static void</span><br><span> resolve_bind_local(struct link_sock=
+et *sock, const sa_family_t af)</span><br><span> {</span><br><span>diff --g=
+it a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br><span>index 2c79=
+a11..e986c9c 100644</span><br><span>--- a/src/openvpn/socket.h</span><br><s=
+pan>+++ b/src/openvpn/socket.h</span><br><span>@@ -291,9 +291,38 @@</span><=
+br><span>     sh.is_handle ? SetLastError(ERROR_INVALID_FUNCTION) : WSASetL=
+astError(WSAEINVAL);</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/* winsock(2).h uses slightly differe=
+nt types so to avoid conversion</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+   errors we wrap these functions on Windows */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+static inline int</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+openvpn_select(socket_descriptor_t nfds, fd_set *readfds=
+, fd_set *writefds,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+               fd_set *exceptfds, struct timeval *timeout)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    (void)nfds; /* first argument ignored on Windows *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return select(=
+0, readfds, writefds, exceptfds, timeout);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline =
+ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+openvpn_send=
+(socket_descriptor_t sockfd, const void *buf, size_t len, int flags)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    ASSERT(len &lt;=3D INT_MAX);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    return send(sockfd, buf, (i=
+nt)len, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+openvpn_bind(socket_descriptor_t sockfd, =
+const struct sockaddr *addr, size_t addrlen)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ASSERT(addrlen &lt;=3D INT_MAX);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    return bind(sockfd, addr, (int)addrlen);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> #else /* ifdef _WIN32 */</=
+span><br><span> </span><br><span> #define openvpn_close_socket(s) close(s)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define openvpn_sele=
+ct(nfds, readfds, writefds, exceptfds, timeout) \</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    select(nfds, readfds, writefds, exceptfds=
+, timeout)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define o=
+penvpn_send(sockfd, buf, len, flags) send(sockfd, buf, len, flags)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#define openvpn_bind(sockfd,=
+ addr, addrlen)   bind(sockfd, addr, addrlen)</span><br><span> </span><br><=
+span> #endif /* ifdef _WIN32 */</span><br><span> </span><br><span>diff --gi=
+t a/src/openvpn/socks.c b/src/openvpn/socks.c</span><br><span>index 6467baf=
+..d383ef7 100644</span><br><span>--- a/src/openvpn/socks.c</span><br><span>=
++++ b/src/openvpn/socks.c</span><br><span>@@ -93,8 +93,7 @@</span><br><span=
+>     tv.tv_sec =3D get_server_poll_remaining_time(server_poll_timeout);</s=
+pan><br><span>     tv.tv_usec =3D 0;</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    /* NB: first argument ignored on Windo=
+ws where socket_descriptor_t !=3D int */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    const int status =3D select((int)sd + 1, &amp;reads,=
+ NULL, NULL, &amp;tv);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const int status =3D openvpn_select(sd + 1, &amp;reads, NULL, NULL, =
+&amp;tv);</span><br><span> </span><br><span>     get_signal(signal_received=
+);</span><br><span>     if (*signal_received)</span><br><span>@@ -156,10 +1=
+55,9 @@</span><br><span>                         creds.username, (int)strle=
+n(creds.password), creds.password);</span><br><span>     ASSERT(sret &gt;=
+=3D 0 &amp;&amp; sret &lt;=3D sizeof(to_send));</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    /* NB: int because Windows =
+APIs */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ssize_t si=
+ze =3D send(sd, to_send, (int)strlen(to_send), MSG_NOSIGNAL);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    ssize_t size =3D openvpn_send=
+(sd, to_send, strlen(to_send), MSG_NOSIGNAL);</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    if (size !=3D strlen(to_send)=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (size !=3D =
+(ssize_t)strlen(to_send))</span><br><span>     {</span><br><span>         m=
+sg(D_LINK_ERRORS | M_ERRNO,</span><br><span>             &quot;socks_userna=
+me_password_auth: TCP port write failed on send()&quot;);</span><br><span>@=
+@ -208,7 +206,7 @@</span><br><span>     {</span><br><span>         method_s=
+el[2] =3D 0x02; /* METHODS =3D [2 (plain login)] */</span><br><span>     }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size =3D send(sd, =
+method_sel, sizeof(method_sel), MSG_NOSIGNAL);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    size =3D openvpn_send(sd, method_sel, sizeof=
+(method_sel), MSG_NOSIGNAL);</span><br><span>     if (size !=3D sizeof(meth=
+od_sel))</span><br><span>     {</span><br><span>         msg(D_LINK_ERRORS =
+| M_ERRNO, &quot;socks_handshake: TCP port write failed on send()&quot;);</=
+span><br><span>@@ -415,10 +413,9 @@</span><br><span>     buf[5 + len + 1] =
+=3D (char)(port &amp; 0xff);</span><br><span> </span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* int because Wind=
+ows APIs */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        in=
+t send_len =3D 5 + (int)len + 2;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        const ssize_t size =3D send(sd, buf, send_len, MSG_NOSIG=
+NAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (size=
+ !=3D send_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    size_t send_len =3D 5 + len + 2;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        const ssize_t size =3D openvpn_send(sd, buf, send_=
+len, MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        if (size !=3D (ssize_t)send_len)</span><br><span>         {</span><=
+br><span>             msg(D_LINK_ERRORS | M_ERRNO,</span><br><span>        =
+         &quot;establish_socks_proxy_passthru: TCP port write failed on sen=
+d()&quot;);</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1277?usp=3Demail">change 1277</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1277?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I70620aca638847168f06b0fb23c=
-c04bd279d7df9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1278 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If91d14f31368a93182bcf23b1d8=
+2b06ea94381d8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1277 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -693,5 +510,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---7YWOt6uXspM=--
+--tEu+2/lEBoQ=--
 
