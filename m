@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 16 Oct 2025 11:21:13 +0000
+Date: Thu, 16 Oct 2025 11:21:16 +0000
 In-Reply-To: <gerrit.1760525463000.I70620aca638847168f06b0fb23cc04bd279d7df9@...2715...>
 References: <gerrit.1760525463000.I70620aca638847168f06b0fb23cc04bd279d7df9@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d9e1f7c6a8a55df40cf4cd3c641bc766e04bdcfe-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <d9e1f7c6a8a55df40cf4cd3c641bc766e04bdcfe-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="e3EGYaoK6do="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="8H8ktI5fkoo="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: proxy: factor out
  recv_char code common with socks proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---e3EGYaoK6do=
+--8H8ktI5fkoo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1278?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+78?usp=3Demail )
 
 Change subject: proxy: factor out recv_char code common with socks proxy
 ......................................................................
@@ -52,7 +48,7 @@ M src/openvpn/socks.c
 3 files changed, 65 insertions(+), 94 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1278/3
+
 
 diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
 index dfe1e59..4205991 100644
@@ -295,7 +291,7 @@ ignal_received)
      {
          method_sel[2] =3D 0x02; /* METHODS =3D [2 (plain login)] */
 @@ -215,7 +183,7 @@
-
+=20
      while (len < 2)
      {
 -        char c;
@@ -383,7 +379,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1278?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I70620aca638847168f06b0fb23cc04bd279d7df9
@@ -394,27 +390,23 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---e3EGYaoK6do=
+--8H8ktI5fkoo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1278?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">proxy: factor out recv_char code co=
-mmon with socks proxy<br><br>Change-Id: I70620aca638847168f06b0fb23cc04bd27=
-9d7df9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acke=
-d-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.op=
-envpn.net/c/openvpn/+/1278<br>Message-Id: &lt;20251016103143.4461-1-gert@...1186...=
-.1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/5924=
-7456/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
-c/openvpn/proxy.c<br>M src/openvpn/proxy.h<br>M src/openvpn/socks.c<br>3 fi=
-les changed, 65 insertions(+), 94 deletions(-)<br><br></pre><pre class=3D"b=
-locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1278/3</pre>=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1278?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">proxy: factor out recv_char code common with soc=
+ks proxy<br><br>Change-Id: I70620aca638847168f06b0fb23cc04bd279d7df9<br>Sig=
+ned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Do=
+ering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/o=
+penvpn/+/1278<br>Message-Id: &lt;20251016103143.4461-1-gert@...1296...&gt;<=
+br>URL: https://sourceforge.net/p/openvpn/mailman/message/59247456/<br>Sign=
+ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/pro=
+xy.c<br>M src/openvpn/proxy.h<br>M src/openvpn/socks.c<br>3 files changed, =
+65 insertions(+), 94 deletions(-)<br><br></pre>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>i=
 ndex dfe1e59..4205991 100644</span><br><span>--- a/src/openvpn/proxy.c</spa=
@@ -680,7 +672,7 @@ org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
 openvpn/+/1278?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
 "/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I70620aca638847168f06b0fb23c=
@@ -698,5 +690,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---e3EGYaoK6do=--
+--8H8ktI5fkoo=--
 
