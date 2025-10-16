@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 16 Oct 2025 12:33:03 +0200
-Message-ID: <20251016103308.4685-1-gert@...1296...>
-In-Reply-To: <gerrit.1760441637000.Ia713a2ecfcad7032863867630a0c306ff9f90385@...2715...>
-References: <gerrit.1760441637000.Ia713a2ecfcad7032863867630a0c306ff9f90385@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 16 Oct 2025 10:37:13 +0000
+In-Reply-To: <gerrit.1760526572000.Ieb18101dcf8143efdae1c39bde356e7166cbefa5@...2715...>
+References: <gerrit.1760526572000.Ieb18101dcf8143efdae1c39bde356e7166cbefa5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <9e35039760861f518e6f8b6ec53af68f720a5355-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] init: Fix datav2_enabled check in
- options import
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="8YAcuAng6Vc="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: proxy: factor out
+ send code common with socks proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--8YAcuAng6Vc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-peer_id is unsigned, so the previous check was partly
-useless. Instead check use_peer_id.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: Ia713a2ecfcad7032863867630a0c306ff9f90385
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1273
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1279?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: proxy: factor out send code common with socks proxy
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1273
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index aaa0573..aa2611d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2728,8 +2728,8 @@
- 
-     /* Ensure that for epoch data format is only enabled if also data v2
-      * is enabled */
--    bool epoch_data = (c->options.imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT);
--    bool datav2_enabled = (c->options.peer_id >= 0 && c->options.peer_id < MAX_PEER_ID);
-+    bool epoch_data = c->options.imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT;
-+    bool datav2_enabled = c->options.use_peer_id && c->options.peer_id < MAX_PEER_ID;
- 
-     if (epoch_data && !datav2_enabled)
-     {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ieb18101dcf8143efdae1c39bde356e7166cbefa5
+Gerrit-Change-Number: 1279
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 16 Oct 2025 10:37:13 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--8YAcuAng6Vc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail=
+">change 1279</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ieb18101dcf8143efdae1c39bde3=
+56e7166cbefa5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1279 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 16 Oct 2025 10:37:13=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--8YAcuAng6Vc=--
 
