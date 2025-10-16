@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 16 Oct 2025 12:12:19 +0000
-In-Reply-To: <gerrit.1760526572000.Ieb18101dcf8143efdae1c39bde356e7166cbefa5@...2715...>
-References: <gerrit.1760526572000.Ieb18101dcf8143efdae1c39bde356e7166cbefa5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5b7493b70383f9c19644d37f42c1e90abe099c67-EmailReplacePatchSet-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KcmaFPvmW0c="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: proxy: factor out
- send code common with socks proxy
+Date: Thu, 16 Oct 2025 14:12:12 +0200 (CEST)
+Message-Id: <202510161212.59GCCCMT031249@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251016103730.5319-1-gert@...1296...>
+References: <20251016103730.5319-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: proxy: factor out send code
+ common with socks proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,323 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---KcmaFPvmW0c=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Change looks good (stare-at-code), client/server tests on linux excercising
+all the proxies also works fine.  BB all green.
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail )
+Your patch has been applied to the master branch.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+commit 23d70b08a94b150f5df76449e2acbf7a1160146a
+Author: Frank Lichtenheld
+Date:   Thu Oct 16 12:37:22 2025 +0200
 
+     proxy: factor out send code common with socks proxy
 
-Change subject: proxy: factor out send code common with socks proxy
-......................................................................
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1279
+     Message-Id: <20251016103730.5319-1-gert@...1296...>
+     URL: https://sourceforge.net/p/openvpn/mailman/message/59247465/
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-proxy: factor out send code common with socks proxy
-
-Change-Id: Ieb18101dcf8143efdae1c39bde356e7166cbefa5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1279
-Message-Id: <20251016103730.5319-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59247465/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/proxy.c
-M src/openvpn/proxy.h
-M src/openvpn/socks.c
-3 files changed, 14 insertions(+), 26 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1279/3
-
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 4205991..ff6ea5a 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -184,13 +184,13 @@
-     return true;
- }
-
--static bool
--send_line(socket_descriptor_t sd, const char *buf)
-+bool
-+proxy_send(socket_descriptor_t sd, const void *buf, size_t buf_len)
- {
--    const ssize_t size =3D openvpn_send(sd, buf, strlen(buf), MSG_NOSIGNAL=
-);
--    if (size !=3D (ssize_t)strlen(buf))
-+    const ssize_t size =3D openvpn_send(sd, buf, buf_len, MSG_NOSIGNAL);
-+    if (size !=3D (ssize_t)buf_len)
-     {
--        msg(D_LINK_ERRORS | M_ERRNO, "send_line: TCP port write failed on =
-send()");
-+        msg(D_LINK_ERRORS | M_ERRNO, "proxy_send: TCP port write failed on=
- send()");
-         return false;
-     }
-     return true;
-@@ -201,10 +201,10 @@
- {
-     bool ret;
-
--    struct buffer buf =3D alloc_buf(strlen(src) + 3);
-+    struct buffer buf =3D alloc_buf(strlen(src) + 2);
-     ASSERT(buf_write(&buf, src, strlen(src)));
--    ASSERT(buf_write(&buf, "\r\n", 3));
--    ret =3D send_line(sd, BSTR(&buf));
-+    ASSERT(buf_write(&buf, "\r\n", 2));
-+    ret =3D proxy_send(sd, BSTR(&buf), BLEN(&buf));
-     free_buf(&buf);
-     return ret;
- }
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index 3bfa687..d14725c 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -83,6 +83,8 @@
- bool proxy_recv_char(uint8_t *c, const char *name, socket_descriptor_t sd,
-                      struct timeval *timeout, volatile int *signal_receive=
-d);
-
-+bool proxy_send(socket_descriptor_t sd, const void *buf, size_t buf_len);
-+
- bool establish_http_proxy_passthru(struct http_proxy_info *p,
-                                    socket_descriptor_t sd, /* already open=
- to proxy */
-                                    const char *host,       /* openvpn serv=
-er remote */
-diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index 9dc013e..7ecf01a 100644
---- a/src/openvpn/socks.c
-+++ b/src/openvpn/socks.c
-@@ -123,12 +123,8 @@
-                         creds.username, (int)strlen(creds.password), creds=
-.password);
-     ASSERT(sret >=3D 0 && sret <=3D sizeof(to_send));
-
--    ssize_t size =3D openvpn_send(sd, to_send, strlen(to_send), MSG_NOSIGN=
-AL);
--
--    if (size !=3D (ssize_t)strlen(to_send))
-+    if (!proxy_send(sd, to_send, strlen(to_send)))
-     {
--        msg(D_LINK_ERRORS | M_ERRNO,
--            "socks_username_password_auth: TCP port write failed on send()=
-");
-         goto cleanup;
-     }
-
-@@ -166,7 +162,6 @@
- {
-     uint8_t buf[2];
-     int len =3D 0;
--    ssize_t size;
-
-     /* VER =3D 5, NMETHODS =3D 1, METHODS =3D [0 (no auth)] */
-     uint8_t method_sel[3] =3D { 0x05, 0x01, 0x00 };
-@@ -174,10 +169,8 @@
-     {
-         method_sel[2] =3D 0x02; /* METHODS =3D [2 (plain login)] */
-     }
--    size =3D openvpn_send(sd, method_sel, sizeof(method_sel), MSG_NOSIGNAL=
-);
--    if (size !=3D sizeof(method_sel))
-+    if (!proxy_send(sd, method_sel, sizeof(method_sel)))
-     {
--        msg(D_LINK_ERRORS | M_ERRNO, "socks_handshake: TCP port write fail=
-ed on send()");
-         return false;
-     }
-
-@@ -380,18 +373,11 @@
-     buf[5 + len] =3D (char)(port >> 8);
-     buf[5 + len + 1] =3D (char)(port & 0xff);
-
-+    if (!proxy_send(sd, buf, 5 + len + 2))
-     {
--        size_t send_len =3D 5 + len + 2;
--        const ssize_t size =3D openvpn_send(sd, buf, send_len, MSG_NOSIGNA=
-L);
--        if (size !=3D (ssize_t)send_len)
--        {
--            msg(D_LINK_ERRORS | M_ERRNO,
--                "establish_socks_proxy_passthru: TCP port write failed on =
-send()");
--            goto error;
--        }
-+        goto error;
-     }
-
--
-     /* receive reply from Socks proxy and discard */
-     if (!recv_socks_reply(sd, NULL, server_poll_timeout, &sig_info->signal=
-_received))
-     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ieb18101dcf8143efdae1c39bde356e7166cbefa5
-Gerrit-Change-Number: 1279
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gert Doering
 
---KcmaFPvmW0c=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">proxy: factor out send code common =
-with socks proxy<br><br>Change-Id: Ieb18101dcf8143efdae1c39bde356e7166cbefa=
-5<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn=
-.net/c/openvpn/+/1279<br>Message-Id: &lt;20251016103730.5319-1-gert@...1726...=
-...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman/message/59247465/=
-<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/ope=
-nvpn/proxy.c<br>M src/openvpn/proxy.h<br>M src/openvpn/socks.c<br>3 files c=
-hanged, 14 insertions(+), 26 deletions(-)<br><br></pre><pre class=3D"blocks=
-" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
-ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1279/3</pre><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
-ff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>index =
-4205991..ff6ea5a 100644</span><br><span>--- a/src/openvpn/proxy.c</span><br=
-><span>+++ b/src/openvpn/proxy.c</span><br><span>@@ -184,13 +184,13 @@</spa=
-n><br><span>     return true;</span><br><span> }</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-send_line(socket_descriptor_t sd, const =
-char *buf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+proxy_send(socket_descri=
-ptor_t sd, const void *buf, size_t buf_len)</span><br><span> {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    const ssize_t size =3D openvpn=
-_send(sd, buf, strlen(buf), MSG_NOSIGNAL);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    if (size !=3D (ssize_t)strlen(buf))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    const ssize_t size =3D openvpn=
-_send(sd, buf, buf_len, MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (size !=3D (ssize_t)buf_len)</span><br><span>    =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_LINK_=
-ERRORS | M_ERRNO, &quot;send_line: TCP port write failed on send()&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_LINK_E=
-RRORS | M_ERRNO, &quot;proxy_send: TCP port write failed on send()&quot;);<=
-/span><br><span>         return false;</span><br><span>     }</span><br><sp=
-an>     return true;</span><br><span>@@ -201,10 +201,10 @@</span><br><span>=
- {</span><br><span>     bool ret;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct buffer buf =3D alloc_buf(strlen(=
-src) + 3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
-t buffer buf =3D alloc_buf(strlen(src) + 2);</span><br><span>     ASSERT(bu=
-f_write(&amp;buf, src, strlen(src)));</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    ASSERT(buf_write(&amp;buf, &quot;\r\n&quot;, 3));</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D send_line(sd, B=
-STR(&amp;buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-ASSERT(buf_write(&amp;buf, &quot;\r\n&quot;, 2));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    ret =3D proxy_send(sd, BSTR(&amp;buf), BL=
-EN(&amp;buf));</span><br><span>     free_buf(&amp;buf);</span><br><span>   =
-  return ret;</span><br><span> }</span><br><span>diff --git a/src/openvpn/p=
-roxy.h b/src/openvpn/proxy.h</span><br><span>index 3bfa687..d14725c 100644<=
-/span><br><span>--- a/src/openvpn/proxy.h</span><br><span>+++ b/src/openvpn=
-/proxy.h</span><br><span>@@ -83,6 +83,8 @@</span><br><span> bool proxy_recv=
-_char(uint8_t *c, const char *name, socket_descriptor_t sd,</span><br><span=
->                      struct timeval *timeout, volatile int *signal_receiv=
-ed);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+bool proxy_send(socket_descriptor_t sd, const void *buf, size_t buf_len)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-bool establish_http_proxy_passthru(struct http_proxy_info *p,</span><br><sp=
-an>                                    socket_descriptor_t sd, /* already o=
-pen to proxy */</span><br><span>                                    const c=
-har *host,       /* openvpn server remote */</span><br><span>diff --git a/s=
-rc/openvpn/socks.c b/src/openvpn/socks.c</span><br><span>index 9dc013e..7ec=
-f01a 100644</span><br><span>--- a/src/openvpn/socks.c</span><br><span>+++ b=
-/src/openvpn/socks.c</span><br><span>@@ -123,12 +123,8 @@</span><br><span> =
-                        creds.username, (int)strlen(creds.password), creds.=
-password);</span><br><span>     ASSERT(sret &gt;=3D 0 &amp;&amp; sret &lt;=
-=3D sizeof(to_send));</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    ssize_t size =3D openvpn_send(sd, to_send, strlen(to_=
-send), MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (size !=3D (ss=
-ize_t)strlen(to_send))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    if (!proxy_send(sd, to_send, strlen(to_send)))</span><br><span>     =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_LINK_E=
-RRORS | M_ERRNO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       &quot;socks_username_password_auth: TCP port write failed on send()&=
-quot;);</span><br><span>         goto cleanup;</span><br><span>     }</span=
-><br><span> </span><br><span>@@ -166,7 +162,6 @@</span><br><span> {</span><=
-br><span>     uint8_t buf[2];</span><br><span>     int len =3D 0;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    ssize_t size;</span><br><sp=
-an> </span><br><span>     /* VER =3D 5, NMETHODS =3D 1, METHODS =3D [0 (no =
-auth)] */</span><br><span>     uint8_t method_sel[3] =3D { 0x05, 0x01, 0x00=
- };</span><br><span>@@ -174,10 +169,8 @@</span><br><span>     {</span><br><=
-span>         method_sel[2] =3D 0x02; /* METHODS =3D [2 (plain login)] */</=
-span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    size =3D openvpn_send(sd, method_sel, sizeof(method_sel), MSG_NOSIGNAL)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (size !=3D si=
-zeof(method_sel))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  if (!proxy_send(sd, method_sel, sizeof(method_sel)))</span><br><span>    =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_LINK_=
-ERRORS | M_ERRNO, &quot;socks_handshake: TCP port write failed on send()&qu=
-ot;);</span><br><span>         return false;</span><br><span>     }</span><=
-br><span> </span><br><span>@@ -380,18 +373,11 @@</span><br><span>     buf[5=
- + len] =3D (char)(port &gt;&gt; 8);</span><br><span>     buf[5 + len + 1] =
-=3D (char)(port &amp; 0xff);</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if (!proxy_send(sd, buf, 5 + len + 2))</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    size_t send_len =3D 5 + len + 2;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        const ssize_t size =3D openvpn_send(sd, buf, send_le=
-n, MSG_NOSIGNAL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    if (size !=3D (ssize_t)send_len)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            msg(D_LINK_ERRORS | M_ERRNO,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                &quot;establish_socks_proxy_passthru:=
- TCP port write failed on send()&quot;);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            goto error;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        goto error;</span><br><span>     }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /* =
-receive reply from Socks proxy and discard */</span><br><span>     if (!rec=
-v_socks_reply(sd, NULL, server_poll_timeout, &amp;sig_info-&gt;signal_recei=
-ved))</span><br><span>     {</span><br><span></span><br></pre><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail">cha=
-nge 1279</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1279?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ieb18101dcf8143efdae1c39bde3=
-56e7166cbefa5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1279 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---KcmaFPvmW0c=--
 
