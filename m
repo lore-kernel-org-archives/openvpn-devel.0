@@ -1,13 +1,14 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Thu, 16 Oct 2025 15:49:13 +0000
+Date: Thu, 16 Oct 2025 15:50:02 +0000
+In-Reply-To: <gerrit.1760629750000.I7b718a14b81e3759398e7a52fe151102494cc821@...2715...>
 References: <gerrit.1760629750000.I7b718a14b81e3759398e7a52fe151102494cc821@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5f8794ad34166e1d51d46be366844ecbceedd679-HTML@...2715...>
+Message-ID: <f6eb237f8738b0a3ac65728c871d489cf59eeb9d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xq3gf88MqbM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KAtfyrYyFq0="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: disable DCO
  when using --reneg-bytes/pkts
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,76 +19,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xq3gf88MqbM=
+--KAtfyrYyFq0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail
-
-to review the following change.
-
+ralf_lici has posted comments on this change by ralf_lici. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1280?usp=3Demail )
 
 Change subject: dco: disable DCO when using --reneg-bytes/pkts
 ......................................................................
 
-dco: disable DCO when using --reneg-bytes/pkts
 
-When using --reneg-bytes or --reneg-pkts, openvpn negotiates a new key
-upon reaching the specified threshold. This implies the usage of per-key
-counters. DCO, on the other hand, provides only global statistics,
-making it currently impossible to track when renegotiation should occur.
+Patch Set 1:
 
-To avoid introducing unnecessary complexity into DCO, it is disabled
-when either of these options is specified. Instead, the automatic key
-renegotiation mechanism is preferred, as it provides a more modern and
-streamlined approach.
+(1 comment)
 
-Change-Id: I7b718a14b81e3759398e7a52fe151102494cc821
-Signed-off-by: Ralf Lici <ralf@...2726...>
----
-M src/openvpn/dco.c
-1 file changed, 7 insertions(+), 0 deletions(-)
+Patchset:
+
+PS1:
+After discussing this with ordex, we chose not to add compatibility for the=
+se options because no valid use case could be identified. More modern and a=
+utomatic key renegotiation mechanisms are preferred and better aligned with=
+ current security practices. Supporting legacy options like these would int=
+roduce unnecessary complexity into DCO.
+
+That said, any strong use case or objection to this approach is welcome
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/1280/1
-
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 8fb4662..59f6f5a 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -424,6 +424,13 @@
-         return false;
-     }
-
-+    if (o->renegotiate_bytes > 0 || o->renegotiate_packets)
-+    {
-+        msg(msglevel, "Note: '--reneg-bytes' and '--reneg-pkts' are not su=
-pported by DCO, "
-+            "disabling data channel offload.");
-+        return false;
-+    }
-+
-     /* now that all options have been confirmed to be supported, check
-      * if DCO is truly available on the system
-      */
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I7b718a14b81e3759398e7a52fe151102494cc821
@@ -99,56 +68,39 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 16 Oct 2025 15:50:02 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
---xq3gf88MqbM=
+--KAtfyrYyFq0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, plaisthos. </p>
-<p>ralf_lici would like plaisthos and flichtenheld to <strong>review</stron=
-g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">dco: disable DCO when using --reneg-bytes/p=
-kts<br><br>When using --reneg-bytes or --reneg-pkts, openvpn negotiates a n=
-ew key<br>upon reaching the specified threshold. This implies the usage of =
-per-key<br>counters. DCO, on the other hand, provides only global statistic=
-s,<br>making it currently impossible to track when renegotiation should occ=
-ur.<br><br>To avoid introducing unnecessary complexity into DCO, it is disa=
-bled<br>when either of these options is specified. Instead, the automatic k=
-ey<br>renegotiation mechanism is preferred, as it provides a more modern an=
-d<br>streamlined approach.<br><br>Change-Id: I7b718a14b81e3759398e7a52fe151=
-102494cc821<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>---<br>M=
- src/openvpn/dco.c<br>1 file changed, 7 insertions(+), 0 deletions(-)<br><b=
-r></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/80/1280/1</pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.=
-c</span><br><span>index 8fb4662..59f6f5a 100644</span><br><span>--- a/src/o=
-penvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><span>@@ -42=
-4,6 +424,13 @@</span><br><span>         return false;</span><br><span>     =
-}</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (o-&gt;renegotiate_bytes &gt; 0 || o-&gt;renegotiate_packets)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;Note: &#39;-=
--reneg-bytes&#39; and &#39;--reneg-pkts&#39; are not supported by DCO, &quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot=
-;disabling data channel offload.&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span>     /* now that all options have been confirmed =
-to be supported, check</span><br><span>      * if DCO is truly available on=
- the system</span><br><span>      */</span><br><span></span><br></pre><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Dem=
-ail">change 1280</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1280?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">After discussin=
+g this with ordex, we chose not to add compatibility for these options beca=
+use no valid use case could be identified. More modern and automatic key re=
+negotiation mechanisms are preferred and better aligned with current securi=
+ty practices. Supporting legacy options like these would introduce unnecess=
+ary complexity into DCO.</p><p class=3D"blocks" style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">That said, any strong use case or objection to=
+ this approach is welcome</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail">change 1280</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I7b718a14b81e3759398e7a52fe1=
@@ -167,8 +119,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 16 Oct 2025 15:50:02=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---xq3gf88MqbM=--
+--KAtfyrYyFq0=--
 
