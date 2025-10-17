@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Oct 2025 10:48:55 +0000
-References: <gerrit.1760698129000.I2d1fbe7ec080beb931253d09c1b5227e9bf4e756@...2715...>
+Date: Fri, 17 Oct 2025 10:48:56 +0000
+References: <gerrit.1760698129000.I348abec1e2f32301a0368d5f541e67bddf358bbc@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <047b3afa3a403385df3f422169960b032486700c-HTML@...2715...>
+Message-ID: <814ad5fda8806a96a74b55bcdd851be1b3b04469-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uiNt2nuKhCE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_util: Fix
- conversion warning in get_num_elements
+Content-Type: multipart/alternative; boundary="Vy7yc6soK50="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: push_util: Make
+ send_push_update static
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---uiNt2nuKhCE=
+--Vy7yc6soK50=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,138 +32,279 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1282?usp=3Demail
 
 to review the following change.
 
 
-Change subject: ssl_util: Fix conversion warning in get_num_elements
+Change subject: push_util: Make send_push_update static
 ......................................................................
 
-ssl_util: Fix conversion warning in get_num_elements
+push_util: Make send_push_update static
 
-Just use correct type.
+Not necessary to make it non-static just for UTs.
 
-Change-Id: I2d1fbe7ec080beb931253d09c1b5227e9bf4e756
+Change-Id: I348abec1e2f32301a0368d5f541e67bddf358bbc
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/ssl_util.c
-1 file changed, 2 insertions(+), 11 deletions(-)
+M CMakeLists.txt
+M src/openvpn/push.h
+M src/openvpn/push_util.c
+M tests/unit_tests/openvpn/Makefile.am
+M tests/unit_tests/openvpn/test_push_update_msg.c
+5 files changed, 17 insertions(+), 20 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/1281/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/82/1282/1
 
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-index 50e8c03..fb7cf3e 100644
---- a/src/openvpn/ssl_util.c
-+++ b/src/openvpn/ssl_util.c
-@@ -290,21 +290,16 @@
-     return NULL;
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b773dcb..23fb4a5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -889,7 +889,6 @@
+     target_sources(test_push_update_msg PRIVATE
+         tests/unit_tests/openvpn/mock_msg.c
+         tests/unit_tests/openvpn/mock_get_random.c
+-        src/openvpn/push_util.c
+         src/openvpn/options_util.c
+         src/openvpn/otime.c
+         src/openvpn/list.c
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 6b3275e..fa72732 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -139,23 +139,6 @@
+ void receive_auth_pending(struct context *c, const struct buffer *buffer);
+
+ #ifdef ENABLE_MANAGEMENT
+-/**
+- * @brief A function to send a PUSH_UPDATE control message from server to =
+client(s).
+- *
+- * @param m the multi_context, contains all the clients connected to this =
+server.
+- * @param target the target to which to send the message. It should be:
+- * `NULL` if `type =3D=3D UPT_BROADCAST`,
+- * a `mroute_addr *` if `type =3D=3D UPT_BY_ADDR`,
+- * a `char *` if `type =3D=3D UPT_BY_CN`,
+- * an `unsigned long *` if `type =3D=3D UPT_BY_CID`.
+- * @param msg a string containing the options to send.
+- * @param type the way to address the message (broadcast, by cid, by cn, b=
+y address).
+- * @param push_bundle_size the maximum size of a bundle of pushed option. =
+Just use PUSH_BUNDLE_SIZE macro.
+- * @return the number of clients to which the message was sent.
+- */
+-int
+-send_push_update(struct multi_context *m, const void *target, const char *=
+msg, const push_update_type type, const int push_bundle_size);
+-
+ bool management_callback_send_push_update_broadcast(void *arg, const char =
+*options);
+
+ bool management_callback_send_push_update_by_cid(void *arg, unsigned long =
+cid, const char *options);
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 25c6ebe..06b4c8b 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -204,7 +204,21 @@
+     return true;
  }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- get_num_elements(const char *string, char delimiter)
+-int
++/**
++ * @brief A function to send a PUSH_UPDATE control message from server to =
+client(s).
++ *
++ * @param m the multi_context, contains all the clients connected to this =
+server.
++ * @param target the target to which to send the message. It should be:
++ * `NULL` if `type =3D=3D UPT_BROADCAST`,
++ * a `mroute_addr *` if `type =3D=3D UPT_BY_ADDR`,
++ * a `char *` if `type =3D=3D UPT_BY_CN`,
++ * an `unsigned long *` if `type =3D=3D UPT_BY_CID`.
++ * @param msg a string containing the options to send.
++ * @param type the way to address the message (broadcast, by cid, by cn, b=
+y address).
++ * @param push_bundle_size the maximum size of a bundle of pushed option. =
+Just use PUSH_BUNDLE_SIZE macro.
++ * @return The number of clients to which the message was sent. Might retu=
+rn < 0 in case of error.
++ */
++static int
+ send_push_update(struct multi_context *m, const void *target, const char *=
+msg, const push_update_type type, const int push_bundle_size)
  {
--    int string_len =3D strlen(string);
-+    const size_t string_len =3D strlen(string);
+     if (dco_enabled(&m->top.options))
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
+n/Makefile.am
+index 17aa0ce..997703a 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -356,7 +356,6 @@
+ 	mock_get_random.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+ 	$(top_srcdir)/src/openvpn/platform.c \
+-	$(top_srcdir)/src/openvpn/push_util.c \
+ 	$(top_srcdir)/src/openvpn/options_util.c \
+ 	$(top_srcdir)/src/openvpn/otime.c \
+ 	$(top_srcdir)/src/openvpn/list.c
+diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_t=
+ests/openvpn/test_push_update_msg.c
+index 60596ed..91b60ba 100644
+--- a/tests/unit_tests/openvpn/test_push_update_msg.c
++++ b/tests/unit_tests/openvpn/test_push_update_msg.c
+@@ -10,6 +10,8 @@
+ #include "options_util.h"
+ #include "multi.h"
 
-     ASSERT(0 !=3D string_len);
++#include "push_util.c"
++
+ /* mocks */
 
-     int element_count =3D 1;
-     /* Get number of ciphers */
--    for (int i =3D 0; i < string_len; i++)
-+    for (size_t i =3D 0; i < string_len; i++)
-     {
-         if (string[i] =3D=3D delimiter)
-         {
-@@ -314,7 +309,3 @@
-
-     return element_count;
- }
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
+ void
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1282?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2d1fbe7ec080beb931253d09c1b5227e9bf4e756
-Gerrit-Change-Number: 1281
+Gerrit-Change-Id: I348abec1e2f32301a0368d5f541e67bddf358bbc
+Gerrit-Change-Number: 1282
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---uiNt2nuKhCE=
+--Vy7yc6soK50=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1282?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">ssl_util: Fix conversion warning in get_num=
-_elements<br><br>Just use correct type.<br><br>Change-Id: I2d1fbe7ec080beb9=
-31253d09c1b5227e9bf4e756<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1665...=
-641...&gt;<br>---<br>M src/openvpn/ssl_util.c<br>1 file changed, 2 insertio=
-ns(+), 11 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
-nvpn.net:29418/openvpn refs/changes/81/1281/1</pre><pre style=3D"font-famil=
-y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/open=
-vpn/ssl_util.c b/src/openvpn/ssl_util.c</span><br><span>index 50e8c03..fb7c=
-f3e 100644</span><br><span>--- a/src/openvpn/ssl_util.c</span><br><span>+++=
- b/src/openvpn/ssl_util.c</span><br><span>@@ -290,21 +290,16 @@</span><br><=
-span>     return NULL;</span><br><span> }</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cl=
-ang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC dia=
-gnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma G=
-CC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span> int</span><br><span> get_num_elements(const cha=
-r *string, char delimiter)</span><br><span> {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    int string_len =3D strlen(string);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const size_t string_len =3D =
-strlen(string);</span><br><span> </span><br><span>     ASSERT(0 !=3D string=
-_len);</span><br><span> </span><br><span>     int element_count =3D 1;</spa=
-n><br><span>     /* Get number of ciphers */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; string_len; i++)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i=
- &lt; string_len; i++)</span><br><span>     {</span><br><span>         if (=
-string[i] =3D=3D delimiter)</span><br><span>         {</span><br><span>@@ -=
-314,7 +309,3 @@</span><br><span> </span><br><span>     return element_count=
-;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) =
-|| defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#endif</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail">change 1281</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">push_util: Make send_push_update static<br>=
+<br>Not necessary to make it non-static just for UTs.<br><br>Change-Id: I34=
+8abec1e2f32301a0368d5f541e67bddf358bbc<br>Signed-off-by: Frank Lichtenheld =
+&lt;frank@...2641...&gt;<br>---<br>M CMakeLists.txt<br>M src/openvpn/push.h=
+<br>M src/openvpn/push_util.c<br>M tests/unit_tests/openvpn/Makefile.am<br>=
+M tests/unit_tests/openvpn/test_push_update_msg.c<br>5 files changed, 17 in=
+sertions(+), 20 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
+it.openvpn.net:29418/openvpn refs/changes/82/1282/1</pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CM=
+akeLists.txt b/CMakeLists.txt</span><br><span>index b773dcb..23fb4a5 100644=
+</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt<=
+/span><br><span>@@ -889,7 +889,6 @@</span><br><span>     target_sources(tes=
+t_push_update_msg PRIVATE</span><br><span>         tests/unit_tests/openvpn=
+/mock_msg.c</span><br><span>         tests/unit_tests/openvpn/mock_get_rand=
+om.c</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        src/openv=
+pn/push_util.c</span><br><span>         src/openvpn/options_util.c</span><b=
+r><span>         src/openvpn/otime.c</span><br><span>         src/openvpn/l=
+ist.c</span><br><span>diff --git a/src/openvpn/push.h b/src/openvpn/push.h<=
+/span><br><span>index 6b3275e..fa72732 100644</span><br><span>--- a/src/ope=
+nvpn/push.h</span><br><span>+++ b/src/openvpn/push.h</span><br><span>@@ -13=
+9,23 +139,6 @@</span><br><span> void receive_auth_pending(struct context *c=
+, const struct buffer *buffer);</span><br><span> </span><br><span> #ifdef E=
+NABLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @brief A function to=
+ send a PUSH_UPDATE control message from server to client(s).</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- * @param m the multi_context, contains all the client=
+s connected to this server.</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">- * @param target the target to which to send the message. It should b=
+e:</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * `NULL` if `type =
+=3D=3D UPT_BROADCAST`,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- * a `mroute_addr *` if `type =3D=3D UPT_BY_ADDR`,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * a `char *` if `type =3D=3D UPT_BY_CN`,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">- * an `unsigned long *`=
+ if `type =3D=3D UPT_BY_CID`.</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">- * @param msg a string containing the options to send.</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * @param type the way to address =
+the message (broadcast, by cid, by cn, by address).</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @param push_bundle_size the maximum size=
+ of a bundle of pushed option. Just use PUSH_BUNDLE_SIZE macro.</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- * @return the number of clients =
+to which the message was sent.</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-send_push_update(struct mul=
+ti_context *m, const void *target, const char *msg, const push_update_type =
+type, const int push_bundle_size);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span> bool management_callback_send_push_update_br=
+oadcast(void *arg, const char *options);</span><br><span> </span><br><span>=
+ bool management_callback_send_push_update_by_cid(void *arg, unsigned long =
+cid, const char *options);</span><br><span>diff --git a/src/openvpn/push_ut=
+il.c b/src/openvpn/push_util.c</span><br><span>index 25c6ebe..06b4c8b 10064=
+4</span><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/o=
+penvpn/push_util.c</span><br><span>@@ -204,7 +204,21 @@</span><br><span>   =
+  return true;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * @brief A function to send a PUSH_UPDATE control message from server to c=
+lient(s).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param m the multi_conte=
+xt, contains all the clients connected to this server.</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * @param target the target to which to =
+send the message. It should be:</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * `NULL` if `type =3D=3D UPT_BROADCAST`,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * a `mroute_addr *` if `type =3D=3D UPT_=
+BY_ADDR`,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * a `char=
+ *` if `type =3D=3D UPT_BY_CN`,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * an `unsigned long *` if `type =3D=3D UPT_BY_CID`.</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param msg a string contain=
+ing the options to send.</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * @param type the way to address the message (broadcast, by cid, by c=
+n, by address).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @=
+param push_bundle_size the maximum size of a bundle of pushed option. Just =
+use PUSH_BUNDLE_SIZE macro.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * @return The number of clients to which the message was sent. Mig=
+ht return &lt; 0 in case of error.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+tatic int</span><br><span> send_push_update(struct multi_context *m, const =
+void *target, const char *msg, const push_update_type type, const int push_=
+bundle_size)</span><br><span> {</span><br><span>     if (dco_enabled(&amp;m=
+-&gt;top.options))</span><br><span>diff --git a/tests/unit_tests/openvpn/Ma=
+kefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>index 17aa=
+0ce..997703a 100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile=
+.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span><br><s=
+pan>@@ -356,7 +356,6 @@</span><br><span> 	mock_get_random.c \</span><br><sp=
+an> 	$(top_srcdir)/src/openvpn/buffer.c \</span><br><span> 	$(top_srcdir)/s=
+rc/openvpn/platform.c \</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-	$(top_srcdir)/src/openvpn/push_util.c \</span><br><span> 	$(top_srcdir)/=
+src/openvpn/options_util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/ot=
+ime.c \</span><br><span> 	$(top_srcdir)/src/openvpn/list.c</span><br><span>=
+diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_t=
+ests/openvpn/test_push_update_msg.c</span><br><span>index 60596ed..91b60ba =
+100644</span><br><span>--- a/tests/unit_tests/openvpn/test_push_update_msg.=
+c</span><br><span>+++ b/tests/unit_tests/openvpn/test_push_update_msg.c</sp=
+an><br><span>@@ -10,6 +10,8 @@</span><br><span> #include &quot;options_util=
+.h&quot;</span><br><span> #include &quot;multi.h&quot;</span><br><span> </s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;push_ut=
+il.c&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span> /* mocks */</span><br><span> </span><br><span> void</span><br><spa=
+n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/1282?usp=3Demail">change 1282</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?us=
+p=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
+ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
+g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1282?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2d1fbe7ec080beb931253d09c1b=
-5227e9bf4e756 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1281 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I348abec1e2f32301a0368d5f541=
+e67bddf358bbc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1282 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -176,5 +317,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---uiNt2nuKhCE=--
+--Vy7yc6soK50=--
 
