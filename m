@@ -1,16 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Oct 2025 19:30:28 +0000
-In-Reply-To: <gerrit.1760629750000.I7b718a14b81e3759398e7a52fe151102494cc821@...2715...>
-References: <gerrit.1760629750000.I7b718a14b81e3759398e7a52fe151102494cc821@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <a822fad86d8bf4d76a1d7ac132b7462af84ea60a-EmailReplacePatchSet-HTML@...2715...>
+Date: Fri, 17 Oct 2025 20:18:52 +0000
+In-Reply-To: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
+References: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ antonio@...2726...
+Message-ID: <9c466a368e429b680354b18030040ce142048d5b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ChmSV6fSEhE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: warn and
- ignore --reneg-bytes/pkts when DCO is enabled
+Content-Type: multipart/alternative; boundary="3GFO35WFqFc="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE server:
+ remove old IP(s) from vhash after sending a messa...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,228 +20,189 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ChmSV6fSEhE=
+--3GFO35WFqFc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- ralf_lici. ( http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail )
+Attention is currently required from: flichtenheld, mrbff, ordex, plaisthos.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
+cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1253?usp=3Demail )
 
-
-Change subject: options: warn and ignore --reneg-bytes/pkts when DCO is ena=
-bled
+Change subject: PUSH_UPDATE server: remove old IP(s) from vhash after sendi=
+ng a message containing ifconfig(-ipv6)
 ......................................................................
 
-options: warn and ignore --reneg-bytes/pkts when DCO is enabled
 
-Thresholds specified by --reneg-bytes and --reneg-pkts cannot be
-enforced when DCO is enabled, as it only provides global statistics.
+Patch Set 7: Code-Review+2
 
-Rather than adding complexity to support these options, ignore them when
-DCO is enabled. Print a warning to inform users and update the manpage
-accordingly.
+(3 comments)
 
-Change-Id: I7b718a14b81e3759398e7a52fe151102494cc821
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1280
-Message-Id: <20251017191612.15642-1-gert@...1296...>
-URL: https://sourceforge.net/p/openvpn/mailman/message/59248122/
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M doc/man-sections/renegotiation.rst
-M src/openvpn/options.c
-2 files changed, 23 insertions(+), 4 deletions(-)
+Patchset:
+
+PS7:
+This looks good now.  Tested a sequence of "change ifconfig, change ifconfi=
+g, change to -ifconfig, send new ifconfig" and it always learned/unlearned =
+the expected things
+
+```
+Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.46 -> fr=
+eebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: primary virtual IP for f=
+reebsd-14-amd64/udp6:194.97.140.5:60204: 10.204.2.46
+Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: Learn: fd00:abcd:204:2::=
+100a -> freebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: primary virtual IPv6 for=
+ freebsd-14-amd64/udp6:194.97.140.5:60204: fd00:abcd:204:2::100a
+Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.46 -> =
+freebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.99 -> fr=
+eebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:13:38 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.99 -> =
+freebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:13:38 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.146 -> f=
+reebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:14:40 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.146 ->=
+ freebsd-14-amd64/udp6:194.97.140.5:60204
+Oct 17 22:14:57 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.99 -> fr=
+eebsd-14-amd64/udp6:194.97.140.5:60204
+```
+
+also the logging is symmetric now (thanks again).  Very nice.
+
+I also tested IPv6, though it mains me to send "PUSH_UPDATE,-ifconfig-ipv6"=
+ - but it still works :-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/1280/4
+File src/openvpn/push_util.c:
 
-diff --git a/doc/man-sections/renegotiation.rst b/doc/man-sections/renegoti=
-ation.rst
-index 1e7c340..f5eb90d 100644
---- a/doc/man-sections/renegotiation.rst
-+++ b/doc/man-sections/renegotiation.rst
-@@ -19,10 +19,18 @@
-   the SWEET32 attack vector. For more information see the ``--cipher``
-   option.
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/831de5dd_a3d9baac?usp=3D=
+email :
+PS6, Line 165:     o.ifconfig_local =3D canary;
+> the canary is mostly to be less invasive as possible. [=E2=80=A6]
+Done
 
-+  When data channel offload (DCO) is enabled, this option is ignored. DCO
-+  does not support configurable renegotiation thresholds; automatic key
-+  renegotiation mechanisms are sufficient for modern ciphers.
-+
- --reneg-pkts n
-   Renegotiate data channel key after **n** packets sent and received
-   (disabled by default).
 
-+  When data channel offload (DCO) is enabled, this option is ignored. DCO
-+  does not support configurable renegotiation thresholds; automatic key
-+  renegotiation mechanisms are sufficient for modern ciphers.
-+
- --reneg-sec args
-   Renegotiate data channel key after at most ``max`` seconds
-   (default :code:`3600`) and at least ``min`` seconds (default is 90% of
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 44f68c7..65c6b3b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3317,11 +3317,22 @@
+http://gerrit.openvpn.net/c/openvpn/+/1253/comment/baeb5012_d8c04c16?usp=3D=
+email :
+PS6, Line 166:     o.ifconfig_ipv6_local =3D canary;
+> same for this obviously.
+While I agree that this is not pretty, I would still leave it at that (and =
+mrbff admitted that "it is ugly").  I do like the rest of the code a lot in=
+ this latest iteration, and want to move it forward so it's in beta4...  so=
+ I'm willing to accept this part of limited beauty.  We can improve it late=
+r - right now it's "not working" which is definitely less useful ;-)
 
-     dns_options_verify(M_FATAL, &o->dns_options);
-
--    if (dco_enabled(o) && o->enable_c2c)
-+    if (dco_enabled(o))
-     {
--        msg(M_WARN, "Note: --client-to-client has no effect when using dat=
-a "
--                    "channel offload: packets are always sent to the VPN "
--                    "interface and then routed based on the system routing=
- table");
-+        if (o->enable_c2c)
-+        {
-+            msg(M_WARN, "Note: --client-to-client has no effect when using=
- data "
-+                        "channel offload: packets are always sent to the V=
-PN "
-+                        "interface and then routed based on the system rou=
-ting table");
-+        }
-+
-+        if (o->renegotiate_bytes > 0 || o->renegotiate_packets)
-+        {
-+            msg(M_WARN, "Note: '--reneg-bytes' and '--reneg-pkts' are not =
-supported "
-+                        "by data channel offload; automatic key renegotiat=
-ion "
-+                        "mechanisms are sufficient for modern ciphers. "
-+                        "Ignoring these options.");
-+        }
-     }
- }
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7b718a14b81e3759398e7a52fe151102494cc821
-Gerrit-Change-Number: 1280
-Gerrit-PatchSet: 4
-Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde98702a9801616a5f
+Gerrit-Change-Number: 1253
+Gerrit-PatchSet: 7
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <antonio@...2726...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Fri, 17 Oct 2025 20:18:52 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: ordex <antonio@...2726...>
+Comment-In-Reply-To: mrbff <marco@...2726...>
 
---ChmSV6fSEhE=
+--3GFO35WFqFc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #4</strong> to the change originally created by ralf_lici.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">options: warn and ignore --reneg-by=
-tes/pkts when DCO is enabled<br><br>Thresholds specified by --reneg-bytes a=
-nd --reneg-pkts cannot be<br>enforced when DCO is enabled, as it only provi=
-des global statistics.<br><br>Rather than adding complexity to support thes=
-e options, ignore them when<br>DCO is enabled. Print a warning to inform us=
-ers and update the manpage<br>accordingly.<br><br>Change-Id: I7b718a14b81e3=
-759398e7a52fe151102494cc821<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...=
-&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https=
-://gerrit.openvpn.net/c/openvpn/+/1280<br>Message-Id: &lt;20251017191612.15=
-642-1-gert@...1296...&gt;<br>URL: https://sourceforge.net/p/openvpn/mailman=
-/message/59248122/<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<b=
-r>---<br>M doc/man-sections/renegotiation.rst<br>M src/openvpn/options.c<br=
->2 files changed, 23 insertions(+), 4 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/1280/4<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/doc/man-sections/renegotiation.rst b/doc/man-sections/=
-renegotiation.rst</span><br><span>index 1e7c340..f5eb90d 100644</span><br><=
-span>--- a/doc/man-sections/renegotiation.rst</span><br><span>+++ b/doc/man=
--sections/renegotiation.rst</span><br><span>@@ -19,10 +19,18 @@</span><br><=
-span>   the SWEET32 attack vector. For more information see the ``--cipher`=
-`</span><br><span>   option.</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  When data channel offload (DCO) is enabled, th=
-is option is ignored. DCO</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  does not support configurable renegotiation thresholds; automatic k=
-ey</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  renegotiation m=
-echanisms are sufficient for modern ciphers.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span> --reneg-pkts n</span><br><span> =
-  Renegotiate data channel key after **n** packets sent and received</span>=
-<br><span>   (disabled by default).</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  When data channel offload (DCO) is enab=
-led, this option is ignored. DCO</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  does not support configurable renegotiation thresholds; auto=
-matic key</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  renegoti=
-ation mechanisms are sufficient for modern ciphers.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --reneg-sec args</span>=
-<br><span>   Renegotiate data channel key after at most ``max`` seconds</sp=
-an><br><span>   (default :code:`3600`) and at least ``min`` seconds (defaul=
-t is 90% of</span><br><span>diff --git a/src/openvpn/options.c b/src/openvp=
-n/options.c</span><br><span>index 44f68c7..65c6b3b 100644</span><br><span>-=
--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</spa=
-n><br><span>@@ -3317,11 +3317,22 @@</span><br><span> </span><br><span>     =
-dns_options_verify(M_FATAL, &amp;o-&gt;dns_options);</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (dco_enabled(o) &am=
-p;&amp; o-&gt;enable_c2c)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (dco_enabled(o))</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;Note: --client-to=
--client has no effect when using data &quot;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                    &quot;channel offload: packets a=
-re always sent to the VPN &quot;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                    &quot;interface and then routed based on the=
- system routing table&quot;);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        if (o-&gt;enable_c2c)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            msg(M_WARN, &quot;Note: --client-to-client has no eff=
-ect when using data &quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                        &quot;channel offload: packets are always se=
-nt to the VPN &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                        &quot;interface and then routed based on the syste=
-m routing table&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (o-&gt;renegot=
-iate_bytes &gt; 0 || o-&gt;renegotiate_packets)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            msg(M_WARN, &quot;Note: &#39;--reneg-bytes&#3=
-9; and &#39;--reneg-pkts&#39; are not supported &quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                        &quot;by data ch=
-annel offload; automatic key renegotiation &quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                        &quot;mechanisms are =
-sufficient for modern ciphers. &quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                        &quot;Ignoring these options.&quo=
-t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
-><br><span>     }</span><br><span> }</span><br><span> </span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1280?usp=3Demail">change 1280</a>. To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dem=
-ail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1280?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, mrbff, ordex, plaisthos. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">V=
+iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1253?tab=3Dcomments&amp;usp=3Demail">Patch Set #7:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This looks=
+ good now.  Tested a sequence of &quot;change ifconfig, change ifconfig, ch=
+ange to -ifconfig, send new ifconfig&quot; and it always learned/unlearned =
+the expected things</p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
+word-wrap: break-word;">```<br>Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: =
+MULTI: Learn: 10.204.2.46 -&gt; freebsd-14-amd64/udp6:194.97.140.5:60204<br=
+>Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: primary virtual IP for =
+freebsd-14-amd64/udp6:194.97.140.5:60204: 10.204.2.46<br>Oct 17 22:11:37 ge=
+ntoo tun-udp-p2mp[13761]: MULTI: Learn: fd00:abcd:204:2::100a -&gt; freebsd=
+-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:11:37 gentoo tun-udp-p2mp[13=
+761]: MULTI: primary virtual IPv6 for freebsd-14-amd64/udp6:194.97.140.5:60=
+204: fd00:abcd:204:2::100a<br>Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: M=
+ULTI: Unlearn: 10.204.2.46 -&gt; freebsd-14-amd64/udp6:194.97.140.5:60204<b=
+r>Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.99 -&g=
+t; freebsd-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:13:38 gentoo tun-u=
+dp-p2mp[13761]: MULTI: Unlearn: 10.204.2.99 -&gt; freebsd-14-amd64/udp6:194=
+.97.140.5:60204<br>Oct 17 22:13:38 gentoo tun-udp-p2mp[13761]: MULTI: Learn=
+: 10.204.2.146 -&gt; freebsd-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:=
+14:40 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.146 -&gt; freebs=
+d-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:14:57 gentoo tun-udp-p2mp[1=
+3761]: MULTI: Learn: 10.204.2.99 -&gt; freebsd-14-amd64/udp6:194.97.140.5:6=
+0204<br>```</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">also the logging is symmetric now (thanks again).  Very nic=
+e.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
+word;">I also tested IPv6, though it mains me to send &quot;PUSH_UPDATE,-if=
+config-ipv6&quot; - but it still works :-)</p></li></ul></li><li style=3D"m=
+argin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</p><ul style=3D"lis=
+t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
+p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1253/comment/831de5dd_a3d9baac?usp=3Demail">Patch Set #6, Line 165:</=
+a> <code style=3D"font-family:monospace,monospace">    o.ifconfig_local =3D=
+ canary;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
+gin: 10px 0; padding: 0 10px;">the canary is mostly to be less invasive as =
+possible. [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0;=
+ padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/1253/comment/baeb5012_d8c04c16?usp=3Demail">P=
+atch Set #6, Line 166:</a> <code style=3D"font-family:monospace,monospace">=
+    o.ifconfig_ipv6_local =3D canary;</code></p><p><blockquote style=3D"bor=
+der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">same for this o=
+bviously.</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">While I agree that this is not pretty, I would s=
+till leave it at that (and mrbff admitted that &quot;it is ugly&quot;).  I =
+do like the rest of the code a lot in this latest iteration, and want to mo=
+ve it forward so it&#39;s in beta4...  so I&#39;m willing to accept this pa=
+rt of limited beauty.  We can improve it later - right now it&#39;s &quot;n=
+ot working&quot; which is definitely less useful ;-)</p></li></ul></li></ul=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?us=
+p=3Demail">change 1253</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7b718a14b81e3759398e7a52fe1=
-51102494cc821 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1280 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde987=
+02a9801616a5f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1253 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -249,8 +211,26 @@ Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Oct 2025 20:18:52=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
+...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: mrbff &lt;marco@...2804...=
+.&gt; </div>
 
 </body></html>=
 
---ChmSV6fSEhE=--
+--3GFO35WFqFc=--
 
