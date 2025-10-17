@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 17 Oct 2025 22:49:09 +0200
-Message-ID: <20251017204914.7548-1-gert@...1296...>
-In-Reply-To: <gerrit.1760698129000.I2d1fbe7ec080beb931253d09c1b5227e9bf4e756@...2715...>
-References: <gerrit.1760698129000.I2d1fbe7ec080beb931253d09c1b5227e9bf4e756@...2715...>
+Date: Fri, 17 Oct 2025 22:56:12 +0200
+Message-ID: <20251017205618.8273-1-gert@...1296...>
+In-Reply-To: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
+References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] ssl_util: Fix conversion warning in
- get_num_elements
+Subject: [Openvpn-devel] [PATCH v2] dco-freebsd: store peer stats directly
+ in c2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +18,40 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+From: Ralf Lici <ralf@...2726...>
 
-Just use correct type.
+The dco_context_t structure includes a reference to the general context
+structure c, which allows us to store dco_read_bytes and dco_write_bytes
+directly as c2 fields. This aligns the FreeBSD implementation with how
+we handle DCO peer stats on Linux and Windows.
 
-Change-Id: I2d1fbe7ec080beb931253d09c1b5227e9bf4e756
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1281
+Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1275
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1281
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1275
+This mail reflects revision 2 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 
         
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-index 50e8c03..fb7cf3e 100644
---- a/src/openvpn/ssl_util.c
-+++ b/src/openvpn/ssl_util.c
-@@ -290,21 +290,16 @@
-     return NULL;
- }
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index 947a769..f7ed02f 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -621,8 +621,8 @@
+             {
+                 const nvlist_t *bytes = nvlist_get_nvlist(nvl, "bytes");
  
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- get_num_elements(const char *string, char delimiter)
- {
--    int string_len = strlen(string);
-+    const size_t string_len = strlen(string);
+-                dco->dco_read_bytes = nvlist_get_number(bytes, "in");
+-                dco->dco_write_bytes = nvlist_get_number(bytes, "out");
++                dco->c->c2.dco_read_bytes = nvlist_get_number(bytes, "in");
++                dco->c->c2.dco_write_bytes = nvlist_get_number(bytes, "out");
+             }
  
-     ASSERT(0 != string_len);
- 
-     int element_count = 1;
-     /* Get number of ciphers */
--    for (int i = 0; i < string_len; i++)
-+    for (size_t i = 0; i < string_len; i++)
-     {
-         if (string[i] == delimiter)
-         {
-@@ -314,7 +309,3 @@
- 
-     return element_count;
- }
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
+             dco->dco_message_type = OVPN_CMD_DEL_PEER;
 
