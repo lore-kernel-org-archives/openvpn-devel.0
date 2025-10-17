@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Oct 2025 20:18:52 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 17 Oct 2025 22:19:12 +0200
+Message-ID: <20251017201916.21697-1-gert@...1296...>
 In-Reply-To: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
 References: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <9c466a368e429b680354b18030040ce142048d5b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3GFO35WFqFc="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE server:
- remove old IP(s) from vhash after sending a messa...
+Subject: [Openvpn-devel] [PATCH v7] PUSH_UPDATE server: remove old IP(s)
+ from vhash after sending a message containing ifconfig(-ipv6)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,217 +14,469 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---3GFO35WFqFc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Marco Baffo <marco@...2726...>
 
-Attention is currently required from: flichtenheld, mrbff, ordex, plaisthos.
+When sending a PUSH_UPDATE containing an ifconfig(-ipv6) option, we must add the new IP to the
+multi_context vhash (hash table of the clients indexed by virtual IPs). Now in addition to
+adding new client IPs, old IPs are also removed from vhash, allowing for a more complete update.
 
-cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1253?usp=3Demail )
+Change-Id: I07a8ddd9026eef64b6f5abde98702a9801616a5f
+Signed-off-by: Marco Baffo <marco@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1253
+---
 
-Change subject: PUSH_UPDATE server: remove old IP(s) from vhash after sendi=
-ng a message containing ifconfig(-ipv6)
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1253
+This mail reflects revision 7 of this Change.
 
-Patch Set 7: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-(3 comments)
-
-Patchset:
-
-PS7:
-This looks good now.  Tested a sequence of "change ifconfig, change ifconfi=
-g, change to -ifconfig, send new ifconfig" and it always learned/unlearned =
-the expected things
-
-```
-Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.46 -> fr=
-eebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: primary virtual IP for f=
-reebsd-14-amd64/udp6:194.97.140.5:60204: 10.204.2.46
-Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: Learn: fd00:abcd:204:2::=
-100a -> freebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: primary virtual IPv6 for=
- freebsd-14-amd64/udp6:194.97.140.5:60204: fd00:abcd:204:2::100a
-Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.46 -> =
-freebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.99 -> fr=
-eebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:13:38 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.99 -> =
-freebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:13:38 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.146 -> f=
-reebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:14:40 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.146 ->=
- freebsd-14-amd64/udp6:194.97.140.5:60204
-Oct 17 22:14:57 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.99 -> fr=
-eebsd-14-amd64/udp6:194.97.140.5:60204
-```
-
-also the logging is symmetric now (thanks again).  Very nice.
-
-I also tested IPv6, though it mains me to send "PUSH_UPDATE,-ifconfig-ipv6"=
- - but it still works :-)
-
-
-File src/openvpn/push_util.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1253/comment/831de5dd_a3d9baac?usp=3D=
-email :
-PS6, Line 165:     o.ifconfig_local =3D canary;
-> the canary is mostly to be less invasive as possible. [=E2=80=A6]
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1253/comment/baeb5012_d8c04c16?usp=3D=
-email :
-PS6, Line 166:     o.ifconfig_ipv6_local =3D canary;
-> same for this obviously.
-While I agree that this is not pretty, I would still leave it at that (and =
-mrbff admitted that "it is ugly").  I do like the rest of the code a lot in=
- this latest iteration, and want to move it forward so it's in beta4...  so=
- I'm willing to accept this part of limited beauty.  We can improve it late=
-r - right now it's "not working" which is definitely less useful ;-)
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde98702a9801616a5f
-Gerrit-Change-Number: 1253
-Gerrit-PatchSet: 7
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Fri, 17 Oct 2025 20:18:52 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: ordex <antonio@...2726...>
-Comment-In-Reply-To: mrbff <marco@...2726...>
-
---3GFO35WFqFc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, mrbff, ordex, plaisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">V=
-iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1253?tab=3Dcomments&amp;usp=3Demail">Patch Set #7:</a> </p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This looks=
- good now.  Tested a sequence of &quot;change ifconfig, change ifconfig, ch=
-ange to -ifconfig, send new ifconfig&quot; and it always learned/unlearned =
-the expected things</p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">```<br>Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: =
-MULTI: Learn: 10.204.2.46 -&gt; freebsd-14-amd64/udp6:194.97.140.5:60204<br=
->Oct 17 22:11:37 gentoo tun-udp-p2mp[13761]: MULTI: primary virtual IP for =
-freebsd-14-amd64/udp6:194.97.140.5:60204: 10.204.2.46<br>Oct 17 22:11:37 ge=
-ntoo tun-udp-p2mp[13761]: MULTI: Learn: fd00:abcd:204:2::100a -&gt; freebsd=
--14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:11:37 gentoo tun-udp-p2mp[13=
-761]: MULTI: primary virtual IPv6 for freebsd-14-amd64/udp6:194.97.140.5:60=
-204: fd00:abcd:204:2::100a<br>Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: M=
-ULTI: Unlearn: 10.204.2.46 -&gt; freebsd-14-amd64/udp6:194.97.140.5:60204<b=
-r>Oct 17 22:13:15 gentoo tun-udp-p2mp[13761]: MULTI: Learn: 10.204.2.99 -&g=
-t; freebsd-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:13:38 gentoo tun-u=
-dp-p2mp[13761]: MULTI: Unlearn: 10.204.2.99 -&gt; freebsd-14-amd64/udp6:194=
-.97.140.5:60204<br>Oct 17 22:13:38 gentoo tun-udp-p2mp[13761]: MULTI: Learn=
-: 10.204.2.146 -&gt; freebsd-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:=
-14:40 gentoo tun-udp-p2mp[13761]: MULTI: Unlearn: 10.204.2.146 -&gt; freebs=
-d-14-amd64/udp6:194.97.140.5:60204<br>Oct 17 22:14:57 gentoo tun-udp-p2mp[1=
-3761]: MULTI: Learn: 10.204.2.99 -&gt; freebsd-14-amd64/udp6:194.97.140.5:6=
-0204<br>```</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wra=
-p: break-word;">also the logging is symmetric now (thanks again).  Very nic=
-e.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">I also tested IPv6, though it mains me to send &quot;PUSH_UPDATE,-if=
-config-ipv6&quot; - but it still works :-)</p></li></ul></li><li style=3D"m=
-argin: 0; padding: 0;"><p>File src/openvpn/push_util.c:</p><ul style=3D"lis=
-t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
-p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/1253/comment/831de5dd_a3d9baac?usp=3Demail">Patch Set #6, Line 165:</=
-a> <code style=3D"font-family:monospace,monospace">    o.ifconfig_local =3D=
- canary;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
-gin: 10px 0; padding: 0 10px;">the canary is mostly to be less invasive as =
-possible. [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-sp=
-ace: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0;=
- padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/1253/comment/baeb5012_d8c04c16?usp=3Demail">P=
-atch Set #6, Line 166:</a> <code style=3D"font-family:monospace,monospace">=
-    o.ifconfig_ipv6_local =3D canary;</code></p><p><blockquote style=3D"bor=
-der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">same for this o=
-bviously.</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">While I agree that this is not pretty, I would s=
-till leave it at that (and mrbff admitted that &quot;it is ugly&quot;).  I =
-do like the rest of the code a lot in this latest iteration, and want to mo=
-ve it forward so it&#39;s in beta4...  so I&#39;m willing to accept this pa=
-rt of limited beauty.  We can improve it later - right now it&#39;s &quot;n=
-ot working&quot; which is definitely less useful ;-)</p></li></ul></li></ul=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?us=
-p=3Demail">change 1253</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde987=
-02a9801616a5f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1253 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Oct 2025 20:18:52=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: mrbff &lt;marco@...2804...=
-.&gt; </div>
-
-</body></html>=
-
---3GFO35WFqFc=--
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2863ff1..558314c 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4269,46 +4269,144 @@
+     close_instance(top);
+ }
+ 
++/* Searches for the address and deletes it if it is owned by the multi_instance */
++static void
++multi_unlearn_addr(struct multi_context *m, struct multi_instance *mi, const struct mroute_addr *addr)
++{
++    struct hash_element *he;
++    const uint32_t hv = hash_value(m->vhash, addr);
++    struct hash_bucket *bucket = hash_bucket(m->vhash, hv);
++    struct multi_route *r = NULL;
++
++    /* if route currently exists, get the instance which owns it */
++    he = hash_lookup_fast(m->vhash, bucket, addr, hv);
++    if (he)
++    {
++        r = (struct multi_route *)he->value;
++    }
++
++    /* if the route does not exist or exists but is not owned by the current instance, return */
++    if (!r || r->instance != mi)
++    {
++        return;
++    }
++
++    struct gc_arena gc = gc_new();
++    msg(D_MULTI_LOW, "MULTI: Unlearn: %s -> %s", mroute_addr_print(&r->addr, &gc), multi_instance_string(mi, false, &gc));
++    learn_address_script(m, NULL, "delete", &r->addr);
++    hash_remove_by_value(m->vhash, r);
++    multi_route_del(r);
++
++    gc_free(&gc);
++}
++
++/**
++ * @param m     The multi_context
++ * @param mi    The multi_instance of the client we are updating
++ * @param a     The new IPv4 address in network byte order
++ */
++static void
++multi_unlearn_in_addr_t(struct multi_context *m, struct multi_instance *mi, in_addr_t a)
++{
++    struct mroute_addr addr;
++    CLEAR(addr);
++
++    addr.type = MR_ADDR_IPV4;
++    addr.len = 4;
++    addr.v4.addr = a;
++
++    multi_unlearn_addr(m, mi, &addr);
++}
++
++/**
++ * @param m     The multi_context
++ * @param mi    The multi_instance of the client we are updating
++ * @param a6    The new IPv6 address
++ */
++static void
++multi_unlearn_in6_addr(struct multi_context *m, struct multi_instance *mi, struct in6_addr a6)
++{
++    struct mroute_addr addr;
++    CLEAR(addr);
++
++    addr.type = MR_ADDR_IPV6;
++    addr.len = 16;
++    addr.v6.addr = a6;
++
++    multi_unlearn_addr(m, mi, &addr);
++}
++
++/* Function to unlearn previous ifconfig of a client in the server multi_context after a PUSH_UPDATE */
++void
++unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi)
++{
++    in_addr_t old_addr = 0;
++    old_addr = htonl(mi->context.c2.push_ifconfig_local);
++    multi_unlearn_in_addr_t(m, mi, old_addr);
++    mi->context.c2.push_ifconfig_defined = false;
++    mi->context.c2.push_ifconfig_local = 0;
++}
++
++/* Function to unlearn previous ifconfig-ipv6 of a client in the server multi_context after a PUSH_UPDATE */
++void
++unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi)
++{
++    struct in6_addr old_addr6;
++    CLEAR(old_addr6);
++    old_addr6 = mi->context.c2.push_ifconfig_ipv6_local;
++    multi_unlearn_in6_addr(m, mi, old_addr6);
++    mi->context.c2.push_ifconfig_ipv6_defined = false;
++    CLEAR(mi->context.c2.push_ifconfig_ipv6_local);
++}
++
+ /**
+  * Update the vhash with new IP/IPv6 addresses in the multi_context when a
+  * push-update message containing ifconfig/ifconfig-ipv6 options is sent
+- * from the server. This function should be called after a push-update
+- * and old_ip/old_ipv6 are the previous addresses of the client in
+- * ctx->options.ifconfig_local and ctx->options.ifconfig_ipv6_local.
++ * from the server.
++ *
++ * @param m         The multi_context
++ * @param mi        The multi_instance of the client we are updating
++ * @param new_ip    The new IPv4 address or NULL if no change
++ * @param new_ipv6  The new IPv6 address or NULL if no change
+  */
+ void
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const char *old_ip, const char *old_ipv6)
++update_vhash(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)
+ {
+-    struct in_addr addr;
+-    struct in6_addr new_ipv6;
+-
+-    if ((mi->context.options.ifconfig_local && (!old_ip || strcmp(old_ip, mi->context.options.ifconfig_local)))
+-        && inet_pton(AF_INET, mi->context.options.ifconfig_local, &addr) == 1)
++    if (new_ip)
+     {
+-        in_addr_t new_ip = ntohl(addr.s_addr);
++        /* Remove old IP */
++        if (mi->context.c2.push_ifconfig_defined)
++        {
++            unlearn_ifconfig(m, mi);
++        }
+ 
+         /* Add new IP */
+-        multi_learn_in_addr_t(m, mi, new_ip, -1, true);
++        struct in_addr new_addr;
++        CLEAR(new_addr);
++        if (inet_pton(AF_INET, new_ip, &new_addr) == 1
++            && multi_learn_in_addr_t(m, mi, ntohl(new_addr.s_addr), -1, true))
++        {
++            mi->context.c2.push_ifconfig_defined = true;
++            mi->context.c2.push_ifconfig_local = ntohl(new_addr.s_addr);
++        }
+     }
+ 
+-    /* TO DO:
+-     *  else if (old_ip)
+-     *  {
+-     *      // remove old IP
+-     *  }
+-     */
+-
+-    if ((mi->context.options.ifconfig_ipv6_local && (!old_ipv6 || strcmp(old_ipv6, mi->context.options.ifconfig_ipv6_local)))
+-        && inet_pton(AF_INET6, mi->context.options.ifconfig_ipv6_local, &new_ipv6) == 1)
++    if (new_ipv6)
+     {
+-        /* Add new IPv6 */
+-        multi_learn_in6_addr(m, mi, new_ipv6, -1, true);
+-    }
++        /* Remove old IPv6 */
++        if (mi->context.c2.push_ifconfig_ipv6_defined)
++        {
++            unlearn_ifconfig_ipv6(m, mi);
++        }
+ 
+-    /* TO DO:
+-     *  else if (old_ipv6)
+-     *  {
+-     *      // remove old IPv6
+-     *  }
+-     */
++        /* Add new IPv6 */
++        struct in6_addr new_addr6;
++        CLEAR(new_addr6);
++        if (inet_pton(AF_INET6, new_ipv6, &new_addr6) == 1
++            && multi_learn_in6_addr(m, mi, new_addr6, -1, true))
++        {
++            mi->context.c2.push_ifconfig_ipv6_defined = true;
++            mi->context.c2.push_ifconfig_ipv6_local = new_addr6;
++        }
++    }
+ }
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index b2b892b..97bbc4a 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -692,6 +692,8 @@
+ #endif
+ 
+ void
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const char *old_ip, const char *old_ipv6);
++update_vhash(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6);
++void unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi);
++void unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi);
+ 
+ #endif /* MULTI_H */
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 0c8eb84..2c717c7 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -1118,7 +1118,7 @@
+                         " To be able to process PUSH_UPDATE messages, be sure to use the --disable-dco option.");
+             return PUSH_MSG_ERROR;
+         }
+-        return process_incoming_push_update(c, permission_mask, option_types_found, &buf, false);
++        return process_push_update(c, &c->options, permission_mask, option_types_found, &buf, false);
+     }
+     else
+     {
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 6b3275e..19a029a 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -61,11 +61,13 @@
+  * message has not yet been received.
+  *
+  * @param c The context for the operation.
++ * @param o The options structure to be updated with the received push options.
+  * @param permission_mask The permission mask specifying which options are allowed to be pulled.
+  * @param option_types_found A pointer to a variable that will be filled with the types of options
+  *                           found in the message.
+  * @param buf A buffer containing the received message.
+- * @param msg_sender A boolean indicating if function is called by the message sender (server).
++ * @param msg_sender A boolean indicating if the message is being processed on the client (false)
++ *                   or on the server (true).
+  *
+  * @return
+  * - `PUSH_MSG_UPDATE`: The message was processed successfully, and the updates were applied.
+@@ -74,9 +76,8 @@
+  * - `PUSH_MSG_ERROR`: An error occurred during message processing, or the message is invalid.
+  */
+ 
+-int process_incoming_push_update(struct context *c, unsigned int permission_mask,
+-                                 unsigned int *option_types_found, struct buffer *buf,
+-                                 bool msg_sender);
++int process_push_update(struct context *c, struct options *o, unsigned int permission_mask,
++                        unsigned int *option_types_found, struct buffer *buf, bool msg_sender);
+ 
+ int process_incoming_push_msg(struct context *c, const struct buffer *buffer,
+                               bool honor_received_options, unsigned int permission_mask,
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 25c6ebe..0e86ad3 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -16,18 +16,17 @@
+ #endif
+ 
+ int
+-process_incoming_push_update(struct context *c, unsigned int permission_mask,
+-                             unsigned int *option_types_found, struct buffer *buf,
+-                             bool msg_sender)
++process_push_update(struct context *c, struct options *o, unsigned int permission_mask,
++                    unsigned int *option_types_found, struct buffer *buf, bool msg_sender)
+ {
+     int ret = PUSH_MSG_ERROR;
+     const uint8_t ch = buf_read_u8(buf);
+     if (ch == ',')
+     {
+-        if (apply_push_options(c, &c->options, buf, permission_mask, option_types_found, c->c2.es,
++        if (apply_push_options(c, o, buf, permission_mask, option_types_found, c->c2.es,
+                                true))
+         {
+-            switch (c->options.push_continuation)
++            switch (o->push_continuation)
+             {
+                 case 0:
+                 case 1:
+@@ -144,13 +143,27 @@
+ 
+ /* send the message(s) prepared to one single client */
+ static bool
+-send_single_push_update(struct context *c, struct buffer *msgs, unsigned int *option_types_found)
++send_single_push_update(struct multi_context *m, struct multi_instance *mi, struct buffer *msgs)
+ {
+     if (!msgs[0].data || !*(msgs[0].data))
+     {
+         return false;
+     }
++
+     int i = -1;
++    unsigned int option_types_found = 0;
++    struct context *c = &mi->context;
++    struct options o;
++    CLEAR(o);
++
++    /* Set canary values to detect ifconfig options in push-update messages.
++     * These placeholder strings will be overwritten to NULL by the option
++     * parser if -ifconfig or -ifconfig-ipv6 options are present in the
++     * push-update.
++     */
++    const char *canary = "canary";
++    o.ifconfig_local = canary;
++    o.ifconfig_ipv6_local = canary;
+ 
+     while (msgs[++i].data && *(msgs[i].data))
+     {
+@@ -159,14 +172,14 @@
+             return false;
+         }
+ 
+-        /* After sending the control message, we update the options
+-         * server-side in the client's context so pushed options like
+-         * ifconfig/ifconfig-ipv6 can actually work.
++        /* After sending the control message, we parse it, miming the behavior
++         * of `process_incoming_push_msg()` and we fill an empty `options` struct
++         * with the new options. If an `ifconfig_local` or `ifconfig_ipv6_local`
++         * options is found we update the vhash accordingly, so that the pushed
++         * ifconfig/ifconfig-ipv6 options can actually work.
+          * If we don't do that, packets arriving from the client with the
+          * new address will be rejected and packets for the new address
+          * will not be routed towards the client.
+-         * For the same reason we later update the vhash too in
+-         * `send_push_update()` function.
+          * Using `buf_string_compare_advance()` we mimic the behavior
+          * inside `process_incoming_push_msg()`. However, we don't need
+          * to check the return value here because we just want to `advance`,
+@@ -176,17 +189,39 @@
+          */
+         struct buffer tmp_msg = msgs[i];
+         buf_string_compare_advance(&tmp_msg, push_update_cmd);
+-        if (process_incoming_push_update(c, pull_permission_mask(c), option_types_found, &tmp_msg, true) == PUSH_MSG_ERROR)
++        unsigned int permission_mask = pull_permission_mask(c);
++        if (process_push_update(c, &o, permission_mask, &option_types_found, &tmp_msg, true) == PUSH_MSG_ERROR)
+         {
+             msg(M_WARN, "Failed to process push update message sent to client ID: %u", c->c2.tls_multi->peer_id);
+-            continue;
+-        }
+-        c->options.push_option_types_found |= *option_types_found;
+-        if (!options_postprocess_pull(&c->options, c->c2.es))
+-        {
+-            msg(M_WARN, "Failed to post-process push update message sent to client ID: %u", c->c2.tls_multi->peer_id);
+         }
+     }
++
++    if (option_types_found & OPT_P_UP)
++    {
++        /* -ifconfig */
++        if (!o.ifconfig_local && mi->context.c2.push_ifconfig_defined)
++        {
++            unlearn_ifconfig(m, mi);
++        }
++        /* -ifconfig-ipv6 */
++        if (!o.ifconfig_ipv6_local && mi->context.c2.push_ifconfig_ipv6_defined)
++        {
++            unlearn_ifconfig_ipv6(m, mi);
++        }
++
++        if (o.ifconfig_local && !strcmp(o.ifconfig_local, canary))
++        {
++            o.ifconfig_local = NULL;
++        }
++        if (o.ifconfig_ipv6_local && !strcmp(o.ifconfig_ipv6_local, canary))
++        {
++            o.ifconfig_ipv6_local = NULL;
++        }
++
++        /* new ifconfig or new ifconfig-ipv6 */
++        update_vhash(m, mi, o.ifconfig_local, o.ifconfig_ipv6_local);
++    }
++
+     return true;
+ }
+ 
+@@ -229,8 +264,6 @@
+     int msgs_num = (strlen(msg) / safe_cap) + ((strlen(msg) % safe_cap) != 0);
+     struct buffer *msgs = gc_malloc((msgs_num + 1) * sizeof(struct buffer), true, &gc);
+ 
+-    unsigned int option_types_found = 0;
+-
+     msgs[msgs_num].data = NULL;
+     if (!message_splitter(msg, msgs, &gc, safe_cap))
+     {
+@@ -255,15 +288,9 @@
+             return 0;
+         }
+ 
+-        const char *old_ip = mi->context.options.ifconfig_local;
+-        const char *old_ipv6 = mi->context.options.ifconfig_ipv6_local;
+         if (!mi->halt
+-            && send_single_push_update(&mi->context, msgs, &option_types_found))
++            && send_single_push_update(m, mi, msgs))
+         {
+-            if (option_types_found & OPT_P_UP)
+-            {
+-                update_vhash(m, mi, old_ip, old_ipv6);
+-            }
+             gc_free(&gc);
+             return 1;
+         }
+@@ -289,18 +316,11 @@
+         }
+ 
+         /* Type is UPT_BROADCAST so we update every client */
+-        option_types_found = 0;
+-        const char *old_ip = curr_mi->context.options.ifconfig_local;
+-        const char *old_ipv6 = curr_mi->context.options.ifconfig_ipv6_local;
+-        if (!send_single_push_update(&curr_mi->context, msgs, &option_types_found))
++        if (!send_single_push_update(m, curr_mi, msgs))
+         {
+             msg(M_CLIENT, "ERROR: Peer ID: %u has not been updated", curr_mi->context.c2.tls_multi->peer_id);
+             continue;
+         }
+-        if (option_types_found & OPT_P_UP)
+-        {
+-            update_vhash(m, curr_mi, old_ip, old_ipv6);
+-        }
+         count++;
+     }
+ 
+diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c
+index 60596ed..7fadb69 100644
+--- a/tests/unit_tests/openvpn/test_push_update_msg.c
++++ b/tests/unit_tests/openvpn/test_push_update_msg.c
+@@ -29,7 +29,19 @@
+ }
+ 
+ void
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const char *old_ip, const char *old_ipv6)
++unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi)
++{
++    return;
++}
++
++void
++unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi)
++{
++    return;
++}
++
++void
++update_vhash(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)
+ {
+     return;
+ }
+@@ -95,7 +107,7 @@
+     }
+     else if (honor_received_options && buf_string_compare_advance(&buf, push_update_cmd))
+     {
+-        return process_incoming_push_update(c, permission_mask, option_types_found, &buf, false);
++        return process_push_update(c, &c->options, permission_mask, option_types_found, &buf, false);
+     }
+     else
+     {
 
