@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Oct 2025 19:15:31 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 17 Oct 2025 21:16:06 +0200
+Message-ID: <20251017191612.15642-1-gert@...1296...>
 In-Reply-To: <gerrit.1760629750000.I7b718a14b81e3759398e7a52fe151102494cc821@...2715...>
 References: <gerrit.1760629750000.I7b718a14b81e3759398e7a52fe151102494cc821@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <7e0d68e30e6540a755ede0b321975a67dc9be192-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="v8VQQYDDnKA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: warn and
- ignore --reneg-bytes/pkts when DCO is enabled
+Subject: [Openvpn-devel] [PATCH v3] options: warn and ignore
+ --reneg-bytes/pkts when DCO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,96 +14,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---v8VQQYDDnKA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+Thresholds specified by --reneg-bytes and --reneg-pkts cannot be
+enforced when DCO is enabled, as it only provides global statistics.
 
-cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1280?usp=3Demail )
+Rather than adding complexity to support these options, ignore them when
+DCO is enabled. Print a warning to inform users and update the manpage
+accordingly.
 
-Change subject: options: warn and ignore --reneg-bytes/pkts when DCO is ena=
-bled
-......................................................................
+Change-Id: I7b718a14b81e3759398e7a52fe151102494cc821
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1280
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 3: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1280
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7b718a14b81e3759398e7a52fe151102494cc821
-Gerrit-Change-Number: 1280
-Gerrit-PatchSet: 3
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Fri, 17 Oct 2025 19:15:31 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---v8VQQYDDnKA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, ralf_lici. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail=
-">change 1280</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1280?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7b718a14b81e3759398e7a52fe1=
-51102494cc821 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1280 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Oct 2025 19:15:31=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---v8VQQYDDnKA=--
+        
+diff --git a/doc/man-sections/renegotiation.rst b/doc/man-sections/renegotiation.rst
+index 1e7c340..f5eb90d 100644
+--- a/doc/man-sections/renegotiation.rst
++++ b/doc/man-sections/renegotiation.rst
+@@ -19,10 +19,18 @@
+   the SWEET32 attack vector. For more information see the ``--cipher``
+   option.
+ 
++  When data channel offload (DCO) is enabled, this option is ignored. DCO
++  does not support configurable renegotiation thresholds; automatic key
++  renegotiation mechanisms are sufficient for modern ciphers.
++
+ --reneg-pkts n
+   Renegotiate data channel key after **n** packets sent and received
+   (disabled by default).
+ 
++  When data channel offload (DCO) is enabled, this option is ignored. DCO
++  does not support configurable renegotiation thresholds; automatic key
++  renegotiation mechanisms are sufficient for modern ciphers.
++
+ --reneg-sec args
+   Renegotiate data channel key after at most ``max`` seconds
+   (default :code:`3600`) and at least ``min`` seconds (default is 90% of
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 44f68c7..65c6b3b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3317,11 +3317,22 @@
+ 
+     dns_options_verify(M_FATAL, &o->dns_options);
+ 
+-    if (dco_enabled(o) && o->enable_c2c)
++    if (dco_enabled(o))
+     {
+-        msg(M_WARN, "Note: --client-to-client has no effect when using data "
+-                    "channel offload: packets are always sent to the VPN "
+-                    "interface and then routed based on the system routing table");
++        if (o->enable_c2c)
++        {
++            msg(M_WARN, "Note: --client-to-client has no effect when using data "
++                        "channel offload: packets are always sent to the VPN "
++                        "interface and then routed based on the system routing table");
++        }
++
++        if (o->renegotiate_bytes > 0 || o->renegotiate_packets)
++        {
++            msg(M_WARN, "Note: '--reneg-bytes' and '--reneg-pkts' are not supported "
++                        "by data channel offload; automatic key renegotiation "
++                        "mechanisms are sufficient for modern ciphers. "
++                        "Ignoring these options.");
++        }
+     }
+ }
+ 
 
