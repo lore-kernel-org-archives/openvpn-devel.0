@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Oct 2025 20:29:40 +0000
+Date: Fri, 17 Oct 2025 20:29:44 +0000
 In-Reply-To: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
 References: <gerrit.1759855064000.I07a8ddd9026eef64b6f5abde98702a9801616a5f@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  antonio@...2726...
-Message-ID: <e13ce091f23859d433eb60b3f7925512b0b08dba-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <e13ce091f23859d433eb60b3f7925512b0b08dba-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NyP1hYXhN64="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ZhSzz1wdJXY="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE server:
  remove old IP(s) from vhash after sending a messa...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NyP1hYXhN64=
+--ZhSzz1wdJXY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#8) to the change originally created by=
- mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+53?usp=3Demail )
 
 Change subject: PUSH_UPDATE server: remove old IP(s) from vhash after sendi=
 ng a message containing ifconfig(-ipv6)
@@ -66,7 +62,7 @@ M tests/unit_tests/openvpn/test_push_update_msg.c
 6 files changed, 205 insertions(+), 72 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1253/8
+
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
 index 2863ff1..558314c 100644
@@ -579,7 +575,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde98702a9801616a5f
@@ -592,500 +588,497 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: ordex <antonio@...2726...>
 
---NyP1hYXhN64=
+--ZhSzz1wdJXY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #8</strong> to the change originally created by mrbff.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1253?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">PUSH_UPDATE server: remove old IP(s=
-) from vhash after sending a message containing ifconfig(-ipv6)<br><br>When=
- sending a PUSH_UPDATE containing an ifconfig(-ipv6) option, we must add th=
-e new IP to the<br>multi_context vhash (hash table of the clients indexed b=
-y virtual IPs). Now in addition to<br>adding new client IPs, old IPs are al=
-so removed from vhash, allowing for a more complete update.<br><br>Change-I=
-d: I07a8ddd9026eef64b6f5abde98702a9801616a5f<br>Signed-off-by: Marco Baffo =
-&lt;marco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<=
-br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1253<br>Message-Id: &=
-lt;20251017201916.21697-1-gert@...1296...&gt;<br>URL: https://www.mail-arch=
-ive.com/openvpn-devel@lists.sourceforge.net/msg33412.html<br>Signed-off-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/multi.c<br>M =
-src/openvpn/multi.h<br>M src/openvpn/push.c<br>M src/openvpn/push.h<br>M sr=
-c/openvpn/push_util.c<br>M tests/unit_tests/openvpn/test_push_update_msg.c<=
-br>6 files changed, 205 insertions(+), 72 deletions(-)<br><br></pre><pre cl=
-ass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1253=
-/8</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;"><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br=
-><span>index 2863ff1..558314c 100644</span><br><span>--- a/src/openvpn/mult=
-i.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -4269,46 +=
-4269,144 @@</span><br><span>     close_instance(top);</span><br><span> }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* S=
-earches for the address and deletes it if it is owned by the multi_instance=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_unlearn_addr(struc=
-t multi_context *m, struct multi_instance *mi, const struct mroute_addr *ad=
-dr)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    struct hash_element *he;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint32_t hv =3D=
- hash_value(m-&gt;vhash, addr);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    struct hash_bucket *bucket =3D hash_bucket(m-&gt;vhash, hv)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_r=
-oute *r =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* if route curre=
-ntly exists, get the instance which owns it */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    he =3D hash_lookup_fast(m-&gt;vhash, bucket,=
- addr, hv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-he)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        r =3D (struct multi_ro=
-ute *)he-&gt;value;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    /* if the route does not exis=
-t or exists but is not owned by the current instance, return */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (!r || r-&gt;instance !=
-=3D mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    msg(D_MULTI_LOW, &quot;MULTI: Unlearn: %s =
--&gt; %s&quot;, mroute_addr_print(&amp;r-&gt;addr, &amp;gc), multi_instance=
-_string(mi, false, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    learn_address_script(m, NULL, &quot;delete&quot;, &amp;r-&gt;=
-addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    hash_remo=
-ve_by_value(m-&gt;vhash, r);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    multi_route_del(r);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc=
-_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1253?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">PUSH_UPDATE server: remove old IP(s) from vhash =
+after sending a message containing ifconfig(-ipv6)<br><br>When sending a PU=
+SH_UPDATE containing an ifconfig(-ipv6) option, we must add the new IP to t=
+he<br>multi_context vhash (hash table of the clients indexed by virtual IPs=
+). Now in addition to<br>adding new client IPs, old IPs are also removed fr=
+om vhash, allowing for a more complete update.<br><br>Change-Id: I07a8ddd90=
+26eef64b6f5abde98702a9801616a5f<br>Signed-off-by: Marco Baffo &lt;marco@...493...=
+2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL=
+: https://gerrit.openvpn.net/c/openvpn/+/1253<br>Message-Id: &lt;2025101720=
+1916.21697-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openv=
+pn-devel@lists.sourceforge.net/msg33412.html<br>Signed-off-by: Gert Doering=
+ &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/multi.c<br>M src/openvpn/m=
+ulti.h<br>M src/openvpn/push.c<br>M src/openvpn/push.h<br>M src/openvpn/pus=
+h_util.c<br>M tests/unit_tests/openvpn/test_push_update_msg.c<br>6 files ch=
+anged, 205 insertions(+), 72 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>i=
+ndex 2863ff1..558314c 100644</span><br><span>--- a/src/openvpn/multi.c</spa=
+n><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -4269,46 +4269,144=
+ @@</span><br><span>     close_instance(top);</span><br><span> }</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Searches =
+for the address and deletes it if it is owned by the multi_instance */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+multi_unlearn_addr(struct multi_=
+context *m, struct multi_instance *mi, const struct mroute_addr *addr)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct hash_element *he;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const uint32_t hv =3D hash_v=
+alue(m-&gt;vhash, addr);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    struct hash_bucket *bucket =3D hash_bucket(m-&gt;vhash, hv);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_route *r=
+ =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /* if route currently ex=
+ists, get the instance which owns it */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    he =3D hash_lookup_fast(m-&gt;vhash, bucket, addr, =
+hv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (he)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        r =3D (struct multi_route *)h=
+e-&gt;value;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* if the route does not exist or ex=
+ists but is not owned by the current instance, return */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (!r || r-&gt;instance !=3D mi)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    msg(D_MULTI_LOW, &quot;MULTI: Unlearn: %s -&gt; %s=
+&quot;, mroute_addr_print(&amp;r-&gt;addr, &amp;gc), multi_instance_string(=
+mi, false, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    learn_address_script(m, NULL, &quot;delete&quot;, &amp;r-&gt;addr);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    hash_remove_by_va=
+lue(m-&gt;vhash, r);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    multi_route_del(r);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&a=
+mp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * @param m     The multi_context</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * @param mi    The multi_instance of the client we=
+ are updating</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
+ram a     The new IPv4 address in network byte order</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+multi_unlearn_in_addr_t(struct multi_context *m, struct multi_ins=
+tance *mi, in_addr_t a)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mro=
+ute_addr addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    C=
+LEAR(addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.type =3D MR_ADDR_I=
+PV4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.len =
+=3D 4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.v4.a=
+ddr =3D a;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    multi_unlearn_addr(m, mi=
+, &amp;addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+ * @param m     The multi_context</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+ * @param mi    The multi_instance of the=
  client we are updating</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @param a     The new IPv4 address in network byte order</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+multi_unlearn_in_addr_t(struct multi_context *m, struct =
-multi_instance *mi, in_addr_t a)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-truct mroute_addr addr;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    CLEAR(addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.type =3D =
-MR_ADDR_IPV4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ad=
-dr.len =3D 4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ad=
-dr.v4.addr =3D a;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_unlearn_add=
-r(m, mi, &amp;addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @param m     The multi_context</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @param mi    The multi_instance of =
-the client we are updating</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * @param a6    The new IPv6 address</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-multi_unlearn_in6_addr(struct multi_context *m, struct multi_instance *mi, =
-struct in6_addr a6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mroute_=
-addr addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR=
-(addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    addr.type =3D MR_ADDR_IPV6;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.len =3D 16=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.v6.addr =
-=3D a6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    multi_unlearn_addr(m, mi, &=
-amp;addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+/* Function to unlearn previous ifconfig of a =
-client in the server multi_context after a PUSH_UPDATE */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+unlearn_ifconfig(struct multi_context *m, struct mul=
-ti_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in_addr_t old_add=
-r =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    old_add=
-r =3D htonl(mi-&gt;context.c2.push_ifconfig_local);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    multi_unlearn_in_addr_t(m, mi, old_ad=
-dr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;cont=
-ext.c2.push_ifconfig_defined =3D false;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    mi-&gt;context.c2.push_ifconfig_local =3D 0;</span>=
+;">+ * @param a6    The new IPv6 address</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mul=
+ti_unlearn_in6_addr(struct multi_context *m, struct multi_instance *mi, str=
+uct in6_addr a6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mroute_add=
+r addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(ad=
+dr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    addr.type =3D MR_ADDR_IPV6;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.len =3D 16;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr.v6.addr =3D =
+a6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    multi_unlearn_addr(m, mi, &amp;=
+addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+/* Function to unlearn previous ifconfig of a clie=
+nt in the server multi_context after a PUSH_UPDATE */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+unlearn_ifconfig(struct multi_context *m, struct multi_i=
+nstance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    in_addr_t old_addr =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    old_addr =
+=3D htonl(mi-&gt;context.c2.push_ifconfig_local);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    multi_unlearn_in_addr_t(m, mi, old_addr);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;context.=
+c2.push_ifconfig_defined =3D false;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    mi-&gt;context.c2.push_ifconfig_local =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+/* Function to unlearn previous ifconfig-ipv6 of a client in the se=
+rver multi_context after a PUSH_UPDATE */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance=
+ *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr old_addr6;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(old_addr6);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    old_addr6 =3D m=
+i-&gt;context.c2.push_ifconfig_ipv6_local;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    multi_unlearn_in6_addr(m, mi, old_addr6);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;context.c2.push=
+_ifconfig_ipv6_defined =3D false;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    CLEAR(mi-&gt;context.c2.push_ifconfig_ipv6_local);</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* Function to unlearn previous ifconfig-ipv6 of a client in th=
-e server multi_context after a PUSH_UPDATE */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_inst=
-ance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr old_addr=
-6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(old_add=
-r6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    old_addr6 =
-=3D mi-&gt;context.c2.push_ifconfig_ipv6_local;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    multi_unlearn_in6_addr(m, mi, old_addr6);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;context.c2=
-.push_ifconfig_ipv6_defined =3D false;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    CLEAR(mi-&gt;context.c2.push_ifconfig_ipv6_local);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span> =
- * Update the vhash with new IP/IPv6 addresses in the multi_context when a<=
-/span><br><span>  * push-update message containing ifconfig/ifconfig-ipv6 o=
-ptions is sent</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * from=
- the server. This function should be called after a push-update</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- * and old_ip/old_ipv6 are the pr=
-evious addresses of the client in</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * ctx-&gt;options.ifconfig_local and ctx-&gt;options.ifconfig_=
-ipv6_local.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * from =
-the server.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param m         The m=
-ulti_context</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am mi        The multi_instance of the client we are updating</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @param new_ip    The new IPv4 =
-address or NULL if no change</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * @param new_ipv6  The new IPv6 address or NULL if no change</spa=
-n><br><span>  */</span><br><span> void</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-update_vhash(struct multi_context *m, struct multi_instanc=
-e *mi, const char *old_ip, const char *old_ipv6)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+update_vhash(struct multi_context *m, struct m=
-ulti_instance *mi, const char *new_ip, const char *new_ipv6)</span><br><spa=
-n> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct in_add=
-r addr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct in6=
-_addr new_ipv6;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((mi-&gt;context.opt=
-ions.ifconfig_local &amp;&amp; (!old_ip || strcmp(old_ip, mi-&gt;context.op=
-tions.ifconfig_local)))</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        &amp;&amp; inet_pton(AF_INET, mi-&gt;context.options.ifconfig_loc=
-al, &amp;addr) =3D=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (new_ip)</span><br><span>     {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        in_addr_t new_ip =3D ntohl(addr.s_addr);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Remove old IP=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (mi-&=
-gt;context.c2.push_ifconfig_defined)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            unlearn_ifconfig(m, mi);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        }</span><br><span> </span><br><span>       =
-  /* Add new IP */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     multi_learn_in_addr_t(m, mi, new_ip, -1, true);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        struct in_addr new_addr;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        CLEAR(new_addr);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (inet_pton(A=
-F_INET, new_ip, &amp;new_addr) =3D=3D 1</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            &amp;&amp; multi_learn_in_addr_t(m, mi, nto=
-hl(new_addr.s_addr), -1, true))</span><br><span style=3D"color: hsl(120, 10=
+"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Up=
+date the vhash with new IP/IPv6 addresses in the multi_context when a</span=
+><br><span>  * push-update message containing ifconfig/ifconfig-ipv6 option=
+s is sent</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * from the =
+server. This function should be called after a push-update</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">- * and old_ip/old_ipv6 are the previou=
+s addresses of the client in</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">- * ctx-&gt;options.ifconfig_local and ctx-&gt;options.ifconfig_ipv6_=
+local.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * from the s=
+erver.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param m         The multi_=
+context</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param mi=
+        The multi_instance of the client we are updating</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * @param new_ip    The new IPv4 addre=
+ss or NULL if no change</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * @param new_ipv6  The new IPv6 address or NULL if no change</span><br=
+><span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-update_vhash(struct multi_context *m, struct multi_instance *mi=
+, const char *old_ip, const char *old_ipv6)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+update_vhash(struct multi_context *m, struct multi_=
+instance *mi, const char *new_ip, const char *new_ipv6)</span><br><span> {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct in_addr add=
+r;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct in6_addr=
+ new_ipv6;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    if ((mi-&gt;context.options.=
+ifconfig_local &amp;&amp; (!old_ip || strcmp(old_ip, mi-&gt;context.options=
+.ifconfig_local)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     &amp;&amp; inet_pton(AF_INET, mi-&gt;context.options.ifconfig_local, &=
+amp;addr) =3D=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    if (new_ip)</span><br><span>     {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        in_addr_t new_ip =3D ntohl(addr.s_addr);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        /* Remove old IP */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (mi-&gt;co=
+ntext.c2.push_ifconfig_defined)</span><br><span style=3D"color: hsl(120, 10=
 0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            mi-&gt;context.c2.push_ifconfig_defined =3D true;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            mi-&gt;context.c2.p=
-ush_ifconfig_local =3D ntohl(new_addr.s_addr);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        }</span><br><span>     }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* TO DO:</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-     *  else if (old_ip)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-     *  {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-     *      // remove old IP</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-     *  }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   if ((mi-&gt;context.options.ifconfig_ipv6_local &amp;&amp; (!old_ipv6 ||=
- strcmp(old_ipv6, mi-&gt;context.options.ifconfig_ipv6_local)))</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; inet_pton(AF_I=
-NET6, mi-&gt;context.options.ifconfig_ipv6_local, &amp;new_ipv6) =3D=3D 1)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (new_ipv6)</s=
-pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       /* Add new IPv6 */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        multi_learn_in6_addr(m, mi, new_ipv6, -1, true);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        /* Remove old IPv6 */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (mi-&gt;context.c2.push_ifcon=
-fig_ipv6_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-unlearn_ifconfig_ipv6(m, mi);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        }</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    /* TO DO:</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-     *  else if (old_ipv6)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-     *  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--     *      // remove old IPv6</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-     *  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-   */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Add=
- new IPv6 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- struct in6_addr new_addr6;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        CLEAR(new_addr6);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        if (inet_pton(AF_INET6, new_ipv6, &amp;new_addr6) =3D=
-=3D 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &a=
-mp;&amp; multi_learn_in6_addr(m, mi, new_addr6, -1, true))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            mi-&gt;context.c2.push_ifconfig_ip=
-v6_defined =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            mi-&gt;context.c2.push_ifconfig_ipv6_local =3D new_addr6;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><br=
-><span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><sp=
-an>index b2b892b..97bbc4a 100644</span><br><span>--- a/src/openvpn/multi.h<=
-/span><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -692,6 +692,8 =
-@@</span><br><span> #endif</span><br><span> </span><br><span> void</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-update_vhash(struct multi_cont=
-ext *m, struct multi_instance *mi, const char *old_ip, const char *old_ipv6=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+update_vhash(stru=
-ct multi_context *m, struct multi_instance *mi, const char *new_ip, const c=
-har *new_ipv6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void=
- unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+void unlearn_ifconfig_ip=
-v6(struct multi_context *m, struct multi_instance *mi);</span><br><span> </=
-span><br><span> #endif /* MULTI_H */</span><br><span>diff --git a/src/openv=
-pn/push.c b/src/openvpn/push.c</span><br><span>index 0c8eb84..2c717c7 10064=
-4</span><br><span>--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvp=
-n/push.c</span><br><span>@@ -1118,7 +1118,7 @@</span><br><span>            =
-             &quot; To be able to process PUSH_UPDATE messages, be sure to =
-use the --disable-dco option.&quot;);</span><br><span>             return P=
-USH_MSG_ERROR;</span><br><span>         }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        return process_incoming_push_update(c, permissi=
-on_mask, option_types_found, &amp;buf, false);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        return process_push_update(c, &amp;c-&gt=
-;options, permission_mask, option_types_found, &amp;buf, false);</span><br>=
-<span>     }</span><br><span>     else</span><br><span>     {</span><br><sp=
-an>diff --git a/src/openvpn/push.h b/src/openvpn/push.h</span><br><span>ind=
-ex 6b3275e..19a029a 100644</span><br><span>--- a/src/openvpn/push.h</span><=
-br><span>+++ b/src/openvpn/push.h</span><br><span>@@ -61,11 +61,13 @@</span=
-><br><span>  * message has not yet been received.</span><br><span>  *</span=
-><br><span>  * @param c The context for the operation.</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * @param o The options structure to be =
-updated with the received push options.</span><br><span>  * @param permissi=
-on_mask The permission mask specifying which options are allowed to be pull=
-ed.</span><br><span>  * @param option_types_found A pointer to a variable t=
-hat will be filled with the types of options</span><br><span>  *           =
-                found in the message.</span><br><span>  * @param buf A buff=
-er containing the received message.</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * @param msg_sender A boolean indicating if function is call=
-ed by the message sender (server).</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * @param msg_sender A boolean indicating if the message is =
-being processed on the client (false)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *                   or on the server (true).</span><br><=
-span>  *</span><br><span>  * @return</span><br><span>  * - `PUSH_MSG_UPDATE=
-`: The message was processed successfully, and the updates were applied.</s=
-pan><br><span>@@ -74,9 +76,8 @@</span><br><span>  * - `PUSH_MSG_ERROR`: An =
-error occurred during message processing, or the message is invalid.</span>=
-<br><span>  */</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-int process_incoming_push_update(struct context *c, unsigned int=
- permission_mask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-                             unsigned int *option_types_found, struct buffe=
-r *buf,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-                   bool msg_sender);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+int process_push_update(struct context *c, struct options =
-*o, unsigned int permission_mask,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                        unsigned int *option_types_found, str=
-uct buffer *buf, bool msg_sender);</span><br><span> </span><br><span> int p=
-rocess_incoming_push_msg(struct context *c, const struct buffer *buffer,</s=
-pan><br><span>                               bool honor_received_options, u=
-nsigned int permission_mask,</span><br><span>diff --git a/src/openvpn/push_=
-util.c b/src/openvpn/push_util.c</span><br><span>index 25c6ebe..0e86ad3 100=
-644</span><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src=
-/openvpn/push_util.c</span><br><span>@@ -16,18 +16,17 @@</span><br><span> #=
-endif</span><br><span> </span><br><span> int</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-process_incoming_push_update(struct context *c, unsi=
-gned int permission_mask,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                             unsigned int *option_types_found, struct b=
-uffer *buf,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-                   bool msg_sender)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+process_push_update(struct context *c, struct options *o, u=
-nsigned int permission_mask,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                    unsigned int *option_types_found, struct buffe=
-r *buf, bool msg_sender)</span><br><span> {</span><br><span>     int ret =
-=3D PUSH_MSG_ERROR;</span><br><span>     const uint8_t ch =3D buf_read_u8(b=
-uf);</span><br><span>     if (ch =3D=3D &#39;,&#39;)</span><br><span>     {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (apply_pus=
-h_options(c, &amp;c-&gt;options, buf, permission_mask, option_types_found, =
-c-&gt;c2.es,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- if (apply_push_options(c, o, buf, permission_mask, option_types_found, c-&=
-gt;c2.es,</span><br><span>                                true))</span><br>=
-<span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       switch (c-&gt;options.push_continuation)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            switch (o-&gt;push_continuation)</s=
-pan><br><span>             {</span><br><span>                 case 0:</span=
-><br><span>                 case 1:</span><br><span>@@ -144,13 +143,27 @@</=
-span><br><span> </span><br><span> /* send the message(s) prepared to one si=
-ngle client */</span><br><span> static bool</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-send_single_push_update(struct context *c, struct buf=
-fer *msgs, unsigned int *option_types_found)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+send_single_push_update(struct multi_context *m, s=
-truct multi_instance *mi, struct buffer *msgs)</span><br><span> {</span><br=
-><span>     if (!msgs[0].data || !*(msgs[0].data))</span><br><span>     {</=
-span><br><span>         return false;</span><br><span>     }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     int i =3D -1=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int o=
-ption_types_found =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    struct context *c =3D &amp;mi-&gt;context;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct options o;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    CLEAR(o);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* Set canary values to detect ifconfig options in push-upda=
-te messages.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
-These placeholder strings will be overwritten to NULL by the option</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+     * parser if -ifconfig =
-or -ifconfig-ipv6 options are present in the</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     * push-update.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    const char *canary =3D &quot;canary&quot;;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    o.ifconfig_local =3D canary;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    o.ifconfig_ipv6_lo=
-cal =3D canary;</span><br><span> </span><br><span>     while (msgs[++i].dat=
-a &amp;&amp; *(msgs[i].data))</span><br><span>     {</span><br><span>@@ -15=
-9,14 +172,14 @@</span><br><span>             return false;</span><br><span>=
-         }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        /* After sending the control message, we update the options<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * server-side=
- in the client&#39;s context so pushed options like</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-         * ifconfig/ifconfig-ipv6 can actua=
-lly work.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
- After sending the control message, we parse it, miming the behavior</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+         * of `process_inc=
-oming_push_msg()` and we fill an empty `options` struct</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+         * with the new options. If an =
-`ifconfig_local` or `ifconfig_ipv6_local`</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+         * options is found we update the vhash accor=
-dingly, so that the pushed</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+         * ifconfig/ifconfig-ipv6 options can actually work.</span><=
-br><span>          * If we don&#39;t do that, packets arriving from the cli=
-ent with the</span><br><span>          * new address will be rejected and p=
-ackets for the new address</span><br><span>          * will not be routed t=
-owards the client.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-      * For the same reason we later update the vhash too in</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-         * `send_push_update()` func=
-tion.</span><br><span>          * Using `buf_string_compare_advance()` we m=
-imic the behavior</span><br><span>          * inside `process_incoming_push=
-_msg()`. However, we don&#39;t need</span><br><span>          * to check th=
-e return value here because we just want to `advance`,</span><br><span>@@ -=
-176,17 +189,39 @@</span><br><span>          */</span><br><span>         str=
-uct buffer tmp_msg =3D msgs[i];</span><br><span>         buf_string_compare=
-_advance(&amp;tmp_msg, push_update_cmd);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        if (process_incoming_push_update(c, pull_permiss=
-ion_mask(c), option_types_found, &amp;tmp_msg, true) =3D=3D PUSH_MSG_ERROR)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unsigned in=
-t permission_mask =3D pull_permission_mask(c);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        if (process_push_update(c, &amp;o, permi=
-ssion_mask, &amp;option_types_found, &amp;tmp_msg, true) =3D=3D PUSH_MSG_ER=
-ROR)</span><br><span>         {</span><br><span>             msg(M_WARN, &q=
-uot;Failed to process push update message sent to client ID: %u&quot;, c-&g=
-t;c2.tls_multi-&gt;peer_id);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            continue;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   c-&gt;options.push_option_types_found |=3D *option_types_found;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        if (!options_postproce=
-ss_pull(&amp;c-&gt;options, c-&gt;c2.es))</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            msg(M_WARN, &quot;Failed to post-process push update me=
-ssage sent to client ID: %u&quot;, c-&gt;c2.tls_multi-&gt;peer_id);</span><=
-br><span>         }</span><br><span>     }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (option_types_found &amp; OPT_P_UP)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        /* -ifconfig */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        if (!o.ifconfig_local &amp;&amp; mi-&gt;context.c2=
-.push_ifconfig_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      unlearn_ifconfig(m, mi);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        /* -ifconfig-ipv6 */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        if (!o.ifconfig_ipv6_local &amp;&amp; mi-&gt;context.c2.p=
-ush_ifconfig_ipv6_defined)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         unlearn_ifconfig_ipv6(m, mi);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
- (o.ifconfig_local &amp;&amp; !strcmp(o.ifconfig_local, canary))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            o.ifconfig_local =3D NULL;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        if (o.ifconfig_ipv6_loc=
-al &amp;&amp; !strcmp(o.ifconfig_ipv6_local, canary))</span><br><span style=
+>+            unlearn_ifconfig(m, mi);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        }</span><br><span> </span><br><span>         /* =
+Add new IP */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+multi_learn_in_addr_t(m, mi, new_ip, -1, true);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        struct in_addr new_addr;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        CLEAR(new_addr);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (inet_pton(AF_INET=
+, new_ip, &amp;new_addr) =3D=3D 1</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            &amp;&amp; multi_learn_in_addr_t(m, mi, ntohl(new=
+_addr.s_addr), -1, true))</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        mi-&gt;context.c2.push_ifconfig_defined =3D true;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            mi-&gt;context.c2.push_if=
+config_local =3D ntohl(new_addr.s_addr);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span>     }</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* TO DO:</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-     *  else if (old_ip)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-     *  {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-     *      // remove old IP</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-     *  }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+((mi-&gt;context.options.ifconfig_ipv6_local &amp;&amp; (!old_ipv6 || strcm=
+p(old_ipv6, mi-&gt;context.options.ifconfig_ipv6_local)))</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; inet_pton(AF_INET6, =
+mi-&gt;context.options.ifconfig_ipv6_local, &amp;new_ipv6) =3D=3D 1)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (new_ipv6)</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ /* Add new IPv6 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      multi_learn_in6_addr(m, mi, new_ipv6, -1, true);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        /* Remove old IPv6 */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        if (mi-&gt;context.c2.push_ifconfig_ip=
+v6_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            unlear=
+n_ifconfig_ipv6(m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    /* TO DO:</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-     *  else if (old_ipv6)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-     *  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+*      // remove old IPv6</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-     *  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Add new I=
+Pv6 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struc=
+t in6_addr new_addr6;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        CLEAR(new_addr6);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (inet_pton(AF_INET6, new_ipv6, &amp;new_addr6) =3D=3D 1<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&am=
+p; multi_learn_in6_addr(m, mi, new_addr6, -1, true))</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            o.ifconfig_ipv6_local =3D NULL;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        /* new ifconfig or new ifconfig-ipv6 */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        update_vhash(m, mi, =
-o.ifconfig_local, o.ifconfig_ipv6_local);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span>     return true;</span><br><span> }</span><br><sp=
-an> </span><br><span>@@ -229,8 +264,6 @@</span><br><span>     int msgs_num =
-=3D (strlen(msg) / safe_cap) + ((strlen(msg) % safe_cap) !=3D 0);</span><br=
-><span>     struct buffer *msgs =3D gc_malloc((msgs_num + 1) * sizeof(struc=
-t buffer), true, &amp;gc);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    unsigned int option_types_found =3D 0;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     msgs[msgs=
-_num].data =3D NULL;</span><br><span>     if (!message_splitter(msg, msgs, =
-&amp;gc, safe_cap))</span><br><span>     {</span><br><span>@@ -255,15 +288,=
-9 @@</span><br><span>             return 0;</span><br><span>         }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-const char *old_ip =3D mi-&gt;context.options.ifconfig_local;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        const char *old_ipv6 =3D mi=
--&gt;context.options.ifconfig_ipv6_local;</span><br><span>         if (!mi-=
-&gt;halt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &=
-amp;&amp; send_single_push_update(&amp;mi-&gt;context, msgs, &amp;option_ty=
-pes_found))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    &amp;&amp; send_single_push_update(m, mi, msgs))</span><br><span>      =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (o=
-ption_types_found &amp; OPT_P_UP)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                update_vhash(m, mi, old_ip, old_ipv6);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span>        =
-     gc_free(&amp;gc);</span><br><span>             return 1;</span><br><sp=
-an>         }</span><br><span>@@ -289,18 +316,11 @@</span><br><span>       =
-  }</span><br><span> </span><br><span>         /* Type is UPT_BROADCAST so =
-we update every client */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        option_types_found =3D 0;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        const char *old_ip =3D curr_mi-&gt;context.options.=
-ifconfig_local;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  const char *old_ipv6 =3D curr_mi-&gt;context.options.ifconfig_ipv6_local;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!send_sin=
-gle_push_update(&amp;curr_mi-&gt;context, msgs, &amp;option_types_found))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!send_sin=
-gle_push_update(m, curr_mi, msgs))</span><br><span>         {</span><br><sp=
-an>             msg(M_CLIENT, &quot;ERROR: Peer ID: %u has not been updated=
-&quot;, curr_mi-&gt;context.c2.tls_multi-&gt;peer_id);</span><br><span>    =
-         continue;</span><br><span>         }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        if (option_types_found &amp; OPT_P_UP)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            update_vhash(m, curr_mi, o=
-ld_ip, old_ipv6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    }</span><br><span>         count++;</span><br><span>     }</span><br><s=
-pan> </span><br><span>diff --git a/tests/unit_tests/openvpn/test_push_updat=
-e_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c</span><br><span>i=
-ndex 60596ed..7fadb69 100644</span><br><span>--- a/tests/unit_tests/openvpn=
-/test_push_update_msg.c</span><br><span>+++ b/tests/unit_tests/openvpn/test=
-_push_update_msg.c</span><br><span>@@ -29,7 +29,19 @@</span><br><span> }</s=
-pan><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-update_vhash(struct multi_context *m, struct multi_instance=
- *mi, const char *old_ip, const char *old_ipv6)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+unlearn_ifconfig(struct multi_context *m, struc=
-t multi_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+update_vhash(struct mult=
-i_context *m, struct multi_instance *mi, const char *new_ip, const char *ne=
-w_ipv6)</span><br><span> {</span><br><span>     return;</span><br><span> }<=
-/span><br><span>@@ -95,7 +107,7 @@</span><br><span>     }</span><br><span> =
-    else if (honor_received_options &amp;&amp; buf_string_compare_advance(&=
-amp;buf, push_update_cmd))</span><br><span>     {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        return process_incoming_push_update(c, =
-permission_mask, option_types_found, &amp;buf, false);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        return process_push_update(c, &a=
-mp;c-&gt;options, permission_mask, option_types_found, &amp;buf, false);</s=
-pan><br><span>     }</span><br><span>     else</span><br><span>     {</span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1253?usp=3Demail">change 1253</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1253?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+ hsl(120, 100%, 40%);">+            mi-&gt;context.c2.push_ifconfig_ipv6_de=
+fined =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        mi-&gt;context.c2.push_ifconfig_ipv6_local =3D new_addr6;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><br><spa=
+n>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><span>in=
+dex b2b892b..97bbc4a 100644</span><br><span>--- a/src/openvpn/multi.h</span=
+><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -692,6 +692,8 @@</s=
+pan><br><span> #endif</span><br><span> </span><br><span> void</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-update_vhash(struct multi_context *=
+m, struct multi_instance *mi, const char *old_ip, const char *old_ipv6);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+update_vhash(struct mu=
+lti_context *m, struct multi_instance *mi, const char *new_ip, const char *=
+new_ipv6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void unle=
+arn_ifconfig(struct multi_context *m, struct multi_instance *mi);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+void unlearn_ifconfig_ipv6(st=
+ruct multi_context *m, struct multi_instance *mi);</span><br><span> </span>=
+<br><span> #endif /* MULTI_H */</span><br><span>diff --git a/src/openvpn/pu=
+sh.c b/src/openvpn/push.c</span><br><span>index 0c8eb84..2c717c7 100644</sp=
+an><br><span>--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/pus=
+h.c</span><br><span>@@ -1118,7 +1118,7 @@</span><br><span>                 =
+        &quot; To be able to process PUSH_UPDATE messages, be sure to use t=
+he --disable-dco option.&quot;);</span><br><span>             return PUSH_M=
+SG_ERROR;</span><br><span>         }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        return process_incoming_push_update(c, permission_ma=
+sk, option_types_found, &amp;buf, false);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return process_push_update(c, &amp;c-&gt;opti=
+ons, permission_mask, option_types_found, &amp;buf, false);</span><br><span=
+>     }</span><br><span>     else</span><br><span>     {</span><br><span>di=
+ff --git a/src/openvpn/push.h b/src/openvpn/push.h</span><br><span>index 6b=
+3275e..19a029a 100644</span><br><span>--- a/src/openvpn/push.h</span><br><s=
+pan>+++ b/src/openvpn/push.h</span><br><span>@@ -61,11 +61,13 @@</span><br>=
+<span>  * message has not yet been received.</span><br><span>  *</span><br>=
+<span>  * @param c The context for the operation.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param o The options structure to be updat=
+ed with the received push options.</span><br><span>  * @param permission_ma=
+sk The permission mask specifying which options are allowed to be pulled.</=
+span><br><span>  * @param option_types_found A pointer to a variable that w=
+ill be filled with the types of options</span><br><span>  *                =
+           found in the message.</span><br><span>  * @param buf A buffer co=
+ntaining the received message.</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * @param msg_sender A boolean indicating if function is called by=
+ the message sender (server).</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * @param msg_sender A boolean indicating if the message is being=
+ processed on the client (false)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *                   or on the server (true).</span><br><span>=
+  *</span><br><span>  * @return</span><br><span>  * - `PUSH_MSG_UPDATE`: Th=
+e message was processed successfully, and the updates were applied.</span><=
+br><span>@@ -74,9 +76,8 @@</span><br><span>  * - `PUSH_MSG_ERROR`: An error=
+ occurred during message processing, or the message is invalid.</span><br><=
+span>  */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-int process_incoming_push_update(struct context *c, unsigned int perm=
+ission_mask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+                        unsigned int *option_types_found, struct buffer *bu=
+f,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+              bool msg_sender);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+int process_push_update(struct context *c, struct options *o, u=
+nsigned int permission_mask,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                        unsigned int *option_types_found, struct b=
+uffer *buf, bool msg_sender);</span><br><span> </span><br><span> int proces=
+s_incoming_push_msg(struct context *c, const struct buffer *buffer,</span><=
+br><span>                               bool honor_received_options, unsign=
+ed int permission_mask,</span><br><span>diff --git a/src/openvpn/push_util.=
+c b/src/openvpn/push_util.c</span><br><span>index 25c6ebe..0e86ad3 100644</=
+span><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/open=
+vpn/push_util.c</span><br><span>@@ -16,18 +16,17 @@</span><br><span> #endif=
+</span><br><span> </span><br><span> int</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-process_incoming_push_update(struct context *c, unsigned =
+int permission_mask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                            unsigned int *option_types_found, struct buffer=
+ *buf,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+              bool msg_sender)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+process_push_update(struct context *c, struct options *o, unsign=
+ed int permission_mask,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    unsigned int *option_types_found, struct buffer *bu=
+f, bool msg_sender)</span><br><span> {</span><br><span>     int ret =3D PUS=
+H_MSG_ERROR;</span><br><span>     const uint8_t ch =3D buf_read_u8(buf);</s=
+pan><br><span>     if (ch =3D=3D &#39;,&#39;)</span><br><span>     {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (apply_push_optio=
+ns(c, &amp;c-&gt;options, buf, permission_mask, option_types_found, c-&gt;c=
+2.es,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (ap=
+ply_push_options(c, o, buf, permission_mask, option_types_found, c-&gt;c2.e=
+s,</span><br><span>                                true))</span><br><span> =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+switch (c-&gt;options.push_continuation)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            switch (o-&gt;push_continuation)</span><br=
+><span>             {</span><br><span>                 case 0:</span><br><s=
+pan>                 case 1:</span><br><span>@@ -144,13 +143,27 @@</span><b=
+r><span> </span><br><span> /* send the message(s) prepared to one single cl=
+ient */</span><br><span> static bool</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-send_single_push_update(struct context *c, struct buffer *ms=
+gs, unsigned int *option_types_found)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+send_single_push_update(struct multi_context *m, struct m=
+ulti_instance *mi, struct buffer *msgs)</span><br><span> {</span><br><span>=
+     if (!msgs[0].data || !*(msgs[0].data))</span><br><span>     {</span><b=
+r><span>         return false;</span><br><span>     }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     int i =3D -1;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int option_t=
+ypes_found =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct context *c =3D &amp;mi-&gt;context;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    struct options o;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    CLEAR(o);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /* Set canary values to detect ifconfig options in push-update messag=
+es.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * These pla=
+ceholder strings will be overwritten to NULL by the option</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     * parser if -ifconfig or -ifcon=
+fig-ipv6 options are present in the</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+     * push-update.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    const char *canary =3D &quot;canary&quot;;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    o.ifconfig_local =3D canary;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    o.ifconfig_ipv6_local =3D c=
+anary;</span><br><span> </span><br><span>     while (msgs[++i].data &amp;&a=
+mp; *(msgs[i].data))</span><br><span>     {</span><br><span>@@ -159,14 +172=
+,14 @@</span><br><span>             return false;</span><br><span>         =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      /* After sending the control message, we update the options</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-         * server-side in the c=
+lient&#39;s context so pushed options like</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-         * ifconfig/ifconfig-ipv6 can actually work.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* After send=
+ing the control message, we parse it, miming the behavior</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+         * of `process_incoming_push_=
+msg()` and we fill an empty `options` struct</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+         * with the new options. If an `ifconfig_l=
+ocal` or `ifconfig_ipv6_local`</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+         * options is found we update the vhash accordingly, so =
+that the pushed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+     * ifconfig/ifconfig-ipv6 options can actually work.</span><br><span>  =
+        * If we don&#39;t do that, packets arriving from the client with th=
+e</span><br><span>          * new address will be rejected and packets for =
+the new address</span><br><span>          * will not be routed towards the =
+client.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * For=
+ the same reason we later update the vhash too in</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-         * `send_push_update()` function.</span=
+><br><span>          * Using `buf_string_compare_advance()` we mimic the be=
+havior</span><br><span>          * inside `process_incoming_push_msg()`. Ho=
+wever, we don&#39;t need</span><br><span>          * to check the return va=
+lue here because we just want to `advance`,</span><br><span>@@ -176,17 +189=
+,39 @@</span><br><span>          */</span><br><span>         struct buffer =
+tmp_msg =3D msgs[i];</span><br><span>         buf_string_compare_advance(&a=
+mp;tmp_msg, push_update_cmd);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        if (process_incoming_push_update(c, pull_permission_mask(c)=
+, option_types_found, &amp;tmp_msg, true) =3D=3D PUSH_MSG_ERROR)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        unsigned int permissio=
+n_mask =3D pull_permission_mask(c);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        if (process_push_update(c, &amp;o, permission_mask,=
+ &amp;option_types_found, &amp;tmp_msg, true) =3D=3D PUSH_MSG_ERROR)</span>=
+<br><span>         {</span><br><span>             msg(M_WARN, &quot;Failed =
+to process push update message sent to client ID: %u&quot;, c-&gt;c2.tls_mu=
+lti-&gt;peer_id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        continue;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c-&gt;op=
+tions.push_option_types_found |=3D *option_types_found;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        if (!options_postprocess_pull(&am=
+p;c-&gt;options, c-&gt;c2.es))</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         msg(M_WARN, &quot;Failed to post-process push update message sent =
+to client ID: %u&quot;, c-&gt;c2.tls_multi-&gt;peer_id);</span><br><span>  =
+       }</span><br><span>     }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(option_types_found &amp; OPT_P_UP)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        /* -ifconfig */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        if (!o.ifconfig_local &amp;&amp; mi-&gt;context.c2.push_ifcon=
+fig_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            unlea=
+rn_ifconfig(m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*=
+ -ifconfig-ipv6 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       if (!o.ifconfig_ipv6_local &amp;&amp; mi-&gt;context.c2.push_ifconfi=
+g_ipv6_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            un=
+learn_ifconfig_ipv6(m, mi);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (o.ifconfi=
+g_local &amp;&amp; !strcmp(o.ifconfig_local, canary))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            o.ifconfig_local =3D NULL;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (o.ifconfig_ipv6_local &amp;&a=
+mp; !strcmp(o.ifconfig_ipv6_local, canary))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            o.ifconfig_ipv6_local =3D NULL;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        /* new ifconfig or new ifconfig-ipv6 */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        update_vhash(m, mi, o.ifconfig=
+_local, o.ifconfig_ipv6_local);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span>     return true;</span><br><span> }</span><br><span> </span=
+><br><span>@@ -229,8 +264,6 @@</span><br><span>     int msgs_num =3D (strle=
+n(msg) / safe_cap) + ((strlen(msg) % safe_cap) !=3D 0);</span><br><span>   =
+  struct buffer *msgs =3D gc_malloc((msgs_num + 1) * sizeof(struct buffer),=
+ true, &amp;gc);</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    unsigned int option_types_found =3D 0;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     msgs[msgs_num].data=
+ =3D NULL;</span><br><span>     if (!message_splitter(msg, msgs, &amp;gc, s=
+afe_cap))</span><br><span>     {</span><br><span>@@ -255,15 +288,9 @@</span=
+><br><span>             return 0;</span><br><span>         }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const char=
+ *old_ip =3D mi-&gt;context.options.ifconfig_local;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        const char *old_ipv6 =3D mi-&gt;con=
+text.options.ifconfig_ipv6_local;</span><br><span>         if (!mi-&gt;halt=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp=
+; send_single_push_update(&amp;mi-&gt;context, msgs, &amp;option_types_foun=
+d))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp=
+;&amp; send_single_push_update(m, mi, msgs))</span><br><span>         {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (option_ty=
+pes_found &amp; OPT_P_UP)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+            update_vhash(m, mi, old_ip, old_ipv6);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            }</span><br><span>             gc_=
+free(&amp;gc);</span><br><span>             return 1;</span><br><span>     =
+    }</span><br><span>@@ -289,18 +316,11 @@</span><br><span>         }</spa=
+n><br><span> </span><br><span>         /* Type is UPT_BROADCAST so we updat=
+e every client */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    option_types_found =3D 0;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        const char *old_ip =3D curr_mi-&gt;context.options.ifconfig=
+_local;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const =
+char *old_ipv6 =3D curr_mi-&gt;context.options.ifconfig_ipv6_local;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!send_single_push=
+_update(&amp;curr_mi-&gt;context, msgs, &amp;option_types_found))</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (!send_single_push=
+_update(m, curr_mi, msgs))</span><br><span>         {</span><br><span>     =
+        msg(M_CLIENT, &quot;ERROR: Peer ID: %u has not been updated&quot;, =
+curr_mi-&gt;context.c2.tls_multi-&gt;peer_id);</span><br><span>            =
+ continue;</span><br><span>         }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        if (option_types_found &amp; OPT_P_UP)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            update_vhash(m, curr_mi, old_ip, o=
+ld_ipv6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
+pan><br><span>         count++;</span><br><span>     }</span><br><span> </s=
+pan><br><span>diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c =
+b/tests/unit_tests/openvpn/test_push_update_msg.c</span><br><span>index 605=
+96ed..7fadb69 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pu=
+sh_update_msg.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_push_up=
+date_msg.c</span><br><span>@@ -29,7 +29,19 @@</span><br><span> }</span><br>=
+<span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-update_vhash(struct multi_context *m, struct multi_instance *mi, co=
+nst char *old_ip, const char *old_ipv6)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+unlearn_ifconfig(struct multi_context *m, struct multi_=
+instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unlearn_i=
+fconfig_ipv6(struct multi_context *m, struct multi_instance *mi)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+update_vhash(struct multi_context=
+ *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)</=
+span><br><span> {</span><br><span>     return;</span><br><span> }</span><br=
+><span>@@ -95,7 +107,7 @@</span><br><span>     }</span><br><span>     else =
+if (honor_received_options &amp;&amp; buf_string_compare_advance(&amp;buf, =
+push_update_cmd))</span><br><span>     {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        return process_incoming_push_update(c, permissio=
+n_mask, option_types_found, &amp;buf, false);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return process_push_update(c, &amp;c-&gt;=
+options, permission_mask, option_types_found, &amp;buf, false);</span><br><=
+span>     }</span><br><span>     else</span><br><span>     {</span><br><spa=
+n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/1253?usp=3Demail">change 1253</a>. To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?us=
+p=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
+ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
+g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1253?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I07a8ddd9026eef64b6f5abde987=
@@ -1107,5 +1100,5 @@ div>
 
 </body></html>=
 
---NyP1hYXhN64=--
+--ZhSzz1wdJXY=--
 
