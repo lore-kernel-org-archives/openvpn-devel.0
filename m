@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 17 Oct 2025 20:58:23 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 17 Oct 2025 22:58:31 +0200
+Message-ID: <20251017205837.8553-1-gert@...1296...>
 In-Reply-To: <gerrit.1760513121000.I61f9d9bb26112eac0c0a47cb9d17982b075887ff@...2715...>
 References: <gerrit.1760513121000.I61f9d9bb26112eac0c0a47cb9d17982b075887ff@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <e8847ee69e9ab3d3ab7afb93c3d56a1fdb6ad472-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q+JrCszhqJM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: remove
- dco_read/write_bytes from dco_context_t
+Subject: [Openvpn-devel] [PATCH v2] dco: remove dco_read/write_bytes from
+ dco_context_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,95 +14,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Q+JrCszhqJM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+Remove dco_read_bytes and dco_write_bytes from all dco_context_t
+structures, as peer statistics are now stored directly in the
+corresponding c2 fields across all DCO interfaces.
 
-cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1276?usp=3Demail )
+Change-Id: I61f9d9bb26112eac0c0a47cb9d17982b075887ff
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1276
+---
 
-Change subject: dco: remove dco_read/write_bytes from dco_context_t
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1276
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I61f9d9bb26112eac0c0a47cb9d17982b075887ff
-Gerrit-Change-Number: 1276
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Fri, 17 Oct 2025 20:58:23 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---Q+JrCszhqJM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, ralf_lici. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail=
-">change 1276</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I61f9d9bb26112eac0c0a47cb9d1=
-7982b075887ff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1276 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Oct 2025 20:58:23=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---Q+JrCszhqJM=--
+        
+diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
+index 2f486f0..0797b82 100644
+--- a/src/openvpn/dco_freebsd.h
++++ b/src/openvpn/dco_freebsd.h
+@@ -59,8 +59,6 @@
+     int dco_message_peer_id;
+     int dco_del_peer_reason;
+     struct sockaddr_storage dco_float_peer_ss;
+-    uint64_t dco_read_bytes;
+-    uint64_t dco_write_bytes;
+ 
+     struct context *c;
+ } dco_context_t;
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index 310d433..efd5b27 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -81,8 +81,6 @@
+     int dco_message_key_id;
+     int dco_del_peer_reason;
+     struct sockaddr_storage dco_float_peer_ss;
+-    uint64_t dco_read_bytes;
+-    uint64_t dco_write_bytes;
+ } dco_context_t;
+ 
+ #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
+diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
+index 4f3f028..02b8389 100644
+--- a/src/openvpn/dco_win.h
++++ b/src/openvpn/dco_win.h
+@@ -55,9 +55,6 @@
+     int dco_del_peer_reason;
+     struct sockaddr_storage dco_float_peer_ss;
+ 
+-    uint64_t dco_read_bytes;
+-    uint64_t dco_write_bytes;
+-
+     struct context *c;
+ };
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2863ff1..053c54d 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3266,8 +3266,6 @@
+      * installed, and we do not need to clean up the state in the kernel */
+     mi->context.c2.tls_multi->dco_peer_id = -1;
+     mi->context.sig->signal_text = reason;
+-    mi->context.c2.dco_read_bytes = dco->dco_read_bytes;
+-    mi->context.c2.dco_write_bytes = dco->dco_write_bytes;
+     multi_signal_instance(m, mi, SIGTERM);
+ }
+ 
+@@ -3337,8 +3335,6 @@
+     dco->dco_message_type = 0;
+     dco->dco_message_peer_id = -1;
+     dco->dco_del_peer_reason = -1;
+-    dco->dco_read_bytes = 0;
+-    dco->dco_write_bytes = 0;
+     return ret > 0;
+ }
+ #endif /* if defined(ENABLE_DCO) */
 
