@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 17 Oct 2025 22:56:12 +0200
-Message-ID: <20251017205618.8273-1-gert@...1296...>
-In-Reply-To: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
-References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 17 Oct 2025 20:57:16 +0000
+In-Reply-To: <gerrit.1760700482000.I46d0e4be82a5cc7e466d6e8f658e5b131b5401c4@...2715...>
+References: <gerrit.1760700482000.I46d0e4be82a5cc7e466d6e8f658e5b131b5401c4@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <9457ce9e9eabde6c8a8f8f4f1f5323c657d6e6c5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco-freebsd: store peer stats directly
- in c2
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="CYIZqbqUo9Y="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: route: Add
+ #endif comment for uncrustify compliance
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Ralf Lici <ralf@...2726...>
+--CYIZqbqUo9Y=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The dco_context_t structure includes a reference to the general context
-structure c, which allows us to store dco_read_bytes and dco_write_bytes
-directly as c2 fields. This aligns the FreeBSD implementation with how
-we handle DCO peer stats on Linux and Windows.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1275
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1284?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: route: Add #endif comment for uncrustify compliance
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1275
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 947a769..f7ed02f 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -621,8 +621,8 @@
-             {
-                 const nvlist_t *bytes = nvlist_get_nvlist(nvl, "bytes");
- 
--                dco->dco_read_bytes = nvlist_get_number(bytes, "in");
--                dco->dco_write_bytes = nvlist_get_number(bytes, "out");
-+                dco->c->c2.dco_read_bytes = nvlist_get_number(bytes, "in");
-+                dco->c->c2.dco_write_bytes = nvlist_get_number(bytes, "out");
-             }
- 
-             dco->dco_message_type = OVPN_CMD_DEL_PEER;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1284?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I46d0e4be82a5cc7e466d6e8f658e5b131b5401c4
+Gerrit-Change-Number: 1284
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 17 Oct 2025 20:57:16 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--CYIZqbqUo9Y=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1284?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1284?usp=3Demail=
+">change 1284</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1284?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I46d0e4be82a5cc7e466d6e8f658=
+e5b131b5401c4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1284 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Oct 2025 20:57:16=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--CYIZqbqUo9Y=--
 
