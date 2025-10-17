@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 17 Oct 2025 22:57:24 +0200
-Message-ID: <20251017205730.8450-1-gert@...1296...>
-In-Reply-To: <gerrit.1760700482000.I46d0e4be82a5cc7e466d6e8f658e5b131b5401c4@...2715...>
-References: <gerrit.1760700482000.I46d0e4be82a5cc7e466d6e8f658e5b131b5401c4@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 17 Oct 2025 20:58:23 +0000
+In-Reply-To: <gerrit.1760513121000.I61f9d9bb26112eac0c0a47cb9d17982b075887ff@...2715...>
+References: <gerrit.1760513121000.I61f9d9bb26112eac0c0a47cb9d17982b075887ff@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
+Message-ID: <e8847ee69e9ab3d3ab7afb93c3d56a1fdb6ad472-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] route: Add #endif comment for uncrustify
- compliance
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Q+JrCszhqJM="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: remove
+ dco_read/write_bytes from dco_context_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +19,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--Q+JrCszhqJM=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Cherry-pick dca6b03098ab0f3ef808c891673305651dc6704a
-broke uncrustify compliance. Apparently this one added
-line pushed it over the limit to require the #endif
-comment.
+Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
 
-Change-Id: I46d0e4be82a5cc7e466d6e8f658e5b131b5401c4
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1284
----
+cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1276?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
+Change subject: dco: remove dco_read/write_bytes from dco_context_t
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1284
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 3ff9717..75e94c2 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2368,7 +2368,7 @@
-     {
-         gateway_needed = true;
-     }
--#endif
-+#endif /* ifndef _WIN32 */
- 
-     struct gc_arena gc = gc_new();
-     struct argv argv = argv_new();
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I61f9d9bb26112eac0c0a47cb9d17982b075887ff
+Gerrit-Change-Number: 1276
+Gerrit-PatchSet: 2
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Fri, 17 Oct 2025 20:58:23 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--Q+JrCszhqJM=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, ralf_lici. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail=
+">change 1276</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1276?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I61f9d9bb26112eac0c0a47cb9d1=
+7982b075887ff </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1276 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Oct 2025 20:58:23=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--Q+JrCszhqJM=--
 
