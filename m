@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 18 Oct 2025 16:51:26 +0000
-In-Reply-To: <gerrit.1760698129000.I2d1fbe7ec080beb931253d09c1b5227e9bf4e756@...2715...>
-References: <gerrit.1760698129000.I2d1fbe7ec080beb931253d09c1b5227e9bf4e756@...2715...>
+Date: Sat, 18 Oct 2025 17:01:34 +0000
+In-Reply-To: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
+References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <45a955fb8d010ec4f7290a3a464cafdd2634b189-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
+Message-ID: <a03439831d4dcf89d010598dce4c0a1b20ef58df-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3yiiHfocKKQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_util: Fix
- conversion warning in get_num_elements
+Content-Type: multipart/alternative; boundary="GyDfElnGKW8="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco-freebsd: store
+ peer stats directly in c2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,155 +19,150 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3yiiHfocKKQ=
+--GyDfElnGKW8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-81?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
 
-Change subject: ssl_util: Fix conversion warning in get_num_elements
+cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1275?usp=3Demail )
+
+Change subject: dco-freebsd: store peer stats directly in c2
 ......................................................................
 
-ssl_util: Fix conversion warning in get_num_elements
 
-Just use correct type.
+Patch Set 2: Code-Review-1
 
-Change-Id: I2d1fbe7ec080beb931253d09c1b5227e9bf4e756
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1281
-Message-Id: <20251017204914.7548-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
-421.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/ssl_util.c
-1 file changed, 2 insertions(+), 11 deletions(-)
+(2 comments)
+
+Patchset:
+
+PS2:
+I think this needs more discussion on which counters on what event and in w=
+hat mode (client side / CM_P2P vs. server side) to put where
 
 
+File src/openvpn/dco_freebsd.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1275/comment/4f9c725c_42b0c79e?usp=3D=
+email :
+PS2, Line 625:                 dco->c->c2.dco_write_bytes =3D nvlist_get_nu=
+mber(bytes, "out");
+I don't think this is the correct place to store these.
+
+The overall context here is "OVPN_NOTIF_DEL_PEER", so we're told by the ker=
+nel that `dco->dco_message_peer_id` went away, and, btw, here are the lates=
+t counters for this peer.
+
+Storing it in `dco->c->c2->` smells like "the server's global structure" wh=
+ile Linux would put per-client into `dco->c->multi->instances[peer_id]->con=
+text.c2->` - OTOH, Linux' `CMD_PEER_DEL_NTF` seems to carry no counters, so=
+ the code is not the same anyway.
+
+Am I misreading this?
 
 
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-index 50e8c03..fb7cf3e 100644
---- a/src/openvpn/ssl_util.c
-+++ b/src/openvpn/ssl_util.c
-@@ -290,21 +290,16 @@
-     return NULL;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- int
- get_num_elements(const char *string, char delimiter)
- {
--    int string_len =3D strlen(string);
-+    const size_t string_len =3D strlen(string);
-
-     ASSERT(0 !=3D string_len);
-
-     int element_count =3D 1;
-     /* Get number of ciphers */
--    for (int i =3D 0; i < string_len; i++)
-+    for (size_t i =3D 0; i < string_len; i++)
-     {
-         if (string[i] =3D=3D delimiter)
-         {
-@@ -314,7 +309,3 @@
-
-     return element_count;
- }
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2d1fbe7ec080beb931253d09c1b5227e9bf4e756
-Gerrit-Change-Number: 1281
+Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
+Gerrit-Change-Number: 1275
 Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Sat, 18 Oct 2025 17:01:34 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---3yiiHfocKKQ=
+--GyDfElnGKW8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1281?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">ssl_util: Fix conversion warning in get_num_elem=
-ents<br><br>Just use correct type.<br><br>Change-Id: I2d1fbe7ec080beb931253=
-d09c1b5227e9bf4e756<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2723...=
-.&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1281<br>Message=
--Id: &lt;20251017204914.7548-1-gert@...1296...&gt;<br>URL: https://www.mail=
--archive.com/openvpn-devel@lists.sourceforge.net/msg33421.html<br>Signed-of=
-f-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/ssl_util=
-.c<br>1 file changed, 2 insertions(+), 11 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c</span><br><=
-span>index 50e8c03..fb7cf3e 100644</span><br><span>--- a/src/openvpn/ssl_ut=
-il.c</span><br><span>+++ b/src/openvpn/ssl_util.c</span><br><span>@@ -290,2=
-1 +290,16 @@</span><br><span>     return NULL;</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
-_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> ge=
-t_num_elements(const char *string, char delimiter)</span><br><span> {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    int string_len =3D strl=
-en(string);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
-t size_t string_len =3D strlen(string);</span><br><span> </span><br><span> =
-    ASSERT(0 !=3D string_len);</span><br><span> </span><br><span>     int e=
-lement_count =3D 1;</span><br><span>     /* Get number of ciphers */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt;=
- string_len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  for (size_t i =3D 0; i &lt; string_len; i++)</span><br><span>     {</span=
-><br><span>         if (string[i] =3D=3D delimiter)</span><br><span>       =
-  {</span><br><span>@@ -314,7 +309,3 @@</span><br><span> </span><br><span> =
-    return element_count;</span><br><span> }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#endif</span><br><span></span><br></pre><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Dema=
-il">change 1281</a>. To unsubscribe, or for help writing mail filters, visi=
-t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1281?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, ralf_lici. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1275?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I think th=
+is needs more discussion on which counters on what event and in what mode (=
+client side / CM_P2P vs. server side) to put where</p></li></ul></li><li st=
+yle=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_freebsd.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1275/comment/4f9c725c_42b0c79e?usp=3Demail">Patch Set #2, L=
+ine 625:</a> <code style=3D"font-family:monospace,monospace">              =
+  dco-&gt;c-&gt;c2.dco_write_bytes =3D nvlist_get_number(bytes, &quot;out&q=
+uot;);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
+rap: break-word;">I don&#39;t think this is the correct place to store thes=
+e.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
+word;">The overall context here is &quot;OVPN_NOTIF_DEL_PEER&quot;, so we&#=
+39;re told by the kernel that `dco-&gt;dco_message_peer_id` went away, and,=
+ btw, here are the latest counters for this peer.</p><p class=3D"blocks" st=
+yle=3D"white-space: pre-wrap; word-wrap: break-word;">Storing it in `dco-&g=
+t;c-&gt;c2-&gt;` smells like &quot;the server&#39;s global structure&quot; =
+while Linux would put per-client into `dco-&gt;c-&gt;multi-&gt;instances[pe=
+er_id]-&gt;context.c2-&gt;` - OTOH, Linux&#39; `CMD_PEER_DEL_NTF` seems to =
+carry no counters, so the code is not the same anyway.</p><p class=3D"block=
+s" style=3D"white-space: pre-wrap; word-wrap: break-word;">Am I misreading =
+this?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1275?usp=3Demail">change 1275</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1275?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2d1fbe7ec080beb931253d09c1b=
-5227e9bf4e756 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1281 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd=
+3b357711c5a84 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1275 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 18 Oct 2025 17:01:34=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---3yiiHfocKKQ=--
+--GyDfElnGKW8=--
 
