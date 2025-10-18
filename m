@@ -1,17 +1,17 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 18 Oct 2025 21:18:40 +0000
-In-Reply-To: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
-References: <gerrit.1757957943000.I83295e00d1a756dfa44050b0a4493095fb050fff@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <5f4d5543fac246f19d64136d0b725997dc729601-EmailReviewComments-HTML@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Sat, 18 Oct 2025 21:29:34 +0000
+In-Reply-To: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
+References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
+ gert@...1296...
+Message-ID: <511bee86dcc353c89fcd495cc482c52e713a95e7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ZMHfd5LnL6I="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Install host routes
- for ifconfig-push routes when DCO is enabled
+Content-Type: multipart/alternative; boundary="Z2X9wf+TbJU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco-freebsd: store
+ peer stats directly in c2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,149 +20,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: d12fk <heiko@...515...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ZMHfd5LnL6I=
+--Z2X9wf+TbJU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, flichtenheld, ordex, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
 
-cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1192?usp=3Demail )
+ordex has posted comments on this change by ralf_lici. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1275?usp=3Demail )
 
-Change subject: Install host routes for ifconfig-push routes when DCO is en=
-abled
+Change subject: dco-freebsd: store peer stats directly in c2
 ......................................................................
 
 
-Patch Set 11: Code-Review-2
+Patch Set 2:
 
 (1 comment)
 
-Patchset:
+File src/openvpn/dco_freebsd.c:
 
-PS11:
-This is not working right yet.  I am testing on FreeBSD/DCO, but the "do I =
-need this route" logic should not make a difference.
-
-I've built a testbed to create `ifconfig-push` or `ifconfig-ipv6-push` at w=
-ill (from the client side) and integrate that in t_client.sh - and noticed =
-that I am always seeing IPv6 /128s added
-
-```
-/sbin/route -6 add -net fd00:abcd:114:2::1001/128 -iface tun0 -fib 0
-```
-
-... for a client that just got a pool address
-
-```
-# grep ^server tun-udp-p2mp/server.conf
-server 10.114.2.0 255.255.255.0
-server-ipv6 fd00:abcd:114:2::/64
-```
-
-will investigate more tomorrow, but maybe you can find it over night? ;-)
+http://gerrit.openvpn.net/c/openvpn/+/1275/comment/eaa99283_eaf32505?usp=3D=
+email :
+PS2, Line 625:                 dco->c->c2.dco_write_bytes =3D nvlist_get_nu=
+mber(bytes, "out");
+> I don't think this is the correct place to store these. [=E2=80=A6]
+actually if you check `dco_update_peer_stat()` it already does the right th=
+ing, similarly to what Gert is alluding to. Maybe this function can be re-u=
+sed while parsing `OVPN_NOTIF_DEL_PEER`?
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I83295e00d1a756dfa44050b0a4493095fb050fff
-Gerrit-Change-Number: 1192
-Gerrit-PatchSet: 11
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
+Gerrit-Change-Number: 1275
+Gerrit-PatchSet: 2
+Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: ordex <antonio@...2726...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Sat, 18 Oct 2025 21:18:40 +0000
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Sat, 18 Oct 2025 21:29:34 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
 
---ZMHfd5LnL6I=
+--Z2X9wf+TbJU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, flichtenheld, ordex, plaisthos. </p>
-<p>Patch set 11:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1192?usp=3Demail">=
-View Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1192?tab=3Dcomments&amp;usp=3Demail">Patch Set #11:</a> </p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This is=
- not working right yet.  I am testing on FreeBSD/DCO, but the &quot;do I ne=
-ed this route&quot; logic should not make a difference.</p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I&#39;ve built =
-a testbed to create `ifconfig-push` or `ifconfig-ipv6-push` at will (from t=
-he client side) and integrate that in t_client.sh - and noticed that I am a=
-lways seeing IPv6 /128s added</p><p class=3D"blocks" style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">```<br>/sbin/route -6 add -net fd00:abcd:=
-114:2::1001/128 -iface tun0 -fib 0<br>```</p><p class=3D"blocks" style=3D"w=
-hite-space: pre-wrap; word-wrap: break-word;">... for a client that just go=
-t a pool address</p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">```<br># grep ^server tun-udp-p2mp/server.conf<br>serv=
-er 10.114.2.0 255.255.255.0<br>server-ipv6 fd00:abcd:114:2::/64<br>```</p><=
-p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-will investigate more tomorrow, but maybe you can find it over night? ;-)</=
-p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1192?usp=3Demail">change 1192</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1192?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
+rently required from: flichtenheld, plaisthos, ralf_lici. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_freebsd.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1275/comment/eaa99283_eaf32505?usp=3Demail">Patch Set=
+ #2, Line 625:</a> <code style=3D"font-family:monospace,monospace">        =
+        dco-&gt;c-&gt;c2.dco_write_bytes =3D nvlist_get_number(bytes, &quot=
+;out&quot;);</code></p><p><blockquote style=3D"border-left: 1px solid #aaa;=
+ margin: 10px 0; padding: 0 10px;">I don&#39;t think this is the correct pl=
+ace to store these. [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">actually if you check `d=
+co_update_peer_stat()` it already does the right thing, similarly to what G=
+ert is alluding to. Maybe this function can be re-used while parsing `OVPN_=
+NOTIF_DEL_PEER`?</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail">change 1275</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1275?usp=3Demail"/><meta itemprop=3D"name" con=
+tent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I83295e00d1a756dfa44050b0a44=
-93095fb050fff </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1192 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 11 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd=
+3b357711c5a84 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1275 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 18 Oct 2025 21:18:40=
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 18 Oct 2025 21:29:34=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 
 </body></html>=
 
---ZMHfd5LnL6I=--
+--Z2X9wf+TbJU=--
 
