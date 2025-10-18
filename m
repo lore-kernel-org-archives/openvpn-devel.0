@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 18 Oct 2025 17:01:34 +0000
-In-Reply-To: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
-References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <a03439831d4dcf89d010598dce4c0a1b20ef58df-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Sat, 18 Oct 2025 19:02:32 +0200
+Message-ID: <20251018170237.21928-1-gert@...1296...>
+In-Reply-To: <gerrit.1760698129000.I4113d14c6ce33818573b0ca5857a9ab39b35a8f4@...2715...>
+References: <gerrit.1760698129000.I4113d14c6ce33818573b0ca5857a9ab39b35a8f4@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GyDfElnGKW8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco-freebsd: store
- peer stats directly in c2
+Subject: [Openvpn-devel] [PATCH v1] push_util: Fix conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,150 +13,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---GyDfElnGKW8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+Mostly just use better types.
 
-cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1275?usp=3Demail )
+Change-Id: I4113d14c6ce33818573b0ca5857a9ab39b35a8f4
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: mrbff <marco@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1283
+---
 
-Change subject: dco-freebsd: store peer stats directly in c2
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1283
+This mail reflects revision 1 of this Change.
 
-Patch Set 2: Code-Review-1
+Acked-by according to Gerrit (reflected above):
+mrbff <marco@...2726...>
 
-(2 comments)
-
-Patchset:
-
-PS2:
-I think this needs more discussion on which counters on what event and in w=
-hat mode (client side / CM_P2P vs. server side) to put where
-
-
-File src/openvpn/dco_freebsd.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1275/comment/4f9c725c_42b0c79e?usp=3D=
-email :
-PS2, Line 625:                 dco->c->c2.dco_write_bytes =3D nvlist_get_nu=
-mber(bytes, "out");
-I don't think this is the correct place to store these.
-
-The overall context here is "OVPN_NOTIF_DEL_PEER", so we're told by the ker=
-nel that `dco->dco_message_peer_id` went away, and, btw, here are the lates=
-t counters for this peer.
-
-Storing it in `dco->c->c2->` smells like "the server's global structure" wh=
-ile Linux would put per-client into `dco->c->multi->instances[peer_id]->con=
-text.c2->` - OTOH, Linux' `CMD_PEER_DEL_NTF` seems to carry no counters, so=
- the code is not the same anyway.
-
-Am I misreading this?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
-Gerrit-Change-Number: 1275
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Sat, 18 Oct 2025 17:01:34 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---GyDfElnGKW8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, ralf_lici. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail">V=
-iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1275?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I think th=
-is needs more discussion on which counters on what event and in what mode (=
-client side / CM_P2P vs. server side) to put where</p></li></ul></li><li st=
-yle=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_freebsd.c:</p><ul st=
-yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1275/comment/4f9c725c_42b0c79e?usp=3Demail">Patch Set #2, L=
-ine 625:</a> <code style=3D"font-family:monospace,monospace">              =
-  dco-&gt;c-&gt;c2.dco_write_bytes =3D nvlist_get_number(bytes, &quot;out&q=
-uot;);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">I don&#39;t think this is the correct place to store thes=
-e.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">The overall context here is &quot;OVPN_NOTIF_DEL_PEER&quot;, so we&#=
-39;re told by the kernel that `dco-&gt;dco_message_peer_id` went away, and,=
- btw, here are the latest counters for this peer.</p><p class=3D"blocks" st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">Storing it in `dco-&g=
-t;c-&gt;c2-&gt;` smells like &quot;the server&#39;s global structure&quot; =
-while Linux would put per-client into `dco-&gt;c-&gt;multi-&gt;instances[pe=
-er_id]-&gt;context.c2-&gt;` - OTOH, Linux&#39; `CMD_PEER_DEL_NTF` seems to =
-carry no counters, so the code is not the same anyway.</p><p class=3D"block=
-s" style=3D"white-space: pre-wrap; word-wrap: break-word;">Am I misreading =
-this?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1275?usp=3Demail">change 1275</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sch=
-ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/1275?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
-w Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd=
-3b357711c5a84 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1275 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 18 Oct 2025 17:01:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---GyDfElnGKW8=--
+        
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 06b4c8b..8c1a503 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -10,18 +10,13 @@
+ #include "ssl_util.h"
+ #endif
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ int
+ process_incoming_push_update(struct context *c, unsigned int permission_mask,
+                              unsigned int *option_types_found, struct buffer *buf,
+                              bool msg_sender)
+ {
+     int ret = PUSH_MSG_ERROR;
+-    const uint8_t ch = buf_read_u8(buf);
++    const int ch = buf_read_u8(buf);
+     if (ch == ',')
+     {
+         if (apply_push_options(c, &c->options, buf, permission_mask, option_types_found, c->c2.es,
+@@ -57,8 +52,8 @@
+  * Return index of last `,` or `0` if it didn't find any.
+  * If there is a comma at index `0` it's an error anyway
+  */
+-static int
+-find_first_comma_of_next_bundle(const char *str, int ix)
++static size_t
++find_first_comma_of_next_bundle(const char *str, size_t ix)
+ {
+     while (ix > 0)
+     {
+@@ -75,8 +70,8 @@
+ static struct buffer
+ forge_msg(const char *src, const char *continuation, struct gc_arena *gc)
+ {
+-    int src_len = strlen(src);
+-    int con_len = continuation ? strlen(continuation) : 0;
++    size_t src_len = strlen(src);
++    size_t con_len = continuation ? strlen(continuation) : 0;
+     struct buffer buf = alloc_buf_gc(src_len + sizeof(push_update_cmd) + con_len + 2, gc);
+ 
+     buf_printf(&buf, "%s,%s%s", push_update_cmd, src, continuation ? continuation : "");
+@@ -93,11 +88,11 @@
+     return ret;
+ }
+ 
+-/* It split the messagge (if necessay) and fill msgs with the message chunks.
++/* It split the messagge (if necessary) and fill msgs with the message chunks.
+  * Return `false` on failure an `true` on success.
+  */
+ static bool
+-message_splitter(const char *s, struct buffer *msgs, struct gc_arena *gc, const int safe_cap)
++message_splitter(const char *s, struct buffer *msgs, struct gc_arena *gc, const size_t safe_cap)
+ {
+     if (!s || !*s)
+     {
+@@ -105,7 +100,7 @@
+     }
+ 
+     char *str = gc_strdup(s, gc);
+-    int i = 0;
++    size_t i = 0;
+     int im = 0;
+ 
+     while (*str)
+@@ -113,7 +108,7 @@
+         /* + ',' - '/0' */
+         if (strlen(str) > safe_cap)
+         {
+-            int ci = find_first_comma_of_next_bundle(str, safe_cap);
++            size_t ci = find_first_comma_of_next_bundle(str, safe_cap);
+             if (!ci)
+             {
+                 /* if no commas were found go to fail, do not send any message */
+@@ -219,7 +214,7 @@
+  * @return The number of clients to which the message was sent. Might return < 0 in case of error.
+  */
+ static int
+-send_push_update(struct multi_context *m, const void *target, const char *msg, const push_update_type type, const int push_bundle_size)
++send_push_update(struct multi_context *m, const void *target, const char *msg, const push_update_type type, const size_t push_bundle_size)
+ {
+     if (dco_enabled(&m->top.options))
+     {
+@@ -228,19 +223,19 @@
+         return 0;
+     }
+ 
+-    if (!msg || !*msg || !m
+-        || (!target && type != UPT_BROADCAST))
++    if (!msg || !*msg || !m || (!target && type != UPT_BROADCAST))
+     {
+         return -EINVAL;
+     }
+ 
+     struct gc_arena gc = gc_new();
+     /* extra space for possible trailing ifconfig and push-continuation */
+-    const int extra = 84 + sizeof(push_update_cmd);
++    const size_t extra = 84 + sizeof(push_update_cmd);
+     /* push_bundle_size is the maximum size of a message, so if the message
+      * we want to send exceeds that size we have to split it into smaller messages */
+-    const int safe_cap = push_bundle_size - extra;
+-    int msgs_num = (strlen(msg) / safe_cap) + ((strlen(msg) % safe_cap) != 0);
++    ASSERT(push_bundle_size > extra);
++    const size_t safe_cap = push_bundle_size - extra;
++    size_t msgs_num = (strlen(msg) / safe_cap) + ((strlen(msg) % safe_cap) != 0);
+     struct buffer *msgs = gc_malloc((msgs_num + 1) * sizeof(struct buffer), true, &gc);
+ 
+     unsigned int option_types_found = 0;
+@@ -354,7 +349,3 @@
+     RETURN_UPDATE_STATUS(n_sent);
+ }
+ #endif /* ifdef ENABLE_MANAGEMENT */
+-
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
 
