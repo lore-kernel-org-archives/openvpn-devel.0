@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 19 Oct 2025 17:02:32 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 19 Oct 2025 19:02:42 +0200
+Message-ID: <20251019170249.30942-1-gert@...1296...>
 In-Reply-To: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
 References: <gerrit.1760513121000.I53dd40fabdeacb9dca843e28fdd3b357711c5a84@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...,
- antonio@...2726...
-Message-ID: <d448ed10930b8c149ccd08b8e7e65103cb37f5c2-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/RaaofIuNXI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco-freebsd: store
- peer stats directly in c2
+Subject: [Openvpn-devel] [PATCH v4] dco-freebsd: store peer stats directly
+ in c2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,102 +14,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---/RaaofIuNXI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos, ralf_=
-lici.
+The dco_context_t structure includes a reference to the general context
+structure c, which allows us to store dco_read_bytes and dco_write_bytes
+directly as c2 fields. This aligns the FreeBSD implementation with how
+we handle DCO peer stats on Linux and Windows.
 
-cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1275?usp=3Demail )
+Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1275
+---
 
-Change subject: dco-freebsd: store peer stats directly in c2
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1275
+This mail reflects revision 4 of this Change.
 
-Patch Set 4: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd3b357711c5a84
-Gerrit-Change-Number: 1275
-Gerrit-PatchSet: 4
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Sun, 19 Oct 2025 17:02:32 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---/RaaofIuNXI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, ordex, plaisthos, ralf_lici. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail=
-">change 1275</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1275?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I53dd40fabdeacb9dca843e28fdd=
-3b357711c5a84 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1275 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 19 Oct 2025 17:02:32=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---/RaaofIuNXI=--
+        
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index 947a769..e51f8dd 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -564,6 +564,21 @@
+     return ret;
+ }
+ 
++static void
++dco_update_peer_stat(struct multi_context *m, uint32_t peerid, const nvlist_t *nvl)
++{
++    if (peerid >= m->max_clients || !m->instances[peerid])
++    {
++        msg(M_WARN, "dco_update_peer_stat: invalid peer ID %d returned by kernel", peerid);
++        return;
++    }
++
++    struct multi_instance *mi = m->instances[peerid];
++
++    mi->context.c2.dco_read_bytes = nvlist_get_number(nvl, "in");
++    mi->context.c2.dco_write_bytes = nvlist_get_number(nvl, "out");
++}
++
+ int
+ dco_do_read(dco_context_t *dco)
+ {
+@@ -619,10 +634,7 @@
+ 
+             if (nvlist_exists_nvlist(nvl, "bytes"))
+             {
+-                const nvlist_t *bytes = nvlist_get_nvlist(nvl, "bytes");
+-
+-                dco->dco_read_bytes = nvlist_get_number(bytes, "in");
+-                dco->dco_write_bytes = nvlist_get_number(bytes, "out");
++                dco_update_peer_stat(dco->c->multi, dco->dco_message_peer_id, nvlist_get_nvlist(nvl, "bytes"));
+             }
+ 
+             dco->dco_message_type = OVPN_CMD_DEL_PEER;
+@@ -777,21 +789,6 @@
+     nvlist_destroy(nvl);
+ }
+ 
+-static void
+-dco_update_peer_stat(struct multi_context *m, uint32_t peerid, const nvlist_t *nvl)
+-{
+-    if (peerid >= m->max_clients || !m->instances[peerid])
+-    {
+-        msg(M_WARN, "dco_update_peer_stat: invalid peer ID %d returned by kernel", peerid);
+-        return;
+-    }
+-
+-    struct multi_instance *mi = m->instances[peerid];
+-
+-    mi->context.c2.dco_read_bytes = nvlist_get_number(nvl, "in");
+-    mi->context.c2.dco_write_bytes = nvlist_get_number(nvl, "out");
+-}
+-
+ int
+ dco_get_peer_stats_multi(dco_context_t *dco, const bool raise_sigusr1_on_err)
+ {
 
