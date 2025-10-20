@@ -1,13 +1,14 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 20 Oct 2025 14:16:25 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 20 Oct 2025 14:57:01 +0000
+In-Reply-To: <gerrit.1760969783000.I82c7c61be07593ecd5bf2f854767dda74ab5170c@...2715...>
 References: <gerrit.1760969783000.I82c7c61be07593ecd5bf2f854767dda74ab5170c@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <7cafef0cebe059318d2ea2b25c8648abd2c08aaf-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <5b50a3b2dc711c7b36022e9387e109db3d945fbc-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="L+624pHvLXs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="qP7QLSE6ykk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Warn if push is used
  without --mode server/--server/--server-bridge
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,95 +19,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---L+624pHvLXs=
+--qP7QLSE6ykk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
-Hello flichtenheld,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1288?usp=3Demail
-
-to review the following change.
-
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1288?usp=3Demail )
 
 Change subject: Warn if push is used without --mode server/--server/--serve=
 r-bridge
 ......................................................................
 
-Warn if push is used without --mode server/--server/--server-bridge
 
-This is not a supported configuration and will often work good enough
-to get a connection working but will operate more in a weird pre P2P
-negotiation compatibility way rather than actually negotiating
-protocol features.
+Patch Set 1: Code-Review-1
 
-Also remove an used macro.
+(4 comments)
 
-Change-Id: I82c7c61be07593ecd5bf2f854767dda74ab5170c
----
-M src/openvpn/options.c
-M src/openvpn/options.h
-2 files changed, 6 insertions(+), 5 deletions(-)
+Commit Message:
+
+http://gerrit.openvpn.net/c/openvpn/+/1288/comment/f7cedb8d_5f290a51?usp=3D=
+email :
+PS1, Line 14: Also remove an used macro.
+"unused" I assume
 
 
+File src/openvpn/options.c:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1288/1
+http://gerrit.openvpn.net/c/openvpn/+/1288/comment/d6b588cf_299e97fa?usp=3D=
+email :
+PS1, Line 3337:
+whitespace
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 65c6b3b..6cfe62f 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3334,6 +3334,12 @@
-                         "Ignoring these options.");
-         }
-     }
-+
-+    if (o->push_list.head && o->mode !=3D MODE_SERVER)
-+    {
-+        msg(M_WARN, "Note: Using --push without --mode server is an unsupp=
-orted"
-+                    " configuration. Negotiation of OpenVPN features is ex=
-pected to fail.");
-+    }
- }
 
- static void
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 009904a..24253af 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -768,16 +768,11 @@
- #define OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL_MODE))
+http://gerrit.openvpn.net/c/openvpn/+/1288/comment/bf2317ec_7c3577ee?usp=3D=
+email :
+PS1, Line 3338:     if (o->push_list.head && o->mode !=3D MODE_SERVER)
+We have a lot of warnings and errors that we potentially throw if not in --=
+mode server, see code around line 2650. Maybe this new check would be bette=
+r put there?
 
- #define PULL_DEFINED(opt) ((opt)->pull)
--#define PUSH_DEFINED(opt) ((opt)->push_list)
 
- #ifndef PULL_DEFINED
- #define PULL_DEFINED(opt) (false)
- #endif
+http://gerrit.openvpn.net/c/openvpn/+/1288/comment/1d984d7c_11af20d7?usp=3D=
+email :
+PS1, Line 3340:         msg(M_WARN, "Note: Using --push without --mode serv=
+er is an unsupported"
+We probably also should add a note under --push in the documentation.
 
--#ifndef PUSH_DEFINED
--#define PUSH_DEFINED(opt) (false)
--#endif
--
- #ifdef _WIN32
- #define ROUTE_OPTION_FLAGS(o) ((o)->route_method & ROUTE_METHOD_MASK)
- #else
+
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1288?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I82c7c61be07593ecd5bf2f854767dda74ab5170c
@@ -115,66 +86,58 @@ Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Mon, 20 Oct 2025 14:57:01 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---L+624pHvLXs=
+--qP7QLSE6ykk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+rently required from: plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1288?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Warn if push is used without --mode server/=
---server/--server-bridge<br><br>This is not a supported configuration and w=
-ill often work good enough<br>to get a connection working but will operate =
-more in a weird pre P2P<br>negotiation compatibility way rather than actual=
-ly negotiating<br>protocol features.<br><br>Also remove an used macro.<br><=
-br>Change-Id: I82c7c61be07593ecd5bf2f854767dda74ab5170c<br>---<br>M src/ope=
-nvpn/options.c<br>M src/openvpn/options.h<br>2 files changed, 6 insertions(=
-+), 5 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
-.net:29418/openvpn refs/changes/88/1288/1</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
-options.c b/src/openvpn/options.c</span><br><span>index 65c6b3b..6cfe62f 10=
-0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
-openvpn/options.c</span><br><span>@@ -3334,6 +3334,12 @@</span><br><span>  =
-                       &quot;Ignoring these options.&quot;);</span><br><spa=
-n>         }</span><br><span>     }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (o-&gt;push_list.head &amp;&amp; o-&gt;mode !=3D MODE_SERVER)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;Note: Using -=
--push without --mode server is an unsupported&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    &quot; configuration.=
- Negotiation of OpenVPN features is expected to fail.&quot;);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><b=
-r><span> </span><br><span> static void</span><br><span>diff --git a/src/ope=
-nvpn/options.h b/src/openvpn/options.h</span><br><span>index 009904a..24253=
-af 100644</span><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b=
-/src/openvpn/options.h</span><br><span>@@ -768,16 +768,11 @@</span><br><spa=
-n> #define OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL_MODE))</span><br><s=
-pan> </span><br><span> #define PULL_DEFINED(opt) ((opt)-&gt;pull)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#define PUSH_DEFINED(opt) ((opt=
-)-&gt;push_list)</span><br><span> </span><br><span> #ifndef PULL_DEFINED</s=
-pan><br><span> #define PULL_DEFINED(opt) (false)</span><br><span> #endif</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifnde=
-f PUSH_DEFINED</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
- PUSH_DEFINED(opt) (false)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span> #ifdef _WIN32</span><br><span> #define ROUTE_OPTION_FLAGS(o) ((o)-&=
-gt;route_method &amp; ROUTE_METHOD_MASK)</span><br><span> #else</span><br><=
-span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1288?usp=3Demail">change 1288</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1288?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
+iew Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1288/comment/f7cedb8d_5f290a51?usp=3Demail">Patch Set #1, Line=
+ 14:</a> <code style=3D"font-family:monospace,monospace">Also remove an use=
+d macro.</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word=
+-wrap: break-word;">&quot;unused&quot; I assume</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p><ul style=3D"=
+list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
+"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1288/comment/d6b588cf_299e97fa?usp=3Demail">Patch Set #1, Line 333=
+7:</a> <code style=3D"font-family:monospace,monospace">    </code></p><p cl=
+ass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">whit=
+espace</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
+rgin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1288/co=
+mment/bf2317ec_7c3577ee?usp=3Demail">Patch Set #1, Line 3338:</a> <code sty=
+le=3D"font-family:monospace,monospace">    if (o-&gt;push_list.head &amp;&a=
+mp; o-&gt;mode !=3D MODE_SERVER)</code></p><p class=3D"blocks" style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">We have a lot of warnings and e=
+rrors that we potentially throw if not in --mode server, see code around li=
+ne 2650. Maybe this new check would be better put there?</p></li><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1288/comment/1d984d7c_11af20d7?=
+usp=3Demail">Patch Set #1, Line 3340:</a> <code style=3D"font-family:monosp=
+ace,monospace">        msg(M_WARN, &quot;Note: Using --push without --mode =
+server is an unsupported&quot;</code></p><p class=3D"blocks" style=3D"white=
+-space: pre-wrap; word-wrap: break-word;">We probably also should add a not=
+e under --push in the documentation.</p></li></ul></li></ul><p>To view, vis=
+it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1288?usp=3Demail">chang=
+e 1288</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1288?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I82c7c61be07593ecd5bf2f85476=
@@ -187,10 +150,14 @@ e"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 20 Oct 2025 14:57:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---L+624pHvLXs=--
+--qP7QLSE6ykk=--
 
