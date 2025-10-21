@@ -1,15 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Oct 2025 16:23:42 +0000
-References: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <2c0d8ea3ee6fd5227be84e27121b09a236c3f06f-HTML@...2715...>
+Date: Tue, 21 Oct 2025 18:30:10 +0000
+From: Joshua Rogers <contact@...2949...>
+Message-ID: <GkfmD_4NelB0iqbXOw6wGvQRrZ_9JHLGCv8OLwRmhNdOkfQcNlLUVKMe4uxXA08HZyEBTE-i5RsEJX26STwRxwyH2GavsbOw7HJvctJRVro=@joshua.hu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cYiqpyX0z7Q="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: Fix conversion
- issues related to timeout in send_auth_pending_m...
+Content-Type: multipart/mixed;
+ boundary="b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0"
+Subject: [Openvpn-devel] [PATCH] ssl_ncp: make tls_item_in_cipher_list
+ zero-alloc and linear
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,290 +14,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---cYiqpyX0z7Q=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
+Content-Type: multipart/alternative;
+ boundary="b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0"
 
-Attention is currently required from: plaisthos.
+--b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Hello plaisthos,
+VGhpcyBhdm9pZHMgYXZvaWRzIHN0cmluZ19hbGxvYyArIHN0cnRvayBvbiBldmVyeSBtZW1iZXJz
+aGlwIGNoZWNrLCB3aGljaApmb3IgdmVyeSBsb25nIElWX0NJUEhFUlMgd2l0aCBtYW55IGNvbG9u
+LXNlcGFyYXRlZCB0b2tlbnMsIGZvcmNlZCBPKE4qTSkKY29tcGFyaXNvbnMgd2l0aCBJKE0pIGFs
+bG9jYXRpb25zIGluIGEgc2luZ2xlIG5lZ290aWF0aW4u
 
-I'd like you to do a code review.
-Please visit
+--b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-    http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
+PGRpdiBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0
+cHg7Ij48c3Bhbj5UaGlzIGF2b2lkcyBhdm9pZHMgc3RyaW5nX2FsbG9jICsgc3RydG9rIG9uIGV2
+ZXJ5IG1lbWJlcnNoaXAgY2hlY2ssIHdoaWNoPC9zcGFuPjxkaXY+PHNwYW4+Zm9yIHZlcnkgbG9u
+ZyBJVl9DSVBIRVJTIHdpdGggbWFueSBjb2xvbi1zZXBhcmF0ZWQgdG9rZW5zLCBmb3JjZWQgTyhO
+Kk0pPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Y29tcGFyaXNvbnMgd2l0aCBJKE0pIGFsbG9jYXRp
+b25zIGluIGEgc2luZ2xlIG5lZ290aWF0aW4uPC9zcGFuPjwvZGl2PjwvZGl2Pg0KPGRpdiBzdHls
+ZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0cHg7IiBjbGFz
+cz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2sgcHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2st
+ZW1wdHkiPg0KICAgIDxkaXYgY2xhc3M9InByb3Rvbm1haWxfc2lnbmF0dXJlX2Jsb2NrLXVzZXIg
+cHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPjwvZGl2Pg0KICAgIA0KICAgICAgICAg
+ICAgPGRpdiBjbGFzcz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stcHJvdG9uIHByb3Rvbm1h
+aWxfc2lnbmF0dXJlX2Jsb2NrLWVtcHR5Ij4NCiAgICAgICAgDQogICAgICAgICAgICA8L2Rpdj4N
+CjwvZGl2Pg0K
 
-to review the following change.
+--b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0--
 
+--b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
+Content-Type: application/octet-stream; name=0001-ssl_ncp-make-tls_item_in_cipher_list-zero-alloc-and-.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=0001-ssl_ncp-make-tls_item_in_cipher_list-zero-alloc-and-.patch
 
-Change subject: push: Fix conversion issues related to timeout in send_auth=
-_pending_messages
-......................................................................
+RnJvbSA1ZDRhNWZjZjg5YTYxMDdjZGIzZmQ3YmUxMjk4MzEzZGQ1YWUzZDZlIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBKb3NodWEgUm9nZXJzIDxNZWdhTWFuU2VjQHVzZXJzLm5vcmVw
+bHkuZ2l0aHViLmNvbT4KRGF0ZTogV2VkLCAyMiBPY3QgMjAyNSAwMjoyNzozNSArMDgwMApTdWJq
+ZWN0OiBbUEFUQ0hdIHNzbF9uY3A6IG1ha2UgdGxzX2l0ZW1faW5fY2lwaGVyX2xpc3QgemVyby1h
+bGxvYyBhbmQgbGluZWFyCgpUaGlzIGF2b2lkcyBhdm9pZHMgc3RyaW5nX2FsbG9jICsgc3RydG9r
+IG9uIGV2ZXJ5IG1lbWJlcnNoaXAgY2hlY2ssIHdoaWNoCmZvciB2ZXJ5IGxvbmcgSVZfQ0lQSEVS
+UyB3aXRoIG1hbnkgY29sb24tc2VwYXJhdGVkIHRva2VucywgZm9yY2VkIE8oTipNKQpjb21wYXJp
+c29ucyB3aXRoIEkoTSkgYWxsb2NhdGlvbnMgaW4gYSBzaW5nbGUgbmVnb3RpYXRpbi4KClRoaXMg
+d2FzIGZvdW5kIGJ5IFplcm9QYXRoLgoKU2lnbmVkLW9mZi1ieTogSm9zaHVhIFJvZ2VycyA8TWVn
+YU1hblNlY0B1c2Vycy5ub3JlcGx5LmdpdGh1Yi5jb20+Ci0tLQogc3JjL29wZW52cG4vc3NsX25j
+cC5jIHwgMjQgKysrKysrKysrKysrKysrLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTUgaW5z
+ZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9zc2xf
+bmNwLmMgYi9zcmMvb3BlbnZwbi9zc2xfbmNwLmMKaW5kZXggNzkwZTUwZmMuLmE2NmY3YTYwIDEw
+MDY0NAotLS0gYS9zcmMvb3BlbnZwbi9zc2xfbmNwLmMKKysrIGIvc3JjL29wZW52cG4vc3NsX25j
+cC5jCkBAIC0yMDUsMjIgKzIwNSwyOCBAQCBhcHBlbmRfY2lwaGVyX3RvX25jcF9saXN0KHN0cnVj
+dCBvcHRpb25zICpvLCBjb25zdCBjaGFyICpjaXBoZXJuYW1lKQogYm9vbAogdGxzX2l0ZW1faW5f
+Y2lwaGVyX2xpc3QoY29uc3QgY2hhciAqaXRlbSwgY29uc3QgY2hhciAqbGlzdCkKIHsKLSAgICBj
+aGFyICp0bXBfY2lwaGVycyA9IHN0cmluZ19hbGxvYyhsaXN0LCBOVUxMKTsKLSAgICBjaGFyICp0
+bXBfY2lwaGVyc19vcmlnID0gdG1wX2NpcGhlcnM7CisgICAgY29uc3Qgc2l6ZV90IGl0ZW1fbGVu
+ID0gc3RybGVuKGl0ZW0pOworICAgIGNvbnN0IGNoYXIgKnAgPSBsaXN0OwogCi0gICAgY29uc3Qg
+Y2hhciAqdG9rZW4gPSBzdHJ0b2sodG1wX2NpcGhlcnMsICI6Iik7Ci0gICAgd2hpbGUgKHRva2Vu
+KQorICAgIHdoaWxlICgqcCkKICAgICB7Ci0gICAgICAgIGlmICgwID09IHN0cmNtcCh0b2tlbiwg
+aXRlbSkpCisgICAgICAgIGNvbnN0IGNoYXIgKnNlcCA9IHN0cmNocihwLCAnOicpOworICAgICAg
+ICBzaXplX3QgbGVuID0gc2VwID8gKHNpemVfdCkoc2VwIC0gcCkgOiBzdHJsZW4ocCk7CisKKyAg
+ICAgICAgaWYgKGxlbiA9PSBpdGVtX2xlbiAmJiAwID09IHN0cm5jbXAocCwgaXRlbSwgbGVuKSkK
+KyAgICAgICAgeworICAgICAgICAgICAgcmV0dXJuIHRydWU7CisgICAgICAgIH0KKworICAgICAg
+ICBpZiAoIXNlcCkKICAgICAgICAgewogICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgIH0KLSAg
+ICAgICAgdG9rZW4gPSBzdHJ0b2soTlVMTCwgIjoiKTsKKyAgICAgICAgcCA9IHNlcCArIDE7CiAg
+ICAgfQotICAgIGZyZWUodG1wX2NpcGhlcnNfb3JpZyk7Ci0KLSAgICByZXR1cm4gdG9rZW4gIT0g
+TlVMTDsKKyAgICByZXR1cm4gZmFsc2U7CiB9CisKIGNvbnN0IGNoYXIgKgogdGxzX3BlZXJfbmNw
+X2xpc3QoY29uc3QgY2hhciAqcGVlcl9pbmZvLCBzdHJ1Y3QgZ2NfYXJlbmEgKmdjKQogewotLSAK
+Mi41MS4xCgo=
 
-push: Fix conversion issues related to timeout in send_auth_pending_messages
+--b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0--
 
-Add additional checking to make sure that the required
-casts are safe.
-
-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/push.c
-M src/openvpn/ssl_verify.c
-2 files changed, 15 insertions(+), 19 deletions(-)
-
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1293/1
-
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 6f146fc..a6f979d 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -429,11 +429,6 @@
-     gc_free(&gc);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
- send_auth_pending_messages(struct tls_multi *tls_multi, struct tls_session=
- *session,
-                            const char *extra, unsigned int timeout)
-@@ -449,7 +444,12 @@
-     /* Calculate the maximum timeout and subtract the time we already wait=
-ed */
-     unsigned int max_timeout =3D
-         max_uint(tls_multi->opt.renegotiate_seconds / 2, tls_multi->opt.ha=
-ndshake_window);
--    max_timeout =3D max_timeout - (now - ks->initial);
-+    time_t time_elapsed =3D now - ks->initial;
-+    if (time_elapsed < 0 || time_elapsed >=3D (time_t)max_timeout)
-+    {
-+        return false;
-+    }
-+    max_timeout -=3D (unsigned int)time_elapsed;
-     timeout =3D min_uint(max_timeout, timeout);
-
-     struct gc_arena gc =3D gc_new();
-@@ -734,6 +734,11 @@
-     return true;
- }
-
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
-+
- static bool
- send_push_options(struct context *c, struct buffer *buf, struct push_list =
-*push_list, int safe_cap,
-                   bool *push_sent, bool *multi_push)
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 04ef27e..fe95621 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -874,11 +874,6 @@
-     return supported;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- /**
-  *  Checks if the deferred state should also send auth pending
-  *  request to the client. Also removes the auth_pending control file
-@@ -915,8 +910,9 @@
-             buf_chomp(iv_buf);
-             buf_chomp(extra_buf);
-
-+            errno =3D 0;
-             long timeout =3D strtol(BSTR(timeout_buf), NULL, 10);
--            if (timeout =3D=3D 0)
-+            if (timeout <=3D 0 || timeout > UINT_MAX || errno)
-             {
-                 msg(M_WARN, "could not parse auth pending file timeout");
-                 buffer_list_free(lines);
-@@ -933,14 +929,13 @@
-                          pending_method);
-                 auth_set_client_reason(multi, buf);
-                 msg(M_INFO,
--                    "Client does not supported auth pending method "
--                    "'%s'",
-+                    "Client does not supported auth pending method '%s'",
-                     pending_method);
-                 ret =3D false;
-             }
-             else
-             {
--                send_auth_pending_messages(multi, session, BSTR(extra_buf)=
-, timeout);
-+                send_auth_pending_messages(multi, session, BSTR(extra_buf)=
-, (unsigned int)timeout);
-             }
-         }
-
-@@ -950,10 +945,6 @@
-     return ret;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /**
-  *  Removes auth_pending and auth_control files from file system
-  *  and key_state structure
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
-Gerrit-Change-Number: 1293
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-
---cYiqpyX0z7Q=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">push: Fix conversion issues related to time=
-out in send_auth_pending_messages<br><br>Add additional checking to make su=
-re that the required<br>casts are safe.<br><br>Change-Id: Icc31b7fa0da86220=
-df45552aecc15dc6c769cd54<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1665...=
-641...&gt;<br>---<br>M src/openvpn/push.c<br>M src/openvpn/ssl_verify.c<br>=
-2 files changed, 15 insertions(+), 19 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1293/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><spa=
-n>index 6f146fc..a6f979d 100644</span><br><span>--- a/src/openvpn/push.c</s=
-pan><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -429,11 +429,6 @@=
-</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__=
-) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> send_aut=
-h_pending_messages(struct tls_multi *tls_multi, struct tls_session *session=
-,</span><br><span>                            const char *extra, unsigned i=
-nt timeout)</span><br><span>@@ -449,7 +444,12 @@</span><br><span>     /* Ca=
-lculate the maximum timeout and subtract the time we already waited */</spa=
-n><br><span>     unsigned int max_timeout =3D</span><br><span>         max_=
-uint(tls_multi-&gt;opt.renegotiate_seconds / 2, tls_multi-&gt;opt.handshake=
-_window);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    max_time=
-out =3D max_timeout - (now - ks-&gt;initial);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    time_t time_elapsed =3D now - ks-&gt;initial;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (time_elapse=
-d &lt; 0 || time_elapsed &gt;=3D (time_t)max_timeout)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    max_timeout -=3D (unsigned int)time_elapsed;</span><br><span>  =
-   timeout =3D min_uint(max_timeout, timeout);</span><br><span> </span><br>=
-<span>     struct gc_arena gc =3D gc_new();</span><br><span>@@ -734,6 +734,=
-11 @@</span><br><span>     return true;</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC=
-__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static bool</span><b=
-r><span> send_push_options(struct context *c, struct buffer *buf, struct pu=
-sh_list *push_list, int safe_cap,</span><br><span>                   bool *=
-push_sent, bool *multi_push)</span><br><span>diff --git a/src/openvpn/ssl_v=
-erify.c b/src/openvpn/ssl_verify.c</span><br><span>index 04ef27e..fe95621 1=
-00644</span><br><span>--- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/=
-src/openvpn/ssl_verify.c</span><br><span>@@ -874,11 +874,6 @@</span><br><sp=
-an>     return supported;</span><br><span> }</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(_=
-_clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC =
-diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragm=
-a GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span> /**</span><br><span>  *  Checks if the defer=
-red state should also send auth pending</span><br><span>  *  request to the=
- client. Also removes the auth_pending control file</span><br><span>@@ -915=
-,8 +910,9 @@</span><br><span>             buf_chomp(iv_buf);</span><br><spa=
-n>             buf_chomp(extra_buf);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            errno =3D 0;</span><br><span=
->             long timeout =3D strtol(BSTR(timeout_buf), NULL, 10);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            if (timeout =3D=
-=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            i=
-f (timeout &lt;=3D 0 || timeout &gt; UINT_MAX || errno)</span><br><span>   =
-          {</span><br><span>                 msg(M_WARN, &quot;could not pa=
-rse auth pending file timeout&quot;);</span><br><span>                 buff=
-er_list_free(lines);</span><br><span>@@ -933,14 +929,13 @@</span><br><span>=
-                          pending_method);</span><br><span>                =
- auth_set_client_reason(multi, buf);</span><br><span>                 msg(M=
-_INFO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-     &quot;Client does not supported auth pending method &quot;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                    &quot;&#39;%s=
-&#39;&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-             &quot;Client does not supported auth pending method &#39;%s&#3=
-9;&quot;,</span><br><span>                     pending_method);</span><br><=
-span>                 ret =3D false;</span><br><span>             }</span><=
-br><span>             else</span><br><span>             {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                send_auth_pending_messa=
-ges(multi, session, BSTR(extra_buf), timeout);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                send_auth_pending_messages(multi=
-, session, BSTR(extra_buf), (unsigned int)timeout);</span><br><span>       =
-      }</span><br><span>         }</span><br><span> </span><br><span>@@ -95=
-0,10 +945,6 @@</span><br><span>     return ret;</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
-__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span> /**</span><br><span>  *  Removes auth_pending and auth_co=
-ntrol files from file system</span><br><span>  *  and key_state structure</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1293?usp=3Demail">change 1293</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1293?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc=
-15dc6c769cd54 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1293 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-
-</body></html>=
-
---cYiqpyX0z7Q=--
 
