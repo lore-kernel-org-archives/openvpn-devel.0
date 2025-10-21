@@ -1,15 +1,16 @@
-Date: Tue, 21 Oct 2025 08:40:20 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <aPcq1N1o2-mZJH1G@...1296...>
-References: <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q.ref@...278...>
- <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q@...278...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Tue, 21 Oct 2025 07:00:17 +0000
+In-Reply-To: <gerrit.1760942237000.Ifb1c49fce75e671f699f5db5f6da7246f6e0b519@...2715...>
+References: <gerrit.1760942237000.Ifb1c49fce75e671f699f5db5f6da7246f6e0b519@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
+Message-ID: <a9ee8e8b448504b8831ef615778bccfd08f6b0fe-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="lfqq87cPwwZguC8d"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q@...278...>
-Subject: Re: [Openvpn-devel] Quick question for the OpenVPN developers on
- the source code functionality [problem solving]
+Content-Type: multipart/alternative; boundary="OlbaOrsVF2k="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: ensure
+ consistent BYTECOUNT timing on server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +19,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jon Chiappetta <root@...2904...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lfqq87cPwwZguC8d
-Content-Type: text/plain; charset="us-ascii"
+--OlbaOrsVF2k=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
 
-On Mon, Oct 20, 2025 at 04:15:22PM -0400, Jon Chiappetta via Openvpn-devel =
-wrote:
-> I was wondering if any part of the OpenVPN source code parses the IPv4
-> packet header for source/destination address already in place?
+stipa has posted comments on this change by ralf_lici. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1285?usp=3Demail )
 
-With tun/tap and ipv4/ipv6, this is a bit of nastiness...
+Change subject: management: ensure consistent BYTECOUNT timing on server
+......................................................................
 
-You might want to have a look at drop_if_recursive_routing() in master,
-as that one has to find destination address & port and will log source
-address & port.
 
-Not sure we have something more convenient.  Grepping for openvpn_iphdr
-might turn up something, though :-) (like somewhere in the NAT code).
+Patch Set 2: Code-Review+2
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+(1 comment)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Patchset:
 
---lfqq87cPwwZguC8d
-Content-Type: application/pgp-signature; name=signature.asc
+PS2:
+LGTM. The previous implementation triggered BYTECOUNT callback at most ever=
+y 10 seconds, even with a smaller interval - this is due to instance reaper=
+ timeout being set to 10 secs, and we haven't checked BYTECOUNT timeout aga=
+inst any timeval instance.
 
------BEGIN PGP SIGNATURE-----
+This checks BYTECOUNT timeout expiration against multi->top.c2.timeval, the=
+ one used by multi_io_wait, which means that any interval will now work.
 
-iQGcBAEBAgAGBQJo9yrUAAoJEB2Cnv7KVigSr5MMALIn9RVxY9uXgG98BgiKSrB2
-1KTLTYZ+xfpJyL4xx1SJgkiDHmvtvgxLG+lKZNPtzkHzGkRGD3I/Kh+2eXIy8Skg
-lw0tJct1AKh9x5KriO/skM0ZneG5bvZMI2NEZAXJvJPftrkS2qUBL3KbMv+1Al8C
-u2Xt+Du9ldlE+uHUZEF0f+/qHmI66hhOsm8qX9HeHqx6huGKUqCDTOzdtk2tP4gc
-kz4gboWe2c11mhOpgZsL+03rqxeGNs9KCWpgQ8nPrNCOnLtVBvV3bHE6bOrN5J3Z
-AscwCnVuk3SxSUgQk/nKiKlzicTfwtEj2sYgIM3N3wposwEZNMLR+5xzRV3AUPBx
-ZFej019QC8Uf1KjMNoY78049/lNE3RfCMUe431NhZyxo0nAjSJcB1e10eRuEYkQZ
-procZmJJaFwOpQNCk32ykQ+L1XJPrXCoSwXRMn3FEtwJ2giAtXvdmP3+nNyxYgSo
-03U8Ue0PF69ej+Cb3CS6SmfJ8CdC9uTlYWUyB7xRzg==
-=LHlN
------END PGP SIGNATURE-----
+Tested on Windows server setup.
 
---lfqq87cPwwZguC8d--
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1285?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifb1c49fce75e671f699f5db5f6da7246f6e0b519
+Gerrit-Change-Number: 1285
+Gerrit-PatchSet: 2
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Tue, 21 Oct 2025 07:00:17 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--OlbaOrsVF2k=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, ralf_lici. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1285?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1285?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">LGTM. The p=
+revious implementation triggered BYTECOUNT callback at most every 10 second=
+s, even with a smaller interval - this is due to instance reaper timeout be=
+ing set to 10 secs, and we haven&#39;t checked BYTECOUNT timeout against an=
+y timeval instance.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
+word-wrap: break-word;">This checks BYTECOUNT timeout expiration against mu=
+lti-&gt;top.c2.timeval, the one used by multi_io_wait, which means that any=
+ interval will now work.</p><p class=3D"blocks" style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">Tested on Windows server setup.</p></li></ul><=
+/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1285?usp=3Demail">change 1285</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/12=
+85?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifb1c49fce75e671f699f5db5f6d=
+a7246f6e0b519 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1285 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 21 Oct 2025 07:00:17=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--OlbaOrsVF2k=--
 
