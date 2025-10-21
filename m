@@ -1,16 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Oct 2025 07:00:17 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 21 Oct 2025 09:08:20 +0200
+Message-ID: <20251021070825.20773-1-gert@...1296...>
 In-Reply-To: <gerrit.1760942237000.Ifb1c49fce75e671f699f5db5f6da7246f6e0b519@...2715...>
 References: <gerrit.1760942237000.Ifb1c49fce75e671f699f5db5f6da7246f6e0b519@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726..., frank@...2641...
-Message-ID: <a9ee8e8b448504b8831ef615778bccfd08f6b0fe-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OlbaOrsVF2k="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: ensure
- consistent BYTECOUNT timing on server
+Subject: [Openvpn-devel] [PATCH v2] management: ensure consistent BYTECOUNT
+ timing on server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,125 +14,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---OlbaOrsVF2k=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: flichtenheld, plaisthos, ralf_lici.
+The BYTECOUNT notification is expected to be emitted every N seconds
+when a management client issues the 'bytecount N' command. However, the
+server currently relies on timeouts from unrelated periodic operations,
+resulting in irregular notification timing.
 
-stipa has posted comments on this change by ralf_lici. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1285?usp=3Demail )
+This issue is especially noticeable with low bytecount intervals and DCO
+enabled, as openvpn handles less traffic in userspace, causing the main
+loop to run less frequently.
 
-Change subject: management: ensure consistent BYTECOUNT timing on server
-......................................................................
+To address this, refactor the timeout logic and pass the timeval
+reference to management_check_bytecount_server so that the timeout is
+correctly set and notifications adhere to the specified interval.
 
+Change-Id: Ifb1c49fce75e671f699f5db5f6da7246f6e0b519
+Signed-off-by: Ralf Lici <ralf@...2726...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+---
 
-Patch Set 2: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1285
+This mail reflects revision 2 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
-PS2:
-LGTM. The previous implementation triggered BYTECOUNT callback at most ever=
-y 10 seconds, even with a smaller interval - this is due to instance reaper=
- timeout being set to 10 secs, and we haven't checked BYTECOUNT timeout aga=
-inst any timeval instance.
-
-This checks BYTECOUNT timeout expiration against multi->top.c2.timeval, the=
- one used by multi_io_wait, which means that any interval will now work.
-
-Tested on Windows server setup.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1285?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ifb1c49fce75e671f699f5db5f6da7246f6e0b519
-Gerrit-Change-Number: 1285
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
-Gerrit-Comment-Date: Tue, 21 Oct 2025 07:00:17 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---OlbaOrsVF2k=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, ralf_lici. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1285?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1285?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">LGTM. The p=
-revious implementation triggered BYTECOUNT callback at most every 10 second=
-s, even with a smaller interval - this is due to instance reaper timeout be=
-ing set to 10 secs, and we haven&#39;t checked BYTECOUNT timeout against an=
-y timeval instance.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">This checks BYTECOUNT timeout expiration against mu=
-lti-&gt;top.c2.timeval, the one used by multi_io_wait, which means that any=
- interval will now work.</p><p class=3D"blocks" style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Tested on Windows server setup.</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1285?usp=3Demail">change 1285</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/12=
-85?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifb1c49fce75e671f699f5db5f6d=
-a7246f6e0b519 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1285 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 21 Oct 2025 07:00:17=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---OlbaOrsVF2k=--
+        
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 1cb5c63..685b137 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -4184,16 +4184,14 @@
+ }
+ 
+ void
+-management_check_bytecount_server(struct multi_context *multi)
++management_check_bytecount_server(struct multi_context *multi, struct timeval *timeval)
+ {
+     if (!(management->persist.callback.flags & MCF_SERVER))
+     {
+         return;
+     }
+ 
+-    struct timeval null;
+-    CLEAR(null);
+-    if (event_timeout_trigger(&management->connection.bytecount_update_interval, &null, ETT_DEFAULT))
++    if (event_timeout_trigger(&management->connection.bytecount_update_interval, timeval, ETT_DEFAULT))
+     {
+         /* fetch counters from dco */
+         if (dco_enabled(&multi->top.options))
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index a31eb06..fe460bf 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -493,7 +493,7 @@
+ 
+ void management_check_bytecount_client(struct context *c, struct management *man, struct timeval *timeval);
+ 
+-void management_check_bytecount_server(struct multi_context *multi);
++void management_check_bytecount_server(struct multi_context *multi, struct timeval *timeval);
+ 
+ void man_persist_client_stats(struct management *man, struct context *c);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index e907524..d512c98 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3809,13 +3809,6 @@
+     {
+         check_stale_routes(m);
+     }
+-
+-#ifdef ENABLE_MANAGEMENT
+-    if (management)
+-    {
+-        management_check_bytecount_server(m);
+-    }
+-#endif /* ENABLE_MANAGEMENT */
+ }
+ 
+ static void
+@@ -4166,6 +4159,29 @@
+     ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
+ }
+ 
++/**
++ * @brief Determines the earliest wakeup interval based on periodic operations.
++ *
++ * Updates the \c timeval to reflect the next scheduled wakeup time.
++ * Also sets \c multi->earliest_wakeup to the instance with the earliest wakeup.
++ *
++ * @param multi     Pointer to the multi context
++ * @param timeval   Pointer to the timeval structure to be updated with the
++ *                  next wakeup time
++ */
++static void
++multi_get_timeout(struct multi_context *multi, struct timeval *timeval)
++{
++    multi_get_timeout_instance(multi, timeval);
++
++#ifdef ENABLE_MANAGEMENT
++    if (management)
++    {
++        management_check_bytecount_server(multi, timeval);
++    }
++#endif /* ENABLE_MANAGEMENT */
++}
++
+ /**************************************************************************/
+ /**
+  * Main event loop for OpenVPN in point-to-multipoint server mode.
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 97bbc4a..960e0be 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -582,15 +582,16 @@
+ }
+ 
+ /*
+- * Compute earliest timeout expiry from the set of
+- * all instances.  Output:
++ * Updates \c dest with the earliest timeout as a delta relative to the current
++ * time and sets \c m->earliest_wakeup to the \c multi_instance with the
++ * soonest scheduled wakeup.
+  *
+- * m->earliest_wakeup : instance needing the earliest service.
+- * dest               : earliest timeout as a delta in relation
+- *                      to current time.
++ * @param m     Pointer to the multi context
++ * @param dest  Pointer to a timeval struct that will hold the earliest timeout
++ *              delta.
+  */
+ static inline void
+-multi_get_timeout(struct multi_context *m, struct timeval *dest)
++multi_get_timeout_instance(struct multi_context *m, struct timeval *dest)
+ {
+     struct timeval tv, current;
+ 
 
