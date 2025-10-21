@@ -1,11 +1,14 @@
+Date: Tue, 21 Oct 2025 21:40:50 +0200
 From: Gert Doering <gert@...1296...>
-Date: Tue, 21 Oct 2025 21:31:40 +0200
-Message-ID: <20251021193147.26778-1-gert@...1296...>
-In-Reply-To: <gerrit.1761063467000.I76babf08b041162ddedf7a9b7c2799847f15cbdc@...2715...>
-References: <gerrit.1761063467000.I76babf08b041162ddedf7a9b7c2799847f15cbdc@...2715...>
+Message-ID: <aPfhwvsB8Sk27GME@...1296...>
+References: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] multi: Fix wrong usage of
- mroute_extract_openvpn_sockaddr
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="oGZ1A4GrMERB1SWF"
+Content-Disposition: inline
+In-Reply-To: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
+Subject: Re: [Openvpn-devel] [PATCH] tcp: apply CLOEXEC to accepted socket,
+ not listener
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +17,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Joshua Rogers <contact@...2949...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--oGZ1A4GrMERB1SWF
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-maddr.proto needs to be set before the call since that
-will change the behavior.
+Hi,
 
-Found by GCC "'maddr.proto' is used uninitialized"
+On Tue, Oct 21, 2025 at 06:11:06PM +0000, Joshua Rogers via Openvpn-devel w=
+rote:
+> The accept path calls set_cloexec(sd) after accept(). That re-flags the
+> listening socket, which is already CLOEXEC from create_socket_tcp(), and
+> leaves new_sd inheritable. As a result, client-connect and auth scripts
+> spawned after accept can inherit the connected socket and read or write
+> the raw TCP stream. This defeats the stated intent to prevent scripts from
+> accessing the client socket.
 
-Change-Id: I76babf08b041162ddedf7a9b7c2799847f15cbdc
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Acked-by: Gianmarco De Gregori <gianmarco@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1292
----
+Impressive find.  I had to actually look at the code to see what
+you are talking about :-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+So we do=20
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1292
-This mail reflects revision 2 of this Change.
+        new_sd =3D accept(sd, &act->dest.addr.sa, &remote_len);
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-Gianmarco De Gregori <gianmarco@...2726...>
+and then
 
-        
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index e907524..fa9c654 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3965,9 +3965,9 @@
-     saddr.addr.in4.sin_family = AF_INET;
-     saddr.addr.in4.sin_addr.s_addr = htonl(addr);
-     saddr.addr.in4.sin_port = htons(port);
-+    maddr.proto = proto;
-     if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
-     {
--        maddr.proto = proto;
-         hash_iterator_init(m->iter, &hi);
-         while ((he = hash_iterator_next(&hi)))
-         {
+        /* set socket file descriptor to not pass across execs, so that
+         * scripts don't have access to it */
+        set_cloexec(sd);
+
+    return new_sd;
+
+which very clearly is not intended behaviour.
+
+So,
+
+Acked-by: gert@...1296...
+
+will deal with it "as soon as possible" which will take a few days.
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--oGZ1A4GrMERB1SWF
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJo9+HCAAoJEB2Cnv7KVigSpdsL/R5PJclfMFL1mmK2kZZgkk9P
+q+RvNj1bn107aB0MY4LRdWYcNa+ufTT9a618p4qV6gZcsH2GuUcdsnNgvgtRJD7y
+quePw7M8msP1ajlAj5EOyBMQ4Jp0RhVBhtQE1IbqaIPaW5cYUMNcMwv8MgkmFFzz
+rneGiGPwWzl9Z5NcZH/4sOK90OPm8XPlJ0unF35ftU52/oHQvV5vvkFIBoctWwFm
+WRHDU2clBYo2a/Da7rJQC7nUeRmOS+3ppYScvGCrNmM4NMlYGYmv/O/K6VwQPUmj
+ffDTD7+CUoObBgG2CNILnEpVPrKTSIHlRgDXG/8wXvMQKJcsT7XAH0dR7WFGDDjQ
+s5Y5buJXZLHCahgq7l+bztZJ2gJ2e3/PScXEz4c2TA6lpt5qrCXPJYqDrae5s9Es
+Zb+m7rCYzNwDY7vx56YWweEsx1bxPhWWDf8jLHrBega5rpKoA2a54uRhC1BmMSWu
+tl7Hw4syQNct5C7T8/jm94CZ3xRu0+uNJMgpxuVwbg==
+=pGs9
+-----END PGP SIGNATURE-----
+
+--oGZ1A4GrMERB1SWF--
 
