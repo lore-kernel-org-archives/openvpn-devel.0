@@ -1,11 +1,17 @@
-Date: Tue, 21 Oct 2025 18:30:10 +0000
-From: Joshua Rogers <contact@...2949...>
-Message-ID: <GkfmD_4NelB0iqbXOw6wGvQRrZ_9JHLGCv8OLwRmhNdOkfQcNlLUVKMe4uxXA08HZyEBTE-i5RsEJX26STwRxwyH2GavsbOw7HJvctJRVro=@joshua.hu>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 21 Oct 2025 19:30:38 +0000
+In-Reply-To: <gerrit.1761063467000.I76babf08b041162ddedf7a9b7c2799847f15cbdc@...2715...>
+References: <gerrit.1761063467000.I76babf08b041162ddedf7a9b7c2799847f15cbdc@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <538a14a13b9a77d5756163cea5201391664ed928-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0"
-Subject: [Openvpn-devel] [PATCH] ssl_ncp: make tls_item_in_cipher_list
- zero-alloc and linear
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ZnNel75x0m0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: multi: Fix wrong
+ usage of mroute_extract_openvpn_sockaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,79 +20,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
-Content-Type: multipart/alternative;
- boundary="b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0"
+--ZnNel75x0m0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Attention is currently required from: flichtenheld, plaisthos.
 
-VGhpcyBhdm9pZHMgYXZvaWRzIHN0cmluZ19hbGxvYyArIHN0cnRvayBvbiBldmVyeSBtZW1iZXJz
-aGlwIGNoZWNrLCB3aGljaApmb3IgdmVyeSBsb25nIElWX0NJUEhFUlMgd2l0aCBtYW55IGNvbG9u
-LXNlcGFyYXRlZCB0b2tlbnMsIGZvcmNlZCBPKE4qTSkKY29tcGFyaXNvbnMgd2l0aCBJKE0pIGFs
-bG9jYXRpb25zIGluIGEgc2luZ2xlIG5lZ290aWF0aW4u
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1292?usp=3Demail )
 
---b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+Change subject: multi: Fix wrong usage of mroute_extract_openvpn_sockaddr
+......................................................................
 
-PGRpdiBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0
-cHg7Ij48c3Bhbj5UaGlzIGF2b2lkcyBhdm9pZHMgc3RyaW5nX2FsbG9jICsgc3RydG9rIG9uIGV2
-ZXJ5IG1lbWJlcnNoaXAgY2hlY2ssIHdoaWNoPC9zcGFuPjxkaXY+PHNwYW4+Zm9yIHZlcnkgbG9u
-ZyBJVl9DSVBIRVJTIHdpdGggbWFueSBjb2xvbi1zZXBhcmF0ZWQgdG9rZW5zLCBmb3JjZWQgTyhO
-Kk0pPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Y29tcGFyaXNvbnMgd2l0aCBJKE0pIGFsbG9jYXRp
-b25zIGluIGEgc2luZ2xlIG5lZ290aWF0aW4uPC9zcGFuPjwvZGl2PjwvZGl2Pg0KPGRpdiBzdHls
-ZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0cHg7IiBjbGFz
-cz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2sgcHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2st
-ZW1wdHkiPg0KICAgIDxkaXYgY2xhc3M9InByb3Rvbm1haWxfc2lnbmF0dXJlX2Jsb2NrLXVzZXIg
-cHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPjwvZGl2Pg0KICAgIA0KICAgICAgICAg
-ICAgPGRpdiBjbGFzcz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stcHJvdG9uIHByb3Rvbm1h
-aWxfc2lnbmF0dXJlX2Jsb2NrLWVtcHR5Ij4NCiAgICAgICAgDQogICAgICAgICAgICA8L2Rpdj4N
-CjwvZGl2Pg0K
 
---b2=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0--
+Patch Set 2: Code-Review-2
 
---b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0
-Content-Type: application/octet-stream; name=0001-ssl_ncp-make-tls_item_in_cipher_list-zero-alloc-and-.patch
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=0001-ssl_ncp-make-tls_item_in_cipher_list-zero-alloc-and-.patch
+(1 comment)
 
-RnJvbSA1ZDRhNWZjZjg5YTYxMDdjZGIzZmQ3YmUxMjk4MzEzZGQ1YWUzZDZlIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBKb3NodWEgUm9nZXJzIDxNZWdhTWFuU2VjQHVzZXJzLm5vcmVw
-bHkuZ2l0aHViLmNvbT4KRGF0ZTogV2VkLCAyMiBPY3QgMjAyNSAwMjoyNzozNSArMDgwMApTdWJq
-ZWN0OiBbUEFUQ0hdIHNzbF9uY3A6IG1ha2UgdGxzX2l0ZW1faW5fY2lwaGVyX2xpc3QgemVyby1h
-bGxvYyBhbmQgbGluZWFyCgpUaGlzIGF2b2lkcyBhdm9pZHMgc3RyaW5nX2FsbG9jICsgc3RydG9r
-IG9uIGV2ZXJ5IG1lbWJlcnNoaXAgY2hlY2ssIHdoaWNoCmZvciB2ZXJ5IGxvbmcgSVZfQ0lQSEVS
-UyB3aXRoIG1hbnkgY29sb24tc2VwYXJhdGVkIHRva2VucywgZm9yY2VkIE8oTipNKQpjb21wYXJp
-c29ucyB3aXRoIEkoTSkgYWxsb2NhdGlvbnMgaW4gYSBzaW5nbGUgbmVnb3RpYXRpbi4KClRoaXMg
-d2FzIGZvdW5kIGJ5IFplcm9QYXRoLgoKU2lnbmVkLW9mZi1ieTogSm9zaHVhIFJvZ2VycyA8TWVn
-YU1hblNlY0B1c2Vycy5ub3JlcGx5LmdpdGh1Yi5jb20+Ci0tLQogc3JjL29wZW52cG4vc3NsX25j
-cC5jIHwgMjQgKysrKysrKysrKysrKysrLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTUgaW5z
-ZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9zc2xf
-bmNwLmMgYi9zcmMvb3BlbnZwbi9zc2xfbmNwLmMKaW5kZXggNzkwZTUwZmMuLmE2NmY3YTYwIDEw
-MDY0NAotLS0gYS9zcmMvb3BlbnZwbi9zc2xfbmNwLmMKKysrIGIvc3JjL29wZW52cG4vc3NsX25j
-cC5jCkBAIC0yMDUsMjIgKzIwNSwyOCBAQCBhcHBlbmRfY2lwaGVyX3RvX25jcF9saXN0KHN0cnVj
-dCBvcHRpb25zICpvLCBjb25zdCBjaGFyICpjaXBoZXJuYW1lKQogYm9vbAogdGxzX2l0ZW1faW5f
-Y2lwaGVyX2xpc3QoY29uc3QgY2hhciAqaXRlbSwgY29uc3QgY2hhciAqbGlzdCkKIHsKLSAgICBj
-aGFyICp0bXBfY2lwaGVycyA9IHN0cmluZ19hbGxvYyhsaXN0LCBOVUxMKTsKLSAgICBjaGFyICp0
-bXBfY2lwaGVyc19vcmlnID0gdG1wX2NpcGhlcnM7CisgICAgY29uc3Qgc2l6ZV90IGl0ZW1fbGVu
-ID0gc3RybGVuKGl0ZW0pOworICAgIGNvbnN0IGNoYXIgKnAgPSBsaXN0OwogCi0gICAgY29uc3Qg
-Y2hhciAqdG9rZW4gPSBzdHJ0b2sodG1wX2NpcGhlcnMsICI6Iik7Ci0gICAgd2hpbGUgKHRva2Vu
-KQorICAgIHdoaWxlICgqcCkKICAgICB7Ci0gICAgICAgIGlmICgwID09IHN0cmNtcCh0b2tlbiwg
-aXRlbSkpCisgICAgICAgIGNvbnN0IGNoYXIgKnNlcCA9IHN0cmNocihwLCAnOicpOworICAgICAg
-ICBzaXplX3QgbGVuID0gc2VwID8gKHNpemVfdCkoc2VwIC0gcCkgOiBzdHJsZW4ocCk7CisKKyAg
-ICAgICAgaWYgKGxlbiA9PSBpdGVtX2xlbiAmJiAwID09IHN0cm5jbXAocCwgaXRlbSwgbGVuKSkK
-KyAgICAgICAgeworICAgICAgICAgICAgcmV0dXJuIHRydWU7CisgICAgICAgIH0KKworICAgICAg
-ICBpZiAoIXNlcCkKICAgICAgICAgewogICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgIH0KLSAg
-ICAgICAgdG9rZW4gPSBzdHJ0b2soTlVMTCwgIjoiKTsKKyAgICAgICAgcCA9IHNlcCArIDE7CiAg
-ICAgfQotICAgIGZyZWUodG1wX2NpcGhlcnNfb3JpZyk7Ci0KLSAgICByZXR1cm4gdG9rZW4gIT0g
-TlVMTDsKKyAgICByZXR1cm4gZmFsc2U7CiB9CisKIGNvbnN0IGNoYXIgKgogdGxzX3BlZXJfbmNw
-X2xpc3QoY29uc3QgY2hhciAqcGVlcl9pbmZvLCBzdHJ1Y3QgZ2NfYXJlbmEgKmdjKQogewotLSAK
-Mi41MS4xCgo=
+Patchset:
 
---b1=_v7WImeT6jZVINSLfOEzoZskbpBiydLkY2T24UeOeJB0--
+PS2:
+v2 has some stuff in there that doesn't belong here (push.c, ssl_verify.c i=
+ntegers)
 
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1292?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I76babf08b041162ddedf7a9b7c2799847f15cbdc
+Gerrit-Change-Number: 1292
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 21 Oct 2025 19:30:38 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--ZnNel75x0m0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1292?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1292?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">v2 has some=
+ stuff in there that doesn&#39;t belong here (push.c, ssl_verify.c integers=
+)</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1292?usp=3Demail">change 1292</a>. To unsubscribe, or for =
+help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
+ngs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1292?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
+ange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76babf08b041162ddedf7a9b7c2=
+799847f15cbdc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1292 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: its_Giaan &lt;gianmarco@...1664...=
+26...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 21 Oct 2025 19:30:38=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--ZnNel75x0m0=--
 
