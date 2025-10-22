@@ -1,18 +1,14 @@
-Date: Wed, 22 Oct 2025 21:38:04 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <aPkynAYvOHI587A7@...1296...>
-References: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
- <aPfhwvsB8Sk27GME@...1296...>
- <38497401-3a75-4885-8d0f-349c837d14a2@...1227...>
- <aPhx4vGvodCxQ6KW@...1296...>
- <AEnQPdqfGWjCz-mlg3_6apDcIz9cuBUpnlgwt8JdcOmoRUOI0J27hvmUpBBwktUlvL0sZxYIIgJT_q_k06xBnACDnbAPypNjq71D99xtCFM=@joshua.hu>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="0WgpI8YPR4EtM0jW"
-Content-Disposition: inline
-In-Reply-To: <AEnQPdqfGWjCz-mlg3_6apDcIz9cuBUpnlgwt8JdcOmoRUOI0J27hvmUpBBwktUlvL0sZxYIIgJT_q_k06xBnACDnbAPypNjq71D99xtCFM=@joshua.hu>
-Subject: Re: [Openvpn-devel] [PATCH] tcp: apply CLOEXEC to accepted socket,
- not listener
+References: <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q.ref@...278...>
+ <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q@...278...>
+ <aPcq1N1o2-mZJH1G@...1296...>
+In-Reply-To: <aPcq1N1o2-mZJH1G@...1296...>
+From: Jon Chiappetta <root@...2904...>
+Date: Wed, 22 Oct 2025 17:29:57 -0400
+Message-ID: <CAOh3LPM2Tc_=LTNmu4ntnXCjkVVChcxeF2KuCE7-0Lm78WKUxA@...278...>
+Content-Type: multipart/alternative; boundary="00000000000046ee9e0641c605e0"
+Subject: Re: [Openvpn-devel] Quick question for the OpenVPN developers on
+ the source code functionality [problem solving]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,69 +17,131 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Joshua Rogers <contact@...2949...>
-Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---0WgpI8YPR4EtM0jW
-Content-Type: text/plain; charset="us-ascii"
+--00000000000046ee9e0641c605e0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Thanks Gert! :) I did find a nice built-in method in the OVPN source code
+to extract both the source and destination ipv4 addresses
+(mroute_extract_addr_ip) which I was able to use and build on top of to
+help solve this multi-threaded "issue" of mine. It has helped greatly in
+terms of performance now as I am able to simply associate an IPv4
+connection state to an available thread which will result in ordered packet
+processing of data from the TUN device (read/write). This has helped
+greatly to prevent or reduce the amount of processing and reordering that
+TCP and QUIC-UDP have to perform and things are loading "snappier" now it
+seems. The other available threads can also work on their own connection
+states at the same time allowing them to work in parallel but also
+separately if you will. Thanks again for your work on this project and
+inputs on this proof-of-concept experiment I'm running. I wouldn't have
+been able to do any of this with WireGuard!
 
-On Wed, Oct 22, 2025 at 06:06:21PM +0000, Joshua Rogers wrote:
-> By the way, as mentioned, this was found with the ZeroPath tool. I was wo=
-ndering if it would be of interest to send the raw results of this scanner =
-to somebody that could allow them to review the findings without me manuall=
-y triaging? I have done this with curl (https://daniel.haxx.se/blog/2025/10=
-/10/a-new-breed-of-analyzers/) and it was quite succesful (~20% false posit=
-ive rate).
->=20
-> If this is of interest, please let me know where to send them. The output=
- is just markdown, and it includes potential security vulnerabilities. If n=
-ot, I will (slowly) continue triaging myself.
+Blog post:
+https://fossjon.com/2025/10/22/solving-a-final-remaining-performance-impact=
+-with-mutli-threaded-operation-by-using-connection-state-mapping-in-the-hig=
+hly-modified-openvpn-source-code-implementation/
 
-This is of interest.
 
-I'm not really sure where to send this - security bugs go to=20
-security@...515..., but if it's not security, we should not spam
-this list.  Non-security things could go to GH issues, but *if*
-there is security relevant things in between, we might want to keep
-the lid on it, for the moment...
 
-So you could send everything my way for a start and I discuss with
-my co-developers how to do this in the future.  I'll then try to
-triage this in a timely fashion and forward to GH, security@, or
-just drop :-)
+On Tue, Oct 21, 2025 at 2:40=E2=80=AFAM Gert Doering <gert@...1296...> wrot=
+e:
 
-gert
+> Hi,
+>
+> On Mon, Oct 20, 2025 at 04:15:22PM -0400, Jon Chiappetta via Openvpn-devel
+> wrote:
+> > I was wondering if any part of the OpenVPN source code parses the IPv4
+> > packet header for source/destination address already in place?
+>
+> With tun/tap and ipv4/ipv6, this is a bit of nastiness...
+>
+> You might want to have a look at drop_if_recursive_routing() in master,
+> as that one has to find destination address & port and will log source
+> address & port.
+>
+> Not sure we have something more convenient.  Grepping for openvpn_iphdr
+> might turn up something, though :-) (like somewhere in the NAT code).
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--00000000000046ee9e0641c605e0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Gert Doering - Munich, Germany                             gert@...1296...
+<div dir=3D"ltr"><br><div>Thanks Gert! :) I did find a nice built-in method=
+ in the OVPN source code to extract both the source and destination ipv4 ad=
+dresses (mroute_extract_addr_ip) which I was able to use and build on top o=
+f to help solve this multi-threaded &quot;issue&quot; of mine. It has helpe=
+d greatly in terms of performance=C2=A0now as I am able to simply associate=
+ an IPv4 connection state to an available thread which will result in order=
+ed packet processing of data from the TUN device (read/write). This has hel=
+ped greatly to prevent or reduce the amount of processing and reordering th=
+at TCP and QUIC-UDP have to perform and things are loading &quot;snappier&q=
+uot; now it seems. The other available threads can also work on their own c=
+onnection states at the same time allowing them to work in parallel but als=
+o separately if you will. Thanks again for your work<span class=3D"gmail-Ap=
+ple-converted-space">=C2=A0</span>on this project and inputs on this proof-=
+of-concept experiment I&#39;m running. I wouldn&#39;t have been able to do =
+any of this with WireGuard!</div><div><br></div><div>Blog post:=C2=A0<a hre=
+f=3D"https://fossjon.com/2025/10/22/solving-a-final-remaining-performance-i=
+mpact-with-mutli-threaded-operation-by-using-connection-state-mapping-in-th=
+e-highly-modified-openvpn-source-code-implementation/">https://fossjon.com/=
+2025/10/22/solving-a-final-remaining-performance-impact-with-mutli-threaded=
+-operation-by-using-connection-state-mapping-in-the-highly-modified-openvpn=
+-source-code-implementation/</a></div><div><br></div><div><br></div></div><=
+br><div class=3D"gmail_quote gmail_quote_container"><div dir=3D"ltr" class=
+=3D"gmail_attr">On Tue, Oct 21, 2025 at 2:40=E2=80=AFAM Gert Doering &lt;<a=
+ href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></div><b=
+lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
+ft-width:1px;border-left-style:solid;border-left-color:rgb(204,204,204);pad=
+ding-left:1ex">Hi,<br>
+<br>
+On Mon, Oct 20, 2025 at 04:15:22PM -0400, Jon Chiappetta via Openvpn-devel =
+wrote:<br>
+&gt; I was wondering if any part of the OpenVPN source code parses the IPv4=
+<br>
+&gt; packet header for source/destination address already in place?<br>
+<br>
+With tun/tap and ipv4/ipv6, this is a bit of nastiness...<br>
+<br>
+You might want to have a look at drop_if_recursive_routing() in master,<br>
+as that one has to find destination address &amp; port and will log source<=
+br>
+address &amp; port.<br>
+<br>
+Not sure we have something more convenient.=C2=A0 Grepping for openvpn_iphd=
+r<br>
+might turn up something, though :-) (like somewhere in the NAT code).<br>
+<br>
+gert<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
+</blockquote></div>
 
---0WgpI8YPR4EtM0jW
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJo+TKcAAoJEB2Cnv7KVigSNAAL/jeJ2IgzZicS61Kw/5q7tOvK
-lUN6OwOVGN14BawsAlP45LQOBgA5E5m0GI0P/pH/ZyZI7RRR0flTChgeRZkzTtAy
-AQ2fpQrQJrxa8Nx445Hq0qWk0MxfgKOQT+85zIpjeTq0OAyueUl8Dag2nmp2zhwu
-T57tJGhu5xWG8Mj77glLQSIGZbab7eGNlMYVv1eY4xUv1gXmmfo5a5jeyHuagdir
-pjJfXZuB1BrAQ9Xc9Rhe7WeWh7j/B4ywLy4DmPMuVhSJNOjEHpJtxB4w/4r+8Rwc
-Wm8Lk1R5EEgrGRsEqItHcSp4IX/QQlTYdtLDBefuYtx7ZVtsMoSwhcD3dM0s3tsh
-7ojbcsW9V8oIxLBRfsCYPhzSKGlFem/1Z3blxsgv7JibEchSR3eECpFDCQoYKfVf
-bUFXF4rdGITBQfK6S8GYEGIvIr81sNImjtltkGTfr+LW9vqDdk6t2revAaKekLT1
-TN3SMTIhx1GMBK47GbSzC8W8/ScpdsdO9v5RUTTz5A==
-=5EJN
------END PGP SIGNATURE-----
-
---0WgpI8YPR4EtM0jW--
+--00000000000046ee9e0641c605e0--
 
