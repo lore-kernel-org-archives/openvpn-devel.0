@@ -1,16 +1,11 @@
-Date: Wed, 22 Oct 2025 07:55:46 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <aPhx4vGvodCxQ6KW@...1296...>
-References: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
- <aPfhwvsB8Sk27GME@...1296...>
- <38497401-3a75-4885-8d0f-349c837d14a2@...1227...>
+Content-Type: multipart/alternative;
+ boundary="------------65y8KqR0V6LYZUSD2K62Mehv"
+Message-ID: <e9d7b325-4eea-4966-8ca7-d5bae3040b87@...2722...>
+Date: Wed, 22 Oct 2025 18:15:43 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="JXcMVKODTJFiuVI9"
-Content-Disposition: inline
-In-Reply-To: <38497401-3a75-4885-8d0f-349c837d14a2@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] tcp: apply CLOEXEC to accepted socket,
- not listener
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,50 +14,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, Joshua Rogers <contact@...2949...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---JXcMVKODTJFiuVI9
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------65y8KqR0V6LYZUSD2K62Mehv
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
+Meeting summary for 22 October 2025:
 
-On Tue, Oct 21, 2025 at 10:34:21PM +0200, Arne Schwabe wrote:
-> Before commiting we have to check that port-share does not rely on this
-> behaviour to pass the fd the forked instances. I didn't check right now.
+  *
 
-Good point.  I have a port-share test instance, will test.
+    *Updated: Release 2.7*
+    OpenVPN 2.7 beta3 was released 13 October.
+    It looks like next up will be beta4, after which a rc1 or stable
+    release is expected, after the hackathon end of October.
+    There are some bug reports for beta3 so we want to address those
+    before doing a beta4.
+    Current tentative release date for beta4 is 29 October.
 
-gert
+  *
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+    *Updated: OpenVPN community meetup 2025*
+    https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025
+    T-shirts arrived at the hotel.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+  *
 
---JXcMVKODTJFiuVI9
-Content-Type: application/pgp-signature; name=signature.asc
+    *Updated: forums situation*
+    minx from OpenVPN Inc. originally set up flarum and started
+    migration process, but he left the company before completion.
+    Now we have eduardo at OpenVPN Inc. who is taking a look and he
+    managed to get migration working.
+    He suggests some further migration testing, and to then plan a hard
+    cutover date.
 
------BEGIN PGP SIGNATURE-----
+  *
 
-iQGcBAEBAgAGBQJo+HHiAAoJEB2Cnv7KVigSCzwMAJENldRGo1fd9vTTh/cR6fI/
-tPZTDAEcUz/yPWQjFXwbla8zcYVD1GCWwhpVQpzv9NVG6qKLRPzdSpoEotT9zT3V
-naF4jHfBS3JZS5Es4IehpnN//tFGkvwtf50V8/9tM1LV5ARjqIU45xwc0Ltfl7bN
-TlqHj4neFzO5kl6KKkMT4WRvZij4z0ESKxRhOoO7bpXa4l9ZYLBKedZqsP1rqo96
-2wzOPVzImdzk9ipicViFuz5RhWaLFOjx/gPlFfmKJe95L5IwnDY0AYL4EGKRbSt+
-n7DVtCnBofQzG7CLh8Voq/XRuKX7Y5Q3reZdAJCrnwINXivAOb/k2Pqt46iIk8MZ
-IVGfMFQotcoAmVFRaNjI6FJa0+OE0BZamClF/fTGLlTazkG/6uqbS3CrX7L2gQDb
-mJqvDJ7AxtBGk7S/LnOD5wDIC+1Y4LFbiUI3BLMrtHtkBr16/I6cuaj84Y+/6e3z
-cMekFww2G0rN1tRfvFKbyntrpZGgHJhsc+uXK9Q3zw==
-=tnQP
------END PGP SIGNATURE-----
+    *Updated: wolfSSL license changed from gplv2 to gplv3*
+    The release notes of wolfSSL indicate the license changed to GPLv3.
+    This basically makes wolfSSL incompatible in regards to licensing
+    with OpenVPN.
+    Currently trying to arrange a meeting between relevant parties.
 
---JXcMVKODTJFiuVI9--
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------65y8KqR0V6LYZUSD2K62Mehv
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 22 October 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          OpenVPN 2.7 beta3 was released 13 October.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          It looks like next up will be beta4, after which a rc1 or
+          stable release is expected, after the hackathon end of
+          October.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There are some bug reports for beta3 so we want to address
+          those before doing a beta4.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Current tentative release date for beta4 is 29 October.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            OpenVPN community meetup 2025</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          <a
+href="https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://community.openvpn.net/openvpn/wiki/CommunityMeetup2025</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          T-shirts arrived at the hotel.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            forums situation</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          minx from OpenVPN Inc. originally set up flarum and started
+          migration process, but he left the company before completion.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Now we have eduardo at OpenVPN Inc. who is taking a look and
+          he managed to get migration working.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          He suggests some further migration testing, and to then plan a
+          hard cutover date.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            wolfSSL license changed from gplv2 to gplv3</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The release notes of wolfSSL indicate the license changed to
+          GPLv3. This basically makes wolfSSL incompatible in regards to
+          licensing with OpenVPN.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Currently trying to arrange a meeting between relevant
+          parties.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------65y8KqR0V6LYZUSD2K62Mehv--
 
