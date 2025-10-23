@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 23 Oct 2025 17:35:08 +0200
-Message-ID: <20251023153514.18691-1-gert@...1296...>
-In-Reply-To: <gerrit.1761218398000.Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d@...2715...>
-References: <gerrit.1761218398000.Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 23 Oct 2025 15:46:34 +0000
+In-Reply-To: <gerrit.1761151453000.Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d@...2715...>
+References: <gerrit.1761151453000.Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <54bffb623efb046b20b4f289ec3fa5a0b35496e8-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Do not try to use the encrypt-then-mac
- ciphers from OpenSSL 3.6.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="vOCo/tefplc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Do not try to use
+ the encrypt-then-mac ciphers from OpenSSL 3.6.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,58 +19,163 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--vOCo/tefplc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+94?usp=3Demail )
+
+Change subject: Do not try to use the encrypt-then-mac ciphers from OpenSSL=
+ 3.6.0
+......................................................................
+
+Do not try to use the encrypt-then-mac ciphers from OpenSSL 3.6.0
 
 These ciphers claim to be CBC but since they are also include an HMAC
 are more a mix of AEAD and CBC. Nevertheless, we do not support these
 and also have no (good) reason to support them.
 
+This patch defines the flag if the SSL library does not define the flag
+to also work when the SSL library is upgraded after OpenVPN has been compil=
+ed.
+
 Change-Id: Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d
 Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1295
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1294
+Message-Id: <20251023111138.25245-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
+846.html
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
+M src/openvpn/crypto_openssl.c
+M src/openvpn/openssl_compat.h
+2 files changed, 7 insertions(+), 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1295
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 331af99..280389c 100644
+index 7688add..f596b8c 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -798,7 +798,8 @@
+@@ -789,7 +789,8 @@
  #ifdef EVP_CIPH_FLAG_CTS
-                           && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_CTS)
+                    && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_CTS)
  #endif
--                          && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER));
-+                          && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER)
-+                          && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_ENC_THEN_MAC));
+-                   && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPH=
+ER));
++                   && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPH=
+ER)
++                   && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_ENC_THEN_=
+MAC));
      EVP_CIPHER_free(cipher);
      return ret;
  }
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index c9fa719..03ece13 100644
+index e3e7cf8..fb3c9b1 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -817,4 +817,9 @@
- 
- #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
- 
+@@ -211,4 +211,9 @@
+ #endif
+ #endif
+
 +/* Introduced in OpenSSL 3.6.0 */
 +#ifndef EVP_CIPH_FLAG_ENC_THEN_MAC
 +#define EVP_CIPH_FLAG_ENC_THEN_MAC 0x10000000
 +#endif
 +
  #endif /* OPENSSL_COMPAT_H_ */
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1294?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d
+Gerrit-Change-Number: 1294
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--vOCo/tefplc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1294?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Do not try to use the encrypt-then-mac ciphers f=
+rom OpenSSL 3.6.0<br><br>These ciphers claim to be CBC but since they are a=
+lso include an HMAC<br>are more a mix of AEAD and CBC. Nevertheless, we do =
+not support these<br>and also have no (good) reason to support them.<br><br=
+>This patch defines the flag if the SSL library does not define the flag<br=
+>to also work when the SSL library is upgraded after OpenVPN has been compi=
+led.<br><br>Change-Id: Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d<br>Signed-=
+off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld=
+ &lt;frank@...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openv=
+pn/+/1294<br>Message-Id: &lt;20251023111138.25245-1-gert@...1296...&gt;<br>=
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
+846.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M=
+ src/openvpn/crypto_openssl.c<br>M src/openvpn/openssl_compat.h<br>2 files =
+changed, 7 insertions(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c=
+</span><br><span>index 7688add..f596b8c 100644</span><br><span>--- a/src/op=
+envpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</=
+span><br><span>@@ -789,7 +789,8 @@</span><br><span> #ifdef EVP_CIPH_FLAG_CT=
+S</span><br><span>                    &amp;&amp; !(EVP_CIPHER_flags(cipher)=
+ &amp; EVP_CIPH_FLAG_CTS)</span><br><span> #endif</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                   &amp;&amp; !(EVP_CIPHER_flag=
+s(cipher) &amp; EVP_CIPH_FLAG_AEAD_CIPHER));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                   &amp;&amp; !(EVP_CIPHER_flags(c=
+ipher) &amp; EVP_CIPH_FLAG_AEAD_CIPHER)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                   &amp;&amp; !(EVP_CIPHER_flags(cipher=
+) &amp; EVP_CIPH_FLAG_ENC_THEN_MAC));</span><br><span>     EVP_CIPHER_free(=
+cipher);</span><br><span>     return ret;</span><br><span> }</span><br><spa=
+n>diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h<=
+/span><br><span>index e3e7cf8..fb3c9b1 100644</span><br><span>--- a/src/ope=
+nvpn/openssl_compat.h</span><br><span>+++ b/src/openvpn/openssl_compat.h</s=
+pan><br><span>@@ -211,4 +211,9 @@</span><br><span> #endif</span><br><span> =
+#endif</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/* Introduced in OpenSSL 3.6.0 */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#ifndef EVP_CIPH_FLAG_ENC_THEN_MAC</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define EVP_CIPH_FLAG_ENC_THEN_MAC 0x1000=
+0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* =
+OPENSSL_COMPAT_H_ */</span><br><span></span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/1294?usp=3Demail">change 1294=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1294?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iafe3c94b952cd3fbecf6f3d0581=
+6e5859f425e7d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1294 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--vOCo/tefplc=--
 
