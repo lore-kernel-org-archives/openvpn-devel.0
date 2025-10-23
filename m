@@ -1,8 +1,8 @@
-Date: Thu, 23 Oct 2025 17:47:10 +0200 (CEST)
-Message-Id: <202510231547.59NFlAGp066459@...2054...>
+Date: Thu, 23 Oct 2025 17:50:43 +0200 (CEST)
+Message-Id: <202510231550.59NFohPi066723@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251023111138.25245-1-gert@...1296...>
-References: <20251023111138.25245-1-gert@...1296...>
+In-Reply-To: <20251023153514.18691-1-gert@...1296...>
+References: <20251023153514.18691-1-gert@...1296...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Do not try to use the
  encrypt-then-mac ciphers from OpenSSL 3.6.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,23 +18,25 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Change and explanation make sense, and BB/GH confirms that macOS is now
-happy again (this isn't a "macOS" problem but the GHA workers on macOS
-discovered it first).
+This is basically the same as commit a69d9b665 on master, but due to 
+context/formatting changes it did not directly apply and Arne was so
+nice and did a 2.6 version.
 
-Your patch has been applied to the master branch.
+BB says this is all good, did not wait for GHA results.
 
-commit a69d9b66502f13354750d8146cd038cc7a26a0bd
+Your patch has been applied to the release/2.6 branch (long-term compat).
+
+commit 0848531640f670f7f6bb79833223ac8a05c1b36e
 Author: Arne Schwabe
-Date:   Thu Oct 23 13:11:33 2025 +0200
+Date:   Thu Oct 23 17:35:08 2025 +0200
 
      Do not try to use the encrypt-then-mac ciphers from OpenSSL 3.6.0
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1294
-     Message-Id: <20251023111138.25245-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33846.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1295
+     Message-Id: <20251023153514.18691-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33849.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
