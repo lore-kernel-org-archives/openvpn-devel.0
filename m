@@ -1,14 +1,16 @@
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 23 Oct 2025 09:53:26 +0000
+In-Reply-To: <gerrit.1761151453000.Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d@...2715...>
+References: <gerrit.1761151453000.Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <eb9d7972bf96f149a7b997cebffca96a29357da7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-References: <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q.ref@...278...>
- <CAOh3LPOK2-L8VCS5VcvpDvDyGQp9o00y9v069OChyK9o9-884Q@...278...>
- <aPcq1N1o2-mZJH1G@...1296...>
-In-Reply-To: <aPcq1N1o2-mZJH1G@...1296...>
-From: Jon Chiappetta <root@...2904...>
-Date: Wed, 22 Oct 2025 17:29:57 -0400
-Message-ID: <CAOh3LPM2Tc_=LTNmu4ntnXCjkVVChcxeF2KuCE7-0Lm78WKUxA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000046ee9e0641c605e0"
-Subject: Re: [Openvpn-devel] Quick question for the OpenVPN developers on
- the source code functionality [problem solving]
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="DBiymPY5LN4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Do not try to use
+ the encrypt-then-mac ciphers from OpenSSL 3.6.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,131 +19,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---00000000000046ee9e0641c605e0
+--DBiymPY5LN4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Thanks Gert! :) I did find a nice built-in method in the OVPN source code
-to extract both the source and destination ipv4 addresses
-(mroute_extract_addr_ip) which I was able to use and build on top of to
-help solve this multi-threaded "issue" of mine. It has helped greatly in
-terms of performance now as I am able to simply associate an IPv4
-connection state to an available thread which will result in ordered packet
-processing of data from the TUN device (read/write). This has helped
-greatly to prevent or reduce the amount of processing and reordering that
-TCP and QUIC-UDP have to perform and things are loading "snappier" now it
-seems. The other available threads can also work on their own connection
-states at the same time allowing them to work in parallel but also
-separately if you will. Thanks again for your work on this project and
-inputs on this proof-of-concept experiment I'm running. I wouldn't have
-been able to do any of this with WireGuard!
+Attention is currently required from: flichtenheld.
 
-Blog post:
-https://fossjon.com/2025/10/22/solving-a-final-remaining-performance-impact=
--with-mutli-threaded-operation-by-using-connection-state-mapping-in-the-hig=
-hly-modified-openvpn-source-code-implementation/
+Hello flichtenheld,=20
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1294?usp=3Demail
+
+to look at the new patch set (#2).
 
 
+Change subject: Do not try to use the encrypt-then-mac ciphers from OpenSSL=
+ 3.6.0
+......................................................................
 
-On Tue, Oct 21, 2025 at 2:40=E2=80=AFAM Gert Doering <gert@...1296...> wrot=
-e:
+Do not try to use the encrypt-then-mac ciphers from OpenSSL 3.6.0
 
-> Hi,
->
-> On Mon, Oct 20, 2025 at 04:15:22PM -0400, Jon Chiappetta via Openvpn-devel
-> wrote:
-> > I was wondering if any part of the OpenVPN source code parses the IPv4
-> > packet header for source/destination address already in place?
->
-> With tun/tap and ipv4/ipv6, this is a bit of nastiness...
->
-> You might want to have a look at drop_if_recursive_routing() in master,
-> as that one has to find destination address & port and will log source
-> address & port.
->
-> Not sure we have something more convenient.  Grepping for openvpn_iphdr
-> might turn up something, though :-) (like somewhere in the NAT code).
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
+These ciphers claim to be CBC but since they are also include an HMAC
+are more a mix of AEAD and CBC. Nevertheless, we do not support these
+and also have no (good) reason to support them.
 
---00000000000046ee9e0641c605e0
+Change-Id: Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M src/openvpn/crypto_openssl.c
+M src/openvpn/openssl_compat.h
+2 files changed, 7 insertions(+), 1 deletion(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/94/1294/2
+
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 7688add..f596b8c 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -789,7 +789,8 @@
+ #ifdef EVP_CIPH_FLAG_CTS
+                    && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_CTS)
+ #endif
+-                   && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPH=
+ER));
++                   && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPH=
+ER)
++                   && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_ENC_THEN_=
+MAC));
+     EVP_CIPHER_free(cipher);
+     return ret;
+ }
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index e3e7cf8..fb3c9b1 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -211,4 +211,9 @@
+ #endif
+ #endif
+
++/* Introduced in OpenSSL 3.6.0 */
++#ifndef EVP_CIPH_FLAG_ENC_THEN_MAC
++#define EVP_CIPH_FLAG_ENC_THEN_MAC 0x10000000
++#endif
++
+ #endif /* OPENSSL_COMPAT_H_ */
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1294?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d
+Gerrit-Change-Number: 1294
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--DBiymPY5LN4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><br><div>Thanks Gert! :) I did find a nice built-in method=
- in the OVPN source code to extract both the source and destination ipv4 ad=
-dresses (mroute_extract_addr_ip) which I was able to use and build on top o=
-f to help solve this multi-threaded &quot;issue&quot; of mine. It has helpe=
-d greatly in terms of performance=C2=A0now as I am able to simply associate=
- an IPv4 connection state to an available thread which will result in order=
-ed packet processing of data from the TUN device (read/write). This has hel=
-ped greatly to prevent or reduce the amount of processing and reordering th=
-at TCP and QUIC-UDP have to perform and things are loading &quot;snappier&q=
-uot; now it seems. The other available threads can also work on their own c=
-onnection states at the same time allowing them to work in parallel but als=
-o separately if you will. Thanks again for your work<span class=3D"gmail-Ap=
-ple-converted-space">=C2=A0</span>on this project and inputs on this proof-=
-of-concept experiment I&#39;m running. I wouldn&#39;t have been able to do =
-any of this with WireGuard!</div><div><br></div><div>Blog post:=C2=A0<a hre=
-f=3D"https://fossjon.com/2025/10/22/solving-a-final-remaining-performance-i=
-mpact-with-mutli-threaded-operation-by-using-connection-state-mapping-in-th=
-e-highly-modified-openvpn-source-code-implementation/">https://fossjon.com/=
-2025/10/22/solving-a-final-remaining-performance-impact-with-mutli-threaded=
--operation-by-using-connection-state-mapping-in-the-highly-modified-openvpn=
--source-code-implementation/</a></div><div><br></div><div><br></div></div><=
-br><div class=3D"gmail_quote gmail_quote_container"><div dir=3D"ltr" class=
-=3D"gmail_attr">On Tue, Oct 21, 2025 at 2:40=E2=80=AFAM Gert Doering &lt;<a=
- href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></div><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
-ft-width:1px;border-left-style:solid;border-left-color:rgb(204,204,204);pad=
-ding-left:1ex">Hi,<br>
-<br>
-On Mon, Oct 20, 2025 at 04:15:22PM -0400, Jon Chiappetta via Openvpn-devel =
-wrote:<br>
-&gt; I was wondering if any part of the OpenVPN source code parses the IPv4=
-<br>
-&gt; packet header for source/destination address already in place?<br>
-<br>
-With tun/tap and ipv4/ipv6, this is a bit of nastiness...<br>
-<br>
-You might want to have a look at drop_if_recursive_routing() in master,<br>
-as that one has to find destination address &amp; port and will log source<=
-br>
-address &amp; port.<br>
-<br>
-Not sure we have something more convenient.=C2=A0 Grepping for openvpn_iphd=
-r<br>
-might turn up something, though :-) (like somewhere in the NAT code).<br>
-<br>
-gert<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
-</blockquote></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld. </p>
+<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1294?usp=3Demail">View Chan=
+ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">Do not try to use the encrypt-then-mac ciphers from=
+ OpenSSL 3.6.0<br><br>These ciphers claim to be CBC but since they are also=
+ include an HMAC<br>are more a mix of AEAD and CBC. Nevertheless, we do not=
+ support these<br>and also have no (good) reason to support them.<br><br>Ch=
+ange-Id: Iafe3c94b952cd3fbecf6f3d05816e5859f425e7d<br>Signed-off-by: Arne S=
+chwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/crypto_openssl.c<br>=
+M src/openvpn/openssl_compat.h<br>2 files changed, 7 insertions(+), 1 delet=
+ion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/94/1294/2</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto_opens=
+sl.c b/src/openvpn/crypto_openssl.c</span><br><span>index 7688add..f596b8c =
+100644</span><br><span>--- a/src/openvpn/crypto_openssl.c</span><br><span>+=
+++ b/src/openvpn/crypto_openssl.c</span><br><span>@@ -789,7 +789,8 @@</span=
+><br><span> #ifdef EVP_CIPH_FLAG_CTS</span><br><span>                    &a=
+mp;&amp; !(EVP_CIPHER_flags(cipher) &amp; EVP_CIPH_FLAG_CTS)</span><br><spa=
+n> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+       &amp;&amp; !(EVP_CIPHER_flags(cipher) &amp; EVP_CIPH_FLAG_AEAD_CIPHE=
+R));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+    &amp;&amp; !(EVP_CIPHER_flags(cipher) &amp; EVP_CIPH_FLAG_AEAD_CIPHER)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   &=
+amp;&amp; !(EVP_CIPHER_flags(cipher) &amp; EVP_CIPH_FLAG_ENC_THEN_MAC));</s=
+pan><br><span>     EVP_CIPHER_free(cipher);</span><br><span>     return ret=
+;</span><br><span> }</span><br><span>diff --git a/src/openvpn/openssl_compa=
+t.h b/src/openvpn/openssl_compat.h</span><br><span>index e3e7cf8..fb3c9b1 1=
+00644</span><br><span>--- a/src/openvpn/openssl_compat.h</span><br><span>++=
++ b/src/openvpn/openssl_compat.h</span><br><span>@@ -211,4 +211,9 @@</span>=
+<br><span> #endif</span><br><span> #endif</span><br><span> </span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/* Introduced in OpenSSL 3.6.0 */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef EVP_CIPH_FLAG=
+_ENC_THEN_MAC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defin=
+e EVP_CIPH_FLAG_ENC_THEN_MAC 0x10000000</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span> #endif /* OPENSSL_COMPAT_H_ */</span><br><span></s=
+pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1294?usp=3Demail">change 1294</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3De=
+mail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1294?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
---00000000000046ee9e0641c605e0--
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iafe3c94b952cd3fbecf6f3d0581=
+6e5859f425e7d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1294 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--DBiymPY5LN4=--
 
