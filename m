@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 24 Oct 2025 16:52:48 +0000
-References: <gerrit.1761324750000.I71e9d4a61d37483685723c16e98f59755694cadf@...2715...>
+Date: Fri, 24 Oct 2025 16:52:50 +0000
+References: <gerrit.1761324750000.I6bc3147d10ca50291110335cd9fc3be961280c1b@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <2e1dd099fb0df6b28cd411711433e0a840548add-HTML@...2715...>
+Message-ID: <c59db43ab03d97b7f9f4948c76778521b6247924-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xRLGa9I4yrA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: change return
- type of calc_control_channel_frame_overhead to size_t
+Content-Type: multipart/alternative; boundary="qo/L/eUFLiw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: Change update
+ argument of compute_earliest_wakeup to time_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xRLGa9I4yrA=
+--qo/L/eUFLiw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,44 +32,56 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1297?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1299?usp=3Demail
 
 to review the following change.
 
 
-Change subject: ssl: change return type of calc_control_channel_frame_overh=
-ead to size_t
+Change subject: ssl: Change update argument of compute_earliest_wakeup to t=
+ime_t
 ......................................................................
 
-ssl: change return type of calc_control_channel_frame_overhead to size_t
+ssl: Change update argument of compute_earliest_wakeup to time_t
 
-This avoids dealing with conversion warnings inside
-the function. Since we only add values that are
-supposed to be positive this should be safe.
+Since we usually input a diff of two time_t values here
+the input value will be officially time_t. So avoid
+conversion warnings at almost every caller site.
 
-Note that we now cast the return value to int at
-the caller side. There we actually substract it and
-want to catch the case where the result gets negative.
-Since all the involved values are quite small compared
-to INT_MAX I decided to just cast it without further
-checks.
+We can safely cast it to interval_t here because we
+checked that it is smaller than the interval_t value
+earliest. And all negative values are treated equal,
+so exact value doesn't matter.
 
-Change-Id: I71e9d4a61d37483685723c16e98f59755694cadf
+Change-Id: I6bc3147d10ca50291110335cd9fc3be961280c1b
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
 M src/openvpn/ssl.c
-1 file changed, 3 insertions(+), 12 deletions(-)
+1 file changed, 7 insertions(+), 7 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/1297/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/99/1299/1
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 567560f..dfbbbc6 100644
+index 54b69ea..925c5af 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -180,21 +180,16 @@
-     frame->tun_mtu =3D max_int(frame->tun_mtu, TLS_CHANNEL_MTU_MIN);
+@@ -1108,11 +1108,11 @@
+  * called again.
+  */
+ static inline void
+-compute_earliest_wakeup(interval_t *earliest, interval_t seconds_from_now)
++compute_earliest_wakeup(interval_t *earliest, time_t seconds_from_now)
+ {
+     if (seconds_from_now < *earliest)
+     {
+-        *earliest =3D seconds_from_now;
++        *earliest =3D (interval_t)seconds_from_now;
+     }
+     if (*earliest < 0)
+     {
+@@ -1120,11 +1120,6 @@
+     }
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -77,133 +89,104 @@ index 567560f..dfbbbc6 100644
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- /**
-  * calculate the maximum overhead that control channel frames have
-  * This includes header, op code and everything apart from the
-  * payload itself. This method is a bit pessimistic and might give higher
-  * overhead than we actually have */
--static int
-+static size_t
- calc_control_channel_frame_overhead(const struct tls_session *session)
- {
-     const struct key_state *ks =3D &session->key[KS_PRIMARY];
--    int overhead =3D 0;
-+    size_t overhead =3D 0;
-
-     /* opcode */
-     overhead +=3D 1;
-@@ -227,10 +222,6 @@
-     return overhead;
+ /*
+  * Return true if "lame duck" or retiring key has expired and can
+  * no longer be used.
+@@ -1786,6 +1781,11 @@
+     return true;
  }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- init_ssl_lib(void)
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
+ static bool
+ write_string(struct buffer *buf, const char *str, const int maxlen)
  {
-@@ -2651,7 +2642,7 @@
-     int max_pkt_len =3D min_int(TLS_CHANNEL_BUF_SIZE, session->opt->frame.=
-tun_mtu);
-
-     /* Subtract overhead */
--    max_pkt_len -=3D calc_control_channel_frame_overhead(session);
-+    max_pkt_len -=3D (int)calc_control_channel_frame_overhead(session);
-
-     /* calculate total available length for outgoing tls ciphertext */
-     int maxlen =3D max_pkt_len * rel_avail;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1297?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1299?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I71e9d4a61d37483685723c16e98f59755694cadf
-Gerrit-Change-Number: 1297
+Gerrit-Change-Id: I6bc3147d10ca50291110335cd9fc3be961280c1b
+Gerrit-Change-Number: 1299
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---xRLGa9I4yrA=
+--qo/L/eUFLiw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1297?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1299?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">ssl: change return type of calc_control_cha=
-nnel_frame_overhead to size_t<br><br>This avoids dealing with conversion wa=
-rnings inside<br>the function. Since we only add values that are<br>suppose=
-d to be positive this should be safe.<br><br>Note that we now cast the retu=
-rn value to int at<br>the caller side. There we actually substract it and<b=
-r>want to catch the case where the result gets negative.<br>Since all the i=
-nvolved values are quite small compared<br>to INT_MAX I decided to just cas=
-t it without further<br>checks.<br><br>Change-Id: I71e9d4a61d37483685723c16=
-e98f59755694cadf<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&g=
-t;<br>---<br>M src/openvpn/ssl.c<br>1 file changed, 3 insertions(+), 12 del=
-etions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
-8/openvpn refs/changes/97/1297/1</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl.c b/s=
-rc/openvpn/ssl.c</span><br><span>index 567560f..dfbbbc6 100644</span><br><s=
-pan>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><=
-br><span>@@ -180,21 +180,16 @@</span><br><span>     frame-&gt;tun_mtu =3D m=
-ax_int(frame-&gt;tun_mtu, TLS_CHANNEL_MTU_MIN);</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
-__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /**</span><br><span>  =
-* calculate the maximum overhead that control channel frames have</span><br=
-><span>  * This includes header, op code and everything apart from the</spa=
-n><br><span>  * payload itself. This method is a bit pessimistic and might =
-give higher</span><br><span>  * overhead than we actually have */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+static size_t</span><br><span> calc_cont=
-rol_channel_frame_overhead(const struct tls_session *session)</span><br><sp=
-an> {</span><br><span>     const struct key_state *ks =3D &amp;session-&gt;=
-key[KS_PRIMARY];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-nt overhead =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   size_t overhead =3D 0;</span><br><span> </span><br><span>     /* opcode =
-*/</span><br><span>     overhead +=3D 1;</span><br><span>@@ -227,10 +222,6 =
-@@</span><br><span>     return overhead;</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC_=
-_) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span> void</span><br><span> init_ssl_lib(void)</span><br><span> {</spa=
-n><br><span>@@ -2651,7 +2642,7 @@</span><br><span>     int max_pkt_len =3D =
-min_int(TLS_CHANNEL_BUF_SIZE, session-&gt;opt-&gt;frame.tun_mtu);</span><br=
-><span> </span><br><span>     /* Subtract overhead */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    max_pkt_len -=3D calc_control_channel_f=
-rame_overhead(session);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    max_pkt_len -=3D (int)calc_control_channel_frame_overhead(session);=
-</span><br><span> </span><br><span>     /* calculate total available length=
- for outgoing tls ciphertext */</span><br><span>     int maxlen =3D max_pkt=
-_len * rel_avail;</span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/1297?usp=3Demail">change 1297</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1297?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">ssl: Change update argument of compute_earl=
+iest_wakeup to time_t<br><br>Since we usually input a diff of two time_t va=
+lues here<br>the input value will be officially time_t. So avoid<br>convers=
+ion warnings at almost every caller site.<br><br>We can safely cast it to i=
+nterval_t here because we<br>checked that it is smaller than the interval_t=
+ value<br>earliest. And all negative values are treated equal,<br>so exact =
+value doesn&#39;t matter.<br><br>Change-Id: I6bc3147d10ca50291110335cd9fc3b=
+e961280c1b<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>=
+---<br>M src/openvpn/ssl.c<br>1 file changed, 7 insertions(+), 7 deletions(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/99/1299/1</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl.c b/src/open=
+vpn/ssl.c</span><br><span>index 54b69ea..925c5af 100644</span><br><span>---=
+ a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><spa=
+n>@@ -1108,11 +1108,11 @@</span><br><span>  * called again.</span><br><span=
+>  */</span><br><span> static inline void</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-compute_earliest_wakeup(interval_t *earliest, interval_=
+t seconds_from_now)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+compute_earliest_wakeup(interval_t *earliest, time_t seconds_from_now)</spa=
+n><br><span> {</span><br><span>     if (seconds_from_now &lt; *earliest)</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       *earliest =3D seconds_from_now;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        *earliest =3D (interval_t)seconds_from_now;</spa=
+n><br><span>     }</span><br><span>     if (*earliest &lt; 0)</span><br><sp=
+an>     {</span><br><span>@@ -1120,11 +1120,6 @@</span><br><span>     }</sp=
+an><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quo=
+t;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+> /*</span><br><span>  * Return true if &quot;lame duck&quot; or retiring k=
+ey has expired and can</span><br><span>  * no longer be used.</span><br><sp=
+an>@@ -1786,6 +1781,11 @@</span><br><span>     return true;</span><br><span=
+> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wco=
+nversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+static bool</span><br><span> write_string(struct buffer *buf, const char *s=
+tr, const int maxlen)</span><br><span> {</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1299?usp=
+=3Demail">change 1299</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1299?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I71e9d4a61d37483685723c16e98=
-f59755694cadf </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1297 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6bc3147d10ca50291110335cd9f=
+c3be961280c1b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1299 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -216,5 +199,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---xRLGa9I4yrA=--
+--qo/L/eUFLiw=--
 
