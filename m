@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 26 Oct 2025 15:35:14 +0100
-Message-ID: <20251026143521.13291-1-gert@...1296...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 26 Oct 2025 14:35:06 +0000
 In-Reply-To: <gerrit.1761489176000.I5b6881dc73358c8d1249ee2ceb968ede295105b0@...2715...>
 References: <gerrit.1761489176000.I5b6881dc73358c8d1249ee2ceb968ede295105b0@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., steffan@...1856...
+Message-ID: <8d237f3b2e93a453a1bbc0e18bf6a3dc736cd3e9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] ssl_mbedtls: fix missing perf_pop() call
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="xPyl+VL6sH8="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: ssl_mbedtls:
+ fix missing perf_pop() call
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,57 +19,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: syzzer <steffan@...1856...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Steffan Karger <steffan@...1856...>
+--xPyl+VL6sH8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This was triggered by a bug report submitted by Joshua Rogers, who
-used ZeroPath to discover we missed a perf_pop() call in one of the
-error paths of ssl_mbedtls.c.
+Attention is currently required from: flichtenheld, plaisthos, syzzer.
 
-Move an existing perf_pop call a bit upwards to fix that.
+cron2 has posted comments on this change by syzzer. ( http://gerrit.openvpn=
+.net/c/openvpn/+/1305?usp=3Demail )
 
-The perf code is always disabled by ENABLE_PERFORMANCE_METRICS being
-commented out in perf.h. There is no configure flag. None of the active
-developers remembers using it and the git log shows no actual code changes
-since at least the project structure overhaul of 2012. So this has no
-real-world impact.
+Change subject: ssl_mbedtls: fix missing perf_pop() call
+......................................................................
 
-Change-Id: I5b6881dc73358c8d1249ee2ceb968ede295105b0
-Signed-off-by: Steffan Karger <steffan@...1856...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1305
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
+Patch Set 1: Code-Review+2
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1305
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1305?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-        
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 8fb69c3..2862989 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1489,13 +1489,13 @@
-     /* Error during read, check for retry error */
-     if (retval < 0)
-     {
-+        perf_pop();
-         if (MBEDTLS_ERR_SSL_WANT_WRITE == retval || MBEDTLS_ERR_SSL_WANT_READ == retval)
-         {
-             return 0;
-         }
-         mbed_log_err(D_TLS_ERRORS, retval, "TLS_ERROR: read tls_read_plaintext error");
-         buf->len = 0;
--        perf_pop();
-         return -1;
-     }
-     /* Nothing read, try again */
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I5b6881dc73358c8d1249ee2ceb968ede295105b0
+Gerrit-Change-Number: 1305
+Gerrit-PatchSet: 1
+Gerrit-Owner: syzzer <steffan@...1856...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: syzzer <steffan@...1856...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 26 Oct 2025 14:35:06 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--xPyl+VL6sH8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, syzzer. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1305?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1305?usp=3Demail=
+">change 1305</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1305?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5b6881dc73358c8d1249ee2ceb9=
+68ede295105b0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1305 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: syzzer &lt;steffan@...1856...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@...2115...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 26 Oct 2025 14:35:06=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--xPyl+VL6sH8=--
 
