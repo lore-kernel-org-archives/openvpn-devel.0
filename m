@@ -1,16 +1,15 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Oct 2025 16:19:32 +0000
-In-Reply-To: <gerrit.1761488400000.I0579d18c784e2ac16973d5553992c28f281a0900@...2715...>
-References: <gerrit.1761488400000.I0579d18c784e2ac16973d5553992c28f281a0900@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., max@...2606...
-Message-ID: <b84aa2d2c3a0fd91954fe24d99bc50c38319065f-EmailReviewComments-HTML@...2715...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Mon, 27 Oct 2025 20:27:04 +0000
+References: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <fee6bd23cc285c884845e2beb9c95a85beba947e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aidJ97eJkvg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add option to check
- tls-crypt-v2 key timestamps
+Content-Type: multipart/alternative; boundary="TTx2tUyiomU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Canonicalize
+ config_dir before comparing with the config file location
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,148 +18,234 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aidJ97eJkvg=
+--TTx2tUyiomU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: MaxF.
+Attention is currently required from: flichtenheld, plaisthos.
 
-plaisthos has posted comments on this change by MaxF. ( http://gerrit.openv=
-pn.net/c/openvpn/+/1304?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: Add option to check tls-crypt-v2 key timestamps
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Canonicalize config_dir before comparing with the config fi=
+le location
 ......................................................................
 
+Canonicalize config_dir before comparing with the config file location
 
-Patch Set 4:
+Found by ZeroPath
 
-(4 comments)
-
-Patchset:
-
-PS4:
-Looks good but I would like a few minor issues to be addressed
-
-
-File doc/man-sections/tls-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/1304/comment/17d09927_5a722c44?usp=3D=
-email :
-PS4, Line 573:   no timestamp.
-should add in the description what happen if tls-crypt-v2 client keys are u=
-sed that don't use the timestamp.
+Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+M src/openvpnserv/CMakeLists.txt
+M src/openvpnserv/validate.c
+2 files changed, 17 insertions(+), 4 deletions(-)
 
 
-File src/openvpn/tls_crypt.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1304/comment/5baff829_139564bf?usp=3D=
-email :
-PS4, Line 537:         msg(M_WARN, "ERROR: Client key doesn't have a timest=
-amp.");
-I would go for the bit more formal form here and use "does not" instead of =
-the short form "doesn't"
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/1318/1
 
+diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
+index 340b904..a92ee08 100644
+--- a/src/openvpnserv/CMakeLists.txt
++++ b/src/openvpnserv/CMakeLists.txt
+@@ -6,6 +6,11 @@
 
-http://gerrit.openvpn.net/c/openvpn/+/1304/comment/7d9d8afb_144c9475?usp=3D=
-email :
-PS4, Line 541:     memcpy(&timestamp, metadata + 1, sizeof(int64_t));
-I think we should add a length check here to ensure that the metadata is lo=
-ng enough.
+ add_executable(openvpnserv)
 
++include(CheckSymbolExists)
++
++# Some old versions of mingw does not have PATHCCH_OPTIONS enums -- add a =
+check
++check_symbol_exists(PATHCCH_ENSURE_TRAILING_SLASH pathcch.h HAVE_PATHCCH_E=
+NSURE_TRAILING_SLASH)
++
+ set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
 
+ target_include_directories(openvpnserv PRIVATE
+@@ -31,7 +36,7 @@
+     )
+ target_link_libraries(openvpnserv
+     advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib
+-    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib)
++    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcch.lib)
+ if (MINGW)
+     target_compile_options(openvpnserv PRIVATE -municode)
+     target_link_options(openvpnserv PRIVATE -municode)
+diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
+index 59d5b86..2187fb5 100644
+--- a/src/openvpnserv/validate.c
++++ b/src/openvpnserv/validate.c
+@@ -25,6 +25,11 @@
+ #include <lmaccess.h>
+ #include <shlwapi.h>
+ #include <lm.h>
++#include <pathcch.h>
++
++#ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH
++#define PATHCCH_ENSURE_TRAILING_SLASH 0x20
++#endif
+
+ static const WCHAR *white_list[] =3D {
+     L"auth-retry",
+@@ -61,7 +66,7 @@
+ {
+     WCHAR tmp[MAX_PATH];
+     const WCHAR *config_file =3D NULL;
+-    const WCHAR *config_dir =3D NULL;
++    WCHAR config_dir[MAX_PATH];
+
+     /* convert fname to full path */
+     if (PathIsRelativeW(fname))
+@@ -74,9 +79,12 @@
+         config_file =3D fname;
+     }
+
+-    config_dir =3D s->config_dir;
++    /* canonicalize config_dir and add trailing slash before comparison */
++    HRESULT res =3D PathCchCanonicalizeEx(config_dir, _countof(config_dir)=
+, s->config_dir,
++                                        PATHCCH_ENSURE_TRAILING_SLASH);
+
+-    if (wcsncmp(config_dir, config_file, wcslen(config_dir)) =3D=3D 0
++    if (res =3D=3D S_OK
++        && wcsncmp(config_dir, config_file, wcslen(config_dir)) =3D=3D 0
+         && wcsstr(config_file + wcslen(config_dir), L"..") =3D=3D NULL)
+     {
+         return TRUE;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1304?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0579d18c784e2ac16973d5553992c28f281a0900
-Gerrit-Change-Number: 1304
-Gerrit-PatchSet: 4
-Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
+Gerrit-Change-Number: 1318
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Mon, 27 Oct 2025 16:19:32 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 
---aidJ97eJkvg=
+--TTx2tUyiomU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: MaxF. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1304?usp=3Demail">View =
-Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-sty=
-le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
-le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1304?tab=3Dcomments&amp;usp=3Demail">Patch Set #4:</a> </p><p class=3D"blo=
-cks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Looks good but=
- I would like a few minor issues to be addressed</p></li></ul></li><li styl=
-e=3D"margin: 0; padding: 0;"><p>File doc/man-sections/tls-options.rst:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1304/comment/17d09927_5a722c44?usp=3Demail">Patch Set =
-#4, Line 573:</a> <code style=3D"font-family:monospace,monospace">  no time=
-stamp.</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">should add in the description what happen if tls-crypt-v2=
- client keys are used that don&#39;t use the timestamp.</p></li></ul></li><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tls_crypt.c:</p><ul=
- style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
- 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1304/comment/5baff829_139564bf?usp=3Demail">Patch Set #4=
-, Line 537:</a> <code style=3D"font-family:monospace,monospace">        msg=
-(M_WARN, &quot;ERROR: Client key doesn&#39;t have a timestamp.&quot;);</cod=
-e></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">I would go for the bit more formal form here and use &quot;does not&=
-quot; instead of the short form &quot;doesn&#39;t&quot;</p></li><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1304/comment/7d9d8afb_144c9475?=
-usp=3Demail">Patch Set #4, Line 541:</a> <code style=3D"font-family:monospa=
-ce,monospace">    memcpy(&amp;timestamp, metadata + 1, sizeof(int64_t));</c=
-ode></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
-k-word;">I think we should add a length check here to ensure that the metad=
-ata is long enough.</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1304?usp=3Demail">change 1304</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1304?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos. </p>
+<p>selvanair would like plaisthos and flichtenheld to <strong>review</stron=
+g> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Canonicalize config_dir before comparing wi=
+th the config file location<br><br>Found by ZeroPath<br><br>Change-Id: I8e8=
+84c00cb94f97a612056e8dca74d821a6d6386<br>Signed-off-by: Selva Nair &lt;selv=
+a.nair@...277...&gt;<br>---<br>M src/openvpnserv/CMakeLists.txt<br>M src/op=
+envpnserv/validate.c<br>2 files changed, 17 insertions(+), 4 deletions(-)<b=
+r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
+efs/changes/18/1318/1</pre><pre style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;"><span>diff --git a/src/openvpnserv/CMakeLists.txt b=
+/src/openvpnserv/CMakeLists.txt</span><br><span>index 340b904..a92ee08 1006=
+44</span><br><span>--- a/src/openvpnserv/CMakeLists.txt</span><br><span>+++=
+ b/src/openvpnserv/CMakeLists.txt</span><br><span>@@ -6,6 +6,11 @@</span><b=
+r><span> </span><br><span> add_executable(openvpnserv)</span><br><span> </s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+include(CheckSymbolExi=
+sts)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+# Some old versions of mingw does =
+not have PATHCCH_OPTIONS enums -- add a check</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+check_symbol_exists(PATHCCH_ENSURE_TRAILING_SLASH=
+ pathcch.h HAVE_PATHCCH_ENSURE_TRAILING_SLASH)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span> set(MC_GEN_DIR ${CMAKE_CURRENT=
+_BINARY_DIR}/mc)</span><br><span> </span><br><span> target_include_director=
+ies(openvpnserv PRIVATE</span><br><span>@@ -31,7 +36,7 @@</span><br><span> =
+    )</span><br><span> target_link_libraries(openvpnserv</span><br><span>  =
+   advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    shlwapi.lib netapi32.lib ws2=
+_32.lib ntdll.lib ole32.lib)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcc=
+h.lib)</span><br><span> if (MINGW)</span><br><span>     target_compile_opti=
+ons(openvpnserv PRIVATE -municode)</span><br><span>     target_link_options=
+(openvpnserv PRIVATE -municode)</span><br><span>diff --git a/src/openvpnser=
+v/validate.c b/src/openvpnserv/validate.c</span><br><span>index 59d5b86..21=
+87fb5 100644</span><br><span>--- a/src/openvpnserv/validate.c</span><br><sp=
+an>+++ b/src/openvpnserv/validate.c</span><br><span>@@ -25,6 +25,11 @@</spa=
+n><br><span> #include &lt;lmaccess.h&gt;</span><br><span> #include &lt;shlw=
+api.h&gt;</span><br><span> #include &lt;lm.h&gt;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#include &lt;pathcch.h&gt;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#define PATHCCH_ENSURE_TRAILING_SLA=
+SH 0x20</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
+><br><span> </span><br><span> static const WCHAR *white_list[] =3D {</span>=
+<br><span>     L&quot;auth-retry&quot;,</span><br><span>@@ -61,7 +66,7 @@</=
+span><br><span> {</span><br><span>     WCHAR tmp[MAX_PATH];</span><br><span=
+>     const WCHAR *config_file =3D NULL;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    const WCHAR *config_dir =3D NULL;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    WCHAR config_dir[MAX_PATH];</span>=
+<br><span> </span><br><span>     /* convert fname to full path */</span><br=
+><span>     if (PathIsRelativeW(fname))</span><br><span>@@ -74,9 +79,12 @@<=
+/span><br><span>         config_file =3D fname;</span><br><span>     }</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    conf=
+ig_dir =3D s-&gt;config_dir;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* canonicalize config_dir and add trailing slash before compa=
+rison */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HRESULT=
+ res =3D PathCchCanonicalizeEx(config_dir, _countof(config_dir), s-&gt;conf=
+ig_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                            PATHCCH_ENSURE_TRAILING_SLASH);</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (wcsncmp(con=
+fig_dir, config_file, wcslen(config_dir)) =3D=3D 0</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (res =3D=3D S_OK</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; wcsncmp(config_dir, c=
+onfig_file, wcslen(config_dir)) =3D=3D 0</span><br><span>         &amp;&amp=
+; wcsstr(config_file + wcslen(config_dir), L&quot;..&quot;) =3D=3D NULL)</s=
+pan><br><span>     {</span><br><span>         return TRUE;</span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1318?usp=3Demail">change 1318</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1318?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0579d18c784e2ac16973d555399=
-2c28f281a0900 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1304 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
+<div style=3D"display:none"> Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca=
+74d821a6d6386 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1318 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Oct 2025 16:19:32=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 
 </body></html>=
 
---aidJ97eJkvg=--
+--TTx2tUyiomU=--
 
