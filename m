@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Oct 2025 21:13:04 +0000
-In-Reply-To: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
-References: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
+Date: Mon, 27 Oct 2025 21:19:25 +0000
+In-Reply-To: <gerrit.1761596820000.I85320b8f1cfc02dfd561916e5637d9481edac59e@...2715...>
+References: <gerrit.1761596820000.I85320b8f1cfc02dfd561916e5637d9481edac59e@...2715...>
 Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <22c3d94483c39a2c1179ea183f77b918382133eb-EmailReviewComments-HTML@...2715...>
+Message-ID: <0e7a925f6d9664103beb581a34e3e4a85e3717e0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jKTLZ0rWg+c="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Canonicalize
- config_dir before comparing with the config file location
+Content-Type: multipart/alternative; boundary="h3TxW19WpJI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
+ pkcs11_management_id_get: Free certificate object after use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,44 +22,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: selvanair <selva.nair@...277...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jKTLZ0rWg+c=
+--h3TxW19WpJI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, selvanair.
 
 plaisthos has posted comments on this change by selvanair. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1318?usp=3Demail )
+openvpn.net/c/openvpn/+/1317?usp=3Demail )
 
-Change subject: Canonicalize config_dir before comparing with the config fi=
-le location
+Change subject: pkcs11_management_id_get: Free certificate object after use
 ......................................................................
 
 
-Patch Set 1: Code-Review+1
-
-(1 comment)
-
-File src/openvpnserv/validate.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1318/comment/4804eff4_88a77403?usp=3D=
-email :
-PS1, Line 32: #endif
-Any reason that we cannot just do #ifndef PATHCCH_ENSURE_TRAILING_SLASH her=
-e and have to do the cmake dance?
-
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
-Gerrit-Change-Number: 1318
+Gerrit-Change-Id: I85320b8f1cfc02dfd561916e5637d9481edac59e
+Gerrit-Change-Number: 1317
 Gerrit-PatchSet: 1
 Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -67,42 +55,34 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Mon, 27 Oct 2025 21:13:04 +0000
-Gerrit-HasComments: Yes
+Gerrit-Comment-Date: Mon, 27 Oct 2025 21:19:25 +0000
+Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---jKTLZ0rWg+c=
+--h3TxW19WpJI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, selvanair. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/validate.c=
-:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
-dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1318/comment/4804eff4_88a77403?usp=3Demail">Patc=
-h Set #1, Line 32:</a> <code style=3D"font-family:monospace,monospace">#end=
-if</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">Any reason that we cannot just do #ifndef PATHCCH_ENSURE_TRAI=
-LING_SLASH here and have to do the cmake dance?</p></li></ul></li></ul><p>T=
-o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3De=
-mail">change 1318</a>. To unsubscribe, or for help writing mail filters, vi=
-sit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail=
+">change 1317</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca=
-74d821a6d6386 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1318 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I85320b8f1cfc02dfd561916e563=
+7d9481edac59e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1317 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
 ..&gt; </div>
@@ -116,12 +96,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
 277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Oct 2025 21:13:04=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Oct 2025 21:19:25=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---jKTLZ0rWg+c=--
+--h3TxW19WpJI=--
 
