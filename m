@@ -1,15 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Oct 2025 21:10:34 +0000
-References: <gerrit.1761599429000.I7b94de92723f9528b01cb932bb079eedf0f1f272@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <f46f52e8c4f91c5bfbe543ef1eb0d34572e02ed3-HTML@...2715...>
+Date: Mon, 27 Oct 2025 21:13:04 +0000
+In-Reply-To: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
+References: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
+Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <22c3d94483c39a2c1179ea183f77b918382133eb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Ml1HThSfLKs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Avoid possible race
- condition that kill OpenVPN itself
+Content-Type: multipart/alternative; boundary="jKTLZ0rWg+c="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Canonicalize
+ config_dir before comparing with the config file location
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,137 +19,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Ml1HThSfLKs=
+--jKTLZ0rWg+c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: flichtenheld, selvanair.
 
-Hello flichtenheld,
+plaisthos has posted comments on this change by selvanair. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1318?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1319?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Avoid possible race condition that kill OpenVPN itself
+Change subject: Canonicalize config_dir before comparing with the config fi=
+le location
 ......................................................................
 
-Avoid possible race condition that kill OpenVPN itself
 
-If for whatever reason the child pid is zero, we would kill ourselves
-since killing 0 means killing the own process group.
+Patch Set 1: Code-Review+1
 
-Reported-By: contact@...2949...
-Found-By: Zeropath
-Change-Id: I7b94de92723f9528b01cb932bb079eedf0f1f272
----
-M src/openvpn/tun_afunix.c
-1 file changed, 6 insertions(+), 1 deletion(-)
+(1 comment)
+
+File src/openvpnserv/validate.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1318/comment/4804eff4_88a77403?usp=3D=
+email :
+PS1, Line 32: #endif
+Any reason that we cannot just do #ifndef PATHCCH_ENSURE_TRAILING_SLASH her=
+e and have to do the cmake dance?
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1319/1
-
-diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c
-index 4d48a31..124db6d 100644
---- a/src/openvpn/tun_afunix.c
-+++ b/src/openvpn/tun_afunix.c
-@@ -128,7 +128,12 @@
-         close(tt->fd);
-         tt->fd =3D 0;
-     }
--    kill(tt->afunix.childprocess, SIGINT);
-+    /* only kill the child process if the PID is not 0 to avoid killing
-+     * ourselves by accident */
-+    if (tt->afunix.childprocess)
-+    {
-+        kill(tt->afunix.childprocess, SIGINT);
-+    }
-
-     free(tt->actual_name);
-     free(tt);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1319?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7b94de92723f9528b01cb932bb079eedf0f1f272
-Gerrit-Change-Number: 1319
+Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
+Gerrit-Change-Number: 1318
 Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Mon, 27 Oct 2025 21:13:04 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---Ml1HThSfLKs=
+--jKTLZ0rWg+c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1319?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Avoid possible race condition that kill Ope=
-nVPN itself<br><br>If for whatever reason the child pid is zero, we would k=
-ill ourselves<br>since killing 0 means killing the own process group.<br><b=
-r>Reported-By: contact@...2949...<br>Found-By: Zeropath<br>Change-Id: I7b94=
-de92723f9528b01cb932bb079eedf0f1f272<br>---<br>M src/openvpn/tun_afunix.c<b=
-r>1 file changed, 6 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D=
-"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1319/1</pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><=
-span>diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c</span=
-><br><span>index 4d48a31..124db6d 100644</span><br><span>--- a/src/openvpn/=
-tun_afunix.c</span><br><span>+++ b/src/openvpn/tun_afunix.c</span><br><span=
->@@ -128,7 +128,12 @@</span><br><span>         close(tt-&gt;fd);</span><br>=
-<span>         tt-&gt;fd =3D 0;</span><br><span>     }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    kill(tt-&gt;afunix.childprocess, SIGIN=
-T);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* only kill=
- the child process if the PID is not 0 to avoid killing</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+     * ourselves by accident */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tt-&gt;afunix.child=
-process)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        kill(tt-&gt;afuni=
-x.childprocess, SIGINT);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span> </span><br><span>     free(tt-&gt;actual_name);=
-</span><br><span>     free(tt);</span><br><span></span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1319?usp=3Demail">=
-change 1319</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1319?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, selvanair. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/validate.c=
+:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1318/comment/4804eff4_88a77403?usp=3Demail">Patc=
+h Set #1, Line 32:</a> <code style=3D"font-family:monospace,monospace">#end=
+if</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap:=
+ break-word;">Any reason that we cannot just do #ifndef PATHCCH_ENSURE_TRAI=
+LING_SLASH here and have to do the cmake dance?</p></li></ul></li></ul><p>T=
+o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3De=
+mail">change 1318</a>. To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7b94de92723f9528b01cb932bb0=
-79eedf0f1f272 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1319 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca=
+74d821a6d6386 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1318 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Oct 2025 21:13:04=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---Ml1HThSfLKs=--
+--jKTLZ0rWg+c=--
 
