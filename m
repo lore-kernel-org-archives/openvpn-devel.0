@@ -1,15 +1,15 @@
 From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Oct 2025 20:27:04 +0000
-References: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
+Date: Mon, 27 Oct 2025 20:27:05 +0000
+References: <gerrit.1761596820000.I85320b8f1cfc02dfd561916e5637d9481edac59e@...2715...>
 Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <fee6bd23cc285c884845e2beb9c95a85beba947e-HTML@...2715...>
+Message-ID: <4fe197a379436411793cc1124b11ec473af5a893-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TTx2tUyiomU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Canonicalize
- config_dir before comparing with the config file location
+Content-Type: multipart/alternative; boundary="YYyYhPyB5qM="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]:
+ pkcs11_management_id_get: Free certificate object after use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---TTx2tUyiomU=
+--YYyYhPyB5qM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,109 +32,63 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Canonicalize config_dir before comparing with the config fi=
-le location
+Change subject: pkcs11_management_id_get: Free certificate object after use
 ......................................................................
 
-Canonicalize config_dir before comparing with the config file location
+pkcs11_management_id_get: Free certificate object after use
 
 Found by ZeroPath
 
-Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
+Change-Id: I85320b8f1cfc02dfd561916e5637d9481edac59e
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-M src/openvpnserv/CMakeLists.txt
-M src/openvpnserv/validate.c
-2 files changed, 17 insertions(+), 4 deletions(-)
+M src/openvpn/pkcs11.c
+1 file changed, 3 insertions(+), 3 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/1318/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17/1317/1
 
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 340b904..a92ee08 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -6,6 +6,11 @@
-
- add_executable(openvpnserv)
-
-+include(CheckSymbolExists)
-+
-+# Some old versions of mingw does not have PATHCCH_OPTIONS enums -- add a =
-check
-+check_symbol_exists(PATHCCH_ENSURE_TRAILING_SLASH pathcch.h HAVE_PATHCCH_E=
-NSURE_TRAILING_SLASH)
-+
- set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
-
- target_include_directories(openvpnserv PRIVATE
-@@ -31,7 +36,7 @@
-     )
- target_link_libraries(openvpnserv
-     advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib
--    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib)
-+    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcch.lib)
- if (MINGW)
-     target_compile_options(openvpnserv PRIVATE -municode)
-     target_link_options(openvpnserv PRIVATE -municode)
-diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index 59d5b86..2187fb5 100644
---- a/src/openvpnserv/validate.c
-+++ b/src/openvpnserv/validate.c
-@@ -25,6 +25,11 @@
- #include <lmaccess.h>
- #include <shlwapi.h>
- #include <lm.h>
-+#include <pathcch.h>
-+
-+#ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH
-+#define PATHCCH_ENSURE_TRAILING_SLASH 0x20
-+#endif
-
- static const WCHAR *white_list[] =3D {
-     L"auth-retry",
-@@ -61,7 +66,7 @@
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index ce64135..9afb181 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -436,9 +436,6 @@
  {
-     WCHAR tmp[MAX_PATH];
-     const WCHAR *config_file =3D NULL;
--    const WCHAR *config_dir =3D NULL;
-+    WCHAR config_dir[MAX_PATH];
+     pkcs11h_certificate_id_list_t id_list =3D NULL;
+     pkcs11h_certificate_id_list_t entry =3D NULL;
+-#if 0 /* certificate_id seems to be unused -- JY */
+-    pkcs11h_certificate_id_t certificate_id =3D NULL;
+-#endif
+     pkcs11h_certificate_t certificate =3D NULL;
+     CK_RV rv =3D CKR_OK;
+     unsigned char *certificate_blob =3D NULL;
+@@ -548,6 +545,9 @@
+     pkcs11h_certificate_freeCertificateIdList(id_list);
+     id_list =3D NULL;
 
-     /* convert fname to full path */
-     if (PathIsRelativeW(fname))
-@@ -74,9 +79,12 @@
-         config_file =3D fname;
-     }
++    pkcs11h_certificate_freeCertificate(certificate);
++    certificate =3D NULL;
++
+     free(internal_id);
+     internal_id =3D NULL;
 
--    config_dir =3D s->config_dir;
-+    /* canonicalize config_dir and add trailing slash before comparison */
-+    HRESULT res =3D PathCchCanonicalizeEx(config_dir, _countof(config_dir)=
-, s->config_dir,
-+                                        PATHCCH_ENSURE_TRAILING_SLASH);
-
--    if (wcsncmp(config_dir, config_file, wcslen(config_dir)) =3D=3D 0
-+    if (res =3D=3D S_OK
-+        && wcsncmp(config_dir, config_file, wcslen(config_dir)) =3D=3D 0
-         && wcsstr(config_file + wcslen(config_dir), L"..") =3D=3D NULL)
-     {
-         return TRUE;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
-Gerrit-Change-Number: 1318
+Gerrit-Change-Id: I85320b8f1cfc02dfd561916e5637d9481edac59e
+Gerrit-Change-Number: 1317
 Gerrit-PatchSet: 1
 Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -143,7 +97,7 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---TTx2tUyiomU=
+--YYyYhPyB5qM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -151,86 +105,48 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: flichtenheld, plaisthos. </p>
 <p>selvanair would like plaisthos and flichtenheld to <strong>review</stron=
 g> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1318?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Canonicalize config_dir before comparing wi=
-th the config file location<br><br>Found by ZeroPath<br><br>Change-Id: I8e8=
-84c00cb94f97a612056e8dca74d821a6d6386<br>Signed-off-by: Selva Nair &lt;selv=
-a.nair@...277...&gt;<br>---<br>M src/openvpnserv/CMakeLists.txt<br>M src/op=
-envpnserv/validate.c<br>2 files changed, 17 insertions(+), 4 deletions(-)<b=
-r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
-efs/changes/18/1318/1</pre><pre style=3D"font-family: monospace,monospace; =
-white-space: pre-wrap;"><span>diff --git a/src/openvpnserv/CMakeLists.txt b=
-/src/openvpnserv/CMakeLists.txt</span><br><span>index 340b904..a92ee08 1006=
-44</span><br><span>--- a/src/openvpnserv/CMakeLists.txt</span><br><span>+++=
- b/src/openvpnserv/CMakeLists.txt</span><br><span>@@ -6,6 +6,11 @@</span><b=
-r><span> </span><br><span> add_executable(openvpnserv)</span><br><span> </s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+include(CheckSymbolExi=
-sts)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+# Some old versions of mingw does =
-not have PATHCCH_OPTIONS enums -- add a check</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+check_symbol_exists(PATHCCH_ENSURE_TRAILING_SLASH=
- pathcch.h HAVE_PATHCCH_ENSURE_TRAILING_SLASH)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span> set(MC_GEN_DIR ${CMAKE_CURRENT=
-_BINARY_DIR}/mc)</span><br><span> </span><br><span> target_include_director=
-ies(openvpnserv PRIVATE</span><br><span>@@ -31,7 +36,7 @@</span><br><span> =
-    )</span><br><span> target_link_libraries(openvpnserv</span><br><span>  =
-   advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    shlwapi.lib netapi32.lib ws2=
-_32.lib ntdll.lib ole32.lib)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcc=
-h.lib)</span><br><span> if (MINGW)</span><br><span>     target_compile_opti=
-ons(openvpnserv PRIVATE -municode)</span><br><span>     target_link_options=
-(openvpnserv PRIVATE -municode)</span><br><span>diff --git a/src/openvpnser=
-v/validate.c b/src/openvpnserv/validate.c</span><br><span>index 59d5b86..21=
-87fb5 100644</span><br><span>--- a/src/openvpnserv/validate.c</span><br><sp=
-an>+++ b/src/openvpnserv/validate.c</span><br><span>@@ -25,6 +25,11 @@</spa=
-n><br><span> #include &lt;lmaccess.h&gt;</span><br><span> #include &lt;shlw=
-api.h&gt;</span><br><span> #include &lt;lm.h&gt;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#include &lt;pathcch.h&gt;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#define PATHCCH_ENSURE_TRAILING_SLA=
-SH 0x20</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
-><br><span> </span><br><span> static const WCHAR *white_list[] =3D {</span>=
-<br><span>     L&quot;auth-retry&quot;,</span><br><span>@@ -61,7 +66,7 @@</=
-span><br><span> {</span><br><span>     WCHAR tmp[MAX_PATH];</span><br><span=
->     const WCHAR *config_file =3D NULL;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    const WCHAR *config_dir =3D NULL;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    WCHAR config_dir[MAX_PATH];</span>=
-<br><span> </span><br><span>     /* convert fname to full path */</span><br=
-><span>     if (PathIsRelativeW(fname))</span><br><span>@@ -74,9 +79,12 @@<=
-/span><br><span>         config_file =3D fname;</span><br><span>     }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    conf=
-ig_dir =3D s-&gt;config_dir;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* canonicalize config_dir and add trailing slash before compa=
-rison */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HRESULT=
- res =3D PathCchCanonicalizeEx(config_dir, _countof(config_dir), s-&gt;conf=
-ig_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                            PATHCCH_ENSURE_TRAILING_SLASH);</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (wcsncmp(con=
-fig_dir, config_file, wcslen(config_dir)) =3D=3D 0</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (res =3D=3D S_OK</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; wcsncmp(config_dir, c=
-onfig_file, wcslen(config_dir)) =3D=3D 0</span><br><span>         &amp;&amp=
-; wcsstr(config_file + wcslen(config_dir), L&quot;..&quot;) =3D=3D NULL)</s=
-pan><br><span>     {</span><br><span>         return TRUE;</span><br><span>=
-</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1318?usp=3Demail">change 1318</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
-=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1318?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
+ospace; white-space: pre-wrap;">pkcs11_management_id_get: Free certificate =
+object after use<br><br>Found by ZeroPath<br><br>Change-Id: I85320b8f1cfc02=
+dfd561916e5637d9481edac59e<br>Signed-off-by: Selva Nair &lt;selva.nair@...1665...=
+77...&gt;<br>---<br>M src/openvpn/pkcs11.c<br>1 file changed, 3 insertions(=
++), 3 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
+.net:29418/openvpn refs/changes/17/1317/1</pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
+pkcs11.c b/src/openvpn/pkcs11.c</span><br><span>index ce64135..9afb181 1006=
+44</span><br><span>--- a/src/openvpn/pkcs11.c</span><br><span>+++ b/src/ope=
+nvpn/pkcs11.c</span><br><span>@@ -436,9 +436,6 @@</span><br><span> {</span>=
+<br><span>     pkcs11h_certificate_id_list_t id_list =3D NULL;</span><br><s=
+pan>     pkcs11h_certificate_id_list_t entry =3D NULL;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#if 0 /* certificate_id seems to be unused=
+ -- JY */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkcs11h_=
+certificate_id_t certificate_id =3D NULL;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#endif</span><br><span>     pkcs11h_certificate_t certi=
+ficate =3D NULL;</span><br><span>     CK_RV rv =3D CKR_OK;</span><br><span>=
+     unsigned char *certificate_blob =3D NULL;</span><br><span>@@ -548,6 +5=
+45,9 @@</span><br><span>     pkcs11h_certificate_freeCertificateIdList(id_l=
+ist);</span><br><span>     id_list =3D NULL;</span><br><span> </span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    pkcs11h_certificate_freeCert=
+ificate(certificate);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    certificate =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span>     free(internal_id);</span><br><span>     inter=
+nal_id =3D NULL;</span><br><span> </span><br><span></span><br></pre><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demai=
+l">change 1317</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1317?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8e884c00cb94f97a612056e8dca=
-74d821a6d6386 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1318 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I85320b8f1cfc02dfd561916e563=
+7d9481edac59e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1317 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
 ..&gt; </div>
@@ -247,5 +163,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---TTx2tUyiomU=--
+--YYyYhPyB5qM=--
 
