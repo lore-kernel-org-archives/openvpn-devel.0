@@ -1,13 +1,14 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Oct 2025 13:55:19 +0000
+Date: Mon, 27 Oct 2025 15:18:58 +0000
+In-Reply-To: <gerrit.1761573316000.I54845bf4dd17d06cfc3b402f188795f74f4b1d3e@...2715...>
 References: <gerrit.1761573316000.I54845bf4dd17d06cfc3b402f188795f74f4b1d3e@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2c1b617e73c8f8777050bce9b1ab4fbb9617fc1c-HTML@...2715...>
+Message-ID: <71115e999939cd224d01d5fe954041f0acc87d07-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zl/XcvBJWD4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="gcNf85E6JFI="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: sitnl: set
  FD_CLOEXEC on socket to prevent abuse
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,20 +22,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zl/XcvBJWD4=
+--gcNf85E6JFI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello flichtenheld, plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: sitnl: set FD_CLOEXEC on socket to prevent abuse
@@ -57,17 +57,24 @@ Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e
 Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
 M src/openvpn/networking_sitnl.c
-1 file changed, 3 insertions(+), 0 deletions(-)
+1 file changed, 4 insertions(+), 0 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/1314/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/1314/2
 
 diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b3adb16..a959fa8 100644
+index b3adb16..3e20b70 100644
 --- a/src/openvpn/networking_sitnl.c
 +++ b/src/openvpn/networking_sitnl.c
-@@ -181,6 +181,9 @@
+@@ -27,6 +27,7 @@
+
+ #include "dco.h"
+ #include "errlevel.h"
++#include "fdmisc.h"
+ #include "buffer.h"
+ #include "misc.h"
+ #include "networking.h"
+@@ -181,6 +182,9 @@
          return fd;
      }
 
@@ -83,12 +90,12 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e
 Gerrit-Change-Number: 1314
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -96,56 +103,60 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---zl/XcvBJWD4=
+--gcNf85E6JFI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, plaisthos. </p>
-<p>ordex would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">sitnl: set FD_CLOEXEC on socket to prevent =
-abuse<br><br>Since OpenVPN spawns various child processes, it is important<=
-br>that sockets are closed after calling exec.<br><br>The sitnl socket didn=
-&#39;t have the right flag set, resulting<br>in it surviving in, for exampl=
-e, connect/disconnect scripts<br>and giving the latter a chance to abuse th=
-e socket.<br><br>Ensure this doesn&#39;t happen by setting FD_CLOEXEC on<br=
->this socket right after creation.<br><br>Reported-by: ZeroPath (https://ze=
-ropath.com/)<br>Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e<br>Sig=
-ned-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/op=
-envpn/networking_sitnl.c<br>1 file changed, 3 insertions(+), 0 deletions(-)=
-<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn=
- refs/changes/14/1314/1</pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;"><span>diff --git a/src/openvpn/networking_sitnl.c=
- b/src/openvpn/networking_sitnl.c</span><br><span>index b3adb16..a959fa8 10=
-0644</span><br><span>--- a/src/openvpn/networking_sitnl.c</span><br><span>+=
-++ b/src/openvpn/networking_sitnl.c</span><br><span>@@ -181,6 +181,9 @@</sp=
-an><br><span>         return fd;</span><br><span>     }</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* set close on e=
-xec to avoid child processes access the socket */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    set_cloexec(fd);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span>     if (setsockopt(fd, SOL=
-_SOCKET, SO_SNDBUF, &amp;sndbuf, sizeof(sndbuf)) &lt; 0)</span><br><span>  =
-   {</span><br><span>         msg(M_WARN | M_ERRNO, &quot;%s: SO_SNDBUF&quo=
-t;, __func__);</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail">change 1314</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+<p>ordex <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail">View Change</=
+a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">sitnl: set FD_CLOEXEC on socket to prevent abuse<br><br=
+>Since OpenVPN spawns various child processes, it is important<br>that sock=
+ets are closed after calling exec.<br><br>The sitnl socket didn&#39;t have =
+the right flag set, resulting<br>in it surviving in, for example, connect/d=
+isconnect scripts<br>and giving the latter a chance to abuse the socket.<br=
+><br>Ensure this doesn&#39;t happen by setting FD_CLOEXEC on<br>this socket=
+ right after creation.<br><br>Reported-by: ZeroPath (https://zeropath.com/)=
+<br>Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e<br>Signed-off-by: =
+Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/openvpn/networ=
+king_sitnl.c<br>1 file changed, 4 insertions(+), 0 deletions(-)<br><br></pr=
+e><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/14/1314/2</pre><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;"><span>diff --git a/src/openvpn/networking_sitnl.c b/src/openv=
+pn/networking_sitnl.c</span><br><span>index b3adb16..3e20b70 100644</span><=
+br><span>--- a/src/openvpn/networking_sitnl.c</span><br><span>+++ b/src/ope=
+nvpn/networking_sitnl.c</span><br><span>@@ -27,6 +27,7 @@</span><br><span> =
+</span><br><span> #include &quot;dco.h&quot;</span><br><span> #include &quo=
+t;errlevel.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+include &quot;fdmisc.h&quot;</span><br><span> #include &quot;buffer.h&quot;=
+</span><br><span> #include &quot;misc.h&quot;</span><br><span> #include &qu=
+ot;networking.h&quot;</span><br><span>@@ -181,6 +182,9 @@</span><br><span> =
+        return fd;</span><br><span>     }</span><br><span> </span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    /* set close on exec to avoid c=
+hild processes access the socket */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    set_cloexec(fd);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span>     if (setsockopt(fd, SOL_SOCKET, SO_SN=
+DBUF, &amp;sndbuf, sizeof(sndbuf)) &lt; 0)</span><br><span>     {</span><br=
+><span>         msg(M_WARN | M_ERRNO, &quot;%s: SO_SNDBUF&quot;, __func__);=
+</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/1314?usp=3Demail">change 1314</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1314?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I54845bf4dd17d06cfc3b402f188=
 795f74f4b1d3e </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1314 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -161,5 +172,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---zl/XcvBJWD4=--
+--gcNf85E6JFI=--
 
