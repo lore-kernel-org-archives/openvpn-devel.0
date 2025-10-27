@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Oct 2025 13:08:14 +0000
-References: <gerrit.1761570487000.I501bf780957a9c685eed5994a15de09c28efc3f0@...2715...>
+Date: Mon, 27 Oct 2025 13:08:16 +0000
+References: <gerrit.1761570487000.I750a0b8107baa77fb14558d0c8e4ef8020d62efd@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <4e245c6f4056f31fc902970d1b7807b6b951adee-HTML@...2715...>
+Message-ID: <65ded91f0a93b6bdedfdd9f06eb9f6fbf8c539ea-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ngyEBY0AIfM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mroute: Remove
- unused mask argument of mroute_get_in*
+Content-Type: multipart/alternative; boundary="ECWQYjTYCJk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: manage: Change
+ kill_by_addr to use better types for port/proto
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ngyEBY0AIfM=
+--ECWQYjTYCJk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,226 +32,218 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1309?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail
 
 to review the following change.
 
 
-Change subject: mroute: Remove unused mask argument of mroute_get_in*
+Change subject: manage: Change kill_by_addr to use better types for port/pr=
+oto
 ......................................................................
 
-mroute: Remove unused mask argument of mroute_get_in*
+manage: Change kill_by_addr to use better types for port/proto
 
-These are obsolete since the removal of pf feature.
-Avoids spurious conversion warnings.
-
-Change-Id: I501bf780957a9c685eed5994a15de09c28efc3f0
+Change-Id: I750a0b8107baa77fb14558d0c8e4ef8020d62efd
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/mroute.c
-1 file changed, 9 insertions(+), 18 deletions(-)
+M src/openvpn/manage.c
+M src/openvpn/manage.h
+M src/openvpn/multi.c
+M src/openvpn/socket.h
+4 files changed, 8 insertions(+), 8 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/09/1309/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/1310/1
 
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 88ea647..b50d48f 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -103,17 +103,12 @@
-     return true;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static inline void
--mroute_get_in_addr_t(struct mroute_addr *ma, const in_addr_t src, unsigned=
- int mask)
-+mroute_get_in_addr_t(struct mroute_addr *ma, const in_addr_t src)
- {
-     if (ma)
-     {
--        ma->type =3D MR_ADDR_IPV4 | mask;
-+        ma->type =3D MR_ADDR_IPV4;
-         ma->netbits =3D 0;
-         ma->len =3D 4;
-         ma->v4.addr =3D src;
-@@ -121,11 +116,11 @@
- }
-
- static inline void
--mroute_get_in6_addr(struct mroute_addr *ma, const struct in6_addr src, uns=
-igned int mask)
-+mroute_get_in6_addr(struct mroute_addr *ma, const struct in6_addr src)
- {
-     if (ma)
-     {
--        ma->type =3D MR_ADDR_IPV6 | mask;
-+        ma->type =3D MR_ADDR_IPV6;
-         ma->netbits =3D 0;
-         ma->len =3D 16;
-         ma->v6.addr =3D src;
-@@ -161,8 +156,8 @@
-                 {
-                     const struct openvpn_iphdr *ip =3D (const struct openv=
-pn_iphdr *)BPTR(buf);
-
--                    mroute_get_in_addr_t(src, ip->saddr, 0);
--                    mroute_get_in_addr_t(dest, ip->daddr, 0);
-+                    mroute_get_in_addr_t(src, ip->saddr);
-+                    mroute_get_in_addr_t(dest, ip->daddr);
-
-                     /* multicast packet? */
-                     if (mroute_is_mcast(ip->daddr))
-@@ -192,8 +187,8 @@
-                     gc_free(&gc);
- #endif
-
--                    mroute_get_in6_addr(src, ipv6->saddr, 0);
--                    mroute_get_in6_addr(dest, ipv6->daddr, 0);
-+                    mroute_get_in6_addr(src, ipv6->saddr);
-+                    mroute_get_in6_addr(dest, ipv6->daddr);
-
-                     if (mroute_is_mcast_ipv6(ipv6->daddr))
-                     {
-@@ -342,7 +337,7 @@
-             }
-             else
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 1cb5c63..823e46a 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -608,14 +608,14 @@
+             if (status)
              {
--                ma->v6.addr.s6_addr[byte--] &=3D (IPV4_NETMASK_HOST << bit=
-s_to_clear);
-+                ma->v6.addr.s6_addr[byte--] &=3D (0xFF << bits_to_clear);
-                 bits_to_clear =3D 0;
-             }
-         }
-@@ -552,10 +547,6 @@
-     }
+                 const int port =3D atoi(p3);
+-                const int proto =3D (streq(p1, "tcp"))   ? PROTO_TCP_SERVER
+-                                  : (streq(p1, "udp")) ? PROTO_UDP
+-                                                       : PROTO_NONE;
++                const uint8_t proto =3D (streq(p1, "tcp"))   ? PROTO_TCP_S=
+ERVER
++                                      : (streq(p1, "udp")) ? PROTO_UDP
++                                                           : PROTO_NONE;
+
+-                if ((port > 0 && port < 65536) && (proto !=3D PROTO_NONE))
++                if ((port > 0 && port < UINT16_MAX) && (proto !=3D PROTO_N=
+ONE))
+                 {
+                     n_killed =3D (*man->persist.callback.kill_by_addr)(man=
+->persist.callback.arg,
+-                                                                     addr,=
+ port, proto);
++                                                                     addr,=
+ (uint16_t)port, proto);
+                     if (n_killed > 0)
+                     {
+                         msg(M_CLIENT, "SUCCESS: %d client(s) at address %s=
+:%s:%d killed", n_killed,
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index a31eb06..1a14c9d 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -178,7 +178,7 @@
+     void (*status)(void *arg, const int version, struct status_output *so);
+     void (*show_net)(void *arg, const msglvl_t msglevel);
+     int (*kill_by_cn)(void *arg, const char *common_name);
+-    int (*kill_by_addr)(void *arg, const in_addr_t addr, const int port, c=
+onst int proto);
++    int (*kill_by_addr)(void *arg, const in_addr_t addr, const uint16_t po=
+rt, const uint8_t proto);
+     void (*delete_event)(void *arg, event_t event);
+     int (*n_clients)(void *arg);
+     bool (*send_cc_message)(void *arg, const char *message, const char *pa=
+rameter);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index fa9c654..ad5004e 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3952,7 +3952,7 @@
  }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- mroute_helper_free(struct mroute_helper *mh)
+ static int
+-management_callback_kill_by_addr(void *arg, const in_addr_t addr, const in=
+t port, const int proto)
++management_callback_kill_by_addr(void *arg, const in_addr_t addr, const ui=
+nt16_t port, const uint8_t proto)
  {
+     struct multi_context *m =3D (struct multi_context *)arg;
+     struct hash_iterator hi;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index e986c9c..832d62e 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -89,7 +89,7 @@
+     const char *ipchange_command;
+     const struct plugin_list *plugins;
+     bool remote_float;
+-    int proto;       /* Protocol (PROTO_x defined below) */
++    uint8_t proto;   /* Protocol (PROTO_x defined below) */
+     sa_family_t af;  /* Address family like AF_INET, AF_INET6 or AF_UNSPEC=
+*/
+     bool bind_ipv6_only;
+     int mtu_changed; /* Set to true when mtu value is changed */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1309?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I501bf780957a9c685eed5994a15de09c28efc3f0
-Gerrit-Change-Number: 1309
+Gerrit-Change-Id: I750a0b8107baa77fb14558d0c8e4ef8020d62efd
+Gerrit-Change-Number: 1310
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---ngyEBY0AIfM=
+--ECWQYjTYCJk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1309?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">mroute: Remove unused mask argument of mrou=
-te_get_in*<br><br>These are obsolete since the removal of pf feature.<br>Av=
-oids spurious conversion warnings.<br><br>Change-Id: I501bf780957a9c685eed5=
-994a15de09c28efc3f0<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2723...=
-.&gt;<br>---<br>M src/openvpn/mroute.c<br>1 file changed, 9 insertions(+), =
-18 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
-t:29418/openvpn refs/changes/09/1309/1</pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/mro=
-ute.c b/src/openvpn/mroute.c</span><br><span>index 88ea647..b50d48f 100644<=
-/span><br><span>--- a/src/openvpn/mroute.c</span><br><span>+++ b/src/openvp=
-n/mroute.c</span><br><span>@@ -103,17 +103,12 @@</span><br><span>     retur=
-n true;</span><br><span> }</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic i=
-gnored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span> static inline void</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-mroute_get_in_addr_t(struct mroute_addr *ma, const in_addr_t src,=
- unsigned int mask)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-mroute_get_in_addr_t(struct mroute_addr *ma, const in_addr_t src)</span><br=
-><span> {</span><br><span>     if (ma)</span><br><span>     {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        ma-&gt;type =3D MR_ADDR_IPV=
-4 | mask;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ma=
--&gt;type =3D MR_ADDR_IPV4;</span><br><span>         ma-&gt;netbits =3D 0;<=
-/span><br><span>         ma-&gt;len =3D 4;</span><br><span>         ma-&gt;=
-v4.addr =3D src;</span><br><span>@@ -121,11 +116,11 @@</span><br><span> }</=
-span><br><span> </span><br><span> static inline void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-mroute_get_in6_addr(struct mroute_addr *ma,=
- const struct in6_addr src, unsigned int mask)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+mroute_get_in6_addr(struct mroute_addr *ma, cons=
-t struct in6_addr src)</span><br><span> {</span><br><span>     if (ma)</spa=
-n><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     ma-&gt;type =3D MR_ADDR_IPV6 | mask;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        ma-&gt;type =3D MR_ADDR_IPV6;</span><br><span=
->         ma-&gt;netbits =3D 0;</span><br><span>         ma-&gt;len =3D 16;=
-</span><br><span>         ma-&gt;v6.addr =3D src;</span><br><span>@@ -161,8=
- +156,8 @@</span><br><span>                 {</span><br><span>             =
-        const struct openvpn_iphdr *ip =3D (const struct openvpn_iphdr *)BP=
-TR(buf);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                    mroute_get_in_addr_t(src, ip-&gt;saddr, 0);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                    mroute_g=
-et_in_addr_t(dest, ip-&gt;daddr, 0);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                    mroute_get_in_addr_t(src, ip-&gt;saddr=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-   mroute_get_in_addr_t(dest, ip-&gt;daddr);</span><br><span> </span><br><s=
-pan>                     /* multicast packet? */</span><br><span>          =
-           if (mroute_is_mcast(ip-&gt;daddr))</span><br><span>@@ -192,8 +18=
-7,8 @@</span><br><span>                     gc_free(&amp;gc);</span><br><sp=
-an> #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                    mroute_get_in6_addr(src, ipv6-&gt;saddr, 0);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    mrout=
-e_get_in6_addr(dest, ipv6-&gt;daddr, 0);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                    mroute_get_in6_addr(src, ipv6-&gt;=
-saddr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        mroute_get_in6_addr(dest, ipv6-&gt;daddr);</span><br><span> </span>=
-<br><span>                     if (mroute_is_mcast_ipv6(ipv6-&gt;daddr))</s=
-pan><br><span>                     {</span><br><span>@@ -342,7 +337,7 @@</s=
-pan><br><span>             }</span><br><span>             else</span><br><s=
-pan>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-             ma-&gt;v6.addr.s6_addr[byte--] &amp;=3D (IPV4_NETMASK_HOST &lt=
-;&lt; bits_to_clear);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                ma-&gt;v6.addr.s6_addr[byte--] &amp;=3D (0xFF &lt;&lt; bi=
-ts_to_clear);</span><br><span>                 bits_to_clear =3D 0;</span><=
-br><span>             }</span><br><span>         }</span><br><span>@@ -552,=
-10 +547,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) ||=
- defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#p=
-ragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span> void</span><br><span> mroute_helper_free(struct mroute_helper *mh)</s=
-pan><br><span> {</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1309?usp=3Demail">change 1309</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1309?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">manage: Change kill_by_addr to use better t=
+ypes for port/proto<br><br>Change-Id: I750a0b8107baa77fb14558d0c8e4ef8020d6=
+2efd<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br=
+>M src/openvpn/manage.c<br>M src/openvpn/manage.h<br>M src/openvpn/multi.c<=
+br>M src/openvpn/socket.h<br>4 files changed, 8 insertions(+), 8 deletions(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/10/1310/1</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/manage.c b/src/o=
+penvpn/manage.c</span><br><span>index 1cb5c63..823e46a 100644</span><br><sp=
+an>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</s=
+pan><br><span>@@ -608,14 +608,14 @@</span><br><span>             if (status=
+)</span><br><span>             {</span><br><span>                 const int=
+ port =3D atoi(p3);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              const int proto =3D (streq(p1, &quot;tcp&quot;))   ? PROTO_TC=
+P_SERVER</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+                     : (streq(p1, &quot;udp&quot;)) ? PROTO_UDP</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                                 =
+                      : PROTO_NONE;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                const uint8_t proto =3D (streq(p1, &quot;tc=
+p&quot;))   ? PROTO_TCP_SERVER</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                                      : (streq(p1, &quot;udp&quo=
+t;)) ? PROTO_UDP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                                                        : PROTO_NONE;</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       if ((port &gt; 0 &amp;&amp; port &lt; 65536) &amp;&amp; (proto !=3D =
+PROTO_NONE))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         if ((port &gt; 0 &amp;&amp; port &lt; UINT16_MAX) &amp;&amp; (prot=
+o !=3D PROTO_NONE))</span><br><span>                 {</span><br><span>    =
+                 n_killed =3D (*man-&gt;persist.callback.kill_by_addr)(man-=
+&gt;persist.callback.arg,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                                                                     ad=
+dr, port, proto);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                                                                   addr, (u=
+int16_t)port, proto);</span><br><span>                     if (n_killed &gt=
+; 0)</span><br><span>                     {</span><br><span>               =
+          msg(M_CLIENT, &quot;SUCCESS: %d client(s) at address %s:%s:%d kil=
+led&quot;, n_killed,</span><br><span>diff --git a/src/openvpn/manage.h b/sr=
+c/openvpn/manage.h</span><br><span>index a31eb06..1a14c9d 100644</span><br>=
+<span>--- a/src/openvpn/manage.h</span><br><span>+++ b/src/openvpn/manage.h=
+</span><br><span>@@ -178,7 +178,7 @@</span><br><span>     void (*status)(vo=
+id *arg, const int version, struct status_output *so);</span><br><span>    =
+ void (*show_net)(void *arg, const msglvl_t msglevel);</span><br><span>    =
+ int (*kill_by_cn)(void *arg, const char *common_name);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    int (*kill_by_addr)(void *arg, const =
+in_addr_t addr, const int port, const int proto);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    int (*kill_by_addr)(void *arg, const in_a=
+ddr_t addr, const uint16_t port, const uint8_t proto);</span><br><span>    =
+ void (*delete_event)(void *arg, event_t event);</span><br><span>     int (=
+*n_clients)(void *arg);</span><br><span>     bool (*send_cc_message)(void *=
+arg, const char *message, const char *parameter);</span><br><span>diff --gi=
+t a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index fa9c654=
+..ad5004e 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>=
++++ b/src/openvpn/multi.c</span><br><span>@@ -3952,7 +3952,7 @@</span><br><=
+span> }</span><br><span> </span><br><span> static int</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-management_callback_kill_by_addr(void *arg,=
+ const in_addr_t addr, const int port, const int proto)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+management_callback_kill_by_addr(void *=
+arg, const in_addr_t addr, const uint16_t port, const uint8_t proto)</span>=
+<br><span> {</span><br><span>     struct multi_context *m =3D (struct multi=
+_context *)arg;</span><br><span>     struct hash_iterator hi;</span><br><sp=
+an>diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br><span=
+>index e986c9c..832d62e 100644</span><br><span>--- a/src/openvpn/socket.h</=
+span><br><span>+++ b/src/openvpn/socket.h</span><br><span>@@ -89,7 +89,7 @@=
+</span><br><span>     const char *ipchange_command;</span><br><span>     co=
+nst struct plugin_list *plugins;</span><br><span>     bool remote_float;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    int proto;       /* =
+Protocol (PROTO_x defined below) */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    uint8_t proto;   /* Protocol (PROTO_x defined below) */=
+</span><br><span>     sa_family_t af;  /* Address family like AF_INET, AF_I=
+NET6 or AF_UNSPEC*/</span><br><span>     bool bind_ipv6_only;</span><br><sp=
+an>     int mtu_changed; /* Set to true when mtu value is changed */</span>=
+<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1310?usp=3Demail">change 1310</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1310?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
+Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I501bf780957a9c685eed5994a15=
-de09c28efc3f0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1309 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I750a0b8107baa77fb14558d0c8e=
+4ef8020d62efd </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1310 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -264,5 +256,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---ngyEBY0AIfM=--
+--ECWQYjTYCJk=--
 
