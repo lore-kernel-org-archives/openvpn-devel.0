@@ -1,10 +1,10 @@
-Date: Tue, 28 Oct 2025 18:32:55 +0100 (CET)
-Message-Id: <202510281732.59SHWtP9018754@...2054...>
+Date: Tue, 28 Oct 2025 18:46:36 +0100 (CET)
+Message-Id: <202510281746.59SHkajr020655@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
-References: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
-Subject: [Openvpn-devel] [PATCH applied] Re: tcp: apply CLOEXEC to accepted
- socket, not listener
+In-Reply-To: <20251023155614.20642-1-gert@...1296...>
+References: <20251023155614.20642-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Warn if push is used without
+ --mode server/--server/--server-bridge
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Joshua Rogers <MegaManSec@...2243...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-So, this took a bit - the change itself seems trivially correct, but
-after Arne's comment about "make sure that this does not break the
-port share proxy" I needed to test this in more detail - and I can
-confirm that it still works.
+Change is straightforward enough... interestingly enough I do have a
+t_server test instance that is "p2p --mode tls-server with --push" so
+I could test this right away...
 
-I have no real idea how the PS proxy works, but there is "a socketpair()
-between openvpn/main and ps proxy process" and "event stuff" involved. 
-It certainly doesn't fork() for each individual TCP connect.  What strace
-suggests to me is "openvpn sends the original TCP data stream to the
-PS proxy, and the responses go back via PS proxy -> openvpn main -> client",
-so that wouldn't need to see the freshly accept()ed socket ever.
+2025-10-28 18:39:08 us=773113 Note: Using --push without --mode server is an unsupported configuration. Negotiation of OpenVPN features is expected to fail.
 
-Your patch has been applied to the master and release/2.6 branch (bugfix).
+.. and there you go.  Indeed it then fails cipher negotiation (without
+--pull on the other end, it won't PUSH_REPLY, but with --pull, it fails
+p2p cipher negotiation... and goes to lala land)
 
-commit c0d96fd8732bd903ab390bb5047a13880cdcac9b (master)
-commit 2aa8550d44440a039da509a7afebfeacf0886a32 (release/2.6)
-Author: Joshua Rogers
-Date:   Wed Oct 22 01:20:52 2025 +0800
+Interesting find on PUSH_DEFINED()... you could have removed the redundant
+PULL_DEFINED() as well, while at it.  Next time.
 
-     tcp: apply CLOEXEC to accepted socket, not listener
+Your patch has been applied to the master branch.
 
-     Signed-off-by: Joshua Rogers <MegaManSec@...2243...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <-MNw5Hu8h0rHV18x36ISt7V0UHchIO4i-JoAeV_wlxS1AmDIAe7YVYNput3_r2hiu3HhwxkhGyUhv4-iH_E7mf7nGjvocmGXlDq7Tjly5cE=@joshua.hu>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33823.html
+commit d6a0cf599c68edc672c67c6afa4bdff0e1a30b8a
+Author: Arne Schwabe
+Date:   Thu Oct 23 17:56:08 2025 +0200
+
+     Warn if push is used without --mode server/--server/--server-bridge
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1288
+     Message-Id: <20251023155614.20642-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33856.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
