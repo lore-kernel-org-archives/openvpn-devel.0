@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Oct 2025 11:59:38 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 28 Oct 2025 12:59:47 +0100
+Message-ID: <20251028115953.22487-1-gert@...1296...>
 In-Reply-To: <gerrit.1761601339000.Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e@...2715...>
 References: <gerrit.1761601339000.Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <69d3bc5fd317a98413b996e7c4f0fcc955a070b6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="a/eWT08n6fs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Add ASSERT to
- afunix code that dev_node is always set up the way we e...
+Subject: [Openvpn-devel] [PATCH v2] Add ASSERT to afunix code that dev_node
+ is always set up the way we expect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---a/eWT08n6fs=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+The calling code only calls tun_afunix_exec_child if is_tun_afunix is true,
+which checks that the path is having unix: as prefix.
 
-cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1320?usp=3Demail )
+But since adding an ASSERT here to ensure that it is really the case
+does not cost us anything, just add the ASSERT.
 
-Change subject: Add ASSERT to afunix code that dev_node is always set up th=
-e way we expect
-......................................................................
+Reported-By: Joshua Rogers <contact@...2949...>
+Found-By: Zeropath
 
+Change-Id: Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1320
+---
 
-Patch Set 2: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1320
+This mail reflects revision 2 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1320?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Signed-off-by line for the author was added as per our policy.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e
-Gerrit-Change-Number: 1320
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 28 Oct 2025 11:59:38 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---a/eWT08n6fs=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1320?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1320?usp=3Demail=
-">change 1320</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1320?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Idbb7bf279eb467fc1d56ab75a50=
-b5eb2c8d0a57e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1320 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Oct 2025 11:59:38=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---a/eWT08n6fs=--
+        
+diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c
+index 4d48a31..e6f2be1 100644
+--- a/src/openvpn/tun_afunix.c
++++ b/src/openvpn/tun_afunix.c
+@@ -53,6 +53,8 @@
+     const char *msgprefix = "ERROR: failure executing process for tun:";
+     struct argv argv = argv_new();
+ 
++    /* we should always called with a proper unix: dev node string */
++    ASSERT(dev_node && strncmp(dev_node, "unix:", strlen("unix:")) == 0);
+     /* since we know that dev-node starts with unix: we can just skip that
+      * to get the program name */
+     const char *program = dev_node + strlen("unix:");
 
