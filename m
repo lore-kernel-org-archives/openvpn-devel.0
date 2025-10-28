@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 28 Oct 2025 11:16:36 +0100
-Message-ID: <20251028101642.11874-1-gert@...1296...>
-In-Reply-To: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
-References: <gerrit.1761596820000.I8e884c00cb94f97a612056e8dca74d821a6d6386@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 28 Oct 2025 10:39:06 +0000
+In-Reply-To: <gerrit.1761581200000.Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9@...2715...>
+References: <gerrit.1761581200000.Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <00cac86cbc4ce4f09bc74f0ab54f2e2e564a5882-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Canonicalize config_dir before comparing
- with the config file location
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="fQhe9nHhSyQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: PUSH_UPDATE server:
+ added new unit tests and improved documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,93 +19,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--fQhe9nHhSyQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Found by ZeroPath
+Attention is currently required from: mrbff, plaisthos.
 
-Change-Id: I8e884c00cb94f97a612056e8dca74d821a6d6386
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1318
----
+flichtenheld has posted comments on this change by mrbff. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1316?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: PUSH_UPDATE server: added new unit tests and improved docum=
+entation
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1318
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Patch Set 1: Code-Review-1
 
-        
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 340b904..a92ee08 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -6,6 +6,11 @@
- 
- add_executable(openvpnserv)
- 
-+include(CheckSymbolExists)
-+
-+# Some old versions of mingw does not have PATHCCH_OPTIONS enums -- add a check
-+check_symbol_exists(PATHCCH_ENSURE_TRAILING_SLASH pathcch.h HAVE_PATHCCH_ENSURE_TRAILING_SLASH)
-+
- set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
- 
- target_include_directories(openvpnserv PRIVATE
-@@ -31,7 +36,7 @@
-     )
- target_link_libraries(openvpnserv
-     advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib
--    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib)
-+    shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcch.lib)
- if (MINGW)
-     target_compile_options(openvpnserv PRIVATE -municode)
-     target_link_options(openvpnserv PRIVATE -municode)
-diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index 59d5b86..2187fb5 100644
---- a/src/openvpnserv/validate.c
-+++ b/src/openvpnserv/validate.c
-@@ -25,6 +25,11 @@
- #include <lmaccess.h>
- #include <shlwapi.h>
- #include <lm.h>
-+#include <pathcch.h>
-+
-+#ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH
-+#define PATHCCH_ENSURE_TRAILING_SLASH 0x20
-+#endif
- 
- static const WCHAR *white_list[] = {
-     L"auth-retry",
-@@ -61,7 +66,7 @@
- {
-     WCHAR tmp[MAX_PATH];
-     const WCHAR *config_file = NULL;
--    const WCHAR *config_dir = NULL;
-+    WCHAR config_dir[MAX_PATH];
- 
-     /* convert fname to full path */
-     if (PathIsRelativeW(fname))
-@@ -74,9 +79,12 @@
-         config_file = fname;
-     }
- 
--    config_dir = s->config_dir;
-+    /* canonicalize config_dir and add trailing slash before comparison */
-+    HRESULT res = PathCchCanonicalizeEx(config_dir, _countof(config_dir), s->config_dir,
-+                                        PATHCCH_ENSURE_TRAILING_SLASH);
- 
--    if (wcsncmp(config_dir, config_file, wcslen(config_dir)) == 0
-+    if (res == S_OK
-+        && wcsncmp(config_dir, config_file, wcslen(config_dir)) == 0
-         && wcsstr(config_file + wcslen(config_dir), L"..") == NULL)
-     {
-         return TRUE;
+(1 comment)
+
+File tests/unit_tests/openvpn/test_push_update_msg.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1316/comment/c3c8a28a_a6ce6843?usp=3D=
+email :
+PS1, Line 147:                 printf("\n\nexpected_size: %lu\n  actual_siz=
+e: %lu", res_len, str_len);
+```suggestion
+                printf("\n\nexpected_size: %zu\n  actual_size: %zu", res_le=
+n, str_len);
+```
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9
+Gerrit-Change-Number: 1316
+Gerrit-PatchSet: 1
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Tue, 28 Oct 2025 10:39:06 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--fQhe9nHhSyQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: mrbff, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/t=
+est_push_update_msg.c:</p><ul style=3D"list-style: none; padding: 0;"><li s=
+tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316/comment/c3c8a28a_a6ce6=
+843?usp=3Demail">Patch Set #1, Line 147:</a> <code style=3D"font-family:mon=
+ospace,monospace">                printf(&quot;\n\nexpected_size: %lu\n  ac=
+tual_size: %lu&quot;, res_len, str_len);</code></p><pre class=3D"blocks" st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">```suggest=
+ion<br>                printf(&quot;\n\nexpected_size: %zu\n  actual_size: =
+%zu&quot;, res_len, str_len);<br>```</pre></li></ul></li></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail">cha=
+nge 1316</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idba419681fe3ccc4e6e2f6ce759=
+2332dcff62cd9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1316 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Oct 2025 10:39:06=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--fQhe9nHhSyQ=--
 
