@@ -1,11 +1,10 @@
+Date: Tue, 28 Oct 2025 13:18:07 +0100 (CET)
+Message-Id: <202510281218.59SCI7ct000834@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 28 Oct 2025 12:59:47 +0100
-Message-ID: <20251028115953.22487-1-gert@...1296...>
-In-Reply-To: <gerrit.1761601339000.Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e@...2715...>
-References: <gerrit.1761601339000.Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Add ASSERT to afunix code that dev_node
- is always set up the way we expect
+In-Reply-To: <20251028115953.22487-1-gert@...1296...>
+References: <20251028115953.22487-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add ASSERT to afunix code that
+ dev_node is always set up the way we expect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,48 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Looks reasonable, BB is happy, and the unit tests excercising tun_afunix
+(t_server_null) still pass.  Also, I have a t_client test excercising
+this, which still works :-)
 
-The calling code only calls tun_afunix_exec_child if is_tun_afunix is true,
-which checks that the path is having unix: as prefix.
+I have updated the commit message a bit (language, Reported-By:), and
+for one decided to try doing this in gerrit - it works, but is not the
+best way to do it (it then does a "v2" of the patch, which hides the
+test result of the actual patch, and creates extra noise on the list).
 
-But since adding an ASSERT here to ensure that it is really the case
-does not cost us anything, just add the ASSERT.
+Your patch has been applied to the master branch.
 
-Reported-By: Joshua Rogers <contact@...2949...>
-Found-By: Zeropath
+commit 5bc0eae87ccf1abd6c400cb27d8e51819feb2036
+Author: Arne Schwabe
+Date:   Tue Oct 28 12:59:47 2025 +0100
 
-Change-Id: Idbb7bf279eb467fc1d56ab75a50b5eb2c8d0a57e
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1320
----
+     Add ASSERT to afunix code that dev_node is always set up the way we expect
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1320
+     Message-Id: <20251028115953.22487-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33934.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1320
-This mail reflects revision 2 of this Change.
 
-Signed-off-by line for the author was added as per our policy.
+--
+kind regards,
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Gert Doering
 
-        
-diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c
-index 4d48a31..e6f2be1 100644
---- a/src/openvpn/tun_afunix.c
-+++ b/src/openvpn/tun_afunix.c
-@@ -53,6 +53,8 @@
-     const char *msgprefix = "ERROR: failure executing process for tun:";
-     struct argv argv = argv_new();
- 
-+    /* we should always called with a proper unix: dev node string */
-+    ASSERT(dev_node && strncmp(dev_node, "unix:", strlen("unix:")) == 0);
-     /* since we know that dev-node starts with unix: we can just skip that
-      * to get the program name */
-     const char *program = dev_node + strlen("unix:");
 
