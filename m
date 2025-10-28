@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Oct 2025 19:22:22 +0000
+Date: Tue, 28 Oct 2025 19:22:24 +0000
 In-Reply-To: <gerrit.1760967063000.I27f2fcd903d26ccbfbd0cdc45f99cc3cd8b0e49a@...2715...>
 References: <gerrit.1760967063000.I27f2fcd903d26ccbfbd0cdc45f99cc3cd8b0e49a@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <43b15b447e09710b99f214cb44a2266ce5d200e2-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <43b15b447e09710b99f214cb44a2266ce5d200e2-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Wjr+egz7XVk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="WKTVayXhPIM="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: crypto_backend:
  Change len argument of md_ctx_update to size_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Wjr+egz7XVk=
+--WKTVayXhPIM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1287?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+87?usp=3Demail )
 
 Change subject: crypto_backend: Change len argument of md_ctx_update to siz=
 e_t
@@ -64,7 +60,7 @@ M src/openvpn/push.c
 5 files changed, 18 insertions(+), 18 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/1287/3
+
 
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
 index 4d6a96c..e95752a 100644
@@ -211,7 +207,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1287?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I27f2fcd903d26ccbfbd0cdc45f99cc3cd8b0e49a
@@ -222,141 +218,138 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Wjr+egz7XVk=
+--WKTVayXhPIM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1287?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">crypto_backend: Change len argument=
- of md_ctx_update to size_t<br><br>The underlying APIs already use size_t a=
-nd all the<br>users (only httpdigest and push) already put size_t<br>into i=
-t. So avoid conversion warnings.<br><br>Also fix one trivial conversion war=
-ning in push.c<br>to able to easily remove the -Wconversion override<br>fro=
-m the affected code paths.<br><br>Change-Id: I27f2fcd903d26ccbfbd0cdc45f99c=
-c3cd8b0e49a<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br=
->Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerr=
-it.openvpn.net/c/openvpn/+/1287<br>Message-Id: &lt;20251028185706.1247-1-ge=
-rt@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
-sourceforge.net/msg33973.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>---<br>M src/openvpn/crypto_backend.h<br>M src/openvpn/crypto_=
-mbedtls.c<br>M src/openvpn/crypto_openssl.c<br>M src/openvpn/httpdigest.c<b=
-r>M src/openvpn/push.c<br>5 files changed, 18 insertions(+), 18 deletions(-=
-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
-n refs/changes/87/1287/3</pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto_backend.h =
-b/src/openvpn/crypto_backend.h</span><br><span>index 4d6a96c..e95752a 10064=
-4</span><br><span>--- a/src/openvpn/crypto_backend.h</span><br><span>+++ b/=
-src/openvpn/crypto_backend.h</span><br><span>@@ -599,7 +599,7 @@</span><br>=
-<span>  * @param src           Buffer to digest. May not be NULL.</span><br=
-><span>  * @param src_len       The length of the incoming buffer.</span><b=
-r><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void md_c=
-tx_update(md_ctx_t *ctx, const uint8_t *src, int src_len);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+void md_ctx_update(md_ctx_t *ctx, co=
-nst uint8_t *src, size_t src_len);</span><br><span> </span><br><span> /*</s=
-pan><br><span>  * Output the message digest to the given buffer.</span><br>=
-<span>diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtl=
-s.c</span><br><span>index 076d4ee..2e328c3 100644</span><br><span>--- a/src=
-/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/openvpn/crypto_mbedtls.=
-c</span><br><span>@@ -765,6 +765,10 @@</span><br><span>     return 1;</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  *</spa=
-n><br><span>  * Generic message digest information functions</span><br><spa=
-n>@@ -877,7 +881,7 @@</span><br><span> }</span><br><span> </span><br><span>=
- void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_ctx_update(mb=
-edtls_md_context_t *ctx, const uint8_t *src, int src_len)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+md_ctx_update(mbedtls_md_context_t *c=
-tx, const uint8_t *src, size_t src_len)</span><br><span> {</span><br><span>=
-     ASSERT(0 =3D=3D mbedtls_md_update(ctx, src, src_len));</span><br><span=
-> }</span><br><span>@@ -994,6 +998,11 @@</span><br><span>                  =
-                      seed_len, output, output_len));</span><br><span> }</s=
-pan><br><span> #else /* defined(HAVE_MBEDTLS_SSL_TLS_PRF) &amp;&amp; define=
-d(MBEDTLS_SSL_TLS_PRF_TLS1) */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &=
-quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> /*</span><br><span>  * Generate the hash required by for the \c tl=
-s1_PRF function.</span><br><span>  *</span><br><span>@@ -1122,10 +1131,10 @=
-@</span><br><span>     gc_free(&amp;gc);</span><br><span>     return true;<=
-/span><br><span> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
-dif /* HAVE_MBEDTLS_SSL_TLS_PRF &amp;&amp; defined(MBEDTLS_SSL_TLS_PRF_TLS1=
-) */</span><br><span> </span><br><span> #if defined(__GNUC__) || defined(__=
-clang__)</span><br><span> #pragma GCC diagnostic pop</span><br><span> #endi=
-f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* HAVE_MBE=
-DTLS_SSL_TLS_PRF &amp;&amp; defined(MBEDTLS_SSL_TLS_PRF_TLS1) */</span><br>=
-<span> </span><br><span> #endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span=
->diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c</=
-span><br><span>index f596b8c..ec0269c 100644</span><br><span>--- a/src/open=
-vpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</sp=
-an><br><span>@@ -1165,7 +1165,7 @@</span><br><span> }</span><br><span> </sp=
-an><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_=
-ctx_update(EVP_MD_CTX *ctx, const uint8_t *src, int src_len)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+md_ctx_update(EVP_MD_CTX *ctx, con=
-st uint8_t *src, size_t src_len)</span><br><span> {</span><br><span>     EV=
-P_DigestUpdate(ctx, src, src_len);</span><br><span> }</span><br><span>diff =
---git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c</span><br><span=
->index f665b17..be20638 100644</span><br><span>--- a/src/openvpn/httpdigest=
-.c</span><br><span>+++ b/src/openvpn/httpdigest.c</span><br><span>@@ -61,11=
- +61,6 @@</span><br><span>     Hex[HASHHEXLEN] =3D &#39;\0&#39;;</span><br>=
-<span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wcon=
-version&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* ca=
-lculate H(A1) as per spec */</span><br><span> void</span><br><span> DigestC=
-alcHA1(IN char *pszAlg, IN char *pszUserName, IN char *pszRealm, IN char *p=
-szPassword,</span><br><span>@@ -150,8 +145,4 @@</span><br><span>     CvtHex=
-(RespHash, Response);</span><br><span> }</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cla=
-ng__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diag=
-nostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #endif /=
-* if PROXY_DIGEST_AUTH */</span><br><span>diff --git a/src/openvpn/push.c b=
-/src/openvpn/push.c</span><br><span>index 2c717c7..6f146fc 100644</span><br=
-><span>--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c</s=
-pan><br><span>@@ -772,6 +772,10 @@</span><br><span>     return true;</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> send_p=
-ush_reply_auth_token(struct tls_multi *multi)</span><br><span> {</span><br>=
-<span>@@ -1046,7 +1050,7 @@</span><br><span>                             un=
-signed int *option_types_found, struct buffer *buf)</span><br><span> {</spa=
-n><br><span>     int ret =3D PUSH_MSG_ERROR;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    const uint8_t ch =3D buf_read_u8(buf);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    const int ch =3D buf_read=
-_u8(buf);</span><br><span>     if (ch =3D=3D &#39;,&#39;)</span><br><span> =
-    {</span><br><span>         struct buffer buf_orig =3D (*buf);</span><br=
-><span>@@ -1090,10 +1094,6 @@</span><br><span>     return ret;</span><br><s=
-pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> int</span><br><span> process_incoming_pu=
-sh_msg(struct context *c, const struct buffer *buffer,</span><br><span>    =
-                       bool honor_received_options, unsigned int permission=
-_mask,</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1287?usp=3Demail">change 1287</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1287?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1287?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">crypto_backend: Change len argument of md_ctx_up=
+date to size_t<br><br>The underlying APIs already use size_t and all the<br=
+>users (only httpdigest and push) already put size_t<br>into it. So avoid c=
+onversion warnings.<br><br>Also fix one trivial conversion warning in push.=
+c<br>to able to easily remove the -Wconversion override<br>from the affecte=
+d code paths.<br><br>Change-Id: I27f2fcd903d26ccbfbd0cdc45f99cc3cd8b0e49a<b=
+r>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Ge=
+rt Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.ne=
+t/c/openvpn/+/1287<br>Message-Id: &lt;20251028185706.1247-1-gert@...1296...=
+&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1223...=
+et/msg33973.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
+---<br>M src/openvpn/crypto_backend.h<br>M src/openvpn/crypto_mbedtls.c<br>=
+M src/openvpn/crypto_openssl.c<br>M src/openvpn/httpdigest.c<br>M src/openv=
+pn/push.c<br>5 files changed, 18 insertions(+), 18 deletions(-)<br><br></pr=
+e>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h=
+</span><br><span>index 4d6a96c..e95752a 100644</span><br><span>--- a/src/op=
+envpn/crypto_backend.h</span><br><span>+++ b/src/openvpn/crypto_backend.h</=
+span><br><span>@@ -599,7 +599,7 @@</span><br><span>  * @param src          =
+ Buffer to digest. May not be NULL.</span><br><span>  * @param src_len     =
+  The length of the incoming buffer.</span><br><span>  */</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-void md_ctx_update(md_ctx_t *ctx, const=
+ uint8_t *src, int src_len);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+void md_ctx_update(md_ctx_t *ctx, const uint8_t *src, size_t src_l=
+en);</span><br><span> </span><br><span> /*</span><br><span>  * Output the m=
+essage digest to the given buffer.</span><br><span>diff --git a/src/openvpn=
+/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><span>index 076d=
+4ee..2e328c3 100644</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</spa=
+n><br><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>@@ -765,6 +7=
+65,10 @@</span><br><span>     return 1;</span><br><span> }</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC=
+__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span> /*</span><br><span>  *</span><br><span>  * Generic messag=
+e digest information functions</span><br><span>@@ -877,7 +881,7 @@</span><b=
+r><span> }</span><br><span> </span><br><span> void</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-md_ctx_update(mbedtls_md_context_t *ctx, const=
+ uint8_t *src, int src_len)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+md_ctx_update(mbedtls_md_context_t *ctx, const uint8_t *src, size_t=
+ src_len)</span><br><span> {</span><br><span>     ASSERT(0 =3D=3D mbedtls_m=
+d_update(ctx, src, src_len));</span><br><span> }</span><br><span>@@ -994,6 =
++998,11 @@</span><br><span>                                        seed_len=
+, output, output_len));</span><br><span> }</span><br><span> #else /* define=
+d(HAVE_MBEDTLS_SSL_TLS_PRF) &amp;&amp; defined(MBEDTLS_SSL_TLS_PRF_TLS1) */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC_=
+_) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  =
+* Generate the hash required by for the \c tls1_PRF function.</span><br><sp=
+an>  *</span><br><span>@@ -1122,10 +1131,10 @@</span><br><span>     gc_free=
+(&amp;gc);</span><br><span>     return true;</span><br><span> }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#endif /* HAVE_MBEDTLS_SSL_TLS_PR=
+F &amp;&amp; defined(MBEDTLS_SSL_TLS_PRF_TLS1) */</span><br><span> </span><=
+br><span> #if defined(__GNUC__) || defined(__clang__)</span><br><span> #pra=
+gma GCC diagnostic pop</span><br><span> #endif</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#endif /* HAVE_MBEDTLS_SSL_TLS_PRF &amp;&amp; de=
+fined(MBEDTLS_SSL_TLS_PRF_TLS1) */</span><br><span> </span><br><span> #endi=
+f /* ENABLE_CRYPTO_MBEDTLS */</span><br><span>diff --git a/src/openvpn/cryp=
+to_openssl.c b/src/openvpn/crypto_openssl.c</span><br><span>index f596b8c..=
+ec0269c 100644</span><br><span>--- a/src/openvpn/crypto_openssl.c</span><br=
+><span>+++ b/src/openvpn/crypto_openssl.c</span><br><span>@@ -1165,7 +1165,=
+7 @@</span><br><span> }</span><br><span> </span><br><span> void</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-md_ctx_update(EVP_MD_CTX *ctx, co=
+nst uint8_t *src, int src_len)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+md_ctx_update(EVP_MD_CTX *ctx, const uint8_t *src, size_t src_le=
+n)</span><br><span> {</span><br><span>     EVP_DigestUpdate(ctx, src, src_l=
+en);</span><br><span> }</span><br><span>diff --git a/src/openvpn/httpdigest=
+.c b/src/openvpn/httpdigest.c</span><br><span>index f665b17..be20638 100644=
+</span><br><span>--- a/src/openvpn/httpdigest.c</span><br><span>+++ b/src/o=
+penvpn/httpdigest.c</span><br><span>@@ -61,11 +61,6 @@</span><br><span>    =
+ Hex[HASHHEXLEN] =3D &#39;\0&#39;;</span><br><span> }</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || =
+defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pr=
+agma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span> /* calculate H(A1) as per spec */</=
+span><br><span> void</span><br><span> DigestCalcHA1(IN char *pszAlg, IN cha=
+r *pszUserName, IN char *pszRealm, IN char *pszPassword,</span><br><span>@@=
+ -150,8 +145,4 @@</span><br><span>     CvtHex(RespHash, Response);</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> #endif /* if PROXY_DIGEST_AUTH */</spa=
+n><br><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br>=
+<span>index 2c717c7..6f146fc 100644</span><br><span>--- a/src/openvpn/push.=
+c</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -772,6 +772,1=
+0 @@</span><br><span>     return true;</span><br><span> }</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC_=
+_) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span> void</span><br><span> send_push_reply_auth_token(struct tl=
+s_multi *multi)</span><br><span> {</span><br><span>@@ -1046,7 +1050,7 @@</s=
+pan><br><span>                             unsigned int *option_types_found=
+, struct buffer *buf)</span><br><span> {</span><br><span>     int ret =3D P=
+USH_MSG_ERROR;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    con=
+st uint8_t ch =3D buf_read_u8(buf);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const int ch =3D buf_read_u8(buf);</span><br><span>    =
+ if (ch =3D=3D &#39;,&#39;)</span><br><span>     {</span><br><span>        =
+ struct buffer buf_orig =3D (*buf);</span><br><span>@@ -1090,10 +1094,6 @@<=
+/span><br><span>     return ret;</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
+ma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n> int</span><br><span> process_incoming_push_msg(struct context *c, const =
+struct buffer *buffer,</span><br><span>                           bool hono=
+r_received_options, unsigned int permission_mask,</span><br><span></span><b=
+r></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1287?usp=3Demail">change 1287</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">=
+settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
+><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
+n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/128=
+7?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
+v>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I27f2fcd903d26ccbfbd0cdc45f9=
@@ -374,5 +367,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---Wjr+egz7XVk=--
+--WKTVayXhPIM=--
 
