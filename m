@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Oct 2025 18:36:22 +0000
-References: <gerrit.1761676579000.I9118333bb65cd5db0836abefa5d45a729f0142cc@...2715...>
+Date: Tue, 28 Oct 2025 18:36:23 +0000
+References: <gerrit.1761676579000.I7f4c7b0ca748975defca1e5104e7077a761cd49c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <70c4a2fb47889154088f15e0a0d3b497b2ee74b1-HTML@...2715...>
+Message-ID: <d0c4160d5af06e0f7e4fa5497662bde3b4f568d7-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2JD/cUyC9RY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: remove redundant
- PULL_DEFINED() macro definition
+Content-Type: multipart/alternative; boundary="To2x91FfucI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: zeroize struct
+ image in packet_id_persist_save() before writing to disk
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---2JD/cUyC9RY=
+--To2x91FfucI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,56 +32,58 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1322?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1323?usp=3Demail
 
 to review the following change.
 
 
-Change subject: remove redundant PULL_DEFINED() macro definition
+Change subject: zeroize struct image in packet_id_persist_save() before wri=
+ting to disk
 ......................................................................
 
-remove redundant PULL_DEFINED() macro definition
+zeroize struct image in packet_id_persist_save() before writing to disk
 
-this seems to be a leftover of the time when we had conditional
-compilation for "--disable-server" or thus.  Commit d6a0cf599
-removed PUSH_DEFINED() nearby but overlooked this one.
+while this really is only a debug function, ensuring that no uninitialized
+heap content ends up in padding in the structure and thus to disk is good
+practice.
 
-Change-Id: I9118333bb65cd5db0836abefa5d45a729f0142cc
+Reported-by: Joshua Rogers <contact@...2949...>
+Found-by: ZeroPath (https://zeropath.com/)
+
+Change-Id: I7f4c7b0ca748975defca1e5104e7077a761cd49c
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/options.h
-1 file changed, 0 insertions(+), 4 deletions(-)
+M src/openvpn/packet_id.c
+1 file changed, 1 insertion(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/1322/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/1323/1
 
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 24253af..125e524 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -769,10 +769,6 @@
-
- #define PULL_DEFINED(opt) ((opt)->pull)
-
--#ifndef PULL_DEFINED
--#define PULL_DEFINED(opt) (false)
--#endif
--
- #ifdef _WIN32
- #define ROUTE_OPTION_FLAGS(o) ((o)->route_method & ROUTE_METHOD_MASK)
- #else
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index 880eee1..08d9d9b 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -511,6 +511,7 @@
+         && (p->time !=3D p->time_last_written || p->id !=3D p->id_last_wri=
+tten))
+     {
+         struct packet_id_persist_file_image image;
++        CLEAR(image);
+         ssize_t n;
+         off_t seek_ret;
+         struct gc_arena gc =3D gc_new();
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1322?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1323?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9118333bb65cd5db0836abefa5d45a729f0142cc
-Gerrit-Change-Number: 1322
+Gerrit-Change-Id: I7f4c7b0ca748975defca1e5104e7077a761cd49c
+Gerrit-Change-Number: 1323
 Gerrit-PatchSet: 1
 Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -90,7 +92,7 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---2JD/cUyC9RY=
+--To2x91FfucI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -98,43 +100,43 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: flichtenheld, plaisthos. </p>
 <p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
 his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1322?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1323?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">remove redundant PULL_DEFINED() macro defin=
-ition<br><br>this seems to be a leftover of the time when we had conditiona=
-l<br>compilation for &quot;--disable-server&quot; or thus.  Commit d6a0cf59=
-9<br>removed PUSH_DEFINED() nearby but overlooked this one.<br><br>Change-I=
-d: I9118333bb65cd5db0836abefa5d45a729f0142cc<br>Signed-off-by: Gert Doering=
- &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/options.h<br>1 file change=
-d, 0 insertions(+), 4 deletions(-)<br><br></pre><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/22/1322/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><span>index 2=
-4253af..125e524 100644</span><br><span>--- a/src/openvpn/options.h</span><b=
-r><span>+++ b/src/openvpn/options.h</span><br><span>@@ -769,10 +769,6 @@</s=
-pan><br><span> </span><br><span> #define PULL_DEFINED(opt) ((opt)-&gt;pull)=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
-ndef PULL_DEFINED</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
-ine PULL_DEFINED(opt) (false)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span> #ifdef _WIN32</span><br><span> #define ROUTE_OPTION_FLAGS(o) ((o=
-)-&gt;route_method &amp; ROUTE_METHOD_MASK)</span><br><span> #else</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1322?usp=3Demail">change 1322</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1322?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+ospace; white-space: pre-wrap;">zeroize struct image in packet_id_persist_s=
+ave() before writing to disk<br><br>while this really is only a debug funct=
+ion, ensuring that no uninitialized<br>heap content ends up in padding in t=
+he structure and thus to disk is good<br>practice.<br><br>Reported-by: Josh=
+ua Rogers &lt;contact@...2949...&gt;<br>Found-by: ZeroPath (https://zeropat=
+h.com/)<br><br>Change-Id: I7f4c7b0ca748975defca1e5104e7077a761cd49c<br>Sign=
+ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/pac=
+ket_id.c<br>1 file changed, 1 insertion(+), 0 deletions(-)<br><br></pre><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/=
+1323/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id=
+.c</span><br><span>index 880eee1..08d9d9b 100644</span><br><span>--- a/src/=
+openvpn/packet_id.c</span><br><span>+++ b/src/openvpn/packet_id.c</span><br=
+><span>@@ -511,6 +511,7 @@</span><br><span>         &amp;&amp; (p-&gt;time =
+!=3D p-&gt;time_last_written || p-&gt;id !=3D p-&gt;id_last_written))</span=
+><br><span>     {</span><br><span>         struct packet_id_persist_file_im=
+age image;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        C=
+LEAR(image);</span><br><span>         ssize_t n;</span><br><span>         o=
+ff_t seek_ret;</span><br><span>         struct gc_arena gc =3D gc_new();</s=
+pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1323?usp=3Demail">change 1323</a>. To unsubscribe, o=
+r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
+/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1323?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
+iew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9118333bb65cd5db0836abefa5d=
-45a729f0142cc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1322 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7f4c7b0ca748975defca1e5104e=
+7077a761cd49c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1323 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
 div>
@@ -151,5 +153,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---2JD/cUyC9RY=--
+--To2x91FfucI=--
 
