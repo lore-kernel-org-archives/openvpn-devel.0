@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Oct 2025 10:39:06 +0000
+Date: Tue, 28 Oct 2025 10:45:04 +0000
 In-Reply-To: <gerrit.1761581200000.Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9@...2715...>
 References: <gerrit.1761581200000.Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227..., marco@...2726...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <00cac86cbc4ce4f09bc74f0ab54f2e2e564a5882-EmailReviewComments-HTML@...2715...>
+Message-ID: <48e8e7d7d0c915449d28c2de85ea7779f43eaa88-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fQhe9nHhSyQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Cm/tYkMaQ7Q="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: PUSH_UPDATE server:
  added new unit tests and improved documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fQhe9nHhSyQ=
+--Cm/tYkMaQ7Q=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,20 +36,16 @@ entation
 ......................................................................
 
 
-Patch Set 1: Code-Review-1
+Patch Set 1: Code-Review-2
 
 (1 comment)
 
-File tests/unit_tests/openvpn/test_push_update_msg.c:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/1316/comment/c3c8a28a_a6ce6843?usp=3D=
-email :
-PS1, Line 147:                 printf("\n\nexpected_size: %lu\n  actual_siz=
-e: %lu", res_len, str_len);
-```suggestion
-                printf("\n\nexpected_size: %zu\n  actual_size: %zu", res_le=
-n, str_len);
-```
+PS1:
+Actually on second thought this whole code should be replaced with "check_e=
+xpected". This is exactly what it is intended for. See my recent test_optio=
+ns_parse.c for example
 
 
 
@@ -70,37 +66,35 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Tue, 28 Oct 2025 10:39:06 +0000
+Gerrit-Comment-Date: Tue, 28 Oct 2025 10:45:04 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---fQhe9nHhSyQ=
+--Cm/tYkMaQ7Q=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: mrbff, plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail">V=
 iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/t=
-est_push_update_msg.c:</p><ul style=3D"list-style: none; padding: 0;"><li s=
-tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316/comment/c3c8a28a_a6ce6=
-843?usp=3Demail">Patch Set #1, Line 147:</a> <code style=3D"font-family:mon=
-ospace,monospace">                printf(&quot;\n\nexpected_size: %lu\n  ac=
-tual_size: %lu&quot;, res_len, str_len);</code></p><pre class=3D"blocks" st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">```suggest=
-ion<br>                printf(&quot;\n\nexpected_size: %zu\n  actual_size: =
-%zu&quot;, res_len, str_len);<br>```</pre></li></ul></li></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail">cha=
-nge 1316</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1316?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Actually on=
+ second thought this whole code should be replaced with &quot;check_expecte=
+d&quot;. This is exactly what it is intended for. See my recent test_option=
+s_parse.c for example</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail">change 1316</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -121,12 +115,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
 t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Oct 2025 10:39:06=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Oct 2025 10:45:04=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---fQhe9nHhSyQ=--
+--Cm/tYkMaQ7Q=--
 
