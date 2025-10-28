@@ -1,17 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Oct 2025 16:35:43 +0000
-In-Reply-To: <gerrit.1761573316000.I54845bf4dd17d06cfc3b402f188795f74f4b1d3e@...2715...>
-References: <gerrit.1761573316000.I54845bf4dd17d06cfc3b402f188795f74f4b1d3e@...2715...>
+Date: Tue, 28 Oct 2025 17:32:29 +0000
+In-Reply-To: <gerrit.1761604654000.I76eb584024610a6054a069340adbac988abf686c@...2715...>
+References: <gerrit.1761604654000.I76eb584024610a6054a069340adbac988abf686c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <2f671f9d992948f379a09cdbbf8338573724f1ee-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <71958b48a70604ca1ad4becd898b7824599df679-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9960IyOSXtY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: sitnl: set
- FD_CLOEXEC on socket to prevent abuse
+Content-Type: multipart/alternative; boundary="nHTOAqUlLC8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix logic when
+ pushed cipher triggers tun reopen and ignore more options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,201 +19,142 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---9960IyOSXtY=
+--nHTOAqUlLC8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-14?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: sitnl: set FD_CLOEXEC on socket to prevent abuse
+cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1321?usp=3Demail )
+
+Change subject: Fix logic when pushed cipher triggers tun reopen and ignore=
+ more options
 ......................................................................
 
-sitnl: set FD_CLOEXEC on socket to prevent abuse
 
-Since OpenVPN spawns various child processes, it is important
-that sockets are closed after calling exec.
+Patch Set 1: Code-Review-1
 
-The sitnl socket didn't have the right flag set, resulting
-in it surviving in, for example, connect/disconnect scripts
-and giving the latter a chance to abuse the socket.
+(2 comments)
 
-Ensure this doesn't happen by setting FD_CLOEXEC on
-this socket right after creation.
+Patchset:
 
-Reported-by: Joshua Rogers <contact@...2949...>
-Found-by: ZeroPath (https://zeropath.com/)
-Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1314
-Message-Id: <20251028162843.18189-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg33=
-952.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M CMakeLists.txt
-M src/openvpn/networking_sitnl.c
-M tests/unit_tests/openvpn/Makefile.am
-3 files changed, 6 insertions(+), 0 deletions(-)
+PS1:
+I don't think the logic is right now (neither before nor afterwards).  The =
+commit message actually speaks about `link-mtu` but the code tests `tun_mtu=
+_defined`.
 
 
+File src/openvpn/push.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1321/comment/d77bec25_18f7eaaa?usp=3D=
+email :
+PS1, Line 1046:         if (strprefix(line, "cipher ") && opt->ce.tun_mtu_d=
+efined)
+I don't think this is actually correct - `--tun-mtu` is the *inner* MTU, an=
+d that never changes on `--cipher`.  So the original variant means "if we h=
+ave a configured tun-mtu, a cipher change will not affect this, so we don't=
+ care".
+
+A more clear expression would be "if a `--link-mtu` was defined and `--ciph=
+er changes` (because in that case, `--tun-mtu` would be recalculated - or w=
+ould it?)
+
+Maybe that whole thing needs to go after the big mtu refactoring?
 
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5954a6e..bf754f3 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -923,6 +923,7 @@
-             src/openvpn/crypto_openssl.c
-             src/openvpn/crypto.c
-             src/openvpn/crypto_epoch.c
-+            src/openvpn/fdmisc.c
-             src/openvpn/otime.c
-             src/openvpn/packet_id.c
-             )
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b3adb16..3e20b70 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -27,6 +27,7 @@
-
- #include "dco.h"
- #include "errlevel.h"
-+#include "fdmisc.h"
- #include "buffer.h"
- #include "misc.h"
- #include "networking.h"
-@@ -181,6 +182,9 @@
-         return fd;
-     }
-
-+    /* set close on exec to avoid child processes access the socket */
-+    set_cloexec(fd);
-+
-     if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &sndbuf, sizeof(sndbuf)) < 0)
-     {
-         msg(M_WARN | M_ERRNO, "%s: SO_SNDBUF", __func__);
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
-n/Makefile.am
-index 997703a..0f13172 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -196,6 +196,7 @@
- 	$(top_srcdir)/src/openvpn/crypto_epoch.c \
- 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
- 	$(top_srcdir)/src/openvpn/crypto_openssl.c \
-+	$(top_srcdir)/src/openvpn/fdmisc.c \
- 	$(top_srcdir)/src/openvpn/otime.c \
- 	$(top_srcdir)/src/openvpn/packet_id.c \
- 	$(top_srcdir)/src/openvpn/platform.c
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1321?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e
-Gerrit-Change-Number: 1314
-Gerrit-PatchSet: 5
-Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Change-Id: I76eb584024610a6054a069340adbac988abf686c
+Gerrit-Change-Number: 1321
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 28 Oct 2025 17:32:29 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---9960IyOSXtY=
+--nHTOAqUlLC8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1314?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">sitnl: set FD_CLOEXEC on socket to prevent abuse=
-<br><br>Since OpenVPN spawns various child processes, it is important<br>th=
-at sockets are closed after calling exec.<br><br>The sitnl socket didn&#39;=
-t have the right flag set, resulting<br>in it surviving in, for example, co=
-nnect/disconnect scripts<br>and giving the latter a chance to abuse the soc=
-ket.<br><br>Ensure this doesn&#39;t happen by setting FD_CLOEXEC on<br>this=
- socket right after creation.<br><br>Reported-by: Joshua Rogers &lt;contact=
-@...2949...&gt;<br>Found-by: ZeroPath (https://zeropath.com/)<br>Change-Id:=
- I54845bf4dd17d06cfc3b402f188795f74f4b1d3e<br>Signed-off-by: Antonio Quartu=
-lli &lt;antonio@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...2132...=
-.&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1314<br>Message=
--Id: &lt;20251028162843.18189-1-gert@...1296...&gt;<br>URL: https://www.mai=
-l-archive.com/openvpn-devel@lists.sourceforge.net/msg33952.html<br>Signed-o=
-ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M=
- src/openvpn/networking_sitnl.c<br>M tests/unit_tests/openvpn/Makefile.am<b=
-r>3 files changed, 6 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index 5954a=
-6e..bf754f3 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
- b/CMakeLists.txt</span><br><span>@@ -923,6 +923,7 @@</span><br><span>     =
-        src/openvpn/crypto_openssl.c</span><br><span>             src/openv=
-pn/crypto.c</span><br><span>             src/openvpn/crypto_epoch.c</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/fdm=
-isc.c</span><br><span>             src/openvpn/otime.c</span><br><span>    =
-         src/openvpn/packet_id.c</span><br><span>             )</span><br><=
-span>diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_s=
-itnl.c</span><br><span>index b3adb16..3e20b70 100644</span><br><span>--- a/=
-src/openvpn/networking_sitnl.c</span><br><span>+++ b/src/openvpn/networking=
-_sitnl.c</span><br><span>@@ -27,6 +27,7 @@</span><br><span> </span><br><spa=
-n> #include &quot;dco.h&quot;</span><br><span> #include &quot;errlevel.h&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;f=
-dmisc.h&quot;</span><br><span> #include &quot;buffer.h&quot;</span><br><spa=
-n> #include &quot;misc.h&quot;</span><br><span> #include &quot;networking.h=
-&quot;</span><br><span>@@ -181,6 +182,9 @@</span><br><span>         return =
-fd;</span><br><span>     }</span><br><span> </span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* set close on exec to avoid child processes =
-access the socket */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    set_cloexec(fd);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span>     if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &amp;sndb=
-uf, sizeof(sndbuf)) &lt; 0)</span><br><span>     {</span><br><span>        =
- msg(M_WARN | M_ERRNO, &quot;%s: SO_SNDBUF&quot;, __func__);</span><br><spa=
-n>diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/open=
-vpn/Makefile.am</span><br><span>index 997703a..0f13172 100644</span><br><sp=
-an>--- a/tests/unit_tests/openvpn/Makefile.am</span><br><span>+++ b/tests/u=
-nit_tests/openvpn/Makefile.am</span><br><span>@@ -196,6 +196,7 @@</span><br=
-><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top=
-_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span> 	$(top_srcdir)/src=
-/openvpn/crypto_openssl.c \</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	$(top_srcdir)/src/openvpn/fdmisc.c \</span><br><span> 	$(top_srcdi=
-r)/src/openvpn/otime.c \</span><br><span> 	$(top_srcdir)/src/openvpn/packet=
-_id.c \</span><br><span> 	$(top_srcdir)/src/openvpn/platform.c</span><br><s=
-pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1314?usp=3Demail">change 1314</a>. To unsubscribe, or for help=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1321?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1321?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I don&#39;=
+t think the logic is right now (neither before nor afterwards).  The commit=
+ message actually speaks about `link-mtu` but the code tests `tun_mtu_defin=
+ed`.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/ope=
+nvpn/push.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
+rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1321/comment/d77bec25_18f7eaaa?usp=3D=
+email">Patch Set #1, Line 1046:</a> <code style=3D"font-family:monospace,mo=
+nospace">        if (strprefix(line, &quot;cipher &quot;) &amp;&amp; opt-&g=
+t;ce.tun_mtu_defined)</code></p><p class=3D"blocks" style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">I don&#39;t think this is actually correct=
+ - `--tun-mtu` is the *inner* MTU, and that never changes on `--cipher`.  S=
+o the original variant means &quot;if we have a configured tun-mtu, a ciphe=
+r change will not affect this, so we don&#39;t care&quot;.</p><p class=3D"b=
+locks" style=3D"white-space: pre-wrap; word-wrap: break-word;">A more clear=
+ expression would be &quot;if a `--link-mtu` was defined and `--cipher chan=
+ges` (because in that case, `--tun-mtu` would be recalculated - or would it=
+?)</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
+word;">Maybe that whole thing needs to go after the big mtu refactoring?</p=
+></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1321?usp=3Demail">change 1321</a>. To unsubscribe, or for help=
  writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?=
 usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
 EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
 org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1314?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+openvpn/+/1321?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
 "/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I54845bf4dd17d06cfc3b402f188=
-795f74f4b1d3e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1314 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76eb584024610a6054a069340ad=
+bac988abf686c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1321 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Oct 2025 17:32:29=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---9960IyOSXtY=--
+--nHTOAqUlLC8=--
 
