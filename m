@@ -1,17 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Oct 2025 16:27:42 +0000
+From: Gert Doering <gert@...1296...>
+Date: Tue, 28 Oct 2025 17:28:38 +0100
+Message-ID: <20251028162843.18189-1-gert@...1296...>
 In-Reply-To: <gerrit.1761573316000.I54845bf4dd17d06cfc3b402f188795f74f4b1d3e@...2715...>
 References: <gerrit.1761573316000.I54845bf4dd17d06cfc3b402f188795f74f4b1d3e@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <ae0d012a0718b8ac700ab5f77a64612813633836-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lnU1zhirt3M="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: sitnl: set
- FD_CLOEXEC on socket to prevent abuse
+Subject: [Openvpn-devel] [PATCH v4] sitnl: set FD_CLOEXEC on socket to
+ prevent abuse
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,94 +14,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---lnU1zhirt3M=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: flichtenheld, ordex, plaisthos.
+Since OpenVPN spawns various child processes, it is important
+that sockets are closed after calling exec.
 
-cron2 has posted comments on this change by ordex. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1314?usp=3Demail )
+The sitnl socket didn't have the right flag set, resulting
+in it surviving in, for example, connect/disconnect scripts
+and giving the latter a chance to abuse the socket.
 
-Change subject: sitnl: set FD_CLOEXEC on socket to prevent abuse
-......................................................................
+Ensure this doesn't happen by setting FD_CLOEXEC on
+this socket right after creation.
 
+Reported-by: Joshua Rogers <contact@...2949...>
+Found-by: ZeroPath (https://zeropath.com/)
+Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1314
+---
 
-Patch Set 4: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1314
+This mail reflects revision 4 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I54845bf4dd17d06cfc3b402f188795f74f4b1d3e
-Gerrit-Change-Number: 1314
-Gerrit-PatchSet: 4
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Tue, 28 Oct 2025 16:27:42 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---lnU1zhirt3M=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, ordex, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail=
-">change 1314</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1314?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I54845bf4dd17d06cfc3b402f188=
-795f74f4b1d3e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1314 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Oct 2025 16:27:42=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---lnU1zhirt3M=--
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5954a6e..bf754f3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -923,6 +923,7 @@
+             src/openvpn/crypto_openssl.c
+             src/openvpn/crypto.c
+             src/openvpn/crypto_epoch.c
++            src/openvpn/fdmisc.c
+             src/openvpn/otime.c
+             src/openvpn/packet_id.c
+             )
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index b3adb16..3e20b70 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -27,6 +27,7 @@
+ 
+ #include "dco.h"
+ #include "errlevel.h"
++#include "fdmisc.h"
+ #include "buffer.h"
+ #include "misc.h"
+ #include "networking.h"
+@@ -181,6 +182,9 @@
+         return fd;
+     }
+ 
++    /* set close on exec to avoid child processes access the socket */
++    set_cloexec(fd);
++
+     if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &sndbuf, sizeof(sndbuf)) < 0)
+     {
+         msg(M_WARN | M_ERRNO, "%s: SO_SNDBUF", __func__);
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 997703a..0f13172 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -196,6 +196,7 @@
+ 	$(top_srcdir)/src/openvpn/crypto_epoch.c \
+ 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
+ 	$(top_srcdir)/src/openvpn/crypto_openssl.c \
++	$(top_srcdir)/src/openvpn/fdmisc.c \
+ 	$(top_srcdir)/src/openvpn/otime.c \
+ 	$(top_srcdir)/src/openvpn/packet_id.c \
+ 	$(top_srcdir)/src/openvpn/platform.c
 
