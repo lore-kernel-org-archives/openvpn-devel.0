@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Oct 2025 17:56:15 +0000
+Date: Wed, 29 Oct 2025 17:56:17 +0000
 In-Reply-To: <gerrit.1761749931000.I5f57e7bf52e3f6289462ef05e1f6e81ab0133d0d@...2715...>
 References: <gerrit.1761749931000.I5f57e7bf52e3f6289462ef05e1f6e81ab0133d0d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7fdde1355e7f9a9531fec9b8d98d3159f37f429a-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <7fdde1355e7f9a9531fec9b8d98d3159f37f429a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qSlBlXo7VHQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ej4BRHRWabM="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove --memstats
  feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qSlBlXo7VHQ=
+--ej4BRHRWabM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+29?usp=3Demail )
 
 Change subject: Remove --memstats feature
 ......................................................................
@@ -75,7 +71,7 @@ M src/openvpn/syshead.h
 12 files changed, 5 insertions(+), 257 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/1329/2
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index bf754f3..c9301e6 100644
@@ -147,7 +143,7 @@ index 7f72000..5bbac13 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
 @@ -44,8 +44,6 @@
-=20
+
  #include "memdbg.h"
 
 -#include "mstats.h"
@@ -538,7 +534,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I5f57e7bf52e3f6289462ef05e1f6e81ab0133d0d
@@ -549,437 +545,434 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qSlBlXo7VHQ=
+--ej4BRHRWabM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by plaisthos.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">Remove --memstats feature<br><br>Th=
-e ``--mememstat`` was largely undocumented and there is no known<br>user of=
- this feature.  This feature provided very limited statistics<br>(number of=
- users, link bytes read/written) and we do not except any<br>usage because =
-of this.<br><br>The only documentation was a mention in --help without any =
-mention of<br>the (binary) format of the mmap file or other usage instructi=
-ons.<br><br>This deals also with issues reported by zeropath regarding pote=
-ntially<br>insecure handling of the file permission of the memory mapped fi=
-le.<br><br>Reported-by: Joshua Rogers &lt;contact@...2949...&gt;<br>Found-b=
-y: ZeroPath (https://zeropath.com/)<br>Change-Id: I5f57e7bf52e3f6289462ef05=
-e1f6e81ab0133d0d<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>=
-Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerri=
-t.openvpn.net/c/openvpn/+/1329<br>Message-Id: &lt;20251029163849.446-1-gert=
-@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1466...=
-urceforge.net/msg34021.html<br>Signed-off-by: Gert Doering &lt;gert@...1726...=
-...&gt;<br>---<br>M CMakeLists.txt<br>M Changes.rst<br>M src/openvpn/Makefi=
-le.am<br>M src/openvpn/error.c<br>M src/openvpn/forward.c<br>M src/openvpn/=
-init.c<br>D src/openvpn/mstats.c<br>D src/openvpn/mstats.h<br>M src/openvpn=
-/multi.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/ope=
-nvpn/syshead.h<br>12 files changed, 5 insertions(+), 257 deletions(-)<br><b=
-r></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
-changes/29/1329/2</pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</spa=
-n><br><span>index bf754f3..c9301e6 100644</span><br><span>--- a/CMakeLists.=
-txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -490,8 +490,6 @=
-@</span><br><span>     src/openvpn/mroute.h</span><br><span>     src/openvp=
-n/mss.c</span><br><span>     src/openvpn/mss.h</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    src/openvpn/mstats.c</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    src/openvpn/mstats.h</span><br><span>     s=
-rc/openvpn/mtcp.c</span><br><span>     src/openvpn/mtcp.h</span><br><span> =
-    src/openvpn/mtu.c</span><br><span>diff --git a/Changes.rst b/Changes.rs=
-t</span><br><span>index 4feacad2..41af103 100644</span><br><span>--- a/Chan=
-ges.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -217,6 +217,11=
- @@</span><br><span>     ``--allow-compression yes`` is now an alias for</s=
-pan><br><span>     ``--allow-compression asym``.</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+``--memstats`` feature remov=
-ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    The ``--memem=
-stat`` was largely undocumented and there is no known</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    user of this feature.  This feature p=
-rovided very limited statistics</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    (number of users, link bytes read/written) and we do not ex=
-cept any</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    usage b=
-ecause of this.</span><br><span> </span><br><span> User-visible Changes</sp=
-an><br><span> --------------------</span><br><span>diff --git a/src/openvpn=
-/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index dc58cd1..db87d=
-fc 100644</span><br><span>--- a/src/openvpn/Makefile.am</span><br><span>+++=
- b/src/openvpn/Makefile.am</span><br><span>@@ -90,7 +90,6 @@</span><br><spa=
-n> 	mbedtls_compat.h \</span><br><span> 	mroute.c mroute.h \</span><br><spa=
-n> 	mss.c mss.h \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	mst=
-ats.c mstats.h \</span><br><span> 	mtcp.c mtcp.h \</span><br><span> 	mtu.c =
-mtu.h \</span><br><span> 	mudp.c mudp.h \</span><br><span>diff --git a/src/=
-openvpn/error.c b/src/openvpn/error.c</span><br><span>index 735d259..bd588d=
-4 100644</span><br><span>--- a/src/openvpn/error.c</span><br><span>+++ b/sr=
-c/openvpn/error.c</span><br><span>@@ -37,8 +37,6 @@</span><br><span> #inclu=
-de &quot;status.h&quot;</span><br><span> #include &quot;integer.h&quot;</sp=
-an><br><span> #include &quot;ps.h&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#include &quot;mstats.h&quot;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span> </span><br><span> #if SYSLOG_CA=
-PABILITY</span><br><span> #ifndef LOG_OPENVPN</span><br><span>@@ -723,10 +7=
-21,6 @@</span><br><span>         }</span><br><span> #endif</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTA=
-TS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        mstats_clos=
-e();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef ABORT_O=
-N_ERROR</span><br><span>         if (status =3D=3D OPENVPN_EXIT_STATUS_ERRO=
-R)</span><br><span>         {</span><br><span>diff --git a/src/openvpn/forw=
-ard.c b/src/openvpn/forward.c</span><br><span>index 7f72000..5bbac13 100644=
-</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/open=
-vpn/forward.c</span><br><span>@@ -44,8 +44,6 @@</span><br><span> </span><br=
-><span> #include &quot;memdbg.h&quot;</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#include &quot;mstats.h&quot;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> counter_type li=
-nk_read_bytes_global;  /* GLOBAL */</span><br><span> counter_type link_writ=
-e_bytes_global; /* GLOBAL */</span><br><span> </span><br><span>@@ -992,12 +=
-990,6 @@</span><br><span>     {</span><br><span>         c-&gt;c2.link_read=
-_bytes +=3D c-&gt;c2.buf.len;</span><br><span>         link_read_bytes_glob=
-al +=3D c-&gt;c2.buf.len;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#ifdef ENABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        if (mmap_stats)</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       mmap_stats-&gt;link_read_bytes =3D link_read_bytes_global;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>         c-&gt;c2.or=
-iginal_recv_size =3D c-&gt;c2.buf.len;</span><br><span>     }</span><br><sp=
-an>     else</span><br><span>@@ -1821,12 +1813,6 @@</span><br><span>       =
-          c-&gt;c2.max_send_size_local =3D max_int(size, c-&gt;c2.max_send_=
-size_local);</span><br><span>                 c-&gt;c2.link_write_bytes +=
-=3D size;</span><br><span>                 link_write_bytes_global +=3D siz=
-e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMST=
-ATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if=
- (mmap_stats)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-        mmap_stats-&gt;link_write_bytes =3D link_write_bytes_global;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>         =
-    }</span><br><span>         }</span><br><span> </span><br><span>diff --g=
-it a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index aa2611d.=
-.1bdaf27 100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>++=
-+ b/src/openvpn/init.c</span><br><span>@@ -44,7 +44,6 @@</span><br><span> #=
-include &quot;ps.h&quot;</span><br><span> #include &quot;lladdr.h&quot;</sp=
-an><br><span> #include &quot;ping.h&quot;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#include &quot;mstats.h&quot;</span><br><span> #include=
- &quot;ssl_verify.h&quot;</span><br><span> #include &quot;ssl_ncp.h&quot;</=
-span><br><span> #include &quot;tls_crypt.h&quot;</span><br><span>@@ -908,22=
- +907,6 @@</span><br><span>     return false;</span><br><span> #endif</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef MS=
-TATS_TEST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        mstats_open(&quot;/dev/shm/=
-mstats.dat&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     for (i =3D 0; i &lt; 30; ++i)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            mmap_stats-&gt;n_clients +=3D 1;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            mmap_stats-&gt;link_write_bytes +=3D 8;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            mmap_stat=
-s-&gt;link_read_bytes +=3D 16;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            sleep(1);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     mstats_close();</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     return tru=
-e;</span><br><span> }</span><br><span> </span><br><span>@@ -1233,13 +1216,6=
- @@</span><br><span>             }</span><br><span>         }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEM=
-STATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c-&g=
-t;first_time &amp;&amp; c-&gt;options.memstats_fn)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            mstats_open(c-&gt;options.memstats_fn);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1329?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Remove --memstats feature<br><br>The ``--mememst=
+at`` was largely undocumented and there is no known<br>user of this feature=
+.  This feature provided very limited statistics<br>(number of users, link =
+bytes read/written) and we do not except any<br>usage because of this.<br><=
+br>The only documentation was a mention in --help without any mention of<br=
+>the (binary) format of the mmap file or other usage instructions.<br><br>T=
+his deals also with issues reported by zeropath regarding potentially<br>in=
+secure handling of the file permission of the memory mapped file.<br><br>Re=
+ported-by: Joshua Rogers &lt;contact@...2949...&gt;<br>Found-by: ZeroPath (=
+https://zeropath.com/)<br>Change-Id: I5f57e7bf52e3f6289462ef05e1f6e81ab0133=
+d0d<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Ger=
+t Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net=
+/c/openvpn/+/1329<br>Message-Id: &lt;20251029163849.446-1-gert@...1296...&g=
+t;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net=
+/msg34021.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>--=
+-<br>M CMakeLists.txt<br>M Changes.rst<br>M src/openvpn/Makefile.am<br>M sr=
+c/openvpn/error.c<br>M src/openvpn/forward.c<br>M src/openvpn/init.c<br>D s=
+rc/openvpn/mstats.c<br>D src/openvpn/mstats.h<br>M src/openvpn/multi.c<br>M=
+ src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/openvpn/syshead.=
+h<br>12 files changed, 5 insertions(+), 257 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index bf754=
+f3..c9301e6 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -490,8 +490,6 @@</span><br><span>     =
+src/openvpn/mroute.h</span><br><span>     src/openvpn/mss.c</span><br><span=
+>     src/openvpn/mss.h</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    src/openvpn/mstats.c</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    src/openvpn/mstats.h</span><br><span>     src/openvpn/mtcp.c</span=
+><br><span>     src/openvpn/mtcp.h</span><br><span>     src/openvpn/mtu.c</=
+span><br><span>diff --git a/Changes.rst b/Changes.rst</span><br><span>index=
+ 4feacad2..41af103 100644</span><br><span>--- a/Changes.rst</span><br><span=
+>+++ b/Changes.rst</span><br><span>@@ -217,6 +217,11 @@</span><br><span>   =
+  ``--allow-compression yes`` is now an alias for</span><br><span>     ``--=
+allow-compression asym``.</span><br><span> </span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+``--memstats`` feature removed</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    The ``--mememstat`` was largely undo=
+cumented and there is no known</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    user of this feature.  This feature provided very limited st=
+atistics</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    (number=
+ of users, link bytes read/written) and we do not except any</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    usage because of this.</span><=
+br><span> </span><br><span> User-visible Changes</span><br><span> ---------=
+-----------</span><br><span>diff --git a/src/openvpn/Makefile.am b/src/open=
+vpn/Makefile.am</span><br><span>index dc58cd1..db87dfc 100644</span><br><sp=
+an>--- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefile=
+.am</span><br><span>@@ -90,7 +90,6 @@</span><br><span> 	mbedtls_compat.h \<=
+/span><br><span> 	mroute.c mroute.h \</span><br><span> 	mss.c mss.h \</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-	mstats.c mstats.h \</span>=
+<br><span> 	mtcp.c mtcp.h \</span><br><span> 	mtu.c mtu.h \</span><br><span=
+> 	mudp.c mudp.h \</span><br><span>diff --git a/src/openvpn/error.c b/src/o=
+penvpn/error.c</span><br><span>index 735d259..bd588d4 100644</span><br><spa=
+n>--- a/src/openvpn/error.c</span><br><span>+++ b/src/openvpn/error.c</span=
+><br><span>@@ -37,8 +37,6 @@</span><br><span> #include &quot;status.h&quot;=
+</span><br><span> #include &quot;integer.h&quot;</span><br><span> #include =
+&quot;ps.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#incl=
+ude &quot;mstats.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span> </span><br><span> #if SYSLOG_CAPABILITY</span><br><spa=
+n> #ifndef LOG_OPENVPN</span><br><span>@@ -723,10 +721,6 @@</span><br><span=
+>         }</span><br><span> #endif</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTATS</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        mstats_close();</span><br><span st=
 yle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span> #ifdef ENABLE_SELINUX</span><br><span=
->         /* Apply a SELinux context in order to restrict what OpenVPN can =
-do</span><br><span>          * to _only_ what it is supposed to do after in=
-itialization is complete</span><br><span>diff --git a/src/openvpn/mstats.c =
-b/src/openvpn/mstats.c</span><br><span>deleted file mode 100644</span><br><=
-span>index bd6316c..0000000</span><br><span>--- a/src/openvpn/mstats.c</spa=
-n><br><span>+++ /dev/null</span><br><span>@@ -1,124 +0,0 @@</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- *  OpenVPN -- An application to securely tunnel IP netw=
-orks</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *             ov=
-er a single TCP/UDP port, with support for SSL/TLS-based</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">- *             session authentication an=
-d key exchange,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    =
-         packet encryption, packet authentication, and</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- *             packet compression.</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- *  Copyright (C) 2002-2025 OpenVPN Inc &lt;sale=
-s@...515...&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- *  This program is free =
-software; you can redistribute it and/or modify</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- *  it under the terms of the GNU General Public =
-License version 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  =
-as published by the Free Software Foundation.</span><br><span style=3D"colo=
+sl(0, 100%, 40%);">-</span><br><span> #ifdef ABORT_ON_ERROR</span><br><span=
+>         if (status =3D=3D OPENVPN_EXIT_STATUS_ERROR)</span><br><span>    =
+     {</span><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/for=
+ward.c</span><br><span>index 7f72000..5bbac13 100644</span><br><span>--- a/=
+src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br=
+><span>@@ -44,8 +44,6 @@</span><br><span> </span><br><span> #include &quot;=
+memdbg.h&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#include &quot;mstats.h&quot;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> counter_type link_read_bytes_global;  =
+/* GLOBAL */</span><br><span> counter_type link_write_bytes_global; /* GLOB=
+AL */</span><br><span> </span><br><span>@@ -992,12 +990,6 @@</span><br><spa=
+n>     {</span><br><span>         c-&gt;c2.link_read_bytes +=3D c-&gt;c2.bu=
+f.len;</span><br><span>         link_read_bytes_global +=3D c-&gt;c2.buf.le=
+n;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMST=
+ATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (mmap_s=
+tats)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            mmap_stats-&gt;l=
+ink_read_bytes =3D link_read_bytes_global;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#endif</span><br><span>         c-&gt;c2.original_recv_size =3D c-=
+&gt;c2.buf.len;</span><br><span>     }</span><br><span>     else</span><br>=
+<span>@@ -1821,12 +1813,6 @@</span><br><span>                 c-&gt;c2.max_=
+send_size_local =3D max_int(size, c-&gt;c2.max_send_size_local);</span><br>=
+<span>                 c-&gt;c2.link_write_bytes +=3D size;</span><br><span=
+>                 link_write_bytes_global +=3D size;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTATS</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                if (mmap_stats)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                    mmap_stats-&gt;l=
+ink_write_bytes =3D link_write_bytes_global;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#endif</span><br><span>             }</span><br><span>  =
+       }</span><br><span> </span><br><span>diff --git a/src/openvpn/init.c =
+b/src/openvpn/init.c</span><br><span>index aa2611d..1bdaf27 100644</span><b=
+r><span>--- a/src/openvpn/init.c</span><br><span>+++ b/src/openvpn/init.c</=
+span><br><span>@@ -44,7 +44,6 @@</span><br><span> #include &quot;ps.h&quot;=
+</span><br><span> #include &quot;lladdr.h&quot;</span><br><span> #include &=
+quot;ping.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#inc=
+lude &quot;mstats.h&quot;</span><br><span> #include &quot;ssl_verify.h&quot=
+;</span><br><span> #include &quot;ssl_ncp.h&quot;</span><br><span> #include=
+ &quot;tls_crypt.h&quot;</span><br><span>@@ -908,22 +907,6 @@</span><br><sp=
+an>     return false;</span><br><span> #endif</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#ifdef MSTATS_TEST</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        int i;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        mstats_open(&quot;/dev/shm/mstats.dat&quot;);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt=
+; 30; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            mmap_stats-=
+&gt;n_clients +=3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            mmap_stats-&gt;link_write_bytes +=3D 8;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            mmap_stats-&gt;link_read_bytes =
++=3D 16;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            s=
+leep(1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        mstats_close();</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return false;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span>     return true;</span><br><span> }<=
+/span><br><span> </span><br><span>@@ -1233,13 +1216,6 @@</span><br><span>  =
+           }</span><br><span>         }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTATS</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        if (c-&gt;first_time &amp;&amp=
+; c-&gt;options.memstats_fn)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       mstats_open(c-&gt;options.memstats_fn);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span> #ifdef ENABLE_SELINUX</span><br><span>         /* Apply a S=
+ELinux context in order to restrict what OpenVPN can do</span><br><span>   =
+       * to _only_ what it is supposed to do after initialization is comple=
+te</span><br><span>diff --git a/src/openvpn/mstats.c b/src/openvpn/mstats.c=
+</span><br><span>deleted file mode 100644</span><br><span>index bd6316c..00=
+00000</span><br><span>--- a/src/openvpn/mstats.c</span><br><span>+++ /dev/n=
+ull</span><br><span>@@ -1,124 +0,0 @@</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+ OpenVPN -- An application to securely tunnel IP networks</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- *             over a single TCP/UDP po=
+rt, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- *             session authentication and key exchange,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- *             packet encryp=
+tion, packet authentication, and</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">- *             packet compression.</span><br><span style=3D"colo=
 r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- *  This program is distributed in the hope that it will be useful,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *  but WITHOUT ANY WARR=
-ANTY; without even the implied warranty of</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOS=
-E.  See the</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  GNU Ge=
-neral Public License for more details.</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
-  You should have received a copy of the GNU General Public License along</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  with this program; =
-if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * Maintain usage stats in a =
-memory-mapped file</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */=
+);">- *  Copyright (C) 2002-2025 OpenVPN Inc &lt;sales@...515...&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">- *  This program is free software; you can redi=
+stribute it and/or modify</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- *  it under the terms of the GNU General Public License version 2</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">- *  as published by the Fr=
+ee Software Foundation.</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  This program =
+is distributed in the hope that it will be useful,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- *  but WITHOUT ANY WARRANTY; without even the=
+ implied warranty of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">- *  GNU General Public License f=
+or more details.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *  You should have rece=
+ived a copy of the GNU General Public License along</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- *  with this program; if not, see &lt;http=
+s://www.gnu.org/licenses/&gt;.</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- * Maintain usage stats in a memory-mapped file</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#include &quot;config.h&quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;s=
+yshead.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_MEMSTATS)=
 </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE_CONFIG_H</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#include &quot;config.h&quot;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#include &quot;syshead.h&quot;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defi=
-ned(ENABLE_MEMSTATS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;sys/mman.=
-h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#include &quot;error.h&quot;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;misc.h&quot;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;mstats.h&=
-quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#include &quot;memdbg.h&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-volatile struct mmap_stats *mmap_stats =3D NULL; /=
-* GLOBAL */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static cha=
-r mmap_fn[128];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-mstats_open(const char *fn)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    void *data;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    ssize_t stat;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    int fd;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  struct mmap_stats ms;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mmap_stats)=
- /* already called? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return;=
+e=3D"color: hsl(0, 100%, 40%);">-#include &lt;sys/mman.h&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#include &quot;error.h&quot;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#include &quot;misc.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &quot;mstats.h&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#include &quot;memdbg.h&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-volatile struct mmap_stats *mmap_stats =3D NULL; /* GLOBAL */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-static char mmap_fn[128];</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-mstats_open(const char *fn)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  void *data;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ssiz=
+e_t stat;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int fd;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct mmap_stats =
+ms;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (mmap_stats) /* already called? =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ /* verify that filename is not too long */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    if (strlen(fn) &gt;=3D sizeof(mmap_fn))</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quot;mstats_open: filenam=
+e too long&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    /* create file that will be memory m=
+apped */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fd =3D op=
+en(fn, O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    if (fd &lt; 0)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        msg(M_ERR, &quot;mstats_open: cannot open: %s&quot;=
+, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return;=
 </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
  style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    /* verify that filename is not too long */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if (strlen(fn) &gt;=3D sizeof=
-(mmap_fn))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quot;=
-mstats_open: filename too long&quot;);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* create file t=
-hat will be memory mapped */</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    fd =3D open(fn, O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (fd &lt; 0)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        msg(M_ERR, &quot;mstats_open: can=
-not open: %s&quot;, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    /* set the file to the correct size =
-to contain a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * st=
-ruct mmap_stats, and zero it */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    CLEAR(ms);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    ms.state =3D MSTATS_ACTIVE;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    stat =3D write(fd, &amp;ms, sizeof(ms));</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    if (stat !=3D sizeof(ms))</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        msg(M_ERR, &quot;mstats_open: write err=
-or: %s&quot;, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     close(fd);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    /* mmap the file */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    data =3D mmap(NULL, sizeof(struct mmap_stat=
-s), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    if (data =3D=3D MAP_FAILED)</span><br><span s=
+0, 100%, 40%);">-    /* set the file to the correct size to contain a</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-     * struct mmap_stats, a=
+nd zero it */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    CLEA=
+R(ms);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ms.state =
+=3D MSTATS_ACTIVE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ stat =3D write(fd, &amp;ms, sizeof(ms));</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (stat !=3D sizeof(ms))</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        msg(M_ERR, &quot;mstats_open: write error: %s&quot;, fn=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        close(fd);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    /* mmap the file */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    data =3D mmap(NULL, sizeof(struct mmap_stats), PROT_READ |=
+ PROT_WRITE, MAP_SHARED, fd, 0);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (data =3D=3D MAP_FAILED)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        msg(M_ERR, &quot;mstats_open: write error: %s&quot;, fn);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        close(fd);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    /* close the fd (mmap now controls the file) */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    if (close(fd))</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        msg(M_ERR, &quot;mstats_open: close error: %s&quot;=
+, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    /* save filename so we can delete it later */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    strcpy(mmap_fn, fn);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    /* save a global pointer to memory-map=
+ped region */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mmap=
+_stats =3D (struct mmap_stats *)data;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
+sg(M_INFO, &quot;memstats data will be written to %s&quot;, fn);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mstats_close(vo=
+id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    if (mmap_stats)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        mmap_stats-&gt;state =3D MSTATS_EXPIRED;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        if (munmap((void *)mm=
+ap_stats, sizeof(struct mmap_stats)))</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            msg(M_WARN | M_ERRNO, &quot;mstats_close: munmap error&quot=
+;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        platform_unlink(mmap_f=
+n);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        mmap_stats=
+ =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#endif /* if defined(ENABLE_MEMSTATS) */</span><br><span>diff --git =
+a/src/openvpn/mstats.h b/src/openvpn/mstats.h</span><br><span>deleted file =
+mode 100644</span><br><span>index c38b0f2..0000000</span><br><span>--- a/sr=
+c/openvpn/mstats.h</span><br><span>+++ /dev/null</span><br><span>@@ -1,51 +=
+0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- *  OpenVPN -- An application to s=
+ecurely tunnel IP networks</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- *             over a single TCP/UDP port, with support for SSL/TLS-ba=
+sed</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *             ses=
+sion authentication and key exchange,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- *             packet encryption, packet authentication, an=
+d</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *             packe=
+t compression.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">- *  Copyright (C) 2002-202=
+5 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+ This program is free software; you can redistribute it and/or modify</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- *  it under the terms of t=
+he GNU General Public License version 2</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">- *  as published by the Free Software Foundation.</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- *  This program is distributed in the hope that=
+ it will be useful,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+  but WITHOUT ANY WARRANTY; without even the implied warranty of</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">- *  MERCHANTABILITY or FITNESS F=
+OR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">- *  GNU General Public License for more details.</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">- *  You should have received a copy of the GNU General =
+Public License along</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+*  with this program; if not, see &lt;https://www.gnu.org/licenses/&gt;.</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Main=
+tain usage stats in a memory-mapped file</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if !defined(OPENVPN=
+_MEMSTATS_H) &amp;&amp; defined(ENABLE_MEMSTATS)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#define OPENVPN_MEMSTATS_H</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#include &quot;basic.h&quot;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* =
+this struct is mapped to the file */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-struct mmap_stats</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    count=
+er_type link_read_bytes; /* counter_type can be assumed to be a uint64_t */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    counter_type link=
+_write_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int =
+n_clients;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#define MSTATS_UNDEF   0</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#define MSTATS_ACTIVE  1</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MSTATS_EXPIRED 2</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int state;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-extern volatile struct mmap_stats *mmap_stats; /* GLOBAL */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-void mstats_open(const char *fn);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-void mstats_close(void);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endi=
+f /* if !defined(OPENVPN_MEMSTATS_H) &amp;&amp; defined(ENABLE_MEMSTATS) */=
+</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</sp=
+an><br><span>index 285671d..e243843 100644</span><br><span>--- a/src/openvp=
+n/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -37,=
+7 +37,6 @@</span><br><span> #include &quot;run_command.h&quot;</span><br><s=
+pan> #include &quot;otime.h&quot;</span><br><span> #include &quot;gremlin.h=
+&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;=
+mstats.h&quot;</span><br><span> #include &quot;ssl_verify.h&quot;</span><br=
+><span> #include &quot;ssl_ncp.h&quot;</span><br><span> #include &quot;vlan=
+.h&quot;</span><br><span>@@ -80,17 +79,6 @@</span><br><span> }</span><br><s=
+pan> #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-static inline void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-update_mstat_n_clients(const int n_clients)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#ifdef ENABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    if (mmap_stats)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        mm=
+ap_stats-&gt;n_clients =3D n_clients;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static bool</span=
+><br><span> learn_address_script(const struct multi_context *m, const struc=
+t multi_instance *mi, const char *op,</span><br><span>                     =
+ const struct mroute_addr *addr)</span><br><span>@@ -589,7 +577,6 @@</span>=
+<br><span> </span><br><span>     /* adjust current client connection count =
+*/</span><br><span>     m-&gt;n_clients +=3D mi-&gt;n_clients_delta;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    update_mstat_n_clients(m=
+-&gt;n_clients);</span><br><span>     mi-&gt;n_clients_delta =3D 0;</span><=
+br><span> </span><br><span>     /* prevent dangling pointers */</span><br><=
+span>@@ -2799,7 +2786,6 @@</span><br><span> </span><br><span>     /* increm=
+ent number of current authenticated clients */</span><br><span>     ++m-&gt=
+;n_clients;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    update=
+_mstat_n_clients(m-&gt;n_clients);</span><br><span>     --mi-&gt;n_clients_=
+delta;</span><br><span> </span><br><span> #ifdef ENABLE_MANAGEMENT</span><b=
+r><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><b=
+r><span>index 9c02a8c..ecf9374 100644</span><br><span>--- a/src/openvpn/opt=
+ions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -323,=
+9 +323,6 @@</span><br><span>     &quot;                  via a VRF present =
+on the system.\n&quot;</span><br><span> #endif</span><br><span>     &quot;-=
+-txqueuelen n  : Set the tun/tap TX queue length to n (Linux only).\n&quot;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTAT=
+S</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;--memstats=
+ file : Write live usage stats to memory mapped binary file.\n&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>     =
+&quot;--mlock         : Disable Paging -- ensures key material and tunnel\n=
+&quot;</span><br><span>     &quot;                  data will never be writ=
+ten to disk.\n&quot;</span><br><span>     &quot;--up cmd        : Run comma=
+nd cmd after successful tun device open.\n&quot;</span><br><span>@@ -6333,1=
+3 +6330,6 @@</span><br><span>         options-&gt;log =3D true;</span><br><=
+span>         redirect_stdout_stderr(p[1], true);</span><br><span>     }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTATS</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (streq(p[0]=
+, &quot;memstats&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span s=
 tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        msg(M_ERR, &quot;mstats_open: write error: %s&q=
-uot;, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        clo=
-se(fd);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    /* close the fd (mmap now controls the file) */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (close(fd))</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        msg(M_ERR, &quot;mstats_open: close er=
-ror: %s&quot;, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    /* save filename so we can delete i=
-t later */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    strcpy(=
-mmap_fn, fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    /* save a global pointer =
-to memory-mapped region */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    mmap_stats =3D (struct mmap_stats *)data;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    msg(M_INFO, &quot;memstats data will be written to %s&quot;, fn=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ms=
-tats_close(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mmap_stats)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        mmap_stats-&gt;state =3D MSTATS_EXP=
-IRED;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (munm=
-ap((void *)mmap_stats, sizeof(struct mmap_stats)))</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            msg(M_WARN | M_ERRNO, &quot;mstats_close: munm=
-ap error&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        platform_=
-unlink(mmap_fn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   mmap_stats =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#endif /* if defined(ENABLE_MEMSTATS) */</span><br><spa=
-n>diff --git a/src/openvpn/mstats.h b/src/openvpn/mstats.h</span><br><span>=
-deleted file mode 100644</span><br><span>index c38b0f2..0000000</span><br><=
-span>--- a/src/openvpn/mstats.h</span><br><span>+++ /dev/null</span><br><sp=
-an>@@ -1,51 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  OpenVPN -- An app=
-lication to securely tunnel IP networks</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- *             over a single TCP/UDP port, with support f=
-or SSL/TLS-based</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *   =
-          session authentication and key exchange,</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- *             packet encryption, packet authe=
-ntication, and</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *     =
-        packet compression.</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  Copyright=
- (C) 2002-2025 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- *  This program is free software; you can redistribute it and/or=
- modify</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  it under t=
-he terms of the GNU General Public License version 2</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *  as published by the Free Software Found=
-ation.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- *  This program is distributed in=
- the hope that it will be useful,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- *  but WITHOUT ANY WARRANTY; without even the implied warranty=
- of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  MERCHANTABILIT=
-Y or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- *  GNU General Public License for more details.<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- *  You should have received a copy of th=
-e GNU General Public License along</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- *  with this program; if not, see &lt;https://www.gnu.org/lic=
-enses/&gt;.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * Maintain usage stats in a memory-mapped file</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if !d=
-efined(OPENVPN_MEMSTATS_H) &amp;&amp; defined(ENABLE_MEMSTATS)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_MEMSTATS_H</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#include &quot;basic.h&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-/* this struct is mapped to the file */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-struct mmap_stats</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    counter_type link_read_bytes; /* counter_type can be assumed to be=
- a uint64_t */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cou=
-nter_type link_write_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    int n_clients;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MSTATS_UND=
-EF   0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MSTATS_=
-ACTIVE  1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MSTA=
-TS_EXPIRED 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int s=
-tate;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-extern volatile struct mmap_stats *mmap_stats; /* GLOBAL=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void mstats_open(const char *fn);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-void mstats_close(void);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#endif /* if !defined(OPENVPN_MEMSTATS_H) &amp;&amp; defined(ENA=
-BLE_MEMSTATS) */</span><br><span>diff --git a/src/openvpn/multi.c b/src/ope=
-nvpn/multi.c</span><br><span>index 285671d..e243843 100644</span><br><span>=
---- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><=
-br><span>@@ -37,7 +37,6 @@</span><br><span> #include &quot;run_command.h&qu=
-ot;</span><br><span> #include &quot;otime.h&quot;</span><br><span> #include=
- &quot;gremlin.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#include &quot;mstats.h&quot;</span><br><span> #include &quot;ssl_verify.h=
-&quot;</span><br><span> #include &quot;ssl_ncp.h&quot;</span><br><span> #in=
-clude &quot;vlan.h&quot;</span><br><span>@@ -80,17 +79,6 @@</span><br><span=
-> }</span><br><span> #endif</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-static inline void</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-update_mstat_n_clients(const int n_clients)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEMSTATS</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    if (mmap_stats)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        mmap_stats-&gt;n_clients =3D n_clients;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> s=
-tatic bool</span><br><span> learn_address_script(const struct multi_context=
- *m, const struct multi_instance *mi, const char *op,</span><br><span>     =
-                 const struct mroute_addr *addr)</span><br><span>@@ -589,7 =
-+577,6 @@</span><br><span> </span><br><span>     /* adjust current client c=
-onnection count */</span><br><span>     m-&gt;n_clients +=3D mi-&gt;n_clien=
-ts_delta;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    update_m=
-stat_n_clients(m-&gt;n_clients);</span><br><span>     mi-&gt;n_clients_delt=
-a =3D 0;</span><br><span> </span><br><span>     /* prevent dangling pointer=
-s */</span><br><span>@@ -2799,7 +2786,6 @@</span><br><span> </span><br><spa=
-n>     /* increment number of current authenticated clients */</span><br><s=
-pan>     ++m-&gt;n_clients;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    update_mstat_n_clients(m-&gt;n_clients);</span><br><span>     --m=
-i-&gt;n_clients_delta;</span><br><span> </span><br><span> #ifdef ENABLE_MAN=
-AGEMENT</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/op=
-tions.c</span><br><span>index 9c02a8c..ecf9374 100644</span><br><span>--- a=
-/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><b=
-r><span>@@ -323,9 +323,6 @@</span><br><span>     &quot;                  vi=
-a a VRF present on the system.\n&quot;</span><br><span> #endif</span><br><s=
-pan>     &quot;--txqueuelen n  : Set the tun/tap TX queue length to n (Linu=
-x only).\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifde=
-f ENABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-&quot;--memstats file : Write live usage stats to memory mapped binary file=
-.\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span=
-><br><span>     &quot;--mlock         : Disable Paging -- ensures key mater=
-ial and tunnel\n&quot;</span><br><span>     &quot;                  data wi=
-ll never be written to disk.\n&quot;</span><br><span>     &quot;--up cmd   =
-     : Run command cmd after successful tun device open.\n&quot;</span><br>=
-<span>@@ -6333,13 +6330,6 @@</span><br><span>         options-&gt;log =3D t=
-rue;</span><br><span>         redirect_stdout_stderr(p[1], true);</span><br=
-><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef E=
-NABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    els=
-e if (streq(p[0], &quot;memstats&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        VERIFY_PERMISSION(OPT_P_GENERAL=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt=
-;memstats_fn =3D p[1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
-r><span>     else if (streq(p[0], &quot;mlock&quot;) &amp;&amp; !p[1])</spa=
-n><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL=
-);</span><br><span>diff --git a/src/openvpn/options.h b/src/openvpn/options=
-.h</span><br><span>index 125e524..9d2ff9f 100644</span><br><span>--- a/src/=
-openvpn/options.h</span><br><span>+++ b/src/openvpn/options.h</span><br><sp=
-an>@@ -336,10 +336,6 @@</span><br><span> </span><br><span>     bool mtu_tes=
-t;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-ifdef ENABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    char *memstats_fn;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an>     bool mlock;</span><br><span> </span><br><span>     int keepalive_pi=
-ng; /* a proxy for ping/ping-restart */</span><br><span>diff --git a/src/op=
-envpn/syshead.h b/src/openvpn/syshead.h</span><br><span>index 26a553b..9004=
-5a9 100644</span><br><span>--- a/src/openvpn/syshead.h</span><br><span>+++ =
-b/src/openvpn/syshead.h</span><br><span>@@ -528,13 +528,6 @@</span><br><spa=
-n> #define USE_COMP</span><br><span> #endif</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- * Enable --memstats option</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#ifdef TARGET_LINUX</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#define ENABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span> #ifdef _MSC_VER</span><br><span> #ifndef PATH_MAX</span><br><sp=
-an> #define PATH_MAX MAX_PATH</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail">ch=
-ange 1329</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
+sl(0, 100%, 40%);">-        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;memstats_fn =3D=
+ p[1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>     els=
+e if (streq(p[0], &quot;mlock&quot;) &amp;&amp; !p[1])</span><br><span>    =
+ {</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><sp=
+an>diff --git a/src/openvpn/options.h b/src/openvpn/options.h</span><br><sp=
+an>index 125e524..9d2ff9f 100644</span><br><span>--- a/src/openvpn/options.=
+h</span><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -336,10 +3=
+36,6 @@</span><br><span> </span><br><span>     bool mtu_test;</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MEM=
+STATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *memsta=
+ts_fn;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     bool mlo=
+ck;</span><br><span> </span><br><span>     int keepalive_ping; /* a proxy f=
+or ping/ping-restart */</span><br><span>diff --git a/src/openvpn/syshead.h =
+b/src/openvpn/syshead.h</span><br><span>index 26a553b..90045a9 100644</span=
+><br><span>--- a/src/openvpn/syshead.h</span><br><span>+++ b/src/openvpn/sy=
+shead.h</span><br><span>@@ -528,13 +528,6 @@</span><br><span> #define USE_C=
+OMP</span><br><span> #endif</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * Enable --memstats option</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef =
+TARGET_LINUX</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define E=
+NABLE_MEMSTATS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #ifd=
+ef _MSC_VER</span><br><span> #ifndef PATH_MAX</span><br><span> #define PATH=
+_MAX MAX_PATH</span><br><span></span><br></pre><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail">change 1329</a>. T=
+o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
+rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
+type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
+itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1329?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I5f57e7bf52e3f6289462ef05e1f=
@@ -997,5 +990,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---qSlBlXo7VHQ=--
+--ej4BRHRWabM=--
 
