@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Oct 2025 11:48:44 +0000
-In-Reply-To: <gerrit.1761737448000.I70e221ff5d9752fec17bad18fd41dcf188ae8fbc@...2715...>
-References: <gerrit.1761737448000.I70e221ff5d9752fec17bad18fd41dcf188ae8fbc@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <293af57cba2cc31607665874fd7260bb6043e9e5-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 29 Oct 2025 12:53:35 +0000
+In-Reply-To: <gerrit.1761581200000.Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9@...2715...>
+References: <gerrit.1761581200000.Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <c56ce5bc4b9e2921fcea956a86bff77895fc0981-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EWRmih9yJtg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Ensure that
- get_sigtype always return non-NULL
+Content-Type: multipart/alternative; boundary="C8OY2ulwqQA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: PUSH_UPDATE server:
+ invalid read bug-fix and unit-tests improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,157 +19,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: mrbff <marco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---EWRmih9yJtg=
+--C8OY2ulwqQA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: mrbff, plaisthos.
 
-Hello flichtenheld,=20
+flichtenheld has posted comments on this change by mrbff. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1316?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1325?usp=3Demail
-
-to look at the new patch set (#2).
-
-
-Change subject: Ensure that get_sigtype always return non-NULL
+Change subject: PUSH_UPDATE server: invalid read bug-fix and unit-tests imp=
+rovements
 ......................................................................
 
-Ensure that get_sigtype always return non-NULL
 
-There is a theoretical possibility that OpenSSL returns an NID that
-OBJ_nid2sn cannot resolve and thus the function return NULL.
+Patch Set 3: Code-Review-1
 
-This is however extremely unlikely. But we still cover this case now
-to make linters/code checker happy and avoid similar false positives
-in the future.
+(2 comments)
 
-Reported-by: Joshua Rogers <contact@...2949...>
-Found-by: ZeroPath (https://zeropath.com/)
-Change-Id: I70e221ff5d9752fec17bad18fd41dcf188ae8fbc
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M src/openvpn/ssl_openssl.c
-1 file changed, 11 insertions(+), 1 deletion(-)
+File tests/unit_tests/openvpn/test_push_update_msg.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1316/comment/ad0ce4ab_16f525ad?usp=3D=
+email :
+PS3, Line 140:     i++;
+i seems unused?
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/1325/2
+http://gerrit.openvpn.net/c/openvpn/+/1316/comment/b1ef2d25_51152e2b?usp=3D=
+email :
+PS3, Line 409: #define expect_control_channel_strings()                    =
+         \
+Just give the macro an argument instead of using global res.
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index d997141..a4a6863 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -2408,7 +2408,17 @@
-             return "(error getting name)";
 
-         default:
--            return OBJ_nid2sn(nid);
-+        {
-+            const char *type =3D OBJ_nid2sn(nid);
-+            if (!type)
-+            {
-+                /* This is unlikely to ever happen as OpenSSL is unlikely =
-to
-+                 * return an NID it cannot resolve itself but we silence
-+                 * linter/code checkers here */
-+                type =3D "(error getting name, OBJ_nid2sn failed)";
-+            }
-+            return type;
-+        }
-     }
- }
- #endif /* ifndef LIBRESSL_VERSION_NUMBER */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1325?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I70e221ff5d9752fec17bad18fd41dcf188ae8fbc
-Gerrit-Change-Number: 1325
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: Idba419681fe3ccc4e6e2f6ce7592332dcff62cd9
+Gerrit-Change-Number: 1316
+Gerrit-PatchSet: 3
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Wed, 29 Oct 2025 12:53:35 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---EWRmih9yJtg=
+--C8OY2ulwqQA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1325?usp=3Demail">View Chan=
-ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
-white-space: pre-wrap;">Ensure that get_sigtype always return non-NULL<br><=
-br>There is a theoretical possibility that OpenSSL returns an NID that<br>O=
-BJ_nid2sn cannot resolve and thus the function return NULL.<br><br>This is =
-however extremely unlikely. But we still cover this case now<br>to make lin=
-ters/code checker happy and avoid similar false positives<br>in the future.=
-<br><br>Reported-by: Joshua Rogers &lt;contact@...2949...&gt;<br>Found-by: =
-ZeroPath (https://zeropath.com/)<br>Change-Id: I70e221ff5d9752fec17bad18fd4=
-1dcf188ae8fbc<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---=
-<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 11 insertions(+), 1 dele=
-tion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
-openvpn refs/changes/25/1325/2</pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl=
-.c b/src/openvpn/ssl_openssl.c</span><br><span>index d997141..a4a6863 10064=
-4</span><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src=
-/openvpn/ssl_openssl.c</span><br><span>@@ -2408,7 +2408,17 @@</span><br><sp=
-an>             return &quot;(error getting name)&quot;;</span><br><span> <=
-/span><br><span>         default:</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            return OBJ_nid2sn(nid);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            const char *type =3D OBJ_nid2sn(nid);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!type)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                /* This is unl=
-ikely to ever happen as OpenSSL is unlikely to</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                 * return an NID it cannot resol=
-ve itself but we silence</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                 * linter/code checkers here */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                type =3D &quot;(error get=
-ting name, OBJ_nid2sn failed)&quot;;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            return type;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span>     }</span><br><span> }</span><=
-br><span> #endif /* ifndef LIBRESSL_VERSION_NUMBER */</span><br><span></spa=
-n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1325?usp=3Demail">change 1325</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dema=
-il">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1325?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+rently required from: mrbff, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/=
+test_push_update_msg.c:</p><ul style=3D"list-style: none; padding: 0;"><li =
+style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;">=
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1316/comment/ad0ce4ab_16f5=
+25ad?usp=3Demail">Patch Set #3, Line 140:</a> <code style=3D"font-family:mo=
+nospace,monospace">    i++;</code></p><p class=3D"blocks" style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">i seems unused?</p></li><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1316/comment/b1ef2d25_51152e2b?us=
+p=3Demail">Patch Set #3, Line 409:</a> <code style=3D"font-family:monospace=
+,monospace">#define expect_control_channel_strings()                       =
+      \</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">Just give the macro an argument instead of using global =
+res.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1316?usp=3Demail">change 1316</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1316?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I70e221ff5d9752fec17bad18fd4=
-1dcf188ae8fbc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1325 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idba419681fe3ccc4e6e2f6ce759=
+2332dcff62cd9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1316 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Oct 2025 12:53:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---EWRmih9yJtg=--
+--C8OY2ulwqQA=--
 
