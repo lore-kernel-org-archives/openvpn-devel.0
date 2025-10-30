@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 30 Oct 2025 21:03:55 +0000
+Date: Thu, 30 Oct 2025 21:03:52 +0000
 In-Reply-To: <gerrit.1761756587000.I830b6b27fc3efe707e103ba629c4bfe3796a9cbe@...2715...>
 References: <gerrit.1761756587000.I830b6b27fc3efe707e103ba629c4bfe3796a9cbe@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <69a689e5eaa31af2b4c772000597e7283d0a53f7-HTML@...2715...>
+Message-ID: <69a689e5eaa31af2b4c772000597e7283d0a53f7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xiT+ASWRUbU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="9tF5HpDiacc="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Ensure return value
  of snprintf is correctly checked
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xiT+ASWRUbU=
+--9tF5HpDiacc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-30?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1330?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: Ensure return value of snprintf is correctly checked
 ......................................................................
@@ -63,7 +67,7 @@ M src/openvpn/win32.c
 8 files changed, 21 insertions(+), 16 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/1330/2
 
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
 index 2e328c3..89f0ab9 100644
@@ -239,7 +243,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1330?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I830b6b27fc3efe707e103ba629c4bfe3796a9cbe
@@ -250,170 +254,173 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xiT+ASWRUbU=
+--9tF5HpDiacc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1330?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Ensure return value of snprintf is correctly che=
-cked<br><br>Commit 130548fe4d change the usages of openvpn_snprintf to snpr=
-intf. When<br>doing that conversion I did not notice that, despite the func=
-tion name,<br>openvpn_snprintf had a different semantic for the return valu=
-e.<br><br>This commit goes through all the usages of snprintf and ensures t=
-hat<br>the return is correctly checked for overruns.<br><br>Reported-by: Jo=
-shua Rogers &lt;contact@...2949...&gt;<br>Found-by: ZeroPath (https://zerop=
-ath.com/)<br>Change-Id: I830b6b27fc3efe707e103ba629c4bfe3796a9cbe<br>Signed=
--off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Gert Doering &lt=
-;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/=
-1330<br>Message-Id: &lt;20251030193638.1010-1-gert@...1296...&gt;<br>URL: h=
-ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34063.ht=
-ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/o=
-penvpn/crypto_mbedtls.c<br>M src/openvpn/dns.c<br>M src/openvpn/env_set.c<b=
-r>M src/openvpn/platform.c<br>M src/openvpn/ssl_ncp.c<br>M src/openvpn/ssl_=
-verify.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/win32.c<br>=
-8 files changed, 21 insertions(+), 16 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c=
-</span><br><span>index 2e328c3..89f0ab9 100644</span><br><span>--- a/src/op=
-envpn/crypto_mbedtls.c</span><br><span>+++ b/src/openvpn/crypto_mbedtls.c</=
-span><br><span>@@ -127,7 +127,7 @@</span><br><span> {</span><br><span>     =
-char prefix[256];</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    if (!snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, =
-func, line))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-(snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, func, line) &gt;=3D si=
-zeof(prefix))</span><br><span>     {</span><br><span>         return mbed_l=
-og_err(flags, errval, func);</span><br><span>     }</span><br><span>@@ -243=
-,11 +243,11 @@</span><br><span>     char header[1000 + 1] =3D { 0 };</span>=
-<br><span>     char footer[1000 + 1] =3D { 0 };</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    if (!snprintf(header, sizeo=
-f(header), &quot;-----BEGIN %s-----\n&quot;, name))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(header, sizeof(header), =
-&quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof(header))</span><br><=
-span>     {</span><br><span>         return false;</span><br><span>     }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!snprintf(foote=
-r, sizeof(footer), &quot;-----END %s-----\n&quot;, name))</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(footer, sizeof(foote=
-r), &quot;-----END %s-----\n&quot;, name) &gt;=3D sizeof(footer))</span><br=
-><span>     {</span><br><span>         return false;</span><br><span>     }=
-</span><br><span>@@ -280,11 +280,11 @@</span><br><span>     char header[100=
-0 + 1] =3D { 0 };</span><br><span>     char footer[1000 + 1] =3D { 0 };</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(!snprintf(header, sizeof(header), &quot;-----BEGIN %s-----&quot;, name))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(head=
-er, sizeof(header), &quot;-----BEGIN %s-----&quot;, name) &gt;=3D sizeof(he=
-ader))</span><br><span>     {</span><br><span>         return false;</span>=
-<br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-f (!snprintf(footer, sizeof(footer), &quot;-----END %s-----&quot;, name))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(foot=
-er, sizeof(footer), &quot;-----END %s-----&quot;, name) &gt;=3D sizeof(foot=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by plaisthos.<=
+/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1330?usp=3Demail">Vi=
+ew Change</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">Ensure return value of snprintf is =
+correctly checked<br><br>Commit 130548fe4d change the usages of openvpn_snp=
+rintf to snprintf. When<br>doing that conversion I did not notice that, des=
+pite the function name,<br>openvpn_snprintf had a different semantic for th=
+e return value.<br><br>This commit goes through all the usages of snprintf =
+and ensures that<br>the return is correctly checked for overruns.<br><br>Re=
+ported-by: Joshua Rogers &lt;contact@...2949...&gt;<br>Found-by: ZeroPath (=
+https://zeropath.com/)<br>Change-Id: I830b6b27fc3efe707e103ba629c4bfe3796a9=
+cbe<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Ger=
+t Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net=
+/c/openvpn/+/1330<br>Message-Id: &lt;20251030193638.1010-1-gert@...1296...&=
+gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...475...=
+t/msg34063.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>-=
+--<br>M src/openvpn/crypto_mbedtls.c<br>M src/openvpn/dns.c<br>M src/openvp=
+n/env_set.c<br>M src/openvpn/platform.c<br>M src/openvpn/ssl_ncp.c<br>M src=
+/openvpn/ssl_verify.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvp=
+n/win32.c<br>8 files changed, 21 insertions(+), 16 deletions(-)<br><br></pr=
+e><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/30/1330/2</pre><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;"><span>diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn=
+/crypto_mbedtls.c</span><br><span>index 2e328c3..89f0ab9 100644</span><br><=
+span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/openvpn/c=
+rypto_mbedtls.c</span><br><span>@@ -127,7 +127,7 @@</span><br><span> {</spa=
+n><br><span>     char prefix[256];</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (!snprintf(prefix, sizeof(prefix), &=
+quot;%s:%d&quot;, func, line))</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, func=
+, line) &gt;=3D sizeof(prefix))</span><br><span>     {</span><br><span>    =
+     return mbed_log_err(flags, errval, func);</span><br><span>     }</span=
+><br><span>@@ -243,11 +243,11 @@</span><br><span>     char header[1000 + 1]=
+ =3D { 0 };</span><br><span>     char footer[1000 + 1] =3D { 0 };</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!snpr=
+intf(header, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(header, =
+sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof(head=
 er))</span><br><span>     {</span><br><span>         return false;</span><b=
-r><span>     }</span><br><span>diff --git a/src/openvpn/dns.c b/src/openvpn=
-/dns.c</span><br><span>index d2ff670..539023f 100644</span><br><span>--- a/=
-src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@=
-@ -485,11 +485,13 @@</span><br><span> </span><br><span>     if (j &lt; 0)</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        name_ok =3D snprintf(name, sizeof(name), format, i);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        const int ret =3D snprintf=
-(name, sizeof(name), format, i);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        name_ok =3D (ret &gt; 0 &amp;&amp; ret &lt; sizeof(nam=
-e));</span><br><span>     }</span><br><span>     else</span><br><span>     =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        name_ok =3D =
-snprintf(name, sizeof(name), format, i, j);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        const int ret =3D snprintf(name, sizeof(nam=
-e), format, i, j);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       name_ok =3D (ret &gt; 0 &amp;&amp; ret &lt; sizeof(name));</span><br=
-><span>     }</span><br><span> </span><br><span>     if (!name_ok)</span><b=
-r><span>diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><b=
-r><span>index 2ae71ab..1311e6f 100644</span><br><span>--- a/src/openvpn/env=
-_set.c</span><br><span>+++ b/src/openvpn/env_set.c</span><br><span>@@ -334,=
-7 +334,7 @@</span><br><span>     strcpy(tmpname, name);</span><br><span>   =
-  while (NULL !=3D env_set_get(es, tmpname) &amp;&amp; counter &lt; 1000)</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        ASSERT(snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, coun=
-ter));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSER=
-T(snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, counter) &lt; tmp=
-name_len);</span><br><span>         counter++;</span><br><span>     }</span=
-><br><span>     if (counter &lt; 1000)</span><br><span>diff --git a/src/ope=
-nvpn/platform.c b/src/openvpn/platform.c</span><br><span>index a1ffdaf..a61=
-2237 100644</span><br><span>--- a/src/openvpn/platform.c</span><br><span>++=
-+ b/src/openvpn/platform.c</span><br><span>@@ -550,8 +550,9 @@</span><br><s=
-pan>     {</span><br><span>         ++attempts;</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        if (!snprintf(fname, si=
-zeof(fname), fname_fmt, max_prefix_len, prefix,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                      (unsigned long)get_random()=
-, (unsigned long)get_random()))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        const int ret =3D snprintf(fname, sizeof(fname), fname_=
-fmt, max_prefix_len, prefix,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                                 (unsigned long)get_random(), (uns=
-igned long)get_random());</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        if (ret &lt; 0 || ret &gt;=3D sizeof(fname))</span><br><span>=
-         {</span><br><span>             msg(M_WARN, &quot;ERROR: temporary =
-filename too long&quot;);</span><br><span>             return NULL;</span><=
-br><span>diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c</span><=
-br><span>index 790e50f..d4519b0 100644</span><br><span>--- a/src/openvpn/ss=
-l_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.c</span><br><span>@@ -198=
-,7 +198,7 @@</span><br><span>     size_t newlen =3D strlen(o-&gt;ncp_cipher=
-s) + 1 + strlen(ciphername) + 1;</span><br><span>     char *ncp_ciphers =3D=
- gc_malloc(newlen, false, &amp;o-&gt;gc);</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(snprintf(ncp_ciphers, newl=
-en, &quot;%s:%s&quot;, o-&gt;ncp_ciphers, ciphername));</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    ASSERT(snprintf(ncp_ciphers, newlen=
-, &quot;%s:%s&quot;, o-&gt;ncp_ciphers, ciphername) &lt; newlen);</span><br=
-><span>     o-&gt;ncp_ciphers =3D ncp_ciphers;</span><br><span> }</span><br=
-><span> </span><br><span>diff --git a/src/openvpn/ssl_verify.c b/src/openvp=
-n/ssl_verify.c</span><br><span>index a16f5fa..a11003c 100644</span><br><spa=
-n>--- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/openvpn/ssl_veri=
-fy.c</span><br><span>@@ -548,7 +548,7 @@</span><br><span>         goto clea=
-nup;</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    if (!snprintf(fn, sizeof(fn), &quot;%s%c%s&quot=
-;, crl_dir, PATH_SEPARATOR, serial))</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (snprintf(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_d=
-ir, PATH_SEPARATOR, serial) &gt;=3D sizeof(fn))</span><br><span>     {</spa=
-n><br><span>         msg(D_HANDSHAKE, &quot;VERIFY CRL: filename overflow&q=
-uot;);</span><br><span>         goto cleanup;</span><br><span>diff --git a/=
-src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><=
-br><span>index 472eb49..9e2aa19 100644</span><br><span>--- a/src/openvpn/ss=
-l_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</=
-span><br><span>@@ -85,8 +85,9 @@</span><br><span> </span><br><span>        =
- ret =3D mbedtls_x509_crt_verify_info(errstr, sizeof(errstr) - 1, &quot;&qu=
-ot;, *flags);</span><br><span>         if (ret &lt;=3D 0</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; !snprintf(errstr,=
- sizeof(errstr), &quot;Could not retrieve error string, flags=3D%&quot; PRI=
-x32,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-        *flags))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         &amp;&amp; snprintf(errstr, sizeof(errstr), &quot;Could not retrie=
-ve error string, flags=3D%&quot; PRIx32,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                        *flags)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                   &gt;=3D sizeof(errstr)=
-)</span><br><span>         {</span><br><span>             errstr[0] =3D &#3=
-9;\0&#39;;</span><br><span>         }</span><br><span>diff --git a/src/open=
-vpn/win32.c b/src/openvpn/win32.c</span><br><span>index 3c11ec3..df29dd7 10=
-0644</span><br><span>--- a/src/openvpn/win32.c</span><br><span>+++ b/src/op=
-envpn/win32.c</span><br><span>@@ -881,8 +881,9 @@</span><br><span>     char=
- force_path[256];</span><br><span>     char *sysroot =3D get_win_sys_path()=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  if (!snprintf(force_path, sizeof(force_path), &quot;PATH=3D%s\\System32;%=
-s;%s\\System32\\Wbem&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                  sysroot, sysroot, sysroot))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(force_path, sizeof(force=
-_path), &quot;PATH=3D%s\\System32;%s;%s\\System32\\Wbem&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                 sysroot, sysroo=
-t, sysroot)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-&gt;=3D sizeof(force_path))</span><br><span>     {</span><br><span>        =
- msg(M_WARN, &quot;env_block: default path truncated to %s&quot;, force_pat=
-h);</span><br><span>     }</span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1330?usp=3Demail">chang=
-e 1330</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1330?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+r><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(!snprintf(footer, sizeof(footer), &quot;-----END %s-----\n&quot;, name))</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(foot=
+er, sizeof(footer), &quot;-----END %s-----\n&quot;, name) &gt;=3D sizeof(fo=
+oter))</span><br><span>     {</span><br><span>         return false;</span>=
+<br><span>     }</span><br><span>@@ -280,11 +280,11 @@</span><br><span>    =
+ char header[1000 + 1] =3D { 0 };</span><br><span>     char footer[1000 + 1=
+] =3D { 0 };</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    if (!snprintf(header, sizeof(header), &quot;-----BEGIN %s-----=
+&quot;, name))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (snprintf(header, sizeof(header), &quot;-----BEGIN %s-----&quot;, name) &=
+gt;=3D sizeof(header))</span><br><span>     {</span><br><span>         retu=
+rn false;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (!snprintf(footer, sizeof(footer), &quot;-----END %s-----=
+&quot;, name))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (snprintf(footer, sizeof(footer), &quot;-----END %s-----&quot;, name) &gt=
+;=3D sizeof(footer))</span><br><span>     {</span><br><span>         return=
+ false;</span><br><span>     }</span><br><span>diff --git a/src/openvpn/dns=
+.c b/src/openvpn/dns.c</span><br><span>index d2ff670..539023f 100644</span>=
+<br><span>--- a/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</=
+span><br><span>@@ -485,11 +485,13 @@</span><br><span> </span><br><span>    =
+ if (j &lt; 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        name_ok =3D snprintf(name, sizeof(name), format, i)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const int =
+ret =3D snprintf(name, sizeof(name), format, i);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        name_ok =3D (ret &gt; 0 &amp;&amp; ret=
+ &lt; sizeof(name));</span><br><span>     }</span><br><span>     else</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    name_ok =3D snprintf(name, sizeof(name), format, i, j);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        const int ret =3D snprintf(=
+name, sizeof(name), format, i, j);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        name_ok =3D (ret &gt; 0 &amp;&amp; ret &lt; sizeof(n=
+ame));</span><br><span>     }</span><br><span> </span><br><span>     if (!n=
+ame_ok)</span><br><span>diff --git a/src/openvpn/env_set.c b/src/openvpn/en=
+v_set.c</span><br><span>index 2ae71ab..1311e6f 100644</span><br><span>--- a=
+/src/openvpn/env_set.c</span><br><span>+++ b/src/openvpn/env_set.c</span><b=
+r><span>@@ -334,7 +334,7 @@</span><br><span>     strcpy(tmpname, name);</sp=
+an><br><span>     while (NULL !=3D env_set_get(es, tmpname) &amp;&amp; coun=
+ter &lt; 1000)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        ASSERT(snprintf(tmpname, tmpname_len, &quot;%s_%u&q=
+uot;, name, counter));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        ASSERT(snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, c=
+ounter) &lt; tmpname_len);</span><br><span>         counter++;</span><br><s=
+pan>     }</span><br><span>     if (counter &lt; 1000)</span><br><span>diff=
+ --git a/src/openvpn/platform.c b/src/openvpn/platform.c</span><br><span>in=
+dex a1ffdaf..a612237 100644</span><br><span>--- a/src/openvpn/platform.c</s=
+pan><br><span>+++ b/src/openvpn/platform.c</span><br><span>@@ -550,8 +550,9=
+ @@</span><br><span>     {</span><br><span>         ++attempts;</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!sn=
+printf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                      (unsigned l=
+ong)get_random(), (unsigned long)get_random()))</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        const int ret =3D snprintf(fname, sizeo=
+f(fname), fname_fmt, max_prefix_len, prefix,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                                 (unsigned long)ge=
+t_random(), (unsigned long)get_random());</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        if (ret &lt; 0 || ret &gt;=3D sizeof(fname))<=
+/span><br><span>         {</span><br><span>             msg(M_WARN, &quot;E=
+RROR: temporary filename too long&quot;);</span><br><span>             retu=
+rn NULL;</span><br><span>diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/s=
+sl_ncp.c</span><br><span>index 790e50f..d4519b0 100644</span><br><span>--- =
+a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.c</span><=
+br><span>@@ -198,7 +198,7 @@</span><br><span>     size_t newlen =3D strlen(=
+o-&gt;ncp_ciphers) + 1 + strlen(ciphername) + 1;</span><br><span>     char =
+*ncp_ciphers =3D gc_malloc(newlen, false, &amp;o-&gt;gc);</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(snprintf(n=
+cp_ciphers, newlen, &quot;%s:%s&quot;, o-&gt;ncp_ciphers, ciphername));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(snprintf(ncp=
+_ciphers, newlen, &quot;%s:%s&quot;, o-&gt;ncp_ciphers, ciphername) &lt; ne=
+wlen);</span><br><span>     o-&gt;ncp_ciphers =3D ncp_ciphers;</span><br><s=
+pan> }</span><br><span> </span><br><span>diff --git a/src/openvpn/ssl_verif=
+y.c b/src/openvpn/ssl_verify.c</span><br><span>index a16f5fa..a11003c 10064=
+4</span><br><span>--- a/src/openvpn/ssl_verify.c</span><br><span>+++ b/src/=
+openvpn/ssl_verify.c</span><br><span>@@ -548,7 +548,7 @@</span><br><span>  =
+       goto cleanup;</span><br><span>     }</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    if (!snprintf(fn, sizeof(fn), &=
+quot;%s%c%s&quot;, crl_dir, PATH_SEPARATOR, serial))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(fn, sizeof(fn), &quot;%s=
+%c%s&quot;, crl_dir, PATH_SEPARATOR, serial) &gt;=3D sizeof(fn))</span><br>=
+<span>     {</span><br><span>         msg(D_HANDSHAKE, &quot;VERIFY CRL: fi=
+lename overflow&quot;);</span><br><span>         goto cleanup;</span><br><s=
+pan>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_=
+mbedtls.c</span><br><span>index 472eb49..9e2aa19 100644</span><br><span>---=
+ a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_v=
+erify_mbedtls.c</span><br><span>@@ -85,8 +85,9 @@</span><br><span> </span><=
+br><span>         ret =3D mbedtls_x509_crt_verify_info(errstr, sizeof(errst=
+r) - 1, &quot;&quot;, *flags);</span><br><span>         if (ret &lt;=3D 0</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; =
+!snprintf(errstr, sizeof(errstr), &quot;Could not retrieve error string, fl=
+ags=3D%&quot; PRIx32,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                         *flags))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            &amp;&amp; snprintf(errstr, sizeof(errstr), &quot=
+;Could not retrieve error string, flags=3D%&quot; PRIx32,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                        *flags)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                   &gt;=
+=3D sizeof(errstr))</span><br><span>         {</span><br><span>            =
+ errstr[0] =3D &#39;\0&#39;;</span><br><span>         }</span><br><span>dif=
+f --git a/src/openvpn/win32.c b/src/openvpn/win32.c</span><br><span>index 3=
+c11ec3..df29dd7 100644</span><br><span>--- a/src/openvpn/win32.c</span><br>=
+<span>+++ b/src/openvpn/win32.c</span><br><span>@@ -881,8 +881,9 @@</span><=
+br><span>     char force_path[256];</span><br><span>     char *sysroot =3D =
+get_win_sys_path();</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (!snprintf(force_path, sizeof(force_path), &quot;PAT=
+H=3D%s\\System32;%s;%s\\System32\\Wbem&quot;,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                  sysroot, sysroot, sysroot))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(force_pa=
+th, sizeof(force_path), &quot;PATH=3D%s\\System32;%s;%s\\System32\\Wbem&quo=
+t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+ sysroot, sysroot, sysroot)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        &gt;=3D sizeof(force_path))</span><br><span>     {</span><b=
+r><span>         msg(M_WARN, &quot;env_block: default path truncated to %s&=
+quot;, force_path);</span><br><span>     }</span><br><span></span><br></pre=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1330?us=
+p=3Demail">change 1330</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1330?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I830b6b27fc3efe707e103ba629c=
@@ -431,5 +438,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---xiT+ASWRUbU=--
+--9tF5HpDiacc=--
 
