@@ -1,11 +1,10 @@
+Date: Thu, 30 Oct 2025 17:17:06 +0100 (CET)
+Message-Id: <202510301617.59UGH6sD015466@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Thu, 30 Oct 2025 16:04:26 +0100
-Message-ID: <20251030150432.4689-1-gert@...1296...>
-In-Reply-To: <gerrit.1761813264000.I75ebf01641db4dcd07041e3b8b3fa8a632d07595@...2715...>
-References: <gerrit.1761813264000.I75ebf01641db4dcd07041e3b8b3fa8a632d07595@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] interactive.c: add the upper bound for
- startupdata size
+In-Reply-To: <20251030150432.4689-1-gert@...1296...>
+References: <20251030150432.4689-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: interactive.c: add the upper
+ bound for startupdata size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Looks good, reasonable hardening against unasked-for garbage coming in
+via the service pipe.  Have not tested this, but since you have so nicely
+made event logging beautiful again, evidence should be clearly visible.
 
-The size is passed from the limited-privileges process.
-This check ensures that the service won't allocate
-more than needed.
+Your patch has been applied to the master branch.
 
-Reported-by: Joshua Rogers <contact@...2949...>
-Found-by: ZeroPath (https://zeropath.com/)
+commit 37af2c953266a3ffd34b3fa95317bd995e985aec
+Author: Lev Stipakov
+Date:   Thu Oct 30 16:04:26 2025 +0100
 
-Change-Id: I75ebf01641db4dcd07041e3b8b3fa8a632d07595
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1331
----
+     interactive.c: add the upper bound for startupdata size
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1331
+     Message-Id: <20251030150432.4689-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34039.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1331
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--
+kind regards,
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index ce0d4dd..cb31267 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -446,9 +446,9 @@
-     }
- 
-     size = bytes / sizeof(*data);
--    if (size == 0)
-+    if ((size == 0) || (size > 4096)) /* our startup data is 1024 wchars at the moment */
-     {
--        MsgToEventLog(M_SYSERR, L"malformed startup data: 1 byte received");
-+        MsgToEventLog(M_SYSERR, L"malformed startup data: %lu bytes received", size);
-         ReturnError(pipe, ERROR_STARTUP_DATA, L"GetStartupData", 1, &exit_event);
-         goto err;
-     }
+Gert Doering
+
 
