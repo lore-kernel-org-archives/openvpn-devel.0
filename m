@@ -1,10 +1,16 @@
-Date: Thu, 30 Oct 2025 22:01:12 +0100 (CET)
-Message-Id: <202510302101.59UL1CCj025753@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251030193834.1186-1-gert@...1296...>
-References: <20251030193834.1186-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix warnings about conversion
- from int to unsigned char/uint8_t
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Oct 2025 21:01:21 +0000
+In-Reply-To: <gerrit.1761745430000.I648ee99b1152b1248d1b3e64af7679ab99f1388f@...2715...>
+References: <gerrit.1761745430000.I648ee99b1152b1248d1b3e64af7679ab99f1388f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <d60379bfa760044707c1aeabb1c52b353066bcef-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="GCjrtheWUSg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix warnings about
+ conversion from int to unsigned char/uint8_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +19,169 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Looks reasonable.  I do not have an ubuntu 25 system yet to test, but
-on the older boxes this does not warn either way, and the casts are
-safe.  BB is happy.
+--GCjrtheWUSg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+28?usp=3Demail )
 
-commit e7df832354fd476defe6a0fb35ab1aa05314c5e3
-Author: Arne Schwabe
-Date:   Thu Oct 30 20:38:20 2025 +0100
+Change subject: Fix warnings about conversion from int to unsigned char/uin=
+t8_t
+......................................................................
 
-     Fix warnings about conversion from int to unsigned char/uint8_t
+Fix warnings about conversion from int to unsigned char/uint8_t
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1328
-     Message-Id: <20251030193834.1186-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34065.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+When compiling with cmake -DCMAKE_BUILD_TYPE=3DASAN under Ubuntu 25.10
+(gcc 15.2.0).
 
+Explicitly cast these instances to uint8_t/unssigned char to silence this
+warning.
+
+Change-Id: I648ee99b1152b1248d1b3e64af7679ab99f1388f
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1328
+Message-Id: <20251030193834.1186-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
+065.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/httpdigest.c
+M src/openvpn/mroute.c
+2 files changed, 3 insertions(+), 3 deletions(-)
+
+
+
+
+diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
+index be20638..3e6520a 100644
+--- a/src/openvpn/httpdigest.c
++++ b/src/openvpn/httpdigest.c
+@@ -46,7 +46,7 @@
+         }
+         else
+         {
+-            Hex[i * 2] =3D (j + 'a' - 10);
++            Hex[i * 2] =3D (unsigned char)(j + 'a' - 10);
+         }
+         j =3D Bin[i] & 0xf;
+         if (j <=3D 9)
+@@ -55,7 +55,7 @@
+         }
+         else
+         {
+-            Hex[i * 2 + 1] =3D (j + 'a' - 10);
++            Hex[i * 2 + 1] =3D (unsigned char)(j + 'a' - 10);
+         }
+     }
+     Hex[HASHHEXLEN] =3D '\0';
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index b50d48f..d17902f 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -337,7 +337,7 @@
+             }
+             else
+             {
+-                ma->v6.addr.s6_addr[byte--] &=3D (0xFF << bits_to_clear);
++                ma->v6.addr.s6_addr[byte--] &=3D (uint8_t)(0xFF << bits_to=
+_clear);
+                 bits_to_clear =3D 0;
+             }
+         }
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1328?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I648ee99b1152b1248d1b3e64af7679ab99f1388f
+Gerrit-Change-Number: 1328
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--GCjrtheWUSg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1328?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Fix warnings about conversion from int to unsign=
+ed char/uint8_t<br><br>When compiling with cmake -DCMAKE_BUILD_TYPE=3DASAN =
+under Ubuntu 25.10<br>(gcc 15.2.0).<br><br>Explicitly cast these instances =
+to uint8_t/unssigned char to silence this<br>warning.<br><br>Change-Id: I64=
+8ee99b1152b1248d1b3e64af7679ab99f1388f<br>Signed-off-by: Arne Schwabe &lt;a=
+rne@...1227...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Ger=
+rit URL: https://gerrit.openvpn.net/c/openvpn/+/1328<br>Message-Id: &lt;202=
+51030193834.1186-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com=
+/openvpn-devel@lists.sourceforge.net/msg34065.html<br>Signed-off-by: Gert D=
+oering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/httpdigest.c<br>M sr=
+c/openvpn/mroute.c<br>2 files changed, 3 insertions(+), 3 deletions(-)<br><=
+br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c</span><=
+br><span>index be20638..3e6520a 100644</span><br><span>--- a/src/openvpn/ht=
+tpdigest.c</span><br><span>+++ b/src/openvpn/httpdigest.c</span><br><span>@=
+@ -46,7 +46,7 @@</span><br><span>         }</span><br><span>         else</=
+span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            Hex[i * 2] =3D (j + &#39;a&#39; - 10);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            Hex[i * 2] =3D (unsigned cha=
+r)(j + &#39;a&#39; - 10);</span><br><span>         }</span><br><span>      =
+   j =3D Bin[i] &amp; 0xf;</span><br><span>         if (j &lt;=3D 9)</span>=
+<br><span>@@ -55,7 +55,7 @@</span><br><span>         }</span><br><span>    =
+     else</span><br><span>         {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            Hex[i * 2 + 1] =3D (j + &#39;a&#39; - 10);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            Hex[i * 2 + 1=
+] =3D (unsigned char)(j + &#39;a&#39; - 10);</span><br><span>         }</sp=
+an><br><span>     }</span><br><span>     Hex[HASHHEXLEN] =3D &#39;\0&#39;;<=
+/span><br><span>diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c</s=
+pan><br><span>index b50d48f..d17902f 100644</span><br><span>--- a/src/openv=
+pn/mroute.c</span><br><span>+++ b/src/openvpn/mroute.c</span><br><span>@@ -=
+337,7 +337,7 @@</span><br><span>             }</span><br><span>            =
+ else</span><br><span>             {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                ma-&gt;v6.addr.s6_addr[byte--] &amp;=3D (0xF=
+F &lt;&lt; bits_to_clear);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                ma-&gt;v6.addr.s6_addr[byte--] &amp;=3D (uint8_t)(0x=
+FF &lt;&lt; bits_to_clear);</span><br><span>                 bits_to_clear =
+=3D 0;</span><br><span>             }</span><br><span>         }</span><br>=
+<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1328?usp=3Demail">change 1328</a>. To unsubscribe, or for he=
+lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
+s?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/1328?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I648ee99b1152b1248d1b3e64af7=
+679ab99f1388f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1328 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--GCjrtheWUSg=--
 
