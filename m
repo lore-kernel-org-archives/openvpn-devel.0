@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 30 Oct 2025 18:17:39 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 30 Oct 2025 19:29:12 +0100
+Message-ID: <20251030182922.26448-1-gert@...1296...>
 In-Reply-To: <gerrit.1761570487000.I750a0b8107baa77fb14558d0c8e4ef8020d62efd@...2715...>
 References: <gerrit.1761570487000.I750a0b8107baa77fb14558d0c8e4ef8020d62efd@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1adbe38858e4499c2f0a31fbd54bd7b3c4fa12b4-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EbUv93Zwmzk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: manage: Change
- kill_by_addr to use better types for port/proto
+Subject: [Openvpn-devel] [PATCH v3] manage: Change kill_by_addr to use
+ better types for port/proto
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +14,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---EbUv93Zwmzk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Change-Id: I750a0b8107baa77fb14558d0c8e4ef8020d62efd
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1310
+---
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1310?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: manage: Change kill_by_addr to use better types for port/pr=
-oto
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1310
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-Patch Set 3: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I750a0b8107baa77fb14558d0c8e4ef8020d62efd
-Gerrit-Change-Number: 1310
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 30 Oct 2025 18:17:39 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---EbUv93Zwmzk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail=
-">change 1310</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1310?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I750a0b8107baa77fb14558d0c8e=
-4ef8020d62efd </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1310 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Oct 2025 18:17:39=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---EbUv93Zwmzk=--
+        
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 685b137..e46b5f2 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -608,14 +608,14 @@
+             if (status)
+             {
+                 const int port = atoi(p3);
+-                const int proto = (streq(p1, "tcp"))   ? PROTO_TCP_SERVER
+-                                  : (streq(p1, "udp")) ? PROTO_UDP
+-                                                       : PROTO_NONE;
++                const uint8_t proto = (streq(p1, "tcp"))   ? PROTO_TCP_SERVER
++                                      : (streq(p1, "udp")) ? PROTO_UDP
++                                                           : PROTO_NONE;
+ 
+-                if ((port > 0 && port < 65536) && (proto != PROTO_NONE))
++                if ((port > 0 && port < UINT16_MAX) && (proto != PROTO_NONE))
+                 {
+                     n_killed = (*man->persist.callback.kill_by_addr)(man->persist.callback.arg,
+-                                                                     addr, port, proto);
++                                                                     addr, (uint16_t)port, proto);
+                     if (n_killed > 0)
+                     {
+                         msg(M_CLIENT, "SUCCESS: %d client(s) at address %s:%s:%d killed", n_killed,
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index fe460bf..dedcc15 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -178,7 +178,7 @@
+     void (*status)(void *arg, const int version, struct status_output *so);
+     void (*show_net)(void *arg, const msglvl_t msglevel);
+     int (*kill_by_cn)(void *arg, const char *common_name);
+-    int (*kill_by_addr)(void *arg, const in_addr_t addr, const int port, const int proto);
++    int (*kill_by_addr)(void *arg, const in_addr_t addr, const uint16_t port, const uint8_t proto);
+     void (*delete_event)(void *arg, event_t event);
+     int (*n_clients)(void *arg);
+     bool (*send_cc_message)(void *arg, const char *message, const char *parameter);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 285671d..00637b1 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3951,7 +3951,7 @@
+ }
+ 
+ static int
+-management_callback_kill_by_addr(void *arg, const in_addr_t addr, const int port, const int proto)
++management_callback_kill_by_addr(void *arg, const in_addr_t addr, const uint16_t port, const uint8_t proto)
+ {
+     struct multi_context *m = (struct multi_context *)arg;
+     struct hash_iterator hi;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index e986c9c..832d62e 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -89,7 +89,7 @@
+     const char *ipchange_command;
+     const struct plugin_list *plugins;
+     bool remote_float;
+-    int proto;       /* Protocol (PROTO_x defined below) */
++    uint8_t proto;   /* Protocol (PROTO_x defined below) */
+     sa_family_t af;  /* Address family like AF_INET, AF_INET6 or AF_UNSPEC*/
+     bool bind_ipv6_only;
+     int mtu_changed; /* Set to true when mtu value is changed */
 
