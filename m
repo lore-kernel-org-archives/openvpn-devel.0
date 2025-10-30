@@ -1,11 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Thu, 30 Oct 2025 15:52:26 +0100
-Message-ID: <20251030145231.2792-1-gert@...1296...>
-In-Reply-To: <gerrit.1761324750000.Id7bacec23edc6dcd94465c308ea2144c7329a0c1@...2715...>
-References: <gerrit.1761324750000.Id7bacec23edc6dcd94465c308ea2144c7329a0c1@...2715...>
+Date: Thu, 30 Oct 2025 16:01:49 +0100
+Message-ID: <20251030150214.4161-1-gert@...1296...>
+In-Reply-To: <gerrit.1761565272000.I329b407693b97dd048bd3788ecad345d6e25dab2@...2715...>
+References: <gerrit.1761565272000.I329b407693b97dd048bd3788ecad345d6e25dab2@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] ssl: Clean up type handling in
- export_user_keying_material()
+Subject: [Openvpn-devel] [PATCH v3] iservice: use interface index with netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,122 +17,192 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+From: Heiko Hund <heiko@...2662...>
 
-For this we actually change the API of the
-format_hex{,_ex} functions by changing int
-to size_t for length parameters. While we
-call this function with int paramters in
-a lot of places (usually BLEN), this will
-not produce warnings under
--Wno-sign-conversion. And we're sure those
-values are positive since format_hex already
-uses size_t internally.
+We use the interface index with netsh everywhere else, so convert this
+invocation of netsh to index use as well.
 
-Change-Id: Id7bacec23edc6dcd94465c308ea2144c7329a0c1
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1301
+Remove CmpWString() as it is no longer used anywhere.
+
+Change-Id: I329b407693b97dd048bd3788ecad345d6e25dab2
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1308
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1301
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1308
 This mail reflects revision 3 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Lev Stipakov <lstipakov@...277...>
 
         
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 28de00f..293622f 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -480,18 +480,17 @@
-  */
- 
- char *
--format_hex_ex(const uint8_t *data, int size, int maxoutput, unsigned int space_break_flags,
-+format_hex_ex(const uint8_t *data, size_t size, size_t maxoutput, unsigned int space_break_flags,
-               const char *separator, struct gc_arena *gc)
- {
-     const size_t bytes_per_hexblock = space_break_flags & FHE_SPACE_BREAK_MASK;
-     const size_t separator_len = separator ? strlen(separator) : 0;
--    static_assert(INT_MAX <= SIZE_MAX, "Code assumes INT_MAX <= SIZE_MAX");
-     const size_t out_len = maxoutput > 0
-                                ? maxoutput
-                                : ((size * 2) + ((size / bytes_per_hexblock) * separator_len) + 2);
- 
-     struct buffer out = alloc_buf_gc(out_len, gc);
--    for (int i = 0; i < size; ++i)
-+    for (size_t i = 0; i < size; ++i)
-     {
-         if (separator && i && !(i % bytes_per_hexblock))
-         {
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 148cee0..ab2a29d 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -496,11 +496,11 @@
-  */
- #define FHE_SPACE_BREAK_MASK 0xFF  /* space_break parameter in lower 8 bits */
- #define FHE_CAPS             0x100 /* output hex in caps */
--char *format_hex_ex(const uint8_t *data, int size, int maxoutput, unsigned int space_break_flags,
-+char *format_hex_ex(const uint8_t *data, size_t size, size_t maxoutput, unsigned int space_break_flags,
-                     const char *separator, struct gc_arena *gc);
- 
- static inline char *
--format_hex(const uint8_t *data, int size, int maxoutput, struct gc_arena *gc)
-+format_hex(const uint8_t *data, size_t size, size_t maxoutput, struct gc_arena *gc)
- {
-     return format_hex_ex(data, size, maxoutput, 4, " ", gc);
- }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index be29367..987d450 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1829,11 +1829,6 @@
-     return len;
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index ce0d4dd..50f1627 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -995,16 +995,16 @@
  }
  
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static char *
- read_string_alloc(struct buffer *buf)
- {
-@@ -2174,15 +2169,15 @@
- {
-     if (session->opt->ekm_size > 0)
-     {
--        unsigned int size = session->opt->ekm_size;
-+        const size_t size = session->opt->ekm_size;
-         struct gc_arena gc = gc_new();
- 
--        unsigned char *ekm = gc_malloc(session->opt->ekm_size, true, &gc);
-+        unsigned char *ekm = gc_malloc(size, true, &gc);
-         if (key_state_export_keying_material(session, session->opt->ekm_label,
-                                              session->opt->ekm_label_size, ekm,
-                                              session->opt->ekm_size))
-         {
--            unsigned int len = (size * 2) + 2;
-+            const size_t len = (size * 2) + 2;
- 
-             const char *key = format_hex_ex(ekm, size, len, 0, NULL, &gc);
-             setenv_str(session->opt->es, "exported_keying_material", key);
-@@ -2199,6 +2194,11 @@
-     }
- }
- 
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
-+
  /**
-  * Handle reading key data, peer-info, username/password, OCC
-  * from the TLS control channel (cleartext).
+- * Run the command: netsh interface ip $action wins $if_name [static] $addr
++ * Run the command: netsh interface ip $action wins $if_index [static] $addr
+  * @param  action      "delete", "add" or "set"
+- * @param  if_name     "name_of_interface"
++ * @param  if_index    index of the interface to modify WINS for
+  * @param  addr        IPv4 address as a string
+  *
+  * If addr is null and action = "delete" all addresses are deleted.
+  * if action = "set" then "static" is added before $addr
+  */
+ static DWORD
+-netsh_wins_cmd(const wchar_t *action, const wchar_t *if_name, const wchar_t *addr)
++netsh_wins_cmd(const wchar_t *action, int if_index, const wchar_t *addr)
+ {
+     DWORD err = 0;
+     int timeout = 30000; /* in msec */
+@@ -1030,10 +1030,10 @@
+     /* cmd template:
+      * netsh interface ip $action wins $if_name $static $addr
+      */
+-    const wchar_t *fmt = L"netsh interface ip %ls wins \"%ls\" %ls %ls";
++    const wchar_t *fmt = L"netsh interface ip %ls wins %d %ls %ls";
+ 
+     /* max cmdline length in wchars -- include room for worst case and some */
+-    size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(action) + wcslen(addr)
++    size_t ncmdline = wcslen(fmt) + 11 /*if_index*/ + wcslen(action) + wcslen(addr)
+                       + wcslen(addr_static) + 32 + 1;
+     cmdline = malloc(ncmdline * sizeof(wchar_t));
+     if (!cmdline)
+@@ -1042,7 +1042,7 @@
+         goto out;
+     }
+ 
+-    swprintf(cmdline, ncmdline, fmt, action, if_name, addr_static, addr);
++    swprintf(cmdline, ncmdline, fmt, action, if_index, addr_static, addr);
+ 
+     err = ExecCommand(argv0, cmdline, timeout);
+ 
+@@ -1051,12 +1051,6 @@
+     return err;
+ }
+ 
+-static BOOL
+-CmpWString(LPVOID item, LPVOID str)
+-{
+-    return (wcscmp(item, str) == 0) ? TRUE : FALSE;
+-}
+-
+ /**
+  * Signal the DNS resolver (and others potentially) to reload the
+  * group policy (DNS) settings on 32 bit Windows systems
+@@ -2882,7 +2876,7 @@
+ static DWORD
+ HandleWINSConfigMessage(const wins_cfg_message_t *msg, undo_lists_t *lists)
+ {
+-    DWORD err = 0;
++    DWORD err = NO_ERROR;
+     wchar_t addr[16]; /* large enough to hold string representation of an ipv4 */
+     int addr_len = msg->addr_len;
+ 
+@@ -2892,38 +2886,25 @@
+         addr_len = _countof(msg->addr);
+     }
+ 
+-    if (!msg->iface.name[0]) /* interface name is required */
++    if (!msg->iface.index) /* interface index is required */
+     {
+         return ERROR_MESSAGE_DATA;
+     }
+ 
+-    /* use a non-const reference with limited scope to enforce null-termination of strings from
+-     * client */
+-    {
+-        wins_cfg_message_t *msgptr = (wins_cfg_message_t *)msg;
+-        msgptr->iface.name[_countof(msg->iface.name) - 1] = '\0';
+-    }
+-
+-    wchar_t *wide_name = utf8to16(msg->iface.name); /* utf8 to wide-char */
+-    if (!wide_name)
+-    {
+-        return ERROR_OUTOFMEMORY;
+-    }
+-
+     /* We delete all current addresses before adding any
+      * OR if the message type is del_wins_cfg
+      */
+     if (addr_len > 0 || msg->header.type == msg_del_wins_cfg)
+     {
+-        err = netsh_wins_cmd(L"delete", wide_name, NULL);
++        err = netsh_wins_cmd(L"delete", msg->iface.index, NULL);
+         if (err)
+         {
+             goto out;
+         }
+-        free(RemoveListItem(&(*lists)[undo_wins], CmpWString, wide_name));
++        free(RemoveListItem(&(*lists)[undo_wins], CmpAny, NULL));
+     }
+ 
+-    if (msg->header.type == msg_del_wins_cfg)
++    if (addr_len == 0 || msg->header.type == msg_del_wins_cfg)
+     {
+         goto out; /* job done */
+     }
+@@ -2931,7 +2912,7 @@
+     for (int i = 0; i < addr_len; ++i)
+     {
+         RtlIpv4AddressToStringW(&msg->addr[i].ipv4, addr);
+-        err = netsh_wins_cmd(i == 0 ? L"set" : L"add", wide_name, addr);
++        err = netsh_wins_cmd(i == 0 ? L"set" : L"add", msg->iface.index, addr);
+         if (i == 0 && err)
+         {
+             goto out;
+@@ -2941,22 +2922,23 @@
+          */
+     }
+ 
+-    err = 0;
+-
+-    if (addr_len > 0)
++    int *if_index = malloc(sizeof(msg->iface.index));
++    if (if_index)
+     {
+-        wchar_t *tmp_name = _wcsdup(wide_name);
+-        if (!tmp_name || AddListItem(&(*lists)[undo_wins], tmp_name))
+-        {
+-            free(tmp_name);
+-            netsh_wins_cmd(L"delete", wide_name, NULL);
+-            err = ERROR_OUTOFMEMORY;
+-            goto out;
+-        }
++        *if_index = msg->iface.index;
+     }
+ 
++    if (!if_index || AddListItem(&(*lists)[undo_wins], if_index))
++    {
++        free(if_index);
++        netsh_wins_cmd(L"delete", msg->iface.index, NULL);
++        err = ERROR_OUTOFMEMORY;
++        goto out;
++    }
++
++    err = 0;
++
+ out:
+-    free(wide_name);
+     return err;
+ }
+ 
+@@ -3206,7 +3188,7 @@
+                     break;
+ 
+                 case undo_wins:
+-                    netsh_wins_cmd(L"delete", item->data, NULL);
++                    netsh_wins_cmd(L"delete", *(int *)item->data, NULL);
+                     break;
+ 
+                 case wfp_block:
 
