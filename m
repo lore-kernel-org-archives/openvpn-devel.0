@@ -1,12 +1,16 @@
-MIME-Version: 1.0
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Oct 2025 17:05:57 +0000
+In-Reply-To: <gerrit.1761833482000.Ie990f4dd10094810d6632f8dedfa261727ebfbcb@...2715...>
 References: <gerrit.1761833482000.Ie990f4dd10094810d6632f8dedfa261727ebfbcb@...2715...>
- <28143412a9658f544a35b30e574cd3cfd98b08f7-EmailReplacePatchSet-HTML@...2715...>
-In-Reply-To: <28143412a9658f544a35b30e574cd3cfd98b08f7-EmailReplacePatchSet-HTML@...2715...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 30 Oct 2025 12:56:35 -0400
-Message-ID: <CAKuzo_gpF7Tzx85O023M-sMqA7VJ0RZYvMnmEPDPccK3+gNfBQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000b7d632064263222d"
-Subject: Re: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv:
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <b4519e4bf2b91558d5078a455bd6a15837fdcf99-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="wsdmlN8wglo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv:
  validate openvpn-gui process path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,71 +20,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: lstipakov@...277..., arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net, frank@...2641...
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000b7d632064263222d
+--wsdmlN8wglo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 30, 2025 at 10:12=E2=80=AFAM stipa (Code Review) <gerrit@...2146...=
-...>
-wrote:
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-> Attention is currently required from: flichtenheld, plaisthos.
->
-> stipa *uploaded patch set #2* to this change.
->
-> View Change <http://gerrit.openvpn.net/c/openvpn/+/1333?usp=3Demail>
->
-> openvpnserv: validate openvpn-gui process path
->
-> Ensure that the service pipe client process (which is openvpn-gui)
-> is from openvpn binary directory, defined in registry. This limits
-> unauthorized connections to the service pipe.
->
-> Reported-by: Abdul Mhanni <abdul.mhanni@...2951...>
->
->
-Do we really want to do this? I thought allowing any user process to use
-the interactive service was deliberate: the only restriction being user
-whitelisted as "OpenVPNAdministrators" or else we allow only a limited set
-of config directives.
+selvanair has posted comments on this change by stipa. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1333?usp=3Demail )
 
-Currently, starting openvpn.exe through the service using a script or a
-custom application works. Without having to install it in the "OpenVPN/bin"
-directory. Do we want to take away that functionality? The threat being
-addressed here is unclear to me.
+Change subject: openvpnserv: validate openvpn-gui process path
+......................................................................
 
-Selva
 
---000000000000b7d632064263222d
+Patch Set 2:
+
+(1 comment)
+
+Patchset:
+
+PS2:
+Unsure why we want to do this. Currently we can use the service to start op=
+envpn.exe as user by a script or any user application. Subject restrictions=
+ like only whitelisted config directives unless user is in a specific group.
+
+Why take away that functionality?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1333?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie990f4dd10094810d6632f8dedfa261727ebfbcb
+Gerrit-Change-Number: 1333
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: selvanair <selva.nair@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Thu, 30 Oct 2025 17:05:57 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+
+--wsdmlN8wglo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote g=
-mail_quote_container"><div dir=3D"ltr" class=3D"gmail_attr">On Thu, Oct 30,=
- 2025 at 10:12=E2=80=AFAM stipa (Code Review) &lt;<a href=3D"mailto:gerrit@=
-...515...">gerrit@...515...</a>&gt; wrote:<br></div><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex"><u></u><div><p> Attention is currently required =
-from: flichtenheld, plaisthos. </p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1333?usp=3Demail" target=3D"_bl=
-ank">View Change</a></p><pre style=3D"font-family:monospace,monospace;white=
--space:pre-wrap">openvpnserv: validate openvpn-gui process path<br><br>Ensu=
-re that the service pipe client process (which is openvpn-gui)<br>is from o=
-penvpn binary directory, defined in registry. This limits<br>unauthorized c=
-onnections to the service pipe.<br><br>Reported-by: Abdul Mhanni &lt;<a hre=
-f=3D"mailto:abdul.mhanni@...2951..." target=3D"_blank">abdul.mhanni@...2952...=
-...</a>&gt;<br></pre></div></blockquote><div><br></div><div>Do we really wa=
-nt to do this? I thought allowing any user process to use the interactive s=
-ervice was deliberate: the only restriction being user whitelisted as &quot=
-;OpenVPNAdministrators&quot; or else we allow only a limited set of config =
-directives.=C2=A0<br><br>Currently, starting openvpn.exe through the servic=
-e using a script or a custom=C2=A0application works. Without having to inst=
-all it in the &quot;OpenVPN/bin&quot; directory. Do we want to take away th=
-at functionality? The threat being addressed here is unclear=C2=A0to me.</d=
-iv><div><br></div><div>Selva<br></div></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, stipa. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1333?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1333?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Unsure why we w=
+ant to do this. Currently we can use the service to start openvpn.exe as us=
+er by a script or any user application. Subject restrictions like only whit=
+elisted config directives unless user is in a specific group.</p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Why tak=
+e away that functionality?</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1333?usp=3Demail">change 1333</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1333?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
---000000000000b7d632064263222d--
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie990f4dd10094810d6632f8dedf=
+a261727ebfbcb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1333 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: selvanair &lt;selva.nair@...277...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Oct 2025 17:05:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+
+</body></html>=
+
+--wsdmlN8wglo=--
 
