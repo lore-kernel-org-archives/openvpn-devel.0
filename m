@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 30 Oct 2025 16:01:49 +0100
-Message-ID: <20251030150214.4161-1-gert@...1296...>
-In-Reply-To: <gerrit.1761565272000.I329b407693b97dd048bd3788ecad345d6e25dab2@...2715...>
-References: <gerrit.1761565272000.I329b407693b97dd048bd3788ecad345d6e25dab2@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Oct 2025 15:04:19 +0000
+In-Reply-To: <gerrit.1761813264000.I75ebf01641db4dcd07041e3b8b3fa8a632d07595@...2715...>
+References: <gerrit.1761813264000.I75ebf01641db4dcd07041e3b8b3fa8a632d07595@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <a28816d90d65998f9d35015e6702ad9962fc268f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] iservice: use interface index with netsh
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="0DXuau4T+Po="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: interactive.c: add
+ the upper bound for startupdata size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,196 +20,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Heiko Hund <heiko@...2662...>
+--0DXuau4T+Po=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We use the interface index with netsh everywhere else, so convert this
-invocation of netsh to index use as well.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-Remove CmpWString() as it is no longer used anywhere.
+cron2 has posted comments on this change by stipa. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1331?usp=3Demail )
 
-Change-Id: I329b407693b97dd048bd3788ecad345d6e25dab2
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1308
----
+Change subject: interactive.c: add the upper bound for startupdata size
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1308
-This mail reflects revision 3 of this Change.
+Patch Set 1: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@...277...>
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index ce0d4dd..50f1627 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -995,16 +995,16 @@
- }
- 
- /**
-- * Run the command: netsh interface ip $action wins $if_name [static] $addr
-+ * Run the command: netsh interface ip $action wins $if_index [static] $addr
-  * @param  action      "delete", "add" or "set"
-- * @param  if_name     "name_of_interface"
-+ * @param  if_index    index of the interface to modify WINS for
-  * @param  addr        IPv4 address as a string
-  *
-  * If addr is null and action = "delete" all addresses are deleted.
-  * if action = "set" then "static" is added before $addr
-  */
- static DWORD
--netsh_wins_cmd(const wchar_t *action, const wchar_t *if_name, const wchar_t *addr)
-+netsh_wins_cmd(const wchar_t *action, int if_index, const wchar_t *addr)
- {
-     DWORD err = 0;
-     int timeout = 30000; /* in msec */
-@@ -1030,10 +1030,10 @@
-     /* cmd template:
-      * netsh interface ip $action wins $if_name $static $addr
-      */
--    const wchar_t *fmt = L"netsh interface ip %ls wins \"%ls\" %ls %ls";
-+    const wchar_t *fmt = L"netsh interface ip %ls wins %d %ls %ls";
- 
-     /* max cmdline length in wchars -- include room for worst case and some */
--    size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(action) + wcslen(addr)
-+    size_t ncmdline = wcslen(fmt) + 11 /*if_index*/ + wcslen(action) + wcslen(addr)
-                       + wcslen(addr_static) + 32 + 1;
-     cmdline = malloc(ncmdline * sizeof(wchar_t));
-     if (!cmdline)
-@@ -1042,7 +1042,7 @@
-         goto out;
-     }
- 
--    swprintf(cmdline, ncmdline, fmt, action, if_name, addr_static, addr);
-+    swprintf(cmdline, ncmdline, fmt, action, if_index, addr_static, addr);
- 
-     err = ExecCommand(argv0, cmdline, timeout);
- 
-@@ -1051,12 +1051,6 @@
-     return err;
- }
- 
--static BOOL
--CmpWString(LPVOID item, LPVOID str)
--{
--    return (wcscmp(item, str) == 0) ? TRUE : FALSE;
--}
--
- /**
-  * Signal the DNS resolver (and others potentially) to reload the
-  * group policy (DNS) settings on 32 bit Windows systems
-@@ -2882,7 +2876,7 @@
- static DWORD
- HandleWINSConfigMessage(const wins_cfg_message_t *msg, undo_lists_t *lists)
- {
--    DWORD err = 0;
-+    DWORD err = NO_ERROR;
-     wchar_t addr[16]; /* large enough to hold string representation of an ipv4 */
-     int addr_len = msg->addr_len;
- 
-@@ -2892,38 +2886,25 @@
-         addr_len = _countof(msg->addr);
-     }
- 
--    if (!msg->iface.name[0]) /* interface name is required */
-+    if (!msg->iface.index) /* interface index is required */
-     {
-         return ERROR_MESSAGE_DATA;
-     }
- 
--    /* use a non-const reference with limited scope to enforce null-termination of strings from
--     * client */
--    {
--        wins_cfg_message_t *msgptr = (wins_cfg_message_t *)msg;
--        msgptr->iface.name[_countof(msg->iface.name) - 1] = '\0';
--    }
--
--    wchar_t *wide_name = utf8to16(msg->iface.name); /* utf8 to wide-char */
--    if (!wide_name)
--    {
--        return ERROR_OUTOFMEMORY;
--    }
--
-     /* We delete all current addresses before adding any
-      * OR if the message type is del_wins_cfg
-      */
-     if (addr_len > 0 || msg->header.type == msg_del_wins_cfg)
-     {
--        err = netsh_wins_cmd(L"delete", wide_name, NULL);
-+        err = netsh_wins_cmd(L"delete", msg->iface.index, NULL);
-         if (err)
-         {
-             goto out;
-         }
--        free(RemoveListItem(&(*lists)[undo_wins], CmpWString, wide_name));
-+        free(RemoveListItem(&(*lists)[undo_wins], CmpAny, NULL));
-     }
- 
--    if (msg->header.type == msg_del_wins_cfg)
-+    if (addr_len == 0 || msg->header.type == msg_del_wins_cfg)
-     {
-         goto out; /* job done */
-     }
-@@ -2931,7 +2912,7 @@
-     for (int i = 0; i < addr_len; ++i)
-     {
-         RtlIpv4AddressToStringW(&msg->addr[i].ipv4, addr);
--        err = netsh_wins_cmd(i == 0 ? L"set" : L"add", wide_name, addr);
-+        err = netsh_wins_cmd(i == 0 ? L"set" : L"add", msg->iface.index, addr);
-         if (i == 0 && err)
-         {
-             goto out;
-@@ -2941,22 +2922,23 @@
-          */
-     }
- 
--    err = 0;
--
--    if (addr_len > 0)
-+    int *if_index = malloc(sizeof(msg->iface.index));
-+    if (if_index)
-     {
--        wchar_t *tmp_name = _wcsdup(wide_name);
--        if (!tmp_name || AddListItem(&(*lists)[undo_wins], tmp_name))
--        {
--            free(tmp_name);
--            netsh_wins_cmd(L"delete", wide_name, NULL);
--            err = ERROR_OUTOFMEMORY;
--            goto out;
--        }
-+        *if_index = msg->iface.index;
-     }
- 
-+    if (!if_index || AddListItem(&(*lists)[undo_wins], if_index))
-+    {
-+        free(if_index);
-+        netsh_wins_cmd(L"delete", msg->iface.index, NULL);
-+        err = ERROR_OUTOFMEMORY;
-+        goto out;
-+    }
-+
-+    err = 0;
-+
- out:
--    free(wide_name);
-     return err;
- }
- 
-@@ -3206,7 +3188,7 @@
-                     break;
- 
-                 case undo_wins:
--                    netsh_wins_cmd(L"delete", item->data, NULL);
-+                    netsh_wins_cmd(L"delete", *(int *)item->data, NULL);
-                     break;
- 
-                 case wfp_block:
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1331?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I75ebf01641db4dcd07041e3b8b3fa8a632d07595
+Gerrit-Change-Number: 1331
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Thu, 30 Oct 2025 15:04:19 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--0DXuau4T+Po=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, stipa. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1331?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1331?usp=3Demail=
+">change 1331</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1331?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I75ebf01641db4dcd07041e3b8b3=
+fa8a632d07595 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1331 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Oct 2025 15:04:19=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--0DXuau4T+Po=--
 
