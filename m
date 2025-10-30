@@ -1,15 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 30 Oct 2025 08:18:11 +0000
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Oct 2025 08:31:07 +0000
 In-Reply-To: <gerrit.1761565272000.I329b407693b97dd048bd3788ecad345d6e25dab2@...2715...>
 References: <gerrit.1761565272000.I329b407693b97dd048bd3788ecad345d6e25dab2@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <b538b79770a439717d06c2d3217d0bc49d380211-EmailReviewComments-HTML@...2715...>
+ gert@...1296...
+Message-ID: <69306d7265d3f382d8b473cb9ceb2e0666d40b94-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4Qm9v91GGNw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="+9C6LvpDIpE="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: iservice: use
  interface index with netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,29 +21,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: d12fk <heiko@...515...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4Qm9v91GGNw=
+--+9C6LvpDIpE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos, stipa.
+Attention is currently required from: d12fk, flichtenheld, plaisthos.
 
-cron2 has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
+stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
 net/c/openvpn/+/1308?usp=3Demail )
 
 Change subject: iservice: use interface index with netsh
 ......................................................................
 
 
-Patch Set 3: -Code-Review
+Patch Set 3: Code-Review+2
 
 (1 comment)
 
 Patchset:
 
 PS3:
-my concerns have been addressed, thanks
+Built and tested, works as expected.
 
 
 
@@ -67,34 +67,33 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Thu, 30 Oct 2025 08:18:11 +0000
+Gerrit-Comment-Date: Thu, 30 Oct 2025 08:31:07 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---4Qm9v91GGNw=
+--+9C6LvpDIpE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, flichtenheld, plaisthos, stipa. </p>
+rently required from: d12fk, flichtenheld, plaisthos. </p>
 <p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1308?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-308?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"block=
-s" style=3D"white-space: pre-wrap; word-wrap: break-word;">my concerns have=
- been addressed, thanks</p></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1308?usp=3Demail">change 1308</a>. T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
-type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1308?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1308?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1308?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Built and t=
+ested, works as expected.</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1308?usp=3Demail">change 1308</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1308?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -121,14 +120,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Oct 2025 08:18:11=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Oct 2025 08:31:07=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---4Qm9v91GGNw=--
+--+9C6LvpDIpE=--
 
