@@ -1,17 +1,15 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Fri, 31 Oct 2025 18:41:15 +0000
-In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <ee3897015bd2c1f93cfa2fec96e9d0de39b852bb-EmailReviewComments-HTML@...2715...>
+Date: Fri, 31 Oct 2025 19:34:46 +0000
+References: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c98e776b2868f9c4f1930b91685f5cb4d70aad34-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Lbr9y5QYnYE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
- config path better
+Content-Type: multipart/alternative; boundary="P/rf5l2m7Iw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: make sure
+ directories have trailing \
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,131 +18,268 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Lbr9y5QYnYE=
+--P/rf5l2m7Iw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos, selva=
-nair.
+Attention is currently required from: flichtenheld, plaisthos.
 
-d12fk has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1307?usp=3Demail )
+Hello plaisthos, flichtenheld,
 
-Change subject: iservice: validate config path better
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
+
+to review the following change.
+
+
+Change subject: iservice: make sure directories have trailing \
 ......................................................................
 
+iservice: make sure directories have trailing \
 
-Patch Set 2:
+At least in the case of the config dir this matters, since the value is
+used to validate input data for the interactive service. A missing \
+at the end would allow a string compare to succeed, if the last element of
+the path to compare starts with the same substring. The trailing slash
+ensures that the last element of a path must match completely.
 
-(1 comment)
-
-File src/openvpnserv/validate.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1307/comment/af7d5233_8513dfb0?usp=3D=
-email :
-PS2, Line 80:     return res =3D=3D S_OK && wcsncmp(config_path, s->config_=
-dir, wcslen(s->config_dir)) =3D=3D 0;
-> https://github. [=E2=80=A6]
-Okay, I think optionally adding a \ when settings_t.config_dir is set makes=
- more sense, as it would apply to any other (future) use as well then. Will=
- add a commit dealing with that.
+Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
+Signed-off-by: Heiko Hund <heiko@...2662...>
+---
+M src/openvpnserv/common.c
+1 file changed, 33 insertions(+), 6 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/1336/1
+
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index d25d9c0..969b8ac 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -54,6 +54,33 @@
+ }
+
+
++/**
++ * Make sure that a dir path ends with a backslash.
++ * If it doesn't, a \ is added to the end of the path, if there's room in =
+the buffer.
++ *
++ * @param dir       pointer to the wide dir path string buffer
++ * @param size      maximum number of wide chars the dir path buffer
++ * @return BOOL to indicate success or failure
++ */
++static BOOL
++ensure_trailing_backslash(WSTR dir, size_t size)
++{
++    size_t len =3D wcslen(dir);
++
++    if (dir[len - 1] !=3D '\\')
++    {
++        if (len + 1 > size)
++        {
++            return FALSE;
++        }
++        dir[len] =3D '\\';
++        dir[len + 1] =3D '\0';
++    }
++
++    return TRUE;
++}
++
++
+ DWORD
+ GetOpenvpnSettings(settings_t *s)
+ {
+@@ -90,16 +117,16 @@
+         goto out;
+     }
+
+-    swprintf(default_value, _countof(default_value), L"%ls\\config", insta=
+ll_path);
++    swprintf(default_value, _countof(default_value), L"%ls\\config\\", ins=
+tall_path);
+     error =3D GetRegString(key, L"config_dir", s->config_dir, sizeof(s->co=
+nfig_dir), default_value);
+-    if (error !=3D ERROR_SUCCESS)
++    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s->config_d=
+ir, _countof(s->config_dir)))
+     {
+         goto out;
+     }
+
+-    swprintf(default_value, _countof(default_value), L"%ls\\bin", install_=
+path);
++    swprintf(default_value, _countof(default_value), L"%ls\\bin\\", instal=
+l_path);
+     error =3D GetRegString(key, L"bin_dir", s->bin_dir, sizeof(s->bin_dir)=
+, default_value);
+-    if (error !=3D ERROR_SUCCESS)
++    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s->bin_dir,=
+ _countof(s->bin_dir)))
+     {
+         goto out;
+     }
+@@ -110,9 +137,9 @@
+         goto out;
+     }
+
+-    swprintf(default_value, _countof(default_value), L"%ls\\log", install_=
+path);
++    swprintf(default_value, _countof(default_value), L"%ls\\log\\", instal=
+l_path);
+     error =3D GetRegString(key, L"log_dir", s->log_dir, sizeof(s->log_dir)=
+, default_value);
+-    if (error !=3D ERROR_SUCCESS)
++    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s->log_dir,=
+ _countof(s->log_dir)))
+     {
+         goto out;
+     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
-Gerrit-Change-Number: 1307
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
+Gerrit-Change-Number: 1336
+Gerrit-PatchSet: 1
 Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: selvanair <selva.nair@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Fri, 31 Oct 2025 18:41:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: d12fk <heiko@...515...>
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---Lbr9y5QYnYE=
+--P/rf5l2m7Iw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos, selvanair. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/validate.c:</p=
-><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
-g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1307/comment/af7d5233_8513dfb0?usp=3Demail">Patch Se=
-t #2, Line 80:</a> <code style=3D"font-family:monospace,monospace">    retu=
-rn res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wcslen=
-(s-&gt;config_dir)) =3D=3D 0;</code></p><p><blockquote style=3D"border-left=
-: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">https://github. [=E2=80=
-=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
-rd-wrap: break-word;">Okay, I think optionally adding a \ when settings_t.c=
-onfig_dir is set makes more sense, as it would apply to any other (future) =
-use as well then. Will add a commit dealing with that.</p></li></ul></li></=
-ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?=
-usp=3Demail">change 1307</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setti=
-ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
- itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
-ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos. </p>
+<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">iservice: make sure directories have traili=
+ng \<br><br>At least in the case of the config dir this matters, since the =
+value is<br>used to validate input data for the interactive service. A miss=
+ing \<br>at the end would allow a string compare to succeed, if the last el=
+ement of<br>the path to compare starts with the same substring. The trailin=
+g slash<br>ensures that the last element of a path must match completely.<b=
+r><br>Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f<br>Signed-off-by=
+: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpnserv/common.c<=
+br>1 file changed, 33 insertions(+), 6 deletions(-)<br><br></pre><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/1336/1<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c</s=
+pan><br><span>index d25d9c0..969b8ac 100644</span><br><span>--- a/src/openv=
+pnserv/common.c</span><br><span>+++ b/src/openvpnserv/common.c</span><br><s=
+pan>@@ -54,6 +54,33 @@</span><br><span> }</span><br><span> </span><br><span=
+> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * Make sure that a dir path ends=
+ with a backslash.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* If it doesn&#39;t, a \ is added to the end of the path, if there&#39;s ro=
+om in the buffer.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param dir      =
+ pointer to the wide dir path string buffer</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * @param size      maximum number of wide chars th=
+e dir path buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @return BOOL to indicate success or failure</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ensure_trailing_backslash(WSTR dir, size_t size)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    size_t len =3D wcslen(dir);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (dir[len - 1] !=3D &#39;\\&#39;)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        if (len + 1 &gt; size)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            return FALSE;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        dir[len] =3D &#39;\\&#39;;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        dir[len + 1] =3D &#39;\0&#39;;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    return TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> DWORD</span><=
+br><span> GetOpenvpnSettings(settings_t *s)</span><br><span> {</span><br><s=
+pan>@@ -90,16 +117,16 @@</span><br><span>         goto out;</span><br><span=
+>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    swprintf(default_value, _countof(default_value), L&quot;%ls\\config=
+&quot;, install_path);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    swprintf(default_value, _countof(default_value), L&quot;%ls\\config\=
+\&quot;, install_path);</span><br><span>     error =3D GetRegString(key, L&=
+quot;config_dir&quot;, s-&gt;config_dir, sizeof(s-&gt;config_dir), default_=
+value);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (error =
+!=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s-&gt;config=
+_dir, _countof(s-&gt;config_dir)))</span><br><span>     {</span><br><span> =
+        goto out;</span><br><span>     }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    swprintf(default_value, _countof(d=
+efault_value), L&quot;%ls\\bin&quot;, install_path);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    swprintf(default_value, _countof(defa=
+ult_value), L&quot;%ls\\bin\\&quot;, install_path);</span><br><span>     er=
+ror =3D GetRegString(key, L&quot;bin_dir&quot;, s-&gt;bin_dir, sizeof(s-&gt=
+;bin_dir), default_value);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (error !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (error !=3D ERROR_SUCCESS || !ensure_trailing_bac=
+kslash(s-&gt;bin_dir, _countof(s-&gt;bin_dir)))</span><br><span>     {</spa=
+n><br><span>         goto out;</span><br><span>     }</span><br><span>@@ -1=
+10,9 +137,9 @@</span><br><span>         goto out;</span><br><span>     }</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sw=
+printf(default_value, _countof(default_value), L&quot;%ls\\log&quot;, insta=
+ll_path);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprin=
+tf(default_value, _countof(default_value), L&quot;%ls\\log\\&quot;, install=
+_path);</span><br><span>     error =3D GetRegString(key, L&quot;log_dir&quo=
+t;, s-&gt;log_dir, sizeof(s-&gt;log_dir), default_value);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (error !=3D ERROR_SUCCESS)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error !=3D ERROR_=
+SUCCESS || !ensure_trailing_backslash(s-&gt;log_dir, _countof(s-&gt;log_dir=
+)))</span><br><span>     {</span><br><span>         goto out;</span><br><sp=
+an>     }</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">change 1336</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0e94068f467f2899daf133b032a=
-785d2d7fc05e4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1307 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If28e66fcc3493821f78fd14d432=
+b22b996918e8f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1336 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: selvanair &lt;selva.nair@...277...&=
-gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 31 Oct 2025 18:41:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
 
 </body></html>=
 
---Lbr9y5QYnYE=--
+--P/rf5l2m7Iw=--
 
