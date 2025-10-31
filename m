@@ -1,15 +1,15 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Fri, 31 Oct 2025 18:19:57 +0000
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Fri, 31 Oct 2025 18:27:07 +0000
 In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
 References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227..., selva.nair@...277...,
+Reply-To: selva.nair@...277..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <9e71514c67582fb5e5f63d6dcb34a7de4095bfe2-EmailReviewComments-HTML@...2715...>
+Message-ID: <c0c9eb0e18c790db0c4cf4d4bdb87e8ece7b89b4-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Z3qkHCAT7H0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="BCmRDI0qpLk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
  config path better
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,17 +20,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Z3qkHCAT7H0=
+--BCmRDI0qpLk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos, selva=
-nair.
+Attention is currently required from: cron2, d12fk, flichtenheld, plaisthos.
 
-d12fk has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1307?usp=3Demail )
+selvanair has posted comments on this change by d12fk. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1307?usp=3Demail )
 
 Change subject: iservice: validate config path better
 ......................................................................
@@ -42,12 +42,12 @@ Patch Set 2:
 
 File src/openvpnserv/validate.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1307/comment/fe993544_9469c998?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1307/comment/3e51da9a_275be521?usp=3D=
 email :
 PS2, Line 80:     return res =3D=3D S_OK && wcsncmp(config_path, s->config_=
 dir, wcslen(s->config_dir)) =3D=3D 0;
-> hmm. This misses the purpose of the previous patch -- i.e. [=E2=80=A6]
-Which github issue # is this?
+> Which github issue # is this?
+https://github.com/OpenVPN/openvpn-private-issues/issues/22
 
 
 
@@ -71,38 +71,39 @@ Gerrit-CC: selvanair <selva.nair@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Fri, 31 Oct 2025 18:19:57 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Fri, 31 Oct 2025 18:27:07 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: d12fk <heiko@...515...>
 Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---Z3qkHCAT7H0=
+--BCmRDI0qpLk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos, selvanair. </p>
+rently required from: cron2, d12fk, flichtenheld, plaisthos. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/validate.c:</p=
 ><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
 g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1307/comment/fe993544_9469c998?usp=3Demail">Patch Se=
+penvpn.net/c/openvpn/+/1307/comment/3e51da9a_275be521?usp=3Demail">Patch Se=
 t #2, Line 80:</a> <code style=3D"font-family:monospace,monospace">    retu=
 rn res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wcslen=
 (s-&gt;config_dir)) =3D=3D 0;</code></p><p><blockquote style=3D"border-left=
-: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">hmm. This misses the pu=
-rpose of the previous patch -- i.e. [=E2=80=A6]</blockquote></p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Which gith=
-ub issue # is this?</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 1307</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Which github issue # is=
+ this?</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
+word-wrap: break-word;">https://github.com/OpenVPN/openvpn-private-issues/i=
+ssues/22</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1307?usp=3Demail">change 1307</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
+schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
+p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -129,16 +130,18 @@ gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 31 Oct 2025 18:19:57=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 31 Oct 2025 18:27:07=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
 ...277...&gt; </div>
 
 </body></html>=
 
---Z3qkHCAT7H0=--
+--BCmRDI0qpLk=--
 
