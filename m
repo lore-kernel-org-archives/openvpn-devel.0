@@ -1,10 +1,15 @@
-From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_CAFFEC82-72BC-4388-99A0-ACA934A59A88"
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81\))
-Message-Id: <0D74CA76-785C-4920-9956-7DE92047F3CA@...2722...>
-Date: Sat, 1 Nov 2025 09:02:56 +0200
-Subject: [Openvpn-devel] OpenVPN 2.7_rc1 released
+From: "chesain (Code Review)" <gerrit@...515...>
+Date: Sat, 1 Nov 2025 19:40:36 +0000
+References: <gerrit.1762026034000.Ifb4e9d79c167337fb780b53141d080abf55f3f5e@...2715...>
+Reply-To: cvanteddu1@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c4ce34f81654fdcfdf639426ebca2e20a5fa1bd0-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="1/RGIdfu7aQ="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: CONTRIBUTING:
+ add Gerrit option + links
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,170 +18,155 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_CAFFEC82-72BC-4388-99A0-ACA934A59A88
-Content-Type: text/plain; charset="us-ascii"
+--1/RGIdfu7aQ=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.7_rc1.
-This is a first release candidate for the feature release 2.7.0 which inclu=
-des improvements and bug fixes.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Feature changes since 2.7_beta3:
+Hello plaisthos, flichtenheld,
 
-* add warning for unsupported combination of --push and --tls-server
-* add warning for unsupported combination of --reneg-bytes or --reneg-pkts =
-with DCO
-* remove perf_push()/perf_pop() infrastructure (because it did not work any=
-more, and compiler profiling will give
-  better results today)
-* ensure compatibility with OpenSSL 3.6.0 - specifically, do not crash in t=
-_lpback.sh trying to use=20
-   new encrypt-then-mac (ETM) ciphers
-* improved PUSH_UPDATE server side support, which now handles changes of pu=
-shed ifconfig/ifconfig-ipv6 addresses
-   correctly (send packets to new IP addresses to this client, stop sending=
- packets to the old addresses).
-* freshen URLs all over the tree, and change to HTTPS where possible
-* on DCO Linux/FreeBSD, add support for clients receiving an IPv4/IPv6 addr=
-ess that is not part of
-   the --server/--server-ipv6 subnet (=3D install extra on-interface host r=
-outes).
-* Windows programs use a new API for path name canonicalization now (PathCc=
-hCanonicalizeEx()) which will break building
-   with MinGW on Ubuntu 22.04 -> Upgrade to 24.04 to make builds work again.
-* on Windows, when setting up WINS servers using netsh, use interface index=
- instead of adapter name now
-   ("as for all other netsh calls")
-* remove undocumented and unused --memstats feature
+I'd like you to do a code review.
+Please visit
 
-Important bug fixes since 2.7_beta3:
+    http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail
 
-* even more type conversion related warnings have been fixed
-* more bugfixes related to BYTECOUNT display on the management interface an=
-d byte counters on DCO platforms in general
-* numerous minibugs reported by ZeroPath AI have been fixed (small memleaks=
-, possible file descriptor leaks,
-  improved sanity checks, add ASSERT() on function contracts, etc.)
+to review the following change.
 
-More details can be found in the Changes document:
 
-<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+Change subject: CONTRIBUTING: add Gerrit option + links
+......................................................................
 
-Source code and Windows installers can be downloaded from our download page:
+CONTRIBUTING: add Gerrit option + links
 
-<https://openvpn.net/community-downloads/>
+- Add Gerrit as an alternative review path
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in th=
-e various
-official Community repositories:
+- Add links: signup, web UI, best practices
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
+- Final patches still go to openvpn-devel
 
-Kind regards,
-Yuriy Darnobyt=
+Change-Id: Ifb4e9d79c167337fb780b53141d080abf55f3f5e
+Signed-off-by: chesain <cvanteddu1@...277...>
+---
+M CONTRIBUTING.rst
+1 file changed, 8 insertions(+), 0 deletions(-)
 
---Apple-Mail=_CAFFEC82-72BC-4388-99A0-ACA934A59A88
-Content-Type: text/html; charset="us-ascii"
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/1338/1
+
+diff --git a/CONTRIBUTING.rst b/CONTRIBUTING.rst
+index 67baa4e..8181aa3 100644
+--- a/CONTRIBUTING.rst
++++ b/CONTRIBUTING.rst
+@@ -8,6 +8,14 @@
+
+ - https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
++Alternatively, you can use Gerrit for code review:
++
++- Create account: https://gerrit.openvpn.net/pwm/public/newuser
++- Web UI: https://gerrit.openvpn.net/
++- Best practices: https://community.openvpn.net/Development/GerritBestPrac=
+tices
++
++Note: final, approved patches are still sent to the mailing list.
++
+ While we do not merge GitHub pull requests as-is, we do allow their use fo=
+r code
+ review purposes. After the patch has been ACKed (reviewed and accepted), i=
+t must
+ be sent to the mailing list. This last step does not necessarily need to b=
+e done
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Ifb4e9d79c167337fb780b53141d080abf55f3f5e
+Gerrit-Change-Number: 1338
+Gerrit-PatchSet: 1
+Gerrit-Owner: chesain <cvanteddu1@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--1/RGIdfu7aQ=
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
-=3Dus-ascii"></head><body style=3D"overflow-wrap: break-word; -webkit-nbsp-=
-mode: space; line-break: after-white-space;"><div><div><font color=3D"#0000=
-00">The OpenVPN community project team is proud to release OpenVPN 2.7_rc1.=
-</font></div><div><font color=3D"#000000">This is a first release candidate=
-&nbsp;<span style=3D"caret-color: rgb(0, 0, 0);">for the feature release 2.=
-7.0</span></font><span style=3D"color: rgb(0, 0, 0);">&nbsp;which includes =
-improvements and bug fixes.</span></div><div><font color=3D"#000000"><br></=
-font></div><div><div><font color=3D"#000000"><span style=3D"caret-color: rg=
-b(0, 0, 0);">Feature changes since 2.7_beta3:</span></font></div><div><font=
- color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);"><br></span></=
-font></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, =
-0, 0);">* add warning for unsupported combination of --push and --tls-serve=
-r</span></font></div><div><font color=3D"#000000"><span style=3D"caret-colo=
-r: rgb(0, 0, 0);">* add warning for unsupported combination of --reneg-byte=
-s or --reneg-pkts with DCO</span></font></div><div><font color=3D"#000000">=
-<span style=3D"caret-color: rgb(0, 0, 0);">* remove perf_push()/perf_pop() =
-infrastructure (because it did not work anymore, and compiler profiling wil=
-l give</span></font></div><div><font color=3D"#000000"><span style=3D"caret=
--color: rgb(0, 0, 0);">&nbsp; </span></font><span style=3D"caret-color: rgb=
-(0, 0, 0); color: rgb(0, 0, 0);">better results today)</span></div><div><fo=
-nt color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* ensure co=
-mpatibility with OpenSSL 3.6.0 - specifically, do not crash in t_lpback.sh =
-trying to use&nbsp;</span></font></div><div><font color=3D"#000000"><span s=
-tyle=3D"caret-color: rgb(0, 0, 0);">&nbsp; &nbsp;new encrypt-then-mac (ETM)=
- ciphers</span></font></div><div><font color=3D"#000000"><span style=3D"car=
-et-color: rgb(0, 0, 0);">* improved PUSH_UPDATE server side support, which =
-now handles changes of pushed ifconfig/ifconfig-ipv6 addresses</span></font=
-></div><div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0=
-);">&nbsp; &nbsp;correctly (send packets to new IP addresses to this client=
-, stop sending packets to the old addresses).</span></font></div><div><font=
- color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* freshen URL=
-s all over the tree, and change to HTTPS where possible</span></font></div>=
-<div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* o=
-n DCO Linux/FreeBSD, add support for clients receiving an IPv4/IPv6 address=
- that is not part of</span></font></div><div><font color=3D"#000000"><span =
-style=3D"caret-color: rgb(0, 0, 0);">&nbsp; &nbsp;the --server/--server-ipv=
-6 subnet (=3D install extra on-interface host routes).</span></font></div><=
-div><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* Wi=
-ndows programs use a new API for path name canonicalization now (PathCchCan=
-onicalizeEx()) which will break building</span></font></div><div><font colo=
-r=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">&nbsp; &nbsp;with =
-MinGW on Ubuntu 22.04 -&gt; Upgrade to 24.04 to make builds work again.</sp=
-an></font></div><div><font color=3D"#000000"><span style=3D"caret-color: rg=
-b(0, 0, 0);">* on Windows, when setting up WINS servers using netsh, use in=
-terface index instead of adapter name now</span></font></div><div><font col=
-or=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">&nbsp; &nbsp;("as=
- for all other netsh calls")</span></font></div><div><font color=3D"#000000=
-"><span style=3D"caret-color: rgb(0, 0, 0);">* remove undocumented and unus=
-ed --memstats feature</span></font></div><div><font color=3D"#000000"><span=
- style=3D"caret-color: rgb(0, 0, 0);"><br></span></font></div><div><font co=
-lor=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">Important bug fi=
-xes since 2.7_beta3:</span></font></div><div><font color=3D"#000000"><span =
-style=3D"caret-color: rgb(0, 0, 0);"><br></span></font></div><div><font col=
-or=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* even more type =
-conversion related warnings have been fixed</span></font></div><div><font c=
-olor=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);">* more bugfixes=
- related to BYTECOUNT display on the management interface and byte counters=
- on DCO platforms in general</span></font></div><div><font color=3D"#000000=
-"><span style=3D"caret-color: rgb(0, 0, 0);">* numerous minibugs reported b=
-y ZeroPath AI have been fixed (small memleaks, possible file descriptor lea=
-ks,</span></font></div><div><font color=3D"#000000"><span style=3D"caret-co=
-lor: rgb(0, 0, 0);">&nbsp; improved sanity checks, add ASSERT() on function=
- contracts, etc.)</span></font></div></div></div><br style=3D"caret-color: =
-rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0=
-); color: rgb(0, 0, 0);">More details can be found in the Changes document:=
-</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br st=
-yle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"care=
-t-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"https://=
-github.com/OpenVPN/openvpn/blob/master/Changes.rst">https://github.com/Open=
-VPN/openvpn/blob/master/Changes.rst</a><span style=3D"caret-color: rgb(0, 0=
-, 0); color: rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: rgb(0, 0, =
-0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rg=
-b(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);=
-">Source code and Windows installers can be downloaded from our download pa=
-ge:</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br=
- style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"c=
-aret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"https=
-://openvpn.net/community-downloads/">https://openvpn.net/community-download=
-s/</a><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;<=
-/span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br sty=
-le=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret=
--color: rgb(0, 0, 0); color: rgb(0, 0, 0);">Packages for Debian, Ubuntu, Fe=
-dora, RHEL, and openSUSE are available in the various</span><br style=3D"ca=
-ret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: =
-rgb(0, 0, 0); color: rgb(0, 0, 0);">official Community repositories:</span>=
-<br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"=
-caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color=
-: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"https://communi=
-ty.openvpn.net/Pages/OpenVPN%20software%20repos">https://community.openvpn.=
-net/Pages/OpenVPN%20software%20repos</a><span style=3D"caret-color: rgb(0, =
-0, 0); color: rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: rgb(0, 0,=
- 0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: r=
-gb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0)=
-;">Kind regards,</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0=
-, 0, 0);"><font color=3D"#000000">Yuriy Darnobyt</font></body></html>=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>chesain would like plaisthos and flichtenheld to <strong>review</strong>=
+ this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">CONTRIBUTING: add Gerrit option + links<br>=
+<br>- Add Gerrit as an alternative review path<br><br>- Add links: signup, =
+web UI, best practices<br><br>- Final patches still go to openvpn-devel<br>=
+<br>Change-Id: Ifb4e9d79c167337fb780b53141d080abf55f3f5e<br>Signed-off-by: =
+chesain &lt;cvanteddu1@...277...&gt;<br>---<br>M CONTRIBUTING.rst<br>1 file=
+ changed, 8 insertions(+), 0 deletions(-)<br><br></pre><pre class=3D"blocks=
+" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
+ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/1338/1</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/CONTRIBUTING.rst b/CONTRIBUTING.rst</span><br><span>index 67baa4=
+e..8181aa3 100644</span><br><span>--- a/CONTRIBUTING.rst</span><br><span>++=
++ b/CONTRIBUTING.rst</span><br><span>@@ -8,6 +8,14 @@</span><br><span> </sp=
+an><br><span> - https://lists.sourceforge.net/lists/listinfo/openvpn-devel<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+Al=
+ternatively, you can use Gerrit for code review:</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+- Create account: https://gerrit.openvpn.net/pwm/public/newuser</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Web UI: https://ger=
+rit.openvpn.net/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- B=
+est practices: https://community.openvpn.net/Development/GerritBestPractice=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+Note: final, approved patches are sti=
+ll sent to the mailing list.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span> While we do not merge GitHub pull requests as-is=
+, we do allow their use for code</span><br><span> review purposes. After th=
+e patch has been ACKed (reviewed and accepted), it must</span><br><span> be=
+ sent to the mailing list. This last step does not necessarily need to be d=
+one</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1338?usp=3Demail">change 1338</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1338?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
---Apple-Mail=_CAFFEC82-72BC-4388-99A0-ACA934A59A88--
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifb4e9d79c167337fb780b53141d=
+080abf55f3f5e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1338 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: chesain &lt;cvanteddu1@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--1/RGIdfu7aQ=--
 
