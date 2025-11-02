@@ -1,16 +1,11 @@
-From: "chesain (Code Review)" <gerrit@...515...>
-Date: Sun, 2 Nov 2025 03:04:43 +0000
-In-Reply-To: <gerrit.1762026034000.Ifb4e9d79c167337fb780b53141d080abf55f3f5e@...2715...>
-References: <gerrit.1762026034000.Ifb4e9d79c167337fb780b53141d080abf55f3f5e@...2715...>
-Reply-To: cvanteddu1@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f3b3b340c2802cce5fb180a9cfc35b581c0e71fe-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="98gTYQrYFEM="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: CONTRIBUTING:
- add Gerrit option + links
+From: Jon Chiappetta <root@...2904...>
+Date: Sun, 2 Nov 2025 01:35:30 -0400
+Message-ID: <CAOh3LPP9XVUU7TGHP51RdBEYSRKW1ih3EV_-FxiNxmiZCCS47g@...278...>
+Content-Type: multipart/alternative; boundary="00000000000027a46f064295f8f9"
+References: <CAOh3LPP9XVUU7TGHP51RdBEYSRKW1ih3EV_-FxiNxmiZCCS47g.ref@...278...>
+Subject: [Openvpn-devel] Question for the devs - Found something interesting
+ in the OpenVPN source code that I change in my modified version...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,83 +14,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
---98gTYQrYFEM=
+--00000000000027a46f064295f8f9
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Hi Gert and devs!
 
-chesain has removed a vote from this change. ( http://gerrit.openvpn.net/c/=
-openvpn/+/1338?usp=3Demail )
+While I was working on the modified version of OpenVPN and tracing through
+the SSL library, I found what I think is a potential invalid memory index
+access. I wanted to verify with you all if this could be correct.
 
+https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl.c#L3682
+https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl_common.h#L712
 
-Change subject: CONTRIBUTING: add Gerrit option + links
-......................................................................
+In this file and that line number there is an integer i that is outside the
+for loop so that it can look for the matching session key index number.
+However, there is an if statement after the loop which checks for the
+following conditions:
 
+if (i == TM_SIZE && is_hard_reset_method2(op))
 
-Removed Code-Review+2 by chesain <cvanteddu1@...277...>
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+If the key is not found, i will equal TM_SIZE but if the second condition
+is false for whatever reason, the code will enter the else block and during
+my debugging, it entered into an invalid index of the array!
 
-Gerrit-MessageType: deleteVote
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ifb4e9d79c167337fb780b53141d080abf55f3f5e
-Gerrit-Change-Number: 1338
-Gerrit-PatchSet: 1
-Gerrit-Owner: chesain <cvanteddu1@...277...>
-Gerrit-Reviewer: chesain <cvanteddu1@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+struct tls_session *session = &multi->session[i]; (->
+multi->session[TM_SIZE] !)
 
---98gTYQrYFEM=
+And as you can see, the session array is only sized for this amount:
+
+struct tls_session session[TM_SIZE];
+
+In my modified version I wasn't sure of when this hard reset check
+condition would be true but to prevent an invalid memory access I changed
+my code to be this instead:
+
+if (i == TM_SIZE || is_hard_reset_method2(op))
+
+That way it helps to protect the else block and from potentially going into
+an invalid index number in the worst case.
+
+Does this seem correct to anyone else or am I missing something else here?
+
+Thanks again,
+Jon C
+
+--00000000000027a46f064295f8f9
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>chesain <strong>removed a vote</strong> from this change.</p><p><a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail">View Change</a>=
-</p><div style=3D"white-space:pre-wrap">Removed Code-Review+2 by chesain &l=
-t;cvanteddu1@...277...&gt;</div><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1338?usp=3Demail">change 1338</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1338?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+<div dir=3D"ltr">Hi Gert and devs!<div><br></div><div>While I was working o=
+n the modified version of OpenVPN and tracing through the SSL library, I fo=
+und what I think is a potential invalid memory index access. I wanted to ve=
+rify with you all if this could be correct.=C2=A0</div><div><br></div><div>=
+<a href=3D"https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl.c=
+#L3682">https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl.c#L3=
+682</a><br></div><div><a href=3D"https://github.com/OpenVPN/openvpn/blob/ma=
+ster/src/openvpn/ssl_common.h#L712">https://github.com/OpenVPN/openvpn/blob=
+/master/src/openvpn/ssl_common.h#L712</a><br></div><div><br></div><div>In t=
+his file and that line number there is an integer i that is outside the for=
+ loop so that it can look for the matching session key index number. Howeve=
+r, there is an if statement after the loop which checks for the following c=
+onditions:</div><div><br></div><div>if (i =3D=3D TM_SIZE &amp;&amp; is_hard=
+_reset_method2(op))<br></div><div><br></div><div>If the key is not found, i=
+ will equal TM_SIZE but if the second condition is false for whatever reaso=
+n, the code will enter the else block and during my debugging, it entered i=
+nto an invalid index of the array!</div><div><br></div><div>struct tls_sess=
+ion *session =3D &amp;multi-&gt;session[i]; (-&gt; multi-&gt;session[TM_SIZ=
+E] !)</div><div><br></div><div>And as you can see, the session array is onl=
+y sized for this amount:</div><div><br></div><div>struct tls_session sessio=
+n[TM_SIZE];<br></div><div><br></div><div>In my modified version I wasn&#39;=
+t sure of when this hard reset check condition would be true but to prevent=
+ an invalid memory access I changed my code to be this instead:</div><div><=
+br></div><div><div>if (i =3D=3D TM_SIZE || is_hard_reset_method2(op))<br></=
+div><br class=3D"gmail-Apple-interchange-newline"></div><div>That way it he=
+lps to protect the else block and from potentially going into an invalid in=
+dex number in the worst case.=C2=A0</div><div><br></div><div>Does this seem=
+ correct to anyone else or am I missing something else here?</div><div><br>=
+</div><div>Thanks again,</div><div>Jon C</div><div><br></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifb4e9d79c167337fb780b53141d=
-080abf55f3f5e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1338 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: chesain &lt;cvanteddu1@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: chesain &lt;cvanteddu1@...1482...=
-...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-
-</body></html>=
-
---98gTYQrYFEM=--
+--00000000000027a46f064295f8f9--
 
