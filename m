@@ -1,13 +1,16 @@
-Message-ID: <ec8fb727-3db8-4ca5-b4ce-b94adbce53e9@...1227...>
-Date: Mon, 3 Nov 2025 11:12:32 +0100
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Mon, 3 Nov 2025 10:28:32 +0000
+In-Reply-To: <gerrit.1762092816000.I7252d5a252e91ffc03db142aa226c9eb1656480b@...2715...>
+References: <gerrit.1762092816000.I7252d5a252e91ffc03db142aa226c9eb1656480b@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3147cb83415bb18bb5841889a0c420f56a5521f0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <CAOh3LPOey9b8wdPv7NeHqZopWgw3f0c-cXsZ+ozWZ7nzyn7s2Q.ref@...278...>
- <CAOh3LPOey9b8wdPv7NeHqZopWgw3f0c-cXsZ+ozWZ7nzyn7s2Q@...278...>
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <CAOh3LPOey9b8wdPv7NeHqZopWgw3f0c-cXsZ+ozWZ7nzyn7s2Q@...278...>
-Subject: Re: [Openvpn-devel] One more program crash that I happened to
- observe and catch in GDB - potential free/malloc bug?
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="qGgouXe4chA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: fix DNS
+ address list generation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +19,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Jon Chiappetta <root@...2904...>, openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 02.11.25 um 20:52 schrieb Jon Chiappetta via Openvpn-devel:
-> Hi Gert and devs,
-> 
-> During my experimentation with this dual mode, I've had to go through a 
-> lot of the code in the ssl.c library file. While I was tracing and 
-> testing my modifications, I think I found another potential crash path 
-> but I'm also not sure if it was my modifications or if this is indeed a 
-> bug potentially.
-> 
-> This was the GDB backtrace I was able to capture during my own modified 
-> testing:
-> 
-> 
-> 
-> Thread 8 "openvpn" received signal SIGSEGV, Segmentation fault.
-> [Switching to Thread 0x7fffdffff6c0 (LWP 638500)]
-> 0x00007ffff74add55 in __GI___libc_free (mem=0x2) at ./malloc/malloc.c:3375
-> warning: 3375   ./malloc/malloc.c: No such file or directory
-> (gdb) Quit
-> (gdb) bt
-> #0  0x00007ffff74add55 in __GI___libc_free (mem=0x2) at ./malloc/ 
-> malloc.c:3375
-> #1  0x0000555555564be1 in free_buf (buf=buf@...1851...=0x7fffd40068b0) at 
-> buffer.c:186
-> #2  0x00005555555e1d04 in key_state_free (ks=ks@...1851...=0x7fffd40065d0, clear=clear@...1851...=false) at ssl.c:928
+--qGgouXe4chA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: d12fk, flichtenheld, plaisthos.
+
+stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1339?usp=3Demail )
+
+Change subject: iservice: fix DNS address list generation
+......................................................................
 
 
-void
-key_state_ssl_free(struct key_state_ssl *ks_ssl)
-{
-     if (ks_ssl->ssl)
-     {
-#ifdef BIO_DEBUG
-         bio_debug_oc("close ssl_bio", ks_ssl->ssl_bio);
-         bio_debug_oc("close ct_in", ks_ssl->ct_in);
-         bio_debug_oc("close ct_out", ks_ssl->ct_out);
-#endif
-         BIO_free_all(ks_ssl->ssl_bio);
-         SSL_free(ks_ssl->ssl);
-     }
-}
+Patch Set 1: Code-Review+2
 
-This method does not have a free_buf that is in your backtrace. So it 
-looks more like it is only in your modified version.
 
-In general you have to a bit careful. Often the code assumes that the 
-struct are initlised with zero, which also makes pointers and so on 
-NULL. And the original method here is also in this pattern and checking 
-if (ks_ssl->ssl) before doing anything. The pattern that free is used on 
-something that is not initialised (but only is all zero) is a quite a 
-common pattern in OpenVPN.
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1339?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Arne
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7252d5a252e91ffc03db142aa226c9eb1656480b
+Gerrit-Change-Number: 1339
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Mon, 03 Nov 2025 10:28:32 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--qGgouXe4chA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: d12fk, flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1339?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1339?usp=3Demail=
+">change 1339</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1339?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7252d5a252e91ffc03db142aa22=
+6c9eb1656480b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1339 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 03 Nov 2025 10:28:32=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--qGgouXe4chA=--
 
