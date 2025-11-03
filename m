@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 3 Nov 2025 13:08:48 +0000
+Date: Mon, 3 Nov 2025 13:08:50 +0000
 In-Reply-To: <gerrit.1761942169000.I5cf45cfe0567da8fb5d47118a432a35b358f3809@...2715...>
 References: <gerrit.1761942169000.I5cf45cfe0567da8fb5d47118a432a35b358f3809@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <5954d2ac82210ec40535a4d97bb5a4ccc43aa126-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5954d2ac82210ec40535a4d97bb5a4ccc43aa126-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MGKMmz+u+Xk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="hDeEvzkLVoQ="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: iservice: use
  interface index with netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MGKMmz+u+Xk=
+--hDeEvzkLVoQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by stipa
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+37?usp=3Demail )
 
 Change subject: iservice: use interface index with netsh
 ......................................................................
@@ -53,7 +49,7 @@ M src/openvpnserv/interactive.c
 1 file changed, 50 insertions(+), 57 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/37/1337/2
+
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
 index c12d34f..b35005c 100644
@@ -330,7 +326,7 @@ dex, addr);
 
 @@ -1734,15 +1727,15 @@
                      break;
-=20
+
                  case undo_dns4:
 -                    DeleteDNS(AF_INET, item->data);
 +                    DeleteDNS(AF_INET, *(int *)item->data);
@@ -353,7 +349,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
 Gerrit-Change-Id: I5cf45cfe0567da8fb5d47118a432a35b358f3809
@@ -365,279 +361,275 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MGKMmz+u+Xk=
+--hDeEvzkLVoQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by d12fk.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by stipa</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">iservice: use interface index with =
-netsh<br><br>We use the interface index with netsh everywhere else, so conv=
-ert the<br>remaining invocations of netsh to index use as well.<br><br>Chan=
-ge-Id: I5cf45cfe0567da8fb5d47118a432a35b358f3809<br>Signed-off-by: Heiko Hu=
-nd &lt;heiko@...2662...&gt;<br>Acked-by: Lev Stipakov &lt;lstipakov@...1354...=
-..&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1337<br>Messag=
-e-Id: &lt;20251103091525.22108-1-gert@...1296...&gt;<br>Signed-off-by: Gert=
- Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpnserv/interactive.c<=
-br>1 file changed, 50 insertions(+), 57 deletions(-)<br><br></pre><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/37/1337/2=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/inter=
-active.c</span><br><span>index c12d34f..b35005c 100644</span><br><span>--- =
-a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/inter=
-active.c</span><br><span>@@ -1035,16 +1035,16 @@</span><br><span> }</span><=
-br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- * Run the command: netsh interface $proto $action dns $if_name $=
-addr [validate=3Dno]</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * Run the command: netsh interface $proto $action dns $if_index $addr [va=
-lidate=3Dno]</span><br><span>  * @param  action      &quot;delete&quot; or =
-&quot;add&quot;</span><br><span>  * @param  proto       &quot;ipv6&quot; or=
- &quot;ip&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @pa=
-ram  if_name     &quot;name_of_interface&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * @param  if_index     index of the interface t=
-o modify DNS for</span><br><span>  * @param  addr         IPv4 (for proto =
-=3D ip) or IPv6 address as a string</span><br><span>  *</span><br><span>  *=
- If addr is null and action =3D &quot;delete&quot; all addresses are delete=
-d.</span><br><span>  */</span><br><span> static DWORD</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-netsh_dns_cmd(const wchar_t *action, const =
-wchar_t *proto, const wchar_t *if_name, const wchar_t *addr)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+netsh_dns_cmd(const wchar_t *actio=
-n, const wchar_t *proto, int if_index, const wchar_t *addr)</span><br><span=
-> {</span><br><span>     DWORD err =3D 0;</span><br><span>     int timeout =
-=3D 30000; /* in msec */</span><br><span>@@ -1069,10 +1069,10 @@</span><br>=
-<span>     /* cmd template:</span><br><span>      * netsh interface $proto =
-$action dns $if_name $addr [validate=3Dno]</span><br><span>      */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    const wchar_t *fmt =3D L&=
-quot;netsh interface %ls %ls dns \&quot;%ls\&quot; %ls&quot;;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    const wchar_t *fmt =3D L&quot=
-;netsh interface %ls %ls dns %d %ls&quot;;</span><br><span> </span><br><spa=
-n>     /* max cmdline length in wchars -- include room for worst case and s=
-ome */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t ncmd=
-line =3D wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    size_t ncmdline =3D wcslen(=
-fmt) + 11 /*if_index*/ + wcslen(addr) + 32 + 1;</span><br><span>     cmdlin=
-e =3D malloc(ncmdline*sizeof(wchar_t));</span><br><span>     if (!cmdline)<=
-/span><br><span>     {</span><br><span>@@ -1080,7 +1080,7 @@</span><br><spa=
-n>         goto out;</span><br><span>     }</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdline, ncmdl=
-ine, fmt, proto, action, if_name, addr);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    openvpn_swprintf(cmdline, ncmdline, fmt, proto, ac=
-tion, if_index, addr);</span><br><span> </span><br><span>     if (IsWindows=
-7OrGreater())</span><br><span>     {</span><br><span>@@ -1094,16 +1094,16 @=
-@</span><br><span> }</span><br><span> </span><br><span> /**</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * Run the command: netsh interface i=
-p $action wins $if_name [static] $addr</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * Run the command: netsh interface ip $action wins $if_=
-index [static] $addr</span><br><span>  * @param  action      &quot;delete&q=
-uot;, &quot;add&quot; or &quot;set&quot;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- * @param  if_name     &quot;name_of_interface&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  if_index    =
-index of the interface to modify WINS for</span><br><span>  * @param  addr =
-       IPv4 address as a string</span><br><span>  *</span><br><span>  * If =
-addr is null and action =3D &quot;delete&quot; all addresses are deleted.</=
-span><br><span>  * if action =3D &quot;set&quot; then &quot;static&quot; is=
- added before $addr</span><br><span>  */</span><br><span> static DWORD</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-netsh_wins_cmd(const wchar=
-_t *action, const wchar_t *if_name, const wchar_t *addr)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+netsh_wins_cmd(const wchar_t *action, =
-int if_index, const wchar_t *addr)</span><br><span> {</span><br><span>     =
-DWORD err =3D 0;</span><br><span>     int timeout =3D 30000; /* in msec */<=
-/span><br><span>@@ -1129,11 +1129,11 @@</span><br><span>     /* cmd templat=
-e:</span><br><span>      * netsh interface ip $action wins $if_name $static=
- $addr</span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    const wchar_t *fmt =3D L&quot;netsh interface ip %ls wins \&q=
-uot;%ls\&quot; %ls %ls&quot;;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    const wchar_t *fmt =3D L&quot;netsh interface ip %ls wins %d =
-%ls %ls&quot;;</span><br><span> </span><br><span>     /* max cmdline length=
- in wchars -- include room for worst case and some */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    size_t ncmdline =3D wcslen(fmt) + wcsle=
-n(if_name) + wcslen(action) + wcslen(addr)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                      +wcslen(addr_static) + 32 + 1;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t ncmdline =
-=3D wcslen(fmt) + 11 /*if_index*/ + wcslen(action) + wcslen(addr)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                      + wcsle=
-n(addr_static) + 32 + 1;</span><br><span>     cmdline =3D malloc(ncmdline *=
- sizeof(wchar_t));</span><br><span>     if (!cmdline)</span><br><span>     =
-{</span><br><span>@@ -1141,7 +1141,7 @@</span><br><span>         goto out;<=
-/span><br><span>     }</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    openvpn_swprintf(cmdline, ncmdline, fmt, action, if_=
-name, addr_static, addr);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    openvpn_swprintf(cmdline, ncmdline, fmt, action, if_index, addr_s=
-tatic, addr);</span><br><span> </span><br><span>     err =3D ExecCommand(ar=
-gv0, cmdline, timeout);</span><br><span> </span><br><span>@@ -1184,18 +1184=
-,18 @@</span><br><span> </span><br><span> /* Delete all IPv4 or IPv6 dns se=
-rvers for an interface */</span><br><span> static DWORD</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-DeleteDNS(short family, wchar_t *if_name)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+DeleteDNS(short fam=
-ily, int if_index)</span><br><span> {</span><br><span>     wchar_t *proto =
-=3D (family =3D=3D AF_INET6) ? L&quot;ipv6&quot; : L&quot;ip&quot;;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    return netsh_dns_cmd(L&qu=
-ot;delete&quot;, proto, if_name, NULL);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    return netsh_dns_cmd(L&quot;delete&quot;, proto, if=
-_index, NULL);</span><br><span> }</span><br><span> </span><br><span> /* Add=
- an IPv4 or IPv6 dns server to an interface */</span><br><span> static DWOR=
-D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AddDNS(short family,=
- wchar_t *if_name, wchar_t *addr)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+AddDNS(short family, int if_index, wchar_t *addr)</span><br><=
-span> {</span><br><span>     wchar_t *proto =3D (family =3D=3D AF_INET6) ? =
-L&quot;ipv6&quot; : L&quot;ip&quot;;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    return netsh_dns_cmd(L&quot;add&quot;, proto, if_name, a=
-ddr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return net=
-sh_dns_cmd(L&quot;add&quot;, proto, if_index, addr);</span><br><span> }</sp=
-an><br><span> </span><br><span> static BOOL</span><br><span>@@ -1295,12 +12=
-95,12 @@</span><br><span>      */</span><br><span>     if (addr_len &gt; 0 =
-|| msg-&gt;header.type =3D=3D msg_del_dns_cfg)</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D DeleteDNS(m=
-sg-&gt;family, wide_name);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        err =3D DeleteDNS(msg-&gt;family, msg-&gt;iface.index);</spa=
-n><br><span>         if (err)</span><br><span>         {</span><br><span>  =
-           goto out;</span><br><span>         }</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        free(RemoveListItem(&amp;(*lists)[undo_ty=
-pe], CmpWString, wide_name));</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        free(RemoveListItem(&amp;(*lists)[undo_type], CmpAny, NUL=
-L));</span><br><span>     }</span><br><span> </span><br><span>     if (msg-=
-&gt;header.type =3D=3D msg_del_dns_cfg)</span><br><span>@@ -1323,7 +1323,7 =
-@@</span><br><span>         {</span><br><span>             RtlIpv4AddressTo=
-StringW(&amp;msg-&gt;addr[i].ipv4, addr);</span><br><span>         }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D AddDNS(msg-&=
-gt;family, wide_name, addr);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        err =3D AddDNS(msg-&gt;family, msg-&gt;iface.index, addr);=
-</span><br><span>         if (i =3D=3D 0 &amp;&amp; err)</span><br><span>  =
-       {</span><br><span>             goto out;</span><br><span>@@ -1337,11=
- +1337,15 @@</span><br><span> </span><br><span>     if (msg-&gt;addr_len &g=
-t; 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        wchar_t *tmp_name =3D _wcsdup(wide_name);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        if (!tmp_name || AddListItem(&am=
-p;(*lists)[undo_type], tmp_name))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        int *tmp_index =3D malloc(sizeof(msg-&gt;iface.index)=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (tmp_i=
-ndex)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            free(tmp_name);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            DeleteDNS(msg-&gt;family, wide_name);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            *tmp_index =3D m=
-sg-&gt;iface.index;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
- (!tmp_index || AddListItem(&amp;(*lists)[undo_type], tmp_index))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            free(tmp_index);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            DeleteDNS(msg-&gt;=
-family, msg-&gt;iface.index);</span><br><span>             err =3D ERROR_OU=
-TOFMEMORY;</span><br><span>             goto out;</span><br><span>         =
-}</span><br><span>@@ -1360,7 +1364,7 @@</span><br><span> static DWORD</span=
-><br><span> HandleWINSConfigMessage(const wins_cfg_message_t *msg, undo_lis=
-ts_t *lists)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    DWORD err =3D 0;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    DWORD err =3D NO_ERROR;</span><br><span>     wchar_t addr[16=
-]; /* large enough to hold string representation of an ipv4 */</span><br><s=
-pan>     int addr_len =3D msg-&gt;addr_len;</span><br><span> </span><br><sp=
-an>@@ -1370,37 +1374,25 @@</span><br><span>         addr_len =3D _countof(m=
-sg-&gt;addr);</span><br><span>     }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    if (!msg-&gt;iface.name[0]) /* interfa=
-ce name is required */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    if (!msg-&gt;iface.index) /* interface index is required */</span><b=
-r><span>     {</span><br><span>         return ERROR_MESSAGE_DATA;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    /* use a non-const reference with limited scope to enforce n=
-ull-termination of strings from client */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        wins_cfg_message_t *msgptr =3D (wins_cfg_message_t *)msg;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        msgptr-&gt;iface.na=
-me[_countof(msg-&gt;iface.name) - 1] =3D &#39;\0&#39;;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-wchar_t *wide_name =3D utf8to16(msg-&gt;iface.name); /* utf8 to wide-char *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!wide_name)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        return ERROR_OUTOFMEMORY;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /* We delete all cur=
-rent addresses before adding any</span><br><span>      * OR if the message =
-type is del_wins_cfg</span><br><span>      */</span><br><span>     if (addr=
-_len &gt; 0 || msg-&gt;header.type =3D=3D msg_del_wins_cfg)</span><br><span=
->     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =
-=3D netsh_wins_cmd(L&quot;delete&quot;, wide_name, NULL);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        err =3D netsh_wins_cmd(L&quot=
-;delete&quot;, msg-&gt;iface.index, NULL);</span><br><span>         if (err=
-)</span><br><span>         {</span><br><span>             goto out;</span><=
-br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      free(RemoveListItem(&amp;(*lists)[undo_wins], CmpWString, wide_name))=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        free(Remov=
-eListItem(&amp;(*lists)[undo_wins], CmpAny, NULL));</span><br><span>     }<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (msg-&gt;header.type =3D=3D msg_del_wins_cfg)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    if (addr_len =3D=3D 0 || msg-&gt;header.ty=
-pe =3D=3D msg_del_wins_cfg)</span><br><span>     {</span><br><span>        =
- goto out;  /* job done */</span><br><span>     }</span><br><span>@@ -1408,=
-7 +1400,7 @@</span><br><span>     for (int i =3D 0; i &lt; addr_len; ++i)</=
-span><br><span>     {</span><br><span>         RtlIpv4AddressToStringW(&amp=
-;msg-&gt;addr[i].ipv4, addr);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        err =3D netsh_wins_cmd(i =3D=3D 0 ? L&quot;set&quot; : L&qu=
-ot;add&quot;, wide_name, addr);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        err =3D netsh_wins_cmd(i =3D=3D 0 ? L&quot;set&quot; : =
-L&quot;add&quot;, msg-&gt;iface.index, addr);</span><br><span>         if (=
-i =3D=3D 0 &amp;&amp; err)</span><br><span>         {</span><br><span>     =
-        goto out;</span><br><span>@@ -1418,22 +1410,23 @@</span><br><span> =
-         */</span><br><span>     }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    err =3D 0;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (addr_len &gt; 0)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    int *if_index =3D malloc(sizeof(msg-&gt;iface.index));</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (if_index)</span><br=
-><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-wchar_t *tmp_name =3D _wcsdup(wide_name);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        if (!tmp_name || AddListItem(&amp;(*lists)[undo=
-_wins], tmp_name))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            fre=
-e(tmp_name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   netsh_wins_cmd(L&quot;delete&quot;, wide_name, NULL);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            err =3D ERROR_OUTOFMEMORY;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto out;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        *if_index =3D msg-&gt;ifa=
-ce.index;</span><br><span>     }</span><br><span> </span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (!if_index || AddListItem(&amp;(*list=
-s)[undo_wins], if_index))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-free(if_index);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    netsh_wins_cmd(L&quot;delete&quot;, msg-&gt;iface.index, NULL);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        err =3D ERROR_OUTOF=
-MEMORY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto=
- out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    err =3D 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span> out:</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    free(wide_name);</span><br><span>     return er=
-r;</span><br><span> }</span><br><span> </span><br><span>@@ -1734,15 +1727,1=
-5 @@</span><br><span>                     break;</span><br><span> </span><b=
-r><span>                 case undo_dns4:</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                    DeleteDNS(AF_INET, item-&gt;data);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    D=
-eleteDNS(AF_INET, *(int *)item-&gt;data);</span><br><span>                 =
-    break;</span><br><span> </span><br><span>                 case undo_dns=
-6:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
- DeleteDNS(AF_INET6, item-&gt;data);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                    DeleteDNS(AF_INET6, *(int *)item-&gt;d=
-ata);</span><br><span>                     break;</span><br><span> </span><=
-br><span>                 case undo_wins:</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                    netsh_wins_cmd(L&quot;delete&quot;,=
- item-&gt;data, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                    netsh_wins_cmd(L&quot;delete&quot;, *(int *)item-&gt=
-;data, NULL);</span><br><span>                     break;</span><br><span> =
-</span><br><span>                 case undo_domain:</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1337?usp=3Demail">change 1337</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-337?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1337?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">iservice: use interface index with netsh<br><br>=
+We use the interface index with netsh everywhere else, so convert the<br>re=
+maining invocations of netsh to index use as well.<br><br>Change-Id: I5cf45=
+cfe0567da8fb5d47118a432a35b358f3809<br>Signed-off-by: Heiko Hund &lt;heiko@=
+...2662...&gt;<br>Acked-by: Lev Stipakov &lt;lstipakov@...277...&gt;<br>Ger=
+rit URL: https://gerrit.openvpn.net/c/openvpn/+/1337<br>Message-Id: &lt;202=
+51103091525.22108-1-gert@...1296...&gt;<br>Signed-off-by: Gert Doering &lt;=
+gert@...1296...&gt;<br>---<br>M src/openvpnserv/interactive.c<br>1 file cha=
+nged, 50 insertions(+), 57 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
+.c</span><br><span>index c12d34f..b35005c 100644</span><br><span>--- a/src/=
+openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interactive=
+.c</span><br><span>@@ -1035,16 +1035,16 @@</span><br><span> }</span><br><sp=
+an> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- * Run the command: netsh interface $proto $action dns $if_name $addr [=
+validate=3Dno]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Ru=
+n the command: netsh interface $proto $action dns $if_index $addr [validate=
+=3Dno]</span><br><span>  * @param  action      &quot;delete&quot; or &quot;=
+add&quot;</span><br><span>  * @param  proto       &quot;ipv6&quot; or &quot=
+;ip&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  i=
+f_name     &quot;name_of_interface&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * @param  if_index     index of the interface to modi=
+fy DNS for</span><br><span>  * @param  addr         IPv4 (for proto =3D ip)=
+ or IPv6 address as a string</span><br><span>  *</span><br><span>  * If add=
+r is null and action =3D &quot;delete&quot; all addresses are deleted.</spa=
+n><br><span>  */</span><br><span> static DWORD</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-netsh_dns_cmd(const wchar_t *action, const wchar_t=
+ *proto, const wchar_t *if_name, const wchar_t *addr)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+netsh_dns_cmd(const wchar_t *action, cons=
+t wchar_t *proto, int if_index, const wchar_t *addr)</span><br><span> {</sp=
+an><br><span>     DWORD err =3D 0;</span><br><span>     int timeout =3D 300=
+00; /* in msec */</span><br><span>@@ -1069,10 +1069,10 @@</span><br><span> =
+    /* cmd template:</span><br><span>      * netsh interface $proto $action=
+ dns $if_name $addr [validate=3Dno]</span><br><span>      */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    const wchar_t *fmt =3D L&quot;ne=
+tsh interface %ls %ls dns \&quot;%ls\&quot; %ls&quot;;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    const wchar_t *fmt =3D L&quot;netsh =
+interface %ls %ls dns %d %ls&quot;;</span><br><span> </span><br><span>     =
+/* max cmdline length in wchars -- include room for worst case and some */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t ncmdline =
+=3D wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    size_t ncmdline =3D wcslen(fmt) =
++ 11 /*if_index*/ + wcslen(addr) + 32 + 1;</span><br><span>     cmdline =3D=
+ malloc(ncmdline*sizeof(wchar_t));</span><br><span>     if (!cmdline)</span=
+><br><span>     {</span><br><span>@@ -1080,7 +1080,7 @@</span><br><span>   =
+      goto out;</span><br><span>     }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    openvpn_swprintf(cmdline, ncmdline, =
+fmt, proto, action, if_name, addr);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    openvpn_swprintf(cmdline, ncmdline, fmt, proto, action,=
+ if_index, addr);</span><br><span> </span><br><span>     if (IsWindows7OrGr=
+eater())</span><br><span>     {</span><br><span>@@ -1094,16 +1094,16 @@</sp=
+an><br><span> }</span><br><span> </span><br><span> /**</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">- * Run the command: netsh interface ip $ac=
+tion wins $if_name [static] $addr</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * Run the command: netsh interface ip $action wins $if_index=
+ [static] $addr</span><br><span>  * @param  action      &quot;delete&quot;,=
+ &quot;add&quot; or &quot;set&quot;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- * @param  if_name     &quot;name_of_interface&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  if_index    index=
+ of the interface to modify WINS for</span><br><span>  * @param  addr      =
+  IPv4 address as a string</span><br><span>  *</span><br><span>  * If addr =
+is null and action =3D &quot;delete&quot; all addresses are deleted.</span>=
+<br><span>  * if action =3D &quot;set&quot; then &quot;static&quot; is adde=
+d before $addr</span><br><span>  */</span><br><span> static DWORD</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-netsh_wins_cmd(const wchar_t *a=
+ction, const wchar_t *if_name, const wchar_t *addr)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+netsh_wins_cmd(const wchar_t *action, int=
+ if_index, const wchar_t *addr)</span><br><span> {</span><br><span>     DWO=
+RD err =3D 0;</span><br><span>     int timeout =3D 30000; /* in msec */</sp=
+an><br><span>@@ -1129,11 +1129,11 @@</span><br><span>     /* cmd template:<=
+/span><br><span>      * netsh interface ip $action wins $if_name $static $a=
+ddr</span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    const wchar_t *fmt =3D L&quot;netsh interface ip %ls wins \&quot=
+;%ls\&quot; %ls %ls&quot;;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    const wchar_t *fmt =3D L&quot;netsh interface ip %ls wins %d %ls=
+ %ls&quot;;</span><br><span> </span><br><span>     /* max cmdline length in=
+ wchars -- include room for worst case and some */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    size_t ncmdline =3D wcslen(fmt) + wcslen(i=
+f_name) + wcslen(action) + wcslen(addr)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                      +wcslen(addr_static) + 32 + 1;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t ncmdline =3D =
+wcslen(fmt) + 11 /*if_index*/ + wcslen(action) + wcslen(addr)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                      + wcslen(ad=
+dr_static) + 32 + 1;</span><br><span>     cmdline =3D malloc(ncmdline * siz=
+eof(wchar_t));</span><br><span>     if (!cmdline)</span><br><span>     {</s=
+pan><br><span>@@ -1141,7 +1141,7 @@</span><br><span>         goto out;</spa=
+n><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    openvpn_swprintf(cmdline, ncmdline, fmt, action, if_name=
+, addr_static, addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    openvpn_swprintf(cmdline, ncmdline, fmt, action, if_index, addr_stati=
+c, addr);</span><br><span> </span><br><span>     err =3D ExecCommand(argv0,=
+ cmdline, timeout);</span><br><span> </span><br><span>@@ -1184,18 +1184,18 =
+@@</span><br><span> </span><br><span> /* Delete all IPv4 or IPv6 dns server=
+s for an interface */</span><br><span> static DWORD</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-DeleteDNS(short family, wchar_t *if_name)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+DeleteDNS(short famil=
+y, int if_index)</span><br><span> {</span><br><span>     wchar_t *proto =3D=
+ (family =3D=3D AF_INET6) ? L&quot;ipv6&quot; : L&quot;ip&quot;;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    return netsh_dns_cmd(L&quot;=
+delete&quot;, proto, if_name, NULL);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    return netsh_dns_cmd(L&quot;delete&quot;, proto, if_in=
+dex, NULL);</span><br><span> }</span><br><span> </span><br><span> /* Add an=
+ IPv4 or IPv6 dns server to an interface */</span><br><span> static DWORD</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-AddDNS(short family, wc=
+har_t *if_name, wchar_t *addr)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+AddDNS(short family, int if_index, wchar_t *addr)</span><br><spa=
+n> {</span><br><span>     wchar_t *proto =3D (family =3D=3D AF_INET6) ? L&q=
+uot;ipv6&quot; : L&quot;ip&quot;;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    return netsh_dns_cmd(L&quot;add&quot;, proto, if_name, addr=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return netsh_=
+dns_cmd(L&quot;add&quot;, proto, if_index, addr);</span><br><span> }</span>=
+<br><span> </span><br><span> static BOOL</span><br><span>@@ -1295,12 +1295,=
+12 @@</span><br><span>      */</span><br><span>     if (addr_len &gt; 0 || =
+msg-&gt;header.type =3D=3D msg_del_dns_cfg)</span><br><span>     {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D DeleteDNS(msg-=
+&gt;family, wide_name);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        err =3D DeleteDNS(msg-&gt;family, msg-&gt;iface.index);</span><=
+br><span>         if (err)</span><br><span>         {</span><br><span>     =
+        goto out;</span><br><span>         }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        free(RemoveListItem(&amp;(*lists)[undo_type]=
+, CmpWString, wide_name));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        free(RemoveListItem(&amp;(*lists)[undo_type], CmpAny, NULL))=
+;</span><br><span>     }</span><br><span> </span><br><span>     if (msg-&gt=
+;header.type =3D=3D msg_del_dns_cfg)</span><br><span>@@ -1323,7 +1323,7 @@<=
+/span><br><span>         {</span><br><span>             RtlIpv4AddressToStr=
+ingW(&amp;msg-&gt;addr[i].ipv4, addr);</span><br><span>         }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D AddDNS(msg-&gt;=
+family, wide_name, addr);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        err =3D AddDNS(msg-&gt;family, msg-&gt;iface.index, addr);</s=
+pan><br><span>         if (i =3D=3D 0 &amp;&amp; err)</span><br><span>     =
+    {</span><br><span>             goto out;</span><br><span>@@ -1337,11 +1=
+337,15 @@</span><br><span> </span><br><span>     if (msg-&gt;addr_len &gt; =
+0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        wchar_t *tmp_name =3D _wcsdup(wide_name);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (!tmp_name || AddListItem(&amp;(=
+*lists)[undo_type], tmp_name))</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        int *tmp_index =3D malloc(sizeof(msg-&gt;iface.index));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (tmp_inde=
+x)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            free(tmp_name);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            DeleteDNS(msg-&gt;family, wide_name);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            *tmp_index =3D msg-=
+&gt;iface.index;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!=
+tmp_index || AddListItem(&amp;(*lists)[undo_type], tmp_index))</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            free(tmp_index);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            DeleteDNS(msg-&gt;fa=
+mily, msg-&gt;iface.index);</span><br><span>             err =3D ERROR_OUTO=
+FMEMORY;</span><br><span>             goto out;</span><br><span>         }<=
+/span><br><span>@@ -1360,7 +1364,7 @@</span><br><span> static DWORD</span><=
+br><span> HandleWINSConfigMessage(const wins_cfg_message_t *msg, undo_lists=
+_t *lists)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    DWORD err =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    DWORD err =3D NO_ERROR;</span><br><span>     wchar_t addr[16];=
+ /* large enough to hold string representation of an ipv4 */</span><br><spa=
+n>     int addr_len =3D msg-&gt;addr_len;</span><br><span> </span><br><span=
+>@@ -1370,37 +1374,25 @@</span><br><span>         addr_len =3D _countof(msg=
+-&gt;addr);</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (!msg-&gt;iface.name[0]) /* interfac=
+e name is required */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!msg-&gt;iface.index) /* interface index is required */</span><br=
+><span>     {</span><br><span>         return ERROR_MESSAGE_DATA;</span><br=
+><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    /* use a non-const reference with limited scope to enforce nu=
+ll-termination of strings from client */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        wins_cfg_message_t *msgptr =3D (wins_cfg_message_t *)msg;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        msgptr-&gt;iface.nam=
+e[_countof(msg-&gt;iface.name) - 1] =3D &#39;\0&#39;;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    w=
+char_t *wide_name =3D utf8to16(msg-&gt;iface.name); /* utf8 to wide-char */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!wide_name)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        return ERROR_OUTOFMEMORY;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /* We delete all curr=
+ent addresses before adding any</span><br><span>      * OR if the message t=
+ype is del_wins_cfg</span><br><span>      */</span><br><span>     if (addr_=
+len &gt; 0 || msg-&gt;header.type =3D=3D msg_del_wins_cfg)</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        err =3D=
+ netsh_wins_cmd(L&quot;delete&quot;, wide_name, NULL);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        err =3D netsh_wins_cmd(L&quot;de=
+lete&quot;, msg-&gt;iface.index, NULL);</span><br><span>         if (err)</=
+span><br><span>         {</span><br><span>             goto out;</span><br>=
+<span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   free(RemoveListItem(&amp;(*lists)[undo_wins], CmpWString, wide_name));</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        free(RemoveLi=
+stItem(&amp;(*lists)[undo_wins], CmpAny, NULL));</span><br><span>     }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(msg-&gt;header.type =3D=3D msg_del_wins_cfg)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (addr_len =3D=3D 0 || msg-&gt;header.type =
+=3D=3D msg_del_wins_cfg)</span><br><span>     {</span><br><span>         go=
+to out;  /* job done */</span><br><span>     }</span><br><span>@@ -1408,7 +=
+1400,7 @@</span><br><span>     for (int i =3D 0; i &lt; addr_len; ++i)</spa=
+n><br><span>     {</span><br><span>         RtlIpv4AddressToStringW(&amp;ms=
+g-&gt;addr[i].ipv4, addr);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        err =3D netsh_wins_cmd(i =3D=3D 0 ? L&quot;set&quot; : L&quot;=
+add&quot;, wide_name, addr);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        err =3D netsh_wins_cmd(i =3D=3D 0 ? L&quot;set&quot; : L&q=
+uot;add&quot;, msg-&gt;iface.index, addr);</span><br><span>         if (i =
+=3D=3D 0 &amp;&amp; err)</span><br><span>         {</span><br><span>       =
+      goto out;</span><br><span>@@ -1418,22 +1410,23 @@</span><br><span>   =
+       */</span><br><span>     }</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    err =3D 0;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    if (addr_len &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    int *if_index =3D malloc(sizeof(msg-&gt;iface.index));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (if_index)</span><br><s=
+pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        wch=
+ar_t *tmp_name =3D _wcsdup(wide_name);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        if (!tmp_name || AddListItem(&amp;(*lists)[undo_wi=
+ns], tmp_name))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            free(t=
+mp_name);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+netsh_wins_cmd(L&quot;delete&quot;, wide_name, NULL);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            err =3D ERROR_OUTOFMEMORY;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto out;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        *if_index =3D msg-&gt;iface.=
+index;</span><br><span>     }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    if (!if_index || AddListItem(&amp;(*lists)[=
+undo_wins], if_index))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fre=
+e(if_index);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ netsh_wins_cmd(L&quot;delete&quot;, msg-&gt;iface.index, NULL);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        err =3D ERROR_OUTOFMEM=
+ORY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto ou=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    err =3D 0;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span> out:</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    free(wide_name);</span><br><span>     return err;<=
+/span><br><span> }</span><br><span> </span><br><span>@@ -1734,15 +1727,15 @=
+@</span><br><span>                     break;</span><br><span> </span><br><=
+span>                 case undo_dns4:</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                    DeleteDNS(AF_INET, item-&gt;data);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    Dele=
+teDNS(AF_INET, *(int *)item-&gt;data);</span><br><span>                    =
+ break;</span><br><span> </span><br><span>                 case undo_dns6:<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    De=
+leteDNS(AF_INET6, item-&gt;data);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    DeleteDNS(AF_INET6, *(int *)item-&gt;data=
+);</span><br><span>                     break;</span><br><span> </span><br>=
+<span>                 case undo_wins:</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                    netsh_wins_cmd(L&quot;delete&quot;, it=
+em-&gt;data, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                    netsh_wins_cmd(L&quot;delete&quot;, *(int *)item-&gt;da=
+ta, NULL);</span><br><span>                     break;</span><br><span> </s=
+pan><br><span>                 case undo_domain:</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+337?usp=3Demail">change 1337</a>. To unsubscribe, or for help writing mail =
+filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1337=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I5cf45cfe0567da8fb5d47118a43=
@@ -657,5 +649,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---MGKMmz+u+Xk=--
+--hDeEvzkLVoQ=--
 
