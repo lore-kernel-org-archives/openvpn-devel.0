@@ -1,16 +1,16 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 3 Nov 2025 08:30:53 +0000
-In-Reply-To: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
-References: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
+Date: Mon, 3 Nov 2025 09:00:45 +0000
+In-Reply-To: <gerrit.1761942169000.I5cf45cfe0567da8fb5d47118a432a35b358f3809@...2715...>
+References: <gerrit.1761942169000.I5cf45cfe0567da8fb5d47118a432a35b358f3809@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d969accd7dce217b7a1262bb7789ddc6d141013d-EmailReviewComments-HTML@...2715...>
+Message-ID: <7a37ac4f638cdc267d003a7ca8f4f51b8a6c5ac8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+PgxPlJYbKg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: make sure
- directories have trailing \
+Content-Type: multipart/alternative; boundary="Uaq6kZp3FJc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: iservice: use
+ interface index with netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,42 +22,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+PgxPlJYbKg=
+--Uaq6kZp3FJc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: d12fk, flichtenheld, plaisthos.
 
 stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1336?usp=3Demail )
+net/c/openvpn/+/1337?usp=3Demail )
 
-Change subject: iservice: make sure directories have trailing \
+Change subject: iservice: use interface index with netsh
 ......................................................................
 
 
-Patch Set 2: Code-Review-1
+Patch Set 1: Code-Review+2
 
 (1 comment)
 
 Patchset:
 
-PS2:=20
-Why not https://learn.microsoft.com/en-us/windows/win32/api/pathcch/nf-path=
-cch-pathcchaddbackslashex ?
+PS1:
+Code looks good, built and tested.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
-Gerrit-Change-Number: 1336
-Gerrit-PatchSet: 2
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I5cf45cfe0567da8fb5d47118a432a35b358f3809
+Gerrit-Change-Number: 1337
+Gerrit-PatchSet: 1
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -66,42 +65,41 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Mon, 03 Nov 2025 08:30:53 +0000
+Gerrit-Comment-Date: Mon, 03 Nov 2025 09:00:45 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---+PgxPlJYbKg=
+--Uaq6kZp3FJc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: d12fk, flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">V=
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail">V=
 iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
 style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
 style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1336?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Why not htt=
-ps://learn.microsoft.com/en-us/windows/win32/api/pathcch/nf-pathcch-pathcch=
-addbackslashex ?</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">change 1336</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1336?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+n/+/1337?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Code looks =
+good, built and tested.</p></li></ul></li></ul><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail">change 1337</a>. T=
+o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
+rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
+type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
+itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1337?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If28e66fcc3493821f78fd14d432=
-b22b996918e8f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1336 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5cf45cfe0567da8fb5d47118a43=
+2a35b358f3809 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1337 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -118,12 +116,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 03 Nov 2025 08:30:53=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 03 Nov 2025 09:00:45=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---+PgxPlJYbKg=--
+--Uaq6kZp3FJc=--
 
