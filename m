@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 4 Nov 2025 09:11:23 +0000
-In-Reply-To: <gerrit.1762166039000.Ie15977b44091445b9d1edebe885d92ec5cb5770a@...2715...>
-References: <gerrit.1762166039000.Ie15977b44091445b9d1edebe885d92ec5cb5770a@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+Date: Tue, 4 Nov 2025 09:19:24 +0000
+In-Reply-To: <gerrit.1761324750000.I3309265edf8d6bea7bd73b21eef589a92ede6e0a@...2715...>
+References: <gerrit.1761324750000.I3309265edf8d6bea7bd73b21eef589a92ede6e0a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8b2433e01105018c2d1d4c81ffb8eca1ef3b8154-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <f1e67d89538ded929fc57c408221ca49ce524580-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="toNIUjTP8H4="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: PUSH_UPDATE server:
- update reporting_addr after ifconfig update
+Content-Type: multipart/alternative; boundary="0B2EjKiPDSs="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: Clean up type
+ handling in write_string()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,181 +19,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---toNIUjTP8H4=
+--0B2EjKiPDSs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- mrbff. ( http://gerrit.openvpn.net/c/openvpn/+/1340?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1300?usp=3Demail )
 
-Change subject: PUSH_UPDATE server: update reporting_addr after ifconfig up=
-date
+Change subject: ssl: Clean up type handling in write_string()
 ......................................................................
 
-PUSH_UPDATE server: update reporting_addr after ifconfig update
 
-Update mi->reporting_addr(_ipv6) for status reporting purposes
-after sending a PUSH_UPDATE containing an ifconfig(-ipv6) option.
+Patch Set 4: Code-Review+2
 
-Github: fixes OpenVPN/openvpn#889
+(1 comment)
 
-Change-Id: Ie15977b44091445b9d1edebe885d92ec5cb5770a
-Signed-off-by: Marco Baffo <marco@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1340
-Message-Id: <20251104085553.8218-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-186.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/multi.c
-1 file changed, 6 insertions(+), 0 deletions(-)
+File src/openvpn/ssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1300/comment/00f9633e_e49112f5?usp=3D=
+email :
+PS3, Line 1788:     if (len < 2 || len > real_maxlen)
+> Right, removed the check completely.
+Indeed.  If `strlen(str)` is 0, `len =3D=3D 1`, so `len < 1` can just not h=
+appen anymore.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/1340/3
-
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 261209d..2b944667 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -4346,6 +4346,7 @@
-     multi_unlearn_in_addr_t(m, mi, old_addr);
-     mi->context.c2.push_ifconfig_defined =3D false;
-     mi->context.c2.push_ifconfig_local =3D 0;
-+    mi->reporting_addr =3D 0;
- }
-
- /* Function to unlearn previous ifconfig-ipv6 of a client in the server mu=
-lti_context after a PUSH_UPDATE */
-@@ -4358,6 +4359,7 @@
-     multi_unlearn_in6_addr(m, mi, old_addr6);
-     mi->context.c2.push_ifconfig_ipv6_defined =3D false;
-     CLEAR(mi->context.c2.push_ifconfig_ipv6_local);
-+    CLEAR(mi->reporting_addr_ipv6);
- }
-
- /**
-@@ -4389,6 +4391,8 @@
-         {
-             mi->context.c2.push_ifconfig_defined =3D true;
-             mi->context.c2.push_ifconfig_local =3D ntohl(new_addr.s_addr);
-+            /* set our client's VPN endpoint for status reporting purposes=
- */
-+            mi->reporting_addr =3D mi->context.c2.push_ifconfig_local;
-         }
-     }
-
-@@ -4408,6 +4412,8 @@
-         {
-             mi->context.c2.push_ifconfig_ipv6_defined =3D true;
-             mi->context.c2.push_ifconfig_ipv6_local =3D new_addr6;
-+            /* set our client's VPN endpoint for status reporting purposes=
- */
-+            mi->reporting_addr_ipv6 =3D mi->context.c2.push_ifconfig_ipv6_=
-local;
-         }
-     }
- }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1340?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1300?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie15977b44091445b9d1edebe885d92ec5cb5770a
-Gerrit-Change-Number: 1340
-Gerrit-PatchSet: 3
-Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Change-Id: I3309265edf8d6bea7bd73b21eef589a92ede6e0a
+Gerrit-Change-Number: 1300
+Gerrit-PatchSet: 4
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 04 Nov 2025 09:19:24 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
 
---toNIUjTP8H4=
+--0B2EjKiPDSs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by mrbff.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1340?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">PUSH_UPDATE server: update reporting_addr after =
-ifconfig update<br><br>Update mi-&gt;reporting_addr(_ipv6) for status repor=
-ting purposes<br>after sending a PUSH_UPDATE containing an ifconfig(-ipv6) =
-option.<br><br>Github: fixes OpenVPN/openvpn#889<br><br>Change-Id: Ie15977b=
-44091445b9d1edebe885d92ec5cb5770a<br>Signed-off-by: Marco Baffo &lt;marco@...220...=
-..2726...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1340<br=
->Message-Id: &lt;20251104085553.8218-1-gert@...1296...&gt;<br>URL: https://=
-www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34186.html<br>S=
-igned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/=
-multi.c<br>1 file changed, 6 insertions(+), 0 deletions(-)<br><br></pre><pr=
-e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/40/=
-1340/3</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span=
-><br><span>index 261209d..2b944667 100644</span><br><span>--- a/src/openvpn=
-/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -4346=
-,6 +4346,7 @@</span><br><span>     multi_unlearn_in_addr_t(m, mi, old_addr)=
-;</span><br><span>     mi-&gt;context.c2.push_ifconfig_defined =3D false;</=
-span><br><span>     mi-&gt;context.c2.push_ifconfig_local =3D 0;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;reporting_addr =3D =
-0;</span><br><span> }</span><br><span> </span><br><span> /* Function to unl=
-earn previous ifconfig-ipv6 of a client in the server multi_context after a=
- PUSH_UPDATE */</span><br><span>@@ -4358,6 +4359,7 @@</span><br><span>     =
-multi_unlearn_in6_addr(m, mi, old_addr6);</span><br><span>     mi-&gt;conte=
-xt.c2.push_ifconfig_ipv6_defined =3D false;</span><br><span>     CLEAR(mi-&=
-gt;context.c2.push_ifconfig_ipv6_local);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    CLEAR(mi-&gt;reporting_addr_ipv6);</span><br><span=
-> }</span><br><span> </span><br><span> /**</span><br><span>@@ -4389,6 +4391=
-,8 @@</span><br><span>         {</span><br><span>             mi-&gt;contex=
-t.c2.push_ifconfig_defined =3D true;</span><br><span>             mi-&gt;co=
-ntext.c2.push_ifconfig_local =3D ntohl(new_addr.s_addr);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            /* set our client&#39;s VP=
-N endpoint for status reporting purposes */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            mi-&gt;reporting_addr =3D mi-&gt;contex=
-t.c2.push_ifconfig_local;</span><br><span>         }</span><br><span>     }=
-</span><br><span> </span><br><span>@@ -4408,6 +4412,8 @@</span><br><span>  =
-       {</span><br><span>             mi-&gt;context.c2.push_ifconfig_ipv6_=
-defined =3D true;</span><br><span>             mi-&gt;context.c2.push_ifcon=
-fig_ipv6_local =3D new_addr6;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            /* set our client&#39;s VPN endpoint for status repor=
-ting purposes */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         mi-&gt;reporting_addr_ipv6 =3D mi-&gt;context.c2.push_ifconfig_ipv=
-6_local;</span><br><span>         }</span><br><span>     }</span><br><span>=
- }</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1340?usp=3Demail">change 1340</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1340?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1300?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl.c:</p><ul =
+style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1300/comment/00f9633e_e49112f5?usp=3Demail">Patch Set #3,=
+ Line 1788:</a> <code style=3D"font-family:monospace,monospace">    if (len=
+ &lt; 2 || len &gt; real_maxlen)</code></p><p><blockquote style=3D"border-l=
+eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Right, removed the c=
+heck completely.</blockquote></p><p class=3D"blocks" style=3D"white-space: =
+pre-wrap; word-wrap: break-word;">Indeed.  If `strlen(str)` is 0, `len =3D=
+=3D 1`, so `len &lt; 1` can just not happen anymore.</p></li></ul></li></ul=
+><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1300?us=
+p=3Demail">change 1300</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1300?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie15977b44091445b9d1edebe885=
-d92ec5cb5770a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1340 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3309265edf8d6bea7bd73b21eef=
+589a92ede6e0a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1300 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 04 Nov 2025 09:19:24=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
 
 </body></html>=
 
---toNIUjTP8H4=--
+--0B2EjKiPDSs=--
 
