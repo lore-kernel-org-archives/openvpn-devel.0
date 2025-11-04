@@ -1,17 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 4 Nov 2025 17:23:07 +0000
-In-Reply-To: <gerrit.1762214128000.I2b5429841bcd46376241890ace50b82a291b7400@...2715...>
-References: <gerrit.1762214128000.I2b5429841bcd46376241890ace50b82a291b7400@...2715...>
+Date: Tue, 4 Nov 2025 21:44:19 +0000
+References: <gerrit.1762292654000.I38a040a9bdcb44933d4ca538f746af5c61011d7c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <fbc824393b3f898982bd22d0d8f32deead0c5ba6-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <2de24554593d96b8364ce1590e7e4083f4b00abc-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3aCJgxg2pAc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: init: make some
- functions static
+Content-Type: multipart/alternative; boundary="sm6JFSPzITo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_freebsd:
+ implement dco_get_peer_stats()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,300 +18,240 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3aCJgxg2pAc=
+--sm6JFSPzITo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-46?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: init: make some functions static
+Hello plaisthos, flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1350?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco_freebsd: implement dco_get_peer_stats()
 ......................................................................
 
-init: make some functions static
+dco_freebsd: implement dco_get_peer_stats()
 
-A bunch of functions are defined and used within init.c only.
-We can therefore drop their declaration in init.h and make
-them static.
+This is "fetch read/write statistics for a single peer", complementing
+dco_get_peer_stats_multi() "... for all peers", and it is called in
+--client mode, and (!) in p2mp mode to check if --inactive thresholds
+are reached.
 
-Change-Id: I2b5429841bcd46376241890ace50b82a291b7400
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1346
-Message-Id: <20251104104448.98093-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-193.html
+The FreeBSD DCO module has no "give me stats for a single peer" call, so
+we just call dco_get_peer_stats_multi() to get all of them - and that
+function is modified to handle p2p or p2mp mode by checking mode =3D=3D CM_=
+TOP.
+
+(dco_linux does about the same in dco_get_peer*() -> ovpn_handle_peer(),
+after a few iterations, except that it can query for "just one peer")
+
+"--inactive" still does not work on FreeBSD, because the code in forward.c
+looks at counters that are not set by FreeBSD DCO.
+
+Github: OpenVPN/openvpn#898
+
+Change-Id: I38a040a9bdcb44933d4ca538f746af5c61011d7c
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/init.c
-M src/openvpn/init.h
-2 files changed, 26 insertions(+), 32 deletions(-)
+M src/openvpn/dco_freebsd.c
+1 file changed, 25 insertions(+), 4 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/1350/1
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1bdaf27..8d95d5c 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -71,13 +71,13 @@
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index e4cb71a..2131d9c 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -870,8 +870,20 @@
+     {
+         const nvlist_t *peer =3D nvpeers[i];
+         uint32_t peerid =3D nvlist_get_number(peer, "peerid");
++        const nvlist_t *bytes =3D nvlist_get_nvlist(peer, "bytes");
 
- static bool do_deferred_p2p_ncp(struct context *c);
+-        dco_update_peer_stat(dco->c->multi, peerid, nvlist_get_nvlist(peer=
+, "bytes"));
++        /* we can end here in p2mp mode, or in p2p mode via
++         * the call to "dco_get_peer_stat()"
++         */
++        if (dco->c->mode =3D=3D CM_TOP)
++        {
++            dco_update_peer_stat(dco->c->multi, peerid, bytes);
++        }
++        else
++        {
++            dco->c->c2.dco_read_bytes =3D nvlist_get_number(bytes, "in");
++            dco->c->c2.dco_write_bytes =3D nvlist_get_number(bytes, "out");
++        }
+     }
 
--void
-+static void
- context_clear(struct context *c)
- {
-     CLEAR(*c);
- }
+     nvlist_destroy(nvl);
+@@ -882,12 +894,21 @@
+ #pragma GCC diagnostic pop
+ #endif
 
--void
-+static void
- context_clear_1(struct context *c)
- {
-     CLEAR(c->c1);
-@@ -4430,32 +4430,9 @@
- }
-
- /*
-- * Initialize a tunnel instance, handle pre and post-init
-- * signal settings.
-- */
--void
--init_instance_handle_signals(struct context *c, const struct env_set *env,=
- const unsigned int flags)
--{
--    pre_init_signal_catch();
--    init_instance(c, env, flags);
--    post_init_signal_catch();
--
--    /*
--     * This is done so that signals thrown during
--     * initialization can bring us back to
--     * a management hold.
--     */
--    if (IS_SIG(c))
--    {
--        remap_signal(c);
--        uninit_management_callback();
--    }
--}
--
--/*
-  * Initialize a tunnel instance.
-  */
--void
-+static void
- init_instance(struct context *c, const struct env_set *env, const unsigned=
- int flags)
- {
-     const struct options *options =3D &c->options;
-@@ -4745,6 +4722,29 @@
- }
-
- /*
-+ * Initialize a tunnel instance, handle pre and post-init
-+ * signal settings.
++/* get stats for a single peer
++ * we can get here for "the peer stats" in p2p client mode, or by
++ * being queried for a particular peer in p2mp mode, for --inactive
 + */
-+void
-+init_instance_handle_signals(struct context *c, const struct env_set *env,=
- const unsigned int flags)
-+{
-+    pre_init_signal_catch();
-+    init_instance(c, env, flags);
-+    post_init_signal_catch();
+ int
+ dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
+ {
+-    msg(D_DCO_DEBUG, __func__);
+-    /* Not implemented. */
+-    return 0;
++    ASSERT(c->c2.tls_multi);
++    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, c->c2.tls_multi->dco_peer=
+_id);
 +
-+    /*
-+     * This is done so that signals thrown during
-+     * initialization can bring us back to
-+     * a management hold.
++    /* unfortunately, the FreeBSD kernel has no peer-specific query - so
++     * we just get all the stats - and if we're there anyway, we can save =
+it
++     * for all peers, too...
 +     */
-+    if (IS_SIG(c))
-+    {
-+        remap_signal(c);
-+        uninit_management_callback();
-+    }
-+}
-+
-+/*
-  * Close a tunnel instance.
-  */
- void
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index e89615b..97318ec 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -31,10 +31,6 @@
-  */
- #define BASE_N_EVENTS 5
++    return dco_get_peer_stats_multi(&c->c1.tuntap->dco, raise_sigusr1_on_e=
+rr);
+ }
 
--void context_clear(struct context *c);
--
--void context_clear_1(struct context *c);
--
- void context_clear_2(struct context *c);
-
- void context_init_1(struct context *c);
-@@ -64,8 +60,6 @@
- void init_instance_handle_signals(struct context *c, const struct env_set =
-*env,
-                                   const unsigned int flags);
-
--void init_instance(struct context *c, const struct env_set *env, const uns=
-igned int flags);
--
- /**
-  * Query for private key and auth-user-pass username/passwords.
-  */
+ const char *
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1346?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1350?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2b5429841bcd46376241890ace50b82a291b7400
-Gerrit-Change-Number: 1346
-Gerrit-PatchSet: 2
-Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Change-Id: I38a040a9bdcb44933d4ca538f746af5c61011d7c
+Gerrit-Change-Number: 1350
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 
---3aCJgxg2pAc=
+--sm6JFSPzITo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1346?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">init: make some functions static<br><br>A bunch =
-of functions are defined and used within init.c only.<br>We can therefore d=
-rop their declaration in init.h and make<br>them static.<br><br>Change-Id: =
-I2b5429841bcd46376241890ace50b82a291b7400<br>Signed-off-by: Antonio Quartul=
-li &lt;antonio@...2726...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...1665...=
-641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1346<br>Me=
-ssage-Id: &lt;20251104104448.98093-1-frank@...2641...&gt;<br>URL: https://w=
-ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34193.html<br>Si=
-gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/i=
-nit.c<br>M src/openvpn/init.h<br>2 files changed, 26 insertions(+), 32 dele=
-tions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>ind=
-ex 1bdaf27..8d95d5c 100644</span><br><span>--- a/src/openvpn/init.c</span><=
-br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -71,13 +71,13 @@</span=
-><br><span> </span><br><span> static bool do_deferred_p2p_ncp(struct contex=
-t *c);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void<=
-/span><br><span> context_clear(struct context *c)</span><br><span> {</span>=
-<br><span>     CLEAR(*c);</span><br><span> }</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+static void</span><br><span> context_clear_1(stru=
-ct context *c)</span><br><span> {</span><br><span>     CLEAR(c-&gt;c1);</sp=
-an><br><span>@@ -4430,32 +4430,9 @@</span><br><span> }</span><br><span> </s=
-pan><br><span> /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * I=
-nitialize a tunnel instance, handle pre and post-init</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * signal settings.</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ini=
-t_instance_handle_signals(struct context *c, const struct env_set *env, con=
-st unsigned int flags)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pre_init_signal=
-_catch();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_ins=
-tance(c, env, flags);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    post_init_signal_catch();</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-     * This is done so that =
-signals thrown during</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-     * initialization can bring us back to</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-     * a management hold.</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (IS_SIG(c))</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-remap_signal(c);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   uninit_management_callback();</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-/*</span><br><span>  * Initialize a tunnel ins=
-tance.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static vo=
-id</span><br><span> init_instance(struct context *c, const struct env_set *=
-env, const unsigned int flags)</span><br><span> {</span><br><span>     cons=
-t struct options *options =3D &amp;c-&gt;options;</span><br><span>@@ -4745,=
-6 +4722,29 @@</span><br><span> }</span><br><span> </span><br><span> /*</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Initialize a tunnel i=
-nstance, handle pre and post-init</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * signal settings.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+vo=
-id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+init_instance_han=
-dle_signals(struct context *c, const struct env_set *env, const unsigned in=
-t flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    pre_init_signal_catch();<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_instance(c,=
- env, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    po=
-st_init_signal_catch();</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+     * This is done so that =
-signals thrown during</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+     * initialization can bring us back to</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     * a management hold.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (IS_SIG(c))</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        remap_signal(c);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        uninit_management_callback();</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span>  * C=
-lose a tunnel instance.</span><br><span>  */</span><br><span> void</span><b=
-r><span>diff --git a/src/openvpn/init.h b/src/openvpn/init.h</span><br><spa=
-n>index e89615b..97318ec 100644</span><br><span>--- a/src/openvpn/init.h</s=
-pan><br><span>+++ b/src/openvpn/init.h</span><br><span>@@ -31,10 +31,6 @@</=
-span><br><span>  */</span><br><span> #define BASE_N_EVENTS 5</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void context_clear=
-(struct context *c);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-void context_clear_1(s=
-truct context *c);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span> void context_clear_2(struct context *c);</span><br><span> </=
-span><br><span> void context_init_1(struct context *c);</span><br><span>@@ =
--64,8 +60,6 @@</span><br><span> void init_instance_handle_signals(struct co=
-ntext *c, const struct env_set *env,</span><br><span>                      =
-             const unsigned int flags);</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void init_instance(struct context *c, c=
-onst struct env_set *env, const unsigned int flags);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /**</span><br><span>  * Q=
-uery for private key and auth-user-pass username/passwords.</span><br><span=
->  */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/1346?usp=3Demail">change 1346</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1346?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1350?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">dco_freebsd: implement dco_get_peer_stats()=
+<br><br>This is &quot;fetch read/write statistics for a single peer&quot;, =
+complementing<br>dco_get_peer_stats_multi() &quot;... for all peers&quot;, =
+and it is called in<br>--client mode, and (!) in p2mp mode to check if --in=
+active thresholds<br>are reached.<br><br>The FreeBSD DCO module has no &quo=
+t;give me stats for a single peer&quot; call, so<br>we just call dco_get_pe=
+er_stats_multi() to get all of them - and that<br>function is modified to h=
+andle p2p or p2mp mode by checking mode =3D=3D CM_TOP.<br><br>(dco_linux do=
+es about the same in dco_get_peer*() -&gt; ovpn_handle_peer(),<br>after a f=
+ew iterations, except that it can query for &quot;just one peer&quot;)<br><=
+br>&quot;--inactive&quot; still does not work on FreeBSD, because the code =
+in forward.c<br>looks at counters that are not set by FreeBSD DCO.<br><br>G=
+ithub: OpenVPN/openvpn#898<br><br>Change-Id: I38a040a9bdcb44933d4ca538f746a=
+f5c61011d7c<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<b=
+r>M src/openvpn/dco_freebsd.c<br>1 file changed, 25 insertions(+), 4 deleti=
+ons(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/50/1350/1</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco_freebsd.=
+c b/src/openvpn/dco_freebsd.c</span><br><span>index e4cb71a..2131d9c 100644=
+</span><br><span>--- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/=
+openvpn/dco_freebsd.c</span><br><span>@@ -870,8 +870,20 @@</span><br><span>=
+     {</span><br><span>         const nvlist_t *peer =3D nvpeers[i];</span>=
+<br><span>         uint32_t peerid =3D nvlist_get_number(peer, &quot;peerid=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        con=
+st nvlist_t *bytes =3D nvlist_get_nvlist(peer, &quot;bytes&quot;);</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_=
+update_peer_stat(dco-&gt;c-&gt;multi, peerid, nvlist_get_nvlist(peer, &quot=
+;bytes&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    /* we can end here in p2mp mode, or in p2p mode via</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+         * the call to &quot;dco_get_pe=
+er_stat()&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+dco-&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            dco_update_peer_stat(dco-&gt;c-&gt;multi, peerid, bytes);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            dco-&gt;c-&gt;c2.dco_read_bytes =3D =
+nvlist_get_number(bytes, &quot;in&quot;);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            dco-&gt;c-&gt;c2.dco_write_bytes =3D nvli=
+st_get_number(bytes, &quot;out&quot;);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        }</span><br><span>     }</span><br><span> </span=
+><br><span>     nvlist_destroy(nvl);</span><br><span>@@ -882,12 +894,21 @@<=
+/span><br><span> #pragma GCC diagnostic pop</span><br><span> #endif</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* get st=
+ats for a single peer</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * we can get here for &quot;the peer stats&quot; in p2p client mode, or =
+by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * being queried =
+for a particular peer in p2mp mode, for --inactive</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ */</span><br><span> int</span><br><span> dc=
+o_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)</span>=
+<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D=
+_DCO_DEBUG, __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    /* Not implemented. */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    ASSERT(c-&gt;c2.tls_multi);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: peer-id %d&quot;, __func__, c-&g=
+t;c2.tls_multi-&gt;dco_peer_id);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
+ unfortunately, the FreeBSD kernel has no peer-specific query - so</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+     * we just get all the s=
+tats - and if we&#39;re there anyway, we can save it</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     * for all peers, too...</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return dco_get_peer_stats_multi(&amp;c-&=
+gt;c1.tuntap-&gt;dco, raise_sigusr1_on_err);</span><br><span> }</span><br><=
+span> </span><br><span> const char *</span><br><span></span><br></pre><p>To=
+ view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1350?usp=3Dem=
+ail">change 1350</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1350?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2b5429841bcd46376241890ace5=
-0b82a291b7400 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1346 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I38a040a9bdcb44933d4ca538f74=
+6af5c61011d7c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1350 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 
 </body></html>=
 
---3aCJgxg2pAc=--
+--sm6JFSPzITo=--
 
