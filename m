@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 4 Nov 2025 10:36:41 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue,  4 Nov 2025 11:44:48 +0100
+Message-Id: <20251104104448.98093-1-frank@...2641...>
 In-Reply-To: <gerrit.1762214128000.I2b5429841bcd46376241890ace50b82a291b7400@...2715...>
 References: <gerrit.1762214128000.I2b5429841bcd46376241890ace50b82a291b7400@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <66ee6b04015dfbecb7db38f2b60c81f1d583bf3c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/zpsqunMo6g="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: init: make some
- functions static
+Subject: [Openvpn-devel] [PATCH v1] init: make some functions static
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,88 +13,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...2726...>
 
---/zpsqunMo6g=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...2726...>
 
-Attention is currently required from: ordex, plaisthos.
+A bunch of functions are defined and used within init.c only.
+We can therefore drop their declaration in init.h and make
+them static.
 
-flichtenheld has posted comments on this change by ordex. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1346?usp=3Demail )
+Change-Id: I2b5429841bcd46376241890ace50b82a291b7400
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1346
+---
 
-Change subject: init: make some functions static
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1346
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1346?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2b5429841bcd46376241890ace50b82a291b7400
-Gerrit-Change-Number: 1346
-Gerrit-PatchSet: 1
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Tue, 04 Nov 2025 10:36:41 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---/zpsqunMo6g=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: ordex, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1346?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1346?usp=3Demail=
-">change 1346</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1346?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2b5429841bcd46376241890ace5=
-0b82a291b7400 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1346 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 04 Nov 2025 10:36:41=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---/zpsqunMo6g=--
+        
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 1bdaf27..8d95d5c 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -71,13 +71,13 @@
+ 
+ static bool do_deferred_p2p_ncp(struct context *c);
+ 
+-void
++static void
+ context_clear(struct context *c)
+ {
+     CLEAR(*c);
+ }
+ 
+-void
++static void
+ context_clear_1(struct context *c)
+ {
+     CLEAR(c->c1);
+@@ -4430,32 +4430,9 @@
+ }
+ 
+ /*
+- * Initialize a tunnel instance, handle pre and post-init
+- * signal settings.
+- */
+-void
+-init_instance_handle_signals(struct context *c, const struct env_set *env, const unsigned int flags)
+-{
+-    pre_init_signal_catch();
+-    init_instance(c, env, flags);
+-    post_init_signal_catch();
+-
+-    /*
+-     * This is done so that signals thrown during
+-     * initialization can bring us back to
+-     * a management hold.
+-     */
+-    if (IS_SIG(c))
+-    {
+-        remap_signal(c);
+-        uninit_management_callback();
+-    }
+-}
+-
+-/*
+  * Initialize a tunnel instance.
+  */
+-void
++static void
+ init_instance(struct context *c, const struct env_set *env, const unsigned int flags)
+ {
+     const struct options *options = &c->options;
+@@ -4745,6 +4722,29 @@
+ }
+ 
+ /*
++ * Initialize a tunnel instance, handle pre and post-init
++ * signal settings.
++ */
++void
++init_instance_handle_signals(struct context *c, const struct env_set *env, const unsigned int flags)
++{
++    pre_init_signal_catch();
++    init_instance(c, env, flags);
++    post_init_signal_catch();
++
++    /*
++     * This is done so that signals thrown during
++     * initialization can bring us back to
++     * a management hold.
++     */
++    if (IS_SIG(c))
++    {
++        remap_signal(c);
++        uninit_management_callback();
++    }
++}
++
++/*
+  * Close a tunnel instance.
+  */
+ void
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index e89615b..97318ec 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -31,10 +31,6 @@
+  */
+ #define BASE_N_EVENTS 5
+ 
+-void context_clear(struct context *c);
+-
+-void context_clear_1(struct context *c);
+-
+ void context_clear_2(struct context *c);
+ 
+ void context_init_1(struct context *c);
+@@ -64,8 +60,6 @@
+ void init_instance_handle_signals(struct context *c, const struct env_set *env,
+                                   const unsigned int flags);
+ 
+-void init_instance(struct context *c, const struct env_set *env, const unsigned int flags);
+-
+ /**
+  * Query for private key and auth-user-pass username/passwords.
+  */
 
