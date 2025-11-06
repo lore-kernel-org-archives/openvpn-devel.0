@@ -1,15 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Nov 2025 12:03:32 +0000
-References: <gerrit.1762430608000.I48c877843d24144450af1282b7524bb3ba18232e@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <283ad778a38cd0e0ed380a2db7e07432e90b544d-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Nov 2025 13:19:53 +0000
+In-Reply-To: <gerrit.1762271909000.Id0bb4c45d373437ab8dbaff7a311745f9b538cbf@...2715...>
+References: <gerrit.1762271909000.Id0bb4c45d373437ab8dbaff7a311745f9b538cbf@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
+Message-ID: <853a6756bf381b3f97f3a9ff5afa4f162d4cfb0d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wCnwW4u/Wes="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: FreeBSD DCO: repair
- --inactive
+Content-Type: multipart/alternative; boundary="q1PLGWWhPZ0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mudp: fix unaligned
+ 32-bit read when parsing peer ID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,205 +19,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---wCnwW4u/Wes=
+--q1PLGWWhPZ0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: its_Giaan, plaisthos.
 
-Hello plaisthos, flichtenheld,
+flichtenheld has posted comments on this change by its_Giaan. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1348?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1351?usp=3Demail
-
-to review the following change.
-
-
-Change subject: FreeBSD DCO: repair --inactive
+Change subject: mudp: fix unaligned 32-bit read when parsing peer ID
 ......................................................................
 
-FreeBSD DCO: repair --inactive
 
---inactive on DCO requires a working DCO counters query function
-(dco_get_peer_stats(), implemented in the previous commit) and
-that the DCO implementation in use fills the "tun_{read,write}_bytes"
-fields for the peer context.
+Patch Set 1: Code-Review+2
 
-FreeBSD DCO only fills the "dco_{read,write}_bytes" counters - which is
-something we can't fix in OpenVPN, this needs kernel enhancements.
-
-So, to make the feature (mostly) work, check the other set of counters
-on FreeBSD.  Caveat: this will count encryption overhead and keepalives,
-so it will still not work for `--inactive <n>` without a byte count, or
-for byte counts with too tight thresholds.
-
-Adding the #ifdef to forward.c was considered the least bad alternative.
-
-Github: OpenVPN/openvpn#898
-
-Change-Id: I48c877843d24144450af1282b7524bb3ba18232e
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M doc/man-sections/client-options.rst
-M src/openvpn/forward.c
-2 files changed, 12 insertions(+), 0 deletions(-)
-
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/1351/1
-
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
-options.rst
-index 0aee9e2..4513ff3 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -274,6 +274,11 @@
-   counted as traffic, as they are used internally by OpenVPN and are not
-   an indication of actual user activity.
-
-+  NOTE: on FreeBSD with DCO, due to platform limits, the previous paragraph
-+  is not correct.  In that case, encapsulation overhead and keepalives are
-+  counted, so using this feature needs a sufficiently-high `bytes` value to
-+  take these extra numbers into account.
-+
- --proto-force p
-   When iterating through connection profiles, only consider profiles using
-   protocol ``p`` (:code:`tcp` \| :code:`udp`).
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 5bbac13..c355f66 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -476,13 +476,20 @@
-  * and the logic needs to change - we permit the event to trigger and check
-  * kernel DCO counters here, returning and rearming the timer if there was
-  * sufficient traffic.
-+ *
-+ * NOTE: FreeBSD DCO does not supply "tun bytes" (=3D decrypted payload) t=
-oday,
-+ * so "dco bytes" (encrypted bytes, including keepalives) is used instead
-  */
- static void
- check_inactivity_timeout(struct context *c)
- {
-     if (dco_enabled(&c->options) && dco_get_peer_stats(c, true) =3D=3D 0)
-     {
-+#ifdef TARGET_FREEBSD
-+        int64_t tot_bytes =3D c->c2.dco_read_bytes + c->c2.dco_write_bytes;
-+#else
-         int64_t tot_bytes =3D c->c2.tun_read_bytes + c->c2.tun_write_bytes;
-+#endif
-         int64_t new_bytes =3D tot_bytes - c->c2.inactivity_bytes;
-
-         if (new_bytes > c->options.inactivity_minimum_bytes)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1351?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1348?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I48c877843d24144450af1282b7524bb3ba18232e
-Gerrit-Change-Number: 1351
+Gerrit-Change-Id: Id0bb4c45d373437ab8dbaff7a311745f9b538cbf
+Gerrit-Change-Number: 1348
 Gerrit-PatchSet: 1
-Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Comment-Date: Thu, 06 Nov 2025 13:19:53 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---wCnwW4u/Wes=
+--q1PLGWWhPZ0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1351?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">FreeBSD DCO: repair --inactive<br><br>--ina=
-ctive on DCO requires a working DCO counters query function<br>(dco_get_pee=
-r_stats(), implemented in the previous commit) and<br>that the DCO implemen=
-tation in use fills the &quot;tun_{read,write}_bytes&quot;<br>fields for th=
-e peer context.<br><br>FreeBSD DCO only fills the &quot;dco_{read,write}_by=
-tes&quot; counters - which is<br>something we can&#39;t fix in OpenVPN, thi=
-s needs kernel enhancements.<br><br>So, to make the feature (mostly) work, =
-check the other set of counters<br>on FreeBSD.  Caveat: this will count enc=
-ryption overhead and keepalives,<br>so it will still not work for `--inacti=
-ve &lt;n&gt;` without a byte count, or<br>for byte counts with too tight th=
-resholds.<br><br>Adding the #ifdef to forward.c was considered the least ba=
-d alternative.<br><br>Github: OpenVPN/openvpn#898<br><br>Change-Id: I48c877=
-843d24144450af1282b7524bb3ba18232e<br>Signed-off-by: Gert Doering &lt;gert@=
-...1296...&gt;<br>---<br>M doc/man-sections/client-options.rst<br>M src/ope=
-nvpn/forward.c<br>2 files changed, 12 insertions(+), 0 deletions(-)<br><br>=
-</pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/ch=
-anges/51/1351/1</pre><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;"><span>diff --git a/doc/man-sections/client-options.rst b/=
-doc/man-sections/client-options.rst</span><br><span>index 0aee9e2..4513ff3 =
-100644</span><br><span>--- a/doc/man-sections/client-options.rst</span><br>=
-<span>+++ b/doc/man-sections/client-options.rst</span><br><span>@@ -274,6 +=
-274,11 @@</span><br><span>   counted as traffic, as they are used internall=
-y by OpenVPN and are not</span><br><span>   an indication of actual user ac=
-tivity.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  NOTE: on FreeBSD with DCO, due to platform limits, the previous par=
-agraph</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  is not corr=
-ect.  In that case, encapsulation overhead and keepalives are</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  counted, so using this feature =
-needs a sufficiently-high `bytes` value to</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  take these extra numbers into account.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --proto-force=
- p</span><br><span>   When iterating through connection profiles, only cons=
-ider profiles using</span><br><span>   protocol ``p`` (:code:`tcp` \| :code=
-:`udp`).</span><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/f=
-orward.c</span><br><span>index 5bbac13..c355f66 100644</span><br><span>--- =
-a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><=
-br><span>@@ -476,13 +476,20 @@</span><br><span>  * and the logic needs to c=
-hange - we permit the event to trigger and check</span><br><span>  * kernel=
- DCO counters here, returning and rearming the timer if there was</span><br=
-><span>  * sufficient traffic.</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * NOT=
-E: FreeBSD DCO does not supply &quot;tun bytes&quot; (=3D decrypted payload=
-) today,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * so &quot=
-;dco bytes&quot; (encrypted bytes, including keepalives) is used instead</s=
-pan><br><span>  */</span><br><span> static void</span><br><span> check_inac=
-tivity_timeout(struct context *c)</span><br><span> {</span><br><span>     i=
-f (dco_enabled(&amp;c-&gt;options) &amp;&amp; dco_get_peer_stats(c, true) =
-=3D=3D 0)</span><br><span>     {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#ifdef TARGET_FREEBSD</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        int64_t tot_bytes =3D c-&gt;c2.dco_read_bytes + c-&g=
-t;c2.dco_write_bytes;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#else</span><br><span>         int64_t tot_bytes =3D c-&gt;c2.tun_read_by=
-tes + c-&gt;c2.tun_write_bytes;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#endif</span><br><span>         int64_t new_bytes =3D tot_bytes=
- - c-&gt;c2.inactivity_bytes;</span><br><span> </span><br><span>         if=
- (new_bytes &gt; c-&gt;options.inactivity_minimum_bytes)</span><br><span></=
-span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1351?usp=3Demail">change 1351</a>. To unsubscribe, or for help writi=
-ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3D=
-email">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1351?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+rently required from: its_Giaan, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1348?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1348?usp=3Demail=
+">change 1348</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1348?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I48c877843d24144450af1282b75=
-24bb3ba18232e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1351 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id0bb4c45d373437ab8dbaff7a31=
+1745f9b538cbf </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1348 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -225,10 +94,14 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Nov 2025 13:19:53=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---wCnwW4u/Wes=--
+--q1PLGWWhPZ0=--
 
