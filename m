@@ -1,11 +1,15 @@
-Content-Type: multipart/alternative;
- boundary="------------0yPR2PKFyxFIc4gek909Q2J5"
-Message-ID: <fc5ad85b-1fad-4f00-9e83-39fa1811d75c@...2722...>
-Date: Wed, 5 Nov 2025 15:22:06 +0100
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 6 Nov 2025 12:03:32 +0000
+References: <gerrit.1762430608000.I48c877843d24144450af1282b7524bb3ba18232e@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <283ad778a38cd0e0ed380a2db7e07432e90b544d-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="wCnwW4u/Wes="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: FreeBSD DCO: repair
+ --inactive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,129 +18,217 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------0yPR2PKFyxFIc4gek909Q2J5
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--wCnwW4u/Wes=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 5 November 2025:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  *
+Hello plaisthos, flichtenheld,
 
-    *Updated: Release 2.7*
-    OpenVPN 2.7 release candidate 1 was released 31st of October.
-    There were some reports of bugs and issues, which are being fixed
-    and prepared for the rc2 release.
+I'd like you to do a code review.
+Please visit
 
-  *
+    http://gerrit.openvpn.net/c/openvpn/+/1351?usp=3Demail
 
-    *New: Release 2.6.16*
-    Some of the issues also affected 2.6 code.
-    So a 2.6.16 release seems prudent, to coincide with similar/same
-    fixes done in 2.7rc2.
+to review the following change.
 
-  *
 
-    *Updated, closed: wolfSSL license changed from gplv2 to gplv3*
-    The release notes of wolfSSL indicate the license changed to GPLv3.
-    This basically makes wolfSSL incompatible in regards to licensing
-    with OpenVPN, because OpenVPN is GPLv2 licensed.
-    After a discussion between maxF, plaisthos, from OpenVPN community,
-    and people from wolfSSL, a conclusion was reached.
-    wolfSSL believes that an exception to allow linking wolfSSL with
-    OpenVPN is sufficient. They will implement such an exception in
-    their license.
-    For us this means the topic is closed.
+Change subject: FreeBSD DCO: repair --inactive
+......................................................................
 
-  *
+FreeBSD DCO: repair --inactive
 
-    *New: community meetup 2026*
-    Tentatively in Paderborn, Germany.
+--inactive on DCO requires a working DCO counters query function
+(dco_get_peer_stats(), implemented in the previous commit) and
+that the DCO implementation in use fills the "tun_{read,write}_bytes"
+fields for the peer context.
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+FreeBSD DCO only fills the "dco_{read,write}_bytes" counters - which is
+something we can't fix in OpenVPN, this needs kernel enhancements.
 
-Kind regards,
-Johan Draaisma
+So, to make the feature (mostly) work, check the other set of counters
+on FreeBSD.  Caveat: this will count encryption overhead and keepalives,
+so it will still not work for `--inactive <n>` without a byte count, or
+for byte counts with too tight thresholds.
 
---------------0yPR2PKFyxFIc4gek909Q2J5
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Adding the #ifdef to forward.c was considered the least bad alternative.
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 5 November 2025:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.7</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          OpenVPN 2.7 release candidate 1 was released 31st of October.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          There were some reports of bugs and issues, which are being
-          fixed and prepared for the rc2 release.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
-            Release 2.6.16</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Some of the issues also affected 2.6 code.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          So a 2.6.16 release seems prudent, to coincide with
-          similar/same fixes done in 2.7rc2.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated,
-            closed: wolfSSL license changed from gplv2 to gplv3</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The release notes of wolfSSL indicate the license changed to
-          GPLv3.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          This basically makes wolfSSL incompatible in regards to
-          licensing with OpenVPN, because OpenVPN is GPLv2 licensed.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          After a discussion between maxF, plaisthos, from OpenVPN
-          community, and people from wolfSSL, a conclusion was reached.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          wolfSSL believes that an exception to allow linking wolfSSL
-          with OpenVPN is sufficient. They will implement such an
-          exception in their license.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For us this means the topic is closed.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
-            community meetup 2026</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Tentatively in Paderborn, Germany.</p>
-      </li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+Github: OpenVPN/openvpn#898
 
---------------0yPR2PKFyxFIc4gek909Q2J5--
+Change-Id: I48c877843d24144450af1282b7524bb3ba18232e
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M doc/man-sections/client-options.rst
+M src/openvpn/forward.c
+2 files changed, 12 insertions(+), 0 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/1351/1
+
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
+options.rst
+index 0aee9e2..4513ff3 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -274,6 +274,11 @@
+   counted as traffic, as they are used internally by OpenVPN and are not
+   an indication of actual user activity.
+
++  NOTE: on FreeBSD with DCO, due to platform limits, the previous paragraph
++  is not correct.  In that case, encapsulation overhead and keepalives are
++  counted, so using this feature needs a sufficiently-high `bytes` value to
++  take these extra numbers into account.
++
+ --proto-force p
+   When iterating through connection profiles, only consider profiles using
+   protocol ``p`` (:code:`tcp` \| :code:`udp`).
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 5bbac13..c355f66 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -476,13 +476,20 @@
+  * and the logic needs to change - we permit the event to trigger and check
+  * kernel DCO counters here, returning and rearming the timer if there was
+  * sufficient traffic.
++ *
++ * NOTE: FreeBSD DCO does not supply "tun bytes" (=3D decrypted payload) t=
+oday,
++ * so "dco bytes" (encrypted bytes, including keepalives) is used instead
+  */
+ static void
+ check_inactivity_timeout(struct context *c)
+ {
+     if (dco_enabled(&c->options) && dco_get_peer_stats(c, true) =3D=3D 0)
+     {
++#ifdef TARGET_FREEBSD
++        int64_t tot_bytes =3D c->c2.dco_read_bytes + c->c2.dco_write_bytes;
++#else
+         int64_t tot_bytes =3D c->c2.tun_read_bytes + c->c2.tun_write_bytes;
++#endif
+         int64_t new_bytes =3D tot_bytes - c->c2.inactivity_bytes;
+
+         if (new_bytes > c->options.inactivity_minimum_bytes)
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1351?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I48c877843d24144450af1282b7524bb3ba18232e
+Gerrit-Change-Number: 1351
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--wCnwW4u/Wes=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>cron2 would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1351?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">FreeBSD DCO: repair --inactive<br><br>--ina=
+ctive on DCO requires a working DCO counters query function<br>(dco_get_pee=
+r_stats(), implemented in the previous commit) and<br>that the DCO implemen=
+tation in use fills the &quot;tun_{read,write}_bytes&quot;<br>fields for th=
+e peer context.<br><br>FreeBSD DCO only fills the &quot;dco_{read,write}_by=
+tes&quot; counters - which is<br>something we can&#39;t fix in OpenVPN, thi=
+s needs kernel enhancements.<br><br>So, to make the feature (mostly) work, =
+check the other set of counters<br>on FreeBSD.  Caveat: this will count enc=
+ryption overhead and keepalives,<br>so it will still not work for `--inacti=
+ve &lt;n&gt;` without a byte count, or<br>for byte counts with too tight th=
+resholds.<br><br>Adding the #ifdef to forward.c was considered the least ba=
+d alternative.<br><br>Github: OpenVPN/openvpn#898<br><br>Change-Id: I48c877=
+843d24144450af1282b7524bb3ba18232e<br>Signed-off-by: Gert Doering &lt;gert@=
+...1296...&gt;<br>---<br>M doc/man-sections/client-options.rst<br>M src/ope=
+nvpn/forward.c<br>2 files changed, 12 insertions(+), 0 deletions(-)<br><br>=
+</pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/ch=
+anges/51/1351/1</pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/doc/man-sections/client-options.rst b/=
+doc/man-sections/client-options.rst</span><br><span>index 0aee9e2..4513ff3 =
+100644</span><br><span>--- a/doc/man-sections/client-options.rst</span><br>=
+<span>+++ b/doc/man-sections/client-options.rst</span><br><span>@@ -274,6 +=
+274,11 @@</span><br><span>   counted as traffic, as they are used internall=
+y by OpenVPN and are not</span><br><span>   an indication of actual user ac=
+tivity.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  NOTE: on FreeBSD with DCO, due to platform limits, the previous par=
+agraph</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  is not corr=
+ect.  In that case, encapsulation overhead and keepalives are</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  counted, so using this feature =
+needs a sufficiently-high `bytes` value to</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  take these extra numbers into account.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --proto-force=
+ p</span><br><span>   When iterating through connection profiles, only cons=
+ider profiles using</span><br><span>   protocol ``p`` (:code:`tcp` \| :code=
+:`udp`).</span><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/f=
+orward.c</span><br><span>index 5bbac13..c355f66 100644</span><br><span>--- =
+a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><=
+br><span>@@ -476,13 +476,20 @@</span><br><span>  * and the logic needs to c=
+hange - we permit the event to trigger and check</span><br><span>  * kernel=
+ DCO counters here, returning and rearming the timer if there was</span><br=
+><span>  * sufficient traffic.</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * NOT=
+E: FreeBSD DCO does not supply &quot;tun bytes&quot; (=3D decrypted payload=
+) today,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * so &quot=
+;dco bytes&quot; (encrypted bytes, including keepalives) is used instead</s=
+pan><br><span>  */</span><br><span> static void</span><br><span> check_inac=
+tivity_timeout(struct context *c)</span><br><span> {</span><br><span>     i=
+f (dco_enabled(&amp;c-&gt;options) &amp;&amp; dco_get_peer_stats(c, true) =
+=3D=3D 0)</span><br><span>     {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#ifdef TARGET_FREEBSD</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        int64_t tot_bytes =3D c-&gt;c2.dco_read_bytes + c-&g=
+t;c2.dco_write_bytes;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#else</span><br><span>         int64_t tot_bytes =3D c-&gt;c2.tun_read_by=
+tes + c-&gt;c2.tun_write_bytes;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span>         int64_t new_bytes =3D tot_bytes=
+ - c-&gt;c2.inactivity_bytes;</span><br><span> </span><br><span>         if=
+ (new_bytes &gt; c-&gt;options.inactivity_minimum_bytes)</span><br><span></=
+span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1351?usp=3Demail">change 1351</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3D=
+email">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1351?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I48c877843d24144450af1282b75=
+24bb3ba18232e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1351 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--wCnwW4u/Wes=--
 
