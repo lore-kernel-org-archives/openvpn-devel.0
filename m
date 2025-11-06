@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Nov 2025 13:39:15 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu,  6 Nov 2025 14:39:30 +0100
+Message-ID: <20251106133936.30264-1-gert@...1296...>
 In-Reply-To: <gerrit.1762436081000.I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995@...2715...>
 References: <gerrit.1762436081000.I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <db1eb8f895e4b0d0a4eb191f73baf9e1a6e24924-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Y2I26sKHHts="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: pkcs11_openssl:
- Silence a conversion warning
+Subject: [Openvpn-devel] [PATCH v1] pkcs11_openssl: Silence a conversion
+ warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Y2I26sKHHts=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+The only caller of this function uses a constant
+for this parameter, so this is all quite safe. Add
+an ASSERT for good measure anyway to make the assumption
+explicit.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1352?usp=3Demail )
+Change-Id: I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1352
+---
 
-Change subject: pkcs11_openssl: Silence a conversion warning
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1352
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995
-Gerrit-Change-Number: 1352
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 06 Nov 2025 13:39:15 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---Y2I26sKHHts=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail=
-">change 1352</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6079bf9e7f6b37cb2e2d7f28851=
-a77d0b08be995 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1352 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Nov 2025 13:39:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---Y2I26sKHHts=--
+        
+diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+index f619b95..1d527db 100644
+--- a/src/openvpn/pkcs11_openssl.c
++++ b/src/openvpn/pkcs11_openssl.c
+@@ -428,18 +428,12 @@
+     return dn;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ int
+ pkcs11_certificate_serial(pkcs11h_certificate_t certificate, char *serial, size_t serial_len)
+ {
+     X509 *x509 = NULL;
+     BIO *bio = NULL;
+     int ret = 1;
+-    int n;
+ 
+     if ((x509 = pkcs11h_openssl_getX509(certificate)) == NULL)
+     {
+@@ -454,7 +448,8 @@
+     }
+ 
+     i2a_ASN1_INTEGER(bio, X509_get_serialNumber(x509));
+-    n = BIO_read(bio, serial, serial_len - 1);
++    ASSERT(serial_len <= INT_MAX);
++    int n = BIO_read(bio, serial, (int)serial_len - 1);
+ 
+     if (n < 0)
+     {
+@@ -474,8 +469,4 @@
+     return ret;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #endif /* defined(ENABLE_PKCS11) && defined(ENABLE_OPENSSL) */
 
