@@ -1,15 +1,15 @@
 From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Thu, 6 Nov 2025 22:04:44 +0000
+Date: Thu, 6 Nov 2025 22:12:58 +0000
 In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
 References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
 Reply-To: selva.nair@...277..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <1d65b450d3aa18e57f4c60198b1b7b4d0b5ad5a5-EmailReviewComments-HTML@...2715...>
+Message-ID: <be58a0f2f7e228661e4bc539a6f5756da65f013f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="llyC9tCBIcM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Qdz9rk+8MJk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
  config path better
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---llyC9tCBIcM=
+--Qdz9rk+8MJk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -42,12 +42,13 @@ Patch Set 4:
 
 File src/openvpnserv/validate.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1307/comment/121294f6_264c940d?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1307/comment/4c526f28_d6c55351?usp=3D=
 email :
-PS4, Line 78:         res =3D PathCchCombine(config_path, sizeof(config_pat=
-h), workdir, fname);
-size should be in characters, not sizeof() isn't it? Same below in PathCchC=
-anonicalize.
+PS3, Line 85:     return res =3D=3D S_OK && wcsncmp(config_path, s->config_=
+dir, wcslen(s->config_dir)) =3D=3D 0;
+> Done
+For got to mention that this was reported by:
+https://github.com/OpenVPN/openvpn-private-issues/issues/81
 
 
 
@@ -72,11 +73,13 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Thu, 06 Nov 2025 22:04:44 +0000
+Gerrit-Comment-Date: Thu, 06 Nov 2025 22:12:58 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: d12fk <heiko@...515...>
+Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---llyC9tCBIcM=
+--Qdz9rk+8MJk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -87,19 +90,21 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/validate.c:</p=
 ><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
 g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1307/comment/121294f6_264c940d?usp=3Demail">Patch Se=
-t #4, Line 78:</a> <code style=3D"font-family:monospace,monospace">        =
-res =3D PathCchCombine(config_path, sizeof(config_path), workdir, fname);</=
-code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: bre=
-ak-word;">size should be in characters, not sizeof() isn&#39;t it? Same bel=
-ow in PathCchCanonicalize.</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 1307</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+penvpn.net/c/openvpn/+/1307/comment/4c526f28_d6c55351?usp=3Demail">Patch Se=
+t #3, Line 85:</a> <code style=3D"font-family:monospace,monospace">    retu=
+rn res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wcslen=
+(s-&gt;config_dir)) =3D=3D 0;</code></p><p><blockquote style=3D"border-left=
+: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Done</blockquote></p><p=
+ class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">F=
+or got to mention that this was reported by:<br>https://github.com/OpenVPN/=
+openvpn-private-issues/issues/81</p></li></ul></li></ul><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 13=
+07</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
+http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div items=
+cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
+"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemp=
+rop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -128,12 +133,16 @@ gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Nov 2025 22:04:44=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Nov 2025 22:12:58=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
+&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
+...277...&gt; </div>
 
 </body></html>=
 
---llyC9tCBIcM=--
+--Qdz9rk+8MJk=--
 
