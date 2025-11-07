@@ -1,17 +1,17 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 02:48:41 +0000
-In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227..., heiko@...515...,
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 7 Nov 2025 08:14:42 +0000
+In-Reply-To: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
+References: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <e408457aab8646997b1cf7d175c2768f769a4809-EmailReviewComments-HTML@...2715...>
+ lstipakov@...277...
+Message-ID: <d7371654e22ebccc3a6e8836864221893ecd7063-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Cfj+myUV8DQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
- config path better
+Content-Type: multipart/alternative; boundary="ewBT/hunu14="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: make sure
+ directories have trailing \
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,95 +21,106 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Cfj+myUV8DQ=
+--ewBT/hunu14=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, d12fk, flichtenheld, plaisthos.
+Attention is currently required from: d12fk, flichtenheld, plaisthos, stipa.
 
-selvanair has posted comments on this change by d12fk. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1307?usp=3Demail )
+cron2 has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1336?usp=3Demail )
 
-Change subject: iservice: validate config path better
+Change subject: iservice: make sure directories have trailing \
 ......................................................................
 
 
-Patch Set 5: Code-Review+2
+Patch Set 5: Code-Review-2
 
-(1 comment)
+(2 comments)
 
 Patchset:
 
-PS5:=20
-Please add a reported by line for https://github.com/OpenVPN/openvpn-privat=
-e-issues/issues/81 (for the character case fix). May be done at commit time.
+PS5:
+does not compile on windows
 
-This has to be merged along with 1307 to avoid re-introducing the "trailing=
- slash" bug.
+
+File src/openvpnserv/common.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1336/comment/5866c2c1_a20cb45c?usp=3D=
+email :
+PS5, Line 71:     return res =3D=3D S_OK || res =3D=3D S_FALSE ? TRUE : FAL=
+SE;
+please use braces here so it's clear to the casual reader what part of the =
+boolean goes into the ternary operator
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
-Gerrit-Change-Number: 1307
+Gerrit-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
+Gerrit-Change-Number: 1336
 Gerrit-PatchSet: 5
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Fri, 07 Nov 2025 02:48:41 +0000
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 07 Nov 2025 08:14:42 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---Cfj+myUV8DQ=
+--ewBT/hunu14=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, d12fk, flichtenheld, plaisthos. </p>
+rently required from: d12fk, flichtenheld, plaisthos, stipa. </p>
 <p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1307?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Please add =
-a reported by line for https://github.com/OpenVPN/openvpn-private-issues/is=
-sues/81 (for the character case fix). May be done at commit time.</p><p cla=
-ss=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This =
-has to be merged along with 1307 to avoid re-introducing the &quot;trailing=
- slash&quot; bug.</p></li></ul></li></ul><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 1307</a>. To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
-penvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1336?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">does not c=
+ompile on windows</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p=
+>File src/openvpnserv/common.c:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom=
+: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336/comment/5866c=
+2c1_a20cb45c?usp=3Demail">Patch Set #5, Line 71:</a> <code style=3D"font-fa=
+mily:monospace,monospace">    return res =3D=3D S_OK || res =3D=3D S_FALSE =
+? TRUE : FALSE;</code></p><p class=3D"blocks" style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">please use braces here so it&#39;s clear to the =
+casual reader what part of the boolean goes into the ternary operator</p></=
+li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1336?usp=3Demail">change 1336</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1336?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0e94068f467f2899daf133b032a=
-785d2d7fc05e4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1307 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If28e66fcc3493821f78fd14d432=
+b22b996918e8f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1336 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
@@ -119,24 +130,24 @@ div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 02:48:41=
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 08:14:42=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---Cfj+myUV8DQ=--
+--ewBT/hunu14=--
 
