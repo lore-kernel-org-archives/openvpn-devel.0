@@ -1,17 +1,15 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 18:23:15 +0000
-In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <e645193b0cbab6e87d3d3d81020a4cdb78651527-EmailReplacePatchSet-HTML@...2715...>
+Date: Fri, 7 Nov 2025 18:23:20 +0000
+References: <gerrit.1762539795000.I4d905da3add9b8a3daf349eb1bc830a017cf493d@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <439ef7976a080713b0919ac783e85dde405d40b0-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NzVG3wc1iIk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
- config path better
+Content-Type: multipart/alternative; boundary="Ut9puTB0yCE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: validate
+ config path case-insensitive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,262 +18,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, selvanair <selva.nair@...277...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NzVG3wc1iIk=
+--Ut9puTB0yCE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos, selva=
-nair.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello cron2, flichtenheld, plaisthos, selvanair,
+Hello plaisthos, flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail
 
-to look at the new patch set (#6).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by selvanair
+to review the following change.
 
 
-Change subject: iservice: validate config path better
+Change subject: iservice: validate config path case-insensitive
 ......................................................................
 
-iservice: validate config path better
+iservice: validate config path case-insensitive
 
-Instead of just rejecting any path that contains ".." use some WIN32 API
-functions to combine, canonicalize and then check if the resulting
-path is located under the config directory. Makes the code prettier
-and more correct.
+Windows filesystems do not make a difference here, so should we.
 
-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
+Reported-by: stephan@...2953...
+Change-Id: I4d905da3add9b8a3daf349eb1bc830a017cf493d
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
 M src/openvpnserv/validate.c
-1 file changed, 9 insertions(+), 22 deletions(-)
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/07/1307/6
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1362/1
 
 diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index ddaa381..2dcfe1a 100644
+index b3189b7..3381503 100644
 --- a/src/openvpnserv/validate.c
 +++ b/src/openvpnserv/validate.c
-@@ -24,8 +24,8 @@
-
- #include <lmaccess.h>
- #include <shlwapi.h>
--#include <lm.h>
- #include <pathcch.h>
-+#include <lm.h>
-
- #ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH
- #define PATHCCH_ENSURE_TRAILING_SLASH 0x20
-@@ -58,44 +58,31 @@
- static PTOKEN_GROUPS GetTokenGroups(const HANDLE token);
-
- /*
-- * Check workdir\fname is inside config_dir
-- * The logic here is simple: we may reject some valid paths if ..\ is in a=
-ny of the strings
-+ * Check that config path is inside config_dir
-+ * The logic here is simple: if the path isn't prefixed with config_dir it=
-'s rejected
-  */
- static BOOL
- CheckConfigPath(const WCHAR *workdir, const WCHAR *fname, const settings_t=
- *s)
- {
--    WCHAR tmp[MAX_PATH];
--    const WCHAR *config_file =3D NULL;
--    WCHAR config_dir[MAX_PATH];
-+    HRESULT res;
-+    WCHAR config_path[MAX_PATH];
-
-     /* fname =3D stdin is special: do not treat it as a relative path */
-     if (wcscmp(fname, L"stdin") =3D=3D 0)
-     {
-         return FALSE;
-     }
--    /* convert fname to full path */
-+    /* convert fname to full canonical path */
-     if (PathIsRelativeW(fname))
-     {
--        swprintf(tmp, _countof(tmp), L"%ls\\%ls", workdir, fname);
--        config_file =3D tmp;
-+        res =3D PathCchCombine(config_path, _countof(config_path), workdir=
-, fname);
-     }
-     else
-     {
--        config_file =3D fname;
-+        res =3D PathCchCanonicalize(config_path, _countof(config_path), fn=
+@@ -78,7 +78,7 @@
+         res =3D PathCchCanonicalize(config_path, _countof(config_path), fn=
 ame);
      }
 
--    /* canonicalize config_dir and add trailing slash before comparison */
--    HRESULT res =3D PathCchCanonicalizeEx(config_dir, _countof(config_dir)=
-, s->config_dir,
--                                        PATHCCH_ENSURE_TRAILING_SLASH);
--
--    if (res =3D=3D S_OK
--        && wcsncmp(config_dir, config_file, wcslen(config_dir)) =3D=3D 0
--        && wcsstr(config_file + wcslen(config_dir), L"..") =3D=3D NULL)
--    {
--        return TRUE;
--    }
--
--    return FALSE;
-+    return res =3D=3D S_OK && wcsncmp(config_path, s->config_dir, wcslen(s=
+-    return res =3D=3D S_OK && wcsncmp(config_path, s->config_dir, wcslen(s=
 ->config_dir)) =3D=3D 0;
++    return res =3D=3D S_OK && wcsnicmp(config_path, s->config_dir, wcslen(=
+s->config_dir)) =3D=3D 0;
  }
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
-Gerrit-Change-Number: 1307
-Gerrit-PatchSet: 6
+Gerrit-Change-Id: I4d905da3add9b8a3daf349eb1bc830a017cf493d
+Gerrit-Change-Number: 1362
+Gerrit-PatchSet: 1
 Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
 
---NzVG3wc1iIk=
+--Ut9puTB0yCE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos, selvanair. </p>
-<p>d12fk <strong>uploaded patch set #6</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by selvanair</p><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">iservice: validate config path =
-better<br><br>Instead of just rejecting any path that contains &quot;..&quo=
-t; use some WIN32 API<br>functions to combine, canonicalize and then check =
-if the resulting<br>path is located under the config directory. Makes the c=
-ode prettier<br>and more correct.<br><br>Change-Id: I0e94068f467f2899daf133=
-b032a785d2d7fc05e4<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br=
->---<br>M src/openvpnserv/validate.c<br>1 file changed, 9 insertions(+), 22=
- deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
+rently required from: flichtenheld, plaisthos. </p>
+<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">iservice: validate config path case-insensi=
+tive<br><br>Windows filesystems do not make a difference here, so should we=
+.<br><br>Reported-by: stephan@...2953...<br>Change-Id: I4d905da3add9b8a3daf=
+349eb1bc830a017cf493d<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;=
+<br>---<br>M src/openvpnserv/validate.c<br>1 file changed, 1 insertion(+), =
+1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
 space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/07/1307/6</pre><pre style=3D"font-family: monosp=
+29418/openvpn refs/changes/62/1362/1</pre><pre style=3D"font-family: monosp=
 ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpnserv/v=
-alidate.c b/src/openvpnserv/validate.c</span><br><span>index ddaa381..2dcfe=
-1a 100644</span><br><span>--- a/src/openvpnserv/validate.c</span><br><span>=
-+++ b/src/openvpnserv/validate.c</span><br><span>@@ -24,8 +24,8 @@</span><b=
-r><span> </span><br><span> #include &lt;lmaccess.h&gt;</span><br><span> #in=
-clude &lt;shlwapi.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#include &lt;lm.h&gt;</span><br><span> #include &lt;pathcch.h&gt;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;lm.h&gt;</span=
-><br><span> </span><br><span> #ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH</s=
-pan><br><span> #define PATHCCH_ENSURE_TRAILING_SLASH 0x20</span><br><span>@=
-@ -58,44 +58,31 @@</span><br><span> static PTOKEN_GROUPS GetTokenGroups(con=
-st HANDLE token);</span><br><span> </span><br><span> /*</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * Check workdir\fname is inside config_d=
-ir</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * The logic here i=
-s simple: we may reject some valid paths if ..\ is in any of the strings</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check that config p=
-ath is inside config_dir</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * The logic here is simple: if the path isn&#39;t prefixed with confi=
-g_dir it&#39;s rejected</span><br><span>  */</span><br><span> static BOOL</=
-span><br><span> CheckConfigPath(const WCHAR *workdir, const WCHAR *fname, c=
-onst settings_t *s)</span><br><span> {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    WCHAR tmp[MAX_PATH];</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    const WCHAR *config_file =3D NULL;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    WCHAR config_dir[MAX_PATH];</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    HRESULT res;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    WCHAR config_path[MAX_PAT=
-H];</span><br><span> </span><br><span>     /* fname =3D stdin is special: d=
-o not treat it as a relative path */</span><br><span>     if (wcscmp(fname,=
- L&quot;stdin&quot;) =3D=3D 0)</span><br><span>     {</span><br><span>     =
-    return FALSE;</span><br><span>     }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    /* convert fname to full path */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* convert fname to full canonical =
-path */</span><br><span>     if (PathIsRelativeW(fname))</span><br><span>  =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        swprintf(=
-tmp, _countof(tmp), L&quot;%ls\\%ls&quot;, workdir, fname);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        config_file =3D tmp;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        res =3D PathCchCombi=
-ne(config_path, _countof(config_path), workdir, fname);</span><br><span>   =
-  }</span><br><span>     else</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        config_file =3D fname;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        res =3D PathCchCanonical=
-ize(config_path, _countof(config_path), fname);</span><br><span>     }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* c=
-anonicalize config_dir and add trailing slash before comparison */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    HRESULT res =3D PathCchCan=
-onicalizeEx(config_dir, _countof(config_dir), s-&gt;config_dir,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                                 =
-       PATHCCH_ENSURE_TRAILING_SLASH);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (res =3D=3D S_OK</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      &amp;&amp; wcsncmp(config_dir, config_file, wcslen(config_dir)) =3D=
-=3D 0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        &amp;&am=
-p; wcsstr(config_file + wcslen(config_dir), L&quot;..&quot;) =3D=3D NULL)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        return TRUE;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  return FALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wc=
-slen(s-&gt;config_dir)) =3D=3D 0;</span><br><span> }</span><br><span> </spa=
-n><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 1307</a>. T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
-type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+alidate.c b/src/openvpnserv/validate.c</span><br><span>index b3189b7..33815=
+03 100644</span><br><span>--- a/src/openvpnserv/validate.c</span><br><span>=
++++ b/src/openvpnserv/validate.c</span><br><span>@@ -78,7 +78,7 @@</span><b=
+r><span>         res =3D PathCchCanonicalize(config_path, _countof(config_p=
+ath), fname);</span><br><span>     }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    return res =3D=3D S_OK &amp;&amp; wcsn=
+cmp(config_path, s-&gt;config_dir, wcslen(s-&gt;config_dir)) =3D=3D 0;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return res =3D=3D S_=
+OK &amp;&amp; wcsnicmp(config_path, s-&gt;config_dir, wcslen(s-&gt;config_d=
+ir)) =3D=3D 0;</span><br><span> }</span><br><span> </span><br><span> </span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1362?usp=3Demail">change 1362</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1362?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0e94068f467f2899daf133b032a=
-785d2d7fc05e4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1307 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d905da3add9b8a3daf349eb1bc=
+830a017cf493d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1362 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
 
 </body></html>=
 
---NzVG3wc1iIk=--
+--Ut9puTB0yCE=--
 
