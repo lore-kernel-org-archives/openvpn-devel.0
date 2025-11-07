@@ -1,15 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 12:11:47 +0000
-References: <gerrit.1762517501000.Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <f62388f7b538ed62194bb5db67beee10f044a59e-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 7 Nov 2025 12:44:40 +0000
+References: <gerrit.1762519477000.I429d768fb33ef2c58484287d4091440ad8599053@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <fa73515f02aa8ac1d11e9536df727411885d7a71-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XqY4EPrsXQQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: Change
- tls_send_payload size argument to size_t
+Content-Type: multipart/alternative; boundary="mpZt/PoukgU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not underestimate
+ number of encrypted/decrypted AEAD blocks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,242 +18,205 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XqY4EPrsXQQ=
+--mpZt/PoukgU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld.
 
-Hello plaisthos,
+Hello flichtenheld,
 
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1355?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail
 
 to review the following change.
 
 
-Change subject: ssl: Change tls_send_payload size argument to size_t
+Change subject: Do not underestimate number of encrypted/decrypted  AEAD bl=
+ocks
 ......................................................................
 
-ssl: Change tls_send_payload size argument to size_t
+Do not underestimate number of encrypted/decrypted  AEAD blocks
 
-There is only one caller of this function and it
-wants it to be size_t. So move the size_t to int
-conversion one step down in the call chain. Do not
-switch key_state_write_plaintext_const, yet, since
-that is a backend function and so needs way more
-work.
+Even thought the current code typically counts all the encrypted/decrypted
+traffic, this is only the case because of the specific implementation
+of OpenSSL at the moment.
 
-Change-Id: Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Instead of counting the length returned by one call only, count all
+the encrypted/decrypted bytes.
+
+Other implementations that AES-GCM (like IPSec, MacSEC, TLS 1.2) currently
+do not honour these usage limits at all. So this currently not something
+that I consider to be security vulnerability since currently this something
+that enhances security but is not yet required so to say.
+
+Reported by: <stephan@...2953...>
+
+Change-Id: I429d768fb33ef2c58484287d4091440ad8599053
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/forward.c
-M src/openvpn/ssl.c
-M src/openvpn/ssl.h
-3 files changed, 10 insertions(+), 9 deletions(-)
+M src/openvpn/crypto.c
+1 file changed, 6 insertions(+), 7 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/55/1355/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/1358/1
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 5bbac13..cffb310 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -365,11 +365,6 @@
-     }
- }
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 307d1ee..8049b3a 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -152,15 +152,15 @@
+     ASSERT(cipher_ctx_update(ctx->cipher, BEND(&work), &outlen, BPTR(buf),=
+ BLEN(buf)));
+     ASSERT(buf_inc_len(&work, outlen));
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
+-    /* update number of plaintext blocks encrypted. Use the (x + (n-1))/n =
+trick
+-     * to round up the result to the number of blocks used */
+-    const int blocksize =3D AEAD_LIMIT_BLOCKSIZE;
+-    opt->key_ctx_bi.encrypt.plaintext_blocks +=3D (outlen + (blocksize - 1=
+)) / blocksize;
 -
- bool
- send_control_channel_string_dowork(struct tls_session *session, const char=
- *str,
-                                    msglvl_t msglevel)
-@@ -827,6 +822,11 @@
- #endif /* ENABLE_MANAGEMENT */
- }
+     /* Flush the encryption buffer */
+     ASSERT(cipher_ctx_final(ctx->cipher, BEND(&work), &outlen));
+     ASSERT(buf_inc_len(&work, outlen));
 
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
++    /* update number of plaintext blocks encrypted. Use the (x + (n-1))/n =
+trick
++     * to round up the result to the number of blocks used */
++    const int blocksize =3D AEAD_LIMIT_BLOCKSIZE;
++    opt->key_ctx_bi.encrypt.plaintext_blocks +=3D (BLEN(&work) + (blocksiz=
+e - 1)) / blocksize;
 +
- static void
- check_coarse_timers(struct context *c)
- {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 908854a..398c9ae 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -4032,7 +4032,7 @@
-  */
-
- bool
--tls_send_payload(struct key_state *ks, const uint8_t *data, int size)
-+tls_send_payload(struct key_state *ks, const uint8_t *data, size_t size)
- {
-     bool ret =3D false;
-
-@@ -4042,7 +4042,8 @@
-
-     if (ks->state >=3D S_ACTIVE)
+     /* if the tag is at end the end, allocate it now */
+     if (use_epoch_data_format)
      {
--        if (key_state_write_plaintext_const(&ks->ks_ssl, data, size) =3D=
-=3D 1)
-+        ASSERT(size <=3D INT_MAX);
-+        if (key_state_write_plaintext_const(&ks->ks_ssl, data, (int)size) =
-=3D=3D 1)
-         {
-             ret =3D true;
-         }
-@@ -4053,7 +4054,7 @@
-         {
-             ks->paybuf =3D buffer_list_new();
-         }
--        buffer_list_push_data(ks->paybuf, data, (size_t)size);
-+        buffer_list_push_data(ks->paybuf, data, size);
-         ret =3D true;
+@@ -580,11 +580,10 @@
+         goto error_exit;
      }
 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index ffcc7c4..db8a798 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -426,7 +426,7 @@
- /*
-  * Send a payload over the TLS control channel
-  */
--bool tls_send_payload(struct key_state *ks, const uint8_t *data, int size);
-+bool tls_send_payload(struct key_state *ks, const uint8_t *data, size_t si=
-ze);
+-
+     /* update number of plaintext blocks decrypted. Use the (x + (n-1))/n =
+trick
+      * to round up the result to the number of blocks used. */
+     const int blocksize =3D AEAD_LIMIT_BLOCKSIZE;
+-    opt->key_ctx_bi.decrypt.plaintext_blocks +=3D (outlen + (blocksize - 1=
+)) / blocksize;
++    opt->key_ctx_bi.decrypt.plaintext_blocks +=3D (BLEN(&work) + (blocksiz=
+e - 1)) / blocksize;
 
- /*
-  * Receive a payload through the TLS control channel
+     *buf =3D work;
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1355?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af
-Gerrit-Change-Number: 1355
+Gerrit-Change-Id: I429d768fb33ef2c58484287d4091440ad8599053
+Gerrit-Change-Number: 1358
 Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 
---XqY4EPrsXQQ=
+--mpZt/PoukgU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1355?usp=3Demail">V=
+rently required from: flichtenheld. </p>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">ssl: Change tls_send_payload size argument =
-to size_t<br><br>There is only one caller of this function and it<br>wants =
-it to be size_t. So move the size_t to int<br>conversion one step down in t=
-he call chain. Do not<br>switch key_state_write_plaintext_const, yet, since=
-<br>that is a backend function and so needs way more<br>work.<br><br>Change=
--Id: Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/forward.c<br>M src=
-/openvpn/ssl.c<br>M src/openvpn/ssl.h<br>3 files changed, 10 insertions(+),=
- 9 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
-t:29418/openvpn refs/changes/55/1355/1</pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/for=
-ward.c b/src/openvpn/forward.c</span><br><span>index 5bbac13..cffb310 10064=
-4</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/ope=
-nvpn/forward.c</span><br><span>@@ -365,11 +365,6 @@</span><br><span>     }<=
-/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &=
-quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan> bool</span><br><span> send_control_channel_string_dowork(struct tls_se=
-ssion *session, const char *str,</span><br><span>                          =
-          msglvl_t msglevel)</span><br><span>@@ -827,6 +822,11 @@</span><br=
-><span> #endif /* ENABLE_MANAGEMENT */</span><br><span> }</span><br><span> =
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC_=
-_) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br=
-><span> check_coarse_timers(struct context *c)</span><br><span> {</span><br=
-><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>i=
-ndex 908854a..398c9ae 100644</span><br><span>--- a/src/openvpn/ssl.c</span>=
-<br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -4032,7 +4032,7 @@</sp=
-an><br><span>  */</span><br><span> </span><br><span> bool</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-tls_send_payload(struct key_state *ks, =
-const uint8_t *data, int size)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+tls_send_payload(struct key_state *ks, const uint8_t *data, size=
-_t size)</span><br><span> {</span><br><span>     bool ret =3D false;</span>=
-<br><span> </span><br><span>@@ -4042,7 +4042,8 @@</span><br><span> </span><=
-br><span>     if (ks-&gt;state &gt;=3D S_ACTIVE)</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (key_state_wri=
-te_plaintext_const(&amp;ks-&gt;ks_ssl, data, size) =3D=3D 1)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(size &lt;=3D INT_MA=
-X);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (key_=
-state_write_plaintext_const(&amp;ks-&gt;ks_ssl, data, (int)size) =3D=3D 1)<=
-/span><br><span>         {</span><br><span>             ret =3D true;</span=
-><br><span>         }</span><br><span>@@ -4053,7 +4054,7 @@</span><br><span=
->         {</span><br><span>             ks-&gt;paybuf =3D buffer_list_new(=
-);</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        buffer_list_push_data(ks-&gt;paybuf, data, (size_t)size);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        buffer_list_p=
-ush_data(ks-&gt;paybuf, data, size);</span><br><span>         ret =3D true;=
-</span><br><span>     }</span><br><span> </span><br><span>diff --git a/src/=
-openvpn/ssl.h b/src/openvpn/ssl.h</span><br><span>index ffcc7c4..db8a798 10=
-0644</span><br><span>--- a/src/openvpn/ssl.h</span><br><span>+++ b/src/open=
-vpn/ssl.h</span><br><span>@@ -426,7 +426,7 @@</span><br><span> /*</span><br=
-><span>  * Send a payload over the TLS control channel</span><br><span>  */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool tls_send_payload=
-(struct key_state *ks, const uint8_t *data, int size);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+bool tls_send_payload(struct key_state *=
-ks, const uint8_t *data, size_t size);</span><br><span> </span><br><span> /=
-*</span><br><span>  * Receive a payload through the TLS control channel</sp=
-an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1355?usp=3Demail">change 1355</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1355?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+ospace; white-space: pre-wrap;">Do not underestimate number of encrypted/de=
+crypted  AEAD blocks<br><br>Even thought the current code typically counts =
+all the encrypted/decrypted<br>traffic, this is only the case because of th=
+e specific implementation<br>of OpenSSL at the moment.<br><br>Instead of co=
+unting the length returned by one call only, count all<br>the encrypted/dec=
+rypted bytes.<br><br>Other implementations that AES-GCM (like IPSec, MacSEC=
+, TLS 1.2) currently<br>do not honour these usage limits at all. So this cu=
+rrently not something<br>that I consider to be security vulnerability since=
+ currently this something<br>that enhances security but is not yet required=
+ so to say.<br><br>Reported by: &lt;stephan@...2953...&gt;<br><br>Change-Id=
+: I429d768fb33ef2c58484287d4091440ad8599053<br>Signed-off-by: Arne Schwabe =
+&lt;arne@...1227...&gt;<br>---<br>M src/openvpn/crypto.c<br>1 file changed,=
+ 6 insertions(+), 7 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/58/1358/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index 307=
+d1ee..8049b3a 100644</span><br><span>--- a/src/openvpn/crypto.c</span><br><=
+span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -152,15 +152,15 @@</span=
+><br><span>     ASSERT(cipher_ctx_update(ctx-&gt;cipher, BEND(&amp;work), &=
+amp;outlen, BPTR(buf), BLEN(buf)));</span><br><span>     ASSERT(buf_inc_len=
+(&amp;work, outlen));</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    /* update number of plaintext blocks encrypted. Use t=
+he (x + (n-1))/n trick</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-     * to round up the result to the number of blocks used */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    const int blocksize =3D AEAD_L=
+IMIT_BLOCKSIZE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    op=
+t-&gt;key_ctx_bi.encrypt.plaintext_blocks +=3D (outlen + (blocksize - 1)) /=
+ blocksize;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span>     /* Flush the encryption buffer */</span><br><span>     ASSERT(c=
+ipher_ctx_final(ctx-&gt;cipher, BEND(&amp;work), &amp;outlen));</span><br><=
+span>     ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span> </span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /* update number of pla=
+intext blocks encrypted. Use the (x + (n-1))/n trick</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     * to round up the result to the numb=
+er of blocks used */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const int blocksize =3D AEAD_LIMIT_BLOCKSIZE;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    opt-&gt;key_ctx_bi.encrypt.plaintext_blo=
+cks +=3D (BLEN(&amp;work) + (blocksize - 1)) / blocksize;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /* if the tag i=
+s at end the end, allocate it now */</span><br><span>     if (use_epoch_dat=
+a_format)</span><br><span>     {</span><br><span>@@ -580,11 +580,10 @@</spa=
+n><br><span>         goto error_exit;</span><br><span>     }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+    /* update number of plaintext blocks decrypted. Use the (x + (n-1))/n t=
+rick</span><br><span>      * to round up the result to the number of blocks=
+ used. */</span><br><span>     const int blocksize =3D AEAD_LIMIT_BLOCKSIZE=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    opt-&gt;key_ctx_=
+bi.decrypt.plaintext_blocks +=3D (outlen + (blocksize - 1)) / blocksize;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    opt-&gt;key_ctx_bi=
+.decrypt.plaintext_blocks +=3D (BLEN(&amp;work) + (blocksize - 1)) / blocks=
+ize;</span><br><span> </span><br><span>     *buf =3D work;</span><br><span>=
+ </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1358?usp=3Demail">change 1358</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
+://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1358?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic90c5a0e48bda4a02d5e11c4c16=
-1f388cc8805af </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1355 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I429d768fb33ef2c58484287d409=
+1440ad8599053 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1358 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 
 </body></html>=
 
---XqY4EPrsXQQ=--
+--mpZt/PoukgU=--
 
