@@ -1,14 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 13:50:56 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 7 Nov 2025 14:13:08 +0000
 In-Reply-To: <gerrit.1762447154000.I991d6053776efed771bc1a3880acb80b55959cbc@...2715...>
 References: <gerrit.1762447154000.I991d6053776efed771bc1a3880acb80b55959cbc@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <41dc67f72120089a448868a33b3a1469aacf302e-EmailReviewComments-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <f19f8ab3f26d8a2937e0c5474d5f019782b847be-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BKH6JbpyzYk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="YGuO9WJ6q4k="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: FreeBSD DCO: repair
  incoming "delete peer" notifications in p2p clien...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,34 +19,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---BKH6JbpyzYk=
+--YGuO9WJ6q4k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: cron2, plaisthos.
 
-cron2 has posted comments on this change by cron2. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1353?usp=3Demail )
+flichtenheld has posted comments on this change by cron2. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1353?usp=3Demail )
 
 Change subject: FreeBSD DCO: repair incoming "delete peer" notifications in=
  p2p client mode
 ......................................................................
 
 
-Patch Set 3:
-
-(1 comment)
-
-File src/openvpn/dco_freebsd.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/1353/comment/399e42cb_cfbf57f1?usp=3D=
-email :
-PS1, Line 36:     OVPN_CMD_DEL_PEER =3D 1,
-> Should have some comment why this is required.
-Done
-
+Patch Set 3: Code-Review+2
 
 
 --
@@ -65,36 +54,28 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 07 Nov 2025 13:50:56 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Comment-Date: Fri, 07 Nov 2025 14:13:08 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---BKH6JbpyzYk=
+--YGuO9WJ6q4k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dco_freebsd.h:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1353/comment/399e42cb_cfbf57f1?usp=3Demail">Patch Set=
- #1, Line 36:</a> <code style=3D"font-family:monospace,monospace">    OVPN_=
-CMD_DEL_PEER =3D 1,</code></p><p><blockquote style=3D"border-left: 1px soli=
-d #aaa; margin: 10px 0; padding: 0 10px;">Should have some comment why this=
- is required.</blockquote></p><p class=3D"blocks" style=3D"white-space: pre=
--wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visi=
-t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail">change=
- 1353</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: cron2, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail=
+">change 1353</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -113,16 +94,14 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 13:50:56=
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 14:13:08=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---BKH6JbpyzYk=--
+--YGuO9WJ6q4k=--
 
