@@ -1,17 +1,10 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 16:30:34 +0000
-In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <e85986942306849dac0ab1f840c5d1d51dd3c9c2-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LEWT93Ujfpg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
- config path better
+Date: Fri, 7 Nov 2025 17:31:59 +0100 (CET)
+Message-Id: <202511071631.5A7GVxV5003208@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251107141333.12056-1-gert@...1296...>
+References: <20251107141333.12056-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: FreeBSD DCO: repair incoming
+ 'delete peer' notifications in p2p client mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,124 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---LEWT93Ujfpg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Thanks for the review.  Tested on FreeBSD 14.3 with DCO.
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+As it says in the commit, we might want to make the other DCO backends
+use "OVPN_CMD_NO_MESSAGE" as well, instead of "defaulting to 0", but
+that's for another day.
 
-d12fk has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1307?usp=3Demail )
+Patch has been applied to the master branch.
 
-Change subject: iservice: validate config path better
-......................................................................
+commit c4fe7813d8b8eba99549a7b5e9499a31f91c8109
+Author: Gert Doering
+Date:   Fri Nov 7 15:13:27 2025 +0100
 
+     FreeBSD DCO: repair incoming 'delete peer' notifications in p2p client mode
 
-Patch Set 5:
-
-(1 comment)
-
-File src/openvpnserv/validate.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1307/comment/0bc45645_e107cbf0?usp=3D=
-email :
-PS3, Line 85:     return res =3D=3D S_OK && wcsncmp(config_path, s->config_=
-dir, wcslen(s->config_dir)) =3D=3D 0;
-> For got to mention that this was reported by: [=E2=80=A6]
-I think I'll break it out into its own commit then.
-
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1353
+     Message-Id: <20251107141333.12056-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34237.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
-Gerrit-Change-Number: 1307
-Gerrit-PatchSet: 5
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 07 Nov 2025 16:30:34 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: d12fk <heiko@...515...>
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
+Gert Doering
 
---LEWT93Ujfpg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/validate.c:</p=
-><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
-g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1307/comment/0bc45645_e107cbf0?usp=3Demail">Patch Se=
-t #3, Line 85:</a> <code style=3D"font-family:monospace,monospace">    retu=
-rn res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wcslen=
-(s-&gt;config_dir)) =3D=3D 0;</code></p><p><blockquote style=3D"border-left=
-: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">For got to mention that=
- this was reported by: [=E2=80=A6]</blockquote></p><p class=3D"blocks" styl=
-e=3D"white-space: pre-wrap; word-wrap: break-word;">I think I&#39;ll break =
-it out into its own commit then.</p></li></ul></li></ul><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 13=
-07</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemp=
-rop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0e94068f467f2899daf133b032a=
-785d2d7fc05e4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1307 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 16:30:34=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-
-</body></html>=
-
---LEWT93Ujfpg=--
 
