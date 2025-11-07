@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 14:13:08 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri,  7 Nov 2025 15:13:27 +0100
+Message-ID: <20251107141333.12056-1-gert@...1296...>
 In-Reply-To: <gerrit.1762447154000.I991d6053776efed771bc1a3880acb80b55959cbc@...2715...>
 References: <gerrit.1762447154000.I991d6053776efed771bc1a3880acb80b55959cbc@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <f19f8ab3f26d8a2937e0c5474d5f019782b847be-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YGuO9WJ6q4k="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: FreeBSD DCO: repair
- incoming "delete peer" notifications in p2p clien...
+Subject: [Openvpn-devel] [PATCH v3] FreeBSD DCO: repair incoming "delete
+ peer" notifications in p2p client mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---YGuO9WJ6q4k=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+commit 4a48841da2 introduced a workaround for spurious DCO notifications
+"with no useful content" on Linux - namely, ignoring dco_message_type==0
+in forward.c, process_incoming_dco(), "because Linux has no message
+type 0 anyway".
 
-Attention is currently required from: cron2, plaisthos.
+Each DCO platform uses its own enum for these notification messages
+*inside* OpenVPN (which might not have the best design decision ever),
+and FreeBSD had OVPN_CMD_DEL_PEER in the enum on "position 0"...
 
-flichtenheld has posted comments on this change by cron2. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1353?usp=3Demail )
+Fix by changing the enum to start with 1.  Tested with DEL_PEER in p2p
+client and DEL_PEER & FLOAT in p2mp server mode.
 
-Change subject: FreeBSD DCO: repair incoming "delete peer" notifications in=
- p2p client mode
-......................................................................
+v2:
+  introduce OVPN_CMD_NO_MESSAGE in position 0, and a comment explaining why.
+  A future commit can then clean up forward.c and dco_linux.c to use the
+  constant, and not "magic 0 which happens to be in there after CLEAR()".
 
+Github: fixes OpenVPN/openvpn#881
 
-Patch Set 3: Code-Review+2
+Change-Id: I991d6053776efed771bc1a3880acb80b55959cbc
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1353
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1353
+This mail reflects revision 3 of this Change.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I991d6053776efed771bc1a3880acb80b55959cbc
-Gerrit-Change-Number: 1353
-Gerrit-PatchSet: 3
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Fri, 07 Nov 2025 14:13:08 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
---YGuO9WJ6q4k=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail=
-">change 1353</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1353?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I991d6053776efed771bc1a3880a=
-cb80b55959cbc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1353 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 14:13:08=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---YGuO9WJ6q4k=--
+        
+diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
+index 0797b82..5e2a552 100644
+--- a/src/openvpn/dco_freebsd.h
++++ b/src/openvpn/dco_freebsd.h
+@@ -33,6 +33,8 @@
+ 
+ enum ovpn_message_type_t
+ {
++    /* message type #0 is treated as magic number by process_incoming_dco() */
++    OVPN_CMD_NO_MESSAGE = 0,
+     OVPN_CMD_DEL_PEER,
+     OVPN_CMD_PACKET,
+     OVPN_CMD_SWAP_KEYS,
 
