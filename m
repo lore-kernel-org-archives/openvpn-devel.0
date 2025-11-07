@@ -1,17 +1,17 @@
-From: "chesain (Code Review)" <gerrit@...515...>
-Date: Fri, 7 Nov 2025 22:21:08 +0000
-In-Reply-To: <gerrit.1762026034000.Ifb4e9d79c167337fb780b53141d080abf55f3f5e@...2715...>
-References: <gerrit.1762026034000.Ifb4e9d79c167337fb780b53141d080abf55f3f5e@...2715...>
-Reply-To: cvanteddu1@...277..., arne-openvpn@...1227...,
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 7 Nov 2025 22:44:21 +0000
+In-Reply-To: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
+References: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
- yura.uddr@...277...
-Message-ID: <7fa9d358ec52914282df71be674cb8c0e9e3e873-EmailReviewComments-HTML@...2715...>
+ lstipakov@...277...
+Message-ID: <7e899f2ec71f75993fe1aab55b347d3bbf102472-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LbMgWZKKQ0A="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: CONTRIBUTING:
- add Gerrit option + links
+Content-Type: multipart/alternative; boundary="rStpTqPHCCE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: make sure
+ directories have trailing \
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,122 +20,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: uddr <yura.uddr@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LbMgWZKKQ0A=
+--rStpTqPHCCE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, uddr.
+Attention is currently required from: d12fk, flichtenheld, plaisthos, stipa.
 
-chesain has posted comments on this change by chesain. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1338?usp=3Demail )
+cron2 has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1336?usp=3Demail )
 
-Change subject: CONTRIBUTING: add Gerrit option + links
+Change subject: iservice: make sure directories have trailing \
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 6: Code-Review-2
 
 (1 comment)
 
-File CONTRIBUTING.rst:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/1338/comment/fea2190d_8ddbce6b?usp=3D=
-email :
-PS1, Line 13: - Create account: https://gerrit.openvpn.net/pwm/public/newus=
-er
-> We are about to change Gerrit auth method so this will have to wait when =
-we can describe it here.
-Understood, I went ahead and removed that line
+PS6:
+It still fails compilation... googling for the error message led me here
+
+https://stackoverflow.com/questions/4845198/fatal-error-no-target-architect=
+ure-in-visual-studio
+
+which reads as if windows header files need to come after <windows.h>, neve=
+r standalone.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ifb4e9d79c167337fb780b53141d080abf55f3f5e
-Gerrit-Change-Number: 1338
-Gerrit-PatchSet: 2
-Gerrit-Owner: chesain <cvanteddu1@...277...>
-Gerrit-Reviewer: chesain <cvanteddu1@...277...>
+Gerrit-Branch: master
+Gerrit-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
+Gerrit-Change-Number: 1336
+Gerrit-PatchSet: 6
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: uddr <yura.uddr@...277...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: uddr <yura.uddr@...277...>
-Gerrit-Comment-Date: Fri, 07 Nov 2025 22:21:08 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Fri, 07 Nov 2025 22:44:21 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: uddr <yura.uddr@...277...>
+Gerrit-Has-Labels: Yes
 
---LbMgWZKKQ0A=
+--rStpTqPHCCE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, uddr. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1338?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File CONTRIBUTING.rst:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1338/comment/fea2190d_8ddbce6b?usp=3Demail">Patch Set #1, Line=
- 13:</a> <code style=3D"font-family:monospace,monospace">- Create account: =
-https://gerrit.openvpn.net/pwm/public/newuser</code></p><p><blockquote styl=
-e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">We are =
-about to change Gerrit auth method so this will have to wait when we can de=
-scribe it here.</blockquote></p><p class=3D"blocks" style=3D"white-space: p=
-re-wrap; word-wrap: break-word;">Understood, I went ahead and removed that =
-line</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1338?usp=3Demail">change 1338</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1338?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+rently required from: d12fk, flichtenheld, plaisthos, stipa. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1336?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">It still fa=
+ils compilation... googling for the error message led me here</p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">https:/=
+/stackoverflow.com/questions/4845198/fatal-error-no-target-architecture-in-=
+visual-studio</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
+rap: break-word;">which reads as if windows header files need to come after=
+ &lt;windows.h&gt;, never standalone.</p></li></ul></li></ul><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">chan=
+ge 1336</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
+itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
+rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifb4e9d79c167337fb780b53141d=
-080abf55f3f5e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1338 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: chesain &lt;cvanteddu1@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: chesain &lt;cvanteddu1@...1482...=
-...&gt; </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If28e66fcc3493821f78fd14d432=
+b22b996918e8f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1336 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
-gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: uddr &lt;yura.uddr@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 22:21:08=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 07 Nov 2025 22:44:21=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: uddr &lt;yura.uddr@...1482...=
-...&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---LbMgWZKKQ0A=--
+--rStpTqPHCCE=--
 
