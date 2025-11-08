@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 8 Nov 2025 22:59:41 +0000
+Date: Sat, 8 Nov 2025 22:59:43 +0000
 In-Reply-To: <gerrit.1762436081000.I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995@...2715...>
 References: <gerrit.1762436081000.I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <32038c69d9a057aa6263de50744e829aefa1cf9e-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <32038c69d9a057aa6263de50744e829aefa1cf9e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ehpbJomWPAw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="w5XYO/+/QL4="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: pkcs11_openssl:
  Silence a conversion warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ehpbJomWPAw=
+--w5XYO/+/QL4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+52?usp=3Demail )
 
 Change subject: pkcs11_openssl: Silence a conversion warning
 ......................................................................
@@ -56,7 +52,7 @@ M src/openvpn/pkcs11_openssl.c
 1 file changed, 2 insertions(+), 11 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/52/1352/2
+
 
 diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
 index f619b95..1d527db 100644
@@ -107,7 +103,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I6079bf9e7f6b37cb2e2d7f28851a77d0b08be995
@@ -118,69 +114,65 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ehpbJomWPAw=
+--w5XYO/+/QL4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">pkcs11_openssl: Silence a conversio=
-n warning<br><br>The only caller of this function uses a constant<br>for th=
-is parameter, so this is all quite safe. Add<br>an ASSERT for good measure =
-anyway to make the assumption<br>explicit.<br><br>Change-Id: I6079bf9e7f6b3=
-7cb2e2d7f28851a77d0b08be995<br>Signed-off-by: Frank Lichtenheld &lt;frank@...220...=
-..2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit U=
-RL: https://gerrit.openvpn.net/c/openvpn/+/1352<br>Message-Id: &lt;20251106=
-133936.30264-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/ope=
-nvpn-devel@lists.sourceforge.net/msg34209.html<br>Signed-off-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/pkcs11_openssl.c<br>1 fi=
-le changed, 2 insertions(+), 11 deletions(-)<br><br></pre><pre class=3D"blo=
-cks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
- pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/52/1352/2</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c</=
-span><br><span>index f619b95..1d527db 100644</span><br><span>--- a/src/open=
-vpn/pkcs11_openssl.c</span><br><span>+++ b/src/openvpn/pkcs11_openssl.c</sp=
-an><br><span>@@ -428,18 +428,12 @@</span><br><span>     return dn;</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wc=
-onversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int=
-</span><br><span> pkcs11_certificate_serial(pkcs11h_certificate_t certifica=
-te, char *serial, size_t serial_len)</span><br><span> {</span><br><span>   =
-  X509 *x509 =3D NULL;</span><br><span>     BIO *bio =3D NULL;</span><br><s=
-pan>     int ret =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    int n;</span><br><span> </span><br><span>     if ((x509 =3D pkcs11h_o=
-penssl_getX509(certificate)) =3D=3D NULL)</span><br><span>     {</span><br>=
-<span>@@ -454,7 +448,8 @@</span><br><span>     }</span><br><span> </span><b=
-r><span>     i2a_ASN1_INTEGER(bio, X509_get_serialNumber(x509));</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    n =3D BIO_read(bio, serial, =
-serial_len - 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- ASSERT(serial_len &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    int n =3D BIO_read(bio, serial, (int)serial_len - 1);<=
-/span><br><span> </span><br><span>     if (n &lt; 0)</span><br><span>     {=
-</span><br><span>@@ -474,8 +469,4 @@</span><br><span>     return ret;</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span> #endif /* defined(ENABLE_PKCS11) &a=
-mp;&amp; defined(ENABLE_OPENSSL) */</span><br><span></span><br></pre><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Dema=
-il">change 1352</a>. To unsubscribe, or for help writing mail filters, visi=
-t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1352?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">pkcs11_openssl: Silence a conversion warning<br>=
+<br>The only caller of this function uses a constant<br>for this parameter,=
+ so this is all quite safe. Add<br>an ASSERT for good measure anyway to mak=
+e the assumption<br>explicit.<br><br>Change-Id: I6079bf9e7f6b37cb2e2d7f2885=
+1a77d0b08be995<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;=
+<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://g=
+errit.openvpn.net/c/openvpn/+/1352<br>Message-Id: &lt;20251106133936.30264-=
+1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1224...=
+sts.sourceforge.net/msg34209.html<br>Signed-off-by: Gert Doering &lt;gert@...220...=
+..1296...&gt;<br>---<br>M src/openvpn/pkcs11_openssl.c<br>1 file changed, 2=
+ insertions(+), 11 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c=
+</span><br><span>index f619b95..1d527db 100644</span><br><span>--- a/src/op=
+envpn/pkcs11_openssl.c</span><br><span>+++ b/src/openvpn/pkcs11_openssl.c</=
+span><br><span>@@ -428,18 +428,12 @@</span><br><span>     return dn;</span>=
+<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;=
+-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+int</span><br><span> pkcs11_certificate_serial(pkcs11h_certificate_t certif=
+icate, char *serial, size_t serial_len)</span><br><span> {</span><br><span>=
+     X509 *x509 =3D NULL;</span><br><span>     BIO *bio =3D NULL;</span><br=
+><span>     int ret =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    int n;</span><br><span> </span><br><span>     if ((x509 =3D pkcs11=
+h_openssl_getX509(certificate)) =3D=3D NULL)</span><br><span>     {</span><=
+br><span>@@ -454,7 +448,8 @@</span><br><span>     }</span><br><span> </span=
+><br><span>     i2a_ASN1_INTEGER(bio, X509_get_serialNumber(x509));</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    n =3D BIO_read(bio, seria=
+l, serial_len - 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    ASSERT(serial_len &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    int n =3D BIO_read(bio, serial, (int)serial_len - 1=
+);</span><br><span> </span><br><span>     if (n &lt; 0)</span><br><span>   =
+  {</span><br><span>@@ -474,8 +469,4 @@</span><br><span>     return ret;</s=
+pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span> #endif /* defined(ENABLE_PKCS11)=
+ &amp;&amp; defined(ENABLE_OPENSSL) */</span><br><span></span><br></pre><p>=
+To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3D=
+email">change 1352</a>. To unsubscribe, or for help writing mail filters, v=
+isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1352?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I6079bf9e7f6b37cb2e2d7f28851=
@@ -198,5 +190,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---ehpbJomWPAw=--
+--w5XYO/+/QL4=--
 
