@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 9 Nov 2025 11:11:18 +0000
+Date: Sun, 9 Nov 2025 11:11:20 +0000
 In-Reply-To: <gerrit.1762536182000.Ief19ba87b0832baa6530ea8bf039d85115434e3e@...2715...>
 References: <gerrit.1762536182000.Ief19ba87b0832baa6530ea8bf039d85115434e3e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <710fb66e693512303995c547ec13f18228c0f2d6-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <710fb66e693512303995c547ec13f18228c0f2d6-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0VBA7eg7zJc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="W6Jg/jJLB4Q="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_freebsd.c: fix
  integer warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,24 +19,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0VBA7eg7zJc=
+--W6Jg/jJLB4Q=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1361?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+61?usp=3Demail )
 
 Change subject: dco_freebsd.c: fix integer warnings
 ......................................................................
@@ -62,7 +52,7 @@ M src/openvpn/dco_freebsd.c
 1 file changed, 11 insertions(+), 17 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/1361/2
+
 
 diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
 index 21f0ac0..f2a89ac 100644
@@ -86,7 +76,7 @@ index 21f0ac0..f2a89ac 100644
 
 -    ss->ss_family =3D nvlist_get_number(nvl, "af");
 +    ss->ss_family =3D (unsigned char)nvlist_get_number(nvl, "af");
-=20
+
      switch (ss->ss_family)
      {
 @@ -107,7 +102,7 @@
@@ -165,7 +155,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1361?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ief19ba87b0832baa6530ea8bf039d85115434e3e
@@ -176,57 +166,54 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0VBA7eg7zJc=
+--W6Jg/jJLB4Q=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to this change.</p><p><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1361?usp=3Demail">View Change</a></p><p>The followi=
-ng approvals got outdated and were removed:
-Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">dco_freebsd.c: fix integer w=
-arnings<br><br>Fix all nvlist_get_number() related warnings by explicitly c=
-asting - these<br>are all messages coming from DCO, which we trust in this =
-(nothing will<br>crash if a number is truncated, just &quot;things will not=
- work correctly&quot;).<br><br>Remove #pragmas.<br><br>Change-Id: Ief19ba87=
-b0832baa6530ea8bf039d85115434e3e<br>Signed-off-by: Gert Doering &lt;gert@...1186...=
-.1296...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Ger=
-rit URL: https://gerrit.openvpn.net/c/openvpn/+/1361<br>Message-Id: &lt;202=
-51107174810.31851-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.co=
-m/openvpn-devel@lists.sourceforge.net/msg34256.html<br>Signed-off-by: Gert =
-Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dco_freebsd.c<br>1 =
-file changed, 11 insertions(+), 17 deletions(-)<br><br></pre><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/1361/2</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</spa=
-n><br><span>index 21f0ac0..f2a89ac 100644</span><br><span>--- a/src/openvpn=
-/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><s=
-pan>@@ -72,11 +72,6 @@</span><br><span>     return (nvl);</span><br><span> =
-}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
-f defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion=
-&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static bool<=
-/span><br><span> nvlist_to_sockaddr(const nvlist_t *nvl, struct sockaddr_st=
-orage *ss)</span><br><span> {</span><br><span>@@ -93,7 +88,7 @@</span><br><=
-span>         return (false);</span><br><span>     }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    ss-&gt;ss_family =3D n=
-vlist_get_number(nvl, &quot;af&quot;);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    ss-&gt;ss_family =3D (unsigned char)nvlist_get_numbe=
-r(nvl, &quot;af&quot;);</span><br><span> </span><br><span>     switch (ss-&=
-gt;ss_family)</span><br><span>     {</span><br><span>@@ -107,7 +102,7 @@</s=
-pan><br><span>             data =3D nvlist_get_binary(nvl, &quot;address&qu=
-ot;, &amp;len);</span><br><span>             ASSERT(len =3D=3D sizeof(in-&g=
-t;sin_addr));</span><br><span>             memcpy(&amp;in-&gt;sin_addr, dat=
-a, sizeof(in-&gt;sin_addr));</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            in-&gt;sin_port =3D nvlist_get_number(nvl, &quot;port&qu=
-ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            in=
--&gt;sin_port =3D (in_port_t)nvlist_get_number(nvl, &quot;port&quot;);</spa=
-n><br><span>             break;</span><br><span>         }</span><br><span>=
- </span><br><span>@@ -121,11 +116,11 @@</span><br><span>             data =
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1361?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">dco_freebsd.c: fix integer warnings<br><br>Fix a=
+ll nvlist_get_number() related warnings by explicitly casting - these<br>ar=
+e all messages coming from DCO, which we trust in this (nothing will<br>cra=
+sh if a number is truncated, just &quot;things will not work correctly&quot=
+;).<br><br>Remove #pragmas.<br><br>Change-Id: Ief19ba87b0832baa6530ea8bf039=
+d85115434e3e<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>Acke=
+d-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Gerrit URL: https://ger=
+rit.openvpn.net/c/openvpn/+/1361<br>Message-Id: &lt;20251107174810.31851-1-=
+gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1514...=
+s.sourceforge.net/msg34256.html<br>Signed-off-by: Gert Doering &lt;gert@...493...=
+1296...&gt;<br>---<br>M src/openvpn/dco_freebsd.c<br>1 file changed, 11 ins=
+ertions(+), 17 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span=
+><br><span>index 21f0ac0..f2a89ac 100644</span><br><span>--- a/src/openvpn/=
+dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><sp=
+an>@@ -72,11 +72,6 @@</span><br><span>     return (nvl);</span><br><span> }=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
+ defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static bool</=
+span><br><span> nvlist_to_sockaddr(const nvlist_t *nvl, struct sockaddr_sto=
+rage *ss)</span><br><span> {</span><br><span>@@ -93,7 +88,7 @@</span><br><s=
+pan>         return (false);</span><br><span>     }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    ss-&gt;ss_family =3D nv=
+list_get_number(nvl, &quot;af&quot;);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    ss-&gt;ss_family =3D (unsigned char)nvlist_get_number=
+(nvl, &quot;af&quot;);</span><br><span> </span><br><span>     switch (ss-&g=
+t;ss_family)</span><br><span>     {</span><br><span>@@ -107,7 +102,7 @@</sp=
+an><br><span>             data =3D nvlist_get_binary(nvl, &quot;address&quo=
+t;, &amp;len);</span><br><span>             ASSERT(len =3D=3D sizeof(in-&gt=
+;sin_addr));</span><br><span>             memcpy(&amp;in-&gt;sin_addr, data=
+, sizeof(in-&gt;sin_addr));</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            in-&gt;sin_port =3D nvlist_get_number(nvl, &quot;port&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            in-=
+&gt;sin_port =3D (in_port_t)nvlist_get_number(nvl, &quot;port&quot;);</span=
+><br><span>             break;</span><br><span>         }</span><br><span> =
+</span><br><span>@@ -121,11 +116,11 @@</span><br><span>             data =
 =3D nvlist_get_binary(nvl, &quot;address&quot;, &amp;len);</span><br><span>=
              ASSERT(len =3D=3D sizeof(in6-&gt;sin6_addr));</span><br><span>=
              memcpy(&amp;in6-&gt;sin6_addr, data, sizeof(in6-&gt;sin6_addr)=
@@ -289,7 +276,7 @@ cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
 emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1361?usp=3Dema=
 il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ief19ba87b0832baa6530ea8bf03=
@@ -307,5 +294,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---0VBA7eg7zJc=--
+--W6Jg/jJLB4Q=--
 
