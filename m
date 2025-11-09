@@ -1,17 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Sun, 9 Nov 2025 15:25:21 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun,  9 Nov 2025 16:44:31 +0100
+Message-ID: <20251109154438.15464-1-gert@...1296...>
 In-Reply-To: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
 References: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <90887c796677cdf6a19ccbb1ee9fd683697f08ae-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="bWb0pm5gARk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: make sure
- directories have trailing \
+Subject: [Openvpn-devel] [PATCH v7] iservice: make sure directories have
+ trailing \
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,112 +14,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---bWb0pm5gARk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+At least in the case of the config dir this matters, since the value is
+used to validate input data for the interactive service. A missing \
+at the end would allow a string compare to succeed, if the last element of
+the path to compare starts with the same substring. The trailing slash
+ensures that the last element of a path must match completely.
 
-stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1336?usp=3Demail )
+Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1336
+---
 
-Change subject: iservice: make sure directories have trailing \
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1336
+This mail reflects revision 7 of this Change.
 
-Patch Set 7: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
-(1 comment)
-
-Patchset:
-
-PS7:=20
-LGTM
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
-Gerrit-Change-Number: 1336
-Gerrit-PatchSet: 7
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Sun, 09 Nov 2025 15:25:21 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---bWb0pm5gARk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, flichtenheld, plaisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1336?tab=3Dcomments&amp;usp=3Demail">Patch Set #7:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">LGTM</p></l=
-i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1336?usp=3Demail">change 1336</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
-=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1336?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If28e66fcc3493821f78fd14d432=
-b22b996918e8f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1336 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 09 Nov 2025 15:25:21=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---bWb0pm5gARk=--
+        
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index d25d9c0..b1c89c9 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -24,6 +24,8 @@
+ #include "validate.h"
+ #include "eventmsg.h"
+ 
++#include <pathcch.h>
++
+ LPCWSTR service_instance = L"";
+ static wchar_t win_sys_path[MAX_PATH];
+ 
+@@ -54,6 +56,22 @@
+ }
+ 
+ 
++/**
++ * Make sure that a dir path ends with a backslash.
++ * If it doesn't, a \ is added to the end of the path, if there's room in the buffer.
++ *
++ * @param dir       pointer to the wide dir path string buffer
++ * @param size      maximum number of wide chars the dir path buffer
++ * @return BOOL to indicate success or failure
++ */
++static BOOL
++ensure_trailing_backslash(PWSTR dir, size_t size)
++{
++    HRESULT res = PathCchAddBackslash(dir, size);
++    return (res == S_OK || res == S_FALSE) ? TRUE : FALSE;
++}
++
++
+ DWORD
+ GetOpenvpnSettings(settings_t *s)
+ {
+@@ -90,16 +108,16 @@
+         goto out;
+     }
+ 
+-    swprintf(default_value, _countof(default_value), L"%ls\\config", install_path);
++    swprintf(default_value, _countof(default_value), L"%ls\\config\\", install_path);
+     error = GetRegString(key, L"config_dir", s->config_dir, sizeof(s->config_dir), default_value);
+-    if (error != ERROR_SUCCESS)
++    if (error != ERROR_SUCCESS || !ensure_trailing_backslash(s->config_dir, _countof(s->config_dir)))
+     {
+         goto out;
+     }
+ 
+-    swprintf(default_value, _countof(default_value), L"%ls\\bin", install_path);
++    swprintf(default_value, _countof(default_value), L"%ls\\bin\\", install_path);
+     error = GetRegString(key, L"bin_dir", s->bin_dir, sizeof(s->bin_dir), default_value);
+-    if (error != ERROR_SUCCESS)
++    if (error != ERROR_SUCCESS || !ensure_trailing_backslash(s->bin_dir, _countof(s->bin_dir)))
+     {
+         goto out;
+     }
+@@ -110,9 +128,9 @@
+         goto out;
+     }
+ 
+-    swprintf(default_value, _countof(default_value), L"%ls\\log", install_path);
++    swprintf(default_value, _countof(default_value), L"%ls\\log\\", install_path);
+     error = GetRegString(key, L"log_dir", s->log_dir, sizeof(s->log_dir), default_value);
+-    if (error != ERROR_SUCCESS)
++    if (error != ERROR_SUCCESS || !ensure_trailing_backslash(s->log_dir, _countof(s->log_dir)))
+     {
+         goto out;
+     }
 
