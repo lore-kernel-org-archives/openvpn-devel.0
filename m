@@ -1,17 +1,17 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 10 Nov 2025 14:49:46 +0000
-In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
-References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
-Reply-To: arne-openvpn@...1227..., gianmarco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <d345a39c42b0d8c8adf7f54da85f6ddb7343a0d6-EmailReviewComments-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 10 Nov 2025 22:59:36 +0000
+In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
+References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ selva.nair@...277..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <f85b595a0fff55dbbe868b60d81c70662602073d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cnVaOprial4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: multipeer: introduce
- asymmetric peer-id
+Content-Type: multipart/alternative; boundary="QeNAcUYodO0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: validate
+ config path better
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,152 +20,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---cnVaOprial4=
+--QeNAcUYodO0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, its_Giaan.
+Attention is currently required from: d12fk, flichtenheld, plaisthos, selva=
+nair.
 
-plaisthos has posted comments on this change by its_Giaan. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1089?usp=3Demail )
+cron2 has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1307?usp=3Demail )
 
-Change subject: multipeer: introduce asymmetric peer-id
+Change subject: iservice: validate config path better
 ......................................................................
 
 
-Patch Set 7: Code-Review-2
+Patch Set 6: Code-Review+1
 
 (1 comment)
 
 Patchset:
 
-PS7:=20
-So this seem to not work correctly in P2p mode.
-
-peer a: openvpn --port 1195 --tls-server --ifconfig 10.173.0.1 255.255.255.=
-0 --topology subnet  --topology subnet --cert ~/nemesis.pem  --key ~/nemesi=
-s.pem   --dev tun --verb 4  --tun-mtu 1400 --config ~/fp   --disable-dco
-
-peer b: openvpn --verb 4  --dev tun  --remote nemesis.fritz.box 1195 --conf=
-ig ~/ovpn/confs/fp  --tls-client --cert ~/ovpn/confs/styx-ed25519.pem --key=
- ~/ovpn/confs/styx-ed25519.pem --disable-dco --ifconfig  10.173.0.2 255.255=
-.255.0
-
-
-The fp config just has the fingerpints in it.
-
-And the negotiated peer ids just don't make sense. It should be just the sa=
-me ids with rx and tx swapped but this is is not really that.
-
-2025-11-10 15:48:41 us=3D782130 Data Channel: cipher 'AES-256-GCM', rx_peer=
--id: 7762030, tx_peer-id: 5695615
-
-2025-11-10 14:48:41 us=3D533055 Data Channel: cipher 'AES-256-GCM', rx_peer=
--id: 7762030, tx_peer-id: 14459670
-
-Also it seems to *always* use 7762030 in my tests.
+PS6:=20
+I withdraw my -2, as that has been addressed by the new version and Selva +=
+2'ing it already.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
-Gerrit-Change-Number: 1089
-Gerrit-PatchSet: 7
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
+Gerrit-Change-Number: 1307
+Gerrit-PatchSet: 6
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 10 Nov 2025 14:49:46 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Mon, 10 Nov 2025 22:59:36 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---cnVaOprial4=
+--QeNAcUYodO0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, its_Giaan. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">V=
+rently required from: d12fk, flichtenheld, plaisthos, selvanair. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1307?usp=3Demail">V=
 iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
 style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
 style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1089?tab=3Dcomments&amp;usp=3Demail">Patch Set #7:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">So this see=
-m to not work correctly in P2p mode.</p><p class=3D"blocks" style=3D"white-=
-space: pre-wrap; word-wrap: break-word;">peer a: openvpn --port 1195 --tls-=
-server --ifconfig 10.173.0.1 255.255.255.0 --topology subnet  --topology su=
-bnet --cert ~/nemesis.pem  --key ~/nemesis.pem   --dev tun --verb 4  --tun-=
-mtu 1400 --config ~/fp   --disable-dco</p><p class=3D"blocks" style=3D"whit=
-e-space: pre-wrap; word-wrap: break-word;">peer b: openvpn --verb 4  --dev =
-tun  --remote nemesis.fritz.box 1195 --config ~/ovpn/confs/fp  --tls-client=
- --cert ~/ovpn/confs/styx-ed25519.pem --key ~/ovpn/confs/styx-ed25519.pem -=
--disable-dco --ifconfig  10.173.0.2 255.255.255.0 </p><p class=3D"blocks" s=
-tyle=3D"white-space: pre-wrap; word-wrap: break-word;"><br>The fp config ju=
-st has the fingerpints in it.</p><p class=3D"blocks" style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">And the negotiated peer ids just don&#39;=
-t make sense. It should be just the same ids with rx and tx swapped but thi=
-s is is not really that. </p><p class=3D"blocks" style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">2025-11-10 15:48:41 us=3D782130 Data Channel:=
- cipher &#39;AES-256-GCM&#39;, rx_peer-id: 7762030, tx_peer-id: 5695615</p>=
-<p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->2025-11-10 14:48:41 us=3D533055 Data Channel: cipher &#39;AES-256-GCM&#39;=
-, rx_peer-id: 7762030, tx_peer-id: 14459670</p><p class=3D"blocks" style=3D=
-"white-space: pre-wrap; word-wrap: break-word;">Also it seems to *always* u=
-se 7762030 in my tests.</p></li></ul></li></ul><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">change 1089</a>. T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
-type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+n/+/1307?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I withdraw =
+my -2, as that has been addressed by the new version and Selva +2&#39;ing i=
+t already.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/1307?usp=3Demail">change 1307</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1307?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3ba=
-b3f2dff639bf9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1089 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0e94068f467f2899daf133b032a=
+785d2d7fc05e4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1307 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 10 Nov 2025 14:49:46=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 10 Nov 2025 22:59:36=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---cnVaOprial4=--
+--QeNAcUYodO0=--
 
