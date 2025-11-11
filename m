@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 11 Nov 2025 16:51:31 +0100
-Message-ID: <20251111155139.31642-1-gert@...1296...>
-In-Reply-To: <gerrit.1762517501000.Id9158f477404aac1d6b08b08e672980e5a58dc35@...2715...>
-References: <gerrit.1762517501000.Id9158f477404aac1d6b08b08e672980e5a58dc35@...2715...>
+Date: Tue, 11 Nov 2025 16:52:31 +0100
+Message-ID: <20251111155239.31747-1-gert@...1296...>
+In-Reply-To: <gerrit.1762517501000.Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af@...2715...>
+References: <gerrit.1762517501000.Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] forward: Change context_reschedule_sec
- sec argument to time_t
+Subject: [Openvpn-devel] [PATCH v1] ssl: Change tls_send_payload size
+ argument to size_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,23 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@...2641...>
 
-This avoids conversions at the caller sites. Since we only
-replace tv_sec if the new value is smaller the cast
-to tv_sec_t is also safe.
+There is only one caller of this function and it
+wants it to be size_t. So move the size_t to int
+conversion one step down in the call chain. Do not
+switch key_state_write_plaintext_const, yet, since
+that is a backend function and so needs way more
+work.
 
-Change-Id: Id9158f477404aac1d6b08b08e672980e5a58dc35
+Change-Id: Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1356
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1355
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1356
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1355
 This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
@@ -41,37 +44,11 @@ Arne Schwabe <arne-openvpn@...1227...>
 
         
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index cffb310..fbef539 100644
+index 5bbac13..cffb310 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
-@@ -33,6 +33,7 @@
- #include "mss.h"
- #include "event.h"
- #include "occ.h"
-+#include "otime.h"
- #include "ping.h"
- #include "ps.h"
- #include "dhcp.h"
-@@ -127,7 +128,7 @@
- }
- 
- static inline void
--context_reschedule_sec(struct context *c, int sec)
-+context_reschedule_sec(struct context *c, time_t sec)
- {
-     if (sec < 0)
-     {
-@@ -135,7 +136,7 @@
+@@ -365,11 +365,6 @@
      }
-     if (sec < c->c2.timeval.tv_sec)
-     {
--        c->c2.timeval.tv_sec = sec;
-+        c->c2.timeval.tv_sec = (tv_sec_t)sec;
-         c->c2.timeval.tv_usec = 0;
-     }
- }
-@@ -822,11 +823,6 @@
- #endif /* ENABLE_MANAGEMENT */
  }
  
 -#if defined(__GNUC__) || defined(__clang__)
@@ -79,11 +56,11 @@ index cffb310..fbef539 100644
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- static void
- check_coarse_timers(struct context *c)
- {
-@@ -1297,6 +1293,11 @@
- #endif /* if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD)) */
+ bool
+ send_control_channel_string_dowork(struct tls_session *session, const char *str,
+                                    msglvl_t msglevel)
+@@ -827,6 +822,11 @@
+ #endif /* ENABLE_MANAGEMENT */
  }
  
 +#if defined(__GNUC__) || defined(__clang__)
@@ -91,7 +68,52 @@ index cffb310..fbef539 100644
 +#pragma GCC diagnostic ignored "-Wconversion"
 +#endif
 +
- /*
-  * Output: c->c2.buf
+ static void
+ check_coarse_timers(struct context *c)
+ {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 908854a..398c9ae 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -4032,7 +4032,7 @@
   */
+ 
+ bool
+-tls_send_payload(struct key_state *ks, const uint8_t *data, int size)
++tls_send_payload(struct key_state *ks, const uint8_t *data, size_t size)
+ {
+     bool ret = false;
+ 
+@@ -4042,7 +4042,8 @@
+ 
+     if (ks->state >= S_ACTIVE)
+     {
+-        if (key_state_write_plaintext_const(&ks->ks_ssl, data, size) == 1)
++        ASSERT(size <= INT_MAX);
++        if (key_state_write_plaintext_const(&ks->ks_ssl, data, (int)size) == 1)
+         {
+             ret = true;
+         }
+@@ -4053,7 +4054,7 @@
+         {
+             ks->paybuf = buffer_list_new();
+         }
+-        buffer_list_push_data(ks->paybuf, data, (size_t)size);
++        buffer_list_push_data(ks->paybuf, data, size);
+         ret = true;
+     }
+ 
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index ffcc7c4..db8a798 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -426,7 +426,7 @@
+ /*
+  * Send a payload over the TLS control channel
+  */
+-bool tls_send_payload(struct key_state *ks, const uint8_t *data, int size);
++bool tls_send_payload(struct key_state *ks, const uint8_t *data, size_t size);
+ 
+ /*
+  * Receive a payload through the TLS control channel
 
