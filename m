@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Tue, 11 Nov 2025 14:26:54 +0000
-In-Reply-To: <gerrit.1761324750000.Id7bacec23edc6dcd94465c308ea2144c7329a0c1@...2715...>
-References: <gerrit.1761324750000.Id7bacec23edc6dcd94465c308ea2144c7329a0c1@...2715...>
+In-Reply-To: <gerrit.1762532329000.I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f@...2715...>
+References: <gerrit.1762532329000.I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <6fb3826da381511fc8440748834b4ac5e4c98026-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <c795e53bd6dc6d9fddb63713eda0778d56565a3a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RCeoJSt+yVQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: Clean up type
- handling in export_user_keying_material()
+Content-Type: multipart/alternative; boundary="ndh0gGR7HYo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_pkt: Avoid
+ conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,109 +22,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RCeoJSt+yVQ=
+--ndh0gGR7HYo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello cron2, plaisthos,
+Hello plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1301?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1360?usp=3Demail
 
-to look at the new patch set (#6).
+to look at the new patch set (#2).
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+The following approvals got outdated and were removed:
+Code-Review-1 by plaisthos
 
 
-Change subject: ssl: Clean up type handling in export_user_keying_material()
+Change subject: ssl_pkt: Avoid conversion warnings
 ......................................................................
 
-ssl: Clean up type handling in export_user_keying_material()
+ssl_pkt: Avoid conversion warnings
 
-For this we actually change the API of the
-format_hex{,_ex} functions by changing int
-to size_t for length parameters. While we
-call this function with int paramters in
-a lot of places (usually BLEN), this will
-not produce warnings under
--Wno-sign-conversion. And we're sure those
-values are positive since format_hex already
-uses size_t internally.
+I considered changing opcode to be uint8_t directly, but
+most code treats it as int now, so that would be a much
+bigger change. Similar for key_id.
 
-Change-Id: Id7bacec23edc6dcd94465c308ea2144c7329a0c1
+Change-Id: I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/buffer.c
-M src/openvpn/buffer.h
-M src/openvpn/ssl.c
-3 files changed, 12 insertions(+), 13 deletions(-)
+M src/openvpn/ssl_pkt.c
+1 file changed, 4 insertions(+), 11 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/1301/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1360/2
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 28de00f..293622f 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -480,18 +480,17 @@
-  */
-
- char *
--format_hex_ex(const uint8_t *data, int size, int maxoutput, unsigned int s=
-pace_break_flags,
-+format_hex_ex(const uint8_t *data, size_t size, size_t maxoutput, unsigned=
- int space_break_flags,
-               const char *separator, struct gc_arena *gc)
- {
-     const size_t bytes_per_hexblock =3D space_break_flags & FHE_SPACE_BREA=
-K_MASK;
-     const size_t separator_len =3D separator ? strlen(separator) : 0;
--    static_assert(INT_MAX <=3D SIZE_MAX, "Code assumes INT_MAX <=3D SIZE_M=
-AX");
-     const size_t out_len =3D maxoutput > 0
-                                ? maxoutput
-                                : ((size * 2) + ((size / bytes_per_hexblock=
-) * separator_len) + 2);
-
-     struct buffer out =3D alloc_buf_gc(out_len, gc);
--    for (int i =3D 0; i < size; ++i)
-+    for (size_t i =3D 0; i < size; ++i)
-     {
-         if (separator && i && !(i % bytes_per_hexblock))
-         {
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 148cee0..ab2a29d 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -496,11 +496,11 @@
-  */
- #define FHE_SPACE_BREAK_MASK 0xFF  /* space_break parameter in lower 8 bit=
-s */
- #define FHE_CAPS             0x100 /* output hex in caps */
--char *format_hex_ex(const uint8_t *data, int size, int maxoutput, unsigned=
- int space_break_flags,
-+char *format_hex_ex(const uint8_t *data, size_t size, size_t maxoutput, un=
-signed int space_break_flags,
-                     const char *separator, struct gc_arena *gc);
-
- static inline char *
--format_hex(const uint8_t *data, int size, int maxoutput, struct gc_arena *=
-gc)
-+format_hex(const uint8_t *data, size_t size, size_t maxoutput, struct gc_a=
-rena *gc)
- {
-     return format_hex_ex(data, size, maxoutput, 4, " ", gc);
- }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 86f6f59..555f483 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1829,11 +1829,6 @@
-     return len;
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index d7f7ac3..f216e88 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -160,17 +160,14 @@
+     }
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -132,185 +71,138 @@ index 86f6f59..555f483 100644
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- static char *
- read_string_alloc(struct buffer *buf)
+ void
+ write_control_auth(struct tls_session *session, struct key_state *ks, stru=
+ct buffer *buf,
+                    struct link_socket_actual **to_link_addr, int opcode, i=
+nt max_ack,
+                    bool prepend_ack)
  {
-@@ -2174,15 +2169,15 @@
- {
-     if (session->opt->ekm_size > 0)
-     {
--        unsigned int size =3D session->opt->ekm_size;
-+        const size_t size =3D session->opt->ekm_size;
-         struct gc_arena gc =3D gc_new();
+-    uint8_t header =3D ks->key_id | (opcode << P_OPCODE_SHIFT);
++    ASSERT(ks->key_id >=3D 0 && ks->key_id <=3D P_KEY_ID_MASK);
++    ASSERT(opcode >=3D 0 && opcode <=3D P_LAST_OPCODE);
++    uint8_t header =3D (uint8_t)(ks->key_id | (opcode << P_OPCODE_SHIFT));
 
--        unsigned char *ekm =3D gc_malloc(session->opt->ekm_size, true, &gc=
-);
-+        unsigned char *ekm =3D gc_malloc(size, true, &gc);
-         if (key_state_export_keying_material(session, session->opt->ekm_la=
-bel,
-                                              session->opt->ekm_label_size,=
- ekm,
-                                              session->opt->ekm_size))
-         {
--            unsigned int len =3D (size * 2) + 2;
-+            const size_t len =3D (size * 2) + 2;
+     /* Workaround for Softether servers. Softether has a bug that it only
+      * allows 4 ACks in packets and drops packets if more ACKs are contain=
+ed
+@@ -474,7 +471,7 @@
+     /* Get the valid time quantisation for our hmac,
+      * we divide time by handwindow/2 and allow the previous
+      * and future session time if specified by offset */
+-    uint32_t session_id_time =3D ntohl(now / ((handwindow + 1) / 2) + offs=
+et);
++    uint32_t session_id_time =3D ntohl((uint32_t)(now / ((handwindow + 1) =
+/ 2) + offset));
 
-             const char *key =3D format_hex_ex(ekm, size, len, 0, NULL, &gc=
-);
-             setenv_str(session->opt->es, "exported_keying_material", key);
-@@ -2199,6 +2194,11 @@
-     }
+     hmac_ctx_reset(hmac);
+     /* We do not care about endian here since it does not need to be
+@@ -501,10 +498,6 @@
+     return result.sid;
  }
 
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
-+
- /**
-  * Handle reading key data, peer-info, username/password, OCC
-  * from the TLS control channel (cleartext).
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ bool
+ check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state,
+                               const struct openvpn_sockaddr *from,
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1301?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1360?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id7bacec23edc6dcd94465c308ea2144c7329a0c1
-Gerrit-Change-Number: 1301
-Gerrit-PatchSet: 6
+Gerrit-Change-Id: I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f
+Gerrit-Change-Number: 1360
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---RCeoJSt+yVQ=
+--ndh0gGR7HYo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #6</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1301?usp=3Demail">View C=
-hange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRul=
-e is unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">ssl: Clean up type handling in expor=
-t_user_keying_material()<br><br>For this we actually change the API of the<=
-br>format_hex{,_ex} functions by changing int<br>to size_t for length param=
-eters. While we<br>call this function with int paramters in<br>a lot of pla=
-ces (usually BLEN), this will<br>not produce warnings under<br>-Wno-sign-co=
-nversion. And we&#39;re sure those<br>values are positive since format_hex =
-already<br>uses size_t internally.<br><br>Change-Id: Id7bacec23edc6dcd94465=
-c308ea2144c7329a0c1<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2723...=
-.&gt;<br>---<br>M src/openvpn/buffer.c<br>M src/openvpn/buffer.h<br>M src/o=
-penvpn/ssl.c<br>3 files changed, 12 insertions(+), 13 deletions(-)<br><br><=
-/pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
-nges/01/1301/6</pre><pre style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;"><span>diff --git a/src/openvpn/buffer.c b/src/openvpn/buff=
-er.c</span><br><span>index 28de00f..293622f 100644</span><br><span>--- a/sr=
-c/openvpn/buffer.c</span><br><span>+++ b/src/openvpn/buffer.c</span><br><sp=
-an>@@ -480,18 +480,17 @@</span><br><span>  */</span><br><span> </span><br><=
-span> char *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-format_he=
-x_ex(const uint8_t *data, int size, int maxoutput, unsigned int space_break=
-_flags,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+format_hex_e=
-x(const uint8_t *data, size_t size, size_t maxoutput, unsigned int space_br=
-eak_flags,</span><br><span>               const char *separator, struct gc_=
-arena *gc)</span><br><span> {</span><br><span>     const size_t bytes_per_h=
-exblock =3D space_break_flags &amp; FHE_SPACE_BREAK_MASK;</span><br><span> =
-    const size_t separator_len =3D separator ? strlen(separator) : 0;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    static_assert(INT_MAX &=
-lt;=3D SIZE_MAX, &quot;Code assumes INT_MAX &lt;=3D SIZE_MAX&quot;);</span>=
-<br><span>     const size_t out_len =3D maxoutput &gt; 0</span><br><span>  =
-                              ? maxoutput</span><br><span>                 =
-               : ((size * 2) + ((size / bytes_per_hexblock) * separator_len=
-) + 2);</span><br><span> </span><br><span>     struct buffer out =3D alloc_=
-buf_gc(out_len, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   for (int i =3D 0; i &lt; size; ++i)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; size; ++i)</span><br><sp=
-an>     {</span><br><span>         if (separator &amp;&amp; i &amp;&amp; !(=
-i % bytes_per_hexblock))</span><br><span>         {</span><br><span>diff --=
-git a/src/openvpn/buffer.h b/src/openvpn/buffer.h</span><br><span>index 148=
-cee0..ab2a29d 100644</span><br><span>--- a/src/openvpn/buffer.h</span><br><=
-span>+++ b/src/openvpn/buffer.h</span><br><span>@@ -496,11 +496,11 @@</span=
-><br><span>  */</span><br><span> #define FHE_SPACE_BREAK_MASK 0xFF  /* spac=
-e_break parameter in lower 8 bits */</span><br><span> #define FHE_CAPS     =
-        0x100 /* output hex in caps */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-char *format_hex_ex(const uint8_t *data, int size, int max=
-output, unsigned int space_break_flags,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+char *format_hex_ex(const uint8_t *data, size_t size, s=
-ize_t maxoutput, unsigned int space_break_flags,</span><br><span>          =
-           const char *separator, struct gc_arena *gc);</span><br><span> </=
-span><br><span> static inline char *</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-format_hex(const uint8_t *data, int size, int maxoutput, str=
-uct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fo=
-rmat_hex(const uint8_t *data, size_t size, size_t maxoutput, struct gc_aren=
-a *gc)</span><br><span> {</span><br><span>     return format_hex_ex(data, s=
-ize, maxoutput, 4, &quot; &quot;, gc);</span><br><span> }</span><br><span>d=
-iff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 86f=
-6f59..555f483 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><spa=
-n>+++ b/src/openvpn/ssl.c</span><br><span>@@ -1829,11 +1829,6 @@</span><br>=
-<span>     return len;</span><br><span> }</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cl=
-ang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC dia=
-gnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma G=
-CC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span> static char *</span><br><span> read_string_allo=
-c(struct buffer *buf)</span><br><span> {</span><br><span>@@ -2174,15 +2169,=
-15 @@</span><br><span> {</span><br><span>     if (session-&gt;opt-&gt;ekm_s=
-ize &gt; 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        unsigned int size =3D session-&gt;opt-&gt;ekm_size;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        const size_t s=
-ize =3D session-&gt;opt-&gt;ekm_size;</span><br><span>         struct gc_ar=
-ena gc =3D gc_new();</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        unsigned char *ekm =3D gc_malloc(session-&gt;opt-&=
-gt;ekm_size, true, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        unsigned char *ekm =3D gc_malloc(size, true, &amp;gc);</sp=
-an><br><span>         if (key_state_export_keying_material(session, session=
--&gt;opt-&gt;ekm_label,</span><br><span>                                   =
-           session-&gt;opt-&gt;ekm_label_size, ekm,</span><br><span>       =
-                                       session-&gt;opt-&gt;ekm_size))</span=
-><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            unsigned int len =3D (size * 2) + 2;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            const size_t len =3D (size * 2) + =
-2;</span><br><span> </span><br><span>             const char *key =3D forma=
-t_hex_ex(ekm, size, len, 0, NULL, &amp;gc);</span><br><span>             se=
-tenv_str(session-&gt;opt-&gt;es, &quot;exported_keying_material&quot;, key)=
-;</span><br><span>@@ -2199,6 +2194,11 @@</span><br><span>     }</span><br><=
-span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;=
--Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an> /**</span><br><span>  * Handle reading key data, peer-info, username/pa=
-ssword, OCC</span><br><span>  * from the TLS control channel (cleartext).</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1301?usp=3Demail">change 1301</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1301?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1360?usp=3Demail">View C=
+hange</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">ssl_pkt: Avoid conversion warni=
+ngs<br><br>I considered changing opcode to be uint8_t directly, but<br>most=
+ code treats it as int now, so that would be a much<br>bigger change. Simil=
+ar for key_id.<br><br>Change-Id: I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f<=
+br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M sr=
+c/openvpn/ssl_pkt.c<br>1 file changed, 4 insertions(+), 11 deletions(-)<br>=
+<br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
+s/changes/60/1360/2</pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_pkt.c b/src/openvp=
+n/ssl_pkt.c</span><br><span>index d7f7ac3..f216e88 100644</span><br><span>-=
+-- a/src/openvpn/ssl_pkt.c</span><br><span>+++ b/src/openvpn/ssl_pkt.c</spa=
+n><br><span>@@ -160,17 +160,14 @@</span><br><span>     }</span><br><span> }=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
+ defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void</span><b=
+r><span> write_control_auth(struct tls_session *session, struct key_state *=
+ks, struct buffer *buf,</span><br><span>                    struct link_soc=
+ket_actual **to_link_addr, int opcode, int max_ack,</span><br><span>       =
+             bool prepend_ack)</span><br><span> {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    uint8_t header =3D ks-&gt;key_id | (opcode =
+&lt;&lt; P_OPCODE_SHIFT);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ASSERT(ks-&gt;key_id &gt;=3D 0 &amp;&amp; ks-&gt;key_id &lt;=3D P=
+_KEY_ID_MASK);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    A=
+SSERT(opcode &gt;=3D 0 &amp;&amp; opcode &lt;=3D P_LAST_OPCODE);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t header =3D (uint8_=
+t)(ks-&gt;key_id | (opcode &lt;&lt; P_OPCODE_SHIFT));</span><br><span> </sp=
+an><br><span>     /* Workaround for Softether servers. Softether has a bug =
+that it only</span><br><span>      * allows 4 ACks in packets and drops pac=
+kets if more ACKs are contained</span><br><span>@@ -474,7 +471,7 @@</span><=
+br><span>     /* Get the valid time quantisation for our hmac,</span><br><s=
+pan>      * we divide time by handwindow/2 and allow the previous</span><br=
+><span>      * and future session time if specified by offset */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t session_id_time =3D=
+ ntohl(now / ((handwindow + 1) / 2) + offset);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    uint32_t session_id_time =3D ntohl((uint32_t=
+)(now / ((handwindow + 1) / 2) + offset));</span><br><span> </span><br><spa=
+n>     hmac_ctx_reset(hmac);</span><br><span>     /* We do not care about e=
+ndian here since it does not need to be</span><br><span>@@ -501,10 +498,6 @=
+@</span><br><span>     return result.sid;</span><br><span> }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC=
+__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span> bool</span><br><span> check_session_hmac_and_pkt_id(struct tls_=
+pre_decrypt_state *state,</span><br><span>                               co=
+nst struct openvpn_sockaddr *from,</span><br><span></span><br></pre><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1360?usp=3Demai=
+l">change 1360</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1360?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id7bacec23edc6dcd94465c308ea=
-2144c7329a0c1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1301 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2a1786b2bf15852222c28e1b73a=
+b7edbb5f19d7f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1360 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -322,5 +214,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---RCeoJSt+yVQ=--
+--ndh0gGR7HYo=--
 
