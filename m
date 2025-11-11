@@ -1,10 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 11 Nov 2025 16:49:18 +0100
-Message-ID: <20251111154924.31446-1-gert@...1296...>
-In-Reply-To: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
-References: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
+Date: Tue, 11 Nov 2025 16:51:31 +0100
+Message-ID: <20251111155139.31642-1-gert@...1296...>
+In-Reply-To: <gerrit.1762517501000.Id9158f477404aac1d6b08b08e672980e5a58dc35@...2715...>
+References: <gerrit.1762517501000.Id9158f477404aac1d6b08b08e672980e5a58dc35@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] multi: Fix various conversion warnings
+Subject: [Openvpn-devel] [PATCH v1] forward: Change context_reschedule_sec
+ sec argument to time_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,96 +20,78 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@...2641...>
 
-Mostly make required casts explicit.
+This avoids conversions at the caller sites. Since we only
+replace tv_sec if the new value is smaller the cast
+to tv_sec_t is also safe.
 
-Change-Id: I88cd7e1ebb49e97db33bad75c4fbbe23d196e964
+Change-Id: Id9158f477404aac1d6b08b08e672980e5a58dc35
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1313
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1356
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1313
-This mail reflects revision 4 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1356
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 2a12398..9e28932 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -245,11 +245,6 @@
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index cffb310..fbef539 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -33,6 +33,7 @@
+ #include "mss.h"
+ #include "event.h"
+ #include "occ.h"
++#include "otime.h"
+ #include "ping.h"
+ #include "ps.h"
+ #include "dhcp.h"
+@@ -127,7 +128,7 @@
+ }
  
- #endif
+ static inline void
+-context_reschedule_sec(struct context *c, int sec)
++context_reschedule_sec(struct context *c, time_t sec)
+ {
+     if (sec < 0)
+     {
+@@ -135,7 +136,7 @@
+     }
+     if (sec < c->c2.timeval.tv_sec)
+     {
+-        c->c2.timeval.tv_sec = sec;
++        c->c2.timeval.tv_sec = (tv_sec_t)sec;
+         c->c2.timeval.tv_usec = 0;
+     }
+ }
+@@ -822,11 +823,6 @@
+ #endif /* ENABLE_MANAGEMENT */
+ }
  
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- #ifdef ENABLE_ASYNC_PUSH
- static uint32_t
- /*
-@@ -2809,8 +2804,8 @@
- multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
- {
-     char buffer[INOTIFY_EVENT_BUFFER_SIZE];
--    size_t buffer_i = 0;
--    int r = read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);
-+    ssize_t buffer_i = 0;
-+    ssize_t r = read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);
- 
-     while (buffer_i < r)
-     {
-@@ -2942,21 +2937,23 @@
- static inline unsigned int
- compute_wakeup_sigma(const struct timeval *delta)
- {
-+    ASSERT(delta->tv_sec >= 0);
-+    ASSERT(delta->tv_usec >= 0);
-     if (delta->tv_sec < 1)
-     {
-         /* if < 1 sec, fuzz = # of microseconds / 8 */
--        return delta->tv_usec >> 3;
-+        return (unsigned int)(delta->tv_usec >> 3);
-     }
-     else
-     {
-         /* if < 10 minutes, fuzz = 13.1% of timeout */
-         if (delta->tv_sec < 600)
-         {
--            return delta->tv_sec << 17;
-+            return (unsigned int)(delta->tv_sec << 17);
-         }
-         else
-         {
--            return 120000000; /* if >= 10 minutes, fuzz = 2 minutes */
-+            return 120 * 1000000; /* if >= 10 minutes, fuzz = 2 minutes */
-         }
-     }
- }
-@@ -3751,7 +3748,7 @@
- 
-         for (i = 0; i < parm.packet_size; ++i)
-         {
--            ASSERT(buf_write_u8(&buf, get_random() & 0xFF));
-+            ASSERT(buf_write_u8(&buf, (uint8_t)(get_random() & 0xFF)));
-         }
- 
-         for (i = 0; i < parm.n_packets; ++i)
-@@ -3967,10 +3964,6 @@
-     return count;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
  static void
- management_delete_event(void *arg, event_t event)
+ check_coarse_timers(struct context *c)
  {
+@@ -1297,6 +1293,11 @@
+ #endif /* if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD)) */
+ }
+ 
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
+ /*
+  * Output: c->c2.buf
+  */
 
