@@ -1,11 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 11 Nov 2025 16:48:39 +0100
-Message-ID: <20251111154846.31360-1-gert@...1296...>
-In-Reply-To: <gerrit.1758627240000.Iaabddb6f81cd94863291b193aae9d384a8f9d871@...2715...>
-References: <gerrit.1758627240000.Iaabddb6f81cd94863291b193aae9d384a8f9d871@...2715...>
+Date: Tue, 11 Nov 2025 16:49:18 +0100
+Message-ID: <20251111154924.31446-1-gert@...1296...>
+In-Reply-To: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
+References: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] Enable -Wtype-limits by default (via
- -Wextra)
+Subject: [Openvpn-devel] [PATCH v4] multi: Fix various conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,104 +19,96 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@...2641...>
 
-Removes a few smaller instances:
- - Fix return type check for socket() on Windows/Unixy
- - Ignore a few instances related to WSAWaitForMultipleEvents.
-   The compiler says the check is currently useless, but
-   we follow the API documentation.
+Mostly make required casts explicit.
 
-Change-Id: Iaabddb6f81cd94863291b193aae9d384a8f9d871
+Change-Id: I88cd7e1ebb49e97db33bad75c4fbbe23d196e964
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1207
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1313
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1207
-This mail reflects revision 6 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1313
+This mail reflects revision 4 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c9301e6..e812145 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -114,7 +114,7 @@
-     check_and_add_compiler_flag(-Wstrict-prototypes StrictPrototypes)
-     check_and_add_compiler_flag(-Wold-style-definition OldStyleDefinition)
-     add_compile_options(-Wconversion -Wno-sign-conversion)
--    add_compile_options(-Wextra -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter)
-+    add_compile_options(-Wextra -Wno-sign-compare -Wno-unused-parameter)
-     # clang doesn't have the different levels but also doesn't include it in -Wextra
-     check_and_add_compiler_flag(-Wimplicit-fallthrough=2 GCCImplicitFallthrough)
-     if (WIN32)
-diff --git a/configure.ac b/configure.ac
-index 3117e13..f6e4b6d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1410,7 +1410,7 @@
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wold-style-definition])
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wconversion -Wno-sign-conversion])
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wall])
--ACL_CHECK_ADD_COMPILE_FLAGS([-Wextra -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter])
-+ACL_CHECK_ADD_COMPILE_FLAGS([-Wextra -Wno-sign-compare -Wno-unused-parameter])
- # clang doesn't have the different levels but also doesn't include it in -Wextra
- ACL_CHECK_ADD_COMPILE_FLAGS([-Wimplicit-fallthrough=2])
- if test "${WIN32}" = "yes"; then
-diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-index ca84d19..ca2d0c1 100644
---- a/src/openvpn/event.c
-+++ b/src/openvpn/event.c
-@@ -410,6 +410,13 @@
-     }
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2a12398..9e28932 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -245,11 +245,6 @@
+ 
  #endif
  
-+    /* WSA_WAIT_EVENT_0 == 0 but the API documentation is written in a way
-+       that doesn't guarantee that. So we make useless checks. */
-+#if defined(__GNUC__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wtype-limits"
-+#endif
-+
-     /*
-      * First poll our event list with 0 timeout
-      */
-@@ -474,6 +481,9 @@
-             return -1;
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ #ifdef ENABLE_ASYNC_PUSH
+ static uint32_t
+ /*
+@@ -2809,8 +2804,8 @@
+ multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
+ {
+     char buffer[INOTIFY_EVENT_BUFFER_SIZE];
+-    size_t buffer_i = 0;
+-    int r = read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);
++    ssize_t buffer_i = 0;
++    ssize_t r = read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);
+ 
+     while (buffer_i < r)
+     {
+@@ -2942,21 +2937,23 @@
+ static inline unsigned int
+ compute_wakeup_sigma(const struct timeval *delta)
+ {
++    ASSERT(delta->tv_sec >= 0);
++    ASSERT(delta->tv_usec >= 0);
+     if (delta->tv_sec < 1)
+     {
+         /* if < 1 sec, fuzz = # of microseconds / 8 */
+-        return delta->tv_usec >> 3;
++        return (unsigned int)(delta->tv_usec >> 3);
+     }
+     else
+     {
+         /* if < 10 minutes, fuzz = 13.1% of timeout */
+         if (delta->tv_sec < 600)
+         {
+-            return delta->tv_sec << 17;
++            return (unsigned int)(delta->tv_sec << 17);
+         }
+         else
+         {
+-            return 120000000; /* if >= 10 minutes, fuzz = 2 minutes */
++            return 120 * 1000000; /* if >= 10 minutes, fuzz = 2 minutes */
          }
      }
-+#if defined(__GNUC__)
-+#pragma GCC diagnostic pop
-+#endif
+ }
+@@ -3751,7 +3748,7 @@
+ 
+         for (i = 0; i < parm.packet_size; ++i)
+         {
+-            ASSERT(buf_write_u8(&buf, get_random() & 0xFF));
++            ASSERT(buf_write_u8(&buf, (uint8_t)(get_random() & 0xFF)));
+         }
+ 
+         for (i = 0; i < parm.n_packets; ++i)
+@@ -3967,10 +3964,6 @@
+     return count;
  }
  
- static struct event_set *
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 8eac96d..f7317d1 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -577,7 +577,8 @@
-     ASSERT(addrinfo);
-     ASSERT(addrinfo->ai_socktype == SOCK_STREAM);
- 
--    if ((sd = socket(addrinfo->ai_family, addrinfo->ai_socktype, addrinfo->ai_protocol)) < 0)
-+    if ((sd = socket(addrinfo->ai_family, addrinfo->ai_socktype, addrinfo->ai_protocol))
-+        == SOCKET_UNDEFINED)
-     {
-         msg(M_ERR, "Cannot create TCP socket");
-     }
-@@ -608,7 +609,8 @@
-     ASSERT(addrinfo);
-     ASSERT(addrinfo->ai_socktype == SOCK_DGRAM);
- 
--    if ((sd = socket(addrinfo->ai_family, addrinfo->ai_socktype, addrinfo->ai_protocol)) < 0)
-+    if ((sd = socket(addrinfo->ai_family, addrinfo->ai_socktype, addrinfo->ai_protocol))
-+        == SOCKET_UNDEFINED)
-     {
-         msg(M_ERR, "UDP: Cannot create UDP/UDP6 socket");
-     }
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static void
+ management_delete_event(void *arg, event_t event)
+ {
 
