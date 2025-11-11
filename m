@@ -1,16 +1,16 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Tue, 11 Nov 2025 09:48:40 +0000
-In-Reply-To: <gerrit.1762271747000.I51e0ffd54fef817894f35f51c7c57c8167cfbd6c@...2715...>
-References: <gerrit.1762271747000.I51e0ffd54fef817894f35f51c7c57c8167cfbd6c@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ec69458e8a149340afcc1b29975ff3898e09e8c2-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 11 Nov 2025 10:59:25 +0000
+In-Reply-To: <gerrit.1762529900000.I31024f93d9d9d0f678fb39d4758a7e870bf00873@...2715...>
+References: <gerrit.1762529900000.I31024f93d9d9d0f678fb39d4758a7e870bf00873@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <ee341e8f2672ed3ef8fca9e1035a499565a78b25-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fpPHbwTRV7w="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mudp: fix handling
- of multiple UDP event flags
+Content-Type: multipart/alternative; boundary="TupXXdUVwQ8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: openssl_compat:
+ Avoid conversion warning for SSL_get_negotiated_group
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,73 +19,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fpPHbwTRV7w=
+--TupXXdUVwQ8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-its_Giaan has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/=
-+/1347?usp=3Demail )
+Attention is currently required from: flichtenheld.
 
-Change subject: mudp: fix handling of multiple UDP event flags
+plaisthos has posted comments on this change by flichtenheld. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1359?usp=3Demail )
+
+Change subject: openssl_compat: Avoid conversion warning for SSL_get_negoti=
+ated_group
 ......................................................................
 
 
-Abandoned
+Patch Set 1: Code-Review+2
 
-Found more worms in this path so i'm reworking this
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1347?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1359?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: abandon
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I51e0ffd54fef817894f35f51c7c57c8167cfbd6c
-Gerrit-Change-Number: 1347
+Gerrit-Change-Id: I31024f93d9d9d0f678fb39d4758a7e870bf00873
+Gerrit-Change-Number: 1359
 Gerrit-PatchSet: 1
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 11 Nov 2025 10:59:25 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---fpPHbwTRV7w=
+--TupXXdUVwQ8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>its_Giaan <strong=
->abandoned</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1347?usp=3Demail">View Change</a></p><div style=3D"white-space=
-:pre-wrap">Abandoned
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1359?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1359?usp=3Demail=
+">change 1359</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1359?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-Found more worms in this path so i&#39;m reworking this</div><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1347?usp=3Demail">chan=
-ge 1347</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
-itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
-rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1347?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I51e0ffd54fef817894f35f51c7c=
-57c8167cfbd6c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1347 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I31024f93d9d9d0f678fb39d4758=
+a7e870bf00873 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1359 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 11 Nov 2025 10:59:25=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---fpPHbwTRV7w=--
+--TupXXdUVwQ8=--
 
