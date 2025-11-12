@@ -1,15 +1,10 @@
-MIME-Version: 1.0
-References: <CAOh3LPP9XVUU7TGHP51RdBEYSRKW1ih3EV_-FxiNxmiZCCS47g.ref@...278...>
- <CAOh3LPP9XVUU7TGHP51RdBEYSRKW1ih3EV_-FxiNxmiZCCS47g@...278...>
- <aQcXgtGRUKqadBPc@...1296...> <aRSa9JwiVksvEB6R@...1296...>
-In-Reply-To: <aRSa9JwiVksvEB6R@...1296...>
-From: Jon Chiappetta <root@...2904...>
-Date: Wed, 12 Nov 2025 10:07:23 -0500
-Message-ID: <CAOh3LPODhNo+x543G86UiPxWWhPbewvjc1bE+4xQhdRTT+fEVg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c6479d0643671fce"
-Subject: Re: [Openvpn-devel] Question for the devs - Found something
- interesting in the OpenVPN source code that I change in my modified
- version...
+Date: Wed, 12 Nov 2025 16:33:01 +0100 (CET)
+Message-Id: <202511121533.5ACFX15d052974@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251112141335.17417-1-gert@...1296...>
+References: <20251112141335.17417-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix construction of invalid
+ pointer in tls_pre_decrypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,122 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000c6479d0643671fce
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Trivially-correct avoidance of the invalid-index pointer read... and 
+quite likely this is what the compiler does as well "this is only needed
+after the if(), so let's do that one first", or suchabouts.  Where this
+is now, we know i is TM_ACTIVE (0) or TM_UNTRUSTED (1), and so ->session[i]
+is valid.
 
-Yeah, looks pretty good, thanks for taking time to look it over! That if
-statement should be able to catch the invalid index and goto error which
-will then also help to protect and bypass the variable list index access
-further down below on line number 3814 which was an additional access also!
+Tested the master patch on the t_server testbed, 2.6 and 2.5 just on the
+clients (which is arguably not excercising this code very heavily).
 
-Thanks again all,
-Jon C
+Your patch has been applied to the master, release/2.6 and release/2.5 branch.
+
+Since this is arguably a bug, but has been shown to have no adverse effects,
+and everything older has been out of support for a long time, I decided to
+be lazy and not backport to 2.4, 2.3, 2.2 and 2.1...
+
+commit 5cdf3f9724c89b278c88fd408714a8d2c1f4d1a1 (master)
+commit 4e31670b1e1215130ffaec0f6769e084169da0f1 (release/2.6)
+commit 03385f89a1cd95f12bc8ff92b76c209d8b11ef83 (release/2.5)
+Author: Arne Schwabe
+Date:   Wed Nov 12 15:13:28 2025 +0100
+
+     Fix construction of invalid pointer in tls_pre_decrypt
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1373
+     Message-Id: <20251112141335.17417-1-gert@...1296...>
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-On Wed, Nov 12, 2025 at 9:34=E2=80=AFAM Gert Doering <gert@...1296...> wrot=
-e:
+--
+kind regards,
 
-> Hi,
->
-> On Sun, Nov 02, 2025 at 09:34:10AM +0100, Gert Doering wrote:
-> > > In my modified version I wasn't sure of when this hard reset check
-> > > condition would be true but to prevent an invalid memory access I
-> changed
-> > > my code to be this instead:
-> > >
-> > > if (i =3D=3D TM_SIZE || is_hard_reset_method2(op))
-> >
-> > From my understanding of this code, this is the correct fix.
-> >
-> > Good find!
->
-> As a followup to this - it's not the right fix, and my understanding was
-> not sufficient.
->
-> Arne understands the code better and has just moved the possibly-invalid
-> pointer initialization a few lines down (to be committed in the next few
-> minutes), after the check on "i" and error-exit.
->
-> Thanks for your report!
->
-> (There is another one which I'll look into "really soon now" :-) )
->
-> gert
->
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never
-> doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh
-> Mistress
->
-> Gert Doering - Munich, Germany
-> gert@...1296...
->
+Gert Doering
 
---000000000000c6479d0643671fce
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div>Yeah, looks pretty good, thanks for taking time t=
-o look it over! That if statement should be able to catch the invalid index=
- and goto error which will then also help to protect and bypass the variabl=
-e list index access further down below on line=C2=A0number 3814 which was a=
-n additional access also!=C2=A0</div><div><br></div><div>Thanks again all,<=
-/div><div>Jon C</div><div><br></div></div><br><div class=3D"gmail_quote gma=
-il_quote_container"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Nov 12, 2=
-025 at 9:34=E2=80=AFAM Gert Doering &lt;<a href=3D"mailto:gert@...1296...">=
-gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-style:so=
-lid;border-left-color:rgb(204,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Sun, Nov 02, 2025 at 09:34:10AM +0100, Gert Doering wrote:<br>
-&gt; &gt; In my modified version I wasn&#39;t sure of when this hard reset =
-check<br>
-&gt; &gt; condition would be true but to prevent an invalid memory access I=
- changed<br>
-&gt; &gt; my code to be this instead:<br>
-&gt; &gt; <br>
-&gt; &gt; if (i =3D=3D TM_SIZE || is_hard_reset_method2(op))<br>
-&gt; <br>
-&gt; From my understanding of this code, this is the correct fix.<br>
-&gt; <br>
-&gt; Good find!<br>
-<br>
-As a followup to this - it&#39;s not the right fix, and my understanding wa=
-s<br>
-not sufficient.<br>
-<br>
-Arne understands the code better and has just moved the possibly-invalid<br>
-pointer initialization a few lines down (to be committed in the next few<br>
-minutes), after the check on &quot;i&quot; and error-exit.<br>
-<br>
-Thanks for your report!<br>
-<br>
-(There is another one which I&#39;ll look into &quot;really soon now&quot; =
-:-) )<br>
-<br>
-gert<br>
-<br>
--- <br>
-&quot;If was one thing all people took for granted, was conviction that if =
-you <br>
-=C2=A0feed honest figures into a computer, honest figures come out. Never d=
-oubted <br>
-=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
-ress<br>
-<br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
-</blockquote></div>
-
---000000000000c6479d0643671fce--
 
