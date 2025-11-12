@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 11:21:17 +0000
-In-Reply-To: <gerrit.1762519477000.I429d768fb33ef2c58484287d4091440ad8599053@...2715...>
-References: <gerrit.1762519477000.I429d768fb33ef2c58484287d4091440ad8599053@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <330e121b1a8cb9450886c062c417acfc1bf4e951-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OYeCA3cq1Ok="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not underestimate
- number of encrypted/decrypted AEAD blocks
+Date: Wed, 12 Nov 2025 12:26:49 +0100 (CET)
+Message-Id: <202511121126.5ACBQnBK037347@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251109154438.15464-1-gert@...1296...>
+References: <20251109154438.15464-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: iservice: make sure directories
+ have trailing backslash
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---OYeCA3cq1Ok=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Stared at the code, it does what it says on the lid, though I wonder
+if that's a reasonable thing to do in all cases... "log_dir" seems to
+be fully unused in the code base, and "bin_dir" is only used once (to
+call tapctl), and that one has two backslashes now, as the
 
-Attention is currently required from: flichtenheld, plaisthos.
+src/openvpnserv/interactive.c:    if (swprintf_s(cmd, _countof(cmd), L"%s\\tapctl.exe", settings.bin_dir) < 0)
 
-cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1358?usp=3Demail )
+adds another one...  but it will not hurt, as far as I understand.
 
-Change subject: Do not underestimate number of encrypted/decrypted  AEAD bl=
-ocks
-......................................................................
+I have changed the Subject: to not end in a single "\", because that 
+upsets half my scripts later on :-)
 
+Your patch has been applied to the master branch.
 
-Patch Set 3: Code-Review+2
+commit 985f4eaeccf0d3f9d833f3271d88634e237d7cd5
+Author: Heiko Hund
+Date:   Sun Nov 9 16:44:31 2025 +0100
+
+     iservice: make sure directories have trailing backslash
+
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1336
+     Message-Id: <20251109154438.15464-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34285.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I429d768fb33ef2c58484287d4091440ad8599053
-Gerrit-Change-Number: 1358
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 12 Nov 2025 11:21:17 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gert Doering
 
---OYeCA3cq1Ok=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail=
-">change 1358</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1358?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I429d768fb33ef2c58484287d409=
-1440ad8599053 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1358 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Nov 2025 11:21:17=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---OYeCA3cq1Ok=--
 
