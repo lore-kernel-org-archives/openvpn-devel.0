@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 12 Nov 2025 16:38:29 +0100
-Message-ID: <20251112153836.8437-1-gert@...1296...>
-In-Reply-To: <gerrit.1762958138000.Ia60a393a296f23ac1090d0f2016b5682649ed490@...2715...>
-References: <gerrit.1762958138000.Ia60a393a296f23ac1090d0f2016b5682649ed490@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 12 Nov 2025 15:45:18 +0000
+In-Reply-To: <gerrit.1761324750000.If3331a2d0477634af077b4c29963dbec6d04e17b@...2715...>
+References: <gerrit.1761324750000.If3331a2d0477634af077b4c29963dbec6d04e17b@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <105ee238e64c9b6212f33a7ba9171904f00cb27b-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] drop --opt-verify functionality
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="IBAytsI7sFE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: pkcs11: Avoid some
+ conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,96 +19,199 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...2726...>
+--IBAytsI7sFE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-As previously agreed, the --opt-verify directive is deprecated
-and can be fully removed as of 2.7.0.
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
+96?usp=3Demail )
 
-GitHub: closes OpenVPN/openvpn#901
-Change-Id: Ia60a393a296f23ac1090d0f2016b5682649ed490
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1375
+Change subject: pkcs11: Avoid some conversion warnings
+......................................................................
+
+pkcs11: Avoid some conversion warnings
+
+Since we translate between different APIs
+casts are unavoidable. Make sure they are safe.
+
+Change-Id: If3331a2d0477634af077b4c29963dbec6d04e17b
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1296
+Message-Id: <20251111172531.7754-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
+328.html
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
+M src/openvpn/pkcs11.c
+1 file changed, 13 insertions(+), 12 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1375
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ecf9374..9308bc3 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -472,8 +472,6 @@
-     "                  OTP based two-factor auth mechanisms are in use and\n"
-     "                  --reneg-* options are enabled. Optionally a lifetime in seconds\n"
-     "                  for generated tokens can be set.\n"
--    "--opt-verify    : (DEPRECATED) Clients that connect with options that are incompatible\n"
--    "                  with those of the server will be disconnected.\n"
-     "--auth-user-pass-optional : Allow connections by clients that don't\n"
-     "                  specify a username/password.\n"
-     "--no-name-remapping : (DEPRECATED) Allow Common Name and X509 Subject to include\n"
-@@ -2666,7 +2664,6 @@
-                       "verify-client-cert");
-         MUST_BE_FALSE(options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME, "username-as-common-name");
-         MUST_BE_FALSE(options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL, "auth-user-pass-optional");
--        MUST_BE_FALSE(options->ssl_flags & SSLF_OPT_VERIFY, "opt-verify");
-         if (options->server_flags & SF_TCP_NODELAY_HELPER)
-         {
-             msg(M_WARN, "WARNING: setting tcp-nodelay on the client side will not "
-@@ -7447,13 +7444,6 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->ssl_flags |= SSLF_AUTH_USER_PASS_OPTIONAL;
-     }
--    else if (streq(p[0], "opt-verify") && !p[1])
--    {
--        VERIFY_PERMISSION(OPT_P_GENERAL);
--        msg(M_INFO, "DEPRECATION: opt-verify is deprecated and will be removed "
--                    "in OpenVPN 2.7");
--        options->ssl_flags |= SSLF_OPT_VERIFY;
--    }
-     else if (streq(p[0], "auth-user-pass-verify") && p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_SCRIPT);
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 398c9ae..2f08c43 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2343,13 +2343,6 @@
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index 9afb181..14118a9 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -53,18 +53,17 @@
+ }
  #endif
- 
-         options_warning(options, remote_options);
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
 -
--        if (session->opt->ssl_flags & SSLF_OPT_VERIFY)
--        {
--            msg(D_TLS_ERRORS,
--                "Option inconsistency warnings triggering disconnect due to --opt-verify");
--            ks->authenticated = KS_AUTH_FALSE;
--        }
+ static void
+-__mysleep(const unsigned long usec)
++__mysleep(unsigned long usec)
+ {
+ #if defined(_WIN32)
+     Sleep(usec / 1000);
+ #else
+-    usleep(usec);
++    if (usec > UINT_MAX)
++    {
++        usec =3D UINT_MAX;
++    }
++    usleep((useconds_t)usec);
+ #endif
+ }
+
+@@ -528,7 +527,13 @@
+         goto cleanup;
      }
- 
-     buf_clear(buf);
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index de89d30..4c8efd5 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -425,7 +425,7 @@
- #define SSLF_CLIENT_CERT_OPTIONAL     (1u << 1)
- #define SSLF_USERNAME_AS_COMMON_NAME  (1u << 2)
- #define SSLF_AUTH_USER_PASS_OPTIONAL  (1u << 3)
--#define SSLF_OPT_VERIFY               (1u << 4)
-+/* (1u << 4) OPT_VERIFY removed in 2.7, bit can be reused */
- #define SSLF_CRL_VERIFY_DIR           (1u << 5)
- #define SSLF_TLS_VERSION_MIN_SHIFT    6
- #define SSLF_TLS_VERSION_MIN_MASK     0xFu /* (uses bit positions 6 to 9) */
+
+-    if (openvpn_base64_encode(certificate_blob, certificate_blob_size, &in=
+ternal_base64) =3D=3D -1)
++    if (certificate_blob_size > INT_MAX)
++    {
++        msg(M_WARN, "PKCS#11: Invalid certificate size %zu", certificate_b=
+lob_size);
++        goto cleanup;
++    }
++
++    if (openvpn_base64_encode(certificate_blob, (int)certificate_blob_size=
+, &internal_base64) =3D=3D -1)
+     {
+         msg(M_WARN, "PKCS#11: Cannot encode certificate");
+         goto cleanup;
+@@ -563,10 +568,6 @@
+     return success;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ int
+ tls_ctx_use_pkcs11(struct tls_root_ctx *const ssl_ctx, bool pkcs11_id_mana=
+gement,
+                    const char *const pkcs11_id)
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1296?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: If3331a2d0477634af077b4c29963dbec6d04e17b
+Gerrit-Change-Number: 1296
+Gerrit-PatchSet: 4
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--IBAytsI7sFE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1296?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">pkcs11: Avoid some conversion warnings<br><br>Si=
+nce we translate between different APIs<br>casts are unavoidable. Make sure=
+ they are safe.<br><br>Change-Id: If3331a2d0477634af077b4c29963dbec6d04e17b=
+<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: =
+Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Gerrit URL: https://gerrit.=
+openvpn.net/c/openvpn/+/1296<br>Message-Id: &lt;20251111172531.7754-1-gert@=
+...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1885...=
+rceforge.net/msg34328.html<br>Signed-off-by: Gert Doering &lt;gert@...1725...=
+..&gt;<br>---<br>M src/openvpn/pkcs11.c<br>1 file changed, 13 insertions(+)=
+, 12 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c</span><br><span=
+>index 9afb181..14118a9 100644</span><br><span>--- a/src/openvpn/pkcs11.c</=
+span><br><span>+++ b/src/openvpn/pkcs11.c</span><br><span>@@ -53,18 +53,17 =
+@@</span><br><span> }</span><br><span> #endif</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(=
+__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC=
+ diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
+ma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span> static void</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-__mysleep(const unsigned long usec)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+__mysleep(unsigned long usec)</span><=
+br><span> {</span><br><span> #if defined(_WIN32)</span><br><span>     Sleep=
+(usec / 1000);</span><br><span> #else</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    usleep(usec);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (usec &gt; UINT_MAX)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        usec =3D UINT_MAX;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    usleep((useconds_t)usec);</span><br><span> #endif</span><br><span> }</=
+span><br><span> </span><br><span>@@ -528,7 +527,13 @@</span><br><span>     =
+    goto cleanup;</span><br><span>     }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    if (openvpn_base64_encode(certific=
+ate_blob, certificate_blob_size, &amp;internal_base64) =3D=3D -1)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (certificate_blob_size=
+ &gt; INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN,=
+ &quot;PKCS#11: Invalid certificate size %zu&quot;, certificate_blob_size);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto cleanu=
+p;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (openvpn_base64_encode(certificate_blob, (i=
+nt)certificate_blob_size, &amp;internal_base64) =3D=3D -1)</span><br><span>=
+     {</span><br><span>         msg(M_WARN, &quot;PKCS#11: Cannot encode ce=
+rtificate&quot;);</span><br><span>         goto cleanup;</span><br><span>@@=
+ -563,10 +568,6 @@</span><br><span>     return success;</span><br><span> }<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if =
+defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span> int</span><br><span> tls_ctx_use_pkcs11(struct tl=
+s_root_ctx *const ssl_ctx, bool pkcs11_id_management,</span><br><span>     =
+               const char *const pkcs11_id)</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1296?u=
+sp=3Demail">change 1296</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1296?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If3331a2d0477634af077b4c2996=
+3dbec6d04e17b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1296 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--IBAytsI7sFE=--
 
