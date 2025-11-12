@@ -1,17 +1,15 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 15:07:03 +0000
-In-Reply-To: <gerrit.1762823521000.Ia74a931c703d594bdf8ccada9b783b94608de278@...2715...>
-References: <gerrit.1762823521000.Ia74a931c703d594bdf8ccada9b783b94608de278@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <f3f7d236644e2dad159573d6ac89d325a36a2c80-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VFvbv96lCn4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: use saved
- iface index to restore metric
+References: <CAOh3LPP9XVUU7TGHP51RdBEYSRKW1ih3EV_-FxiNxmiZCCS47g.ref@...278...>
+ <CAOh3LPP9XVUU7TGHP51RdBEYSRKW1ih3EV_-FxiNxmiZCCS47g@...278...>
+ <aQcXgtGRUKqadBPc@...1296...> <aRSa9JwiVksvEB6R@...1296...>
+In-Reply-To: <aRSa9JwiVksvEB6R@...1296...>
+From: Jon Chiappetta <root@...2904...>
+Date: Wed, 12 Nov 2025 10:07:23 -0500
+Message-ID: <CAOh3LPODhNo+x543G86UiPxWWhPbewvjc1bE+4xQhdRTT+fEVg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000c6479d0643671fce"
+Subject: Re: [Openvpn-devel] Question for the devs - Found something
+ interesting in the OpenVPN source code that I change in my modified
+ version...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,117 +18,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---VFvbv96lCn4=
+--000000000000c6479d0643671fce
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Yeah, looks pretty good, thanks for taking time to look it over! That if
+statement should be able to catch the invalid index and goto error which
+will then also help to protect and bypass the variable list index access
+further down below on line number 3814 which was an additional access also!
 
-d12fk has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1363?usp=3Demail )
-
-Change subject: iservice: use saved iface index to restore metric
-......................................................................
-
-
-Patch Set 2:
-
-(1 comment)
-
-File src/openvpnserv/interactive.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1363/comment/1fe45f4e_5d157296?usp=3D=
-email :
-PS1, Line 755: DeleteWfpBlock(const wfp_block_message_t *msg, undo_lists_t =
-*lists)
-> msg parameter can be removed, since it is not used anymore
-Done
+Thanks again all,
+Jon C
 
 
+On Wed, Nov 12, 2025 at 9:34=E2=80=AFAM Gert Doering <gert@...1296...> wrot=
+e:
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+> Hi,
+>
+> On Sun, Nov 02, 2025 at 09:34:10AM +0100, Gert Doering wrote:
+> > > In my modified version I wasn't sure of when this hard reset check
+> > > condition would be true but to prevent an invalid memory access I
+> changed
+> > > my code to be this instead:
+> > >
+> > > if (i =3D=3D TM_SIZE || is_hard_reset_method2(op))
+> >
+> > From my understanding of this code, this is the correct fix.
+> >
+> > Good find!
+>
+> As a followup to this - it's not the right fix, and my understanding was
+> not sufficient.
+>
+> Arne understands the code better and has just moved the possibly-invalid
+> pointer initialization a few lines down (to be committed in the next few
+> minutes), after the check on "i" and error-exit.
+>
+> Thanks for your report!
+>
+> (There is another one which I'll look into "really soon now" :-) )
+>
+> gert
+>
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia74a931c703d594bdf8ccada9b783b94608de278
-Gerrit-Change-Number: 1363
-Gerrit-PatchSet: 2
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Wed, 12 Nov 2025 15:07:03 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: stipa <lstipakov@...277...>
-
---VFvbv96lCn4=
+--000000000000c6479d0643671fce
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, stipa. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1363/comment/1fe45f4e_5d157296?usp=3Demail">Patch=
- Set #1, Line 755:</a> <code style=3D"font-family:monospace,monospace">Dele=
-teWfpBlock(const wfp_block_message_t *msg, undo_lists_t *lists)</code></p><=
-p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
-: 0 10px;">msg parameter can be removed, since it is not used anymore</bloc=
-kquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail">change 1363</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1363?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+<div dir=3D"ltr"><br><div>Yeah, looks pretty good, thanks for taking time t=
+o look it over! That if statement should be able to catch the invalid index=
+ and goto error which will then also help to protect and bypass the variabl=
+e list index access further down below on line=C2=A0number 3814 which was a=
+n additional access also!=C2=A0</div><div><br></div><div>Thanks again all,<=
+/div><div>Jon C</div><div><br></div></div><br><div class=3D"gmail_quote gma=
+il_quote_container"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Nov 12, 2=
+025 at 9:34=E2=80=AFAM Gert Doering &lt;<a href=3D"mailto:gert@...1296...">=
+gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" s=
+tyle=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-style:so=
+lid;border-left-color:rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Sun, Nov 02, 2025 at 09:34:10AM +0100, Gert Doering wrote:<br>
+&gt; &gt; In my modified version I wasn&#39;t sure of when this hard reset =
+check<br>
+&gt; &gt; condition would be true but to prevent an invalid memory access I=
+ changed<br>
+&gt; &gt; my code to be this instead:<br>
+&gt; &gt; <br>
+&gt; &gt; if (i =3D=3D TM_SIZE || is_hard_reset_method2(op))<br>
+&gt; <br>
+&gt; From my understanding of this code, this is the correct fix.<br>
+&gt; <br>
+&gt; Good find!<br>
+<br>
+As a followup to this - it&#39;s not the right fix, and my understanding wa=
+s<br>
+not sufficient.<br>
+<br>
+Arne understands the code better and has just moved the possibly-invalid<br>
+pointer initialization a few lines down (to be committed in the next few<br>
+minutes), after the check on &quot;i&quot; and error-exit.<br>
+<br>
+Thanks for your report!<br>
+<br>
+(There is another one which I&#39;ll look into &quot;really soon now&quot; =
+:-) )<br>
+<br>
+gert<br>
+<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
+</blockquote></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia74a931c703d594bdf8ccada9b7=
-83b94608de278 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1363 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Nov 2025 15:07:03=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
-7...&gt; </div>
-
-</body></html>=
-
---VFvbv96lCn4=--
+--000000000000c6479d0643671fce--
 
