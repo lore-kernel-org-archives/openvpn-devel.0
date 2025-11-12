@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 12 Nov 2025 10:22:38 +0100
-Message-ID: <20251112092244.22764-1-gert@...1296...>
-In-Reply-To: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
-References: <gerrit.1761516861000.I0e94068f467f2899daf133b032a785d2d7fc05e4@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 12 Nov 2025 09:25:36 +0000
+In-Reply-To: <gerrit.1762539795000.I4d905da3add9b8a3daf349eb1bc830a017cf493d@...2715...>
+References: <gerrit.1762539795000.I4d905da3add9b8a3daf349eb1bc830a017cf493d@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ccecd4bfd0aa886ccafb71098896dd457610bf1a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] iservice: validate config path better
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="lPiMl+GBG7c="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: validate
+ config path case-insensitive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,98 +19,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Heiko Hund <heiko@...2662...>
+--lPiMl+GBG7c=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Instead of just rejecting any path that contains ".." use some WIN32 API
-functions to combine, canonicalize and then check if the resulting
-path is located under the config directory. Makes the code prettier
-and more correct.
+Attention is currently required from: d12fk, flichtenheld, plaisthos.
 
-Change-Id: I0e94068f467f2899daf133b032a785d2d7fc05e4
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1307
----
+stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1362?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: iservice: validate config path case-insensitive
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1307
-This mail reflects revision 7 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@...277...>
+Patch Set 3: Code-Review+2
 
-        
-diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index ddaa381..2dcfe1a 100644
---- a/src/openvpnserv/validate.c
-+++ b/src/openvpnserv/validate.c
-@@ -24,8 +24,8 @@
- 
- #include <lmaccess.h>
- #include <shlwapi.h>
--#include <lm.h>
- #include <pathcch.h>
-+#include <lm.h>
- 
- #ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH
- #define PATHCCH_ENSURE_TRAILING_SLASH 0x20
-@@ -58,44 +58,31 @@
- static PTOKEN_GROUPS GetTokenGroups(const HANDLE token);
- 
- /*
-- * Check workdir\fname is inside config_dir
-- * The logic here is simple: we may reject some valid paths if ..\ is in any of the strings
-+ * Check that config path is inside config_dir
-+ * The logic here is simple: if the path isn't prefixed with config_dir it's rejected
-  */
- static BOOL
- CheckConfigPath(const WCHAR *workdir, const WCHAR *fname, const settings_t *s)
- {
--    WCHAR tmp[MAX_PATH];
--    const WCHAR *config_file = NULL;
--    WCHAR config_dir[MAX_PATH];
-+    HRESULT res;
-+    WCHAR config_path[MAX_PATH];
- 
-     /* fname = stdin is special: do not treat it as a relative path */
-     if (wcscmp(fname, L"stdin") == 0)
-     {
-         return FALSE;
-     }
--    /* convert fname to full path */
-+    /* convert fname to full canonical path */
-     if (PathIsRelativeW(fname))
-     {
--        swprintf(tmp, _countof(tmp), L"%ls\\%ls", workdir, fname);
--        config_file = tmp;
-+        res = PathCchCombine(config_path, _countof(config_path), workdir, fname);
-     }
-     else
-     {
--        config_file = fname;
-+        res = PathCchCanonicalize(config_path, _countof(config_path), fname);
-     }
- 
--    /* canonicalize config_dir and add trailing slash before comparison */
--    HRESULT res = PathCchCanonicalizeEx(config_dir, _countof(config_dir), s->config_dir,
--                                        PATHCCH_ENSURE_TRAILING_SLASH);
--
--    if (res == S_OK
--        && wcsncmp(config_dir, config_file, wcslen(config_dir)) == 0
--        && wcsstr(config_file + wcslen(config_dir), L"..") == NULL)
--    {
--        return TRUE;
--    }
--
--    return FALSE;
-+    return res == S_OK && wcsncmp(config_path, s->config_dir, wcslen(s->config_dir)) == 0;
- }
- 
- 
+(1 comment)
+
+Patchset:
+
+PS3:=20
+LGTM
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I4d905da3add9b8a3daf349eb1bc830a017cf493d
+Gerrit-Change-Number: 1362
+Gerrit-PatchSet: 3
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 12 Nov 2025 09:25:36 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--lPiMl+GBG7c=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: d12fk, flichtenheld, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1362?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">LGTM</p></l=
+i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1362?usp=3Demail">change 1362</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1362?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d905da3add9b8a3daf349eb1bc=
+830a017cf493d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1362 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Nov 2025 09:25:36=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--lPiMl+GBG7c=--
 
