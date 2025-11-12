@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 11:27:02 +0000
-In-Reply-To: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
-References: <gerrit.1761939285000.If28e66fcc3493821f78fd14d432b22b996918e8f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <525003bd2cfd73d4880b5d752994afe349e12b97-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Wed, 12 Nov 2025 11:56:12 +0000
+References: <gerrit.1762948569000.I432e07216f9adb8f767af172fa37b626b350f994@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <a9b4bfec5849eafe3f1803e0dbbfb2501cd8f800-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CletepLjMKU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: make sure
- directories have trailing backslash
+Content-Type: multipart/alternative; boundary="FJqrQMEe3q8="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: tapctl: factor out
+ command handlers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,259 +18,1040 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CletepLjMKU=
+--FJqrQMEe3q8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-36?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: iservice: make sure directories have trailing backslash
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1370?usp=3Demail
+
+to review the following change.
+
+
+Change subject: tapctl: factor out command handlers
 ......................................................................
 
-iservice: make sure directories have trailing backslash
+tapctl: factor out command handlers
 
-At least in the case of the config dir this matters, since the value is
-used to validate input data for the interactive service. A missing \
-at the end would allow a string compare to succeed, if the last element of
-the path to compare starts with the same substring. The trailing slash
-ensures that the last element of a path must match completely.
-
-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1336
-Message-Id: <20251109154438.15464-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-285.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I432e07216f9adb8f767af172fa37b626b350f994
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
-M src/openvpnserv/common.c
-1 file changed, 24 insertions(+), 6 deletions(-)
+M src/tapctl/main.c
+1 file changed, 196 insertions(+), 202 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/1370/1
 
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index d25d9c0..b1c89c9 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -24,6 +24,8 @@
- #include "validate.h"
- #include "eventmsg.h"
-
-+#include <pathcch.h>
-+
- LPCWSTR service_instance =3D L"";
- static wchar_t win_sys_path[MAX_PATH];
-
-@@ -54,6 +56,22 @@
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c
+index 031e262..3caffd8 100644
+--- a/src/tapctl/main.c
++++ b/src/tapctl/main.c
+@@ -201,6 +201,198 @@
+     return NULL;
  }
 
-
-+/**
-+ * Make sure that a dir path ends with a backslash.
-+ * If it doesn't, a \ is added to the end of the path, if there's room in =
-the buffer.
-+ *
-+ * @param dir       pointer to the wide dir path string buffer
-+ * @param size      maximum number of wide chars the dir path buffer
-+ * @return BOOL to indicate success or failure
-+ */
-+static BOOL
-+ensure_trailing_backslash(PWSTR dir, size_t size)
++static int command_create(int argc, LPCWSTR argv[], BOOL *bRebootRequired);
++static int command_list(int argc, LPCWSTR argv[]);
++static int command_delete(int argc, LPCWSTR argv[], BOOL *bRebootRequired);
++
++static int
++command_create(int argc, LPCWSTR argv[], BOOL *bRebootRequired)
 +{
-+    HRESULT res =3D PathCchAddBackslash(dir, size);
-+    return (res =3D=3D S_OK || res =3D=3D S_FALSE) ? TRUE : FALSE;
++    LPCWSTR szName =3D NULL;
++    LPCWSTR szHwId =3D L"root\\" _L(TAP_WIN_COMPONENT_ID);
++    struct tap_adapter_node *adapter_list =3D NULL;
++    LPWSTR adapter_name =3D NULL;
++    LPOLESTR adapter_id =3D NULL;
++    GUID guidAdapter;
++    int result =3D 1;
++
++    for (int i =3D 2; i < argc; i++)
++    {
++        if (wcsicmp(argv[i], L"--name") =3D=3D 0)
++        {
++            szName =3D argv[++i];
++        }
++        else if (wcsicmp(argv[i], L"--hwid") =3D=3D 0)
++        {
++            szHwId =3D argv[++i];
++        }
++        else
++        {
++            fwprintf(stderr,
++                     L"Unknown option \"%ls"
++                     L"\". Please, use \"tapctl help create\" to list supp=
+orted options. Ignored.\n",
++                     argv[i]);
++        }
++    }
++
++    DWORD dwResult =3D
++        tap_create_adapter(NULL, L"Virtual Ethernet", szHwId, bRebootRequi=
+red, &guidAdapter);
++    if (dwResult !=3D ERROR_SUCCESS)
++    {
++        fwprintf(stderr, L"Creating TUN/TAP adapter failed (error 0x%x).\n=
+", dwResult);
++        return result;
++    }
++
++    dwResult =3D tap_list_adapters(NULL, NULL, &adapter_list);
++    if (dwResult !=3D ERROR_SUCCESS)
++    {
++        fwprintf(stderr, L"Enumerating adapters failed (error 0x%x).\n", d=
+wResult);
++        tap_delete_adapter(NULL, &guidAdapter, bRebootRequired);
++        return result;
++    }
++
++    adapter_name =3D szName ? wcsdup(szName) : get_unique_adapter_name(szH=
+wId, adapter_list);
++    if (adapter_name)
++    {
++        if (szName && !is_adapter_name_available(adapter_name, adapter_lis=
+t, TRUE))
++        {
++            tap_delete_adapter(NULL, &guidAdapter, bRebootRequired);
++            goto cleanup;
++        }
++
++        dwResult =3D tap_set_adapter_name(&guidAdapter, adapter_name, FALS=
+E);
++        if (dwResult !=3D ERROR_SUCCESS)
++        {
++            StringFromIID((REFIID)&guidAdapter, &adapter_id);
++            fwprintf(stderr,
++                     L"Renaming TUN/TAP adapter %ls"
++                     L" to \"%ls\" failed (error 0x%x).\n",
++                     adapter_id, adapter_name, dwResult);
++            CoTaskMemFree(adapter_id);
++            goto cleanup;
++        }
++    }
++
++    result =3D 0;
++
++cleanup:
++    free(adapter_name);
++    tap_free_adapter_list(adapter_list);
++
++    if (result =3D=3D 0)
++    {
++        StringFromIID((REFIID)&guidAdapter, &adapter_id);
++        fwprintf(stdout, L"%ls\n", adapter_id);
++        CoTaskMemFree(adapter_id);
++    }
++
++    return result;
 +}
 +
++static int
++command_list(int argc, LPCWSTR argv[])
++{
++    WCHAR szzHwId[0x100] =3D
++        L"root\\" _L(TAP_WIN_COMPONENT_ID) L"\0" _L(TAP_WIN_COMPONENT_ID) =
+L"\0"
++                                                                          =
+L"ovpn-dco\0";
 +
- DWORD
- GetOpenvpnSettings(settings_t *s)
- {
-@@ -90,16 +108,16 @@
-         goto out;
++    for (int i =3D 2; i < argc; i++)
++    {
++        if (wcsicmp(argv[i], L"--hwid") =3D=3D 0)
++        {
++            memset(szzHwId, 0, sizeof(szzHwId));
++            ++i;
++            memcpy_s(szzHwId,
++                     sizeof(szzHwId) - 2 * sizeof(WCHAR),
++                     argv[i], wcslen(argv[i]) * sizeof(WCHAR));
++        }
++        else
++        {
++            fwprintf(stderr,
++                     L"Unknown option \"%ls"
++                     L"\". Please, use \"tapctl help list\" to list suppor=
+ted options. Ignored.\n",
++                     argv[i]);
++        }
++    }
++
++    struct tap_adapter_node *adapter_list =3D NULL;
++    DWORD dwResult =3D tap_list_adapters(NULL, szzHwId, &adapter_list);
++    if (dwResult !=3D ERROR_SUCCESS)
++    {
++        fwprintf(stderr, L"Enumerating TUN/TAP adapters failed (error 0x%x=
+).\n", dwResult);
++        return 1;
++    }
++
++    for (struct tap_adapter_node *adapter =3D adapter_list; adapter; adapt=
+er =3D adapter->pNext)
++    {
++        LPOLESTR adapter_id =3D NULL;
++        StringFromIID((REFIID)&adapter->guid, &adapter_id);
++        fwprintf(stdout,
++                 L"%ls\t%"
++                 L"ls\n",
++                 adapter_id, adapter->szName);
++        CoTaskMemFree(adapter_id);
++    }
++
++    tap_free_adapter_list(adapter_list);
++
++    return 0;
++}
++
++static int
++command_delete(int argc, LPCWSTR argv[], BOOL *bRebootRequired)
++{
++    if (argc < 3)
++    {
++        fwprintf(stderr,
++                 L"Missing adapter GUID or name. Please, use \"tapctl help=
+ delete\" for usage info.\n");
++        return 1;
++    }
++
++    GUID guidAdapter;
++    if (FAILED(IIDFromString(argv[2], (LPIID)&guidAdapter)))
++    {
++        struct tap_adapter_node *adapter_list =3D NULL;
++        DWORD dwResult =3D tap_list_adapters(NULL, NULL, &adapter_list);
++        if (dwResult !=3D ERROR_SUCCESS)
++        {
++            fwprintf(stderr, L"Enumerating TUN/TAP adapters failed (error =
+0x%x).\n", dwResult);
++            return 1;
++        }
++
++        BOOL found =3D FALSE;
++        for (struct tap_adapter_node *adapter =3D adapter_list; adapter; a=
+dapter =3D adapter->pNext)
++        {
++            if (wcsicmp(argv[2], adapter->szName) =3D=3D 0)
++            {
++                memcpy(&guidAdapter, &adapter->guid, sizeof(GUID));
++                found =3D TRUE;
++                break;
++            }
++        }
++
++        tap_free_adapter_list(adapter_list);
++
++        if (!found)
++        {
++            fwprintf(stderr, L"\"%ls\" adapter not found.\n", argv[2]);
++            return 1;
++        }
++    }
++
++    DWORD dwResult =3D tap_delete_adapter(NULL, &guidAdapter, bRebootRequi=
+red);
++    if (dwResult !=3D ERROR_SUCCESS)
++    {
++        fwprintf(stderr,
++                 L"Deleting adapter \"%ls"
++                 L"\" failed (error 0x%x).\n",
++                 argv[2], dwResult);
++        return 1;
++    }
++
++    return 0;
++}
++
+ /**
+  * Program entry point
+  */
+@@ -248,215 +440,17 @@
      }
-
--    swprintf(default_value, _countof(default_value), L"%ls\\config", insta=
-ll_path);
-+    swprintf(default_value, _countof(default_value), L"%ls\\config\\", ins=
-tall_path);
-     error =3D GetRegString(key, L"config_dir", s->config_dir, sizeof(s->co=
-nfig_dir), default_value);
--    if (error !=3D ERROR_SUCCESS)
-+    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s->config_d=
-ir, _countof(s->config_dir)))
+     else if (wcsicmp(argv[1], L"create") =3D=3D 0)
      {
-         goto out;
+-        LPCWSTR szName =3D NULL;
+-        LPCWSTR szHwId =3D L"root\\" _L(TAP_WIN_COMPONENT_ID);
+-
+-        /* Parse options. */
+-        for (int i =3D 2; i < argc; i++)
+-        {
+-            if (wcsicmp(argv[i], L"--name") =3D=3D 0)
+-            {
+-                szName =3D argv[++i];
+-            }
+-            else if (wcsicmp(argv[i], L"--hwid") =3D=3D 0)
+-            {
+-                szHwId =3D argv[++i];
+-            }
+-            else
+-            {
+-                fwprintf(
+-                    stderr,
+-                    L"Unknown option \"%ls"
+-                    L"\". Please, use \"tapctl help create\" to list suppo=
+rted options. Ignored.\n",
+-                    argv[i]);
+-            }
+-        }
+-
+-        /* Create TUN/TAP adapter. */
+-        GUID guidAdapter;
+-        LPOLESTR szAdapterId =3D NULL;
+-        DWORD dwResult =3D
+-            tap_create_adapter(NULL, L"Virtual Ethernet", szHwId, &bReboot=
+Required, &guidAdapter);
+-        if (dwResult !=3D ERROR_SUCCESS)
+-        {
+-            fwprintf(stderr, L"Creating TUN/TAP adapter failed (error 0x%x=
+).\n", dwResult);
+-            iResult =3D 1;
+-            goto quit;
+-        }
+-
+-        /* Get existing network adapters. */
+-        struct tap_adapter_node *pAdapterList =3D NULL;
+-        dwResult =3D tap_list_adapters(NULL, NULL, &pAdapterList);
+-        if (dwResult !=3D ERROR_SUCCESS)
+-        {
+-            fwprintf(stderr, L"Enumerating adapters failed (error 0x%x).\n=
+", dwResult);
+-            iResult =3D 1;
+-            goto create_delete_adapter;
+-        }
+-
+-        LPWSTR adapter_name =3D
+-            szName ? wcsdup(szName) : get_unique_adapter_name(szHwId, pAda=
+pterList);
+-        if (adapter_name)
+-        {
+-            /* Check for duplicates when name was specified,
+-             * otherwise get_adapter_default_name() takes care of it */
+-            if (szName && !is_adapter_name_available(adapter_name, pAdapte=
+rList, TRUE))
+-            {
+-                iResult =3D 1;
+-                goto create_cleanup_pAdapterList;
+-            }
+-
+-            /* Rename the adapter. */
+-            dwResult =3D tap_set_adapter_name(&guidAdapter, adapter_name, =
+FALSE);
+-            if (dwResult !=3D ERROR_SUCCESS)
+-            {
+-                StringFromIID((REFIID)&guidAdapter, &szAdapterId);
+-                fwprintf(stderr,
+-                         L"Renaming TUN/TAP adapter %ls"
+-                         L" to \"%ls\" failed (error 0x%x).\n",
+-                         szAdapterId, adapter_name, dwResult);
+-                CoTaskMemFree(szAdapterId);
+-                iResult =3D 1;
+-                goto quit;
+-            }
+-        }
+-
+-        iResult =3D 0;
+-
+-create_cleanup_pAdapterList:
+-        free(adapter_name);
+-
+-        tap_free_adapter_list(pAdapterList);
+-        if (iResult)
+-        {
+-            goto create_delete_adapter;
+-        }
+-
+-        /* Output adapter GUID. */
+-        StringFromIID((REFIID)&guidAdapter, &szAdapterId);
+-        fwprintf(stdout, L"%ls\n", szAdapterId);
+-        CoTaskMemFree(szAdapterId);
+-
+-        iResult =3D 0;
+-        goto quit;
+-
+-create_delete_adapter:
+-        tap_delete_adapter(NULL, &guidAdapter, &bRebootRequired);
+-        iResult =3D 1;
++        iResult =3D command_create(argc, argv, &bRebootRequired);
+         goto quit;
      }
-
--    swprintf(default_value, _countof(default_value), L"%ls\\bin", install_=
-path);
-+    swprintf(default_value, _countof(default_value), L"%ls\\bin\\", instal=
-l_path);
-     error =3D GetRegString(key, L"bin_dir", s->bin_dir, sizeof(s->bin_dir)=
-, default_value);
--    if (error !=3D ERROR_SUCCESS)
-+    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s->bin_dir,=
- _countof(s->bin_dir)))
+     else if (wcsicmp(argv[1], L"list") =3D=3D 0)
      {
-         goto out;
+-        WCHAR szzHwId[0x100] =3D
+-            L"root\\" _L(TAP_WIN_COMPONENT_ID) L"\0" _L(TAP_WIN_COMPONENT_=
+ID) L"\0"
+-                                                                          =
+    L"ovpn-dco\0";
+-
+-        /* Parse options. */
+-        for (int i =3D 2; i < argc; i++)
+-        {
+-            if (wcsicmp(argv[i], L"--hwid") =3D=3D 0)
+-            {
+-                memset(szzHwId, 0, sizeof(szzHwId));
+-                ++i;
+-                memcpy_s(szzHwId,
+-                         sizeof(szzHwId) - 2 * sizeof(WCHAR) /*requires do=
+uble zero termination*/,
+-                         argv[i], wcslen(argv[i]) * sizeof(WCHAR));
+-            }
+-            else
+-            {
+-                fwprintf(
+-                    stderr,
+-                    L"Unknown option \"%ls"
+-                    L"\". Please, use \"tapctl help list\" to list support=
+ed options. Ignored.\n",
+-                    argv[i]);
+-            }
+-        }
+-
+-        /* Output list of adapters with given hardware ID. */
+-        struct tap_adapter_node *pAdapterList =3D NULL;
+-        DWORD dwResult =3D tap_list_adapters(NULL, szzHwId, &pAdapterList);
+-        if (dwResult !=3D ERROR_SUCCESS)
+-        {
+-            fwprintf(stderr, L"Enumerating TUN/TAP adapters failed (error =
+0x%x).\n", dwResult);
+-            iResult =3D 1;
+-            goto quit;
+-        }
+-
+-        for (struct tap_adapter_node *pAdapter =3D pAdapterList; pAdapter;=
+ pAdapter =3D pAdapter->pNext)
+-        {
+-            LPOLESTR szAdapterId =3D NULL;
+-            StringFromIID((REFIID)&pAdapter->guid, &szAdapterId);
+-            fwprintf(stdout,
+-                     L"%ls\t%"
+-                     L"ls\n",
+-                     szAdapterId, pAdapter->szName);
+-            CoTaskMemFree(szAdapterId);
+-        }
+-
+-        iResult =3D 0;
+-        tap_free_adapter_list(pAdapterList);
++        iResult =3D command_list(argc, argv);
++        goto quit;
      }
-@@ -110,9 +128,9 @@
-         goto out;
-     }
-
--    swprintf(default_value, _countof(default_value), L"%ls\\log", install_=
-path);
-+    swprintf(default_value, _countof(default_value), L"%ls\\log\\", instal=
-l_path);
-     error =3D GetRegString(key, L"log_dir", s->log_dir, sizeof(s->log_dir)=
-, default_value);
--    if (error !=3D ERROR_SUCCESS)
-+    if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s->log_dir,=
- _countof(s->log_dir)))
+     else if (wcsicmp(argv[1], L"delete") =3D=3D 0)
      {
-         goto out;
+-        if (argc < 3)
+-        {
+-            fwprintf(
+-                stderr,
+-                L"Missing adapter GUID or name. Please, use \"tapctl help =
+delete\" for usage info.\n");
+-            return 1;
+-        }
+-
+-        GUID guidAdapter;
+-        if (FAILED(IIDFromString(argv[2], (LPIID)&guidAdapter)))
+-        {
+-            /* The argument failed to covert to GUID. Treat it as the adap=
+ter name. */
+-            struct tap_adapter_node *pAdapterList =3D NULL;
+-            DWORD dwResult =3D tap_list_adapters(NULL, NULL, &pAdapterList=
+);
+-            if (dwResult !=3D ERROR_SUCCESS)
+-            {
+-                fwprintf(stderr, L"Enumerating TUN/TAP adapters failed (er=
+ror 0x%x).\n", dwResult);
+-                iResult =3D 1;
+-                goto quit;
+-            }
+-
+-            for (struct tap_adapter_node *pAdapter =3D pAdapterList;; pAda=
+pter =3D pAdapter->pNext)
+-            {
+-                if (pAdapter =3D=3D NULL)
+-                {
+-                    fwprintf(stderr, L"\"%ls\" adapter not found.\n", argv=
+[2]);
+-                    iResult =3D 1;
+-                    goto delete_cleanup_pAdapterList;
+-                }
+-                else if (wcsicmp(argv[2], pAdapter->szName) =3D=3D 0)
+-                {
+-                    memcpy(&guidAdapter, &pAdapter->guid, sizeof(GUID));
+-                    break;
+-                }
+-            }
+-
+-            iResult =3D 0;
+-
+-delete_cleanup_pAdapterList:
+-            tap_free_adapter_list(pAdapterList);
+-            if (iResult)
+-            {
+-                goto quit;
+-            }
+-        }
+-
+-        /* Delete the network adapter. */
+-        DWORD dwResult =3D tap_delete_adapter(NULL, &guidAdapter, &bReboot=
+Required);
+-        if (dwResult !=3D ERROR_SUCCESS)
+-        {
+-            fwprintf(stderr,
+-                     L"Deleting adapter \"%ls"
+-                     L"\" failed (error 0x%x).\n",
+-                     argv[2], dwResult);
+-            iResult =3D 1;
+-            goto quit;
+-        }
+-
+-        iResult =3D 0;
++        iResult =3D command_delete(argc, argv, &bRebootRequired);
+         goto quit;
      }
+     else
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1336?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1370?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f
-Gerrit-Change-Number: 1336
-Gerrit-PatchSet: 9
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I432e07216f9adb8f767af172fa37b626b350f994
+Gerrit-Change-Number: 1370
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---CletepLjMKU=
+--FJqrQMEe3q8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1336?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">iservice: make sure directories have trailing ba=
-ckslash<br><br>At least in the case of the config dir this matters, since t=
-he value is<br>used to validate input data for the interactive service. A m=
-issing \<br>at the end would allow a string compare to succeed, if the last=
- element of<br>the path to compare starts with the same substring. The trai=
-ling slash<br>ensures that the last element of a path must match completely=
-.<br><br>Change-Id: If28e66fcc3493821f78fd14d432b22b996918e8f<br>Signed-off=
--by: Heiko Hund &lt;heiko@...2662...&gt;<br>Acked-by: Lev Stipakov &lt;lsti=
-pakov@...277...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1=
-336<br>Message-Id: &lt;20251109154438.15464-1-gert@...1296...&gt;<br>URL: h=
-ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34285.ht=
-ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/o=
-penvpnserv/common.c<br>1 file changed, 24 insertions(+), 6 deletions(-)<br>=
-<br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c</span><=
-br><span>index d25d9c0..b1c89c9 100644</span><br><span>--- a/src/openvpnser=
-v/common.c</span><br><span>+++ b/src/openvpnserv/common.c</span><br><span>@=
-@ -24,6 +24,8 @@</span><br><span> #include &quot;validate.h&quot;</span><br=
-><span> #include &quot;eventmsg.h&quot;</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#include &lt;pathcch.h&gt;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> LPCWSTR serv=
-ice_instance =3D L&quot;&quot;;</span><br><span> static wchar_t win_sys_pat=
-h[MAX_PATH];</span><br><span> </span><br><span>@@ -54,6 +56,22 @@</span><br=
-><span> }</span><br><span> </span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * Make sure that a dir path ends with a backslash.</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * If it doesn&#39;t, a \ is adde=
-d to the end of the path, if there&#39;s room in the buffer.</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param dir       pointer to the wide dir path st=
-ring buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @para=
-m size      maximum number of wide chars the dir path buffer</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to indicate succes=
-s or failure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+static BOOL</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ensure_trailing_backslash(PWSTR=
- dir, size_t size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HRESULT res =3D=
- PathCchAddBackslash(dir, size);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    return (res =3D=3D S_OK || res =3D=3D S_FALSE) ? TRUE : FA=
-LSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span> DWORD</span><br><span> GetOpenvpnS=
-ettings(settings_t *s)</span><br><span> {</span><br><span>@@ -90,16 +108,16=
- @@</span><br><span>         goto out;</span><br><span>     }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    swprintf(defa=
-ult_value, _countof(default_value), L&quot;%ls\\config&quot;, install_path)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(defau=
-lt_value, _countof(default_value), L&quot;%ls\\config\\&quot;, install_path=
-);</span><br><span>     error =3D GetRegString(key, L&quot;config_dir&quot;=
-, s-&gt;config_dir, sizeof(s-&gt;config_dir), default_value);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (error !=3D ERROR_SUCCESS)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error !=3D ER=
-ROR_SUCCESS || !ensure_trailing_backslash(s-&gt;config_dir, _countof(s-&gt;=
-config_dir)))</span><br><span>     {</span><br><span>         goto out;</sp=
-an><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    swprintf(default_value, _countof(default_value), L&quot=
-;%ls\\bin&quot;, install_path);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    swprintf(default_value, _countof(default_value), L&quot;%ls=
-\\bin\\&quot;, install_path);</span><br><span>     error =3D GetRegString(k=
-ey, L&quot;bin_dir&quot;, s-&gt;bin_dir, sizeof(s-&gt;bin_dir), default_val=
-ue);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (error !=
-=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (error !=3D ERROR_SUCCESS || !ensure_trailing_backslash(s-&gt;bin_dir=
-, _countof(s-&gt;bin_dir)))</span><br><span>     {</span><br><span>        =
- goto out;</span><br><span>     }</span><br><span>@@ -110,9 +128,9 @@</span=
-><br><span>         goto out;</span><br><span>     }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    swprintf(default_value=
-, _countof(default_value), L&quot;%ls\\log&quot;, install_path);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    swprintf(default_value, _c=
-ountof(default_value), L&quot;%ls\\log\\&quot;, install_path);</span><br><s=
-pan>     error =3D GetRegString(key, L&quot;log_dir&quot;, s-&gt;log_dir, s=
-izeof(s-&gt;log_dir), default_value);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    if (error !=3D ERROR_SUCCESS)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (error !=3D ERROR_SUCCESS || !ensure_t=
-railing_backslash(s-&gt;log_dir, _countof(s-&gt;log_dir)))</span><br><span>=
-     {</span><br><span>         goto out;</span><br><span>     }</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/1336?usp=3Demail">change 1336</a>. To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
-s?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1336?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>stipa would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1370?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">tapctl: factor out command handlers<br><br>=
+Change-Id: I432e07216f9adb8f767af172fa37b626b350f994<br>Signed-off-by: Lev =
+Stipakov &lt;lev@...515...&gt;<br>---<br>M src/tapctl/main.c<br>1 file chan=
+ged, 196 insertions(+), 202 deletions(-)<br><br></pre><pre class=3D"blocks"=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/1370/1</pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
+f --git a/src/tapctl/main.c b/src/tapctl/main.c</span><br><span>index 031e2=
+62..3caffd8 100644</span><br><span>--- a/src/tapctl/main.c</span><br><span>=
++++ b/src/tapctl/main.c</span><br><span>@@ -201,6 +201,198 @@</span><br><sp=
+an>     return NULL;</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+static int command_create(int argc, L=
+PCWSTR argv[], BOOL *bRebootRequired);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static int command_list(int argc, LPCWSTR argv[]);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+static int command_delete=
+(int argc, LPCWSTR argv[], BOOL *bRebootRequired);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+command_create(int argc, LPCWSTR argv[], BOOL *bRebootRequired)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    LPCWSTR szName =3D NULL;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    LPCWSTR szHwId =3D L&quot;root\\&=
+quot; _L(TAP_WIN_COMPONENT_ID);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct tap_adapter_node *adapter_list =3D NULL;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    LPWSTR adapter_name =3D NUL=
+L;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    LPOLESTR adap=
+ter_id =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ GUID guidAdapter;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   int result =3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D=
+ 2; i &lt; argc; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+wcsicmp(argv[i], L&quot;--name&quot;) =3D=3D 0)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            szName =3D argv[++i];</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        else if (wcsicmp(argv[i], L&quot;--hwid&quo=
+t;) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            szHw=
+Id =3D argv[++i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            fwprintf(stderr,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+ L&quot;Unknown option \&quot;%ls&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                     L&quot;\&quot;. Please, use \&quot=
+;tapctl help create\&quot; to list supported options. Ignored.\n&quot;,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                     ar=
+gv[i]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    DWORD dwResult =3D</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        tap_create_adapter(NULL, L&quot;Virtual Ethe=
+rnet&quot;, szHwId, bRebootRequired, &amp;guidAdapter);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (dwResult !=3D ERROR_SUCCESS)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        fwprintf(stderr, L&quot;Crea=
+ting TUN/TAP adapter failed (error 0x%x).\n&quot;, dwResult);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        return result;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    dwResult =3D tap_list_adapters(NULL, NULL, &amp;adapter_lis=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dwResult=
+ !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fwpri=
+ntf(stderr, L&quot;Enumerating adapters failed (error 0x%x).\n&quot;, dwRes=
+ult);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tap_de=
+lete_adapter(NULL, &amp;guidAdapter, bRebootRequired);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        return result;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    adapter_name =3D szName ? wcsdup(szName) : get_unique_adapter_name=
+(szHwId, adapter_list);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    if (adapter_name)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+if (szName &amp;&amp; !is_adapter_name_available(adapter_name, adapter_list=
+, TRUE))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            tap_delet=
+e_adapter(NULL, &amp;guidAdapter, bRebootRequired);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            goto cleanup;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        dwResult =3D tap_set_adapter_name(&amp;guidAdapter, adap=
+ter_name, FALSE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      if (dwResult !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            StringFromIID((REFIID)&amp;guidAdapter, &amp;adapter_i=
+d);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fwpr=
+intf(stderr,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+              L&quot;Renaming TUN/TAP adapter %ls&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                     L&quot; to \&quot;=
+%ls\&quot; failed (error 0x%x).\n&quot;,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                     adapter_id, adapter_name, dwResul=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CoTa=
+skMemFree(adapter_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            goto cleanup;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    result =3D 0;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+cleanup:</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    free(adapter_name);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    tap_free_adapter_list(adapter_list);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (result =3D=3D 0)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        StringFromIID((REFIID)&amp;guidAdapter, &amp;adapter_id);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        fwprintf(stdout=
+, L&quot;%ls\n&quot;, adapter_id);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        CoTaskMemFree(adapter_id);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ return result;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+command_list(int argc, LPCWSTR argv[])</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    WCHAR szzHwId[0x100] =3D</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        L&quot;root\\&quot; _L(TAP_WIN_C=
+OMPONENT_ID) L&quot;\0&quot; _L(TAP_WIN_COMPONENT_ID) L&quot;\0&quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
+                                                 L&quot;ovpn-dco\0&quot;;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 2; i &lt; argc; i++)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        if (wcsicmp(argv[i], L&quo=
+t;--hwid&quot;) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        memset(szzHwId, 0, sizeof(szzHwId));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            ++i;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            memcpy_s(szzHwId,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                     sizeof(szzHwId) - 2 =
+* sizeof(WCHAR),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                  argv[i], wcslen(argv[i]) * sizeof(WCHAR));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            fwprintf(stderr,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                     L&quot;Unknown option \&quot;%l=
+s&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+         L&quot;\&quot;. Please, use \&quot;tapctl help list\&quot; to list=
+ supported options. Ignored.\n&quot;,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                     argv[i]);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tap=
+_adapter_node *adapter_list =3D NULL;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    DWORD dwResult =3D tap_list_adapters(NULL, szzHwId, &=
+amp;adapter_list);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (dwResult !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        fwprintf(stderr, L&quot;Enumerating TUN/TAP adapters failed (erro=
+r 0x%x).\n&quot;, dwResult);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        return 1;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    for (struct tap_adapte=
+r_node *adapter =3D adapter_list; adapter; adapter =3D adapter-&gt;pNext)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        LPOLESTR adapter_id =3D NUL=
+L;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        StringFro=
+mIID((REFIID)&amp;adapter-&gt;guid, &amp;adapter_id);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        fwprintf(stdout,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                 L&quot;%ls\t%&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 L&=
+quot;ls\n&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+              adapter_id, adapter-&gt;szName);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        CoTaskMemFree(adapter_id);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    tap_free_adapter_list(adapter_list);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+command_delete(int argc, LPCWSTR argv[], =
+BOOL *bRebootRequired)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (argc &l=
+t; 3)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        fwprintf(stderr,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                 L&quot=
+;Missing adapter GUID or name. Please, use \&quot;tapctl help delete\&quot;=
+ for usage info.\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    GUID guidAdapter;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (FAILED(IIDFromStri=
+ng(argv[2], (LPIID)&amp;guidAdapter)))</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        struct tap_adapter_node *adapter_list =3D NULL;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        DWORD dwResult =3D tap_lis=
+t_adapters(NULL, NULL, &amp;adapter_list);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        if (dwResult !=3D ERROR_SUCCESS)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            fwprintf(stderr, L&quot;Enume=
+rating TUN/TAP adapters failed (error 0x%x).\n&quot;, dwResult);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            return 1;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        BOOL found =3D FALSE;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        for (struct tap_adapter_node *adapter =
+=3D adapter_list; adapter; adapter =3D adapter-&gt;pNext)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            if (wcsicmp(argv[2], adapter-&gt;sz=
+Name) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      memcpy(&amp;guidAdapter, &amp;adapter-&gt;guid, sizeof(GUID));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                found =3D =
+TRUE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        tap_free_adapter_list(adapter_list);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if (!found)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            fwprintf(stderr, L&quot;\&quot;%ls\&qu=
+ot; adapter not found.\n&quot;, argv[2]);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            return 1;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD dwResult =
+=3D tap_delete_adapter(NULL, &amp;guidAdapter, bRebootRequired);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (dwResult !=3D ERROR_SU=
+CCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        fwprintf(stderr,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                 L&quo=
+t;Deleting adapter \&quot;%ls&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                 L&quot;\&quot; failed (error 0x%x).\n&quot=
+;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+argv[2], dwResult);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Program entry poi=
+nt</span><br><span>  */</span><br><span>@@ -248,215 +440,17 @@</span><br><s=
+pan>     }</span><br><span>     else if (wcsicmp(argv[1], L&quot;create&quo=
+t;) =3D=3D 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        LPCWSTR szName =3D NULL;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        LPCWSTR szHwId =3D L&quot;root\\&quot; _L=
+(TAP_WIN_COMPONENT_ID);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Parse op=
+tions. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        for =
+(int i =3D 2; i &lt; argc; i++)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          if (wcsicmp(argv[i], L&quot;--name&quot;) =3D=3D 0)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                szName =3D argv[++i];</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            else if (wcsicmp(argv[i=
+], L&quot;--hwid&quot;) =3D=3D 0)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                szHwId =3D argv[++i];</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            else</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+               fwprintf(</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                    stderr,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                    L&quot;Unknown option \&quot;%ls&quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    L&quot;\&=
+quot;. Please, use \&quot;tapctl help create\&quot; to list supported optio=
+ns. Ignored.\n&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                    argv[i]);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        /* Create TUN/TAP adapter=
+. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        GUID guid=
+Adapter;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        LPOLE=
+STR szAdapterId =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        DWORD dwResult =3D</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            tap_create_adapter(NULL, L&quot;Virtual Ethernet&quot;=
+, szHwId, &amp;bRebootRequired, &amp;guidAdapter);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        if (dwResult !=3D ERROR_SUCCESS)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            fwprintf(stderr, L&quot;Cre=
+ating TUN/TAP adapter failed (error 0x%x).\n&quot;, dwResult);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            iResult =3D 1;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            goto quit;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        /* Get existing network adapters. */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        struct tap_adapter_node *pAdap=
+terList =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    dwResult =3D tap_list_adapters(NULL, NULL, &amp;pAdapterList);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        if (dwResult !=3D ERRO=
+R_SUCCESS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            fwprintf(st=
+derr, L&quot;Enumerating adapters failed (error 0x%x).\n&quot;, dwResult);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            iResult =
+=3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            got=
+o create_delete_adapter;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        LPWSTR adapter_name =
+=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            szName=
+ ? wcsdup(szName) : get_unique_adapter_name(szHwId, pAdapterList);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        if (adapter_name)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            /* Check for duplicates wh=
+en name was specified,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-             * otherwise get_adapter_default_name() takes care of it */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (szName &=
+amp;&amp; !is_adapter_name_available(adapter_name, pAdapterList, TRUE))</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                iResult =3D 1;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                goto cre=
+ate_cleanup_pAdapterList;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Rename the=
+ adapter. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   dwResult =3D tap_set_adapter_name(&amp;guidAdapter, adapter_name, FALSE)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (dwRe=
+sult !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           StringFromIID((REFIID)&amp;guidAdapter, &amp;szAdapterId);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                fwprintf(st=
+derr,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+         L&quot;Renaming TUN/TAP adapter %ls&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                         L&quot; to \&quot;%ls=
+\&quot; failed (error 0x%x).\n&quot;,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                         szAdapterId, adapter_name, dwResul=
+t);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                Co=
+TaskMemFree(szAdapterId);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                iResult =3D 1;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                goto quit;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iResult =3D 0;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-create_cleanup_pAdapterList:</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        free(adapter_name);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        tap_free_adapter_list(pAdapterList);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (iResult)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            goto create_delete_adapter;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        /* Output adapter GUID. */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        StringFromIID((REFIID)&amp;guidAdap=
+ter, &amp;szAdapterId);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        fwprintf(stdout, L&quot;%ls\n&quot;, szAdapterId);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        CoTaskMemFree(szAdapterId);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        iResult =3D 0;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        goto quit;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-create_delete_adapter:</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        tap_delete_adapter(NULL, &amp;guidAdapter, &amp;bReboot=
+Required);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iRe=
+sult =3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+iResult =3D command_create(argc, argv, &amp;bRebootRequired);</span><br><sp=
+an>         goto quit;</span><br><span>     }</span><br><span>     else if =
+(wcsicmp(argv[1], L&quot;list&quot;) =3D=3D 0)</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        WCHAR szzHwId[0x100=
+] =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            L&qu=
+ot;root\\&quot; _L(TAP_WIN_COMPONENT_ID) L&quot;\0&quot; _L(TAP_WIN_COMPONE=
+NT_ID) L&quot;\0&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                                                                          =
+    L&quot;ovpn-dco\0&quot;;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Par=
+se options. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ for (int i =3D 2; i &lt; argc; i++)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            if (wcsicmp(argv[i], L&quot;--hwid&quot;) =3D=3D 0)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                memset(szzHwId, 0, siz=
+eof(szzHwId));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+         ++i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        memcpy_s(szzHwId,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                         sizeof(szzHwId) - 2 * sizeof(WCHAR) /*requires=
+ double zero termination*/,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                         argv[i], wcslen(argv[i]) * sizeof(WCHAR));</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            else</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                fwprintf(</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                    stderr,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                    L&quot;Unknow=
+n option \&quot;%ls&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    L&quot;\&quot;. Please, use \&quot;tapctl help list=
+\&quot; to list supported options. Ignored.\n&quot;,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                    argv[i]);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       /* Output list of adapters with given hardware ID. */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        struct tap_adapter_node *pAd=
+apterList =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      DWORD dwResult =3D tap_list_adapters(NULL, szzHwId, &amp;pAdapterList=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (dwResul=
+t !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+fwprintf(stderr, L&quot;Enumerating TUN/TAP adapters failed (error 0x%x).\n=
+&quot;, dwResult);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         iResult =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            goto quit;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        for (struct tap_adapte=
+r_node *pAdapter =3D pAdapterList; pAdapter; pAdapter =3D pAdapter-&gt;pNex=
+t)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            LPOLESTR szAdapterI=
+d =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  StringFromIID((REFIID)&amp;pAdapter-&gt;guid, &amp;szAdapterId);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            fwprintf(stdout,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     L&=
+quot;%ls\t%&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                 L&quot;ls\n&quot;,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                     szAdapterId, pAdapter-&gt;szName);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            CoTaskMemFree(s=
+zAdapterId);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        iResult =3D 0;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        tap_free_adapter_list(pAdapterLis=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        iResult =
+=3D command_list(argc, argv);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        goto quit;</span><br><span>     }</span><br><span>     el=
+se if (wcsicmp(argv[1], L&quot;delete&quot;) =3D=3D 0)</span><br><span>    =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (argc &l=
+t; 3)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            fwprintf(</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                stderr,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                L&quot;Mis=
+sing adapter GUID or name. Please, use \&quot;tapctl help delete\&quot; for=
+ usage info.\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            return 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        GUID guidAdapter;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (FAILED(IIDFromSt=
+ring(argv[2], (LPIID)&amp;guidAdapter)))</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            /* The argument failed to covert to GUID. Treat it as th=
+e adapter name. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         struct tap_adapter_node *pAdapterList =3D NULL;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            DWORD dwResult =3D tap_list_=
+adapters(NULL, NULL, &amp;pAdapterList);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            if (dwResult !=3D ERROR_SUCCESS)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                fwprintf(stderr, L&quot;E=
+numerating TUN/TAP adapters failed (error 0x%x).\n&quot;, dwResult);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                iResult =3D =
+1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                got=
+o quit;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            for (struct tap_adapter_node *p=
+Adapter =3D pAdapterList;; pAdapter =3D pAdapter-&gt;pNext)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                if (pAdapter =3D=3D NULL)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                    fwprint=
+f(stderr, L&quot;\&quot;%ls\&quot; adapter not found.\n&quot;, argv[2]);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    iRes=
+ult =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         goto delete_cleanup_pAdapterList;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                else if (wcsicmp(argv[2], pAdapter-&gt;szN=
+ame) =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         memcpy(&amp;guidAdapter, &amp;pAdapter-&gt;guid, sizeof(GUID));</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                    brea=
+k;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            iResult =3D 0;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-delete_cleanup_pAdapterList:</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            tap_free_adapter_list(pAdapterList);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            if (iResult)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                goto quit;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        /* Delete the network adapter. */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        DWORD dwResult =3D tap_delete_adapter(NULL, &am=
+p;guidAdapter, &amp;bRebootRequired);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        if (dwResult !=3D ERROR_SUCCESS)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            fwprintf(stderr,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                     L&quot;Deleting adapte=
+r \&quot;%ls&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                  L&quot;\&quot; failed (error 0x%x).\n&quot;,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                     argv[2], dwRe=
+sult);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            iRe=
+sult =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  goto quit;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        iResult =3D 0;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        iResult =3D command_delete(argc=
+, argv, &amp;bRebootRequired);</span><br><span>         goto quit;</span><b=
+r><span>     }</span><br><span>     else</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1370?usp=
+=3Demail">change 1370</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1370?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If28e66fcc3493821f78fd14d432=
-b22b996918e8f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1336 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I432e07216f9adb8f767af172fa3=
+7b626b350f994 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1370 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---CletepLjMKU=--
+--FJqrQMEe3q8=--
 
