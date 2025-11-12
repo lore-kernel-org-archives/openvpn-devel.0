@@ -1,10 +1,16 @@
-Date: Wed, 12 Nov 2025 16:33:01 +0100 (CET)
-Message-Id: <202511121533.5ACFX15d052974@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251112141335.17417-1-gert@...1296...>
-References: <20251112141335.17417-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix construction of invalid
- pointer in tls_pre_decrypt
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 12 Nov 2025 15:38:21 +0000
+In-Reply-To: <gerrit.1762958138000.Ia60a393a296f23ac1090d0f2016b5682649ed490@...2715...>
+References: <gerrit.1762958138000.Ia60a393a296f23ac1090d0f2016b5682649ed490@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, antonio@...2726...
+Message-ID: <905dbb9a342ac95b61ce9a0ed3071a1d39603238-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="eBwWJKbWTZY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: drop --opt-verify
+ functionality
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +19,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Trivially-correct avoidance of the invalid-index pointer read... and 
-quite likely this is what the compiler does as well "this is only needed
-after the if(), so let's do that one first", or suchabouts.  Where this
-is now, we know i is TM_ACTIVE (0) or TM_UNTRUSTED (1), and so ->session[i]
-is valid.
+--eBwWJKbWTZY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Tested the master patch on the t_server testbed, 2.6 and 2.5 just on the
-clients (which is arguably not excercising this code very heavily).
+Attention is currently required from: ordex, plaisthos.
 
-Your patch has been applied to the master, release/2.6 and release/2.5 branch.
+cron2 has posted comments on this change by ordex. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1375?usp=3Demail )
 
-Since this is arguably a bug, but has been shown to have no adverse effects,
-and everything older has been out of support for a long time, I decided to
-be lazy and not backport to 2.4, 2.3, 2.2 and 2.1...
+Change subject: drop --opt-verify functionality
+......................................................................
 
-commit 5cdf3f9724c89b278c88fd408714a8d2c1f4d1a1 (master)
-commit 4e31670b1e1215130ffaec0f6769e084169da0f1 (release/2.6)
-commit 03385f89a1cd95f12bc8ff92b76c209d8b11ef83 (release/2.5)
-Author: Arne Schwabe
-Date:   Wed Nov 12 15:13:28 2025 +0100
 
-     Fix construction of invalid pointer in tls_pre_decrypt
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1373
-     Message-Id: <20251112141335.17417-1-gert@...1296...>
-     Signed-off-by: Gert Doering <gert@...1296...>
+Patch Set 1: Code-Review+2
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia60a393a296f23ac1090d0f2016b5682649ed490
+Gerrit-Change-Number: 1375
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: ordex <antonio@...2726...>
+Gerrit-Comment-Date: Wed, 12 Nov 2025 15:38:21 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
+--eBwWJKbWTZY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: ordex, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail=
+">change 1375</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia60a393a296f23ac1090d0f2016=
+b5682649ed490 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1375 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Nov 2025 15:38:21=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--eBwWJKbWTZY=--
 
