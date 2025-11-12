@@ -1,16 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 18:59:15 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 12 Nov 2025 22:51:00 +0100
+Message-ID: <20251112215106.14182-1-gert@...1296...>
 In-Reply-To: <gerrit.1762823521000.Ia74a931c703d594bdf8ccada9b783b94608de278@...2715...>
 References: <gerrit.1762823521000.Ia74a931c703d594bdf8ccada9b783b94608de278@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <593008ccdbc8150260fa7068b30b967d9bcb1cfa-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="AwzYpHyW9DU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: use saved
- iface index to restore metric
+Subject: [Openvpn-devel] [PATCH v2] iservice: use saved iface index to
+ restore metric
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,95 +14,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---AwzYpHyW9DU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+When adding block rules, the interface metric of the VPN adapter is
+temporarily modified so that an old version of Windows 10 would pick
+it up first when looking up stuff via DNS. These metrics are reverted to
+the old value when the block is removed.
 
-stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1363?usp=3Demail )
+When reverting them, instead of using the stored interface index where
+the original values were read from, we were using the interface index
+passed to the service with the wfp block message. That index could
+theoretically be different from the one stored, which would result in
+the metric being set to the wrong interface.
 
-Change subject: iservice: use saved iface index to restore metric
-......................................................................
+Reported-by: stephan@...2953...
+Change-Id: Ia74a931c703d594bdf8ccada9b783b94608de278
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1363
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1363
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia74a931c703d594bdf8ccada9b783b94608de278
-Gerrit-Change-Number: 1363
-Gerrit-PatchSet: 2
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 12 Nov 2025 18:59:15 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---AwzYpHyW9DU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail=
-">change 1363</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1363?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia74a931c703d594bdf8ccada9b7=
-83b94608de278 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1363 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Nov 2025 18:59:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---AwzYpHyW9DU=--
+        
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 0712986..33282c63 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -752,7 +752,7 @@
+ }
+ 
+ static DWORD
+-DeleteWfpBlock(const wfp_block_message_t *msg, undo_lists_t *lists)
++DeleteWfpBlock(undo_lists_t *lists)
+ {
+     DWORD err = 0;
+     wfp_block_data_t *block_data = RemoveListItem(&(*lists)[wfp_block], CmpAny, NULL);
+@@ -762,11 +762,11 @@
+         err = delete_wfp_block_filters(block_data->engine);
+         if (block_data->metric_v4 >= 0)
+         {
+-            set_interface_metric(msg->iface.index, AF_INET, block_data->metric_v4);
++            set_interface_metric(block_data->index, AF_INET, block_data->metric_v4);
+         }
+         if (block_data->metric_v6 >= 0)
+         {
+-            set_interface_metric(msg->iface.index, AF_INET6, block_data->metric_v6);
++            set_interface_metric(block_data->index, AF_INET6, block_data->metric_v6);
+         }
+         free(block_data);
+     }
+@@ -829,7 +829,7 @@
+             if (err)
+             {
+                 /* delete the filters, remove undo item and free interface data */
+-                DeleteWfpBlock(msg, lists);
++                DeleteWfpBlock(lists);
+                 engine = NULL;
+             }
+         }
+@@ -854,7 +854,7 @@
+     }
+     else
+     {
+-        return DeleteWfpBlock(msg, lists);
++        return DeleteWfpBlock(lists);
+     }
+ }
+ 
 
