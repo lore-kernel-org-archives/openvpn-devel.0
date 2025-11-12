@@ -1,16 +1,11 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 09:19:15 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 12 Nov 2025 10:22:10 +0100
+Message-ID: <20251112092216.22703-1-gert@...1296...>
 In-Reply-To: <gerrit.1762462761000.I50f189048ef1a624e6ac84b71d7b22fcbbc3ab6b@...2715...>
 References: <gerrit.1762462761000.I50f189048ef1a624e6ac84b71d7b22fcbbc3ab6b@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8e229984b4f3da680a67a21e0227749c3d4aea1f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MI6BKsWX4pA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: win: remove checks
- for PATHCCH_ENSURE_TRAILING_SLASH
+Subject: [Openvpn-devel] [PATCH v5] win: remove checks for
+ PATHCCH_ENSURE_TRAILING_SLASH
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,111 +14,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---MI6BKsWX4pA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Since the define is no longer used, remove configuration-time checks if
+it exists, and also code dealing with situations where it doesn't.
 
-stipa has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1354?usp=3Demail )
+Change-Id: I50f189048ef1a624e6ac84b71d7b22fcbbc3ab6b
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1354
+---
 
-Change subject: win: remove checks for PATHCCH_ENSURE_TRAILING_SLASH
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1354
+This mail reflects revision 5 of this Change.
 
-Patch Set 5: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Lev Stipakov <lstipakov@...277...>
 
-(1 comment)
-
-Patchset:
-
-PS5:
-Looks good. No real code code changes. Checked that PATHCCH_ENSURE_TRAILING=
-_SLASH is indeed not used.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1354?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I50f189048ef1a624e6ac84b71d7b22fcbbc3ab6b
-Gerrit-Change-Number: 1354
-Gerrit-PatchSet: 5
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 12 Nov 2025 09:19:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---MI6BKsWX4pA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, flichtenheld, plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1354?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1354?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Looks good.=
- No real code code changes. Checked that PATHCCH_ENSURE_TRAILING_SLASH is i=
-ndeed not used.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/1354?usp=3Demail">change 1354</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1354?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I50f189048ef1a624e6ac84b71d7=
-b22fcbbc3ab6b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1354 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 12 Nov 2025 09:19:15=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---MI6BKsWX4pA=--
+        
+diff --git a/configure.ac b/configure.ac
+index 3117e13..8f3c01d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1383,17 +1383,6 @@
+ 	fi
+ fi
+ 
+-if test "${WIN32}" == "yes"; then
+-	AC_CHECK_DECLS(
+-		[PATHCCH_ENSURE_TRAILING_SLASH],
+-		[AC_DEFINE([HAVE_PATHCCH_ENSURE_TRAILING_SLASH], [1], [PATHCCH_ENSURE_TRAILING_SLASH is defined])],
+-		,
+-		[[
+-			#include <pathcch.h>
+-		]]
+-	)
+-fi
+-
+ # When testing a compiler option, we add -Werror to force
+ # an error when the option is unsupported. This is not
+ # required for gcc, but some compilers such as clang need it.
+diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
+index a92ee08..2c8f310 100644
+--- a/src/openvpnserv/CMakeLists.txt
++++ b/src/openvpnserv/CMakeLists.txt
+@@ -8,9 +8,6 @@
+ 
+ include(CheckSymbolExists)
+ 
+-# Some old versions of mingw does not have PATHCCH_OPTIONS enums -- add a check
+-check_symbol_exists(PATHCCH_ENSURE_TRAILING_SLASH pathcch.h HAVE_PATHCCH_ENSURE_TRAILING_SLASH)
+-
+ set(MC_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/mc)
+ 
+ target_include_directories(openvpnserv PRIVATE
+diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
+index 2dcfe1a..b3189b7 100644
+--- a/src/openvpnserv/validate.c
++++ b/src/openvpnserv/validate.c
+@@ -27,10 +27,6 @@
+ #include <pathcch.h>
+ #include <lm.h>
+ 
+-#ifndef HAVE_PATHCCH_ENSURE_TRAILING_SLASH
+-#define PATHCCH_ENSURE_TRAILING_SLASH 0x20
+-#endif
+-
+ static const WCHAR *white_list[] = {
+     L"auth-retry",
+     L"config",
 
