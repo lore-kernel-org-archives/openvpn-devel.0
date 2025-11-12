@@ -1,16 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 13:38:47 +0000
-In-Reply-To: <gerrit.1762517501000.Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af@...2715...>
-References: <gerrit.1762517501000.Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ab8c0f04d881e72a74c29995872c85b177112f23-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 12 Nov 2025 13:40:10 +0000
+References: <gerrit.1762954807000.Ided1ac7c804487055b175d8766535bead257b7d5@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
+Message-ID: <d14f571f0eeea73a1a278cb18618e44a2f8a66b7-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GRMiLVqb8eQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: Change
- tls_send_payload size argument to size_t
+Content-Type: multipart/alternative; boundary="jRtR7qkKYwU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix construction of
+ invalid pointer in tls_pre_decrypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,236 +17,177 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GRMiLVqb8eQ=
+--jRtR7qkKYwU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-55?usp=3Demail )
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1373?usp=3Demail )
 
-Change subject: ssl: Change tls_send_payload size argument to size_t
+
+Change subject: Fix construction of invalid pointer in tls_pre_decrypt
 ......................................................................
 
-ssl: Change tls_send_payload size argument to size_t
+Fix construction of invalid pointer in tls_pre_decrypt
 
-There is only one caller of this function and it
-wants it to be size_t. So move the size_t to int
-conversion one step down in the call chain. Do not
-switch key_state_write_plaintext_const, yet, since
-that is a backend function and so needs way more
-work.
+In tls_pre_decrypt we construct a pointer ks with an invalid i if i is TM_S=
+IZE
+doing a out-of-bounds access in multi->session.
 
-Change-Id: Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1355
-Message-Id: <20251111155239.31747-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-320.html
-Signed-off-by: Gert Doering <gert@...1296...>
+This is a something that exists at least since 2.3.0 (I didn't go further
+back but probalby exists in earlier version as well as the commits date
+back to SVN beta21 branch).
+
+So we construct the pointer but do not do anything with it if it is inval
+id as we check i *after* we construct the pointer `ks`.
+
+I suspect that the compiler optimises the bug away in any higher optimisati=
+on
+level.
+
+Assuming there is no optimisation, let's check what is possible.
+Since we never use the value `ks` if it is invalid, we do not have
+worry if it ends up invalid or not. The only thing that we have to
+worry about is whether
+`session + offsetof(struct tls_session, key[KS_PRIMARY])` is pointing
+to memory that is valid to read to construct the `ks` pointer.
+This is outside the tls_multi struct, so this is not guaranteed to be
+allocated memory but at the same time it is also only few bytes (or few
+tens/houndred) after the struct, so it will with an extremely high
+probably be in a memory region that will not cause a segfault.
+
+Every time this condition is hit and we construct the invalid pointer,
+the log message "TLS Error: Unroutable control packet received" is
+printed at `verb 1` or higher. And this is a quite common log message,
+which serves as indication as well that a crash is not something that
+typically happens but either the optimisation fixes or the memory
+region of the invalid access is valid to read from.
+
+Change-Id: Ided1ac7c804487055b175d8766535bead257b7d5
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/forward.c
 M src/openvpn/ssl.c
-M src/openvpn/ssl.h
-3 files changed, 10 insertions(+), 9 deletions(-)
+1 file changed, 2 insertions(+), 3 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/1373/1
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index c355f66..aa1f858 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -365,11 +365,6 @@
-     }
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
- send_control_channel_string_dowork(struct tls_session *session, const char=
- *str,
-                                    msglvl_t msglevel)
-@@ -834,6 +829,11 @@
- #endif /* ENABLE_MANAGEMENT */
- }
-
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
-+
- static void
- check_coarse_timers(struct context *c)
- {
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 908854a..398c9ae 100644
+index 398c9ae..e21ac78 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -4032,7 +4032,7 @@
-  */
-
- bool
--tls_send_payload(struct key_state *ks, const uint8_t *data, int size)
-+tls_send_payload(struct key_state *ks, const uint8_t *data, size_t size)
- {
-     bool ret =3D false;
-
-@@ -4042,7 +4042,8 @@
-
-     if (ks->state >=3D S_ACTIVE)
-     {
--        if (key_state_write_plaintext_const(&ks->ks_ssl, data, size) =3D=
-=3D 1)
-+        ASSERT(size <=3D INT_MAX);
-+        if (key_state_write_plaintext_const(&ks->ks_ssl, data, (int)size) =
-=3D=3D 1)
-         {
-             ret =3D true;
-         }
-@@ -4053,7 +4054,7 @@
-         {
-             ks->paybuf =3D buffer_list_new();
-         }
--        buffer_list_push_data(ks->paybuf, data, (size_t)size);
-+        buffer_list_push_data(ks->paybuf, data, size);
-         ret =3D true;
+@@ -3729,9 +3729,6 @@
      }
+     else
+     {
+-        struct tls_session *session =3D &multi->session[i];
+-        struct key_state *ks =3D &session->key[KS_PRIMARY];
+-
+         /*
+          * Packet must belong to an existing session.
+          */
+@@ -3742,6 +3739,8 @@
+             goto error;
+         }
 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index ffcc7c4..db8a798 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -426,7 +426,7 @@
- /*
-  * Send a payload over the TLS control channel
-  */
--bool tls_send_payload(struct key_state *ks, const uint8_t *data, int size);
-+bool tls_send_payload(struct key_state *ks, const uint8_t *data, size_t si=
-ze);
-
- /*
-  * Receive a payload through the TLS control channel
++        struct tls_session *session =3D &multi->session[i];
++        struct key_state *ks =3D &session->key[KS_PRIMARY];
+         /*
+          * Verify remote IP address
+          */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1355?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1373?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af
-Gerrit-Change-Number: 1355
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: Ided1ac7c804487055b175d8766535bead257b7d5
+Gerrit-Change-Number: 1373
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GRMiLVqb8eQ=
+--jRtR7qkKYwU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1355?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">ssl: Change tls_send_payload size argument to si=
-ze_t<br><br>There is only one caller of this function and it<br>wants it to=
- be size_t. So move the size_t to int<br>conversion one step down in the ca=
-ll chain. Do not<br>switch key_state_write_plaintext_const, yet, since<br>t=
-hat is a backend function and so needs way more<br>work.<br><br>Change-Id: =
-Ic90c5a0e48bda4a02d5e11c4c161f388cc8805af<br>Signed-off-by: Frank Lichtenhe=
-ld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1386...=
-227...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1355<br>Me=
-ssage-Id: &lt;20251111155239.31747-1-gert@...1296...&gt;<br>URL: https://ww=
-w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34320.html<br>Sig=
-ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/fo=
-rward.c<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl.h<br>3 files changed, 1=
-0 insertions(+), 9 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
-an>index c355f66..aa1f858 100644</span><br><span>--- a/src/openvpn/forward.=
-c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -365,11 +3=
-65,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defi=
-ned(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma=
- GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span> bool</span><br><span> send_control_chan=
-nel_string_dowork(struct tls_session *session, const char *str,</span><br><=
-span>                                    msglvl_t msglevel)</span><br><span=
->@@ -834,6 +829,11 @@</span><br><span> #endif /* ENABLE_MANAGEMENT */</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored =
-&quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span> static void</span><br><span> check_coarse_timers(struct context *=
-c)</span><br><span> {</span><br><span>diff --git a/src/openvpn/ssl.c b/src/=
-openvpn/ssl.c</span><br><span>index 908854a..398c9ae 100644</span><br><span=
->--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br>=
-<span>@@ -4032,7 +4032,7 @@</span><br><span>  */</span><br><span> </span><b=
-r><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tls_send=
-_payload(struct key_state *ks, const uint8_t *data, int size)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+tls_send_payload(struct key_state=
- *ks, const uint8_t *data, size_t size)</span><br><span> {</span><br><span>=
-     bool ret =3D false;</span><br><span> </span><br><span>@@ -4042,7 +4042=
-,8 @@</span><br><span> </span><br><span>     if (ks-&gt;state &gt;=3D S_ACT=
-IVE)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (key_state_write_plaintext_const(&amp;ks-&gt;ks_ssl, data,=
- size) =3D=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     ASSERT(size &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        if (key_state_write_plaintext_const(&amp;ks-&gt;ks_s=
-sl, data, (int)size) =3D=3D 1)</span><br><span>         {</span><br><span> =
-            ret =3D true;</span><br><span>         }</span><br><span>@@ -40=
-53,7 +4054,7 @@</span><br><span>         {</span><br><span>             ks-=
-&gt;paybuf =3D buffer_list_new();</span><br><span>         }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        buffer_list_push_data(ks-&gt=
-;paybuf, data, (size_t)size);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        buffer_list_push_data(ks-&gt;paybuf, data, size);</span><=
-br><span>         ret =3D true;</span><br><span>     }</span><br><span> </s=
-pan><br><span>diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h</span><br>=
-<span>index ffcc7c4..db8a798 100644</span><br><span>--- a/src/openvpn/ssl.h=
-</span><br><span>+++ b/src/openvpn/ssl.h</span><br><span>@@ -426,7 +426,7 @=
-@</span><br><span> /*</span><br><span>  * Send a payload over the TLS contr=
-ol channel</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-bool tls_send_payload(struct key_state *ks, const uint8_t *data, =
-int size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool tls_=
-send_payload(struct key_state *ks, const uint8_t *data, size_t size);</span=
-><br><span> </span><br><span> /*</span><br><span>  * Receive a payload thro=
-ugh the TLS control channel</span><br><span></span><br></pre><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1355?usp=3Demail">chan=
-ge 1355</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
-itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
-rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1355?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1373?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Fix construction of invalid pointer in tls_pre_decrypt<br><br>In tls_pr=
+e_decrypt we construct a pointer ks with an invalid i if i is TM_SIZE<br>do=
+ing a out-of-bounds access in multi-&gt;session.<br><br>This is a something=
+ that exists at least since 2.3.0 (I didn&#39;t go further<br>back but prob=
+alby exists in earlier version as well as the commits date<br>back to SVN b=
+eta21 branch).<br><br>So we construct the pointer but do not do anything wi=
+th it if it is inval<br>id as we check i *after* we construct the pointer `=
+ks`.<br><br>I suspect that the compiler optimises the bug away in any highe=
+r optimisation<br>level.<br><br>Assuming there is no optimisation, let&#39;=
+s check what is possible.<br>Since we never use the value `ks` if it is inv=
+alid, we do not have<br>worry if it ends up invalid or not. The only thing =
+that we have to<br>worry about is whether<br>`session + offsetof(struct tls=
+_session, key[KS_PRIMARY])` is pointing<br>to memory that is valid to read =
+to construct the `ks` pointer.<br>This is outside the tls_multi struct, so =
+this is not guaranteed to be<br>allocated memory but at the same time it is=
+ also only few bytes (or few<br>tens/houndred) after the struct, so it will=
+ with an extremely high<br>probably be in a memory region that will not cau=
+se a segfault.<br><br>Every time this condition is hit and we construct the=
+ invalid pointer,<br>the log message &quot;TLS Error: Unroutable control pa=
+cket received&quot; is<br>printed at `verb 1` or higher. And this is a quit=
+e common log message,<br>which serves as indication as well that a crash is=
+ not something that<br>typically happens but either the optimisation fixes =
+or the memory<br>region of the invalid access is valid to read from.<br><br=
+>Change-Id: Ided1ac7c804487055b175d8766535bead257b7d5<br>Signed-off-by: Arn=
+e Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl.c<br>1 file c=
+hanged, 2 insertions(+), 3 deletions(-)<br><br></pre><pre class=3D"blocks" =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/1373/1</pre><pre st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
+ --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 398c9a=
+e..e21ac78 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>+=
+++ b/src/openvpn/ssl.c</span><br><span>@@ -3729,9 +3729,6 @@</span><br><spa=
+n>     }</span><br><span>     else</span><br><span>     {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        struct tls_session *session =3D=
+ &amp;multi-&gt;session[i];</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMARY];</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>       =
+  /*</span><br><span>          * Packet must belong to an existing session.=
+</span><br><span>          */</span><br><span>@@ -3742,6 +3739,8 @@</span><=
+br><span>             goto error;</span><br><span>         }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct t=
+ls_session *session =3D &amp;multi-&gt;session[i];</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        struct key_state *ks =3D &amp;sessio=
+n-&gt;key[KS_PRIMARY];</span><br><span>         /*</span><br><span>        =
+  * Verify remote IP address</span><br><span>          */</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1373?usp=3Demail">change 1373</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1373?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic90c5a0e48bda4a02d5e11c4c16=
-1f388cc8805af </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1355 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ided1ac7c804487055b175d87665=
+35bead257b7d5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1373 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---GRMiLVqb8eQ=--
+--jRtR7qkKYwU=--
 
