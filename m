@@ -1,15 +1,10 @@
-Date: Wed, 12 Nov 2025 10:39:32 +0100
+Date: Wed, 12 Nov 2025 10:59:47 +0100 (CET)
+Message-Id: <202511120959.5AC9xlaa033862@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <aRRV1KZNNGewOfId@...1296...>
-References: <gerrit.1761743833000.I6c502508026c6b85bb092ada4d16d985b20dd41f@...2715...>
- <20251112092743.23173-1-gert@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="xpljlw4xE34dBLwT"
-Content-Disposition: inline
-In-Reply-To: <20251112092743.23173-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2] clean up environment variable
- handling in verify_user_pass_script
+In-Reply-To: <20251111172504.7683-1-gert@...1296...>
+References: <20251111172504.7683-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: fix struct initialization
+ for v19 compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,55 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---xpljlw4xE34dBLwT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This makes sense - it matches how we do struct initialization elsewhere
+(in networking_sitnl, a few '= {}' remain, but everything else clears
+with CLEAR() or with '= { 0 }').
 
-Hi,
+For a sanity check, compiled on ubuntu2404/mingw.
 
-On Wed, Nov 12, 2025 at 10:27:37AM +0100, Gert Doering wrote:
-> From: Arne Schwabe <arne@...1227...>
->=20
-> The username environment variable is already set by the
-> set_verify_user_pass_env function before the verify_user_pass_script
-> function is called, so this call is not doing anything but might erroneou=
-sly
-> made people think that this needs to be cleaned up.
->=20
-> Also ensure that the password is clean from the env even in an error case.
+Your patch has been applied to the master branch.
 
-Resend by mistake, has long been merged.  Sorry for the noise.
+commit 5888adc6fa86ae6ec718c76f733733c8b9fbd38b
+Author: Heiko Hund
+Date:   Tue Nov 11 18:24:57 2025 +0100
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     msvc: fix struct initialization for v19 compilers
 
-Gert Doering - Munich, Germany                             gert@...1296...
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1366
+     Message-Id: <20251111172504.7683-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34327.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---xpljlw4xE34dBLwT
-Content-Type: application/pgp-signature; name=signature.asc
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJpFFXUAAoJEB2Cnv7KVigS5qAL/2fHkCVCAc+8Q1ilVLpJYdTm
-U/ddjgDC25sqU/fbzKaUfcyB+u+q9webEt40iYlJ+dNhq/2R07dyGJAJKdRRUntT
-DdDulGY0vGTL2HVCFxWKv7sGWAhrgLb0RUU1PUvnwmSfnpXp/LGO4RinuyRpCHTh
-7LssIxk5hhv/D0CCz1KWrhqUXcs3Bk+27i8NHQBCpZWPCkz9o0pxBsnEtNpO6Z3B
-JOZE4HuYJjZStaR5/B3tX/AvAdZzF0APrTh+GLAMqH3zbzfgOdLijOzp+JRxGUyB
-GLXrZ7Q/cxEuTqSnrybfLvPSI87OhUM64gFxgTRKJXl5mDt0BRRHPs23FxbPT4Ml
-4jeykGwX/b+zA6EvIsIrrMG1Xa2hfYqUGcTiywJ2Xtmn5BQxMW2S+kCiB9jTcUSX
-+CzRFLqLCrIkvCffgbOSPhjlTnMVZSufqs1sXPE+CAAN696c0rVlQ8o7a9f3kHGb
-leQqUPt4KM6VtBJr5EAtKPaczM032xw8c302duUQmA==
-=WULX
------END PGP SIGNATURE-----
+Gert Doering
 
---xpljlw4xE34dBLwT--
 
