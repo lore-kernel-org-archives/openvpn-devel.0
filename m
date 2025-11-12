@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 12 Nov 2025 10:40:40 +0000
+Date: Wed, 12 Nov 2025 10:40:41 +0000
 In-Reply-To: <gerrit.1762539795000.I4d905da3add9b8a3daf349eb1bc830a017cf493d@...2715...>
 References: <gerrit.1762539795000.I4d905da3add9b8a3daf349eb1bc830a017cf493d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  lstipakov@...277...
-Message-ID: <c10edaec8642c65faa01bbed4f3cde2af67a04e5-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c10edaec8642c65faa01bbed4f3cde2af67a04e5-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yhbQ1ApgJ6s="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="6DIS42APz1I="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: validate
  config path case-insensitive
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yhbQ1ApgJ6s=
+--6DIS42APz1I=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by stipa
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+62?usp=3Demail )
 
 Change subject: iservice: validate config path case-insensitive
 ......................................................................
@@ -55,7 +51,7 @@ M src/openvpnserv/validate.c
 1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1362/4
+
 
 diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
 index b3189b7..3381503 100644
@@ -79,7 +75,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I4d905da3add9b8a3daf349eb1bc830a017cf493d
@@ -91,48 +87,45 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yhbQ1ApgJ6s=
+--6DIS42APz1I=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #4</strong> to the change originally created by d12fk.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by stipa</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">iservice: validate config path case=
--insensitive<br><br>Windows filesystems do not differentiate by case, so we=
- shouldn&#39;t either.<br><br>Reported-by: stephan@...2953...<br>Change-Id:=
- I4d905da3add9b8a3daf349eb1bc830a017cf493d<br>Signed-off-by: Heiko Hund &lt=
-;heiko@...2662...&gt;<br>Acked-by: Lev Stipakov &lt;lstipakov@...277...&gt;=
-<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1362<br>Message-Id: =
-&lt;20251112093911.24196-1-gert@...1296...&gt;<br>URL: https://www.mail-arc=
-hive.com/openvpn-devel@lists.sourceforge.net/msg34340.html<br>Signed-off-by=
-: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpnserv/validate=
-.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1362/4<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.=
-c</span><br><span>index b3189b7..3381503 100644</span><br><span>--- a/src/o=
-penvpnserv/validate.c</span><br><span>+++ b/src/openvpnserv/validate.c</spa=
-n><br><span>@@ -78,7 +78,7 @@</span><br><span>         res =3D PathCchCanon=
-icalize(config_path, _countof(config_path), fname);</span><br><span>     }<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-return res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wc=
-slen(s-&gt;config_dir)) =3D=3D 0;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    return res =3D=3D S_OK &amp;&amp; wcsnicmp(config_path, s=
--&gt;config_dir, wcslen(s-&gt;config_dir)) =3D=3D 0;</span><br><span> }</sp=
-an><br><span> </span><br><span> </span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail"=
->change 1362</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1362?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">iservice: validate config path case-insensitive<=
+br><br>Windows filesystems do not differentiate by case, so we shouldn&#39;=
+t either.<br><br>Reported-by: stephan@...2953...<br>Change-Id: I4d905da3add=
+9b8a3daf349eb1bc830a017cf493d<br>Signed-off-by: Heiko Hund &lt;heiko@...2843...=
+2...&gt;<br>Acked-by: Lev Stipakov &lt;lstipakov@...277...&gt;<br>Gerrit UR=
+L: https://gerrit.openvpn.net/c/openvpn/+/1362<br>Message-Id: &lt;202511120=
+93911.24196-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/open=
+vpn-devel@lists.sourceforge.net/msg34340.html<br>Signed-off-by: Gert Doerin=
+g &lt;gert@...1296...&gt;<br>---<br>M src/openvpnserv/validate.c<br>1 file =
+changed, 1 insertion(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c</sp=
+an><br><span>index b3189b7..3381503 100644</span><br><span>--- a/src/openvp=
+nserv/validate.c</span><br><span>+++ b/src/openvpnserv/validate.c</span><br=
+><span>@@ -78,7 +78,7 @@</span><br><span>         res =3D PathCchCanonicali=
+ze(config_path, _countof(config_path), fname);</span><br><span>     }</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retur=
+n res =3D=3D S_OK &amp;&amp; wcsncmp(config_path, s-&gt;config_dir, wcslen(=
+s-&gt;config_dir)) =3D=3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    return res =3D=3D S_OK &amp;&amp; wcsnicmp(config_path, s-&gt;=
+config_dir, wcslen(s-&gt;config_dir)) =3D=3D 0;</span><br><span> }</span><b=
+r><span> </span><br><span> </span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail">chan=
+ge 1362</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
+itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
+rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1362?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I4d905da3add9b8a3daf349eb1bc=
@@ -152,5 +145,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---yhbQ1ApgJ6s=--
+--6DIS42APz1I=--
 
