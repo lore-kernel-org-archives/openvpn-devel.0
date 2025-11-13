@@ -1,9 +1,16 @@
-From: Ralf Lici <ralf@...2726...>
-Date: Thu, 13 Nov 2025 13:16:31 +0100
-Message-ID: <20251113121631.351053-1-ralf@...2726...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Thu, 13 Nov 2025 14:04:21 +0000
+In-Reply-To: <gerrit.1762958138000.Ia60a393a296f23ac1090d0f2016b5682649ed490@...2715...>
+References: <gerrit.1762958138000.Ia60a393a296f23ac1090d0f2016b5682649ed490@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <90f87508282ba29275ca7039fe493f1dc400a4b0-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn v2] ovpn: consolidate crypto
- allocations in one chunk
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="NT5eXDGzSTQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: remove
+ --opt-verify functionality
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,314 +19,368 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>, Antonio Quartulli <antonio@...515...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Currently ovpn uses three separate dynamically allocated structures to
-set up cryptographic operations for both encryption and decryption. This
-adds overhead to performance-critical paths and contribute to memory
-fragmentation.
+--NT5eXDGzSTQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This commit consolidates those allocations into a single temporary blob,
-similar to what esp_alloc_tmp() does.
+Attention is currently required from: cron2, ordex, plaisthos.
 
-The resulting performance gain is +7.7% and +4.3% for UDP when using AES
-and ChaChaPoly respectively, and +4.3% for TCP.
+Hello cron2, plaisthos,
 
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail
+
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by cron2
+
+
+Change subject: options: remove --opt-verify functionality
+......................................................................
+
+options: remove --opt-verify functionality
+
+As previously agreed, the --opt-verify directive is deprecated
+and can be fully removed as of OpenVPN 2.7.0.
+
+GitHub: closes OpenVPN/openvpn#901
+Change-Id: Ia60a393a296f23ac1090d0f2016b5682649ed490
+Signed-off-by: Antonio Quartulli <antonio@...2726...>
 ---
-Changes since v1:
-- Fixed typo in commit message
-- Adjusted ovpn_aead_crypto_tmp_size comment to follow kdoc style
-- Stored allocated blob in the skb control block immediately after
-  allocation to prevent leakage on failure
+M Changes.rst
+M doc/man-sections/server-options.rst
+M doc/man-sections/unsupported-options.rst
+M src/openvpn/options.c
+M src/openvpn/ssl.c
+M src/openvpn/ssl_common.h
+6 files changed, 10 insertions(+), 28 deletions(-)
 
- drivers/net/ovpn/crypto_aead.c | 155 +++++++++++++++++++++++++--------
- drivers/net/ovpn/io.c          |   8 +-
- drivers/net/ovpn/skb.h         |  13 ++-
- 3 files changed, 131 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
-index cb6cdf8ec317..6b55d2e715bc 100644
---- a/drivers/net/ovpn/crypto_aead.c
-+++ b/drivers/net/ovpn/crypto_aead.c
-@@ -36,6 +36,105 @@ static int ovpn_aead_encap_overhead(const struct ovpn_crypto_key_slot *ks)
- 		crypto_aead_authsize(ks->encrypt);	/* Auth Tag */
- }
- 
-+/**
-+ * ovpn_aead_crypto_tmp_size - compute the size of a temporary object containing
-+ *			       an AEAD request structure with extra space for SG
-+ *			       and IV.
-+ * @tfm: the AEAD cipher handle
-+ * @nfrags: the number of fragments in the skb
-+ *
-+ * This function calculates the size of a contiguous memory block that includes
-+ * the initialization vector (IV), the AEAD request, and an array of scatterlist
-+ * entries. For alignment considerations, the IV is placed first, followed by
-+ * the request, and then the scatterlist.
-+ * Additional alignment is applied according to the requirements of the
-+ * underlying structures.
-+ *
-+ * Return: the size of the temporary memory that needs to be allocated
-+ */
-+static unsigned int ovpn_aead_crypto_tmp_size(struct crypto_aead *tfm,
-+					      const unsigned int nfrags)
-+{
-+	unsigned int len = crypto_aead_ivsize(tfm);
-+
-+	if (likely(len)) {
-+		/* min size for a buffer of ivsize, aligned to alignmask */
-+		len += crypto_aead_alignmask(tfm) &
-+		       ~(crypto_tfm_ctx_alignment() - 1);
-+		/* round up to the next multiple of the crypto ctx alignment */
-+		len = ALIGN(len, crypto_tfm_ctx_alignment());
-+	}
-+
-+	/* reserve space for the AEAD request */
-+	len += sizeof(struct aead_request) + crypto_aead_reqsize(tfm);
-+	/* round up to the next multiple of the scatterlist alignment */
-+	len = ALIGN(len, __alignof__(struct scatterlist));
-+
-+	/* add enough space for nfrags + 2 scatterlist entries */
-+	len += sizeof(struct scatterlist) * (nfrags + 2);
-+	return len;
-+}
-+
-+/**
-+ * ovpn_aead_crypto_tmp_iv - retrieve the pointer to the IV within a temporary
-+ *			     buffer allocated using ovpn_aead_crypto_tmp_size
-+ * @aead: the AEAD cipher handle
-+ * @tmp: a pointer to the beginning of the temporary buffer
-+ *
-+ * This function retrieves a pointer to the initialization vector (IV) in the
-+ * temporary buffer. If the AEAD cipher specifies an IV size, the pointer is
-+ * adjusted using the AEAD's alignment mask to ensure proper alignment.
-+ *
-+ * Returns: a pointer to the IV within the temporary buffer
-+ */
-+static u8 *ovpn_aead_crypto_tmp_iv(struct crypto_aead *aead, void *tmp)
-+{
-+	return likely(crypto_aead_ivsize(aead)) ?
-+		      PTR_ALIGN((u8 *)tmp, crypto_aead_alignmask(aead) + 1) :
-+		      tmp;
-+}
-+
-+/**
-+ * ovpn_aead_crypto_tmp_req - retrieve the pointer to the AEAD request structure
-+ *			      within a temporary buffer allocated using
-+ *			      ovpn_aead_crypto_tmp_size
-+ * @aead: the AEAD cipher handle
-+ * @iv: a pointer to the initialization vector in the temporary buffer
-+ *
-+ * This function computes the location of the AEAD request structure that
-+ * immediately follows the IV in the temporary buffer and it ensures the request
-+ * is aligned to the crypto transform context alignment.
-+ *
-+ * Returns: a pointer to the AEAD request structure
-+ */
-+static struct aead_request *ovpn_aead_crypto_tmp_req(struct crypto_aead *aead,
-+						     const u8 *iv)
-+{
-+	return (void *)PTR_ALIGN(iv + crypto_aead_ivsize(aead),
-+				 crypto_tfm_ctx_alignment());
-+}
-+
-+/**
-+ * ovpn_aead_crypto_req_sg - locate the scatterlist following the AEAD request
-+ *			     within a temporary buffer allocated using
-+ *			     ovpn_aead_crypto_tmp_size
-+ * @aead: the AEAD cipher handle
-+ * @req: a pointer to the AEAD request structure in the temporary buffer
-+ *
-+ * This function computes the starting address of the scatterlist that is
-+ * allocated immediately after the AEAD request structure. It aligns the pointer
-+ * based on the alignment requirements of the scatterlist structure.
-+ *
-+ * Returns: a pointer to the scatterlist
-+ */
-+static struct scatterlist *ovpn_aead_crypto_req_sg(struct crypto_aead *aead,
-+						   struct aead_request *req)
-+{
-+	return (void *)ALIGN((unsigned long)(req + 1) +
-+			     crypto_aead_reqsize(aead),
-+			     __alignof__(struct scatterlist));
-+}
-+
- int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 		      struct sk_buff *skb)
- {
-@@ -45,6 +144,7 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	struct scatterlist *sg;
- 	int nfrags, ret;
- 	u32 pktid, op;
-+	void *tmp;
- 	u8 *iv;
- 
- 	ovpn_skb_cb(skb)->peer = peer;
-@@ -71,13 +171,17 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
- 		return -ENOSPC;
- 
--	/* sg may be required by async crypto */
--	ovpn_skb_cb(skb)->sg = kmalloc(sizeof(*ovpn_skb_cb(skb)->sg) *
--				       (nfrags + 2), GFP_ATOMIC);
--	if (unlikely(!ovpn_skb_cb(skb)->sg))
-+	/* allocate temporary memory for iv, sg and req */
-+	tmp = kmalloc(ovpn_aead_crypto_tmp_size(ks->encrypt, nfrags),
-+		      GFP_ATOMIC);
-+	if (unlikely(!tmp))
- 		return -ENOMEM;
- 
--	sg = ovpn_skb_cb(skb)->sg;
-+	ovpn_skb_cb(skb)->crypto_tmp = tmp;
-+
-+	iv = ovpn_aead_crypto_tmp_iv(ks->encrypt, tmp);
-+	req = ovpn_aead_crypto_tmp_req(ks->encrypt, iv);
-+	sg = ovpn_aead_crypto_req_sg(ks->encrypt, req);
- 
- 	/* sg table:
- 	 * 0: op, wire nonce (AD, len=OVPN_OP_SIZE_V2+OVPN_NONCE_WIRE_SIZE),
-@@ -105,13 +209,6 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	if (unlikely(ret < 0))
- 		return ret;
- 
--	/* iv may be required by async crypto */
--	ovpn_skb_cb(skb)->iv = kmalloc(OVPN_NONCE_SIZE, GFP_ATOMIC);
--	if (unlikely(!ovpn_skb_cb(skb)->iv))
--		return -ENOMEM;
--
--	iv = ovpn_skb_cb(skb)->iv;
--
- 	/* concat 4 bytes packet id and 8 bytes nonce tail into 12 bytes
- 	 * nonce
- 	 */
-@@ -130,12 +227,6 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	/* AEAD Additional data */
- 	sg_set_buf(sg, skb->data, OVPN_AAD_SIZE);
- 
--	req = aead_request_alloc(ks->encrypt, GFP_ATOMIC);
--	if (unlikely(!req))
--		return -ENOMEM;
--
--	ovpn_skb_cb(skb)->req = req;
--
- 	/* setup async crypto operation */
- 	aead_request_set_tfm(req, ks->encrypt);
- 	aead_request_set_callback(req, 0, ovpn_encrypt_post, skb);
-@@ -156,6 +247,7 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	struct aead_request *req;
- 	struct sk_buff *trailer;
- 	struct scatterlist *sg;
-+	void *tmp;
- 	u8 *iv;
- 
- 	payload_offset = OVPN_AAD_SIZE + tag_size;
-@@ -184,13 +276,17 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
- 		return -ENOSPC;
- 
--	/* sg may be required by async crypto */
--	ovpn_skb_cb(skb)->sg = kmalloc(sizeof(*ovpn_skb_cb(skb)->sg) *
--				       (nfrags + 2), GFP_ATOMIC);
--	if (unlikely(!ovpn_skb_cb(skb)->sg))
-+	/* allocate temporary memory for iv, sg and req */
-+	tmp = kmalloc(ovpn_aead_crypto_tmp_size(ks->decrypt, nfrags),
-+		      GFP_ATOMIC);
-+	if (unlikely(!tmp))
- 		return -ENOMEM;
- 
--	sg = ovpn_skb_cb(skb)->sg;
-+	ovpn_skb_cb(skb)->crypto_tmp = tmp;
-+
-+	iv = ovpn_aead_crypto_tmp_iv(ks->decrypt, tmp);
-+	req = ovpn_aead_crypto_tmp_req(ks->decrypt, iv);
-+	sg = ovpn_aead_crypto_req_sg(ks->decrypt, req);
- 
- 	/* sg table:
- 	 * 0: op, wire nonce (AD, len=OVPN_OPCODE_SIZE+OVPN_NONCE_WIRE_SIZE),
-@@ -213,24 +309,11 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	/* append auth_tag onto scatterlist */
- 	sg_set_buf(sg + ret + 1, skb->data + OVPN_AAD_SIZE, tag_size);
- 
--	/* iv may be required by async crypto */
--	ovpn_skb_cb(skb)->iv = kmalloc(OVPN_NONCE_SIZE, GFP_ATOMIC);
--	if (unlikely(!ovpn_skb_cb(skb)->iv))
--		return -ENOMEM;
--
--	iv = ovpn_skb_cb(skb)->iv;
--
- 	/* copy nonce into IV buffer */
- 	memcpy(iv, skb->data + OVPN_OPCODE_SIZE, OVPN_NONCE_WIRE_SIZE);
- 	memcpy(iv + OVPN_NONCE_WIRE_SIZE, ks->nonce_tail_recv,
- 	       OVPN_NONCE_TAIL_SIZE);
- 
--	req = aead_request_alloc(ks->decrypt, GFP_ATOMIC);
--	if (unlikely(!req))
--		return -ENOMEM;
--
--	ovpn_skb_cb(skb)->req = req;
--
- 	/* setup async crypto operation */
- 	aead_request_set_tfm(req, ks->decrypt);
- 	aead_request_set_callback(req, 0, ovpn_decrypt_post, skb);
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index 3e9e7f8444b3..2721ee8268b2 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -119,9 +119,7 @@ void ovpn_decrypt_post(void *data, int ret)
- 	peer = ovpn_skb_cb(skb)->peer;
- 
- 	/* crypto is done, cleanup skb CB and its members */
--	kfree(ovpn_skb_cb(skb)->iv);
--	kfree(ovpn_skb_cb(skb)->sg);
--	aead_request_free(ovpn_skb_cb(skb)->req);
-+	kfree(ovpn_skb_cb(skb)->crypto_tmp);
- 
- 	if (unlikely(ret < 0))
- 		goto drop;
-@@ -248,9 +246,7 @@ void ovpn_encrypt_post(void *data, int ret)
- 	peer = ovpn_skb_cb(skb)->peer;
- 
- 	/* crypto is done, cleanup skb CB and its members */
--	kfree(ovpn_skb_cb(skb)->iv);
--	kfree(ovpn_skb_cb(skb)->sg);
--	aead_request_free(ovpn_skb_cb(skb)->req);
-+	kfree(ovpn_skb_cb(skb)->crypto_tmp);
- 
- 	if (unlikely(ret == -ERANGE)) {
- 		/* we ran out of IVs and we must kill the key as it can't be
-diff --git a/drivers/net/ovpn/skb.h b/drivers/net/ovpn/skb.h
-index 64430880f1da..4fb7ea025426 100644
---- a/drivers/net/ovpn/skb.h
-+++ b/drivers/net/ovpn/skb.h
-@@ -18,12 +18,19 @@
- #include <linux/socket.h>
- #include <linux/types.h>
- 
-+/**
-+ * struct ovpn_cb - ovpn skb control block
-+ * @peer: the peer this skb was received from/sent to
-+ * @ks: the crypto key slot used to encrypt/decrypt this skb
-+ * @crypto_tmp: pointer to temporary memory used for crypto operations
-+ *		containing the IV, the scatter gather list and the aead request
-+ * @payload_offset: offset in the skb where the payload starts
-+ * @nosignal: whether this skb should be sent with the MSG_NOSIGNAL flag (TCP)
-+ */
- struct ovpn_cb {
- 	struct ovpn_peer *peer;
- 	struct ovpn_crypto_key_slot *ks;
--	struct aead_request *req;
--	struct scatterlist *sg;
--	u8 *iv;
-+	void *crypto_tmp;
- 	unsigned int payload_offset;
- 	bool nosignal;
- };
--- 
-2.51.1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/1375/2
 
+diff --git a/Changes.rst b/Changes.rst
+index 8bdb2b0..457d3a7 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -236,6 +236,9 @@
+ ``--reneg-bytes`` and ``--reneg-packets`` do not work in DCO mode, and will
+     now print an appropriate warning.
+
++``--opt-verify`` feature removed
++    This option was already deprecated and it is now being converted to a
++    no-op. Using this option will only print a warning.
+
+ User-visible Changes
+ --------------------
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
+options.rst
+index ade4d41..5243a06 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -413,19 +413,6 @@
+   Note that this directive affects OpenVPN's internal routing table, not
+   the kernel routing table.
+
+---opt-verify
+-  **DEPRECATED** Clients that connect with options that are incompatible w=
+ith
+-  those of the server will be disconnected.
+-
+-  Options that will be compared for compatibility include ``dev-type``,
+-  ``link-mtu``, ``tun-mtu``, ``proto``, ``ifconfig``,
+-  ``comp-lzo``, ``fragment``, ``keydir``, ``cipher``,
+-  ``auth``, ``keysize``,
+-  ``tls-auth``, ``key-method``, ``tls-server``
+-  and ``tls-client``.
+-
+-  This option requires that ``--disable-occ`` NOT be used.
+-
+ --override-username username
+   Sets the username of a connection to the specified username.  This usern=
+ame
+   will also be used by ``--auth-gen-token``. However, the overridden
+diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/un=
+supported-options.rst
+index 11467ca..e8e76eb 100644
+--- a/doc/man-sections/unsupported-options.rst
++++ b/doc/man-sections/unsupported-options.rst
+@@ -44,4 +44,8 @@
+   Removed in OpenVPN 2.6.  We now always use the PRNG of the SSL library.
+
+ --persist-key
+-  Ignored since OpenVPN 2.7. Keys are now always persisted across restarts.
+\ No newline at end of file
++  Ignored since OpenVPN 2.7. Keys are now always persisted across restarts.
++
++--opt-verify
++  Removed in OpenVPN 2.7.  This option does not make sense anymore as opti=
+on
++  strings may not match due to the introduction of parameters negotiation.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ecf9374..683543a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -472,8 +472,6 @@
+     "                  OTP based two-factor auth mechanisms are in use and=
+\n"
+     "                  --reneg-* options are enabled. Optionally a lifetim=
+e in seconds\n"
+     "                  for generated tokens can be set.\n"
+-    "--opt-verify    : (DEPRECATED) Clients that connect with options that=
+ are incompatible\n"
+-    "                  with those of the server will be disconnected.\n"
+     "--auth-user-pass-optional : Allow connections by clients that don't\n"
+     "                  specify a username/password.\n"
+     "--no-name-remapping : (DEPRECATED) Allow Common Name and X509 Subject=
+ to include\n"
+@@ -2666,7 +2664,6 @@
+                       "verify-client-cert");
+         MUST_BE_FALSE(options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME, "=
+username-as-common-name");
+         MUST_BE_FALSE(options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL, "=
+auth-user-pass-optional");
+-        MUST_BE_FALSE(options->ssl_flags & SSLF_OPT_VERIFY, "opt-verify");
+         if (options->server_flags & SF_TCP_NODELAY_HELPER)
+         {
+             msg(M_WARN, "WARNING: setting tcp-nodelay on the client side w=
+ill not "
+@@ -7450,9 +7447,7 @@
+     else if (streq(p[0], "opt-verify") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        msg(M_INFO, "DEPRECATION: opt-verify is deprecated and will be rem=
+oved "
+-                    "in OpenVPN 2.7");
+-        options->ssl_flags |=3D SSLF_OPT_VERIFY;
++        msg(M_INFO, "DEPRECATED OPTION: --opt-verify was removed in OpenVP=
+N 2.7.");
+     }
+     else if (streq(p[0], "auth-user-pass-verify") && p[1])
+     {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index d7f55dd..896fd65 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2334,13 +2334,6 @@
+ #endif
+
+         options_warning(options, remote_options);
+-
+-        if (session->opt->ssl_flags & SSLF_OPT_VERIFY)
+-        {
+-            msg(D_TLS_ERRORS,
+-                "Option inconsistency warnings triggering disconnect due t=
+o --opt-verify");
+-            ks->authenticated =3D KS_AUTH_FALSE;
+-        }
+     }
+
+     buf_clear(buf);
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index de89d30..23da8cf 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -425,7 +425,7 @@
+ #define SSLF_CLIENT_CERT_OPTIONAL     (1u << 1)
+ #define SSLF_USERNAME_AS_COMMON_NAME  (1u << 2)
+ #define SSLF_AUTH_USER_PASS_OPTIONAL  (1u << 3)
+-#define SSLF_OPT_VERIFY               (1u << 4)
++/* (1u << 4) free for usage */
+ #define SSLF_CRL_VERIFY_DIR           (1u << 5)
+ #define SSLF_TLS_VERSION_MIN_SHIFT    6
+ #define SSLF_TLS_VERSION_MIN_MASK     0xFu /* (uses bit positions 6 to 9) =
+*/
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia60a393a296f23ac1090d0f2016b5682649ed490
+Gerrit-Change-Number: 1375
+Gerrit-PatchSet: 2
+Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: ordex <antonio@...2726...>
+
+--NT5eXDGzSTQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: cron2, ordex, plaisthos. </p>
+<p>ordex <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1375?usp=3Demail">View Change</=
+a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">options: remove --opt-verify functi=
+onality<br><br>As previously agreed, the --opt-verify directive is deprecat=
+ed<br>and can be fully removed as of OpenVPN 2.7.0.<br><br>GitHub: closes O=
+penVPN/openvpn#901<br>Change-Id: Ia60a393a296f23ac1090d0f2016b5682649ed490<=
+br>Signed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M =
+Changes.rst<br>M doc/man-sections/server-options.rst<br>M doc/man-sections/=
+unsupported-options.rst<br>M src/openvpn/options.c<br>M src/openvpn/ssl.c<b=
+r>M src/openvpn/ssl_common.h<br>6 files changed, 10 insertions(+), 28 delet=
+ions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
+openvpn refs/changes/75/1375/2</pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Changes.r=
+st</span><br><span>index 8bdb2b0..457d3a7 100644</span><br><span>--- a/Chan=
+ges.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -236,6 +236,9 =
+@@</span><br><span> ``--reneg-bytes`` and ``--reneg-packets`` do not work i=
+n DCO mode, and will</span><br><span>     now print an appropriate warning.=
+</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+`=
+`--opt-verify`` feature removed</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    This option was already deprecated and it is now being conv=
+erted to a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    no-op=
+. Using this option will only print a warning.</span><br><span> </span><br>=
+<span> User-visible Changes</span><br><span> --------------------</span><br=
+><span>diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/=
+server-options.rst</span><br><span>index ade4d41..5243a06 100644</span><br>=
+<span>--- a/doc/man-sections/server-options.rst</span><br><span>+++ b/doc/m=
+an-sections/server-options.rst</span><br><span>@@ -413,19 +413,6 @@</span><=
+br><span>   Note that this directive affects OpenVPN&#39;s internal routing=
+ table, not</span><br><span>   the kernel routing table.</span><br><span> <=
+/span><br><span>---opt-verify</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  **DEPRECATED** Clients that connect with options that are incompa=
+tible with</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  those of =
+the server will be disconnected.</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Options =
+that will be compared for compatibility include ``dev-type``,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  ``link-mtu``, ``tun-mtu``, ``prot=
+o``, ``ifconfig``,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  `=
+`comp-lzo``, ``fragment``, ``keydir``, ``cipher``,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-  ``auth``, ``keysize``,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  ``tls-auth``, ``key-method``, ``tls-serve=
+r``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  and ``tls-client=
+``.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  This option requires that ``--disable=
+-occ`` NOT be used.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span> --override-username username</span><br><span>   Sets the us=
+ername of a connection to the specified username.  This username</span><br>=
+<span>   will also be used by ``--auth-gen-token``. However, the overridden=
+</span><br><span>diff --git a/doc/man-sections/unsupported-options.rst b/do=
+c/man-sections/unsupported-options.rst</span><br><span>index 11467ca..e8e76=
+eb 100644</span><br><span>--- a/doc/man-sections/unsupported-options.rst</s=
+pan><br><span>+++ b/doc/man-sections/unsupported-options.rst</span><br><spa=
+n>@@ -44,4 +44,8 @@</span><br><span>   Removed in OpenVPN 2.6.  We now alwa=
+ys use the PRNG of the SSL library.</span><br><span> </span><br><span> --pe=
+rsist-key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Ignored si=
+nce OpenVPN 2.7. Keys are now always persisted across restarts.</span><br><=
+span>\ No newline at end of file</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  Ignored since OpenVPN 2.7. Keys are now always persisted acr=
+oss restarts.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+--opt-verify</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  Removed in OpenVPN 2.7.  This =
+option does not make sense anymore as option</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  strings may not match due to the introduction of=
+ parameters negotiation.</span><br><span>diff --git a/src/openvpn/options.c=
+ b/src/openvpn/options.c</span><br><span>index ecf9374..683543a 100644</spa=
+n><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/o=
+ptions.c</span><br><span>@@ -472,8 +472,6 @@</span><br><span>     &quot;   =
+               OTP based two-factor auth mechanisms are in use and\n&quot;<=
+/span><br><span>     &quot;                  --reneg-* options are enabled.=
+ Optionally a lifetime in seconds\n&quot;</span><br><span>     &quot;      =
+            for generated tokens can be set.\n&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &quot;--opt-verify    : (DEPRECATED) Cl=
+ients that connect with options that are incompatible\n&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &quot;                  with th=
+ose of the server will be disconnected.\n&quot;</span><br><span>     &quot;=
+--auth-user-pass-optional : Allow connections by clients that don&#39;t\n&q=
+uot;</span><br><span>     &quot;                  specify a username/passwo=
+rd.\n&quot;</span><br><span>     &quot;--no-name-remapping : (DEPRECATED) A=
+llow Common Name and X509 Subject to include\n&quot;</span><br><span>@@ -26=
+66,7 +2664,6 @@</span><br><span>                       &quot;verify-client-=
+cert&quot;);</span><br><span>         MUST_BE_FALSE(options-&gt;ssl_flags &=
+amp; SSLF_USERNAME_AS_COMMON_NAME, &quot;username-as-common-name&quot;);</s=
+pan><br><span>         MUST_BE_FALSE(options-&gt;ssl_flags &amp; SSLF_AUTH_=
+USER_PASS_OPTIONAL, &quot;auth-user-pass-optional&quot;);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        MUST_BE_FALSE(options-&gt;ssl_f=
+lags &amp; SSLF_OPT_VERIFY, &quot;opt-verify&quot;);</span><br><span>      =
+   if (options-&gt;server_flags &amp; SF_TCP_NODELAY_HELPER)</span><br><spa=
+n>         {</span><br><span>             msg(M_WARN, &quot;WARNING: settin=
+g tcp-nodelay on the client side will not &quot;</span><br><span>@@ -7450,9=
+ +7447,7 @@</span><br><span>     else if (streq(p[0], &quot;opt-verify&quot=
+;) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>         VERIFY=
+_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        msg(M_INFO, &quot;DEPRECATION: opt-verify is deprecated and w=
+ill be removed &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                    &quot;in OpenVPN 2.7&quot;);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        options-&gt;ssl_flags |=3D SSLF_OPT_VERI=
+FY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_IN=
+FO, &quot;DEPRECATED OPTION: --opt-verify was removed in OpenVPN 2.7.&quot;=
+);</span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;a=
+uth-user-pass-verify&quot;) &amp;&amp; p[1])</span><br><span>     {</span><=
+br><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span=
+>index d7f55dd..896fd65 100644</span><br><span>--- a/src/openvpn/ssl.c</spa=
+n><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -2334,13 +2334,6 @@<=
+/span><br><span> #endif</span><br><span> </span><br><span>         options_=
+warning(options, remote_options);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
+f (session-&gt;opt-&gt;ssl_flags &amp; SSLF_OPT_VERIFY)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            msg(D_TLS_ERRORS,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                &quot;Option inconsistency =
+warnings triggering disconnect due to --opt-verify&quot;);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            ks-&gt;authenticated =3D K=
+S_AUTH_FALSE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+}</span><br><span>     }</span><br><span> </span><br><span>     buf_clear(b=
+uf);</span><br><span>diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ss=
+l_common.h</span><br><span>index de89d30..23da8cf 100644</span><br><span>--=
+- a/src/openvpn/ssl_common.h</span><br><span>+++ b/src/openvpn/ssl_common.h=
+</span><br><span>@@ -425,7 +425,7 @@</span><br><span> #define SSLF_CLIENT_C=
+ERT_OPTIONAL     (1u &lt;&lt; 1)</span><br><span> #define SSLF_USERNAME_AS_=
+COMMON_NAME  (1u &lt;&lt; 2)</span><br><span> #define SSLF_AUTH_USER_PASS_O=
+PTIONAL  (1u &lt;&lt; 3)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#define SSLF_OPT_VERIFY               (1u &lt;&lt; 4)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+/* (1u &lt;&lt; 4) free for usage */</=
+span><br><span> #define SSLF_CRL_VERIFY_DIR           (1u &lt;&lt; 5)</span=
+><br><span> #define SSLF_TLS_VERSION_MIN_SHIFT    6</span><br><span> #defin=
+e SSLF_TLS_VERSION_MIN_MASK     0xFu /* (uses bit positions 6 to 9) */</spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1375?usp=3Demail">change 1375</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1375?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia60a393a296f23ac1090d0f2016=
+b5682649ed490 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1375 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
+
+</body></html>=
+
+--NT5eXDGzSTQ=--
 
