@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Nov 2025 11:37:53 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 14 Nov 2025 12:50:22 +0100
+Message-ID: <20251114115029.17432-1-gert@...1296...>
 In-Reply-To: <gerrit.1763112271000.I8a0a8029da02fc63adc918e8d98e9f676ff4ea0d@...2715...>
 References: <gerrit.1763112271000.I8a0a8029da02fc63adc918e8d98e9f676ff4ea0d@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <633f05732e56da051d81953beff6d0fca5057c9d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w6d18bBznGg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: recursive routing:
- fixes and clean-ups
+Subject: [Openvpn-devel] [PATCH v2] recursive routing: fixes and clean-ups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---w6d18bBznGg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: plaisthos, stipa.
+ - get rid of atoi() for getting the remote transport port.
+ It doesn't change, so no point to do in on every packet.
+ In addition, atoi() breaks when we use service names as ports.
 
-flichtenheld has posted comments on this change by stipa. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1377?usp=3Demail )
+ - ensure we correctly handle IPv4 headers with options
 
-Change subject: recursive routing: fixes and clean-ups
-......................................................................
+ - directly use buf parameter in place of c->c2.buf
 
+GitHub: #902
 
-Patch Set 2: Code-Review+2
+Change-Id: I8a0a8029da02fc63adc918e8d98e9f676ff4ea0d
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1377
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1377?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1377
+This mail reflects revision 2 of this Change.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8a0a8029da02fc63adc918e8d98e9f676ff4ea0d
-Gerrit-Change-Number: 1377
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Fri, 14 Nov 2025 11:37:53 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
---w6d18bBznGg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos, stipa. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1377?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1377?usp=3Demail=
-">change 1377</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1377?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8a0a8029da02fc63adc918e8d98=
-e9f676ff4ea0d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1377 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 14 Nov 2025 11:37:53=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---w6d18bBznGg=--
+        
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index aa1f858..90e52d2 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1382,15 +1382,24 @@
+ 
+     struct openvpn_sockaddr *link_addr = &c->c2.to_link_addr->dest;
+     struct link_socket_info *lsi = get_link_socket_info(c);
+-    uint16_t link_port = atoi(c->c2.link_sockets[0]->remote_port);
+ 
+     int ip_hdr_offset = 0;
+-    int tun_ip_ver = get_tun_ip_ver(TUNNEL_TYPE(c->c1.tuntap), &c->c2.buf, &ip_hdr_offset);
++    int tun_ip_ver = get_tun_ip_ver(TUNNEL_TYPE(c->c1.tuntap), buf, &ip_hdr_offset);
+ 
+     if (tun_ip_ver == 4)
+     {
+-        /* make sure we got whole IP header and TCP/UDP src/dst ports */
+-        if (BLEN(buf) < ((int)sizeof(struct openvpn_iphdr) + ip_hdr_offset + sizeof(uint16_t) * 2))
++        /* Ensure we can safely read the IPv4 header */
++        const int min_ip_header = ip_hdr_offset + sizeof(struct openvpn_iphdr);
++        if (BLEN(buf) < min_ip_header)
++        {
++            return;
++        }
++
++        struct openvpn_iphdr *pip = (struct openvpn_iphdr *)(BPTR(buf) + ip_hdr_offset);
++        const int ip_hlen = OPENVPN_IPH_GET_LEN(pip->version_len);
++        /* Reject malformed or truncated headers */
++        if (ip_hlen < sizeof(struct openvpn_iphdr)
++            || BLEN(buf) < (int)(ip_hdr_offset + ip_hlen + sizeof(uint16_t) * 2))
+         {
+             return;
+         }
+@@ -1401,8 +1410,6 @@
+             return;
+         }
+ 
+-        struct openvpn_iphdr *pip = (struct openvpn_iphdr *)(BPTR(buf) + ip_hdr_offset);
+-
+         /* skip if tun protocol doesn't match link protocol */
+         if ((lsi->proto == PROTO_TCP && pip->protocol != OPENVPN_IPPROTO_TCP)
+             || (lsi->proto == PROTO_UDP && pip->protocol != OPENVPN_IPPROTO_UDP))
+@@ -1410,9 +1417,10 @@
+             return;
+         }
+ 
+-
+         /* drop packets with same dest addr and port as remote */
+-        uint8_t *l4_hdr = (uint8_t *)pip + sizeof(struct openvpn_iphdr);
++        uint8_t *l4_hdr = (uint8_t *)pip + ip_hlen;
++
++        uint16_t link_port = ntohs(link_addr->addr.in4.sin_port);
+ 
+         /* TCP and UDP ports are at the same place in the header, and other protocols
+          * can not happen here due to the lsi->proto check above */
+@@ -1420,7 +1428,7 @@
+         uint16_t dst_port = ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t)));
+         if ((memcmp(&link_addr->addr.in4.sin_addr.s_addr, &pip->daddr, sizeof(pip->daddr)) == 0) && (link_port == dst_port))
+         {
+-            c->c2.buf.len = 0;
++            buf->len = 0;
+ 
+             struct gc_arena gc = gc_new();
+             msg(D_LOW, "Recursive routing detected, packet dropped %s:%" PRIu16 " -> %s",
+@@ -1433,7 +1441,8 @@
+     else if (tun_ip_ver == 6)
+     {
+         /* make sure we got whole IPv6 header and TCP/UDP src/dst ports */
+-        if (BLEN(buf) < ((int)sizeof(struct openvpn_ipv6hdr) + ip_hdr_offset + sizeof(uint16_t) * 2))
++        const int min_ipv6 = ip_hdr_offset + sizeof(struct openvpn_ipv6hdr) + sizeof(uint16_t) * 2;
++        if (BLEN(buf) < min_ipv6)
+         {
+             return;
+         }
+@@ -1453,13 +1462,15 @@
+             return;
+         }
+ 
++        uint16_t link_port = ntohs(link_addr->addr.in6.sin6_port);
++
+         /* drop packets with same dest addr and port as remote */
+         uint8_t *l4_hdr = (uint8_t *)pip6 + sizeof(struct openvpn_ipv6hdr);
+         uint16_t src_port = ntohs(*(uint16_t *)l4_hdr);
+         uint16_t dst_port = ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t)));
+         if ((OPENVPN_IN6_ARE_ADDR_EQUAL(&link_addr->addr.in6.sin6_addr, &pip6->daddr)) && (link_port == dst_port))
+         {
+-            c->c2.buf.len = 0;
++            buf->len = 0;
+ 
+             struct gc_arena gc = gc_new();
+             msg(D_LOW, "Recursive routing detected, packet dropped %s:%" PRIu16 " -> %s",
 
