@@ -1,9 +1,9 @@
 From: Ralf Lici <ralf@...2726...>
-Date: Fri, 14 Nov 2025 11:39:40 +0100
-Message-ID: <20251114103940.238076-1-ralf@...2726...>
+Date: Fri, 14 Nov 2025 11:40:29 +0100
+Message-ID: <20251114104029.239065-1-ralf@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn v2] ovpn: notify userspace on client
- float event
+Subject: [Openvpn-devel] [PATCH ovpn v3] ovpn: consolidate crypto
+ allocations in one chunk
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,187 +17,326 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>, Antonio Quartulli <antonio@...515...>
 
-Send a netlink notification when a client updates its remote UDP
-endpoint. The notification includes the new IP address, port, and scope
-ID (for IPv6).
+Currently ovpn uses three separate dynamically allocated structures to
+set up cryptographic operations for both encryption and decryption. This
+adds overhead to performance-critical paths and contribute to memory
+fragmentation.
+
+This commit consolidates those allocations into a single temporary blob,
+similar to what esp_alloc_tmp() does.
+
+The resulting performance gain is +7.7% and +4.3% for UDP when using AES
+and ChaChaPoly respectively, and +4.3% for TCP.
 
 Signed-off-by: Ralf Lici <ralf@...2726...>
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
+Changes since v2:
+- Replaced manual multiplication with array_size() helper
+- Made ovpn_aead_crypto_tmp_size() less generic by asserting that IV
+  size equals OVPN_NONCE_SIZE
+
 Changes since v1:
-- correctly set return value for unsupported AF in
-  ovpn_nl_peer_float_notify
+- Fixed typo in commit message
+- Adjusted ovpn_aead_crypto_tmp_size comment to follow kdoc style
+- Stored allocated blob in the skb control block immediately after
+  allocation to prevent leakage on failure
+- Removed 'inline' from function declarations in crypto_aead.c
 
- Documentation/netlink/specs/ovpn.yaml       |  6 ++
- drivers/net/ovpn/netlink.c                  | 82 +++++++++++++++++++++
- drivers/net/ovpn/netlink.h                  |  2 +
- drivers/net/ovpn/peer.c                     |  2 +
- include/uapi/linux/ovpn.h                   |  1 +
- tools/testing/selftests/net/ovpn/ovpn-cli.c |  3 +
- 6 files changed, 96 insertions(+)
+ drivers/net/ovpn/crypto_aead.c | 160 +++++++++++++++++++++++++--------
+ drivers/net/ovpn/io.c          |   8 +-
+ drivers/net/ovpn/skb.h         |  13 ++-
+ 3 files changed, 135 insertions(+), 46 deletions(-)
 
-diff --git a/Documentation/netlink/specs/ovpn.yaml b/Documentation/netlink/specs/ovpn.yaml
-index 1b91045cee2e..0d0c028bf96f 100644
---- a/Documentation/netlink/specs/ovpn.yaml
-+++ b/Documentation/netlink/specs/ovpn.yaml
-@@ -502,6 +502,12 @@ operations:
-             - ifindex
-             - keyconf
- 
-+    -
-+      name: peer-float-ntf
-+      doc: Notification about a peer floating (changing its remote UDP endpoint)
-+      notify: peer-get
-+      mcgrp: peers
-+
- mcast-groups:
-   list:
-     -
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index fed0e46b32a3..3db056f4cd0a 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -1203,6 +1203,88 @@ int ovpn_nl_peer_del_notify(struct ovpn_peer *peer)
- 	return ret;
+diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
+index cb6cdf8ec317..cd723140c8d0 100644
+--- a/drivers/net/ovpn/crypto_aead.c
++++ b/drivers/net/ovpn/crypto_aead.c
+@@ -36,6 +36,104 @@ static int ovpn_aead_encap_overhead(const struct ovpn_crypto_key_slot *ks)
+ 		crypto_aead_authsize(ks->encrypt);	/* Auth Tag */
  }
  
 +/**
-+ * ovpn_nl_float_peer_notify - notify userspace about peer floating
-+ * @peer: the floated peer
-+ * @ss: sockaddr representing the new remote endpoint
++ * ovpn_aead_crypto_tmp_size - compute the size of a temporary object containing
++ *			       an AEAD request structure with extra space for SG
++ *			       and IV.
++ * @tfm: the AEAD cipher handle
++ * @nfrags: the number of fragments in the skb
 + *
-+ * Return: 0 on success or a negative error code otherwise
++ * This function calculates the size of a contiguous memory block that includes
++ * the initialization vector (IV), the AEAD request, and an array of scatterlist
++ * entries. For alignment considerations, the IV is placed first, followed by
++ * the request, and then the scatterlist.
++ * Additional alignment is applied according to the requirements of the
++ * underlying structures.
++ *
++ * Return: the size of the temporary memory that needs to be allocated
 + */
-+int ovpn_nl_peer_float_notify(struct ovpn_peer *peer,
-+			      const struct sockaddr_storage *ss)
++static unsigned int ovpn_aead_crypto_tmp_size(struct crypto_aead *tfm,
++					      const unsigned int nfrags)
 +{
-+	struct ovpn_socket *sock;
-+	struct sockaddr_in6 *sa6;
-+	struct sockaddr_in *sa;
-+	struct sk_buff *msg;
-+	struct nlattr *attr;
-+	int ret = -EMSGSIZE;
-+	void *hdr;
++	unsigned int len = OVPN_NONCE_SIZE;
 +
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
-+	if (!msg)
-+		return -ENOMEM;
++	DEBUG_NET_WARN_ON_ONCE(OVPN_NONCE_SIZE != crypto_aead_ivsize(tfm));
 +
-+	hdr = genlmsg_put(msg, 0, 0, &ovpn_nl_family, 0,
-+			  OVPN_CMD_PEER_FLOAT_NTF);
-+	if (!hdr) {
-+		ret = -ENOBUFS;
-+		goto err_free_msg;
-+	}
++	/* min size for a buffer of ivsize, aligned to alignmask */
++	len += crypto_aead_alignmask(tfm) & ~(crypto_tfm_ctx_alignment() - 1);
++	/* round up to the next multiple of the crypto ctx alignment */
++	len = ALIGN(len, crypto_tfm_ctx_alignment());
 +
-+	if (nla_put_u32(msg, OVPN_A_IFINDEX, peer->ovpn->dev->ifindex))
-+		goto err_cancel_msg;
++	/* reserve space for the AEAD request */
++	len += sizeof(struct aead_request) + crypto_aead_reqsize(tfm);
++	/* round up to the next multiple of the scatterlist alignment */
++	len = ALIGN(len, __alignof__(struct scatterlist));
 +
-+	attr = nla_nest_start(msg, OVPN_A_PEER);
-+	if (!attr)
-+		goto err_cancel_msg;
-+
-+	if (nla_put_u32(msg, OVPN_A_PEER_ID, peer->id))
-+		goto err_cancel_msg;
-+
-+	if (ss->ss_family == AF_INET) {
-+		sa = (struct sockaddr_in *)ss;
-+		if (nla_put_in_addr(msg, OVPN_A_PEER_REMOTE_IPV4,
-+				    sa->sin_addr.s_addr) ||
-+		    nla_put_net16(msg, OVPN_A_PEER_REMOTE_PORT, sa->sin_port))
-+			goto err_cancel_msg;
-+	} else if (ss->ss_family == AF_INET6) {
-+		sa6 = (struct sockaddr_in6 *)ss;
-+		if (nla_put_in6_addr(msg, OVPN_A_PEER_REMOTE_IPV6,
-+				     &sa6->sin6_addr) ||
-+		    nla_put_u32(msg, OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID,
-+				sa6->sin6_scope_id) ||
-+		    nla_put_net16(msg, OVPN_A_PEER_REMOTE_PORT, sa6->sin6_port))
-+			goto err_cancel_msg;
-+	} else {
-+		ret = -EAFNOSUPPORT;
-+		goto err_cancel_msg;
-+	}
-+
-+	nla_nest_end(msg, attr);
-+	genlmsg_end(msg, hdr);
-+
-+	rcu_read_lock();
-+	sock = rcu_dereference(peer->sock);
-+	if (!sock) {
-+		ret = -EINVAL;
-+		goto err_unlock;
-+	}
-+	genlmsg_multicast_netns(&ovpn_nl_family, sock_net(sock->sk), msg,
-+				0, OVPN_NLGRP_PEERS, GFP_ATOMIC);
-+	rcu_read_unlock();
-+
-+	return 0;
-+
-+err_unlock:
-+	rcu_read_unlock();
-+err_cancel_msg:
-+	genlmsg_cancel(msg, hdr);
-+err_free_msg:
-+	nlmsg_free(msg);
-+	return ret;
++	/* add enough space for nfrags + 2 scatterlist entries */
++	len += array_size(sizeof(struct scatterlist), nfrags + 2);
++	return len;
 +}
 +
- /**
-  * ovpn_nl_key_swap_notify - notify userspace peer's key must be renewed
-  * @peer: the peer whose key needs to be renewed
-diff --git a/drivers/net/ovpn/netlink.h b/drivers/net/ovpn/netlink.h
-index 8615dfc3c472..11ee7c681885 100644
---- a/drivers/net/ovpn/netlink.h
-+++ b/drivers/net/ovpn/netlink.h
-@@ -13,6 +13,8 @@ int ovpn_nl_register(void);
- void ovpn_nl_unregister(void);
- 
- int ovpn_nl_peer_del_notify(struct ovpn_peer *peer);
-+int ovpn_nl_peer_float_notify(struct ovpn_peer *peer,
-+			      const struct sockaddr_storage *ss);
- int ovpn_nl_key_swap_notify(struct ovpn_peer *peer, u8 key_id);
- 
- #endif /* _NET_OVPN_NETLINK_H_ */
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index 4bfcab0c8652..9ad50f1ac2c3 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -287,6 +287,8 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 
- 	spin_unlock_bh(&peer->lock);
- 
-+	ovpn_nl_peer_float_notify(peer, &ss);
++/**
++ * ovpn_aead_crypto_tmp_iv - retrieve the pointer to the IV within a temporary
++ *			     buffer allocated using ovpn_aead_crypto_tmp_size
++ * @aead: the AEAD cipher handle
++ * @tmp: a pointer to the beginning of the temporary buffer
++ *
++ * This function retrieves a pointer to the initialization vector (IV) in the
++ * temporary buffer. If the AEAD cipher specifies an IV size, the pointer is
++ * adjusted using the AEAD's alignment mask to ensure proper alignment.
++ *
++ * Returns: a pointer to the IV within the temporary buffer
++ */
++static u8 *ovpn_aead_crypto_tmp_iv(struct crypto_aead *aead, void *tmp)
++{
++	return likely(crypto_aead_ivsize(aead)) ?
++		      PTR_ALIGN((u8 *)tmp, crypto_aead_alignmask(aead) + 1) :
++		      tmp;
++}
 +
- 	/* rehashing is required only in MP mode as P2P has one peer
- 	 * only and thus there is no hashtable
- 	 */
-diff --git a/include/uapi/linux/ovpn.h b/include/uapi/linux/ovpn.h
-index 680d1522dc87..b3c9ff0a6849 100644
---- a/include/uapi/linux/ovpn.h
-+++ b/include/uapi/linux/ovpn.h
-@@ -99,6 +99,7 @@ enum {
- 	OVPN_CMD_KEY_SWAP,
- 	OVPN_CMD_KEY_SWAP_NTF,
- 	OVPN_CMD_KEY_DEL,
-+	OVPN_CMD_PEER_FLOAT_NTF,
++/**
++ * ovpn_aead_crypto_tmp_req - retrieve the pointer to the AEAD request structure
++ *			      within a temporary buffer allocated using
++ *			      ovpn_aead_crypto_tmp_size
++ * @aead: the AEAD cipher handle
++ * @iv: a pointer to the initialization vector in the temporary buffer
++ *
++ * This function computes the location of the AEAD request structure that
++ * immediately follows the IV in the temporary buffer and it ensures the request
++ * is aligned to the crypto transform context alignment.
++ *
++ * Returns: a pointer to the AEAD request structure
++ */
++static struct aead_request *ovpn_aead_crypto_tmp_req(struct crypto_aead *aead,
++						     const u8 *iv)
++{
++	return (void *)PTR_ALIGN(iv + crypto_aead_ivsize(aead),
++				 crypto_tfm_ctx_alignment());
++}
++
++/**
++ * ovpn_aead_crypto_req_sg - locate the scatterlist following the AEAD request
++ *			     within a temporary buffer allocated using
++ *			     ovpn_aead_crypto_tmp_size
++ * @aead: the AEAD cipher handle
++ * @req: a pointer to the AEAD request structure in the temporary buffer
++ *
++ * This function computes the starting address of the scatterlist that is
++ * allocated immediately after the AEAD request structure. It aligns the pointer
++ * based on the alignment requirements of the scatterlist structure.
++ *
++ * Returns: a pointer to the scatterlist
++ */
++static struct scatterlist *ovpn_aead_crypto_req_sg(struct crypto_aead *aead,
++						   struct aead_request *req)
++{
++	return (void *)ALIGN((unsigned long)(req + 1) +
++			     crypto_aead_reqsize(aead),
++			     __alignof__(struct scatterlist));
++}
++
+ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 		      struct sk_buff *skb)
+ {
+@@ -45,6 +143,7 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	struct scatterlist *sg;
+ 	int nfrags, ret;
+ 	u32 pktid, op;
++	void *tmp;
+ 	u8 *iv;
  
- 	__OVPN_CMD_MAX,
- 	OVPN_CMD_MAX = (__OVPN_CMD_MAX - 1)
-diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-index 0a5226196a2e..064453d16fdd 100644
---- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
-+++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-@@ -1516,6 +1516,9 @@ static int ovpn_handle_msg(struct nl_msg *msg, void *arg)
- 	case OVPN_CMD_PEER_DEL_NTF:
- 		fprintf(stdout, "received CMD_PEER_DEL_NTF\n");
- 		break;
-+	case OVPN_CMD_PEER_FLOAT_NTF:
-+		fprintf(stdout, "received CMD_PEER_FLOAT_NTF\n");
-+		break;
- 	case OVPN_CMD_KEY_SWAP_NTF:
- 		fprintf(stdout, "received CMD_KEY_SWAP_NTF\n");
- 		break;
+ 	ovpn_skb_cb(skb)->peer = peer;
+@@ -71,13 +170,17 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
+ 		return -ENOSPC;
+ 
+-	/* sg may be required by async crypto */
+-	ovpn_skb_cb(skb)->sg = kmalloc(sizeof(*ovpn_skb_cb(skb)->sg) *
+-				       (nfrags + 2), GFP_ATOMIC);
+-	if (unlikely(!ovpn_skb_cb(skb)->sg))
++	/* allocate temporary memory for iv, sg and req */
++	tmp = kmalloc(ovpn_aead_crypto_tmp_size(ks->encrypt, nfrags),
++		      GFP_ATOMIC);
++	if (unlikely(!tmp))
+ 		return -ENOMEM;
+ 
+-	sg = ovpn_skb_cb(skb)->sg;
++	ovpn_skb_cb(skb)->crypto_tmp = tmp;
++
++	iv = ovpn_aead_crypto_tmp_iv(ks->encrypt, tmp);
++	req = ovpn_aead_crypto_tmp_req(ks->encrypt, iv);
++	sg = ovpn_aead_crypto_req_sg(ks->encrypt, req);
+ 
+ 	/* sg table:
+ 	 * 0: op, wire nonce (AD, len=OVPN_OP_SIZE_V2+OVPN_NONCE_WIRE_SIZE),
+@@ -105,13 +208,6 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	if (unlikely(ret < 0))
+ 		return ret;
+ 
+-	/* iv may be required by async crypto */
+-	ovpn_skb_cb(skb)->iv = kmalloc(OVPN_NONCE_SIZE, GFP_ATOMIC);
+-	if (unlikely(!ovpn_skb_cb(skb)->iv))
+-		return -ENOMEM;
+-
+-	iv = ovpn_skb_cb(skb)->iv;
+-
+ 	/* concat 4 bytes packet id and 8 bytes nonce tail into 12 bytes
+ 	 * nonce
+ 	 */
+@@ -130,12 +226,6 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	/* AEAD Additional data */
+ 	sg_set_buf(sg, skb->data, OVPN_AAD_SIZE);
+ 
+-	req = aead_request_alloc(ks->encrypt, GFP_ATOMIC);
+-	if (unlikely(!req))
+-		return -ENOMEM;
+-
+-	ovpn_skb_cb(skb)->req = req;
+-
+ 	/* setup async crypto operation */
+ 	aead_request_set_tfm(req, ks->encrypt);
+ 	aead_request_set_callback(req, 0, ovpn_encrypt_post, skb);
+@@ -156,6 +246,7 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	struct aead_request *req;
+ 	struct sk_buff *trailer;
+ 	struct scatterlist *sg;
++	void *tmp;
+ 	u8 *iv;
+ 
+ 	payload_offset = OVPN_AAD_SIZE + tag_size;
+@@ -184,13 +275,17 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
+ 		return -ENOSPC;
+ 
+-	/* sg may be required by async crypto */
+-	ovpn_skb_cb(skb)->sg = kmalloc(sizeof(*ovpn_skb_cb(skb)->sg) *
+-				       (nfrags + 2), GFP_ATOMIC);
+-	if (unlikely(!ovpn_skb_cb(skb)->sg))
++	/* allocate temporary memory for iv, sg and req */
++	tmp = kmalloc(ovpn_aead_crypto_tmp_size(ks->decrypt, nfrags),
++		      GFP_ATOMIC);
++	if (unlikely(!tmp))
+ 		return -ENOMEM;
+ 
+-	sg = ovpn_skb_cb(skb)->sg;
++	ovpn_skb_cb(skb)->crypto_tmp = tmp;
++
++	iv = ovpn_aead_crypto_tmp_iv(ks->decrypt, tmp);
++	req = ovpn_aead_crypto_tmp_req(ks->decrypt, iv);
++	sg = ovpn_aead_crypto_req_sg(ks->decrypt, req);
+ 
+ 	/* sg table:
+ 	 * 0: op, wire nonce (AD, len=OVPN_OPCODE_SIZE+OVPN_NONCE_WIRE_SIZE),
+@@ -213,24 +308,11 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 	/* append auth_tag onto scatterlist */
+ 	sg_set_buf(sg + ret + 1, skb->data + OVPN_AAD_SIZE, tag_size);
+ 
+-	/* iv may be required by async crypto */
+-	ovpn_skb_cb(skb)->iv = kmalloc(OVPN_NONCE_SIZE, GFP_ATOMIC);
+-	if (unlikely(!ovpn_skb_cb(skb)->iv))
+-		return -ENOMEM;
+-
+-	iv = ovpn_skb_cb(skb)->iv;
+-
+ 	/* copy nonce into IV buffer */
+ 	memcpy(iv, skb->data + OVPN_OPCODE_SIZE, OVPN_NONCE_WIRE_SIZE);
+ 	memcpy(iv + OVPN_NONCE_WIRE_SIZE, ks->nonce_tail_recv,
+ 	       OVPN_NONCE_TAIL_SIZE);
+ 
+-	req = aead_request_alloc(ks->decrypt, GFP_ATOMIC);
+-	if (unlikely(!req))
+-		return -ENOMEM;
+-
+-	ovpn_skb_cb(skb)->req = req;
+-
+ 	/* setup async crypto operation */
+ 	aead_request_set_tfm(req, ks->decrypt);
+ 	aead_request_set_callback(req, 0, ovpn_decrypt_post, skb);
+@@ -273,7 +355,11 @@ static struct crypto_aead *ovpn_aead_init(const char *title,
+ 		goto error;
+ 	}
+ 
+-	/* basic AEAD assumption */
++	/* basic AEAD assumption
++	 * all current algorithms use OVPN_NONCE_SIZE.
++	 * ovpn_aead_crypto_tmp_size and ovpn_aead_encrypt/decrypt
++	 * expect this.
++	 */
+ 	if (crypto_aead_ivsize(aead) != OVPN_NONCE_SIZE) {
+ 		pr_err("%s IV size must be %d\n", title, OVPN_NONCE_SIZE);
+ 		ret = -EINVAL;
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 3e9e7f8444b3..2721ee8268b2 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -119,9 +119,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ 	peer = ovpn_skb_cb(skb)->peer;
+ 
+ 	/* crypto is done, cleanup skb CB and its members */
+-	kfree(ovpn_skb_cb(skb)->iv);
+-	kfree(ovpn_skb_cb(skb)->sg);
+-	aead_request_free(ovpn_skb_cb(skb)->req);
++	kfree(ovpn_skb_cb(skb)->crypto_tmp);
+ 
+ 	if (unlikely(ret < 0))
+ 		goto drop;
+@@ -248,9 +246,7 @@ void ovpn_encrypt_post(void *data, int ret)
+ 	peer = ovpn_skb_cb(skb)->peer;
+ 
+ 	/* crypto is done, cleanup skb CB and its members */
+-	kfree(ovpn_skb_cb(skb)->iv);
+-	kfree(ovpn_skb_cb(skb)->sg);
+-	aead_request_free(ovpn_skb_cb(skb)->req);
++	kfree(ovpn_skb_cb(skb)->crypto_tmp);
+ 
+ 	if (unlikely(ret == -ERANGE)) {
+ 		/* we ran out of IVs and we must kill the key as it can't be
+diff --git a/drivers/net/ovpn/skb.h b/drivers/net/ovpn/skb.h
+index 64430880f1da..4fb7ea025426 100644
+--- a/drivers/net/ovpn/skb.h
++++ b/drivers/net/ovpn/skb.h
+@@ -18,12 +18,19 @@
+ #include <linux/socket.h>
+ #include <linux/types.h>
+ 
++/**
++ * struct ovpn_cb - ovpn skb control block
++ * @peer: the peer this skb was received from/sent to
++ * @ks: the crypto key slot used to encrypt/decrypt this skb
++ * @crypto_tmp: pointer to temporary memory used for crypto operations
++ *		containing the IV, the scatter gather list and the aead request
++ * @payload_offset: offset in the skb where the payload starts
++ * @nosignal: whether this skb should be sent with the MSG_NOSIGNAL flag (TCP)
++ */
+ struct ovpn_cb {
+ 	struct ovpn_peer *peer;
+ 	struct ovpn_crypto_key_slot *ks;
+-	struct aead_request *req;
+-	struct scatterlist *sg;
+-	u8 *iv;
++	void *crypto_tmp;
+ 	unsigned int payload_offset;
+ 	bool nosignal;
+ };
 -- 
 2.51.1
 
