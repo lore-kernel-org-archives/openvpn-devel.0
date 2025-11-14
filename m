@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 14 Nov 2025 12:41:01 +0000
+Date: Fri, 14 Nov 2025 12:41:12 +0000
 In-Reply-To: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
 References: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <0c9cd2b970e66a64ea0670d6761a9487b02451e5-EmailReviewComments-HTML@...2715...>
+Message-ID: <84bc131ae41aba77c22fd6cfb4ecdc413f215402-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="q/yUBw4lDTU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="0tVzxxnYni4="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: tun: Refactor BSD
  write_tun/read_tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---q/yUBw4lDTU=
+--0tVzxxnYni4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,20 +35,7 @@ Change subject: tun: Refactor BSD write_tun/read_tun
 ......................................................................
 
 
-Patch Set 1: -Code-Review
-
-(1 comment)
-
-This change is ready for review.
-
-File src/openvpn/tun.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1378/comment/ec691247_5975103b?usp=3D=
-email :
-PS1, Line 1798: }
-ah, and this lost the `return` part when being moved...  `return write_tun_=
-header...`
-
+Patch Set 1: Code-Review-2
 
 
 --
@@ -68,35 +55,27 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 14 Nov 2025 12:41:01 +0000
-Gerrit-HasComments: Yes
+Gerrit-Comment-Date: Fri, 14 Nov 2025 12:41:12 +0000
+Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---q/yUBw4lDTU=
+--0tVzxxnYni4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1378/comment/ec691247_5975103b?usp=3Demail">Patch Set #1, Line=
- 1798:</a> <code style=3D"font-family:monospace,monospace">}</code></p><p c=
-lass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">ah,=
- and this lost the `return` part when being moved...  `return write_tun_hea=
-der...`</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1378?usp=3Demail">change 1378</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1378?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail=
+">change 1378</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -117,12 +96,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 14 Nov 2025 12:41:01=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 14 Nov 2025 12:41:12=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---q/yUBw4lDTU=--
+--0tVzxxnYni4=--
 
