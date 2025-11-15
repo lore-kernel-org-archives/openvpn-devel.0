@@ -1,11 +1,11 @@
-Date: Sat, 15 Nov 2025 11:09:11 +0100
+Date: Sat, 15 Nov 2025 11:09:41 +0100
 From: Sabrina Dubroca <sd@...2891...>
-Message-ID: <aRhRR2-I0gAiGqJS@...2915...>
-References: <20251114103940.238076-1-ralf@...2726...>
+Message-ID: <aRhRZfy_9liL1HGG@...2915...>
+References: <20251114104029.239065-1-ralf@...2726...>
 MIME-Version: 1.0
-In-Reply-To: <20251114103940.238076-1-ralf@...2726...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn v2] ovpn: notify userspace on
- client float event
+In-Reply-To: <20251114104029.239065-1-ralf@...2726...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn v3] ovpn: consolidate crypto
+ allocations in one chunk
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +20,41 @@ Content-Disposition: inline
 To: Ralf Lici <ralf@...2726...>
 Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
 
-2025-11-14, 11:39:40 +0100, Ralf Lici wrote:
-> Send a netlink notification when a client updates its remote UDP
-> endpoint. The notification includes the new IP address, port, and scope
-> ID (for IPv6).
+2025-11-14, 11:40:29 +0100, Ralf Lici wrote:
+> Currently ovpn uses three separate dynamically allocated structures to
+> set up cryptographic operations for both encryption and decryption. This
+> adds overhead to performance-critical paths and contribute to memory
+> fragmentation.
+> 
+> This commit consolidates those allocations into a single temporary blob,
+> similar to what esp_alloc_tmp() does.
+> 
+> The resulting performance gain is +7.7% and +4.3% for UDP when using AES
+> and ChaChaPoly respectively, and +4.3% for TCP.
 > 
 > Signed-off-by: Ralf Lici <ralf@...2726...>
 > Signed-off-by: Antonio Quartulli <antonio@...515...>
 > ---
-> Changes since v1:
-> - correctly set return value for unsupported AF in
->   ovpn_nl_peer_float_notify
+> Changes since v2:
+> - Replaced manual multiplication with array_size() helper
+> - Made ovpn_aead_crypto_tmp_size() less generic by asserting that IV
+>   size equals OVPN_NONCE_SIZE
 > 
->  Documentation/netlink/specs/ovpn.yaml       |  6 ++
->  drivers/net/ovpn/netlink.c                  | 82 +++++++++++++++++++++
->  drivers/net/ovpn/netlink.h                  |  2 +
->  drivers/net/ovpn/peer.c                     |  2 +
->  include/uapi/linux/ovpn.h                   |  1 +
->  tools/testing/selftests/net/ovpn/ovpn-cli.c |  3 +
->  6 files changed, 96 insertions(+)
+> Changes since v1:
+> - Fixed typo in commit message
+> - Adjusted ovpn_aead_crypto_tmp_size comment to follow kdoc style
+> - Stored allocated blob in the skb control block immediately after
+>   allocation to prevent leakage on failure
+> - Removed 'inline' from function declarations in crypto_aead.c
+> 
+>  drivers/net/ovpn/crypto_aead.c | 160 +++++++++++++++++++++++++--------
+>  drivers/net/ovpn/io.c          |   8 +-
+>  drivers/net/ovpn/skb.h         |  13 ++-
+>  3 files changed, 135 insertions(+), 46 deletions(-)
 
 Reviewed-by: Sabrina Dubroca <sd@...2891...>
+
+Thanks Ralf.
 
 -- 
 Sabrina
