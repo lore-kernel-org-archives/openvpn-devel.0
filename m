@@ -1,17 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 15 Nov 2025 16:49:27 +0000
-In-Reply-To: <gerrit.1761818969000.I5ea90594493ab5cb858f7495f773e080b379e8e8@...2715...>
-References: <gerrit.1761818969000.I5ea90594493ab5cb858f7495f773e080b379e8e8@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <267f5088607481132d608e594e94ec3561bd29fa-EmailReviewComments-HTML@...2715...>
+Date: Sat, 15 Nov 2025 17:07:03 +0000
+In-Reply-To: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
+References: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <173bcbbaaaee173fad6a9f1f45d028c74be659a1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EAuXf5C1V9M="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: win32: ensure plugin
- dir has the trailing slash
+Content-Type: multipart/alternative; boundary="RBMt3QAbyhE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: handle
+ default gateway (net_gateway) and nexthop towards VPN s...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,103 +19,155 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
+To: mrbff <marco@...2726...>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---EAuXf5C1V9M=
+--RBMt3QAbyhE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-cron2 has posted comments on this change by stipa. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1332?usp=3Demail )
+cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
+net/c/openvpn/+/1222?usp=3Demail )
 
-Change subject: win32: ensure plugin dir has the trailing slash
+Change subject: route: handle default gateway (net_gateway) and nexthop tow=
+ards VPN server separately
 ......................................................................
 
 
-Patch Set 2: Code-Review-2
+Patch Set 2: Code-Review-1
 
 (1 comment)
 
 Patchset:
 
-PS2:=20
-This is a bit annoying, with the back and forth of `PATHCCH_ENSURE_TRAILING=
-_SLASH` in the iservice, we actually lost the configure.ac block that tests=
- for it again, in commit 763160a16a.  So this can't go in as it is.
+PS2:
+This is only half-working for me.  Triggered by https://github.com/OpenVPN/=
+openvpn/issues/890 I have built a testbed to reproduce this.
 
-So I do wonder if it makes more sense to have a manual check + `strcat()` o=
-n `normalized_plugin_dir` instead?  Since this is already normalized via `G=
-etFullPathNameW()`, bringing in the new API just for the last character rea=
-lly is a bit heavy...
+- ssh -R *:12345:conn-test-server.openvpn.org:51194 $linuxserver
+- on the linux server, run `openvpn --client --remote 127.0.0.5 51194 tcp .=
+.. --route 1.1.1.1 255.255.255.255 net_gateway`
+
+it will do both gateway lookups, and setenv `net_gateway` accordingly
+
+```
+2025-11-15 17:57:26 net_route_v4_best_gw query: dst 0.0.0.0
+2025-11-15 17:57:26 net_route_v4_best_gw result: via 194.97.140.30 dev enp0=
+s18
+2025-11-15 17:57:26 net_route_v4_best_gw query: dst 127.0.0.5
+2025-11-15 17:57:26 net_route_v4_best_gw result: via 0.0.0.0 dev lo
+2025-11-15 17:57:26 GDG6: remote_host_ipv6=3Dn/a
+2025-11-15 17:57:26 net_route_v6_best_gw query: dst ::
+2025-11-15 17:57:26 net_route_v6_best_gw result: via 2001:608:0:814::ffff d=
+ev enp0s18
+2025-11-15 17:57:26 net_route_v6_best_gw query: dst ::
+2025-11-15 17:57:26 net_route_v6_best_gw result: via 2001:608:0:814::ffff d=
+ev enp0s18
+```
+
+but the gateway address used for `net_gateway` is the one from the second l=
+ookup
+
+```
+2025-11-15 18:03:45 net_route_v4_add: 1.1.1.1/32 via 0.0.0.0 dev [NULL] tab=
+le 0 metric -1
+2025-11-15 18:03:45 sitnl_send: rtnl: generic error (-19): No such device
+2025-11-15 18:03:45 ERROR: Linux route add command failed
+```
+
+so we might need to store the `ngi` in the `struct route-list` as well, and=
+ depending on use case use `rgi` or `ngi` - for the bypass-routes, we want =
+`rgi`, for `get_special_addr()` use case, we want `ngi`...
+
+right?
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1332?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I5ea90594493ab5cb858f7495f773e080b379e8e8
-Gerrit-Change-Number: 1332
+Gerrit-Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3
+Gerrit-Change-Number: 1222
 Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Sat, 15 Nov 2025 16:49:27 +0000
+Gerrit-Attention: mrbff <marco@...2726...>
+Gerrit-Comment-Date: Sat, 15 Nov 2025 17:07:03 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---EAuXf5C1V9M=
+--RBMt3QAbyhE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, stipa. </p>
+rently required from: flichtenheld, mrbff, plaisthos. </p>
 <p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1332?usp=3Demail">V=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail">V=
 iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
 style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
 style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1332?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This is a b=
-it annoying, with the back and forth of `PATHCCH_ENSURE_TRAILING_SLASH` in =
-the iservice, we actually lost the configure.ac block that tests for it aga=
-in, in commit 763160a16a.  So this can&#39;t go in as it is.</p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">So I do wo=
-nder if it makes more sense to have a manual check + `strcat()` on `normali=
-zed_plugin_dir` instead?  Since this is already normalized via `GetFullPath=
-NameW()`, bringing in the new API just for the last character really is a b=
-it heavy...</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1332?usp=3Demail">change 1332</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
-://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
-http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1332?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+n/+/1222?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This is onl=
+y half-working for me.  Triggered by https://github.com/OpenVPN/openvpn/iss=
+ues/890 I have built a testbed to reproduce this.</p><ul class=3D"blocks"><=
+li>ssh -R *:12345:conn-test-server.openvpn.org:51194 $linuxserver</li><li>o=
+n the linux server, run `openvpn --client --remote 127.0.0.5 51194 tcp ... =
+--route 1.1.1.1 255.255.255.255 net_gateway`</li></ul><p class=3D"blocks" s=
+tyle=3D"white-space: pre-wrap; word-wrap: break-word;">it will do both gate=
+way lookups, and setenv `net_gateway` accordingly</p><p class=3D"blocks" st=
+yle=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>2025-11-15 17:=
+57:26 net_route_v4_best_gw query: dst 0.0.0.0<br>2025-11-15 17:57:26 net_ro=
+ute_v4_best_gw result: via 194.97.140.30 dev enp0s18<br>2025-11-15 17:57:26=
+ net_route_v4_best_gw query: dst 127.0.0.5<br>2025-11-15 17:57:26 net_route=
+_v4_best_gw result: via 0.0.0.0 dev lo<br>2025-11-15 17:57:26 GDG6: remote_=
+host_ipv6=3Dn/a<br>2025-11-15 17:57:26 net_route_v6_best_gw query: dst ::<b=
+r>2025-11-15 17:57:26 net_route_v6_best_gw result: via 2001:608:0:814::ffff=
+ dev enp0s18<br>2025-11-15 17:57:26 net_route_v6_best_gw query: dst ::<br>2=
+025-11-15 17:57:26 net_route_v6_best_gw result: via 2001:608:0:814::ffff de=
+v enp0s18<br>```</p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">but the gateway address used for `net_gateway` is the =
+one from the second lookup</p><p class=3D"blocks" style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">```<br>2025-11-15 18:03:45 net_route_v4_add:=
+ 1.1.1.1/32 via 0.0.0.0 dev [NULL] table 0 metric -1<br>2025-11-15 18:03:45=
+ sitnl_send: rtnl: generic error (-19): No such device<br>2025-11-15 18:03:=
+45 ERROR: Linux route add command failed<br>```</p><p class=3D"blocks" styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">so we might need to sto=
+re the `ngi` in the `struct route-list` as well, and depending on use case =
+use `rgi` or `ngi` - for the bypass-routes, we want `rgi`, for `get_special=
+_addr()` use case, we want `ngi`...</p><p class=3D"blocks" style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">right?</p></li></ul></li></ul><p>To=
+ view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Dem=
+ail">change 1222</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5ea90594493ab5cb858f7495f77=
-3e080b379e8e8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1332 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I16d90221d0a75193035253817ff=
+195f6da9dc0b3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1222 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -129,14 +180,14 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 15 Nov 2025 16:49:27=
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 15 Nov 2025 17:07:03=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---EAuXf5C1V9M=--
+--RBMt3QAbyhE=--
 
