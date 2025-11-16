@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 16 Nov 2025 14:07:40 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 16 Nov 2025 15:07:48 +0100
+Message-ID: <20251116140754.17177-1-gert@...1296...>
 In-Reply-To: <gerrit.1763141628000.I3f11423834814bab5d653f160fc2326dae4c0e8e@...2715...>
 References: <gerrit.1763141628000.I3f11423834814bab5d653f160fc2326dae4c0e8e@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <def05fbae73c4398d3812f16d49f833d6940e5f5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UE05b/s7vnc="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: tls_crypt: Avoid
- some conversion warnings
+Subject: [Openvpn-devel] [PATCH v1] tls_crypt: Avoid some conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---UE05b/s7vnc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+The casts should be safe, since one is a constant
+(but got type from sizeof()) and the other is
+limited by the buffer length.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1379?usp=3Demail )
+While here make the code in tls_crypt_v2_wrap_client_key
+as little easier to follow.
 
-Change subject: tls_crypt: Avoid some conversion warnings
-......................................................................
+Change-Id: I3f11423834814bab5d653f160fc2326dae4c0e8e
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1379
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 1: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1379
+This mail reflects revision 1 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3f11423834814bab5d653f160fc2326dae4c0e8e
-Gerrit-Change-Number: 1379
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 16 Nov 2025 14:07:40 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---UE05b/s7vnc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail=
-">change 1379</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3f11423834814bab5d653f160fc=
-2326dae4c0e8e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1379 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 16 Nov 2025 14:07:40=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---UE05b/s7vnc=--
+        
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index a808de3..ab719b3 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -205,11 +205,6 @@
+     return false;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ bool
+ tls_crypt_unwrap(const struct buffer *src, struct buffer *dst, struct crypto_options *opt)
+ {
+@@ -246,7 +241,7 @@
+             CRYPT_ERROR("cipher reset failed");
+         }
+         if (!cipher_ctx_update(ctx->cipher, BPTR(dst), &outlen, BPTR(src) + TLS_CRYPT_OFF_CT,
+-                               BLEN(src) - TLS_CRYPT_OFF_CT))
++                               BLEN(src) - (int)TLS_CRYPT_OFF_CT))
+         {
+             CRYPT_ERROR("cipher update failed");
+         }
+@@ -381,8 +376,9 @@
+         msg(M_WARN, "ERROR: could not write tag");
+         return false;
+     }
+-    uint16_t net_len = htons(sizeof(src_key->keys) + BLEN(src_metadata) + TLS_CRYPT_V2_TAG_SIZE
+-                             + sizeof(uint16_t));
++    const int data_len = BLEN(src_metadata) + sizeof(src_key->keys) + sizeof(uint16_t);
++    const int tagged_len = data_len + TLS_CRYPT_TAG_SIZE;
++    const uint16_t net_len = htons((uint16_t)tagged_len);
+     hmac_ctx_t *hmac_ctx = server_key->hmac;
+     hmac_ctx_reset(hmac_ctx);
+     hmac_ctx_update(hmac_ctx, (void *)&net_len, sizeof(net_len));
+@@ -396,8 +392,8 @@
+     ASSERT(cipher_ctx_reset(cipher_ctx, tag));
+ 
+     /* Overflow check (OpenSSL requires an extra block in the dst buffer) */
+-    if (buf_forward_capacity(&work) < (sizeof(src_key->keys) + BLEN(src_metadata) + sizeof(net_len)
+-                                       + cipher_ctx_block_size(cipher_ctx)))
++    const int padded_len = data_len + cipher_ctx_block_size(cipher_ctx);
++    if (buf_forward_capacity(&work) < padded_len)
+     {
+         msg(M_WARN, "ERROR: could not crypt: insufficient space in dst");
+         return false;
+@@ -418,10 +414,6 @@
+     return buf_copy(wkc, &work);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static bool
+ tls_crypt_v2_unwrap_client_key(struct key2 *client_key, struct buffer *metadata,
+                                struct buffer wrapped_client_key, struct key_ctx *server_key)
 
