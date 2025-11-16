@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 16 Nov 2025 12:26:14 +0000
+Date: Sun, 16 Nov 2025 12:26:11 +0000
 In-Reply-To: <gerrit.1762955252000.I270f679505c90ef78a5afbad1e05219f166be089@...2715...>
 References: <gerrit.1762955252000.I270f679505c90ef78a5afbad1e05219f166be089@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <884e7954936f1d85f9ebea1008339bb91ad95d02-HTML@...2715...>
+Message-ID: <884e7954936f1d85f9ebea1008339bb91ad95d02-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="axsUKeSjlhw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="zh6Hi3TTgLo="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: tapctl: refactor
  'create' command
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---axsUKeSjlhw=
+--zh6Hi3TTgLo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-74?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ stipa. ( http://gerrit.openvpn.net/c/openvpn/+/1374?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
 
 Change subject: tapctl: refactor 'create' command
 ......................................................................
@@ -56,7 +60,7 @@ M src/tapctl/main.c
 1 file changed, 280 insertions(+), 82 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/1374/3
 
 diff --git a/src/tapctl/main.c b/src/tapctl/main.c
 index 15c25ae..c92c122 100644
@@ -602,7 +606,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1374?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I270f679505c90ef78a5afbad1e05219f166be089
@@ -613,105 +617,108 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---axsUKeSjlhw=
+--zh6Hi3TTgLo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1374?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">tapctl: refactor &#39;create&#39; command<br><br=
->Make default adapter name selection logic more robust -<br>sometimes renam=
-ing fails because the deleted adapter name<br>might present in the registry=
- even though adapter is not shown<br>anymore in enumeration.<br><br>Ensure =
-that adapter name doesn&#39;t contain disallowed symbols.<br><br>Use --hwid=
- ovpn-dco by default and update documentation.<br><br>Change-Id: I270f67950=
-5c90ef78a5afbad1e05219f166be089<br>Signed-off-by: Lev Stipakov &lt;lev@...1696...=
-15...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: =
-https://gerrit.openvpn.net/c/openvpn/+/1374<br>Message-Id: &lt;202511161211=
-46.4067-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-=
-devel@lists.sourceforge.net/msg34455.html<br>Signed-off-by: Gert Doering &l=
-t;gert@...1296...&gt;<br>---<br>M src/tapctl/main.c<br>1 file changed, 280 =
-insertions(+), 82 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/tapctl/main.c b/src/tapctl/main.c</span><br><span>index=
- 15c25ae..c92c122 100644</span><br><span>--- a/src/tapctl/main.c</span><br>=
-<span>+++ b/src/tapctl/main.c</span><br><span>@@ -71,12 +71,12 @@</span><br=
-><span>     L&quot;\n&quot;</span><br><span>     L&quot;--name &lt;name&gt;=
-  Set VPN network adapter name. Should the adapter with given     \n&quot;<=
-/span><br><span>     L&quot;               name already exist, an error is =
-returned. If this option is not \n&quot;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    L&quot;               specified, a default adapter n=
-ame is chosen by Windows.         \n&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    L&quot;               specified, an OpenVPN-spec=
-ific default name is chosen.          \n&quot;</span><br><span>     L&quot;=
-               Note: This name can also be specified as OpenVPN&#39;s --dev=
--node   \n&quot;</span><br><span>     L&quot;               option.        =
-                                                 \n&quot;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    L&quot;--hwid &lt;hwid&gt;  Adapter=
- hardware ID. Default value is root\\tap0901, which      \n&quot;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    L&quot;               descr=
-ibes tap-windows6 driver. To work with ovpn-dco driver,    \n&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    L&quot;               dri=
-ver, specify &#39;ovpn-dco&#39;.                                     \n&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    L&quot;--hwid=
- &lt;hwid&gt;  Adapter hardware ID. Default value is ovpn-dco, which uses  =
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #3</strong> to the change originally created by stipa.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1374?usp=3Demail">View C=
+hange</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">tapctl: refactor &#39;create&#39; c=
+ommand<br><br>Make default adapter name selection logic more robust -<br>so=
+metimes renaming fails because the deleted adapter name<br>might present in=
+ the registry even though adapter is not shown<br>anymore in enumeration.<b=
+r><br>Ensure that adapter name doesn&#39;t contain disallowed symbols.<br><=
+br>Use --hwid ovpn-dco by default and update documentation.<br><br>Change-I=
+d: I270f679505c90ef78a5afbad1e05219f166be089<br>Signed-off-by: Lev Stipakov=
+ &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br=
+>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1374<br>Message-Id: &lt=
+;20251116121146.4067-1-gert@...1296...&gt;<br>URL: https://www.mail-archive=
+.com/openvpn-devel@lists.sourceforge.net/msg34455.html<br>Signed-off-by: Ge=
+rt Doering &lt;gert@...1296...&gt;<br>---<br>M src/tapctl/main.c<br>1 file =
+changed, 280 insertions(+), 82 deletions(-)<br><br></pre><pre class=3D"bloc=
+ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
+pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/1374/3</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c</span><br><span>index 15=
+c25ae..c92c122 100644</span><br><span>--- a/src/tapctl/main.c</span><br><sp=
+an>+++ b/src/tapctl/main.c</span><br><span>@@ -71,12 +71,12 @@</span><br><s=
+pan>     L&quot;\n&quot;</span><br><span>     L&quot;--name &lt;name&gt;  S=
+et VPN network adapter name. Should the adapter with given     \n&quot;</sp=
+an><br><span>     L&quot;               name already exist, an error is ret=
+urned. If this option is not \n&quot;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    L&quot;               specified, a default adapter name=
+ is chosen by Windows.         \n&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    L&quot;               specified, an OpenVPN-specifi=
+c default name is chosen.          \n&quot;</span><br><span>     L&quot;   =
+            Note: This name can also be specified as OpenVPN&#39;s --dev-no=
+de   \n&quot;</span><br><span>     L&quot;               option.           =
+                                              \n&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    L&quot;--hwid &lt;hwid&gt;  Adapter ha=
+rdware ID. Default value is root\\tap0901, which      \n&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    L&quot;               describe=
+s tap-windows6 driver. To work with ovpn-dco driver,    \n&quot;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    L&quot;               driver=
+, specify &#39;ovpn-dco&#39;.                                     \n&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    L&quot;--hwid &l=
+t;hwid&gt;  Adapter hardware ID. Default value is ovpn-dco, which uses     =
+ \n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    L&quot=
+;               the OpenVPN Data Channel Offload driver. To work with      =
     \n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    L&q=
-uot;               the OpenVPN Data Channel Offload driver. To work with   =
-       \n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-L&quot;               tap-windows6 driver, specify root\\tap0901 or tap0901=
-.         \n&quot;</span><br><span>     L&quot;\n&quot;</span><br><span>   =
-  L&quot;Output:\n&quot;</span><br><span>     L&quot;\n&quot;</span><br><sp=
-an>@@ -125,26 +125,163 @@</span><br><span> }</span><br><span> </span><br><s=
-pan> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Checks if =
-adapter with given name doesn&#39;t already exist</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ * Locate an adapter node by its friendly nam=
-e within the enumerated list.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
-am name          Friendly name to search for. Comparison is case-insensitiv=
-e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param adapter=
-_list  Head of the adapter list returned by tap_list_adapters().</span><br>=
+uot;               tap-windows6 driver, specify root\\tap0901 or tap0901.  =
+       \n&quot;</span><br><span>     L&quot;\n&quot;</span><br><span>     L=
+&quot;Output:\n&quot;</span><br><span>     L&quot;\n&quot;</span><br><span>=
+@@ -125,26 +125,163 @@</span><br><span> }</span><br><span> </span><br><span=
+> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Checks if ada=
+pter with given name doesn&#39;t already exist</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * Locate an adapter node by its friendly name w=
+ithin the enumerated list.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
+name          Friendly name to search for. Comparison is case-insensitive.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param adapter_li=
+st  Head of the adapter list returned by tap_list_adapters().</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * @return Pointer to the matching node, or NULL w=
+hen not found.</span><br><span>  */</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-static BOOL</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-is_adapter_name_available(LPCWSTR name, struct tap_adapter_node *adapte=
+r_list, BOOL log)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic struct tap_adapter_node *</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+find_adapter_by_name(LPCWSTR name, struct tap_adapter_node *adap=
+ter_list)</span><br><span> {</span><br><span>     for (struct tap_adapter_n=
+ode *a =3D adapter_list; a; a =3D a-&gt;pNext)</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (wcsicmp(name, a=
+-&gt;szName) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        if (_wcsicmp(name, a-&gt;szName) =3D=3D 0)</span><br><span>     =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (=
+log)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                LPOLESTR =
+adapter_id =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+               StringFromIID((REFIID)&amp;a-&gt;guid, &amp;adapter_id);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                fwprintf(=
+stderr,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+           L&quot;Adapter \&quot;%ls\&quot; already exists (GUID %&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
+ L&quot;ls).\n&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                         a-&gt;szName, adapter_id);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                CoTaskMemFree(adapter_id);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            return a;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check whet=
+her the registry still reserves a given network-connection name.</span><br>=
 <span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * @return Pointer to the matching node, or NUL=
-L when not found.</span><br><span>  */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-static BOOL</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-is_adapter_name_available(LPCWSTR name, struct tap_adapter_node *ada=
-pter_list, BOOL log)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+static struct tap_adapter_node *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+find_adapter_by_name(LPCWSTR name, struct tap_adapter_node *a=
-dapter_list)</span><br><span> {</span><br><span>     for (struct tap_adapte=
-r_node *a =3D adapter_list; a; a =3D a-&gt;pNext)</span><br><span>     {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (wcsicmp(name=
-, a-&gt;szName) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        if (_wcsicmp(name, a-&gt;szName) =3D=3D 0)</span><br><span>  =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            i=
-f (log)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                LPOLES=
-TR adapter_id =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                StringFromIID((REFIID)&amp;a-&gt;guid, &amp;adapter_id);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                fwprin=
-tf(stderr,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-              L&quot;Adapter \&quot;%ls\&quot; already exists (GUID %&quot;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
-    L&quot;ls).\n&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                         a-&gt;szName, adapter_id);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                CoTaskMemFree(adapter_id);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            return a;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Check whe=
-ther the registry still reserves a given network-connection name.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * Windows keeps friendly names under</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * \\HKLM\\SYSTEM\\CurrentCo=
-ntrolSet\\Control\\Network\\{NETCLASS}\\{GUID}\\Connection\\Name,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * even after an adapter is r=
-emoved. netsh refuses to rename to any reserved name.</span><br><span style=
+lor: hsl(120, 100%, 40%);">+ * Windows keeps friendly names under</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * \\HKLM\\SYSTEM\\CurrentCon=
+trolSet\\Control\\Network\\{NETCLASS}\\{GUID}\\Connection\\Name,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * even after an adapter is re=
+moved. netsh refuses to rename to any reserved name.</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+ * @param name  Friendly name to test.</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(=
@@ -1152,7 +1159,7 @@ ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
 /1374?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
 </div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I270f679505c90ef78a5afbad1e0=
@@ -1170,5 +1177,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---axsUKeSjlhw=--
+--zh6Hi3TTgLo=--
 
