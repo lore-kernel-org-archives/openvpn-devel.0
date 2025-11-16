@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 16 Nov 2025 14:59:04 +0100
-Message-ID: <20251116135909.15964-1-gert@...1296...>
-In-Reply-To: <gerrit.1761045859000.I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5@...2715...>
-References: <gerrit.1761045859000.I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 16 Nov 2025 14:07:40 +0000
+In-Reply-To: <gerrit.1763141628000.I3f11423834814bab5d653f160fc2326dae4c0e8e@...2715...>
+References: <gerrit.1763141628000.I3f11423834814bab5d653f160fc2326dae4c0e8e@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <def05fbae73c4398d3812f16d49f833d6940e5f5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] interval: Fix conversion warning
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="UE05b/s7vnc="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: tls_crypt: Avoid
+ some conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,61 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--UE05b/s7vnc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Use correct return type of the function.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1291
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1379?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: tls_crypt: Avoid some conversion warnings
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1291
-This mail reflects revision 5 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
-index fbefcd9..f9953a6 100644
---- a/src/openvpn/interval.c
-+++ b/src/openvpn/interval.c
-@@ -38,11 +38,6 @@
-     top->horizon = horizon;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
- event_timeout_trigger(struct event_timeout *et, struct timeval *tv, const int et_const_retry)
- {
-@@ -52,7 +47,7 @@
-     }
- 
-     bool ret = false;
--    time_t wakeup = event_timeout_remaining(et);
-+    interval_t wakeup = event_timeout_remaining(et);
- 
-     if (wakeup <= 0)
-     {
-@@ -82,7 +77,3 @@
-     }
-     return ret;
- }
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3f11423834814bab5d653f160fc2326dae4c0e8e
+Gerrit-Change-Number: 1379
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 16 Nov 2025 14:07:40 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--UE05b/s7vnc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail=
+">change 1379</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1379?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3f11423834814bab5d653f160fc=
+2326dae4c0e8e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1379 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 16 Nov 2025 14:07:40=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--UE05b/s7vnc=--
 
