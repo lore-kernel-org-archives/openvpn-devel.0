@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 16 Nov 2025 17:47:48 +0000
-In-Reply-To: <gerrit.1761045859000.I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5@...2715...>
-References: <gerrit.1761045859000.I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5@...2715...>
+Date: Sun, 16 Nov 2025 18:03:08 +0000
+In-Reply-To: <gerrit.1762517501000.Id9158f477404aac1d6b08b08e672980e5a58dc35@...2715...>
+References: <gerrit.1762517501000.Id9158f477404aac1d6b08b08e672980e5a58dc35@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <48d6f6223861d42de5ca557a8d1fd8cf2e05bd68-HTML@...2715...>
+Message-ID: <5a7d8e1e58472a200f2667c14ea7f5bfa4d8ef6f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="MmkoMcRy9tY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: interval: Fix
- conversion warning
+Content-Type: multipart/alternative; boundary="9vbKcEe9QL4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: forward: Change
+ context_reschedule_sec sec argument to time_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,44 +19,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MmkoMcRy9tY=
+--9vbKcEe9QL4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/12=
-91?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1356?usp=3Demail )
 
-Change subject: interval: Fix conversion warning
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
+
+
+Change subject: forward: Change context_reschedule_sec sec argument to time=
+_t
 ......................................................................
 
-interval: Fix conversion warning
+forward: Change context_reschedule_sec sec argument to time_t
 
-Use correct return type of the function.
+This avoids conversions at the caller sites. Since we only
+replace tv_sec if the new value is smaller the cast
+to tv_sec_t is also safe.
 
-Change-Id: I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5
+Change-Id: Id9158f477404aac1d6b08b08e672980e5a58dc35
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1291
-Message-Id: <20251116135909.15964-1-gert@...1296...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1356
+Message-Id: <20251111155139.31642-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-464.html
+319.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/interval.c
-1 file changed, 1 insertion(+), 10 deletions(-)
+M src/openvpn/forward.c
+1 file changed, 8 insertions(+), 7 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/1356/2
 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 90e52d2..f01fb4c 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -33,6 +33,7 @@
+ #include "mss.h"
+ #include "event.h"
+ #include "occ.h"
++#include "otime.h"
+ #include "ping.h"
+ #include "ps.h"
+ #include "dhcp.h"
+@@ -127,7 +128,7 @@
+ }
 
-diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
-index fbefcd9..f9953a6 100644
---- a/src/openvpn/interval.c
-+++ b/src/openvpn/interval.c
-@@ -38,11 +38,6 @@
-     top->horizon =3D horizon;
+ static inline void
+-context_reschedule_sec(struct context *c, int sec)
++context_reschedule_sec(struct context *c, time_t sec)
+ {
+     if (sec < 0)
+     {
+@@ -135,7 +136,7 @@
+     }
+     if (sec < c->c2.timeval.tv_sec)
+     {
+-        c->c2.timeval.tv_sec =3D sec;
++        c->c2.timeval.tv_sec =3D (tv_sec_t)sec;
+         c->c2.timeval.tv_usec =3D 0;
+     }
+ }
+@@ -829,11 +830,6 @@
+ #endif /* ENABLE_MANAGEMENT */
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -64,104 +97,116 @@ index fbefcd9..f9953a6 100644
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- bool
- event_timeout_trigger(struct event_timeout *et, struct timeval *tv, const =
-int et_const_retry)
+ static void
+ check_coarse_timers(struct context *c)
  {
-@@ -52,7 +47,7 @@
-     }
-
-     bool ret =3D false;
--    time_t wakeup =3D event_timeout_remaining(et);
-+    interval_t wakeup =3D event_timeout_remaining(et);
-
-     if (wakeup <=3D 0)
-     {
-@@ -82,7 +77,3 @@
-     }
-     return ret;
+@@ -1304,6 +1300,11 @@
+ #endif /* if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARG=
+ET_FREEBSD)) */
  }
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
+
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
+ /*
+  * Output: c->c2.buf
+  */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1291?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1356?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I445b2e2cd14e55cc1ae3efdf1650b28e18992aa5
-Gerrit-Change-Number: 1291
-Gerrit-PatchSet: 6
+Gerrit-Change-Id: Id9158f477404aac1d6b08b08e672980e5a58dc35
+Gerrit-Change-Number: 1356
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MmkoMcRy9tY=
+--9vbKcEe9QL4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1291?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">interval: Fix conversion warning<br><br>Use corr=
-ect return type of the function.<br><br>Change-Id: I445b2e2cd14e55cc1ae3efd=
-f1650b28e18992aa5<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
-gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https:=
-//gerrit.openvpn.net/c/openvpn/+/1291<br>Message-Id: &lt;20251116135909.159=
-64-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel=
-@lists.sourceforge.net/msg34464.html<br>Signed-off-by: Gert Doering &lt;ger=
-t@...1296...&gt;<br>---<br>M src/openvpn/interval.c<br>1 file changed, 1 in=
-sertion(+), 10 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c</span><br><=
-span>index fbefcd9..f9953a6 100644</span><br><span>--- a/src/openvpn/interv=
-al.c</span><br><span>+++ b/src/openvpn/interval.c</span><br><span>@@ -38,11=
- +38,6 @@</span><br><span>     top-&gt;horizon =3D horizon;</span><br><span=
-> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversi=
-on&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span=
-><br><span> event_timeout_trigger(struct event_timeout *et, struct timeval =
-*tv, const int et_const_retry)</span><br><span> {</span><br><span>@@ -52,7 =
-+47,7 @@</span><br><span>     }</span><br><span> </span><br><span>     bool=
- ret =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ti=
-me_t wakeup =3D event_timeout_remaining(et);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    interval_t wakeup =3D event_timeout_remaining(=
-et);</span><br><span> </span><br><span>     if (wakeup &lt;=3D 0)</span><br=
-><span>     {</span><br><span>@@ -82,7 +77,3 @@</span><br><span>     }</spa=
-n><br><span>     return ret;</span><br><span> }</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span></span><br></pre><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1291?usp=3D=
-email">change 1291</a>. To unsubscribe, or for help writing mail filters, v=
-isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1291?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1356?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">forward: Change context_resched=
+ule_sec sec argument to time_t<br><br>This avoids conversions at the caller=
+ sites. Since we only<br>replace tv_sec if the new value is smaller the cas=
+t<br>to tv_sec_t is also safe.<br><br>Change-Id: Id9158f477404aac1d6b08b08e=
+672980e5a58dc35<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt=
+;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Gerrit URL: =
+https://gerrit.openvpn.net/c/openvpn/+/1356<br>Message-Id: &lt;202511111551=
+39.31642-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn=
+-devel@lists.sourceforge.net/msg34319.html<br>Signed-off-by: Gert Doering &=
+lt;gert@...1296...&gt;<br>---<br>M src/openvpn/forward.c<br>1 file changed,=
+ 8 insertions(+), 7 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/56/1356/2</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index 9=
+0e52d2..f01fb4c 100644</span><br><span>--- a/src/openvpn/forward.c</span><b=
+r><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -33,6 +33,7 @@</span=
+><br><span> #include &quot;mss.h&quot;</span><br><span> #include &quot;even=
+t.h&quot;</span><br><span> #include &quot;occ.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;otime.h&quot;</span><br><s=
+pan> #include &quot;ping.h&quot;</span><br><span> #include &quot;ps.h&quot;=
+</span><br><span> #include &quot;dhcp.h&quot;</span><br><span>@@ -127,7 +12=
+8,7 @@</span><br><span> }</span><br><span> </span><br><span> static inline =
+void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-context_reschedul=
+e_sec(struct context *c, int sec)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+context_reschedule_sec(struct context *c, time_t sec)</span><=
+br><span> {</span><br><span>     if (sec &lt; 0)</span><br><span>     {</sp=
+an><br><span>@@ -135,7 +136,7 @@</span><br><span>     }</span><br><span>   =
+  if (sec &lt; c-&gt;c2.timeval.tv_sec)</span><br><span>     {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        c-&gt;c2.timeval.tv_sec =
+=3D sec;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c-&=
+gt;c2.timeval.tv_sec =3D (tv_sec_t)sec;</span><br><span>         c-&gt;c2.t=
+imeval.tv_usec =3D 0;</span><br><span>     }</span><br><span> }</span><br><=
+span>@@ -829,11 +830,6 @@</span><br><span> #endif /* ENABLE_MANAGEMENT */</=
+span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &q=
+uot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an> static void</span><br><span> check_coarse_timers(struct context *c)</sp=
+an><br><span> {</span><br><span>@@ -1304,6 +1300,11 @@</span><br><span> #en=
+dif /* if defined(ENABLE_DCO) &amp;&amp; (defined(TARGET_LINUX) || defined(=
+TARGET_FREEBSD)) */</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__cla=
+ng__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC di=
+agnostic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragm=
+a GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Output: c-&gt;c2.=
+buf</span><br><span>  */</span><br><span></span><br></pre><p>To view, visit=
+ <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1356?usp=3Demail">change =
+1356</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1356?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I445b2e2cd14e55cc1ae3efdf165=
-0b28e18992aa5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1291 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id9158f477404aac1d6b08b08e67=
+2980e5a58dc35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1356 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -169,5 +214,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---MmkoMcRy9tY=--
+--9vbKcEe9QL4=--
 
