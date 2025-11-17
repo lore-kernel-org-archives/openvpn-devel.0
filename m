@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 17 Nov 2025 08:49:15 +0100
-Message-ID: <20251117074921.26531-1-gert@...1296...>
-In-Reply-To: <gerrit.1762532329000.I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f@...2715...>
-References: <gerrit.1762532329000.I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 17 Nov 2025 07:59:08 +0000
+In-Reply-To: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
+References: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <cafbc2217175255e0c8cb1056b72d0a4b6f4e8e9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] ssl_pkt: Avoid conversion warnings
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="3Alpp0QST98="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: Fix conversion
+ issues related to timeout in send_auth_pending_m...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,75 +19,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--3Alpp0QST98=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I considered changing opcode to be uint8_t directly, but
-most code treats it as int now, so that would be a much
-bigger change. Similar for key_id.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I2a1786b2bf15852222c28e1b73ab7edbb5f19d7f
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1360
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1293?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: push: Fix conversion issues related to timeout in send_auth=
+_pending_messages
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1360
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 5: Code-Review-1
 
-        
-diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-index d7f7ac3..f216e88 100644
---- a/src/openvpn/ssl_pkt.c
-+++ b/src/openvpn/ssl_pkt.c
-@@ -160,17 +160,14 @@
-     }
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- void
- write_control_auth(struct tls_session *session, struct key_state *ks, struct buffer *buf,
-                    struct link_socket_actual **to_link_addr, int opcode, int max_ack,
-                    bool prepend_ack)
- {
--    uint8_t header = ks->key_id | (opcode << P_OPCODE_SHIFT);
-+    ASSERT(ks->key_id >= 0 && ks->key_id <= P_KEY_ID_MASK);
-+    ASSERT(opcode >= 0 && opcode <= P_LAST_OPCODE);
-+    uint8_t header = (uint8_t)(ks->key_id | (opcode << P_OPCODE_SHIFT));
- 
-     /* Workaround for Softether servers. Softether has a bug that it only
-      * allows 4 ACks in packets and drops packets if more ACKs are contained
-@@ -474,7 +471,7 @@
-     /* Get the valid time quantisation for our hmac,
-      * we divide time by handwindow/2 and allow the previous
-      * and future session time if specified by offset */
--    uint32_t session_id_time = ntohl(now / ((handwindow + 1) / 2) + offset);
-+    uint32_t session_id_time = ntohl((uint32_t)(now / ((handwindow + 1) / 2) + offset));
- 
-     hmac_ctx_reset(hmac);
-     /* We do not care about endian here since it does not need to be
-@@ -501,10 +498,6 @@
-     return result.sid;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- bool
- check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state,
-                               const struct openvpn_sockaddr *from,
+(2 comments)
+
+Patchset:
+
+PS5:
+Not sure I understand all the implications.  It would be good if @arne-open=
+vpn@...1227... had a look.
+
+
+File src/openvpn/push.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1293/comment/0f14fa70_d0079f91?usp=3D=
+email :
+PS5, Line 451:     }
+I'm a bit unsure about that.  In the (unlikely) case of time_elapsed > max_=
+timeout (not sure if this could happen, but maybe if the userland process h=
+appens to be busy with ill-behaved scripts?) then we'll not do any AUTH_PEN=
+DING at all?  Or am I misreading this?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
+Gerrit-Change-Number: 1293
+Gerrit-PatchSet: 5
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 17 Nov 2025 07:59:08 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--3Alpp0QST98=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1293?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Not sure I=
+ understand all the implications.  It would be good if @arne-openvpn@...2068...=
+7... had a look.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>=
+File src/openvpn/push.c:</p><ul style=3D"list-style: none; padding: 0;"><li=
+ style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293/comment/0f14fa70_d00=
+79f91?usp=3Demail">Patch Set #5, Line 451:</a> <code style=3D"font-family:m=
+onospace,monospace">    }</code></p><p class=3D"blocks" style=3D"white-spac=
+e: pre-wrap; word-wrap: break-word;">I&#39;m a bit unsure about that.  In t=
+he (unlikely) case of time_elapsed &gt; max_timeout (not sure if this could=
+ happen, but maybe if the userland process happens to be busy with ill-beha=
+ved scripts?) then we&#39;ll not do any AUTH_PENDING at all?  Or am I misre=
+ading this?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1293?usp=3Demail">change 1293</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
+://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1293?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc=
+15dc6c769cd54 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1293 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 17 Nov 2025 07:59:08=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--3Alpp0QST98=--
 
