@@ -1,10 +1,11 @@
-Date: Mon, 17 Nov 2025 09:20:29 +0100 (CET)
-Message-Id: <202511170820.5AH8KTRv081923@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251117074921.26531-1-gert@...1296...>
-References: <20251117074921.26531-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ssl_pkt: Avoid conversion
- warnings
+Date: Mon, 17 Nov 2025 18:28:58 +0100
+Message-ID: <20251117173843.10091-2-gert@...1296...>
+In-Reply-To: <20251117173843.10091-1-gert@...1296...>
+References: <20251117173843.10091-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/2] socket: reject mismatched address
+ family in get_addr_generic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +16,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Change looks reasonable.  Tested on FreeBSD t_client/t_server testbed.
+From: Mikhail Khachaiants <mkhachaiants@...277...>
 
-Your patch has been applied to the master branch.
+Add a family check to prevent copying address data of the wrong type,
+which could cause buffer over-read when parsing routes or endpoints.
 
-commit 5ab76ad9ec0b45874f49f04d4203fc5912fd55a8
-Author: Frank Lichtenheld
-Date:   Mon Nov 17 08:49:15 2025 +0100
+CVE: 2025-12106
 
-     ssl_pkt: Avoid conversion warnings
+Github: OpenVPN/openvpn-private-issues#77
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1360
-     Message-Id: <20251117074921.26531-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34501.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Mikhail Khachaiants <mkhachaiants@...277...>
+Acked-By: Gert Doering <gert@...1296...>
+Signed-Off-By: Gert Doering <gert@...1296...>
+---
+ src/openvpn/socket.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index f7317d13..8b6e35e4 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -147,6 +147,13 @@ get_addr_generic(sa_family_t af, unsigned int flags, const char *hostname, void
+         struct in6_addr *ip6;
+         in_addr_t *ip4;
+ 
++        if (af != ai->ai_family)
++        {
++            msg(msglevel, "Can't parse %s as IPv%d address", var_host, (af == AF_INET) ? 4 : 6);
++            ret = -1;
++            goto out;
++        }
++
+         switch (af)
+         {
+             case AF_INET:
+-- 
+2.51.2
 
 
