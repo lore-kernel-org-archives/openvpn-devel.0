@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 17 Nov 2025 07:59:08 +0000
-In-Reply-To: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
-References: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cafbc2217175255e0c8cb1056b72d0a4b6f4e8e9-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3Alpp0QST98="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: Fix conversion
- issues related to timeout in send_auth_pending_m...
+Date: Mon, 17 Nov 2025 08:59:35 +0100 (CET)
+Message-Id: <202511170759.5AH7xZFp081027@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251116215433.29257-1-gert@...1296...>
+References: <20251116215433.29257-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ssl: Clean up type handling in
+ parse_early_negotiation_tlvs()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,127 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---3Alpp0QST98=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+And with that, the #pragma in ssl.c can finally go...
 
-Attention is currently required from: flichtenheld, plaisthos.
+Change makes sense (took me a bit to understand the intricacies of
+buf_read_u16() and why it's not returning an uint16_t) - and this is arguably
+more correct, as the old code did not handle the "buffer too small" case
+nicely (it did, by having "len" end up being 0xffff, and buf_len() will
+then be 0 or 1, which is definitely smaller then "len" - but now it's
+quite explicit and easier to understand).
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1293?usp=3Demail )
+Smoke tested on Linux.
 
-Change subject: push: Fix conversion issues related to timeout in send_auth=
-_pending_messages
-......................................................................
+Your patch has been applied to the master branch.
 
+commit abe32bce066ccf77db7e49159ea0f8111c02a3c4
+Author: Frank Lichtenheld
+Date:   Sun Nov 16 22:54:27 2025 +0100
 
-Patch Set 5: Code-Review-1
+     ssl: Clean up type handling in parse_early_negotiation_tlvs()
 
-(2 comments)
-
-Patchset:
-
-PS5:
-Not sure I understand all the implications.  It would be good if @arne-open=
-vpn@...1227... had a look.
-
-
-File src/openvpn/push.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1293/comment/0f14fa70_d0079f91?usp=3D=
-email :
-PS5, Line 451:     }
-I'm a bit unsure about that.  In the (unlikely) case of time_elapsed > max_=
-timeout (not sure if this could happen, but maybe if the userland process h=
-appens to be busy with ill-behaved scripts?) then we'll not do any AUTH_PEN=
-DING at all?  Or am I misreading this?
-
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1302
+     Message-Id: <20251116215433.29257-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34487.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
-Gerrit-Change-Number: 1293
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 17 Nov 2025 07:59:08 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gert Doering
 
---3Alpp0QST98=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail">V=
-iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1293?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Not sure I=
- understand all the implications.  It would be good if @arne-openvpn@...2068...=
-7... had a look.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>=
-File src/openvpn/push.c:</p><ul style=3D"list-style: none; padding: 0;"><li=
- style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293/comment/0f14fa70_d00=
-79f91?usp=3Demail">Patch Set #5, Line 451:</a> <code style=3D"font-family:m=
-onospace,monospace">    }</code></p><p class=3D"blocks" style=3D"white-spac=
-e: pre-wrap; word-wrap: break-word;">I&#39;m a bit unsure about that.  In t=
-he (unlikely) case of time_elapsed &gt; max_timeout (not sure if this could=
- happen, but maybe if the userland process happens to be busy with ill-beha=
-ved scripts?) then we&#39;ll not do any AUTH_PENDING at all?  Or am I misre=
-ading this?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1293?usp=3Demail">change 1293</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
-://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
-http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1293?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc=
-15dc6c769cd54 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1293 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 17 Nov 2025 07:59:08=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---3Alpp0QST98=--
 
