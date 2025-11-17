@@ -1,8 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Mon, 17 Nov 2025 18:28:57 +0100
-Message-ID: <20251117173843.10091-1-gert@...1296...>
+Date: Mon, 17 Nov 2025 18:28:59 +0100
+Message-ID: <20251117173843.10091-3-gert@...1296...>
+In-Reply-To: <20251117173843.10091-1-gert@...1296...>
+References: <20251117173843.10091-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Patches in Master that were privately reviewed
+Subject: [Openvpn-devel] [PATCH 2/2] Fix memcmp check for the hmac
+ verification in the 3way handshake being inverted
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +18,157 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Arne Schwabe <arne@...1227...>
 
-as you have seen, there was a 2.7_rc2 release and a 2.6.16 release
-today.  Both have seen fixes that were considered CVE worthy, and we
-do review and ACK these fixes privately, for a coordinated release.
+This is a stupid mistake but causes all hmac cookies to be accepted,
+thus breaking source IP address validation.   As a consequence, TLS
+sessions can be openend and state can be consumed in the server from
+IP addresses that did not initiate an initial connection.
 
-I'm sending the "master" patches in this patch series.  Release/2.6
-has only the "memcmp()" patch.
+While at it, fix check to only allow [t-2;t] timeslots, disallowing
+HMACs coming in from a future timeslot.
 
-We do not think that the "reject mismatched address family" patch can
-be used to do something really nasty (like "crash openvpn" or "get
-access to memory with interesting secrets in it") - but it is a buffer
-over-read, and you never know, so fix it, and tag it properly.
+Github: OpenVPN/openvpn-private-issues#56
 
-The "memcmp check" patch can be used for state exhaustion attacks
-against an OpenVPN server (read: send legitimately-looking packets
-from random source addresses, each opening a new TLS session, eating
-CPU and memory).  Technically, this has always been possible, "since
-ever", and this check was introduced in 2.6.0 to do a syn-cookie-like
-source IP verification (do not add state in the first packet, only
-add state if the proper cookie comes back later) - which did not work
-the way it was intended.  But for whatever reasons, reflection attacks
-using OpenVPN and state exhaustion attacks have fallen out of favour,
-so nobody ever noticed...  but if you run a server, you want to update.
+CVE: 2025-13086
 
+Reported-By: Joshua Rogers <contact@...2949...>
+Found-by: ZeroPath (https://zeropath.com/)
+Reported-By: stefan@...2953...
 
-The commits in tree are:
+Change-Id: I9cbe2bf535575b47ddd7f34e985c5c1c6953a6fc
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Max Fillinger <max@...2606...>
+---
+ src/openvpn/ssl_pkt.c               |  7 ++--
+ tests/unit_tests/openvpn/test_pkt.c | 58 ++++++++++++++++++++++++++++-
+ 2 files changed, 61 insertions(+), 4 deletions(-)
 
-commit 18c483dd6031d86eb393527855734e8cd62fea19
-Author: Arne Schwabe <arne@...1227...>
-Date:   Mon Oct 27 10:05:55 2025 +0100
-
-    Fix memcmp check for the hmac verification in the 3way handshake being inverted
-    CVE: 2025-13086
-
-commit f1b851dae60eb1e277315dfe6265e3a58660b16a
-Author: Mikhail Khachaiants <mkhachaiants@...277...>
-Date:   Sat Oct 18 11:42:31 2025 +0300
-
-    socket: reject mismatched address family in get_addr_generic
-    CVE: 2025-12106
-
-(This mail is created with git-send-email --compose, which alas does not
-easily permit PGP signing.  It's still me, and you can verify the commits
-in the repo - and the changes are straightforward enough.  The v2.7_rc2
-and 2.6.16 commits & tags *are* signed.)
-
-gert
-
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index f216e88b..85a55b15 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -548,13 +548,14 @@ check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state *state,
+     }
+ 
+ 
+-    /* check adjacent timestamps too */
+-    for (int offset = -2; offset <= 1; offset++)
++    /* check adjacent timestamps too, the handwindow is split in 2 for the
++     * offset, so we check the current timeslot and the two before that */
++    for (int offset = -2; offset <= 0; offset++)
+     {
+         struct session_id expected_id =
+             calculate_session_id_hmac(state->peer_session_id, from, hmac, handwindow, offset);
+ 
+-        if (memcmp_constant_time(&expected_id, &state->server_session_id, SID_SIZE))
++        if (memcmp_constant_time(&expected_id, &state->server_session_id, SID_SIZE) == 0)
+         {
+             return true;
+         }
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index 1423d469..c2aff8c6 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -406,6 +406,8 @@ test_verify_hmac_tls_auth(void **ut_state)
+     hmac_ctx_t *hmac = session_id_hmac_init();
+ 
+     struct link_socket_actual from = { 0 };
++    from.dest.addr.sa.sa_family = AF_INET;
++    from.dest.addr.in4.sin_addr.s_addr = ntohl(0x01020304);
+     struct tls_auth_standalone tas = { 0 };
+     struct tls_pre_decrypt_state state = { 0 };
+ 
+@@ -433,10 +435,12 @@ test_verify_hmac_tls_auth(void **ut_state)
+ static void
+ test_verify_hmac_none(void **ut_state)
+ {
++    now = 1000;
+     hmac_ctx_t *hmac = session_id_hmac_init();
+ 
+     struct link_socket_actual from = { 0 };
+     from.dest.addr.sa.sa_family = AF_INET;
++    from.dest.addr.in4.sin_addr.s_addr = ntohl(0x01020304);
+ 
+     struct tls_auth_standalone tas = { 0 };
+     struct tls_pre_decrypt_state state = { 0 };
+@@ -451,9 +455,61 @@ test_verify_hmac_none(void **ut_state)
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+     assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
+ 
++    /* This packet has a random hmac, so it should fail to validate */
+     bool valid = check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true);
++    assert_false(valid);
++
++    struct session_id client_id = { { 0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79, 0xc8 } };
++    assert_memory_equal(&client_id, &state.peer_session_id, sizeof(struct session_id));
++
++    struct session_id expected_id = calculate_session_id_hmac(client_id, &from.dest, hmac, 30, 0);
++
++    free_tls_pre_decrypt_state(&state);
++    buf_reset_len(&buf);
++
++    /* Write the packet again into the buffer but this time, replacing the peer packet
++     * id with the expected one */
++    buf_write(&buf, client_ack_none_random_id, sizeof(client_ack_none_random_id) - 8);
++    buf_write(&buf, expected_id.id, 8);
++
++    verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
++    assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
++    valid = check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true);
++
+     assert_true(valid);
+ 
++    /* Our handwindow is 30 so the slices are half of that, so they are
++     * (975,990), (990, 1005), (1005, 1020), (1020, 1035), (1035, 1050)
++     * So setting time to the two future ones should work
++     */
++    now = 980;
++    assert_false(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++    now = 1040;
++    assert_false(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++    now = 1002;
++    assert_true(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++    now = 1022;
++    assert_true(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++    now = 1010;
++    assert_true(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++
++    /* Changing the IP address should make this invalid */
++    from.dest.addr.in4.sin_addr.s_addr = ntohl(0x01020305);
++    assert_false(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++
++    /* Change to the correct one again */
++    from.dest.addr.in4.sin_addr.s_addr = ntohl(0x01020304);
++    assert_true(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++
++    /* Modify the peer id, should now fail hmac verification */
++    buf_inc_len(&buf, -4);
++    buf_write_u32(&buf, 0x12345678);
++
++    free_tls_pre_decrypt_state(&state);
++    verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
++    assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
++    assert_false(check_session_hmac_and_pkt_id(&state, &from.dest, hmac, 30, true));
++
+     free_tls_pre_decrypt_state(&state);
+     free_buf(&buf);
+     hmac_ctx_cleanup(hmac);
+@@ -696,12 +752,12 @@ main(void)
+     openvpn_unit_test_setup();
+ 
+     const struct CMUnitTest tests[] = {
++        cmocka_unit_test(test_verify_hmac_none),
+         cmocka_unit_test(test_tls_decrypt_lite_none),
+         cmocka_unit_test(test_tls_decrypt_lite_auth),
+         cmocka_unit_test(test_tls_decrypt_lite_crypt),
+         cmocka_unit_test(test_parse_ack),
+         cmocka_unit_test(test_calc_session_id_hmac_static),
+-        cmocka_unit_test(test_verify_hmac_none),
+         cmocka_unit_test(test_verify_hmac_tls_auth),
+         cmocka_unit_test(test_verify_hmac_none_out_of_range_ack),
+         cmocka_unit_test(test_generate_reset_packet_plain),
+-- 
+2.51.2
 
 
