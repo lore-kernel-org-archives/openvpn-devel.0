@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 18 Nov 2025 18:42:28 +0000
-In-Reply-To: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
-References: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., marco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d153d30f4bef77407568658dc3c5125320219328-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wxbaJySlFkM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: handle
- default gateway (net_gateway) and nexthop towards VPN s...
+From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
+Content-Type: multipart/alternative;
+ boundary="Apple-Mail=_400FC8E1-DFF5-4E98-B683-5CE3E0CDF4EC"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81\))
+Message-Id: <3FCD6D52-EA95-4C82-8C98-AD88F8A86C3A@...2722...>
+Date: Tue, 18 Nov 2025 20:46:51 +0200
+Subject: [Openvpn-devel] OpenVPN 2.6.16 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,124 +13,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mrbff <marco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-announce@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
---wxbaJySlFkM=
-Content-Type: text/plain; charset="UTF-8"
+--Apple-Mail=_400FC8E1-DFF5-4E98-B683-5CE3E0CDF4EC
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, mrbff, plaisthos.
+The OpenVPN community project team is proud to release OpenVPN 2.6.16.
 
-cron2 has posted comments on this change by mrbff. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1222?usp=3Demail )
+This is a bugfix release containing one security fix.
 
-Change subject: route: handle default gateway (net_gateway) and nexthop tow=
-ards VPN server separately
-......................................................................
+Security fixes:
 
+* CVE-2025-13086: Fix memcmp check for the hmac verification in the 3way ha=
+ndshake.
+  This bug renders the HMAC based protection against state exhaustion on
+  receiving spoofed TLS handshake packets in the OpenVPN server inefficient.
 
-Patch Set 3:
+Bug fixes:
 
-(1 comment)
+* fix invalid pointer creation in tls_pre_decrypt() - technically this is
+  a memory over-read issue, in practice, the compilers optimize it away
+  so no negative effects could be observed.
+* Windows: in the interactive service, fix the "undo DNS config" handling.
+* Windows: in the interactive service, disallow using of "stdin" for the
+  config file, unless the caller is authorized OpenVPN Administrator
+* Windows: in the interactive service, change all netsh calls to use
+  interface index and not interface name - sidesteps all possible attack
+  avenues with special characters in interface names.
+* Windows: in the interactive service, improve error handling in
+  some "unlikely to happen" paths.
+* auth plugin/script handling: properly check for errors in creation on
+  $auth_failed_reason_file (arf).
+* for incoming TCP connections, close-on-exec option was applied to
+  the wrong socket fd, leaking socket FDs to child processes.
+* sitnl: set close-on-exec flag on netlink socket
+* ssl_mbedtls: fix missing perf_pop() call (optional performance profiling)
 
-Patchset:
+Windows MSI changes since 2.6.15-I001:
 
-PS2:
-> Done
-I think it would make sense to do the same for IPv6 as well (route_ipv6_lis=
-t, of course).  We do not have such a special target yet, but keeping the i=
-nfra symmetric sounds like a good idea...?
+* Built against OpenSSL 3.6.0
+* Included openvpn-gui updated to 11.58.0.0
+	* Check the return value of GetProp()
+	* Make config path check similar to that in interactive service
+	* Escape the type id of password message received from openvpn
+	* Add a message source for event logging
+	* Check correct management daemon path when OpenVPN3 is enabled
+	* Fix OpenVPN3 radio button label size when OVPN3 is enabled
+	* Use GetTempPath() for debug file in plap as well
+	* Migrate all saved plain usernames to encrypted format
+* Included win-dco driver updated to 2.8.0
 
-(The IPv4 part looks good)
+More details can be found in the Changes document:
 
+<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
 
+(The Changes document also contains a section with work-arounds for
+common problems encountered when using OpenVPN with OpenSSL 3)
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Source code and Windows installers can be downloaded from our download page:
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3
-Gerrit-Change-Number: 1222
-Gerrit-PatchSet: 3
-Gerrit-Owner: mrbff <marco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: mrbff <marco@...2726...>
-Gerrit-Comment-Date: Tue, 18 Nov 2025 18:42:28 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: mrbff <marco@...2726...>
+<https://openvpn.net/community/>
 
---wxbaJySlFkM=
-Content-Type: text/html; charset="UTF-8"
+Debian and Ubuntu packages are available in the official apt repositories:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbun=
+tu:UsingOpenVPNaptrepositories>
+
+On Red Hat derivatives we recommend using the Fedora Copr repository.
+
+<https://copr.fedorainfracloud.org/coprs/g/OpenVPN/openvpn-release-2.6/>
+
+Kind regards,
+Yuriy Darnobyt=
+
+--Apple-Mail=_400FC8E1-DFF5-4E98-B683-5CE3E0CDF4EC
+Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, mrbff, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1222?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Done=
-</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">I think it would make sense to do the same for IPv6 as we=
-ll (route_ipv6_list, of course).  We do not have such a special target yet,=
- but keeping the infra symmetric sounds like a good idea...?</p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">(The IPv4 =
-part looks good)</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail">change 1222</a>. To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
-envpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1222?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
+=3Dus-ascii"></head><body style=3D"overflow-wrap: break-word; -webkit-nbsp-=
+mode: space; line-break: after-white-space;"><span style=3D"caret-color: rg=
+b(0, 0, 0); color: rgb(0, 0, 0);">The OpenVPN community project team is pro=
+ud to release OpenVPN 2.6.16.</span><br style=3D"caret-color: rgb(0, 0, 0);=
+ color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0=
+, 0, 0);"><font color=3D"#000000"><span style=3D"caret-color: rgb(0, 0, 0);=
+">This is a bugfix release containing one security fix.</span></font><br st=
+yle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret-=
+color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><div>Security fixes:</div><div><=
+br></div><div>* CVE-2025-13086: Fix memcmp check for the hmac verification =
+in the 3way handshake.</div><div>&nbsp; This bug renders the HMAC based pro=
+tection against state exhaustion on</div><div>&nbsp; receiving spoofed TLS =
+handshake packets in the OpenVPN server inefficient.</div><div><br></div><d=
+iv>Bug fixes:</div><div><br></div><div>* fix invalid pointer creation in tl=
+s_pre_decrypt() - technically this is</div><div>&nbsp; a memory over-read i=
+ssue, in practice, the compilers optimize it away</div><div>&nbsp; so no ne=
+gative effects could be observed.</div><div>* Windows: in the interactive s=
+ervice, fix the "undo DNS config" handling.</div><div>* Windows: in the int=
+eractive service, disallow using of "stdin" for the</div><div>&nbsp; config=
+ file, unless the caller is authorized OpenVPN Administrator</div><div>* Wi=
+ndows: in the interactive service, change all netsh calls to use</div><div>=
+&nbsp; interface index and not interface name - sidesteps all possible atta=
+ck</div><div>&nbsp; avenues with special characters in interface names.</di=
+v><div>* Windows: in the interactive service, improve error handling in</di=
+v><div>&nbsp; some "unlikely to happen" paths.</div><div>* auth plugin/scri=
+pt handling: properly check for errors in creation on</div><div>&nbsp; $aut=
+h_failed_reason_file (arf).</div><div>* for incoming TCP connections, close=
+-on-exec option was applied to</div><div>&nbsp; the wrong socket fd, leakin=
+g socket FDs to child processes.</div><div>* sitnl: set close-on-exec flag =
+on netlink socket</div><div>* ssl_mbedtls: fix missing perf_pop() call (opt=
+ional performance profiling)</div><br style=3D"caret-color: rgb(0, 0, 0); c=
+olor: rgb(0, 0, 0);"><div>Windows MSI changes since 2.6.15-I001:</div><div>=
+<br></div><div>* Built against OpenSSL 3.6.0</div><div>* Included openvpn-g=
+ui updated to 11.58.0.0</div><div><span class=3D"Apple-tab-span" style=3D"w=
+hite-space:pre">	</span>* Check the return value of GetProp()</div><div><sp=
+an class=3D"Apple-tab-span" style=3D"white-space:pre">	</span>* Make config=
+ path check similar to that in interactive service</div><div><span class=3D=
+"Apple-tab-span" style=3D"white-space:pre">	</span>* Escape the type id of =
+password message received from openvpn</div><div><span class=3D"Apple-tab-s=
+pan" style=3D"white-space:pre">	</span>* Add a message source for event log=
+ging</div><div><span class=3D"Apple-tab-span" style=3D"white-space:pre">	</=
+span>* Check correct management daemon path when OpenVPN3 is enabled</div><=
+div><span class=3D"Apple-tab-span" style=3D"white-space:pre">	</span>* Fix =
+OpenVPN3 radio button label size when OVPN3 is enabled</div><div><span clas=
+s=3D"Apple-tab-span" style=3D"white-space:pre">	</span>* Use GetTempPath() =
+for debug file in plap as well</div><div><span class=3D"Apple-tab-span" sty=
+le=3D"white-space:pre">	</span>* Migrate all saved plain usernames to encry=
+pted format</div><div>* Included win-dco driver updated to 2.8.0</div><br s=
+tyle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"car=
+et-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">More details can be found in =
+the Changes document:</span><br style=3D"caret-color: rgb(0, 0, 0); color: =
+rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);=
+"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</spa=
+n><a href=3D"https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rs=
+t">https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst</a><span=
+ style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><br s=
+tyle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret=
+-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb=
+(0, 0, 0); color: rgb(0, 0, 0);">(The Changes document also contains a sect=
+ion with work-arounds for</span><br style=3D"caret-color: rgb(0, 0, 0); col=
+or: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, =
+0, 0);">common problems encountered when using OpenVPN with OpenSSL 3)</spa=
+n><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=
+=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-c=
+olor: rgb(0, 0, 0); color: rgb(0, 0, 0);">Source code and Windows installer=
+s can be downloaded from our download page:</span><br style=3D"caret-color:=
+ rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0)=
+; color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rg=
+b(0, 0, 0);">&lt;</span><a href=3D"https://openvpn.net/community/">https://=
+openvpn.net/community/</a><span style=3D"caret-color: rgb(0, 0, 0); color: =
+rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: rgb(0, 0, 0); color: rg=
+b(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">=
+<span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">Debian and =
+Ubuntu packages are available in the official apt repositories:</span><br s=
+tyle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret=
+-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"caret-color: rgb=
+(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"https://community.op=
+envpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrep=
+ositories">https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#=
+DebianUbuntu:UsingOpenVPNaptrepositories</a><span style=3D"caret-color: rgb=
+(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><br style=3D"caret-color: rgb(0=
+, 0, 0); color: rgb(0, 0, 0);"><br style=3D"caret-color: rgb(0, 0, 0); colo=
+r: rgb(0, 0, 0);"><span style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0=
+, 0);">On Red Hat derivatives we recommend using the Fedora Copr repository=
+.</span><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br s=
+tyle=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><span style=3D"car=
+et-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&lt;</span><a href=3D"https:/=
+/copr.fedorainfracloud.org/coprs/g/OpenVPN/openvpn-release-2.6/">https://co=
+pr.fedorainfracloud.org/coprs/g/OpenVPN/openvpn-release-2.6/</a><span style=
+=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">&gt;</span><div><span =
+style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"><br></span></div>=
+<div><p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal=
+; font-width: normal; line-height: normal; font-size-adjust: none; font-ker=
+ning: auto; font-variant-alternates: normal; font-variant-ligatures: normal=
+; font-variant-numeric: normal; font-variant-east-asian: normal; font-varia=
+nt-position: normal; font-variant-emoji: normal; font-feature-settings: nor=
+mal; font-optical-sizing: auto; font-variation-settings: normal; color: rgb=
+(0, 0, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0=
+, 0, 0);"><span style=3D"font-kerning: none">Kind regards,</span></p>
+<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
+t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
+ auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
+t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
+sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
+font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
+, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
+0);"><span style=3D"font-kerning: none">Yuriy Darnobyt</span></p></div></bo=
+dy></html>=
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I16d90221d0a75193035253817ff=
-195f6da9dc0b3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1222 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 18 Nov 2025 18:42:28=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: mrbff &lt;marco@...2804...=
-.&gt; </div>
-
-</body></html>=
-
---wxbaJySlFkM=--
+--Apple-Mail=_400FC8E1-DFF5-4E98-B683-5CE3E0CDF4EC--
 
