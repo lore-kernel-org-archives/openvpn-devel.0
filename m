@@ -1,11 +1,10 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 19 Nov 2025 15:01:43 +0100
-Message-ID: <20251119140149.31867-1-gert@...1296...>
-In-Reply-To: <gerrit.1761488400000.I0579d18c784e2ac16973d5553992c28f281a0900@...2715...>
-References: <gerrit.1761488400000.I0579d18c784e2ac16973d5553992c28f281a0900@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] Add option to check tls-crypt-v2 key
- timestamps
+From: Jon Chiappetta <root@...2904...>
+Date: Wed, 19 Nov 2025 09:19:35 -0500
+Message-ID: <CAOh3LPOnR5qbF-8xRuJFfZhWW25wNXBK3cUwC710cK4kRcSVpA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000c35d8d0643f345d6"
+References: <CAOh3LPOnR5qbF-8xRuJFfZhWW25wNXBK3cUwC710cK4kRcSVpA.ref@...278...>
+Subject: [Openvpn-devel] Old/New IP - Logic Redo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,188 +13,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Max Fillinger <max@...2606...>
+--000000000000c35d8d0643f345d6
+Content-Type: text/plain; charset="UTF-8"
 
-This commit adds the option --tls-crypt-v2-max-age n. When a client key
-is older than n days or has no timestamp, the server rejects it.
+Hi all,
 
-Based on work by Rein van Baaren for Sentyron.
+This is something I noticed recently with potential connection
+interruptions which could occur which the original older code checked for!
 
-Co-authored-by: Rein van Baaren <revaban04@...2783...>
-Change-Id: I0579d18c784e2ac16973d5553992c28f281a0900
-Signed-off-by: Max Fillinger <max@...2606...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1304
----
+https://github.com/OpenVPN/openvpn/pull/910
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+There was an update pushed earlier this year which undid some important
+logic in terms of learning/unlearning the ifconfig IP address. The older
+original code would check that the new/old IPs don't match first before
+performing that logic. I believe this was important and correct because it
+could cause connection interruptions during the learn/unlearn process if
+the IP address has stayed the same!
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1304
-This mail reflects revision 6 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
-
-        
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index db107e6..63cb32f 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -568,6 +568,10 @@
-   The command can reject the connection by exiting with a non-zero exit
-   code.
- 
-+--tls-crypt-v2-max-age n
-+  Reject tls-crypt-v2 client keys that are older than n days or have
-+  no timestamp.
-+
- --tls-exit
-   Exit on TLS negotiation failure. This option can be useful when you only
-   want to make one attempt at connecting, e.g. in a test or monitoring script.
-diff --git a/doc/tls-crypt-v2.txt b/doc/tls-crypt-v2.txt
-index 7dcd041..c2e9deb 100644
---- a/doc/tls-crypt-v2.txt
-+++ b/doc/tls-crypt-v2.txt
-@@ -139,7 +139,10 @@
-    The message is dropped and no error response is sent when either 3.1, 3.2 or
-    3.3 fails (DoS protection).
- 
--4. Server optionally checks metadata using a --tls-crypt-v2-verify script
-+4. The server optionally checks if the client key contains a timestamp that is
-+   below a maximum age configured with the --tls-crypt-v2-max-age option.
-+
-+5. Server optionally checks metadata using a --tls-crypt-v2-verify script
- 
-    This allows early abort of connection, *before* we expose any of the
-    notoriously dangerous TLS, X.509 and ASN.1 parsers and thereby reduces the
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 8d95d5c..fc079e1 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3418,6 +3418,7 @@
-         {
-             to.tls_wrap.tls_crypt_v2_server_key = c->c1.ks.tls_crypt_v2_server_key;
-             to.tls_crypt_v2_verify_script = c->options.tls_crypt_v2_verify_script;
-+            to.tls_crypt_v2_max_age = c->options.tls_crypt_v2_max_age;
-             if (options->ce.tls_crypt_v2_force_cookie)
-             {
-                 to.tls_wrap.opt.flags |= CO_FORCE_TLSCRYPTV2_COOKIE;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ecf9374..e1a9a61 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -650,6 +650,8 @@
-     "                  fresh tls-crypt-v2 server key, and store to keyfile\n"
-     "--tls-crypt-v2-verify cmd : Run command cmd to verify the metadata of the\n"
-     "                  client-supplied tls-crypt-v2 client key\n"
-+    "--tls-crypt-v2-max-age n : Only accept tls-crypt-v2 client keys that have a\n"
-+    "                  timestamp which is at most n days old.\n"
-     "--askpass [file]: Get PEM password from controlling tty before we daemonize.\n"
-     "--auth-nocache  : Don't cache --askpass or --auth-user-pass passwords.\n"
-     "--crl-verify crl ['dir']: Check peer certificate against a CRL.\n"
-@@ -9084,6 +9086,14 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->tls_crypt_v2_verify_script = p[1];
-     }
-+    else if (streq(p[0], "tls-crypt-v2-max-age") && p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_GENERAL);
-+        if (!atoi_constrained(p[1], &options->tls_crypt_v2_max_age, "tls-crypt-v2-max-age", 1, INT_MAX, msglevel))
-+        {
-+            goto err;
-+        }
-+    }
-     else if (streq(p[0], "x509-track") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 9d2ff9f..42db9ca 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -678,6 +678,8 @@
- 
-     const char *tls_crypt_v2_verify_script;
- 
-+    int tls_crypt_v2_max_age;
-+
-     /* Allow only one session */
-     bool single_session;
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index de89d30..0402a6a 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -383,6 +383,7 @@
- 
-     bool tls_crypt_v2;
-     const char *tls_crypt_v2_verify_script;
-+    int tls_crypt_v2_max_age;
- 
-     /** TLS handshake wrapping state */
-     struct tls_wrap_ctx tls_wrap;
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index a808de3..7d78d8e 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -29,6 +29,7 @@
- #include "argv.h"
- #include "base64.h"
- #include "crypto.h"
-+#include "integer.h"
- #include "platform.h"
- #include "run_command.h"
- #include "session_id.h"
-@@ -528,6 +529,34 @@
- }
- 
- static bool
-+tls_crypt_v2_check_client_key_age(const struct tls_wrap_ctx *ctx, int max_days)
-+{
-+    if (ctx->tls_crypt_v2_metadata.len < 1 + sizeof(int64_t))
-+    {
-+        msg(M_WARN, "ERROR: Client key metadata is too small to contain a timestamp.");
-+        return false;
-+    }
-+
-+    const uint8_t *metadata = ctx->tls_crypt_v2_metadata.data;
-+    if (*metadata != TLS_CRYPT_METADATA_TYPE_TIMESTAMP)
-+    {
-+        msg(M_WARN, "ERROR: Client key does not have a timestamp.");
-+        return false;
-+    }
-+
-+    int64_t timestamp;
-+    memcpy(&timestamp, metadata + 1, sizeof(int64_t));
-+    timestamp = (int64_t)ntohll((uint64_t)timestamp);
-+    int64_t max_age_in_seconds = max_days * 24 * 60 * 60;
-+    if (now - timestamp > max_age_in_seconds)
-+    {
-+        msg(M_WARN, "ERROR: Client key is too old.");
-+        return false;
-+    }
-+    return true;
-+}
-+
-+static bool
- tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx *ctx, const struct tls_options *opt)
+```
+commit 5e4c9a69eaf9d32e85613bd71ed219fdbb062d34
+Author: Marco Baffo <marco@...2726...>
+Date:   Fri Oct 17 22:19:12 2025 +0200
+...
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const
+char *old_ip, const char *old_ipv6)
++update_vhash(struct multi_context *m, struct multi_instance *mi, const
+char *new_ip, const char *new_ipv6)
  {
-     bool ret = false;
-@@ -642,6 +671,12 @@
-         return false;
-     }
- 
-+    if (opt && opt->tls_crypt_v2_max_age > 0 && !tls_crypt_v2_check_client_key_age(ctx, opt->tls_crypt_v2_max_age))
-+    {
-+        secure_memzero(&ctx->original_wrap_keydata, sizeof(ctx->original_wrap_keydata));
-+        return false;
-+    }
-+
-     if (opt && opt->tls_crypt_v2_verify_script && !tls_crypt_v2_verify_metadata(ctx, opt))
+-    struct in_addr addr;
+-    struct in6_addr new_ipv6;
+-
+-    if ((mi->context.options.ifconfig_local && (!old_ip || strcmp(old_ip,
+mi->context.options.ifconfig_local)))
+-        && inet_pton(AF_INET, mi->context.options.ifconfig_local, &addr)
+== 1)
++    if (new_ip)
      {
-         secure_memzero(&ctx->original_wrap_keydata, sizeof(ctx->original_wrap_keydata));
+```
+
+Thanks,
+Jon C
+
+--000000000000c35d8d0643f345d6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi all,<div><br></div><div>This is something I noticed rec=
+ently with potential connection interruptions which could occur which the o=
+riginal older code checked for!</div><div><br></div><div><a href=3D"https:/=
+/github.com/OpenVPN/openvpn/pull/910">https://github.com/OpenVPN/openvpn/pu=
+ll/910</a><br></div><div><br></div><div>There was an update pushed earlier =
+this year which undid some important logic in terms of learning/unlearning =
+the ifconfig IP address. The older original code would check that the new/o=
+ld IPs don&#39;t match first before performing that logic. I believe this w=
+as important and correct because it could cause connection interruptions du=
+ring the learn/unlearn process if the IP address has stayed the same!<br><b=
+r>```<br>commit 5e4c9a69eaf9d32e85613bd71ed219fdbb062d34<br>Author: Marco B=
+affo &lt;<a href=3D"mailto:marco@...2726...">marco@...2726...</a>&gt;<br>Da=
+te: =C2=A0 Fri Oct 17 22:19:12 2025 +0200<br>...<br>-update_vhash(struct mu=
+lti_context *m, struct multi_instance *mi, const char *old_ip, const char *=
+old_ipv6)<br>+update_vhash(struct multi_context *m, struct multi_instance *=
+mi, const char *new_ip, const char *new_ipv6)<br>=C2=A0{<br>- =C2=A0 =C2=A0=
+struct in_addr addr;<br>- =C2=A0 =C2=A0struct in6_addr new_ipv6;<br>-<br>- =
+=C2=A0 =C2=A0if ((mi-&gt;context.options.ifconfig_local &amp;&amp; (!old_ip=
+ || strcmp(old_ip, mi-&gt;context.options.ifconfig_local)))<br>- =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0&amp;&amp; inet_pton(AF_INET, mi-&gt;context.options.ifcon=
+fig_local, &amp;addr) =3D=3D 1)<br>+ =C2=A0 =C2=A0if (new_ip)<br>=C2=A0 =C2=
+=A0 =C2=A0{<br>```<br></div><div><br></div><div>Thanks,</div><div>Jon C</di=
+v><div><br></div></div>
+
+--000000000000c35d8d0643f345d6--
 
