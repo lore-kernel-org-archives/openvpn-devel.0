@@ -1,11 +1,10 @@
-Content-Type: multipart/alternative;
- boundary="------------BmX6kjLqCJSLWjz6cJwr6Wp9"
-Message-ID: <1ba493b5-bbb1-4bfe-aae6-c94fece4a716@...2722...>
-Date: Wed, 19 Nov 2025 14:38:04 +0100
-MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Date: Wed, 19 Nov 2025 14:41:07 +0100 (CET)
+Message-Id: <202511191341.5AJDf7dm000485@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251119114041.17665-1-gert@...1296...>
+References: <20251119114041.17665-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: route: handle default gateway
+ (net_gateway) and nexthop towards VPN server separately
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,140 +13,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Marco Baffo <marco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------BmX6kjLqCJSLWjz6cJwr6Wp9
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In it goes, at last...  I was wondering for a long time if we really need
+this, but it turns out that we have users that do stuff like "talk openvpn
+via a proxy on 127.0.0.5" plus "--route 1.1.1.1 net_gateway" and this now
+broke with 2.7* (see GH #890).  The initial patch fixed $env{net_gateway}
+but not "--route net_gateway" - for that we really need to store the 
+two different sorts of gateway in the "route_list" / "route_ipv6_list" 
+structures.
 
-Meeting summary for 19 November 2025:
+The log will look a bit redundant now
 
-  *
+2025-11-19 12:40:14 net_route_v4_best_gw query: dst 0.0.0.0
+2025-11-19 12:40:14 net_route_v4_best_gw result: via 194.97.140.30 dev enp0s18
+2025-11-19 12:40:14 net_route_v4_best_gw query: dst 0.0.0.0
+2025-11-19 12:40:14 net_route_v4_best_gw result: via 194.97.140.30 dev enp0s18
+2025-11-19 12:40:14 net_route_v6_best_gw query: dst ::
+2025-11-19 12:40:14 net_route_v6_best_gw result: via 2001:608:0:814::ffff dev enp0s18
+2025-11-19 12:40:14 net_route_v6_best_gw query: dst ::1
+2025-11-19 12:40:14 net_route_v6_best_gw result: via :: dev lo
 
-    *Updated: Release 2.7*
-    OpenVPN 2.7rc2 went out containing among other things 2 CVE fixes.
-    CVE-2025-12106: IPv6 address parsing: fix buffer overread on invalid
-    input
-    CVE-2025-13086: HMAC verification check: fix incorrect memcmp() call
-    The latter of these two also applies to the 2.6 branch, therefore a
-    2.6.16 release was done.
+(this was "--remote ::1") - but adding another clause to "only call the
+other gateway query if the address is different" or more #ifdefs to 
+"only do this on Linux and Windows where it makes a difference" would 
+have been a bit excessive...
 
-  *
+Now let's see if we'll hit even more corner cases :-) - it passes all
+my normal tests, plus the things I've learned from #860.
 
-    *Updated: Release 2.6.16*
-    Some of the issues for 2.7 also affected 2.6 code, therefore 2.6.16
-    with a fix for a CVE issue was released.
-    CVE-2025-13086: HMAC verification check: fix incorrect memcmp() call
+Your patch has been applied to the master branch.
 
-  *
+commit 2777cdd3783776a91514804233c5e2b715d11d64 (master)
+Author: Marco Baffo
+Date:   Wed Nov 19 12:40:35 2025 +0100
 
-    *Updated: 2.7 security audit*
-    ordex arranged mostly through STF funding to get a security audit of
-    OpenVPN 2.7 (currently in release candidate phase).
-    Recently this has kicked off and 2.7 is being put through the meat
-    grinder now by SRLabs.
-    We are processing these reports as well as reports from ZeroPath and
-    addressing concerns raised.
+     route: handle default gateway (net_gateway) and nexthop towards VPN server separately
 
-  *
+     Signed-off-by: Marco Baffo <marco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1222
+     Message-Id: <20251119114041.17665-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34529.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-    *Updated: t_server and t_client testing framework*
-    mattock asked where to put the t_server stack as it is currently on
-    ordex's open source fund funded AWS account but funds might dry up
-    there.
-    Discussed option to move it to OpenVPN Inc. funded AWS community
-    account. Will explore this option.
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+--
+kind regards,
 
-Kind regards,
-Johan Draaisma
+Gert Doering
 
---------------BmX6kjLqCJSLWjz6cJwr6Wp9
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 19 November 2025:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.7</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          OpenVPN 2.7rc2 went out containing among other things 2 CVE
-          fixes.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          CVE-2025-12106: IPv6 address parsing: fix buffer overread on
-          invalid input<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          CVE-2025-13086: HMAC verification check: fix incorrect
-          memcmp() call<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          The latter of these two also applies to the 2.6 branch,
-          therefore a 2.6.16 release was done.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            Release 2.6.16</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Some of the issues for 2.7 also affected 2.6 code, therefore
-          2.6.16 with a fix for a CVE issue was released.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          CVE-2025-13086: HMAC verification check: fix incorrect
-          memcmp() call</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            2.7 security audit</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          ordex arranged mostly through STF funding to get a security
-          audit of OpenVPN 2.7 (currently in release candidate phase).<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Recently this has kicked off and 2.7 is being put through the
-          meat grinder now by SRLabs.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We are processing these reports as well as reports from
-          ZeroPath and addressing concerns raised.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            t_server and t_client testing framework</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          mattock asked where to put the t_server stack as it is
-          currently on ordex's open source fund funded AWS account but
-          funds might dry up there.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Discussed option to move it to OpenVPN Inc. funded AWS
-          community account. Will explore this option.</p>
-      </li>
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
-
---------------BmX6kjLqCJSLWjz6cJwr6Wp9--
 
