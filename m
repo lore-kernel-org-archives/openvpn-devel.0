@@ -1,11 +1,10 @@
+Date: Wed, 19 Nov 2025 17:48:24 +0100 (CET)
+Message-Id: <202511191648.5AJGmOXv006903@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 19 Nov 2025 17:29:28 +0100
-Message-ID: <20251119162934.15672-1-gert@...1296...>
-In-Reply-To: <gerrit.1763565716000.I1633ee6207443e041434e9f0dda98afd5a22e1b4@...2715...>
-References: <gerrit.1763565716000.I1633ee6207443e041434e9f0dda98afd5a22e1b4@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] GHA: Add macos-26 and remove OpenSSL 1.1
- builds on macOS
+In-Reply-To: <20251119140149.31867-1-gert@...1296...>
+References: <20251119140149.31867-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add option to check
+ tls-crypt-v2 key timestamps
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Max Fillinger <max@...2606...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+I have not really reviewed this, just run a few tests on the tls-crypt-v2
+server side testbed (which has a verify script, but no timestamps), and
+it passes.  Memory and integer arithmetics look reasonable, the compilers
+to not complain (-Wconversion -Werror).
 
-The new runner doesn't have OpenSSL 1.1 available anymore
-via homebrew. The formula is also marked as "deprecated"
-for older macOS versions. So I think it is okay to drop
-it.
+Your patch has been applied to the master branch.
 
-Change-Id: I1633ee6207443e041434e9f0dda98afd5a22e1b4
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1382
----
+commit 20b234b23d483cecfb5dec07ae5f9d8b393847a7
+Author: Max Fillinger
+Date:   Wed Nov 19 15:01:43 2025 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Add option to check tls-crypt-v2 key timestamps
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1382
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Max Fillinger <max@...2606...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1304
+     Message-Id: <20251119140149.31867-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34545.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Yuriy Darnobyt <yura.uddr@...277...>
 
-        
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 96d2292..357072d 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -210,9 +210,9 @@
-     strategy:
-       fail-fast: false
-       matrix:
--        ssllib: [openssl@...2560..., openssl@...1554..., libressl]
-+        ssllib: [openssl@...1554..., libressl]
-         build: [normal, asan]
--        os: [macos-14, macos-15]
-+        os: [macos-14, macos-15, macos-26]
-         include:
-           - build: asan
-             cflags: "-fsanitize=address,undefined -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+--
+kind regards,
+
+Gert Doering
+
 
