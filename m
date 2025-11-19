@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 19 Nov 2025 17:48:36 +0000
-In-Reply-To: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
-References: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <e12cec3612bba296a88b26d73465fccde8e95f51-EmailReplacePatchSet-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 19 Nov 2025 18:28:50 +0000
+In-Reply-To: <gerrit.1763574430000.Id429241e1b17a8ff51d9019efc357c910f3bde4c@...2715...>
+References: <gerrit.1763574430000.Id429241e1b17a8ff51d9019efc357c910f3bde4c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <a7972e097a1c8e80b8028dab7acc330806298973-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NtLnQcQJTYE="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: tun: Refactor BSD
- write_tun/read_tun
+Content-Type: multipart/alternative; boundary="0H10xAsAWFM="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Extend '--multihome'
+ to selectively ignore the incoming interface index.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,694 +22,306 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NtLnQcQJTYE=
+--0H10xAsAWFM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, plaisthos.
+Attention is currently required from: plaisthos.
 
-Hello cron2, plaisthos,
+Hello plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail
 
-to look at the new patch set (#5).
+to look at the new patch set (#2).
 
 
-Change subject: tun: Refactor BSD write_tun/read_tun
+Change subject: Extend '--multihome' to selectively ignore the incoming int=
+erface index.
 ......................................................................
 
-tun: Refactor BSD write_tun/read_tun
+Extend '--multihome' to selectively ignore the incoming interface index.
 
-There was a lot of duplicated code, merge it together.
+Traditional OpenVPN ``--multihome`` behaviour is to send packets out the
+same interface that they were received on (copy ipi_ifindex from ingress
+to egress packet info).  For some scenarios this makes sense, for other
+scenarios it is breaking connectivity when there are no routes pointing
+out the ingress interface (intentionally asymmetric traffic).
 
-Change-Id: Ifd9384287648d1f37a625d9ed6a09733208fa56c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Add a flag ``--multihome ignore-iif`` to always send out packets with
+ipi_ifindex =3D 0, to follow normal system interface selection rules.
+
+Github: OpenVPN/openvpn#855
+Github: OpenVPN/openvpn#554
+
+Change-Id: Id429241e1b17a8ff51d9019efc357c910f3bde4c
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/tun.c
-1 file changed, 20 insertions(+), 229 deletions(-)
+M doc/man-sections/server-options.rst
+M src/openvpn/options.c
+M src/openvpn/socket.c
+M src/openvpn/socket.h
+4 files changed, 22 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1378/5
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/1383/2
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 06b7ae5..90505a0 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1685,10 +1685,10 @@
- #endif
- }
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
+options.rst
+index 739be22..562783b 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -342,7 +342,7 @@
+   by ``--ifconfig-ipv6``, OpenVPN will install a /128 host route for the
+   ``ipv6addr`` IP address.
 
--#if defined(TARGET_OPENBSD) || defined(TARGET_DARWIN)
-+#if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defined(TARGET=
-_NETBSD) || defined(TARGET_OPENBSD) || defined(TARGET_DARWIN)
+---multihome
++--multihome [ignore-iif]
+   Configure a multi-homed UDP server. This option needs to be used when a
+   server has more than one IP address (e.g. multiple interfaces, or
+   secondary IP addresses), and is not using ``--local`` to force binding
+@@ -354,11 +354,13 @@
 
- /*
-- * OpenBSD and Mac OS X when using utun
-+ * BSDs and Mac OS X when using utun
-  * have a slightly incompatible TUN device from
-  * the rest of the world, in that it prepends a
-  * uint32 to the beginning of the IP header
-@@ -1733,11 +1733,9 @@
+   *Notes:*
+     -  This option is only relevant for UDP servers.
+-    -  If you do an IPv6+IPv4 dual-stack bind on a Linux machine with
+-       multiple IPv4 address, connections to IPv4 addresses will not
+-       work right on kernels before 3.15, due to missing kernel
+-       support for the IPv4-mapped case (some distributions have
+-       ported this to earlier kernel versions, though).
++    -  This will copy the "ip_ifindex" from the incoming to the outgoing
++       packet by default, that is, try to send the packet out over the
++       same interface where it came in on.  This might not work if there
++       are not usable routes on that interface.
++    -  if the ``ignore-iif`` flag is added, the outgoing interface index
++       is set to ``0``, which means "do not force a particular outgoing
++       interface, use whatever the system will choose".
+
+ --iroute args
+   Generate an internal route to a specific client. The ``netmask``
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4794315..1243e54 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6335,10 +6335,18 @@
+         options->mlock =3D true;
+     }
+ #if ENABLE_IP_PKTINFO
+-    else if (streq(p[0], "multihome") && !p[1])
++    else if (streq(p[0], "multihome") && !p[2])
      {
-         u_int32_t type;
-         struct iovec iv[2];
--        struct openvpn_iphdr *iph;
-+        struct ip *iph =3D (struct ip *)buf;
-
--        iph =3D (struct openvpn_iphdr *)buf;
--
--        if (OPENVPN_IPH_GET_VER(iph->version_len) =3D=3D 6)
-+        if (iph->ip_v =3D=3D 6)
-         {
-             type =3D htonl(AF_INET6);
-         }
-@@ -1784,7 +1782,22 @@
- #pragma GCC diagnostic pop
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->sockflags |=3D SF_USE_IP_PKTINFO;
++        if (p[1] && streq(p[1], "ignore-iif"))
++        {
++            options->sockflags |=3D SF_PKTINFO_IGN_IIF;
++        }
++        else if (p[1])
++        {
++            msg(msglevel, "Unknown parameter to --multihome: %s", p[1]);
++        }
+     }
  #endif
-
--#endif /* if defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */
-+#if !defined(TARGET_DARWIN)
-+int
-+write_tun(struct tuntap *tt, uint8_t *buf, int len)
-+{
-+    return write_tun_header(tt, buf, len);
-+}
-+
-+int
-+read_tun(struct tuntap *tt, uint8_t *buf, int len)
-+{
-+    return read_tun_header(tt, buf, len);
-+}
-+#endif
-+
-+
-+#endif /* defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defined(=
-TARGET_NETBSD) || if defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */
-
- bool
- tun_name_is_fixed(const char *dev)
-@@ -2688,18 +2701,6 @@
-     argv_free(&argv);
- }
-
--int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    return write_tun_header(tt, buf, len);
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    return read_tun_header(tt, buf, len);
--}
--
- #elif defined(TARGET_NETBSD)
-
- /*
-@@ -2801,88 +2802,8 @@
-     argv_free(&argv);
- }
-
--static inline int
--netbsd_modify_read_write_return(int len)
--{
--    if (len > 0)
--    {
--        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
--    }
--    else
--    {
--        return len;
--    }
--}
--
--int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--        struct openvpn_iphdr *iph;
--
--        iph =3D (struct openvpn_iphdr *)buf;
--
--        if (OPENVPN_IPH_GET_VER(iph->version_len) =3D=3D 6)
--        {
--            type =3D htonl(AF_INET6);
--        }
--        else
--        {
--            type =3D htonl(AF_INET);
--        }
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return netbsd_modify_read_write_return(writev(tt->fd, iv, 2));
--    }
--    else
--    {
--        return write(tt->fd, buf, len);
--    }
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return netbsd_modify_read_write_return(readv(tt->fd, iv, 2));
--    }
--    else
--    {
--        return read(tt->fd, buf, len);
--    }
--}
--
- #elif defined(TARGET_FREEBSD)
-
--static inline int
--freebsd_modify_read_write_return(int len)
--{
--    if (len > 0)
--    {
--        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
--    }
--    else
--    {
--        return len;
--    }
--}
--
- void
- open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
-ct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
-@@ -2955,84 +2876,8 @@
-     argv_free(&argv);
- }
-=20
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
--int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--        struct ip *iph;
--
--        iph =3D (struct ip *)buf;
--
--        if (iph->ip_v =3D=3D 6)
--        {
--            type =3D htonl(AF_INET6);
--        }
--        else
--        {
--            type =3D htonl(AF_INET);
--        }
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return freebsd_modify_read_write_return(writev(tt->fd, iv, 2));
--    }
--    else
--    {
--        return write(tt->fd, buf, len);
--    }
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return freebsd_modify_read_write_return(readv(tt->fd, iv, 2));
--    }
--    else
--    {
--        return read(tt->fd, buf, len);
--    }
--}
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #elif defined(TARGET_DRAGONFLY)
-
--static inline int
--dragonfly_modify_read_write_return(int len)
--{
--    if (len > 0)
--    {
--        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
--    }
--    else
--    {
--        return len;
--    }
--}
--
- void
- open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
-ct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
-@@ -3059,60 +2904,6 @@
-     free(tt);
- }
-
--int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--        struct ip *iph;
--
--        iph =3D (struct ip *)buf;
--
--        if (iph->ip_v =3D=3D 6)
--        {
--            type =3D htonl(AF_INET6);
--        }
--        else
--        {
--            type =3D htonl(AF_INET);
--        }
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return dragonfly_modify_read_write_return(writev(tt->fd, iv, 2));
--    }
--    else
--    {
--        return write(tt->fd, buf, len);
--    }
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return dragonfly_modify_read_write_return(readv(tt->fd, iv, 2));
--    }
--    else
--    {
--        return read(tt->fd, buf, len);
--    }
--}
--
- #elif defined(TARGET_DARWIN)
-
- /* Darwin (MacOS X) is mostly "just use the generic stuff", but there
+     else if (streq(p[0], "verb") && p[1] && !p[2])
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 8b6e35e..0217408 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2393,7 +2393,8 @@
+         {
+ #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
+             struct in_pktinfo *pkti =3D (struct in_pktinfo *)CMSG_DATA(cms=
+g);
+-            from->pi.in4.ipi_ifindex =3D pkti->ipi_ifindex;
++            from->pi.in4.ipi_ifindex =3D
++                (sock->sockflags & SF_PKTINFO_IGN_IIF) ? 0 : pkti->ipi_ifi=
+ndex;
+             from->pi.in4.ipi_spec_dst =3D pkti->ipi_spec_dst;
+ #elif defined(IP_RECVDSTADDR)
+             from->pi.in4 =3D *(struct in_addr *)CMSG_DATA(cmsg);
+@@ -2406,7 +2407,8 @@
+                  && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in6_pktinfo=
+)))
+         {
+             struct in6_pktinfo *pkti6 =3D (struct in6_pktinfo *)CMSG_DATA(=
+cmsg);
+-            from->pi.in6.ipi6_ifindex =3D pkti6->ipi6_ifindex;
++            from->pi.in6.ipi6_ifindex =3D
++                (sock->sockflags & SF_PKTINFO_IGN_IIF) ? 0 : pkti6->ipi6_i=
+findex;
+             from->pi.in6.ipi6_addr =3D pkti6->ipi6_addr;
+         }
+         else if (cmsg !=3D NULL)
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 832d62e..d6ff258 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -195,6 +195,7 @@
+ #define SF_GETADDRINFO_DGRAM (1 << 4)
+ #define SF_DCO_WIN           (1 << 5)
+ #define SF_PREPEND_SA        (1 << 6)
++#define SF_PKTINFO_IGN_IIF   (1 << 7)
+     unsigned int sockflags;
+     int mark;
+     const char *bind_dev;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ifd9384287648d1f37a625d9ed6a09733208fa56c
-Gerrit-Change-Number: 1378
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: Id429241e1b17a8ff51d9019efc357c910f3bde4c
+Gerrit-Change-Number: 1383
+Gerrit-PatchSet: 2
+Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 
---NtLnQcQJTYE=
+--0H10xAsAWFM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #5</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">tun: Refactor BSD write_tun/read_tun<br><br>Ther=
-e was a lot of duplicated code, merge it together.<br><br>Change-Id: Ifd938=
-4287648d1f37a625d9ed6a09733208fa56c<br>Signed-off-by: Frank Lichtenheld &lt=
-;frank@...2641...&gt;<br>---<br>M src/openvpn/tun.c<br>1 file changed, 20 i=
-nsertions(+), 229 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ge=
-rrit.openvpn.net:29418/openvpn refs/changes/78/1378/5</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 06b7ae5..90505a=
-0 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/=
-openvpn/tun.c</span><br><span>@@ -1685,10 +1685,10 @@</span><br><span> #end=
-if</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#if defined(TARGET_OPENBSD) || defined(TARGET_DARWIN)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_FREE=
-BSD) || defined(TARGET_DRAGONFLY) || defined(TARGET_NETBSD) || defined(TARG=
-ET_OPENBSD) || defined(TARGET_DARWIN)</span><br><span> </span><br><span> /*=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * OpenBSD and Mac OS=
- X when using utun</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* BSDs and Mac OS X when using utun</span><br><span>  * have a slightly inc=
-ompatible TUN device from</span><br><span>  * the rest of the world, in tha=
-t it prepends a</span><br><span>  * uint32 to the beginning of the IP heade=
-r</span><br><span>@@ -1733,11 +1733,9 @@</span><br><span>     {</span><br><=
-span>         u_int32_t type;</span><br><span>         struct iovec iv[2];<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct openvpn=
-_iphdr *iph;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- struct ip *iph =3D (struct ip *)buf;</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        iph =3D (struct openvpn_iphdr *)b=
-uf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        if (OPENVPN_IPH_GET_VER(iph-&gt=
-;version_len) =3D=3D 6)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        if (iph-&gt;ip_v =3D=3D 6)</span><br><span>         {</span><br=
-><span>             type =3D htonl(AF_INET6);</span><br><span>         }</s=
-pan><br><span>@@ -1784,7 +1782,22 @@</span><br><span> #pragma GCC diagnosti=
-c pop</span><br><span> #endif</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#endif /* if defined (TARGET_OPENBSD) || defined(=
-TARGET_DARWIN) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-f !defined(TARGET_DARWIN)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+write_tun(=
-struct tuntap *tt, uint8_t *buf, int len)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return write_tun_header(tt, buf, len);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+read_tun(struct tuntap *tt=
-, uint8_t *buf, int len)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return re=
-ad_tun_header(tt, buf, len);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#endif /* defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFL=
-Y) || defined(TARGET_NETBSD) || if defined (TARGET_OPENBSD) || defined(TARG=
-ET_DARWIN) */</span><br><span> </span><br><span> bool</span><br><span> tun_=
-name_is_fixed(const char *dev)</span><br><span>@@ -2688,18 +2701,6 @@</span=
-><br><span>     argv_free(&amp;argv);</span><br><span> }</span><br><span> <=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tuntap *tt, uint8_t *bu=
-f, int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    return write_tun_header(tt=
-, buf, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-read_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return read_tun_header(tt, buf, len);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span> #elif defined(TARGET_NETBSD)</span><br><s=
-pan> </span><br><span> /*</span><br><span>@@ -2801,88 +2802,8 @@</span><br>=
-<span>     argv_free(&amp;argv);</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline int</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-netbsd_modify_read_write_return=
-(int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (len &gt; 0)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        return len &gt; sizeof(u_int32_t) ? len - =
-sizeof(u_int32_t) : 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return len;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tuntap *tt, uint8_t *buf, =
-int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&gt;type =3D=3D DEV_TY=
-PE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        u_int32_t type;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        struct iovec iv[2];<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct openvpn=
-_iphdr *iph;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        iph =3D (struct openvp=
-n_iphdr *)buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (OPENVPN_IPH_GET_=
-VER(iph-&gt;version_len) =3D=3D 6)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            type =3D htonl(AF_INET6);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            type=
- =3D htonl(AF_INET);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_base =3D (char *=
-)&amp;type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv=
-[0].iov_len =3D sizeof(type);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        iv[1].iov_base =3D buf;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        iv[1].iov_len =3D len;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        return netbsd_modify_read_write_return(writev(tt-&gt;fd, iv, =
-2));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        return write(tt-&gt;fd, buf, len);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-read_tun(struct tuntap *tt, uint8_t *buf,=
- int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&gt;type =3D=3D DEV_T=
-YPE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        u_int32_t type;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct iovec iv[2];=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_base =3D (char *)&amp;ty=
-pe;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_=
-len =3D sizeof(type);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        iv[1].iov_base =3D buf;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        iv[1].iov_len =3D len;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      return netbsd_modify_read_write_return(readv(tt-&gt;fd, iv, 2));</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        return read(tt-&gt;fd, buf, len);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span> #elif defined(TARGET_FREEBSD)</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-static inline int</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-freebsd_modify_read_write_return(int len)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    if (len &gt; 0)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        return len &gt; sizeof(u_int32_t) ? len - sizeof(u_int32_=
-t) : 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        return len;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void=
-</span><br><span> open_tun(const char *dev, const char *dev_type, const cha=
-r *dev_node, struct tuntap *tt,</span><br><span>          openvpn_net_ctx_t=
- *ctx)</span><br><span>@@ -2955,84 +2876,8 @@</span><br><span>     argv_fre=
-e(&amp;argv);</span><br><span> }</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic p=
-ush</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagno=
-stic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tuntap *tt, uint8_t *=
-buf, int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&gt;type =3D=3D D=
-EV_TYPE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        u_int32_t type;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct iovec iv=
-[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct ip=
- *iph;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        iph =3D (struct ip *)buf;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (iph-&gt;ip_v =3D=3D 6)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            type =3D htonl(AF_INET6);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            type =3D htonl(AF_INET);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       iv[0].iov_base =3D (char *)&amp;type;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(type);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base =3D buf;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_len =
-=3D len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        return freebsd_modify_read=
-_write_return(writev(tt-&gt;fd, iv, 2));</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        return write(tt-&g=
-t;fd, buf, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-read_=
-tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        u_int32_t type;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        struct iovec iv[2];</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  iv[0].iov_base =3D (char *)&amp;type;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(type);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base =3D buf;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_len =3D len=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        return freebsd_modify_read_write_=
-return(readv(tt-&gt;fd, iv, 2));</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e=
-lse</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        return read(tt-&gt;fd, buf=
-, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> #elif defined(TARGET_DRAGONFLY)</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static inlin=
-e int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dragonfly_modify=
-_read_write_return(int len)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (len &g=
-t; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        return len &gt; sizeof(u=
-_int32_t) ? len - sizeof(u_int32_t) : 0;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        return len;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span> void</span><br><span> open_tun(const char *de=
-v, const char *dev_type, const char *dev_node, struct tuntap *tt,</span><br=
-><span>          openvpn_net_ctx_t *ctx)</span><br><span>@@ -3059,60 +2904,=
-6 @@</span><br><span>     free(tt);</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tuntap *tt, uint8_t *buf,=
- int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&gt;type =3D=3D DEV_T=
-YPE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        u_int32_t type;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct iovec iv[2];=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct ip *ip=
-h;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        iph =3D (struct ip *)buf;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        if (iph-&gt;ip_v =3D=3D 6)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            type =3D htonl(AF_INET6);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            type =3D htonl(AF_INET);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- iv[0].iov_base =3D (char *)&amp;type;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(type);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base =3D buf;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_len =3D len;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        return dragonfly_modify_read_write=
-_return(writev(tt-&gt;fd, iv, 2));</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        return write(tt-&gt;fd, =
-buf, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-read_tun(st=
-ruct tuntap *tt, uint8_t *buf, int len)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        u_int32_t type;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        struct iovec iv[2];</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[0=
-].iov_base =3D (char *)&amp;type;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        iv[0].iov_len =3D sizeof(type);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base =3D buf;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_len =3D len;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return dragonfly_modify_read_write_=
-return(readv(tt-&gt;fd, iv, 2));</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e=
-lse</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        return read(tt-&gt;fd, buf=
-, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span> #elif defined(TARGET_DARWIN)</sp=
-an><br><span> </span><br><span> /* Darwin (MacOS X) is mostly &quot;just us=
-e the generic stuff&quot;, but there</span><br><span></span><br></pre><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Dem=
-ail">change 1378</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail">View Change</=
+a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">Extend &#39;--multihome&#39; to selectively ignore the =
+incoming interface index.<br><br>Traditional OpenVPN ``--multihome`` behavi=
+our is to send packets out the<br>same interface that they were received on=
+ (copy ipi_ifindex from ingress<br>to egress packet info).  For some scenar=
+ios this makes sense, for other<br>scenarios it is breaking connectivity wh=
+en there are no routes pointing<br>out the ingress interface (intentionally=
+ asymmetric traffic).<br><br>Add a flag ``--multihome ignore-iif`` to alway=
+s send out packets with<br>ipi_ifindex =3D 0, to follow normal system inter=
+face selection rules.<br><br>Github: OpenVPN/openvpn#855<br>Github: OpenVPN=
+/openvpn#554<br><br>Change-Id: Id429241e1b17a8ff51d9019efc357c910f3bde4c<br=
+>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M doc/man-se=
+ctions/server-options.rst<br>M src/openvpn/options.c<br>M src/openvpn/socke=
+t.c<br>M src/openvpn/socket.h<br>4 files changed, 22 insertions(+), 9 delet=
+ions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
+openvpn refs/changes/83/1383/2</pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/server=
+-options.rst b/doc/man-sections/server-options.rst</span><br><span>index 73=
+9be22..562783b 100644</span><br><span>--- a/doc/man-sections/server-options=
+.rst</span><br><span>+++ b/doc/man-sections/server-options.rst</span><br><s=
+pan>@@ -342,7 +342,7 @@</span><br><span>   by ``--ifconfig-ipv6``, OpenVPN =
+will install a /128 host route for the</span><br><span>   ``ipv6addr`` IP a=
+ddress.</span><br><span> </span><br><span>---multihome</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+--multihome [ignore-iif]</span><br><span=
+>   Configure a multi-homed UDP server. This option needs to be used when a=
+</span><br><span>   server has more than one IP address (e.g. multiple inte=
+rfaces, or</span><br><span>   secondary IP addresses), and is not using ``-=
+-local`` to force binding</span><br><span>@@ -354,11 +354,13 @@</span><br><=
+span> </span><br><span>   *Notes:*</span><br><span>     -  This option is o=
+nly relevant for UDP servers.</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    -  If you do an IPv6+IPv4 dual-stack bind on a Linux machine wi=
+th</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       multiple IPv=
+4 address, connections to IPv4 addresses will not</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-       work right on kernels before 3.15, due t=
+o missing kernel</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+  support for the IPv4-mapped case (some distributions have</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-       ported this to earlier kernel =
+versions, though).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   -  This will copy the &quot;ip_ifindex&quot; from the incoming to the ou=
+tgoing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       packet=
+ by default, that is, try to send the packet out over the</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+       same interface where it came i=
+n on.  This might not work if there</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+       are not usable routes on that interface.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    -  if the ``ignore-iif`` fl=
+ag is added, the outgoing interface index</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+       is set to ``0``, which means &quot;do not forc=
+e a particular outgoing</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+       interface, use whatever the system will choose&quot;.</span><br>=
+<span> </span><br><span> --iroute args</span><br><span>   Generate an inter=
+nal route to a specific client. The ``netmask``</span><br><span>diff --git =
+a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index 47943=
+15..1243e54 100644</span><br><span>--- a/src/openvpn/options.c</span><br><s=
+pan>+++ b/src/openvpn/options.c</span><br><span>@@ -6335,10 +6335,18 @@</sp=
+an><br><span>         options-&gt;mlock =3D true;</span><br><span>     }</s=
+pan><br><span> #if ENABLE_IP_PKTINFO</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    else if (streq(p[0], &quot;multihome&quot;) &amp;&amp; !=
+p[1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (s=
+treq(p[0], &quot;multihome&quot;) &amp;&amp; !p[2])</span><br><span>     {<=
+/span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span>=
+         options-&gt;sockflags |=3D SF_USE_IP_PKTINFO;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if (p[1] &amp;&amp; streq(p[1], =
+&quot;ignore-iif&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       options-&gt;sockflags |=3D SF_PKTINFO_IGN_IIF;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        else if (p[1])</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            msg(msglevel, &quot;Unknown parameter to --mul=
+tihome: %s&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span>     }</span><br><span> #endif</span><br><sp=
+an>     else if (streq(p[0], &quot;verb&quot;) &amp;&amp; p[1] &amp;&amp; !=
+p[2])</span><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socke=
+t.c</span><br><span>index 8b6e35e..0217408 100644</span><br><span>--- a/src=
+/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><spa=
+n>@@ -2393,7 +2393,8 @@</span><br><span>         {</span><br><span> #if def=
+ined(HAVE_IN_PKTINFO) &amp;&amp; defined(HAVE_IPI_SPEC_DST)</span><br><span=
+>             struct in_pktinfo *pkti =3D (struct in_pktinfo *)CMSG_DATA(cm=
+sg);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            from-=
+&gt;pi.in4.ipi_ifindex =3D pkti-&gt;ipi_ifindex;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            from-&gt;pi.in4.ipi_ifindex =3D</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                (sock-=
+&gt;sockflags &amp; SF_PKTINFO_IGN_IIF) ? 0 : pkti-&gt;ipi_ifindex;</span><=
+br><span>             from-&gt;pi.in4.ipi_spec_dst =3D pkti-&gt;ipi_spec_ds=
+t;</span><br><span> #elif defined(IP_RECVDSTADDR)</span><br><span>         =
+    from-&gt;pi.in4 =3D *(struct in_addr *)CMSG_DATA(cmsg);</span><br><span=
+>@@ -2406,7 +2407,8 @@</span><br><span>                  &amp;&amp; cmsg-&g=
+t;cmsg_len &gt;=3D CMSG_LEN(sizeof(struct in6_pktinfo)))</span><br><span>  =
+       {</span><br><span>             struct in6_pktinfo *pkti6 =3D (struct=
+ in6_pktinfo *)CMSG_DATA(cmsg);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            from-&gt;pi.in6.ipi6_ifindex =3D pkti6-&gt;ipi6_ifind=
+ex;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            from=
+-&gt;pi.in6.ipi6_ifindex =3D</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                (sock-&gt;sockflags &amp; SF_PKTINFO_IGN_IIF) ? 0 =
+: pkti6-&gt;ipi6_ifindex;</span><br><span>             from-&gt;pi.in6.ipi6=
+_addr =3D pkti6-&gt;ipi6_addr;</span><br><span>         }</span><br><span> =
+        else if (cmsg !=3D NULL)</span><br><span>diff --git a/src/openvpn/s=
+ocket.h b/src/openvpn/socket.h</span><br><span>index 832d62e..d6ff258 10064=
+4</span><br><span>--- a/src/openvpn/socket.h</span><br><span>+++ b/src/open=
+vpn/socket.h</span><br><span>@@ -195,6 +195,7 @@</span><br><span> #define S=
+F_GETADDRINFO_DGRAM (1 &lt;&lt; 4)</span><br><span> #define SF_DCO_WIN     =
+      (1 &lt;&lt; 5)</span><br><span> #define SF_PREPEND_SA        (1 &lt;&=
+lt; 6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SF_PK=
+TINFO_IGN_IIF   (1 &lt;&lt; 7)</span><br><span>     unsigned int sockflags;=
+</span><br><span>     int mark;</span><br><span>     const char *bind_dev;<=
+/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1383?usp=3Demail">change 1383</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1383?usp=3Demail"/><meta itemprop=3D"name" content=3D=
+"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifd9384287648d1f37a625d9ed6a=
-09733208fa56c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1378 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id429241e1b17a8ff51d9019efc3=
+57c910f3bde4c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1383 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 
 </body></html>=
 
---NtLnQcQJTYE=--
+--0H10xAsAWFM=--
 
