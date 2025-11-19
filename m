@@ -1,15 +1,13 @@
-Date: Wed, 19 Nov 2025 16:12:48 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <aR3ecLldIl2ObLpS@...1296...>
+MIME-Version: 1.0
 References: <CAOh3LPOnR5qbF-8xRuJFfZhWW25wNXBK3cUwC710cK4kRcSVpA.ref@...278...>
  <CAOh3LPOnR5qbF-8xRuJFfZhWW25wNXBK3cUwC710cK4kRcSVpA@...278...>
  <aR3XmaUlPlK-pDqB@...1296...>
  <CAOh3LPMP0U+AmA0OneDXBre2Q4Ow4v4pyunx41jxWMxxojioBA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="mTecpET4t1JSmGmH"
-Content-Disposition: inline
 In-Reply-To: <CAOh3LPMP0U+AmA0OneDXBre2Q4Ow4v4pyunx41jxWMxxojioBA@...278...>
+From: Jon Chiappetta <root@...2904...>
+Date: Wed, 19 Nov 2025 09:55:13 -0500
+Message-ID: <CAOh3LPOoCmqAVBBtOmiFtw68g+yyejoWbh2T9RmW9K2DAuqsAw@...278...>
+Content-Type: multipart/alternative; boundary="00000000000031a1420643f3c5ec"
 Subject: Re: [Openvpn-devel] Old/New IP - Logic Redo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,69 +17,167 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jon Chiappetta <root@...2904...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---mTecpET4t1JSmGmH
-Content-Type: text/plain; charset="us-ascii"
+--00000000000031a1420643f3c5ec
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+*strcmp(old_ip, mi->context.options.ifconfig_local) !*
 
-On Wed, Nov 19, 2025 at 09:54:30AM -0500, Jon Chiappetta wrote:
-> Yes, that is correct, it does impact the multi-threaded operation, howeve=
-r,
-> the older logic has a strcmp between the old IP and the new IP before
-> performing the learn and unlearn logic in the update_vhash function which
-> is what SHOULD happen, this is important and correct. Why would you want =
-to
-> waste cycles and operations doing that when the IPs haven't even changed =
-or
-> differed in value? It doesn't make any logical sense either way even in
-> single threaded operation...
+On Wed, Nov 19, 2025 at 9:54=E2=80=AFAM Jon Chiappetta <root@...2904...> wr=
+ote:
 
-The operational model underlying here is "you send an update when you
-want to change something", so spending brain & code on "verify that there
-is an actual change, and skip the update if not" is not effort well spent
-(also, the client does a full tun restart, which takes much longer than
-the server side - this is what would need optimizing first ;-) ).
+> Hi Gert,
+>
+> Yes, that is correct, it does impact the multi-threaded operation,
+> however, the older logic has a strcmp between the old IP and the new IP
+> before performing the learn and unlearn logic in the update_vhash function
+> which is what SHOULD happen, this is important and correct. Why would you
+> want to waste cycles and operations doing that when the IPs haven't even
+> changed or differed in value? It doesn't make any logical sense either way
+> even in single threaded operation...
+>
+> Thanks,
+> Jon C
+>
+>
+> On Wed, Nov 19, 2025 at 9:43=E2=80=AFAM Gert Doering <gert@...1296...> wr=
+ote:
+>
+>> Hi,
+>>
+>> On Wed, Nov 19, 2025 at 09:19:35AM -0500, Jon Chiappetta via
+>> Openvpn-devel wrote:
+>> > This is something I noticed recently with potential connection
+>> > interruptions which could occur which the original older code checked
+>> for!
+>> >
+>> > https://github.com/OpenVPN/openvpn/pull/910
+>>
+>> Yeah, but, no.
+>>
+>> Since our code is single-threaded, there is no time frame between
+>> "unlearn" and "relearn" where a packet could come in and be dropped, due
+>> to "address not known".
+>>
+>> So yes, on a PUSH_UPDATE with "the same ifconfig again", we do more work
+>> than we would have to do, but it has no adverse effects - and if you are
+>> worried about that, then do not send PUSH_UPDATE with unchanged configs
+>> (given that the client would do a full tun restart on receiving
+>> PUSH_UPDATE,
+>> this has way more impact than on the server).
+>>
+>>
+>> > There was an update pushed earlier this year which undid some important
+>> > logic in terms of learning/unlearning the ifconfig IP address. The old=
+er
+>> > original code would check that the new/old IPs don't match first before
+>> > performing that logic. I believe this was important and correct because
+>> it
+>> > could cause connection interruptions during the learn/unlearn process =
+if
+>> > the IP address has stayed the same!
+>>
+>> The older code did not do proper unlearning at all, so was obviously not
+>> correct.
+>>
+>> gert
+>> --
+>> "If was one thing all people took for granted, was conviction that if you
+>>  feed honest figures into a computer, honest figures come out. Never
+>> doubted
+>>  it myself till I met a computer with a sense of humor."
+>>                              Robert A. Heinlein, The Moon is a Harsh
+>> Mistress
+>>
+>> Gert Doering - Munich, Germany
+>> gert@...1296...
+>>
+>
 
-The code, as it is now, is nice and compact, easy to read, and does what
-is supposed to do.
+--00000000000031a1420643f3c5ec
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We can come back to this in the "after 2.7.0 release" timeframe when
-we open the tree for "refactor and improve code style and details" changes
-again - right now, we need to focus on actual bugfixes.
+<div dir=3D"ltr"><br><div><b>strcmp(old_ip, mi-&gt;context.options.ifconfig=
+_local) !</b><br></div></div><br><div class=3D"gmail_quote gmail_quote_cont=
+ainer"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Nov 19, 2025 at 9:54=
+=E2=80=AFAM Jon Chiappetta &lt;<a href=3D"mailto:root@...2904...">root@...1665...=
+904...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"m=
+argin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-style:solid;borde=
+r-left-color:rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr">Hi Gert,<d=
+iv><br></div><div>Yes, that is correct, it does impact the multi-threaded o=
+peration, however, the older logic has a strcmp between the old IP and the =
+new IP before performing the learn and unlearn logic in the update_vhash fu=
+nction which is what SHOULD happen, this is important and correct. Why woul=
+d you want to waste cycles and operations doing that when the IPs haven&#39=
+;t even changed or differed in value? It doesn&#39;t make any logical sense=
+ either way even in single threaded operation...</div><div><br></div><div>T=
+hanks,</div><div>Jon C</div><div><br></div></div><br><div class=3D"gmail_qu=
+ote"><div dir=3D"ltr" class=3D"gmail_attr">On Wed, Nov 19, 2025 at 9:43=E2=
+=80=AFAM Gert Doering &lt;<a href=3D"mailto:gert@...1296..." target=3D"_bla=
+nk">gert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quot=
+e" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-styl=
+e:solid;border-left-color:rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Wed, Nov 19, 2025 at 09:19:35AM -0500, Jon Chiappetta via Openvpn-devel =
+wrote:<br>
+&gt; This is something I noticed recently with potential connection<br>
+&gt; interruptions which could occur which the original older code checked =
+for!<br>
+&gt; <br>
+&gt; <a href=3D"https://github.com/OpenVPN/openvpn/pull/910" rel=3D"norefer=
+rer" target=3D"_blank">https://github.com/OpenVPN/openvpn/pull/910</a><br>
+<br>
+Yeah, but, no.<br>
+<br>
+Since our code is single-threaded, there is no time frame between<br>
+&quot;unlearn&quot; and &quot;relearn&quot; where a packet could come in an=
+d be dropped, due<br>
+to &quot;address not known&quot;.<br>
+<br>
+So yes, on a PUSH_UPDATE with &quot;the same ifconfig again&quot;, we do mo=
+re work<br>
+than we would have to do, but it has no adverse effects - and if you are<br>
+worried about that, then do not send PUSH_UPDATE with unchanged configs<br>
+(given that the client would do a full tun restart on receiving PUSH_UPDATE=
+,<br>
+this has way more impact than on the server).<br>
+<br>
+<br>
+&gt; There was an update pushed earlier this year which undid some importan=
+t<br>
+&gt; logic in terms of learning/unlearning the ifconfig IP address. The old=
+er<br>
+&gt; original code would check that the new/old IPs don&#39;t match first b=
+efore<br>
+&gt; performing that logic. I believe this was important and correct becaus=
+e it<br>
+&gt; could cause connection interruptions during the learn/unlearn process =
+if<br>
+&gt; the IP address has stayed the same!<br>
+<br>
+The older code did not do proper unlearning at all, so was obviously not<br>
+correct.<br>
+<br>
+gert<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank">gert@...1296...</a><br>
+</blockquote></div>
+</blockquote></div>
 
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---mTecpET4t1JSmGmH
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJpHd5wAAoJEB2Cnv7KVigSz4ML/3iVbT2cxFgk27fbA3Gv1CGb
-uMeHO07wcPW4bgEwrEvlHg0hrOtAecWSBl6CWoY88idrdDKZc9lbrOJ65Xs7F/H+
-6SEfEPNM27EynC5tvfWguBkLf6SWVvChM+22i9SmrmFCQ4Q65DvADiQcA+P4i5PN
-29X8AVu6nx1jz28YGluzKzfE1KbouaR//USnQmXvyD3u49e8mJMG61GWiMxPhSiN
-PqIz8SjFdk1EZUnTSkqzAxU3Q+fjk6lp/sE3pgZgqUxUVB3nOgnFwS1fMpPDkapN
-Xl0NUnBfCsHYocuvD7t0eH4X8+kpn22dQu4TWe+IWEgFKX5jncxmIGAhDpcOuuuR
-l4Lkz8Ip96dsSkpf3gPxYiVq7nNdOd2ZcpN//GBEUfLe7eImDc6lblEIHcbRu95I
-ZuOiGYAcZxk/n3s1kLshkzn1ID0CEs8SXjXxVXJix5yPzMj0pweTDHj1nE6L3FNe
-coIzKbzj9Fl17epNlszJTld/ljfWJ0C36ws2KRHAYA==
-=ahN0
------END PGP SIGNATURE-----
-
---mTecpET4t1JSmGmH--
+--00000000000031a1420643f3c5ec--
 
