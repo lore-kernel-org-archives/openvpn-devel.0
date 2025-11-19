@@ -1,10 +1,17 @@
-From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_DFFF76BF-F4F4-46E8-8844-196271DC084C"
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81\))
-Message-Id: <2E25FB29-2D09-4672-BFE3-3E072226281A@...2722...>
-Date: Tue, 18 Nov 2025 20:50:22 +0200
-Subject: [Openvpn-devel] OpenVPN 2.7_rc2 released
+From: "mrbff (Code Review)" <gerrit@...515...>
+Date: Wed, 19 Nov 2025 03:22:20 +0000
+In-Reply-To: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
+References: <gerrit.1758894427000.I16d90221d0a75193035253817ff195f6da9dc0b3@...2715...>
+Reply-To: marco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <ff7faaec167f5c580f4d8ef843d85905a5f41570-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="FKTaMb3eEW4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: handle
+ default gateway (net_gateway) and nexthop towards VPN s...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,416 +20,297 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_DFFF76BF-F4F4-46E8-8844-196271DC084C
-Content-Type: text/plain; charset="us-ascii"
+--FKTaMb3eEW4=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.7_rc2.
+Attention is currently required from: flichtenheld, mrbff, plaisthos.
 
-This is the second release candidate for the feature release 2.7.0.
+Hello cron2, flichtenheld, plaisthos,
 
-Security fixes:
+I'd like you to reexamine a change. Please visit
 
-* CVE-2025-12106: IPv6 address parsing: fix buffer overread on invalid input
-* CVE-2025-13086: HMAC verification check: fix incorrect memcmp() call
+    http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail
 
-Important bug fixes since 2.7_rc1:
+to look at the new patch set (#4).
 
-* even more type conversion related warnings have been fixed
-* DCO FreeBSD improvements:
-    * improving debug messages (verb 6)
-    * implement client-side counter handling
-    * repair --inactive (and document shortcomings)
-    * repair handling of DCO disconnection notifications in --client mode
-* Windows/Service improvements, hardening, bugfixes
-    * fix DNS address list generation (if 3 or more --dns addresses in use)
-    * fix DNS server undo_list
-    * disallow "stdin" as config name unless user has OpenVPN admin privs
-    * fix compilation errors with MSVC v19
-    * iservice: improve validation of config path (pathcc lib)
-         * [NOTE: this breaks OpenVPN compatibility with Windows 7]
-    * tapctl: refactor, improve output, change driver default to ovpn-dco
-    * iservice: when restoring iface metrics, enforce correct ifindex
-* improve cmocka unit test assert() handling
-* PUSH_UPDATE server: fix reporting of client IPs in ``status`` output afte=
-r pushing a new IPv4/IPv6 address to client
-* AEAD cipher safety margins: fix calculation of AEAD blocks in use (old co=
-de would undercount blocks)
-* fix invalid pointer creation / memory overread in tls_pre_decrypt
-* deprecate ``--opt-verify`` (change into no-op + warning)
 
-More details can be found in the Changes document:
+Change subject: route: handle default gateway (net_gateway) and nexthop tow=
+ards VPN server separately
+......................................................................
 
-<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+route: handle default gateway (net_gateway) and nexthop towards VPN server =
+separately
 
-Source code and Windows installers can be downloaded from our download page:
+Right now there is the assumption that the gateway used for net_gateway is =
+the same used to reach the VPN server.
+However, these two gateways may be different (i.e. when there is a specific=
+ hostroute for the VPN server using a different nexthop).
+For this reason we must adapt init_route_list() to fetch the two gateways s=
+eparately.
 
-<https://openvpn.net/community-downloads/>
+Github: fixes OpenVPN/openvpn#890
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in th=
-e various
-official Community repositories:
+Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3
+Signed-off-by: Marco Baffo <marco@...2726...>
+---
+M src/openvpn/route.c
+M src/openvpn/route.h
+2 files changed, 16 insertions(+), 10 deletions(-)
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
 
-Kind regards,
-Yuriy Darnobyt=
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/1222/4
 
---Apple-Mail=_DFFF76BF-F4F4-46E8-8844-196271DC084C
-Content-Type: text/html; charset="us-ascii"
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 7d988da..770300a 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -257,9 +257,9 @@
+     {
+         if (rl)
+         {
+-            if (rl->rgi.flags & RGI_ADDR_DEFINED)
++            if (rl->ngi.flags & RGI_ADDR_DEFINED)
+             {
+-                *out =3D rl->rgi.gateway.addr;
++                *out =3D rl->ngi.gateway.addr;
+             }
+             else
+             {
+@@ -624,10 +624,10 @@
+         rl->spec.flags |=3D RTSA_DEFAULT_METRIC;
+     }
+
+-    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
+ote_host : INADDR_ANY, ctx);
+-    if (rl->rgi.flags & RGI_ADDR_DEFINED)
++    get_default_gateway(&rl->ngi, INADDR_ANY, ctx);
++    if (rl->ngi.flags & RGI_ADDR_DEFINED)
+     {
+-        setenv_route_addr(es, "net_gateway", rl->rgi.gateway.addr, -1);
++        setenv_route_addr(es, "net_gateway", rl->ngi.gateway.addr, -1);
+ #if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
+         print_default_gateway(D_ROUTE, &rl->rgi, NULL);
+ #endif
+@@ -637,6 +637,8 @@
+         dmsg(D_ROUTE, "ROUTE: default_gateway=3DUNDEF");
+     }
+
++    get_default_gateway(&rl->rgi, remote_host !=3D IPV4_INVALID_ADDR ? rem=
+ote_host : INADDR_ANY, ctx);
++
+     if (rl->spec.flags & RTSA_REMOTE_HOST)
+     {
+         rl->spec.remote_host_local =3D test_local_addr(remote_host, &rl->r=
+gi);
+@@ -773,10 +775,10 @@
+     msg(D_ROUTE, "GDG6: remote_host_ipv6=3D%s",
+         remote_host_ipv6 ? print_in6_addr(*remote_host_ipv6, 0, &gc) : "n/=
+a");
+
+-    get_default_gateway_ipv6(&rl6->rgi6, remote_host_ipv6, ctx);
+-    if (rl6->rgi6.flags & RGI_ADDR_DEFINED)
++    get_default_gateway_ipv6(&rl6->ngi6, NULL, ctx);
++    if (rl6->ngi6.flags & RGI_ADDR_DEFINED)
+     {
+-        setenv_str(es, "net_gateway_ipv6", print_in6_addr(rl6->rgi6.gatewa=
+y.addr_ipv6, 0, &gc));
++        setenv_str(es, "net_gateway_ipv6", print_in6_addr(rl6->ngi6.gatewa=
+y.addr_ipv6, 0, &gc));
+ #if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
+         print_default_gateway(D_ROUTE, NULL, &rl6->rgi6);
+ #endif
+@@ -786,6 +788,8 @@
+         dmsg(D_ROUTE, "ROUTE6: default_gateway=3DUNDEF");
+     }
+
++    get_default_gateway_ipv6(&rl6->rgi6, remote_host_ipv6, ctx);
++
+     if (is_route_parm_defined(remote_endpoint))
+     {
+         if (inet_pton(AF_INET6, remote_endpoint, &rl6->remote_endpoint_ipv=
+6) =3D=3D 1)
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 54fa137..3d19dbd 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -234,7 +234,8 @@
+
+     struct route_special_addr spec;
+     struct route_gateway_info rgi;
+-    unsigned int flags; /* RG_x flags */
++    struct route_gateway_info ngi; /* net_gateway */
++    unsigned int flags;            /* RG_x flags */
+     struct route_ipv4 *routes;
+     struct gc_arena gc;
+ };
+@@ -249,7 +250,8 @@
+     int default_metric;
+
+     struct route_ipv6_gateway_info rgi6;
+-    unsigned int flags; /* RG_x flags, see route_option_list */
++    struct route_ipv6_gateway_info ngi6; /* net_gateway_ipv6 */
++    unsigned int flags;                  /* RG_x flags, see route_option_l=
+ist */
+     struct route_ipv6 *routes_ipv6;
+     struct gc_arena gc;
+ };
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I16d90221d0a75193035253817ff195f6da9dc0b3
+Gerrit-Change-Number: 1222
+Gerrit-PatchSet: 4
+Gerrit-Owner: mrbff <marco@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: mrbff <marco@...2726...>
+
+--FKTaMb3eEW4=
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
-=3Dus-ascii"></head><body style=3D"overflow-wrap: break-word; -webkit-nbsp-=
-mode: space; line-break: after-white-space;"><p style=3D"margin: 0px; font-=
-width: normal; line-height: normal; font-size-adjust: none; font-kerning: a=
-uto; font-variant-alternates: normal; font-variant-ligatures: normal; font-=
-variant-numeric: normal; font-variant-east-asian: normal; font-variant-posi=
-tion: normal; font-feature-settings: normal; font-optical-sizing: auto; fon=
-t-variation-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-colo=
-r: rgb(0, 0, 0);">The OpenVPN community project team is proud to release Op=
-enVPN 2.7_rc2.</p><p style=3D"margin: 0px; font-width: normal; line-height:=
- normal; font-size-adjust: none; font-kerning: auto; font-variant-alternate=
-s: normal; font-variant-ligatures: normal; font-variant-numeric: normal; fo=
-nt-variant-east-asian: normal; font-variant-position: normal; font-feature-=
-settings: normal; font-optical-sizing: auto; font-variation-settings: norma=
-l; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);"><br></p><=
-p style=3D"margin: 0px; font-width: normal; line-height: normal; font-size-=
-adjust: none; font-kerning: auto; font-variant-alternates: normal; font-var=
-iant-ligatures: normal; font-variant-numeric: normal; font-variant-east-asi=
-an: normal; font-variant-position: normal; font-feature-settings: normal; f=
-ont-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0,=
- 0); -webkit-text-stroke-color: rgb(0, 0, 0);">This is the second release c=
-andidate for the feature release 2.7.0.</p><p style=3D"margin: 0px; font-wi=
-dth: normal; line-height: normal; font-size-adjust: none; font-kerning: aut=
-o; font-variant-alternates: normal; font-variant-ligatures: normal; font-va=
-riant-numeric: normal; font-variant-east-asian: normal; font-variant-positi=
-on: normal; font-feature-settings: normal; font-optical-sizing: auto; font-=
-variation-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color:=
- rgb(0, 0, 0);"><br></p><p style=3D"margin: 0px; font-width: normal; line-h=
-eight: normal; font-size-adjust: none; font-kerning: auto; font-variant-alt=
-ernates: normal; font-variant-ligatures: normal; font-variant-numeric: norm=
-al; font-variant-east-asian: normal; font-variant-position: normal; font-fe=
-ature-settings: normal; font-optical-sizing: auto; font-variation-settings:=
- normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);">Sec=
-urity fixes:</p><p style=3D"margin: 0px; font-width: normal; line-height: n=
-ormal; font-size-adjust: none; font-kerning: auto; font-variant-alternates:=
- normal; font-variant-ligatures: normal; font-variant-numeric: normal; font=
--variant-east-asian: normal; font-variant-position: normal; font-feature-se=
-ttings: normal; font-optical-sizing: auto; font-variation-settings: normal;=
- color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);"><br></p><p =
-style=3D"margin: 0px; font-width: normal; line-height: normal; font-size-ad=
-just: none; font-kerning: auto; font-variant-alternates: normal; font-varia=
-nt-ligatures: normal; font-variant-numeric: normal; font-variant-east-asian=
-: normal; font-variant-position: normal; font-feature-settings: normal; fon=
-t-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, 0=
-); -webkit-text-stroke-color: rgb(0, 0, 0);">* CVE-2025-12106: IPv6 address=
- parsing: fix buffer overread on invalid input</p><p style=3D"margin: 0px; =
-font-width: normal; line-height: normal; font-size-adjust: none; font-kerni=
-ng: auto; font-variant-alternates: normal; font-variant-ligatures: normal; =
-font-variant-numeric: normal; font-variant-east-asian: normal; font-variant=
--position: normal; font-feature-settings: normal; font-optical-sizing: auto=
-; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke=
--color: rgb(0, 0, 0);">* CVE-2025-13086: HMAC verification check: fix incor=
-rect memcmp() call</p><p style=3D"margin: 0px; font-width: normal; line-hei=
-ght: normal; font-size-adjust: none; font-kerning: auto; font-variant-alter=
-nates: normal; font-variant-ligatures: normal; font-variant-numeric: normal=
-; font-variant-east-asian: normal; font-variant-position: normal; font-feat=
-ure-settings: normal; font-optical-sizing: auto; font-variation-settings: n=
-ormal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);"><br><=
-/p><p style=3D"margin: 0px; font-width: normal; line-height: normal; font-s=
-ize-adjust: none; font-kerning: auto; font-variant-alternates: normal; font=
--variant-ligatures: normal; font-variant-numeric: normal; font-variant-east=
--asian: normal; font-variant-position: normal; font-feature-settings: norma=
-l; font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0=
-, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);">Important bug fixes sinc=
-e 2.7_rc1:</p><p style=3D"margin: 0px; font-width: normal; line-height: nor=
-mal; font-size-adjust: none; font-kerning: auto; font-variant-alternates: n=
-ormal; font-variant-ligatures: normal; font-variant-numeric: normal; font-v=
-ariant-east-asian: normal; font-variant-position: normal; font-feature-sett=
-ings: normal; font-optical-sizing: auto; font-variation-settings: normal; c=
-olor: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);"><br></p><p st=
-yle=3D"margin: 0px; font-width: normal; line-height: normal; font-size-adju=
-st: none; font-kerning: auto; font-variant-alternates: normal; font-variant=
--ligatures: normal; font-variant-numeric: normal; font-variant-east-asian: =
-normal; font-variant-position: normal; font-feature-settings: normal; font-=
-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, 0);=
- -webkit-text-stroke-color: rgb(0, 0, 0);">* even more type conversion rela=
-ted warnings have been fixed</p><p style=3D"margin: 0px; font-width: normal=
-; line-height: normal; font-size-adjust: none; font-kerning: auto; font-var=
-iant-alternates: normal; font-variant-ligatures: normal; font-variant-numer=
-ic: normal; font-variant-east-asian: normal; font-variant-position: normal;=
- font-feature-settings: normal; font-optical-sizing: auto; font-variation-s=
-ettings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, =
-0);">* DCO FreeBSD improvements:</p><p style=3D"margin: 0px; font-width: no=
-rmal; line-height: normal; font-size-adjust: none; font-kerning: auto; font=
--variant-alternates: normal; font-variant-ligatures: normal; font-variant-n=
-umeric: normal; font-variant-east-asian: normal; font-variant-position: nor=
-mal; font-feature-settings: normal; font-optical-sizing: auto; font-variati=
-on-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0,=
- 0, 0);">&nbsp; &nbsp; * improving debug messages (verb 6)</p><p style=3D"m=
-argin: 0px; font-width: normal; line-height: normal; font-size-adjust: none=
-; font-kerning: auto; font-variant-alternates: normal; font-variant-ligatur=
-es: normal; font-variant-numeric: normal; font-variant-east-asian: normal; =
-font-variant-position: normal; font-feature-settings: normal; font-optical-=
-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit=
--text-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * implement client-side co=
-unter handling</p><p style=3D"margin: 0px; font-width: normal; line-height:=
- normal; font-size-adjust: none; font-kerning: auto; font-variant-alternate=
-s: normal; font-variant-ligatures: normal; font-variant-numeric: normal; fo=
-nt-variant-east-asian: normal; font-variant-position: normal; font-feature-=
-settings: normal; font-optical-sizing: auto; font-variation-settings: norma=
-l; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);">&nbsp; &n=
-bsp; * repair --inactive (and document shortcomings)</p><p style=3D"margin:=
- 0px; font-width: normal; line-height: normal; font-size-adjust: none; font=
--kerning: auto; font-variant-alternates: normal; font-variant-ligatures: no=
-rmal; font-variant-numeric: normal; font-variant-east-asian: normal; font-v=
-ariant-position: normal; font-feature-settings: normal; font-optical-sizing=
-: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit-text-=
-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * repair handling of DCO disconn=
-ection notifications in --client mode</p><p style=3D"margin: 0px; font-widt=
-h: normal; line-height: normal; font-size-adjust: none; font-kerning: auto;=
- font-variant-alternates: normal; font-variant-ligatures: normal; font-vari=
-ant-numeric: normal; font-variant-east-asian: normal; font-variant-position=
-: normal; font-feature-settings: normal; font-optical-sizing: auto; font-va=
-riation-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: r=
-gb(0, 0, 0);">* Windows/Service improvements, hardening, bugfixes</p><p sty=
-le=3D"margin: 0px; font-width: normal; line-height: normal; font-size-adjus=
-t: none; font-kerning: auto; font-variant-alternates: normal; font-variant-=
-ligatures: normal; font-variant-numeric: normal; font-variant-east-asian: n=
-ormal; font-variant-position: normal; font-feature-settings: normal; font-o=
-ptical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, 0); =
--webkit-text-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * fix DNS address l=
-ist generation (if 3 or more --dns addresses in use)</p><p style=3D"margin:=
- 0px; font-width: normal; line-height: normal; font-size-adjust: none; font=
--kerning: auto; font-variant-alternates: normal; font-variant-ligatures: no=
-rmal; font-variant-numeric: normal; font-variant-east-asian: normal; font-v=
-ariant-position: normal; font-feature-settings: normal; font-optical-sizing=
-: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit-text-=
-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * fix DNS server undo_list</p><p=
- style=3D"margin: 0px; font-width: normal; line-height: normal; font-size-a=
-djust: none; font-kerning: auto; font-variant-alternates: normal; font-vari=
-ant-ligatures: normal; font-variant-numeric: normal; font-variant-east-asia=
-n: normal; font-variant-position: normal; font-feature-settings: normal; fo=
-nt-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, =
-0); -webkit-text-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * disallow "std=
-in" as config name unless user has OpenVPN admin privs</p><p style=3D"margi=
-n: 0px; font-width: normal; line-height: normal; font-size-adjust: none; fo=
-nt-kerning: auto; font-variant-alternates: normal; font-variant-ligatures: =
-normal; font-variant-numeric: normal; font-variant-east-asian: normal; font=
--variant-position: normal; font-feature-settings: normal; font-optical-sizi=
-ng: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit-tex=
-t-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * fix compilation errors with =
-MSVC v19</p><p style=3D"margin: 0px; font-width: normal; line-height: norma=
-l; font-size-adjust: none; font-kerning: auto; font-variant-alternates: nor=
-mal; font-variant-ligatures: normal; font-variant-numeric: normal; font-var=
-iant-east-asian: normal; font-variant-position: normal; font-feature-settin=
-gs: normal; font-optical-sizing: auto; font-variation-settings: normal; col=
-or: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; *=
- iservice: improve validation of config path (pathcc lib)</p><p style=3D"ma=
-rgin: 0px; font-width: normal; line-height: normal; font-size-adjust: none;=
- font-kerning: auto; font-variant-alternates: normal; font-variant-ligature=
-s: normal; font-variant-numeric: normal; font-variant-east-asian: normal; f=
-ont-variant-position: normal; font-feature-settings: normal; font-optical-s=
-izing: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit-=
-text-stroke-color: rgb(0, 0, 0);">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;* [NOTE=
-: this breaks OpenVPN compatibility with Windows 7]</p><p style=3D"margin: =
-0px; font-width: normal; line-height: normal; font-size-adjust: none; font-=
-kerning: auto; font-variant-alternates: normal; font-variant-ligatures: nor=
-mal; font-variant-numeric: normal; font-variant-east-asian: normal; font-va=
-riant-position: normal; font-feature-settings: normal; font-optical-sizing:=
- auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit-text-s=
-troke-color: rgb(0, 0, 0);">&nbsp; &nbsp; * tapctl: refactor, improve outpu=
-t, change driver default to ovpn-dco</p><p style=3D"margin: 0px; font-width=
-: normal; line-height: normal; font-size-adjust: none; font-kerning: auto; =
-font-variant-alternates: normal; font-variant-ligatures: normal; font-varia=
-nt-numeric: normal; font-variant-east-asian: normal; font-variant-position:=
- normal; font-feature-settings: normal; font-optical-sizing: auto; font-var=
-iation-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rg=
-b(0, 0, 0);">&nbsp; &nbsp; * iservice: when restoring iface metrics, enforc=
-e correct ifindex</p><p style=3D"margin: 0px; font-width: normal; line-heig=
-ht: normal; font-size-adjust: none; font-kerning: auto; font-variant-altern=
-ates: normal; font-variant-ligatures: normal; font-variant-numeric: normal;=
- font-variant-east-asian: normal; font-variant-position: normal; font-featu=
-re-settings: normal; font-optical-sizing: auto; font-variation-settings: no=
-rmal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);">* impr=
-ove cmocka unit test assert() handling</p><p style=3D"margin: 0px; font-wid=
-th: normal; line-height: normal; font-size-adjust: none; font-kerning: auto=
-; font-variant-alternates: normal; font-variant-ligatures: normal; font-var=
-iant-numeric: normal; font-variant-east-asian: normal; font-variant-positio=
-n: normal; font-feature-settings: normal; font-optical-sizing: auto; font-v=
-ariation-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: =
-rgb(0, 0, 0);">* PUSH_UPDATE server: fix reporting of client IPs in ``statu=
-s`` output after pushing a new IPv4/IPv6 address to client</p><p style=3D"m=
-argin: 0px; font-width: normal; line-height: normal; font-size-adjust: none=
-; font-kerning: auto; font-variant-alternates: normal; font-variant-ligatur=
-es: normal; font-variant-numeric: normal; font-variant-east-asian: normal; =
-font-variant-position: normal; font-feature-settings: normal; font-optical-=
-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -webkit=
--text-stroke-color: rgb(0, 0, 0);">* AEAD cipher safety margins: fix calcul=
-ation of AEAD blocks in use (old code would undercount blocks)</p><p style=
-=3D"margin: 0px; font-width: normal; line-height: normal; font-size-adjust:=
- none; font-kerning: auto; font-variant-alternates: normal; font-variant-li=
-gatures: normal; font-variant-numeric: normal; font-variant-east-asian: nor=
-mal; font-variant-position: normal; font-feature-settings: normal; font-opt=
-ical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0, 0); -w=
-ebkit-text-stroke-color: rgb(0, 0, 0);">* fix invalid pointer creation / me=
-mory overread in tls_pre_decrypt</p><p style=3D"margin: 0px; font-width: no=
-rmal; line-height: normal; font-size-adjust: none; font-kerning: auto; font=
--variant-alternates: normal; font-variant-ligatures: normal; font-variant-n=
-umeric: normal; font-variant-east-asian: normal; font-variant-position: nor=
-mal; font-feature-settings: normal; font-optical-sizing: auto; font-variati=
-on-settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0,=
- 0, 0);">* deprecate ``--opt-verify`` (change into no-op + warning)</p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">More details can be found in the Ch=
-anges document:</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(53, =
-134, 255); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(5=
-3, 134, 255);"><span style=3D"font-kerning: none; color: rgb(0, 0, 0); -web=
-kit-text-stroke-color: rgb(0, 0, 0);">&lt;<a href=3D"https://github.com/Ope=
-nVPN/openvpn/blob/master/Changes.rst"><span style=3D"font-kerning: none; co=
-lor: rgb(53, 134, 255); -webkit-text-stroke-color: rgb(53, 134, 255);">http=
-s://github.com/OpenVPN/openvpn/blob/master/Changes.rst</span></a>&gt;</span=
-></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">Source code and Windows installers =
-can be downloaded from our download page:</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(53, =
-134, 255); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(5=
-3, 134, 255);"><span style=3D"font-kerning: none; color: rgb(0, 0, 0); -web=
-kit-text-stroke-color: rgb(0, 0, 0);">&lt;<a href=3D"https://openvpn.net/co=
-mmunity-downloads/"><span style=3D"font-kerning: none; color: rgb(53, 134, =
-255); -webkit-text-stroke-color: rgb(53, 134, 255);">https://openvpn.net/co=
-mmunity-downloads/</span></a>&gt;</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">Packages for Debian, Ubuntu, Fedora=
-, RHEL, and openSUSE are available in the various</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">official Community repositories:</s=
-pan></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(53, =
-134, 255); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(5=
-3, 134, 255);"><span style=3D"font-kerning: none; color: rgb(0, 0, 0); -web=
-kit-text-stroke-color: rgb(0, 0, 0);">&lt;<a href=3D"https://community.open=
-vpn.net/Pages/OpenVPN%20software%20repos"><span style=3D"font-kerning: none=
-; color: rgb(53, 134, 255); -webkit-text-stroke-color: rgb(53, 134, 255);">=
-https://community.openvpn.net/Pages/OpenVPN%20software%20repos</span></a>&g=
-t;</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0); min-height: 14px;"><span style=3D"font-kerning: none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">Kind regards,</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">Yuriy Darnobyt</span></p></body></h=
-tml>=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, mrbff, plaisthos. </p>
+<p>mrbff <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?usp=3Demail">View Change</=
+a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">route: handle default gateway (net_gateway) and nexthop=
+ towards VPN server separately<br><br>Right now there is the assumption tha=
+t the gateway used for net_gateway is the same used to reach the VPN server=
+.<br>However, these two gateways may be different (i.e. when there is a spe=
+cific hostroute for the VPN server using a different nexthop).<br>For this =
+reason we must adapt init_route_list() to fetch the two gateways separately=
+.<br><br>Github: fixes OpenVPN/openvpn#890<br><br>Change-Id: I16d90221d0a75=
+193035253817ff195f6da9dc0b3<br>Signed-off-by: Marco Baffo &lt;marco@...2787...=
+...&gt;<br>---<br>M src/openvpn/route.c<br>M src/openvpn/route.h<br>2 files=
+ changed, 16 insertions(+), 10 deletions(-)<br><br></pre><pre class=3D"bloc=
+ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
+pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/1222/4</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>inde=
+x 7d988da..770300a 100644</span><br><span>--- a/src/openvpn/route.c</span><=
+br><span>+++ b/src/openvpn/route.c</span><br><span>@@ -257,9 +257,9 @@</spa=
+n><br><span>     {</span><br><span>         if (rl)</span><br><span>       =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (rl=
+-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            if (rl-&gt;ngi.flags &amp; RGI_ADDR_DEFINED)=
+</span><br><span>             {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                *out =3D rl-&gt;rgi.gateway.addr;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                *out =3D rl-&gt;ngi=
+.gateway.addr;</span><br><span>             }</span><br><span>             =
+else</span><br><span>             {</span><br><span>@@ -624,10 +624,10 @@</=
+span><br><span>         rl-&gt;spec.flags |=3D RTSA_DEFAULT_METRIC;</span><=
+br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    get_default_gateway(&amp;rl-&gt;rgi, remote_host !=3D IPV4_=
+INVALID_ADDR ? remote_host : INADDR_ANY, ctx);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    if (rl-&gt;rgi.flags &amp; RGI_ADDR_DEFINED)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    get_default_gatew=
+ay(&amp;rl-&gt;ngi, INADDR_ANY, ctx);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (rl-&gt;ngi.flags &amp; RGI_ADDR_DEFINED)</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ setenv_route_addr(es, &quot;net_gateway&quot;, rl-&gt;rgi.gateway.addr, -1=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        setenv_ro=
+ute_addr(es, &quot;net_gateway&quot;, rl-&gt;ngi.gateway.addr, -1);</span><=
+br><span> #if defined(ENABLE_DEBUG) &amp;&amp; !defined(ENABLE_SMALL)</span=
+><br><span>         print_default_gateway(D_ROUTE, &amp;rl-&gt;rgi, NULL);<=
+/span><br><span> #endif</span><br><span>@@ -637,6 +637,8 @@</span><br><span=
+>         dmsg(D_ROUTE, &quot;ROUTE: default_gateway=3DUNDEF&quot;);</span>=
+<br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    get_default_gateway(&amp;rl-&gt;rgi, remote_host !=3D IP=
+V4_INVALID_ADDR ? remote_host : INADDR_ANY, ctx);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span>     if (rl-&gt;spec.flags &=
+amp; RTSA_REMOTE_HOST)</span><br><span>     {</span><br><span>         rl-&=
+gt;spec.remote_host_local =3D test_local_addr(remote_host, &amp;rl-&gt;rgi)=
+;</span><br><span>@@ -773,10 +775,10 @@</span><br><span>     msg(D_ROUTE, &=
+quot;GDG6: remote_host_ipv6=3D%s&quot;,</span><br><span>         remote_hos=
+t_ipv6 ? print_in6_addr(*remote_host_ipv6, 0, &amp;gc) : &quot;n/a&quot;);<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+get_default_gateway_ipv6(&amp;rl6-&gt;rgi6, remote_host_ipv6, ctx);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    if (rl6-&gt;rgi6.flags &a=
+mp; RGI_ADDR_DEFINED)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    get_default_gateway_ipv6(&amp;rl6-&gt;ngi6, NULL, ctx);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (rl6-&gt;ngi6.flags &amp; =
+RGI_ADDR_DEFINED)</span><br><span>     {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        setenv_str(es, &quot;net_gateway_ipv6&quot;, pri=
+nt_in6_addr(rl6-&gt;rgi6.gateway.addr_ipv6, 0, &amp;gc));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        setenv_str(es, &quot;net_gate=
+way_ipv6&quot;, print_in6_addr(rl6-&gt;ngi6.gateway.addr_ipv6, 0, &amp;gc))=
+;</span><br><span> #if defined(ENABLE_DEBUG) &amp;&amp; !defined(ENABLE_SMA=
+LL)</span><br><span>         print_default_gateway(D_ROUTE, NULL, &amp;rl6-=
+&gt;rgi6);</span><br><span> #endif</span><br><span>@@ -786,6 +788,8 @@</spa=
+n><br><span>         dmsg(D_ROUTE, &quot;ROUTE6: default_gateway=3DUNDEF&qu=
+ot;);</span><br><span>     }</span><br><span> </span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    get_default_gateway_ipv6(&amp;rl6-&gt;rgi6, =
+remote_host_ipv6, ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span>     if (is_route_parm_defined(remote_endpoint))</span=
+><br><span>     {</span><br><span>         if (inet_pton(AF_INET6, remote_e=
+ndpoint, &amp;rl6-&gt;remote_endpoint_ipv6) =3D=3D 1)</span><br><span>diff =
+--git a/src/openvpn/route.h b/src/openvpn/route.h</span><br><span>index 54f=
+a137..3d19dbd 100644</span><br><span>--- a/src/openvpn/route.h</span><br><s=
+pan>+++ b/src/openvpn/route.h</span><br><span>@@ -234,7 +234,8 @@</span><br=
+><span> </span><br><span>     struct route_special_addr spec;</span><br><sp=
+an>     struct route_gateway_info rgi;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    unsigned int flags; /* RG_x flags */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct route_gateway_info ngi; /*=
+ net_gateway */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+unsigned int flags;            /* RG_x flags */</span><br><span>     struct=
+ route_ipv4 *routes;</span><br><span>     struct gc_arena gc;</span><br><sp=
+an> };</span><br><span>@@ -249,7 +250,8 @@</span><br><span>     int default=
+_metric;</span><br><span> </span><br><span>     struct route_ipv6_gateway_i=
+nfo rgi6;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned=
+ int flags; /* RG_x flags, see route_option_list */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct route_ipv6_gateway_info ngi6; =
+/* net_gateway_ipv6 */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    unsigned int flags;                  /* RG_x flags, see route_option=
+_list */</span><br><span>     struct route_ipv6 *routes_ipv6;</span><br><sp=
+an>     struct gc_arena gc;</span><br><span> };</span><br><span></span><br>=
+</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/12=
+22?usp=3Demail">change 1222</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1222?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
---Apple-Mail=_DFFF76BF-F4F4-46E8-8844-196271DC084C--
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I16d90221d0a75193035253817ff=
+195f6da9dc0b3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1222 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: mrbff &lt;marco@...2726...&g=
+t; </div>
+
+</body></html>=
+
+--FKTaMb3eEW4=--
 
