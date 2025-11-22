@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 22 Nov 2025 21:41:55 +0000
+Date: Sat, 22 Nov 2025 21:41:58 +0000
 In-Reply-To: <gerrit.1763636270000.Id1457f8432b4f0a69108b91ca12f2cbd0818f90d@...2715...>
 References: <gerrit.1763636270000.Id1457f8432b4f0a69108b91ca12f2cbd0818f90d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <8d6a45442ed913c2536fe9d6f721aadc2c67ab0d-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <8d6a45442ed913c2536fe9d6f721aadc2c67ab0d-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YwzxMHywbL0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="b+TZr5BW/fk="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi-socket: remove
  duplicated/dead code
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YwzxMHywbL0=
+--b+TZr5BW/fk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- its_Giaan. ( http://gerrit.openvpn.net/c/openvpn/+/1384?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+84?usp=3Demail )
 
 Change subject: multi-socket: remove duplicated/dead code
 ......................................................................
@@ -60,7 +56,7 @@ M src/openvpn/multi_io.c
 2 files changed, 2 insertions(+), 23 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/84/1384/2
+
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
 index f01fb4c..a6d3394 100644
@@ -127,7 +123,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1384?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Id1457f8432b4f0a69108b91ca12f2cbd0818f90d
@@ -138,89 +134,86 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YwzxMHywbL0=
+--b+TZr5BW/fk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by its_Giaan.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1384?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">multi-socket: remove duplicated/dea=
-d code<br><br>Removed the event_ctl() for ENABLE_ASYNC_PUSH<br>in io_wait_d=
-owork() since that function is<br>not executed by servers anymore.<br><br>R=
-emoved a duplicated code in multi_io_process_io()<br>for new incoming TCP c=
-onnections since the same<br>thing is done couple lines above.<br><br>Chang=
-e-Id: Id1457f8432b4f0a69108b91ca12f2cbd0818f90d<br>Signed-off-by: Gianmarco=
- De Gregori &lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert=
-@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1384<=
-br>Message-Id: &lt;20251122185239.26312-1-gert@...1296...&gt;<br>URL: https=
-://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34593.html<b=
-r>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openv=
-pn/forward.c<br>M src/openvpn/multi_io.c<br>2 files changed, 2 insertions(+=
-), 23 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
-.net:29418/openvpn refs/changes/84/1384/2</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
-forward.c b/src/openvpn/forward.c</span><br><span>index f01fb4c..a6d3394 10=
-0644</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/=
-openvpn/forward.c</span><br><span>@@ -2214,9 +2214,7 @@</span><br><span>   =
-  static uintptr_t management_shift =3D</span><br><span>         MANAGEMENT=
-_SHIFT; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */</span><br><sp=
-an> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENAB=
-LE_ASYNC_PUSH</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stat=
-ic uintptr_t file_shift =3D FILE_SHIFT;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)=
-</span><br><span>     static uintptr_t dco_shift =3D DCO_SHIFT; /* Event fr=
-om DCO linux kernel module */</span><br><span> #endif</span><br><span>@@ -2=
-242,14 +2240,6 @@</span><br><span>     }</span><br><span> #endif</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_=
-ASYNC_PUSH</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* arm =
-inotify watcher */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- if (c-&gt;options.mode =3D=3D MODE_SERVER)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        event_ctl(c-&gt;c2.event_set, c-&gt;c2.inotify_fd, EVENT_READ=
-, (void *)file_shift);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /*</span=
-><br><span>      * Possible scenarios:</span><br><span>      *  (1) tcp/udp=
- port has data available to read</span><br><span>diff --git a/src/openvpn/m=
-ulti_io.c b/src/openvpn/multi_io.c</span><br><span>index 6e31687..fe72456 1=
-00644</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++ b/sr=
-c/openvpn/multi_io.c</span><br><span>@@ -500,18 +500,7 @@</span><br><span> =
-                        multi_io_action(m, NULL, TA_TUN_READ, false);</span=
-><br><span>                     }</span><br><span>                 }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                /* new incom=
-ing TCP client attempting to connect? */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                else if (e-&gt;arg =3D=3D MULTI_IO_SOCKE=
-T)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    str=
-uct multi_instance *mi;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                    ASSERT(m-&gt;top.c2.link_sockets[0]);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                    socket_reset_list=
-en_persistent(m-&gt;top.c2.link_sockets[0]);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                    mi =3D multi_create_instance_tcp=
-(m, m-&gt;top.c2.link_sockets[0]);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                    if (mi)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                    {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                        multi_io_action(m, mi, TA_INITIA=
-L, false);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan> #if defined(ENABLE_DCO)</span><br><span>                 /* incoming d=
-ata on DCO? */</span><br><span>                 else if (e-&gt;arg =3D=3D M=
-ULTI_IO_DCO)</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/1384?usp=3Demail">change 1384</a>. To=
- unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
-rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
-ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
-temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1384?usp=3Demail"/><meta itemprop=3D"nam=
-e" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1384?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">multi-socket: remove duplicated/dead code<br><br=
+>Removed the event_ctl() for ENABLE_ASYNC_PUSH<br>in io_wait_dowork() since=
+ that function is<br>not executed by servers anymore.<br><br>Removed a dupl=
+icated code in multi_io_process_io()<br>for new incoming TCP connections si=
+nce the same<br>thing is done couple lines above.<br><br>Change-Id: Id1457f=
+8432b4f0a69108b91ca12f2cbd0818f90d<br>Signed-off-by: Gianmarco De Gregori &=
+lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&g=
+t;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1384<br>Message-Id=
+: &lt;20251122185239.26312-1-gert@...1296...&gt;<br>URL: https://www.mail-a=
+rchive.com/openvpn-devel@lists.sourceforge.net/msg34593.html<br>Signed-off-=
+by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/forward.c<=
+br>M src/openvpn/multi_io.c<br>2 files changed, 2 insertions(+), 23 deletio=
+ns(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
+an>index f01fb4c..a6d3394 100644</span><br><span>--- a/src/openvpn/forward.=
+c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -2214,9 +2=
+214,7 @@</span><br><span>     static uintptr_t management_shift =3D</span><=
+br><span>         MANAGEMENT_SHIFT; /* depends on MANAGEMENT_READ and MANAG=
+EMENT_WRITE */</span><br><span> #endif</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    static uintptr_t file_shift =3D FILE_SHIFT;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #if defined(TARGET_LINU=
+X) || defined(TARGET_FREEBSD)</span><br><span>     static uintptr_t dco_shi=
+ft =3D DCO_SHIFT; /* Event from DCO linux kernel module */</span><br><span>=
+ #endif</span><br><span>@@ -2242,14 +2240,6 @@</span><br><span>     }</span=
+><br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    /* arm inotify watcher */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (c-&gt;options.mode =3D=3D MODE_SERVER)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        event_ctl(c-&gt;c2.event_set, c-=
+&gt;c2.inotify_fd, EVENT_READ, (void *)file_shift);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span>     /*</span><br><span>      * Possible scenarios:</span=
+><br><span>      *  (1) tcp/udp port has data available to read</span><br><=
+span>diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c</span><br=
+><span>index 6e31687..fe72456 100644</span><br><span>--- a/src/openvpn/mult=
+i_io.c</span><br><span>+++ b/src/openvpn/multi_io.c</span><br><span>@@ -500=
+,18 +500,7 @@</span><br><span>                         multi_io_action(m, N=
+ULL, TA_TUN_READ, false);</span><br><span>                     }</span><br>=
+<span>                 }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                /* new incoming TCP client attempting to connect? */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                else if (=
+e-&gt;arg =3D=3D MULTI_IO_SOCKET)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                    struct multi_instance *mi;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                    ASSERT(m-&gt;top.c2.li=
+nk_sockets[0]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+              socket_reset_listen_persistent(m-&gt;top.c2.link_sockets[0]);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    m=
+i =3D multi_create_instance_tcp(m, m-&gt;top.c2.link_sockets[0]);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                    if (mi)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                        m=
+ulti_io_action(m, mi, TA_INITIAL, false);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                    }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span> #if defined(ENABLE_DCO)</span><br><span=
+>                 /* incoming data on DCO? */</span><br><span>             =
+    else if (e-&gt;arg =3D=3D MULTI_IO_DCO)</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1384?u=
+sp=3Demail">change 1384</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1384?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Id1457f8432b4f0a69108b91ca12=
@@ -238,5 +231,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---YwzxMHywbL0=--
+--b+TZr5BW/fk=--
 
