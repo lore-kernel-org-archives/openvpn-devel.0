@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 22 Nov 2025 17:43:21 +0000
+Date: Sat, 22 Nov 2025 17:43:23 +0000
 In-Reply-To: <gerrit.1763661267000.I4c3e5aed23d2e4c543066bb8032ad8808dcd27a8@...2715...>
 References: <gerrit.1763661267000.I4c3e5aed23d2e4c543066bb8032ad8808dcd27a8@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <0c2e76630db7fced5c55ee55c7b9af4cc4b7cfce-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <0c2e76630db7fced5c55ee55c7b9af4cc4b7cfce-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IHsWGQZ5yug="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="tgaKKmxd36A="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: fix
  buffer size in call to FormatMessage
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, selvanair <selva.nair@...277...>, stipa <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: selvanair <selva.nair@...277...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---IHsWGQZ5yug=
+--tgaKKmxd36A=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1387?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+87?usp=3Demail )
 
 Change subject: iservice: fix buffer size in call to FormatMessage
 ......................................................................
@@ -58,7 +54,7 @@ M src/openvpnserv/interactive.c
 1 file changed, 2 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/1387/3
+
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
 index 33282c63..f64c247 100644
@@ -84,7 +80,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1387?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I4c3e5aed23d2e4c543066bb8032ad8808dcd27a8
@@ -97,54 +93,51 @@ Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---IHsWGQZ5yug=
+--tgaKKmxd36A=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by d12fk.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1387?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">iservice: fix buffer size in call t=
-o FormatMessage<br><br>The buffer size is to be given in # of TCHARs accord=
-ing to the docs. In<br>this case that is the number of WCHARs in the buffer=
-.<br><br>While here, remove the unused FORMAT_MESSAGE_ARGUMENT_ARRAY flag. =
-Just<br>to make things a bit shorter.<br><br>Reported-by: stephan@...2966...=
-.<br>Change-Id: I4c3e5aed23d2e4c543066bb8032ad8808dcd27a8<br>Signed-off-by:=
- Heiko Hund &lt;heiko@...2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...493...=
-1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1387<br>M=
-essage-Id: &lt;20251122155506.8901-1-gert@...1296...&gt;<br>URL: https://ww=
-w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34583.html<br>Sig=
-ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpnser=
-v/interactive.c<br>1 file changed, 2 insertions(+), 3 deletions(-)<br><br><=
-/pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
-nges/87/1387/3</pre><pre style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/src/ope=
-nvpnserv/interactive.c</span><br><span>index 33282c63..f64c247 100644</span=
-><br><span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/op=
-envpnserv/interactive.c</span><br><span>@@ -734,9 +734,8 @@</span><br><span=
-> </span><br><span>     err_str =3D L&quot;Unknown Win32 Error&quot;;</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (F=
-ormatMessage(FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
- | FORMAT_MESSAGE_ARGUMENT_ARRAY,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                      NULL, err, 0, buf, sizeof(buf), NULL))</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (FormatMessageW=
-(FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                       NULL, err, =
-0, buf, _countof(buf), NULL))</span><br><span>     {</span><br><span>      =
-   err_str =3D buf;</span><br><span>     }</span><br><span></span><br></pre=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1387?us=
-p=3Demail">change 1387</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1387?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1387?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">iservice: fix buffer size in call to FormatMessa=
+ge<br><br>The buffer size is to be given in # of TCHARs according to the do=
+cs. In<br>this case that is the number of WCHARs in the buffer.<br><br>Whil=
+e here, remove the unused FORMAT_MESSAGE_ARGUMENT_ARRAY flag. Just<br>to ma=
+ke things a bit shorter.<br><br>Reported-by: stephan@...2953...<br>Change-I=
+d: I4c3e5aed23d2e4c543066bb8032ad8808dcd27a8<br>Signed-off-by: Heiko Hund &=
+lt;heiko@...2662...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<b=
+r>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1387<br>Message-Id: &l=
+t;20251122155506.8901-1-gert@...1296...&gt;<br>URL: https://www.mail-archiv=
+e.com/openvpn-devel@lists.sourceforge.net/msg34583.html<br>Signed-off-by: G=
+ert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpnserv/interactive=
+.c<br>1 file changed, 2 insertions(+), 3 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
+.c</span><br><span>index 33282c63..f64c247 100644</span><br><span>--- a/src=
+/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interactiv=
+e.c</span><br><span>@@ -734,9 +734,8 @@</span><br><span> </span><br><span> =
+    err_str =3D L&quot;Unknown Win32 Error&quot;;</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    if (FormatMessage(FORMAT_=
+MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                          | FORMAT_MESSAGE_=
+ARGUMENT_ARRAY,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                NULL, err, 0, buf, sizeof(buf), NULL))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (FormatMessageW(FORMAT_MESSAGE_IG=
+NORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                       NULL, err, 0, buf, _countof(b=
+uf), NULL))</span><br><span>     {</span><br><span>         err_str =3D buf=
+;</span><br><span>     }</span><br><span></span><br></pre><p>To view, visit=
+ <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1387?usp=3Demail">change =
+1387</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1387?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I4c3e5aed23d2e4c543066bb8032=
@@ -166,5 +159,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---IHsWGQZ5yug=--
+--tgaKKmxd36A=--
 
