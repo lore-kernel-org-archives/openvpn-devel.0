@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 22 Nov 2025 17:39:04 +0000
-In-Reply-To: <gerrit.1763650333000.Ie7308d549182a95b86cd113e4a8cc65ff45ba3d7@...2715...>
-References: <gerrit.1763650333000.Ie7308d549182a95b86cd113e4a8cc65ff45ba3d7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7f612e57b913c085574753161bb649e0b76a3e4e-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jlfMtIG/vbY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: tls_crypt: Fix
- Coverity complaint in tls_crypt_v2_check_client_key_age
+Date: Sat, 22 Nov 2025 18:43:14 +0100 (CET)
+Message-Id: <202511221743.5AMHhE7n045883@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251122155506.8901-1-gert@...1296...>
+References: <20251122155506.8901-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: iservice: fix buffer size in
+ call to FormatMessage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,132 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---jlfMtIG/vbY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I have not actually tested this (beyond "does it compile") but reading
+the docs about FormatMessageW() and the overall other code, this looks
+very correct.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-85?usp=3Demail )
+Your patch has been applied to the master branch.
 
-Change subject: tls_crypt: Fix Coverity complaint in tls_crypt_v2_check_cli=
-ent_key_age
-......................................................................
+It might be applicable to release/2.6, but we use a "TCHAR" there, not
+a WCHAR - so that code might just be correct, or not.
 
-tls_crypt: Fix Coverity complaint in tls_crypt_v2_check_client_key_age
+commit b39bed539f218f6165d79224adbc343a63a4514d
+Author: Heiko Hund
+Date:   Sat Nov 22 16:55:00 2025 +0100
 
-Coverity complained about "overflow_before_widen" because
-there is a theoretical overflow that can happen even though
-the target value is wide enough. For useful values of max_days
-this is irrelevant but Coverity is not wrong, so change the
-code accordingly.
+     iservice: fix buffer size in call to FormatMessage
 
-Change-Id: Ie7308d549182a95b86cd113e4a8cc65ff45ba3d7
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1385
-Message-Id: <20251122162553.12254-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-585.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/tls_crypt.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1387
+     Message-Id: <20251122155506.8901-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34583.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-
-
-
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 318c939..9026cff 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -539,7 +539,7 @@
-     int64_t timestamp;
-     memcpy(&timestamp, metadata + 1, sizeof(int64_t));
-     timestamp =3D (int64_t)ntohll((uint64_t)timestamp);
--    int64_t max_age_in_seconds =3D max_days * 24 * 60 * 60;
-+    int64_t max_age_in_seconds =3D (int64_t)max_days * 24 * 60 * 60;
-     if (now - timestamp > max_age_in_seconds)
-     {
-         msg(M_WARN, "ERROR: Client key is too old.");
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1385?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie7308d549182a95b86cd113e4a8cc65ff45ba3d7
-Gerrit-Change-Number: 1385
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gert Doering
 
---jlfMtIG/vbY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1385?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">tls_crypt: Fix Coverity complaint in tls_crypt_v=
-2_check_client_key_age<br><br>Coverity complained about &quot;overflow_befo=
-re_widen&quot; because<br>there is a theoretical overflow that can happen e=
-ven though<br>the target value is wide enough. For useful values of max_day=
-s<br>this is irrelevant but Coverity is not wrong, so change the<br>code ac=
-cordingly.<br><br>Change-Id: Ie7308d549182a95b86cd113e4a8cc65ff45ba3d7<br>S=
-igned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert =
-Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c=
-/openvpn/+/1385<br>Message-Id: &lt;20251122162553.12254-1-gert@...1296...&g=
-t;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net=
-/msg34585.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>--=
--<br>M src/openvpn/tls_crypt.c<br>1 file changed, 1 insertion(+), 1 deletio=
-n(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c</span><br=
-><span>index 318c939..9026cff 100644</span><br><span>--- a/src/openvpn/tls_=
-crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</span><br><span>@@ -5=
-39,7 +539,7 @@</span><br><span>     int64_t timestamp;</span><br><span>    =
- memcpy(&amp;timestamp, metadata + 1, sizeof(int64_t));</span><br><span>   =
-  timestamp =3D (int64_t)ntohll((uint64_t)timestamp);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    int64_t max_age_in_seconds =3D max_days=
- * 24 * 60 * 60;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- int64_t max_age_in_seconds =3D (int64_t)max_days * 24 * 60 * 60;</span><br=
-><span>     if (now - timestamp &gt; max_age_in_seconds)</span><br><span>  =
-   {</span><br><span>         msg(M_WARN, &quot;ERROR: Client key is too ol=
-d.&quot;);</span><br><span></span><br></pre><p>To view, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1385?usp=3Demail">change 1385</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1385?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie7308d549182a95b86cd113e4a8=
-cc65ff45ba3d7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1385 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---jlfMtIG/vbY=--
 
