@@ -1,14 +1,14 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Sun, 23 Nov 2025 19:47:51 +0000
+Date: Sun, 23 Nov 2025 19:47:56 +0000
 In-Reply-To: <gerrit.1763880426000.I16f9426e57f4802ba038ab51f5b70161464b9428@...2715...>
 References: <gerrit.1763880426000.I16f9426e57f4802ba038ab51f5b70161464b9428@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <3a3036ba441a2dfd33a8106d9f25baf42bc6b8d2-EmailReviewComments-HTML@...2715...>
+Message-ID: <c3bf27b55f1a36e1879749c8dcb320df1d4d0ae4-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="tnQ0W1khow4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2g9rfOTNOeA="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: fix
  calculation of converted domains size
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,93 +19,178 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---tnQ0W1khow4=
+--2g9rfOTNOeA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: cron2, plaisthos.
 
-d12fk has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1390?usp=3Demail )
+Hello cron2, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail
+
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by cron2
+
 
 Change subject: iservice: fix calculation of converted domains size
 ......................................................................
 
+iservice: fix calculation of converted domains size
 
-Patch Set 1:
+To keep track of how much of the buffer is already used, the difference
+of the current position and the start of the buffer needs to be
+multiplied with the size of a character / glyph to bet the byte count,
+with which calculations are done further down below.
 
-(1 comment)
-
-File src/openvpnserv/interactive.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1390/comment/4e90d085_1e83014a?usp=3D=
-email :
-PS1, Line 2207:                 domain_size +=3D 1;
-> shouldn't that be `+=3D one_glyph` here?  A wide-character dot will still=
- take 2 bytes? [=E2=80=A6]
-Good catch! Moved it up there in prep for a following patch, adding one_gly=
-ph is the way to go.
+Reported-by: Marc Heuse <marc@...2953...>
+Reported-by: stephan@...2953...
+Change-Id: I16f9426e57f4802ba038ab51f5b70161464b9428
+Signed-off-by: Heiko Hund <heiko@...2662...>
+---
+M src/openvpnserv/interactive.c
+1 file changed, 11 insertions(+), 5 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/1390/2
+
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 07ca7c9..9c533c1 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2181,8 +2181,11 @@
+                     *comma =3D '\0';
+                 }
+
+-                /* Ignore itf domains which match a pushed search domain */
+                 size_t domain_len =3D wcslen(pos);
++                size_t domain_size =3D domain_len * one_glyph;
++                size_t converted_size =3D (pos - domains) * one_glyph;
++
++                /* Ignore itf domains which match a pushed search domain */
+                 if (ListContainsDomain(search_domains, pos, domain_len))
+                 {
+                     if (comma)
+@@ -2199,11 +2202,14 @@
+                     }
+                 }
+
+-                /* Check for enough space to convert this domain */
+-                domain_len +=3D 1; /* leading dot */
+-                size_t converted_size =3D pos - domains;
+-                size_t domain_size =3D domain_len * one_glyph;
++                /* Add space for the leading dot */
++                domain_len +=3D 1;
++                domain_size +=3D one_glyph;
++
++                /* Space for the terminating zeros */
+                 size_t extra_size =3D 2 * one_glyph;
++
++                /* Check for enough space to convert this domain */
+                 if (converted_size + domain_size + extra_size > buf_size)
+                 {
+                     /* Domain doesn't fit, bad luck if it's the first one =
+*/
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I16f9426e57f4802ba038ab51f5b70161464b9428
 Gerrit-Change-Number: 1390
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Sun, 23 Nov 2025 19:47:51 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
 
---tnQ0W1khow4=
+--2g9rfOTNOeA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: cron2, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1390/comment/4e90d085_1e83014a?usp=3Demail">Patch=
- Set #1, Line 2207:</a> <code style=3D"font-family:monospace,monospace">   =
-             domain_size +=3D 1;</code></p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">shouldn&#39;t that b=
-e `+=3D one_glyph` here?  A wide-character dot will still take 2 bytes? [=
-=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wr=
-ap; word-wrap: break-word;">Good catch! Moved it up there in prep for a fol=
-lowing patch, adding one_glyph is the way to go.</p></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3D=
-email">change 1390</a>. To unsubscribe, or for help writing mail filters, v=
-isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>d12fk <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail">View Change</=
+a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">iservice: fix calculation of conver=
+ted domains size<br><br>To keep track of how much of the buffer is already =
+used, the difference<br>of the current position and the start of the buffer=
+ needs to be<br>multiplied with the size of a character / glyph to bet the =
+byte count,<br>with which calculations are done further down below.<br><br>=
+Reported-by: Marc Heuse &lt;marc@...2953...&gt;<br>Reported-by: stephan@...493...=
+2953...<br>Change-Id: I16f9426e57f4802ba038ab51f5b70161464b9428<br>Signed-o=
+ff-by: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpnserv/inte=
+ractive.c<br>1 file changed, 11 insertions(+), 5 deletions(-)<br><br></pre>=
+<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
+90/1390/2</pre><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpns=
+erv/interactive.c</span><br><span>index 07ca7c9..9c533c1 100644</span><br><=
+span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpns=
+erv/interactive.c</span><br><span>@@ -2181,8 +2181,11 @@</span><br><span>  =
+                   *comma =3D &#39;\0&#39;;</span><br><span>               =
+  }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                /* Ignore itf domains which match a pushed search domain */=
+</span><br><span>                 size_t domain_len =3D wcslen(pos);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                size_t dom=
+ain_size =3D domain_len * one_glyph;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                size_t converted_size =3D (pos - domains) =
+* one_glyph;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                /* Ignore =
+itf domains which match a pushed search domain */</span><br><span>         =
+        if (ListContainsDomain(search_domains, pos, domain_len))</span><br>=
+<span>                 {</span><br><span>                     if (comma)</s=
+pan><br><span>@@ -2199,11 +2202,14 @@</span><br><span>                     =
+}</span><br><span>                 }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                /* Check for enough space =
+to convert this domain */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                domain_len +=3D 1; /* leading dot */</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                size_t converted_size =
+=3D pos - domains;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             size_t domain_size =3D domain_len * one_glyph;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                /* Add space for th=
+e leading dot */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+             domain_len +=3D 1;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                domain_size +=3D one_glyph;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                /* Space for the terminating zeros */</spa=
+n><br><span>                 size_t extra_size =3D 2 * one_glyph;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                /* Check for enough space to con=
+vert this domain */</span><br><span>                 if (converted_size + d=
+omain_size + extra_size &gt; buf_size)</span><br><span>                 {</=
+span><br><span>                     /* Domain doesn&#39;t fit, bad luck if =
+it&#39;s the first one */</span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail">change=
+ 1390</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I16f9426e57f4802ba038ab51f5b=
 70161464b9428 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1390 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -118,14 +203,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 23 Nov 2025 19:47:51=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
 
 </body></html>=
 
---tnQ0W1khow4=--
+--2g9rfOTNOeA=--
 
