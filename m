@@ -1,10 +1,16 @@
-Date: Sun, 23 Nov 2025 14:28:16 +0100 (CET)
-Message-Id: <202511231328.5ANDSGDg083825@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251123115851.19555-1-gert@...1296...>
-References: <20251123115851.19555-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: iservice: make sure registry
- string is terminated
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 23 Nov 2025 13:28:44 +0000
+In-Reply-To: <gerrit.1763880426000.Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f@...2715...>
+References: <gerrit.1763880426000.Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <ca641178eeb3f93ff32d0546f0c63e5283e69cad-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="MHmgQt1Lqu0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: make sure
+ registry string is terminated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,47 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko@...2662...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Trivial enough.
+--MHmgQt1Lqu0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Not sure we really *need* this - the documentation for RegGetValueW()
-states
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+92?usp=3Demail )
 
-    If the data is a string, the function checks for a terminating
-    null character. If one is not found, the string is stored with
-    a null terminator if the buffer is large enough to accommodate
-    the extra character. Otherwise, the function fails and returns
-    ERROR_MORE_DATA.
+Change subject: iservice: make sure registry string is terminated
+......................................................................
 
-which reads to me like "either we get 'err' or it is always null 
-terminated", so the "if (!err)" part would catch this anyway.
+iservice: make sure registry string is terminated
 
-I have no way to actually test this beyond "does it compile" - which
-it does.
+When reading the interface domains from the registry, check that the
+string is zero terminated, since the code in GetItfDnsDomains depends
+on the fact when doing size calculations during the conversion.
 
-Your patch has been applied to the master branch.
+Reported-by: Marc Heuse <marc@...2953...>
+Reported-by: stephan@...2953...
+Change-Id: Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1392
+Message-Id: <20251123115851.19555-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
+610.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpnserv/interactive.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit a1c41b0acb6905506ad35e339396206653fee5cc
-Author: Heiko Hund
-Date:   Sun Nov 23 12:58:46 2025 +0100
 
-     iservice: make sure registry string is terminated
 
-     Signed-off-by: Heiko Hund <heiko@...2662...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1392
-     Message-Id: <20251123115851.19555-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34610.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index d778e89..860375d 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2163,7 +2163,7 @@
+     {
+         *size =3D buf_size;
+         err =3D RegGetValueW(itf, NULL, values[i], RRF_RT_REG_SZ, NULL, (P=
+BYTE)domains, size);
+-        if (!err && *size > one_glyph && wcschr(domains, '.'))
++        if (!err && *size > one_glyph && domains[(*size / one_glyph) - 1] =
+=3D=3D '\0' && wcschr(domains, '.'))
+         {
+             /*
+              * Found domain(s), now convert them:
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f
+Gerrit-Change-Number: 1392
+Gerrit-PatchSet: 2
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--MHmgQt1Lqu0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1392?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">iservice: make sure registry string is terminate=
+d<br><br>When reading the interface domains from the registry, check that t=
+he<br>string is zero terminated, since the code in GetItfDnsDomains depends=
+<br>on the fact when doing size calculations during the conversion.<br><br>=
+Reported-by: Marc Heuse &lt;marc@...2953...&gt;<br>Reported-by: stephan@...493...=
+2953...<br>Change-Id: Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f<br>Signed-o=
+ff-by: Heiko Hund &lt;heiko@...2662...&gt;<br>Acked-by: Gert Doering &lt;ge=
+rt@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/139=
+2<br>Message-Id: &lt;20251123115851.19555-1-gert@...1296...&gt;<br>URL: htt=
+ps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34610.html=
+<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/ope=
+nvpnserv/interactive.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br>=
+<br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
+.c</span><br><span>index d778e89..860375d 100644</span><br><span>--- a/src/=
+openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interactive=
+.c</span><br><span>@@ -2163,7 +2163,7 @@</span><br><span>     {</span><br><=
+span>         *size =3D buf_size;</span><br><span>         err =3D RegGetVa=
+lueW(itf, NULL, values[i], RRF_RT_REG_SZ, NULL, (PBYTE)domains, size);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!err &amp;&amp=
+; *size &gt; one_glyph &amp;&amp; wcschr(domains, &#39;.&#39;))</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (!err &amp;&amp; *si=
+ze &gt; one_glyph &amp;&amp; domains[(*size / one_glyph) - 1] =3D=3D &#39;\=
+0&#39; &amp;&amp; wcschr(domains, &#39;.&#39;))</span><br><span>         {<=
+/span><br><span>             /*</span><br><span>              * Found domai=
+n(s), now convert them:</span><br><span></span><br></pre><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail">change 1=
+392</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
+scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icaeca22bdbd8ead0cb12345b1bc=
+c2b5c0f46236f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1392 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--MHmgQt1Lqu0=--
 
