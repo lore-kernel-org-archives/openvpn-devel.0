@@ -1,10 +1,10 @@
+Date: Sun, 23 Nov 2025 14:21:43 +0100 (CET)
+Message-Id: <202511231321.5ANDLhQA083478@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sun, 23 Nov 2025 13:00:23 +0100
-Message-ID: <20251123120029.19736-1-gert@...1296...>
-In-Reply-To: <gerrit.1763880426000.Icd7c7b08e317aefd91a60bfc62e92cd8707b6fac@...2715...>
-References: <gerrit.1763880426000.Icd7c7b08e317aefd91a60bfc62e92cd8707b6fac@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] iservice: check for NULL pointer
+In-Reply-To: <20251123113747.17739-1-gert@...1296...>
+References: <20251123113747.17739-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: iservice: make sure buffer size
+ is not zero
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +15,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Heiko Hund <heiko@...2662...>
+Trivial enough.
 
-Check if the list argument to ListContainsDomain() is NULL. Otherwise
-the call to wcsstr() will bail out.
+While this cannot happen today (the single caller passes in 
+*size = sizeof(data[0].domains)), who knows what the next refactoring
+might bring...
 
-Reported-by: Marc Heuse <marc@...2953...>
-Reported-by: stephan@...2953...
-Change-Id: Icd7c7b08e317aefd91a60bfc62e92cd8707b6fac
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1393
----
+Not tested beyond "does BB confirm it compiles" - it does.  The failed
+checks in BB look more like "something in one part of the build infra
+is eating UDP fragments again" (some workers consistently fail t_client,
+while all others are fine).
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Your patch has been applied to the master branch.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1393
-This mail reflects revision 1 of this Change.
+commit c20a960a338a2e6e7436260cdae4d6eef298cfb0
+Author: Heiko Hund
+Date:   Sun Nov 23 12:37:42 2025 +0100
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     iservice: make sure buffer size is not zero
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index ec80a30..006f748 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -2106,7 +2106,7 @@
- ListContainsDomain(PCWSTR list, PCWSTR domain, size_t len)
- {
-     PCWSTR match = list;
--    while (TRUE)
-+    while (match)
-     {
-         match = wcsstr(match, domain);
-         if (!match)
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1389
+     Message-Id: <20251123113747.17739-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34606.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
