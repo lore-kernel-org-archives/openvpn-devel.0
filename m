@@ -1,16 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 22 Nov 2025 21:41:58 +0000
-In-Reply-To: <gerrit.1763636270000.Id1457f8432b4f0a69108b91ca12f2cbd0818f90d@...2715...>
-References: <gerrit.1763636270000.Id1457f8432b4f0a69108b91ca12f2cbd0818f90d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <8d6a45442ed913c2536fe9d6f721aadc2c67ab0d-HTML@...2715...>
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Sun, 23 Nov 2025 06:47:21 +0000
+References: <gerrit.1763880426000.I16f9426e57f4802ba038ab51f5b70161464b9428@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <f870e4f77bddc23ccd759e28359716845aefaf6c-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="b+TZr5BW/fk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi-socket: remove
- duplicated/dead code
+Content-Type: multipart/alternative; boundary="k0QqxdkB5v4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: fix
+ calculation of converted domains size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,217 +18,184 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---b+TZr5BW/fk=
+--k0QqxdkB5v4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
-84?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: multi-socket: remove duplicated/dead code
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail
+
+to review the following change.
+
+
+Change subject: iservice: fix calculation of converted domains size
 ......................................................................
 
-multi-socket: remove duplicated/dead code
+iservice: fix calculation of converted domains size
 
-Removed the event_ctl() for ENABLE_ASYNC_PUSH
-in io_wait_dowork() since that function is
-not executed by servers anymore.
+To keep track of how much of the buffer is already used, the difference
+of the current position and the start of the buffer needs to be
+multiplied with the size of a character / glyph to bet the byte count,
+with which calculations are done further down below.
 
-Removed a duplicated code in multi_io_process_io()
-for new incoming TCP connections since the same
-thing is done couple lines above.
-
-Change-Id: Id1457f8432b4f0a69108b91ca12f2cbd0818f90d
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1384
-Message-Id: <20251122185239.26312-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-593.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Reported-by: Marc Heuse <marc@...2953...>
+Reported-by: stephan@...2953...
+Change-Id: I16f9426e57f4802ba038ab51f5b70161464b9428
+Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M src/openvpn/forward.c
-M src/openvpn/multi_io.c
-2 files changed, 2 insertions(+), 23 deletions(-)
+M src/openvpnserv/interactive.c
+1 file changed, 11 insertions(+), 5 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/1390/1
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index f01fb4c..a6d3394 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -2214,9 +2214,7 @@
-     static uintptr_t management_shift =3D
-         MANAGEMENT_SHIFT; /* depends on MANAGEMENT_READ and MANAGEMENT_WRI=
-TE */
- #endif
--#ifdef ENABLE_ASYNC_PUSH
--    static uintptr_t file_shift =3D FILE_SHIFT;
--#endif
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index d778e89..37752b2 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2181,8 +2181,11 @@
+                     *comma =3D '\0';
+                 }
+
+-                /* Ignore itf domains which match a pushed search domain */
+                 size_t domain_len =3D wcslen(pos);
++                size_t domain_size =3D domain_len * one_glyph;
++                size_t converted_size =3D (pos - domains) * one_glyph;
 +
- #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     static uintptr_t dco_shift =3D DCO_SHIFT; /* Event from DCO linux kern=
-el module */
- #endif
-@@ -2242,14 +2240,6 @@
-     }
- #endif
-
--#ifdef ENABLE_ASYNC_PUSH
--    /* arm inotify watcher */
--    if (c->options.mode =3D=3D MODE_SERVER)
--    {
--        event_ctl(c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void *)f=
-ile_shift);
--    }
--#endif
--
-     /*
-      * Possible scenarios:
-      *  (1) tcp/udp port has data available to read
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index 6e31687..fe72456 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -500,18 +500,7 @@
-                         multi_io_action(m, NULL, TA_TUN_READ, false);
++                /* Ignore itf domains which match a pushed search domain */
+                 if (ListContainsDomain(search_domains, pos, domain_len))
+                 {
+                     if (comma)
+@@ -2199,11 +2202,14 @@
                      }
                  }
--                /* new incoming TCP client attempting to connect? */
--                else if (e->arg =3D=3D MULTI_IO_SOCKET)
--                {
--                    struct multi_instance *mi;
--                    ASSERT(m->top.c2.link_sockets[0]);
--                    socket_reset_listen_persistent(m->top.c2.link_sockets[=
-0]);
--                    mi =3D multi_create_instance_tcp(m, m->top.c2.link_soc=
-kets[0]);
--                    if (mi)
--                    {
--                        multi_io_action(m, mi, TA_INITIAL, false);
--                    }
--                }
+
+-                /* Check for enough space to convert this domain */
+-                domain_len +=3D 1; /* leading dot */
+-                size_t converted_size =3D pos - domains;
+-                size_t domain_size =3D domain_len * one_glyph;
++                /* Add space for the leading dot */
++                domain_len +=3D 1;
++                domain_size +=3D 1;
 +
- #if defined(ENABLE_DCO)
-                 /* incoming data on DCO? */
-                 else if (e->arg =3D=3D MULTI_IO_DCO)
++                /* Space for the terminating zeros */
+                 size_t extra_size =3D 2 * one_glyph;
++
++                /* Check for enough space to convert this domain */
+                 if (converted_size + domain_size + extra_size > buf_size)
+                 {
+                     /* Domain doesn't fit, bad luck if it's the first one =
+*/
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1384?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id1457f8432b4f0a69108b91ca12f2cbd0818f90d
-Gerrit-Change-Number: 1384
-Gerrit-PatchSet: 2
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I16f9426e57f4802ba038ab51f5b70161464b9428
+Gerrit-Change-Number: 1390
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---b+TZr5BW/fk=
+--k0QqxdkB5v4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1384?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">multi-socket: remove duplicated/dead code<br><br=
->Removed the event_ctl() for ENABLE_ASYNC_PUSH<br>in io_wait_dowork() since=
- that function is<br>not executed by servers anymore.<br><br>Removed a dupl=
-icated code in multi_io_process_io()<br>for new incoming TCP connections si=
-nce the same<br>thing is done couple lines above.<br><br>Change-Id: Id1457f=
-8432b4f0a69108b91ca12f2cbd0818f90d<br>Signed-off-by: Gianmarco De Gregori &=
-lt;gianmarco@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&g=
-t;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1384<br>Message-Id=
-: &lt;20251122185239.26312-1-gert@...1296...&gt;<br>URL: https://www.mail-a=
-rchive.com/openvpn-devel@lists.sourceforge.net/msg34593.html<br>Signed-off-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/forward.c<=
-br>M src/openvpn/multi_io.c<br>2 files changed, 2 insertions(+), 23 deletio=
-ns(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><sp=
-an>index f01fb4c..a6d3394 100644</span><br><span>--- a/src/openvpn/forward.=
-c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -2214,9 +2=
-214,7 @@</span><br><span>     static uintptr_t management_shift =3D</span><=
-br><span>         MANAGEMENT_SHIFT; /* depends on MANAGEMENT_READ and MANAG=
-EMENT_WRITE */</span><br><span> #endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    static uintptr_t file_shift =3D FILE_SHIFT;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #if defined(TARGET_LINU=
-X) || defined(TARGET_FREEBSD)</span><br><span>     static uintptr_t dco_shi=
-ft =3D DCO_SHIFT; /* Event from DCO linux kernel module */</span><br><span>=
- #endif</span><br><span>@@ -2242,14 +2240,6 @@</span><br><span>     }</span=
-><br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#ifdef ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    /* arm inotify watcher */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    if (c-&gt;options.mode =3D=3D MODE_SERVER)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        event_ctl(c-&gt;c2.event_set, c-=
-&gt;c2.inotify_fd, EVENT_READ, (void *)file_shift);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span>     /*</span><br><span>      * Possible scenarios:</span=
-><br><span>      *  (1) tcp/udp port has data available to read</span><br><=
-span>diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c</span><br=
-><span>index 6e31687..fe72456 100644</span><br><span>--- a/src/openvpn/mult=
-i_io.c</span><br><span>+++ b/src/openvpn/multi_io.c</span><br><span>@@ -500=
-,18 +500,7 @@</span><br><span>                         multi_io_action(m, N=
-ULL, TA_TUN_READ, false);</span><br><span>                     }</span><br>=
-<span>                 }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                /* new incoming TCP client attempting to connect? */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                else if (=
-e-&gt;arg =3D=3D MULTI_IO_SOCKET)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                    struct multi_instance *mi;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                    ASSERT(m-&gt;top.c2.li=
-nk_sockets[0]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-              socket_reset_listen_persistent(m-&gt;top.c2.link_sockets[0]);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    m=
-i =3D multi_create_instance_tcp(m, m-&gt;top.c2.link_sockets[0]);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                    if (mi)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                        m=
-ulti_io_action(m, mi, TA_INITIAL, false);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                    }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span> #if defined(ENABLE_DCO)</span><br><span=
->                 /* incoming data on DCO? */</span><br><span>             =
-    else if (e-&gt;arg =3D=3D MULTI_IO_DCO)</span><br><span></span><br></pr=
-e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1384?u=
-sp=3Demail">change 1384</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1384?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>d12fk would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">iservice: fix calculation of converted doma=
+ins size<br><br>To keep track of how much of the buffer is already used, th=
+e difference<br>of the current position and the start of the buffer needs t=
+o be<br>multiplied with the size of a character / glyph to bet the byte cou=
+nt,<br>with which calculations are done further down below.<br><br>Reported=
+-by: Marc Heuse &lt;marc@...2953...&gt;<br>Reported-by: stephan@...2953...<=
+br>Change-Id: I16f9426e57f4802ba038ab51f5b70161464b9428<br>Signed-off-by: H=
+eiko Hund &lt;heiko@...2662...&gt;<br>---<br>M src/openvpnserv/interactive.=
+c<br>1 file changed, 11 insertions(+), 5 deletions(-)<br><br></pre><pre cla=
+ss=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/90/1390/=
+1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;"><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/inte=
+ractive.c</span><br><span>index d778e89..37752b2 100644</span><br><span>---=
+ a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/inte=
+ractive.c</span><br><span>@@ -2181,8 +2181,11 @@</span><br><span>          =
+           *comma =3D &#39;\0&#39;;</span><br><span>                 }</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        /* Ignore itf domains which match a pushed search domain */</span><=
+br><span>                 size_t domain_len =3D wcslen(pos);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                size_t domain_size=
+ =3D domain_len * one_glyph;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                size_t converted_size =3D (pos - domains) * one_gl=
+yph;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                /* Ignore itf doma=
+ins which match a pushed search domain */</span><br><span>                 =
+if (ListContainsDomain(search_domains, pos, domain_len))</span><br><span>  =
+               {</span><br><span>                     if (comma)</span><br>=
+<span>@@ -2199,11 +2202,14 @@</span><br><span>                     }</span>=
+<br><span>                 }</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                /* Check for enough space to conve=
+rt this domain */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+            domain_len +=3D 1; /* leading dot */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                size_t converted_size =3D pos - =
+domains;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   size_t domain_size =3D domain_len * one_glyph;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                /* Add space for the leading =
+dot */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+   domain_len +=3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                domain_size +=3D 1;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               /* Space for the terminating zeros */</span><br><span>      =
+           size_t extra_size =3D 2 * one_glyph;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                /* Check for enough space to convert this domain *=
+/</span><br><span>                 if (converted_size + domain_size + extra=
+_size &gt; buf_size)</span><br><span>                 {</span><br><span>   =
+                  /* Domain doesn&#39;t fit, bad luck if it&#39;s the first=
+ one */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail">change 1390</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1390?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id1457f8432b4f0a69108b91ca12=
-f2cbd0818f90d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1384 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I16f9426e57f4802ba038ab51f5b=
+70161464b9428 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1390 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---b+TZr5BW/fk=--
+--k0QqxdkB5v4=--
 
