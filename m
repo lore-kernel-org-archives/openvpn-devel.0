@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 23 Nov 2025 11:57:07 +0000
-In-Reply-To: <gerrit.1763880426000.Iabad046c930dd0f38ec50d1c43d8b3288816df7d@...2715...>
-References: <gerrit.1763880426000.Iabad046c930dd0f38ec50d1c43d8b3288816df7d@...2715...>
+Date: Sun, 23 Nov 2025 11:58:24 +0000
+In-Reply-To: <gerrit.1763880426000.Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f@...2715...>
+References: <gerrit.1763880426000.Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <84b0ef0c42fce1336341d8f297c66caeee48bc5b-EmailReviewComments-HTML@...2715...>
+Message-ID: <0395aa0afb327a2a41eb65854838f10634223b6b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="p/MJp/PFsmo="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: return
- correct size when domains are truncated
+Content-Type: multipart/alternative; boundary="wh9bKa00QPk="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: make sure
+ registry string is terminated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,62 +22,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---p/MJp/PFsmo=
+--wh9bKa00QPk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: d12fk, plaisthos.
 
 cron2 has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1391?usp=3Demail )
+net/c/openvpn/+/1392?usp=3Demail )
 
-Change subject: iservice: return correct size when domains are truncated
+Change subject: iservice: make sure registry string is terminated
 ......................................................................
 
 
-Patch Set 1: Code-Review-1
-
-(2 comments)
-
-Patchset:
-
-PS1:
-I might not understand this, but we have `+ one_glyph` in one return branch=
-, and `+ 1` in the other.  This can't be both correct.
-
-
-File src/openvpnserv/interactive.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1391/comment/028ab026_9b0f67b5?usp=3D=
-email :
-PS1, Line 2217:                     *size =3D converted_size =3D=3D 0 ? 0 :=
- converted_size + 1;
-`+1` or `+ one_glyph`?
-
-The code 10 lines up does
-
-```
-                        /* This was the last domain */
-                        *pos =3D '\0';
-                        *size +=3D one_glyph;
-                        return wcslen(domains) ? NO_ERROR : ERROR_FILE_NOT_=
-FOUND;
-```
-
-both can not be correct at the same time.
-
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1391?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iabad046c930dd0f38ec50d1c43d8b3288816df7d
-Gerrit-Change-Number: 1391
+Gerrit-Change-Id: Icaeca22bdbd8ead0cb12345b1bcc2b5c0f46236f
+Gerrit-Change-Number: 1392
 Gerrit-PatchSet: 1
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
@@ -85,57 +55,34 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Sun, 23 Nov 2025 11:57:07 +0000
-Gerrit-HasComments: Yes
+Gerrit-Comment-Date: Sun, 23 Nov 2025 11:58:24 +0000
+Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---p/MJp/PFsmo=
+--wh9bKa00QPk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: d12fk, plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1391?usp=3Demail">V=
-iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1391?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I might no=
-t understand this, but we have `+ one_glyph` in one return branch, and `+ 1=
-` in the other.  This can&#39;t be both correct.</p></li></ul></li><li styl=
-e=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:</p><ul =
-style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
-0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/1391/comment/028ab026_9b0f67b5?usp=3Demail">Patch Set #1,=
- Line 2217:</a> <code style=3D"font-family:monospace,monospace">           =
-         *size =3D converted_size =3D=3D 0 ? 0 : converted_size + 1;</code>=
-</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">`+1` or `+ one_glyph`?</p><p class=3D"blocks" style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">The code 10 lines up does</p><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-```<br>                        /* This was the last domain */<br>          =
-              *pos =3D &#39;\0&#39;;<br>                        *size +=3D =
-one_glyph;<br>                        return wcslen(domains) ? NO_ERROR : E=
-RROR_FILE_NOT_FOUND;<br>```</pre><p class=3D"blocks" style=3D"white-space: =
-pre-wrap; word-wrap: break-word;">both can not be correct at the same time.=
-</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1391?usp=3Demail">change 1391</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1391?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail=
+">change 1392</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1392?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iabad046c930dd0f38ec50d1c43d=
-8b3288816df7d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1391 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icaeca22bdbd8ead0cb12345b1bc=
+c2b5c0f46236f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1392 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
@@ -149,12 +96,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 23 Nov 2025 11:57:07=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 23 Nov 2025 11:58:24=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---p/MJp/PFsmo=--
+--wh9bKa00QPk=--
 
