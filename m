@@ -1,11 +1,10 @@
+Date: Mon, 24 Nov 2025 19:49:43 +0100 (CET)
+Message-Id: <202511241849.5AOInhQI044422@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon, 24 Nov 2025 19:39:06 +0100
-Message-ID: <20251124183911.24851-1-gert@...1296...>
-In-Reply-To: <gerrit.1764008169000.I8aa1cf1585e2320fca9329bdd0227976606fe71e@...2715...>
-References: <gerrit.1764008169000.I8aa1cf1585e2320fca9329bdd0227976606fe71e@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Restrict access to the service pipe to
- SYSTEM and owner
+In-Reply-To: <20251124175832.21352-1-gert@...1296...>
+References: <20251124175832.21352-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: multi-socket: do not return
+ tuntap flags on server-side
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +15,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+So we discused this at length on IRC (and in gerrit).  I'm still not sure
+if I grok all the intricacies involved here, but some of the changes
+are very obvious because the way "non udp socket events" have changed
+in the multisocket patch makes the code in mudp.c obsolete now - others
+not so much, but master + this passes all client/server tests, with single
+and multisocket, and async scripts, so I guess all events are still being
+properly addressed...
 
-Access is restricted to SYSTEM and pipe client user
-(the user starting openvpn.exe). The default is
-full access to Administrtors, owner, and read access
-to everyone. This hardens the pipe further.
+I would have gotten rid of get_io_flags_dowork_udp() at the same time
+(just include the 2-3 lines in the single caller...), but this can be
+done another time.
 
-Change-Id: I8aa1cf1585e2320fca9329bdd0227976606fe71e
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1402
----
+Same for the odd indent at the end of multi_io_process_io()...
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
+Your patch has been applied to the master branch.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1402
-This mail reflects revision 1 of this Change.
+commit 6244e466217a367dd4d858f5e930e3aab415fc42
+Author: Gianmarco De Gregori
+Date:   Mon Nov 24 18:58:27 2025 +0100
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     multi-socket: do not return tuntap flags on server-side
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 2dc865e..275bf42 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1975,10 +1975,26 @@
-                      GetCurrentThreadId(), pipe_uuid_str);
-     RpcStringFree(&pipe_uuid_str);
- 
-+    /* make a security descriptor for the named pipe with access
-+     * restricted to the user and SYSTEM
-+     */
-+    SECURITY_ATTRIBUTES sa;
-+    PSECURITY_DESCRIPTOR pSD = NULL;
-+    LPCWSTR szSDDL = L"D:(A;;GA;;;SY)(A;;GA;;;OW)";
-+    if (!ConvertStringSecurityDescriptorToSecurityDescriptorW(
-+            szSDDL, SDDL_REVISION_1, &pSD, NULL))
-+    {
-+        ReturnLastError(pipe, L"ConvertSDDL");
-+        goto out;
-+    }
-+    sa.nLength = sizeof(sa);
-+    sa.lpSecurityDescriptor = pSD;
-+    sa.bInheritHandle = FALSE;
-     ovpn_pipe = CreateNamedPipe(ovpn_pipe_name,
-                                 PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
-                                 PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS,
--                                1, 128, 128, 0, NULL);
-+                                1, 128, 128, 0, &sa);
-+
-     if (ovpn_pipe == INVALID_HANDLE_VALUE)
-     {
-         ReturnLastError(pipe, L"CreateNamedPipe");
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1364
+     Message-Id: <20251124175832.21352-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34650.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
