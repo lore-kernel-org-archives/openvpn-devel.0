@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 24 Nov 2025 17:56:21 +0000
+Date: Mon, 24 Nov 2025 17:56:24 +0000
 In-Reply-To: <gerrit.1763922943000.I8aa1cf1585e2320fca9329bdd0227976606fe71e@...2715...>
 References: <gerrit.1763922943000.I8aa1cf1585e2320fca9329bdd0227976606fe71e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <66cc059a442fea08cbb177bf2f3ca05bf303580a-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <66cc059a442fea08cbb177bf2f3ca05bf303580a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/CtquBEvtmI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="osMNGzC86PQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Restrict access to
  the service pipe to SYSTEM and owner
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, stipa <lstipakov@...277...>
-Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: d12fk <heiko@...515...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/CtquBEvtmI=
+--osMNGzC86PQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- selvanair. ( http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+97?usp=3Demail )
 
 Change subject: Restrict access to the service pipe to SYSTEM and owner
 ......................................................................
@@ -56,7 +52,7 @@ M src/openvpnserv/interactive.c
 1 file changed, 18 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/1397/3
+
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
 index afa8047..dbb5a4b 100644
@@ -99,7 +95,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I8aa1cf1585e2320fca9329bdd0227976606fe71e
@@ -112,74 +108,71 @@ Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/CtquBEvtmI=
+--osMNGzC86PQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by selvanair.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">Restrict access to the service pipe=
- to SYSTEM and owner<br><br>Access is restricted to SYSTEM and pipe client =
-user<br>(the user starting openvpn.exe). The default is<br>full access to A=
-dministrtors, owner, and read access<br>to everyone. This hardens the pipe =
-further.<br><br>Change-Id: I8aa1cf1585e2320fca9329bdd0227976606fe71e<br>Sig=
-ned-off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Acked-by: Lev Stipak=
-ov &lt;lstipakov@...277...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/=
-openvpn/+/1397<br>Message-Id: &lt;20251124165353.14923-1-gert@...1296...&gt=
-;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg34640.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---=
-<br>M src/openvpnserv/interactive.c<br>1 file changed, 18 insertions(+), 1 =
-deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29=
-418/openvpn refs/changes/97/1397/3</pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpnserv/int=
-eractive.c b/src/openvpnserv/interactive.c</span><br><span>index afa8047..d=
-bb5a4b 100644</span><br><span>--- a/src/openvpnserv/interactive.c</span><br=
-><span>+++ b/src/openvpnserv/interactive.c</span><br><span>@@ -3417,9 +3417=
-,26 @@</span><br><span>              GetCurrentThreadId(), pipe_uuid_str);<=
-/span><br><span>     RpcStringFree(&amp;pipe_uuid_str);</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* make a securit=
-y descriptor for the named pipe with access</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * restricted to the user and SYSTEM</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    SECURITY_ATTRIBUTES sa;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    PSECURITY_DESCRIPTOR pSD =3D NULL;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    LPCWSTR szSDDL =3D L&quot;D:(=
-A;;GA;;;SY)(A;;GA;;;OW)&quot;;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (!ConvertStringSecurityDescriptorToSecurityDescriptorW(</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            szSDDL, S=
-DDL_REVISION_1, &amp;pSD, NULL))</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       ReturnLastError(pipe, L&quot;ConvertSDDL&quot;);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    sa.nLength =3D sizeof(sa);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    sa.lpSecurityDescriptor =3D pSD;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    sa.bInheritHandle =3D F=
-ALSE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an>     ovpn_pipe =3D CreateNamedPipe(</span><br><span>         ovpn_pipe_n=
-ame, PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAP=
-PED,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        PIPE_TYPE=
-_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS, =
-1, 128, 128, 0, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT | PIPE_REJ=
-ECT_REMOTE_CLIENTS, 1, 128, 128, 0, &amp;sa);</span><br><span>     if (ovpn=
-_pipe =3D=3D INVALID_HANDLE_VALUE)</span><br><span>     {</span><br><span> =
-        ReturnLastError(pipe, L&quot;CreateNamedPipe&quot;);</span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1397?usp=3Demail">change 1397</a>. To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?us=
-p=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/1397?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1397?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Restrict access to the service pipe to SYSTEM an=
+d owner<br><br>Access is restricted to SYSTEM and pipe client user<br>(the =
+user starting openvpn.exe). The default is<br>full access to Administrtors,=
+ owner, and read access<br>to everyone. This hardens the pipe further.<br><=
+br>Change-Id: I8aa1cf1585e2320fca9329bdd0227976606fe71e<br>Signed-off-by: S=
+elva Nair &lt;selva.nair@...277...&gt;<br>Acked-by: Lev Stipakov &lt;lstipa=
+kov@...277...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/139=
+7<br>Message-Id: &lt;20251124165353.14923-1-gert@...1296...&gt;<br>URL: htt=
+ps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34640.html=
+<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/ope=
+nvpnserv/interactive.c<br>1 file changed, 18 insertions(+), 1 deletion(-)<b=
+r><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
+.c</span><br><span>index afa8047..dbb5a4b 100644</span><br><span>--- a/src/=
+openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interactive=
+.c</span><br><span>@@ -3417,9 +3417,26 @@</span><br><span>              Get=
+CurrentThreadId(), pipe_uuid_str);</span><br><span>     RpcStringFree(&amp;=
+pipe_uuid_str);</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    /* make a security descriptor for the named pipe with acc=
+ess</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * restricte=
+d to the user and SYSTEM</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    SECURITY_ATTRIBUTES sa=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    PSECURITY_DESC=
+RIPTOR pSD =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    LPCWSTR szSDDL =3D L&quot;D:(A;;GA;;;SY)(A;;GA;;;OW)&quot;;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (!ConvertStringSecurity=
+DescriptorToSecurityDescriptorW(</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            szSDDL, SDDL_REVISION_1, &amp;pSD, NULL))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        ReturnLastError(pipe, L&quot;Conv=
+ertSDDL&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sa.nLength =3D s=
+izeof(sa);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sa.lp=
+SecurityDescriptor =3D pSD;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    sa.bInheritHandle =3D FALSE;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span>     ovpn_pipe =3D CreateNamedPipe(</=
+span><br><span>         ovpn_pipe_name, PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRS=
+T_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_=
+WAIT | PIPE_REJECT_REMOTE_CLIENTS, 1, 128, 128, 0, NULL);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        PIPE_TYPE_MESSAGE | PIPE_READ=
+MODE_MESSAGE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS, 1, 128, 128, 0, &amp=
+;sa);</span><br><span>     if (ovpn_pipe =3D=3D INVALID_HANDLE_VALUE)</span=
+><br><span>     {</span><br><span>         ReturnLastError(pipe, L&quot;Cre=
+ateNamedPipe&quot;);</span><br><span></span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail">change 1397=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I8aa1cf1585e2320fca9329bdd02=
@@ -200,5 +193,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---/CtquBEvtmI=--
+--osMNGzC86PQ=--
 
