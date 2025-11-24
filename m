@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 24 Nov 2025 17:53:06 +0100
-Message-ID: <20251124165311.14859-1-gert@...1296...>
-In-Reply-To: <gerrit.1763922943000.Ie66a142751354e421d48b273784fc79bcb9f7208@...2715...>
-References: <gerrit.1763922943000.Ie66a142751354e421d48b273784fc79bcb9f7208@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 24 Nov 2025 16:53:40 +0000
+In-Reply-To: <gerrit.1763922943000.I8aa1cf1585e2320fca9329bdd0227976606fe71e@...2715...>
+References: <gerrit.1763922943000.I8aa1cf1585e2320fca9329bdd0227976606fe71e@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ selva.nair@...277..., openvpn-devel@lists.sourceforge.net, lstipakov@...277...
+Message-ID: <b01f56c8768fbfc4052d68d762050396a72301cb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Harden interactive service pipe
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Ut8DZy1owUo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Restrict access to
+ the service pipe to SYSTEM and owner
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,69 +19,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selvanair <selva.nair@...277...>
+Cc: d12fk <heiko@...515...>, stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--Ut8DZy1owUo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Append a version 4 uuid to ovpn_pipe_name to make it less
-  predictable
-- Do not allow remote access to the pipe
+Attention is currently required from: d12fk, plaisthos, selvanair, stipa.
 
-This greatly reduces the possibility of a rogue process racing to
-open the pipe before CreateFile() is called in the worker thread.
+cron2 has posted comments on this change by selvanair. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1397?usp=3Demail )
 
-Reported-by: Marc Heuse <marc@...2953...>
-Change-Id: Ie66a142751354e421d48b273784fc79bcb9f7208
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1396
----
+Change subject: Restrict access to the service pipe to SYSTEM and owner
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1396
-This mail reflects revision 2 of this Change.
+Patch Set 2: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 0712986..7a0a075 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -3398,12 +3398,29 @@
-         goto out;
-     }
- 
-+    UUID pipe_uuid;
-+    RPC_STATUS rpc_stat = UuidCreate(&pipe_uuid);
-+    if (rpc_stat != RPC_S_OK)
-+    {
-+        ReturnError(pipe, rpc_stat, L"UuidCreate", 1, &exit_event);
-+        goto out;
-+    }
-+
-+    RPC_WSTR pipe_uuid_str = NULL;
-+    rpc_stat = UuidToStringW(&pipe_uuid, &pipe_uuid_str);
-+    if (rpc_stat != RPC_S_OK)
-+    {
-+        ReturnError(pipe, rpc_stat, L"UuidToString", 1, &exit_event);
-+        goto out;
-+    }
-     swprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
--             L"\\\\.\\pipe\\" _L(PACKAGE) L"%ls\\service_%lu", service_instance,
--             GetCurrentThreadId());
-+             L"\\\\.\\pipe\\" _L(PACKAGE) L"%ls\\service_%lu_%ls", service_instance,
-+             GetCurrentThreadId(), pipe_uuid_str);
-+    RpcStringFree(&pipe_uuid_str);
-+
-     ovpn_pipe = CreateNamedPipe(
-         ovpn_pipe_name, PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
--        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 128, 128, 0, NULL);
-+        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT | PIPE_REJECT_REMOTE_CLIENTS, 1, 128, 128, 0, NULL);
-     if (ovpn_pipe == INVALID_HANDLE_VALUE)
-     {
-         ReturnLastError(pipe, L"CreateNamedPipe");
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8aa1cf1585e2320fca9329bdd0227976606fe71e
+Gerrit-Change-Number: 1397
+Gerrit-PatchSet: 2
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: d12fk <heiko@...515...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 24 Nov 2025 16:53:40 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--Ut8DZy1owUo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: d12fk, plaisthos, selvanair, stipa. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail=
+">change 1397</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1397?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8aa1cf1585e2320fca9329bdd02=
+27976606fe71e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1397 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 24 Nov 2025 16:53:40=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--Ut8DZy1owUo=--
 
