@@ -1,13 +1,14 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Tue, 25 Nov 2025 09:14:57 +0000
+Date: Tue, 25 Nov 2025 09:22:07 +0000
+In-Reply-To: <gerrit.1764062094000.Iefc251cb4483c0b9fb9d6a5207db4445cd884d52@...2715...>
 References: <gerrit.1764062094000.Iefc251cb4483c0b9fb9d6a5207db4445cd884d52@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <aa6e668ebb2ffa25712c2ad8c8722b7acfde0a6c-HTML@...2715...>
+Message-ID: <c04dc341bdbf8cfff3f1e31d3728bd1c6e50a63d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="egqxiu5Fq5U="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="EeEWwfPWOlg="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: process
  messages immediately after read
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---egqxiu5Fq5U=
+--EeEWwfPWOlg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,12 +30,11 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: dco: process messages immediately after read
@@ -66,15 +66,13 @@ M src/openvpn/dco_linux.c
 M src/openvpn/dco_win.c
 M src/openvpn/forward.c
 M src/openvpn/forward.h
-M src/openvpn/mudp.c
 M src/openvpn/multi.c
 M src/openvpn/multi.h
 M src/openvpn/multi_io.c
-10 files changed, 74 insertions(+), 41 deletions(-)
+9 files changed, 73 insertions(+), 36 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1403/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1403/2
 
 diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
 index e5e8709..cd6e32a 100644
@@ -239,7 +237,7 @@ index ca5eedf..54044c5 100644
  }
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index f01fb4c..3ef8794 100644
+index ccb8404..070018e 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
 @@ -1243,13 +1243,11 @@
@@ -261,7 +259,7 @@ D))
      /* no message for us to handle - platform specific code has logged det=
 ails */
      if (dco->dco_message_type =3D=3D 0)
-@@ -2379,7 +2377,7 @@
+@@ -2369,7 +2367,7 @@
      {
          if (!IS_SIG(c))
          {
@@ -288,23 +286,6 @@ index a575faf..9e9b02e 100644
   * Write a packet to the external network interface.
   * @ingroup external_multiplexer
   *
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 31134be..08ec8ff 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -417,11 +417,7 @@
-     {
-         if (!IS_SIG(&m->top))
-         {
--            bool ret =3D true;
--            while (ret)
--            {
--                ret =3D multi_process_incoming_dco(m);
--            }
-+            dco_read_and_process(&m->top.c1.tuntap->dco);
-         }
-     }
- #endif
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
 index 2b944667..f3c770e 100644
 --- a/src/openvpn/multi.c
@@ -380,10 +361,10 @@ index a62b07a..a44f9f2 100644
 */
  /**
 diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index 6e31687..3ade59f 100644
+index fe72456..997951e 100644
 --- a/src/openvpn/multi_io.c
 +++ b/src/openvpn/multi_io.c
-@@ -516,7 +516,7 @@
+@@ -505,7 +505,7 @@
                  /* incoming data on DCO? */
                  else if (e->arg =3D=3D MULTI_IO_DCO)
                  {
@@ -398,245 +379,232 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Iefc251cb4483c0b9fb9d6a5207db4445cd884d52
 Gerrit-Change-Number: 1403
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---egqxiu5Fq5U=
+--EeEWwfPWOlg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>ralf_lici would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">dco: process messages immediately after rea=
-d<br><br>Currently, reading and processing of incoming DCO messages are<br>=
-decoupled: notifications are read, parsed, and the relevant information<br>=
-is stored in fields of dco_context_t for later processing (with the only<br=
->exception being stats). This approach is problematic on Linux, since<br>li=
-bnl does not allow reading a single netlink message at a time, which<br>can=
- result in loss of information when multiple notifications are<br>available=
-.<br><br>This change adopts a read -&gt; parse -&gt; process paradigm. On L=
-inux,<br>processing is now invoked directly from within the parsing callbac=
-k,<br>which libnl calls for each received netlink packet. The other interfa=
-ces<br>are adapted accordingly to unify the processing model across all<br>=
-platforms.<br><br>Reported-by: Stefan Baranoff<br>Change-Id: Iefc251cb4483c=
-0b9fb9d6a5207db4445cd884d52<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...=
-&gt;<br>---<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/=
-openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/forward.c<b=
-r>M src/openvpn/forward.h<br>M src/openvpn/mudp.c<br>M src/openvpn/multi.c<=
-br>M src/openvpn/multi.h<br>M src/openvpn/multi_io.c<br>10 files changed, 7=
-4 insertions(+), 41 deletions(-)<br><br></pre><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/03/1403/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>index e5e8709..=
-cd6e32a 100644</span><br><span>--- a/src/openvpn/dco.h</span><br><span>+++ =
-b/src/openvpn/dco.h</span><br><span>@@ -127,12 +127,13 @@</span><br><span> =
-void close_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx);</span><br><s=
-pan> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * Read data from the DCO communication channel (i.e. a control packet=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Read and proces=
-s data from the DCO communication channel</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * (i.e. a control packet)</span><br><span>  *</span>=
-<br><span>  * @param dco       the DCO context</span><br><span>  * @return =
-         0 on success or a negative error code otherwise</span><br><span>  =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int dco_do_read(dco=
-_context_t *dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+in=
-t dco_read_and_process(dco_context_t *dco);</span><br><span> </span><br><sp=
-an> /**</span><br><span>  * Install a DCO in the main event loop</span><br>=
-<span>@@ -305,7 +306,7 @@</span><br><span> }</span><br><span> </span><br><s=
-pan> static inline int</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--dco_do_read(dco_context_t *dco)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+dco_read_and_process(dco_context_t *dco)</span><br><span> {</s=
-pan><br><span>     ASSERT(false);</span><br><span>     return 0;</span><br>=
-<span>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</s=
-pan><br><span>index f2a89ac..ff29ee7 100644</span><br><span>--- a/src/openv=
-pn/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br>=
-<span>@@ -578,7 +578,7 @@</span><br><span> }</span><br><span> </span><br><s=
-pan> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_do_read(d=
-co_context_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
-co_read_and_process(dco_context_t *dco)</span><br><span> {</span><br><span>=
-     struct ifdrv drv;</span><br><span>     uint8_t buf[4096];</span><br><s=
-pan>@@ -689,6 +689,16 @@</span><br><span> </span><br><span>     nvlist_dest=
-roy(nvl);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    if (dco-&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        ASSERT(dco-&gt;c-&gt;multi);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        multi_process_incoming_dco(dco-&g=
-t;c-&gt;multi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        process_incoming_dco(dco-&gt;c);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     return 0;</s=
-pan><br><span> }</span><br><span> </span><br><span>diff --git a/src/openvpn=
-/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>index 0ae30b1..ebdfc=
-34 100644</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>+++=
- b/src/openvpn/dco_linux.c</span><br><span>@@ -1094,29 +1094,34 @@</span><b=
-r><span>      * message, that stores the type-specific attributes.</span><b=
-r><span>      *</span><br><span>      * the &quot;dco&quot; object is then =
-filled accordingly with the information</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-     * retrieved from the message, so that the rest of th=
-e OpenVPN code can</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-  * react as need be.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+     * retrieved from the message, so that *process_incoming_dco can reac=
-t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * as need be.=
-</span><br><span>      */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    int ret;</span><br><span>     switch (gnlh-&gt;cmd)</span><br><sp=
-an>     {</span><br><span>         case OVPN_CMD_PEER_GET:</span><br><span>=
-         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- return ovpn_handle_peer(dco, attrs);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            ret =3D ovpn_handle_peer(dco, attrs);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><b=
-r><span>         }</span><br><span> </span><br><span>         case OVPN_CMD=
-_PEER_DEL_NTF:</span><br><span>         {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            return ovpn_handle_peer_del_ntf(dco, attrs)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ret =
-=3D ovpn_handle_peer_del_ntf(dco, attrs);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            break;</span><br><span>         }</span><=
-br><span> </span><br><span>         case OVPN_CMD_PEER_FLOAT_NTF:</span><br=
-><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        return ovpn_handle_peer_float_ntf(dco, attrs);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            ret =3D ovpn_handle_peer_flo=
-at_ntf(dco, attrs);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            break;</span><br><span>         }</span><br><span> </span><br><=
-span>         case OVPN_CMD_KEY_SWAP_NTF:</span><br><span>         {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            return ovpn_hand=
-le_key_swap_ntf(dco, attrs);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            ret =3D ovpn_handle_key_swap_ntf(dco, attrs);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br=
-><span>         }</span><br><span> </span><br><span>         default:</span=
-><br><span>@@ -1125,11 +1130,26 @@</span><br><span>             return NL_S=
-TOP;</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (ret !=3D NL_OK)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        return ret;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco-&gt;c=
--&gt;mode =3D=3D CM_TOP)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        A=
-SSERT(dco-&gt;c-&gt;multi);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        multi_process_incoming_dco(dco);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pr=
-ocess_incoming_dco(dco);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span>     return NL_OK;</span><br><span> }</span><br><span> </span><br><=
-span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_do_read(=
-dco_context_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-dco_read_and_process(dco_context_t *dco)</span><br><span> {</span><br><span=
->     msg(D_DCO_DEBUG, __func__);</span><br><span> </span><br><span>diff --=
-git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>index c=
-a5eedf..54044c5 100644</span><br><span>--- a/src/openvpn/dco_win.c</span><b=
-r><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -690,7 +690,7 @@</sp=
-an><br><span> }</span><br><span> </span><br><span> int</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco_conte=
-xt_t *dco)</span><br><span> {</span><br><span>     if (dco-&gt;ifmode !=3D =
-DCO_MODE_MP)</span><br><span>     {</span><br><span>@@ -727,6 +727,16 @@</s=
-pan><br><span>             break;</span><br><span>     }</span><br><span> <=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco-&gt;c-&g=
-t;mode =3D=3D CM_TOP)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSE=
-RT(dco-&gt;c-&gt;multi);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        multi_process_incoming_dco(dco);</span><br><span style=3D"colo=
+<p>ralf_lici <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail">View Chan=
+ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">dco: process messages immediately after read<br><br=
+>Currently, reading and processing of incoming DCO messages are<br>decouple=
+d: notifications are read, parsed, and the relevant information<br>is store=
+d in fields of dco_context_t for later processing (with the only<br>excepti=
+on being stats). This approach is problematic on Linux, since<br>libnl does=
+ not allow reading a single netlink message at a time, which<br>can result =
+in loss of information when multiple notifications are<br>available.<br><br=
+>This change adopts a read -&gt; parse -&gt; process paradigm. On Linux,<br=
+>processing is now invoked directly from within the parsing callback,<br>wh=
+ich libnl calls for each received netlink packet. The other interfaces<br>a=
+re adapted accordingly to unify the processing model across all<br>platform=
+s.<br><br>Reported-by: Stefan Baranoff<br>Change-Id: Iefc251cb4483c0b9fb9d6=
+a5207db4445cd884d52<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>=
+---<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/=
+dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/forward.c<br>M src/=
+openvpn/forward.h<br>M src/openvpn/multi.c<br>M src/openvpn/multi.h<br>M sr=
+c/openvpn/multi_io.c<br>9 files changed, 73 insertions(+), 36 deletions(-)<=
+br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn =
+refs/changes/03/1403/2</pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.h b/src/openvpn=
+/dco.h</span><br><span>index e5e8709..cd6e32a 100644</span><br><span>--- a/=
+src/openvpn/dco.h</span><br><span>+++ b/src/openvpn/dco.h</span><br><span>@=
+@ -127,12 +127,13 @@</span><br><span> void close_tun_dco(struct tuntap *tt,=
+ openvpn_net_ctx_t *ctx);</span><br><span> </span><br><span> /**</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">- * Read data from the DCO commun=
+ication channel (i.e. a control packet)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * Read and process data from the DCO communication cha=
+nnel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (i.e. a cont=
+rol packet)</span><br><span>  *</span><br><span>  * @param dco       the DC=
+O context</span><br><span>  * @return          0 on success or a negative e=
+rror code otherwise</span><br><span>  */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-int dco_do_read(dco_context_t *dco);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+int dco_read_and_process(dco_context_t =
+*dco);</span><br><span> </span><br><span> /**</span><br><span>  * Install a=
+ DCO in the main event loop</span><br><span>@@ -305,7 +306,7 @@</span><br><=
+span> }</span><br><span> </span><br><span> static inline int</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco=
+_context_t *dco)</span><br><span> {</span><br><span>     ASSERT(false);</sp=
+an><br><span>     return 0;</span><br><span>diff --git a/src/openvpn/dco_fr=
+eebsd.c b/src/openvpn/dco_freebsd.c</span><br><span>index f2a89ac..ff29ee7 =
+100644</span><br><span>--- a/src/openvpn/dco_freebsd.c</span><br><span>+++ =
+b/src/openvpn/dco_freebsd.c</span><br><span>@@ -578,7 +578,7 @@</span><br><=
+span> }</span><br><span> </span><br><span> int</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco_context_t *dc=
+o)</span><br><span> {</span><br><span>     struct ifdrv drv;</span><br><spa=
+n>     uint8_t buf[4096];</span><br><span>@@ -689,6 +689,16 @@</span><br><s=
+pan> </span><br><span>     nvlist_destroy(nvl);</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco-&gt;c-&gt;mode =
+=3D=3D CM_TOP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(dco-=
+&gt;c-&gt;multi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      multi_process_incoming_dco(dco-&gt;c-&gt;multi);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    process_incoming_dco(dco-&gt;c);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span>     return 0;</span><br><span> }</span><br><span> </sp=
+an><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c=
+</span><br><span>index 0ae30b1..ebdfc34 100644</span><br><span>--- a/src/op=
+envpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br><=
+span>@@ -1094,29 +1094,34 @@</span><br><span>      * message, that stores t=
+he type-specific attributes.</span><br><span>      *</span><br><span>      =
+* the &quot;dco&quot; object is then filled accordingly with the informatio=
+n</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * retrieved fro=
+m the message, so that the rest of the OpenVPN code can</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-     * react as need be.</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     * retrieved from the message, s=
+o that *process_incoming_dco can react</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+     * as need be.</span><br><span>      */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    int ret;</span><br><span>   =
+  switch (gnlh-&gt;cmd)</span><br><span>     {</span><br><span>         cas=
+e OVPN_CMD_PEER_GET:</span><br><span>         {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            return ovpn_handle_peer(dco, attrs);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ret =3D =
+ovpn_handle_peer(dco, attrs);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            break;</span><br><span>         }</span><br><span> </=
+span><br><span>         case OVPN_CMD_PEER_DEL_NTF:</span><br><span>       =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            return=
+ ovpn_handle_peer_del_ntf(dco, attrs);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            ret =3D ovpn_handle_peer_del_ntf(dco, attrs)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            break;=
+</span><br><span>         }</span><br><span> </span><br><span>         case=
+ OVPN_CMD_PEER_FLOAT_NTF:</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            return ovpn_handle_peer_float_n=
+tf(dco, attrs);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        ret =3D ovpn_handle_peer_float_ntf(dco, attrs);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span>    =
+     }</span><br><span> </span><br><span>         case OVPN_CMD_KEY_SWAP_NT=
+F:</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            return ovpn_handle_key_swap_ntf(dco, attrs);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            ret =3D ovpn_handl=
+e_key_swap_ntf(dco, attrs);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            break;</span><br><span>         }</span><br><span> </sp=
+an><br><span>         default:</span><br><span>@@ -1125,11 +1130,26 @@</spa=
+n><br><span>             return NL_STOP;</span><br><span>     }</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret !=
+=3D NL_OK)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return ret;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (dco-&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        ASSERT(dco-&gt;c-&gt;multi);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        multi_process_incoming_=
+dco(dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        process_incoming_dco(dco);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span>     return NL_OK;</span><br><s=
+pan> }</span><br><span> </span><br><span> int</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco_context_t *dco=
+)</span><br><span> {</span><br><span>     msg(D_DCO_DEBUG, __func__);</span=
+><br><span> </span><br><span>diff --git a/src/openvpn/dco_win.c b/src/openv=
+pn/dco_win.c</span><br><span>index ca5eedf..54044c5 100644</span><br><span>=
+--- a/src/openvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</sp=
+an><br><span>@@ -690,7 +690,7 @@</span><br><span> }</span><br><span> </span=
+><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_do=
+_read(dco_context_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+dco_read_and_process(dco_context_t *dco)</span><br><span> {</span><br=
+><span>     if (dco-&gt;ifmode !=3D DCO_MODE_MP)</span><br><span>     {</sp=
+an><br><span>@@ -727,6 +727,16 @@</span><br><span>             break;</span=
+><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (dco-&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        ASSERT(dco-&gt;c-&gt;multi);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        multi_process_incoming_dco=
+(dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        ASSERT(false);</span><br><span style=3D"colo=
 r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSER=
-T(false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     re=
-turn 0;</span><br><span> }</span><br><span> </span><br><span>diff --git a/s=
-rc/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index f01fb4c.=
-.3ef8794 100644</span><br><span>--- a/src/openvpn/forward.c</span><br><span=
->+++ b/src/openvpn/forward.c</span><br><span>@@ -1243,13 +1243,11 @@</span>=
-<br><span>     }</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-process_incoming_dco(struct context *c)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+process_incoming_dco(dco_context_t *dco)</span><=
-br><span> {</span><br><span> #if defined(ENABLE_DCO) &amp;&amp; (defined(TA=
-RGET_LINUX) || defined(TARGET_FREEBSD))</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    dco_context_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dco;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    dco_do_read(dco);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct context *c =3D dco-&gt;c;</spa=
-n><br><span> </span><br><span>     /* no message for us to handle - platfor=
-m specific code has logged details */</span><br><span>     if (dco-&gt;dco_=
-message_type =3D=3D 0)</span><br><span>@@ -2379,7 +2377,7 @@</span><br><spa=
-n>     {</span><br><span>         if (!IS_SIG(c))</span><br><span>         =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            process_=
-incoming_dco(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         dco_read_and_process(&amp;c-&gt;c1.tuntap-&gt;dco);</span><br><spa=
-n>         }</span><br><span>     }</span><br><span> }</span><br><span>diff=
- --git a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><span>inde=
-x a575faf..9e9b02e 100644</span><br><span>--- a/src/openvpn/forward.h</span=
-><br><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -210,6 +210,13 @@=
-</span><br><span>                                  const struct sockaddr *f=
-loat_sa);</span><br><span> </span><br><span> /**</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * Process an incoming DCO message (from kerne=
-l space).</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param dco - Pointer to =
-the structure representing the DCO context.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+void process_incoming_dco(dco_context_t *dco);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/**</span><br><span>  * Write a packet to the external netw=
-ork interface.</span><br><span>  * @ingroup external_multiplexer</span><br>=
-<span>  *</span><br><span>diff --git a/src/openvpn/mudp.c b/src/openvpn/mud=
-p.c</span><br><span>index 31134be..08ec8ff 100644</span><br><span>--- a/src=
-/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@=
- -417,11 +417,7 @@</span><br><span>     {</span><br><span>         if (!IS_=
-SIG(&amp;m-&gt;top))</span><br><span>         {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            bool ret =3D true;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            while (ret)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                ret =3D multi_process_incoming=
-_dco(m);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            dco_rea=
-d_and_process(&amp;m-&gt;top.c1.tuntap-&gt;dco);</span><br><span>         }=
-</span><br><span>     }</span><br><span> #endif</span><br><span>diff --git =
-a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 2b944667.=
-.f3c770e 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+=
-++ b/src/openvpn/multi.c</span><br><span>@@ -3263,14 +3263,10 @@</span><br>=
-<span>     multi_signal_instance(m, mi, SIGTERM);</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-multi_process_incoming_dco(=
-struct multi_context *m)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_proc=
-ess_incoming_dco(dco_context_t *dco)</span><br><span> {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    dco_context_t *dco =3D &amp;m-&gt;top=
-.c1.tuntap-&gt;dco;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instan=
-ce *mi =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D dco_do_rea=
-d(&amp;m-&gt;top.c1.tuntap-&gt;dco);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    struct multi_context *m =3D dco-&gt;c-&gt;multi;</span=
-><br><span> </span><br><span>     int peer_id =3D dco-&gt;dco_message_peer_=
-id;</span><br><span> </span><br><span>@@ -3279,12 +3275,12 @@</span><br><sp=
-an>      */</span><br><span>     if (peer_id &lt; 0)</span><br><span>     {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return ret &g=
-t; 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
-;</span><br><span>     }</span><br><span> </span><br><span>     if ((peer_i=
-d &lt; m-&gt;max_clients) &amp;&amp; (m-&gt;instances[peer_id]))</span><br>=
-<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        m=
-i =3D m-&gt;instances[peer_id];</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        struct multi_instance *mi =3D m-&gt;instances[peer_id];=
-</span><br><span>         set_prefix(mi);</span><br><span>         if (dco-=
-&gt;dco_message_type =3D=3D OVPN_CMD_DEL_PEER)</span><br><span>         {</=
-span><br><span>@@ -3329,7 +3325,6 @@</span><br><span>     dco-&gt;dco_messa=
-ge_type =3D 0;</span><br><span>     dco-&gt;dco_message_peer_id =3D -1;</sp=
-an><br><span>     dco-&gt;dco_del_peer_reason =3D -1;</span><br><span style=
+0%, 40%);">+</span><br><span>     return 0;</span><br><span> }</span><br><s=
+pan> </span><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forw=
+ard.c</span><br><span>index ccb8404..070018e 100644</span><br><span>--- a/s=
+rc/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br>=
+<span>@@ -1243,13 +1243,11 @@</span><br><span>     }</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static =
+void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-process_incoming_=
+dco(struct context *c)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+process_inco=
+ming_dco(dco_context_t *dco)</span><br><span> {</span><br><span> #if define=
+d(ENABLE_DCO) &amp;&amp; (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_context_t *dc=
+o =3D &amp;c-&gt;c1.tuntap-&gt;dco;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco=
+_do_read(dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct context *c =3D dco-&gt;c;</span><br><span> </span><br><span>     /* n=
+o message for us to handle - platform specific code has logged details */</=
+span><br><span>     if (dco-&gt;dco_message_type =3D=3D 0)</span><br><span>=
+@@ -2369,7 +2367,7 @@</span><br><span>     {</span><br><span>         if (!=
+IS_SIG(c))</span><br><span>         {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            process_incoming_dco(c);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            dco_read_and_process(&amp;c-&=
+gt;c1.tuntap-&gt;dco);</span><br><span>         }</span><br><span>     }</s=
+pan><br><span> }</span><br><span>diff --git a/src/openvpn/forward.h b/src/o=
+penvpn/forward.h</span><br><span>index a575faf..9e9b02e 100644</span><br><s=
+pan>--- a/src/openvpn/forward.h</span><br><span>+++ b/src/openvpn/forward.h=
+</span><br><span>@@ -210,6 +210,13 @@</span><br><span>                     =
+             const struct sockaddr *float_sa);</span><br><span> </span><br>=
+<span> /**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Proces=
+s an incoming DCO message (from kernel space).</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * @param dco - Pointer to the structure representing the DCO con=
+text.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+void process_incoming_dco(dco_=
+context_t *dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span>  =
+* Write a packet to the external network interface.</span><br><span>  * @in=
+group external_multiplexer</span><br><span>  *</span><br><span>diff --git a=
+/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 2b944667..=
+f3c770e 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>++=
++ b/src/openvpn/multi.c</span><br><span>@@ -3263,14 +3263,10 @@</span><br><=
+span>     multi_signal_instance(m, mi, SIGTERM);</span><br><span> }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-multi_process_incoming_dco(s=
+truct multi_context *m)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_proce=
+ss_incoming_dco(dco_context_t *dco)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    dco_context_t *dco =3D &amp;m-&gt;top.=
+c1.tuntap-&gt;dco;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instanc=
+e *mi =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D dco_do_read=
+(&amp;m-&gt;top.c1.tuntap-&gt;dco);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct multi_context *m =3D dco-&gt;c-&gt;multi;</span>=
+<br><span> </span><br><span>     int peer_id =3D dco-&gt;dco_message_peer_i=
+d;</span><br><span> </span><br><span>@@ -3279,12 +3275,12 @@</span><br><spa=
+n>      */</span><br><span>     if (peer_id &lt; 0)</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return ret &gt=
+; 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;=
+</span><br><span>     }</span><br><span> </span><br><span>     if ((peer_id=
+ &lt; m-&gt;max_clients) &amp;&amp; (m-&gt;instances[peer_id]))</span><br><=
+span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        mi=
+ =3D m-&gt;instances[peer_id];</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        struct multi_instance *mi =3D m-&gt;instances[peer_id];<=
+/span><br><span>         set_prefix(mi);</span><br><span>         if (dco-&=
+gt;dco_message_type =3D=3D OVPN_CMD_DEL_PEER)</span><br><span>         {</s=
+pan><br><span>@@ -3329,7 +3325,6 @@</span><br><span>     dco-&gt;dco_messag=
+e_type =3D 0;</span><br><span>     dco-&gt;dco_message_peer_id =3D -1;</spa=
+n><br><span>     dco-&gt;dco_del_peer_reason =3D -1;</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-    return ret &gt; 0;</span><br><span> }</=
 span><br><span> #endif /* if defined(ENABLE_DCO) */</span><br><span> </span=
 ><br><span>@@ -4462,4 +4457,4 @@</span><br><span> </span><br><span>     ret=
@@ -662,9 +630,9 @@ ontext *m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void mul=
 ti_process_incoming_dco(dco_context_t *dco);</span><br><span> </span><br><s=
 pan> /*********************************************************************=
 *****/</span><br><span> /**</span><br><span>diff --git a/src/openvpn/multi_=
-io.c b/src/openvpn/multi_io.c</span><br><span>index 6e31687..3ade59f 100644=
+io.c b/src/openvpn/multi_io.c</span><br><span>index fe72456..997951e 100644=
 </span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++ b/src/ope=
-nvpn/multi_io.c</span><br><span>@@ -516,7 +516,7 @@</span><br><span>       =
+nvpn/multi_io.c</span><br><span>@@ -505,7 +505,7 @@</span><br><span>       =
           /* incoming data on DCO? */</span><br><span>                 else=
  if (e-&gt;arg =3D=3D MULTI_IO_DCO)</span><br><span>                 {</spa=
 n><br><span style=3D"color: hsl(0, 100%, 40%);">-                    multi_=
@@ -680,13 +648,13 @@ v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
 link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1403?us=
 p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Iefc251cb4483c0b9fb9d6a5207d=
 b4445cd884d52 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1403 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -698,5 +666,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---egqxiu5Fq5U=--
+--EeEWwfPWOlg=--
 
