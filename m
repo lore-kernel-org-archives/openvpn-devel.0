@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Nov 2025 13:25:46 +0000
-In-Reply-To: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
-References: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <2bcb86ff26bbe07b194e9daeeab90e317d458f86-EmailReplacePatchSet-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------0okcmcYl9sxoS19JYuFR1p0z"
+Message-ID: <c01dc19b-0b61-49ab-b3b1-15b6af28c6a4@...2722...>
+Date: Wed, 26 Nov 2025 14:50:42 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4pt0NIq6NxM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi: Fix various
- conversion warnings
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,237 +14,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---4pt0NIq6NxM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------0okcmcYl9sxoS19JYuFR1p0z
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: flichtenheld.
+Meeting summary for 26 November 2025:
 
-Hello plaisthos,
+  *
 
-I'd like you to reexamine a change. Please visit
+    *Updated: Release 2.7*
+    Currently working to prepare a fix for an issue found with OpenVPN
+    interactive service on Windows.
+    Then we'll prepare a 2.7rc3.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1313?usp=3Demail
+  *
 
-to look at the new patch set (#7).
+    *Updated: Release 2.6.17*
+    The same issue found for Windows also needs a new 2.6 release.
+    Also with release 2.6.16 compatibility with Windows 7 was
+    accidentally broken and this will be fixed.
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+  *
 
+    *Updated: community meetup 2026*
+    Where: Tentatively in Paderborn, Germany.
+    Meeting room:
+    Potentiallyhttps://www.welcome-hotels.com/en/hotels/paderborn/events/
+    Beer: recommendation against local paderborner beer, although it is
+    cheap.
 
-Change subject: multi: Fix various conversion warnings
-......................................................................
+  *
 
-multi: Fix various conversion warnings
+    *Updated: t_server and t_client testing framework*
+    mattock asked where to put the t_server stack as it is currently on
+    ordex's open source fund funded AWS account but funds might dry up
+    there.
+    Discussed option to move it to OpenVPN Inc. funded AWS community
+    account. Will explore this option.
+    Needs to be picked up by either djpig or uddr.
 
-Mostly make required casts explicit.
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Change-Id: I88cd7e1ebb49e97db33bad75c4fbbe23d196e964
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/multi.c
-1 file changed, 8 insertions(+), 15 deletions(-)
+Kind regards,
+Johan Draaisma
 
+--------------0okcmcYl9sxoS19JYuFR1p0z
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/1313/7
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 26 November 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Currently working to prepare a fix for an issue found with
+          OpenVPN interactive service on Windows.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Then we'll prepare a 2.7rc3.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.6.17</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The same issue found for Windows also needs a new 2.6 release.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Also with release 2.6.16 compatibility with Windows 7 was
+          accidentally broken and this will be fixed.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            community meetup 2026</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Where: Tentatively in Paderborn, Germany.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Meeting room: Potentially<span> </span><a
+href="https://www.welcome-hotels.com/en/hotels/paderborn/events/"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://www.welcome-hotels.com/en/hotels/paderborn/events/</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Beer: recommendation against local paderborner beer, although
+          it is cheap.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            t_server and t_client testing framework</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          mattock asked where to put the t_server stack as it is
+          currently on ordex's open source fund funded AWS account but
+          funds might dry up there.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Discussed option to move it to OpenVPN Inc. funded AWS
+          community account. Will explore this option.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Needs to be picked up by either djpig or uddr.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index ccf6239..da7cca3 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -245,11 +245,6 @@
-
- #endif
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- #ifdef ENABLE_ASYNC_PUSH
- static uint32_t
- /*
-@@ -2809,8 +2804,8 @@
- multi_process_file_closed(struct multi_context *m, const unsigned int mpp_=
-flags)
- {
-     char buffer[INOTIFY_EVENT_BUFFER_SIZE];
--    size_t buffer_i =3D 0;
--    int r =3D read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE=
-);
-+    ssize_t buffer_i =3D 0;
-+    ssize_t r =3D read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_=
-SIZE);
-
-     while (buffer_i < r)
-     {
-@@ -2942,21 +2937,23 @@
- static inline unsigned int
- compute_wakeup_sigma(const struct timeval *delta)
- {
-+    ASSERT(delta->tv_sec >=3D 0);
-+    ASSERT(delta->tv_usec >=3D 0);
-     if (delta->tv_sec < 1)
-     {
-         /* if < 1 sec, fuzz =3D # of microseconds / 8 */
--        return delta->tv_usec >> 3;
-+        return (unsigned int)(delta->tv_usec >> 3);
-     }
-     else
-     {
-         /* if < 10 minutes, fuzz =3D 13.1% of timeout */
-         if (delta->tv_sec < 600)
-         {
--            return delta->tv_sec << 17;
-+            return (unsigned int)(delta->tv_sec << 17);
-         }
-         else
-         {
--            return 120000000; /* if >=3D 10 minutes, fuzz =3D 2 minutes */
-+            return 120 * 1000000; /* if >=3D 10 minutes, fuzz =3D 2 minute=
-s */
-         }
-     }
- }
-@@ -3751,7 +3748,7 @@
-
-         for (i =3D 0; i < parm.packet_size; ++i)
-         {
--            ASSERT(buf_write_u8(&buf, get_random() & 0xFF));
-+            ASSERT(buf_write_u8(&buf, (uint8_t)(get_random() & 0xFF)));
-         }
-
-         for (i =3D 0; i < parm.n_packets; ++i)
-@@ -3967,10 +3964,6 @@
-     return count;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static void
- management_delete_event(void *arg, event_t event)
- {
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1313?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I88cd7e1ebb49e97db33bad75c4fbbe23d196e964
-Gerrit-Change-Number: 1313
-Gerrit-PatchSet: 7
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-
---4pt0NIq6NxM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>flichtenheld <strong>uploaded patch set #7</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1313?usp=3Demail">View C=
-hange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRul=
-e is unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">multi: Fix various conversion warnin=
-gs<br><br>Mostly make required casts explicit.<br><br>Change-Id: I88cd7e1eb=
-b49e97db33bad75c4fbbe23d196e964<br>Signed-off-by: Frank Lichtenheld &lt;fra=
-nk@...2641...&gt;<br>---<br>M src/openvpn/multi.c<br>1 file changed, 8 inse=
-rtions(+), 15 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
--family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-.openvpn.net:29418/openvpn refs/changes/13/1313/7</pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/=
-openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index ccf6239..da7cca=
-3 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/sr=
-c/openvpn/multi.c</span><br><span>@@ -245,11 +245,6 @@</span><br><span> </s=
-pan><br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignore=
-d &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span> #ifdef ENABLE_ASYNC_PUSH</span><br><span> static uint32_t</span><br=
-><span> /*</span><br><span>@@ -2809,8 +2804,8 @@</span><br><span> multi_pro=
-cess_file_closed(struct multi_context *m, const unsigned int mpp_flags)</sp=
-an><br><span> {</span><br><span>     char buffer[INOTIFY_EVENT_BUFFER_SIZE]=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t buffer_i =
-=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int r =3D r=
-ead(m-&gt;top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    ssize_t buffer_i =3D 0;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ssize_t r =3D read=
-(m-&gt;top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);</span><br><sp=
-an> </span><br><span>     while (buffer_i &lt; r)</span><br><span>     {</s=
-pan><br><span>@@ -2942,21 +2937,23 @@</span><br><span> static inline unsign=
-ed int</span><br><span> compute_wakeup_sigma(const struct timeval *delta)</=
-span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  ASSERT(delta-&gt;tv_sec &gt;=3D 0);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ASSERT(delta-&gt;tv_usec &gt;=3D 0);</span><br><span>=
-     if (delta-&gt;tv_sec &lt; 1)</span><br><span>     {</span><br><span>  =
-       /* if &lt; 1 sec, fuzz =3D # of microseconds / 8 */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        return delta-&gt;tv_usec &gt;&=
-gt; 3;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
-n (unsigned int)(delta-&gt;tv_usec &gt;&gt; 3);</span><br><span>     }</spa=
-n><br><span>     else</span><br><span>     {</span><br><span>         /* if=
- &lt; 10 minutes, fuzz =3D 13.1% of timeout */</span><br><span>         if =
-(delta-&gt;tv_sec &lt; 600)</span><br><span>         {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            return delta-&gt;tv_sec &lt;&l=
-t; 17;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            r=
-eturn (unsigned int)(delta-&gt;tv_sec &lt;&lt; 17);</span><br><span>       =
-  }</span><br><span>         else</span><br><span>         {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            return 120000000; /* if =
-&gt;=3D 10 minutes, fuzz =3D 2 minutes */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            return 120 * 1000000; /* if &gt;=3D 10 mi=
-nutes, fuzz =3D 2 minutes */</span><br><span>         }</span><br><span>   =
-  }</span><br><span> }</span><br><span>@@ -3751,7 +3748,7 @@</span><br><spa=
-n> </span><br><span>         for (i =3D 0; i &lt; parm.packet_size; ++i)</s=
-pan><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            ASSERT(buf_write_u8(&amp;buf, get_random() &amp; 0xFF));</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            ASSERT(buf_=
-write_u8(&amp;buf, (uint8_t)(get_random() &amp; 0xFF)));</span><br><span>  =
-       }</span><br><span> </span><br><span>         for (i =3D 0; i &lt; pa=
-rm.n_packets; ++i)</span><br><span>@@ -3967,10 +3964,6 @@</span><br><span> =
-    return count;</span><br><span> }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnost=
-ic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static void<=
-/span><br><span> management_delete_event(void *arg, event_t event)</span><b=
-r><span> {</span><br><span></span><br></pre><p>To view, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1313?usp=3Demail">change 1313</a>. To u=
-nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
-t.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtyp=
-e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
-mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1313?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I88cd7e1ebb49e97db33bad75c4f=
-bbe23d196e964 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1313 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-
-</body></html>=
-
---4pt0NIq6NxM=--
+--------------0okcmcYl9sxoS19JYuFR1p0z--
 
