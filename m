@@ -1,10 +1,10 @@
+Date: Wed, 26 Nov 2025 12:01:05 +0100 (CET)
+Message-Id: <202511261101.5AQB15dU025167@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 26 Nov 2025 11:49:32 +0100
-Message-ID: <20251126104938.5612-1-gert@...1296...>
-In-Reply-To: <gerrit.1763880426000.I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca@...2715...>
-References: <gerrit.1763880426000.I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] iservice: fix off by one error
+In-Reply-To: <20251126103427.4085-1-gert@...1296...>
+References: <20251126103427.4085-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: iservice: fix calculation of
+ converted domains size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,44 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Heiko Hund <heiko@...2662...>
+Stared long and hard at the code.  Found lots of "this cannot work, really?"
+staring at it, that are all getting fixed in additional single-line patches
+later on - this is not a useful patch granularity, sending 8 patches to
+fix like 6 single-line bugs.  Reviewing and testing something where the
+starting code is broken to no end and a single patch will not bring it 
+into a correct state is not a good use of my time.
 
-In case there is more than one non-ignored interface domain, the start
-of the next domain was off by one glyph. That meant that all but the
-first domain was ignored when converting to MULTI_SZ.
+This said, this single-line change (plus a bit of movearound in preparation
+for the next patch) does what it says, calculate "converted_size"
+correctly, in bytes ("_len" in glyphs, "_size" = in bytes).
 
-Reported-by: Marc Heuse <marc@...2953...>
-Reported-by: stephan@...2953...
-Change-Id: I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1395
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit ac6c9d65701ed6d41691497846a47cb4e72b2878
+Author: Heiko Hund
+Date:   Wed Nov 26 11:34:21 2025 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1395
-This mail reflects revision 3 of this Change.
+     iservice: fix calculation of converted domains size
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1390
+     Message-Id: <20251126103427.4085-1-gert@...1296...>
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 31a7ffa..23d18aa 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -2234,7 +2234,8 @@
-                     return NO_ERROR;
-                 }
- 
--                pos = comma + 1;
-+                /* Comma pos is now +1 after adding leading dot */
-+                pos = comma + 2;
-             }
-         }
-     }
+
+--
+kind regards,
+
+Gert Doering
+
 
