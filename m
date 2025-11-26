@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Nov 2025 18:33:59 +0000
+Date: Wed, 26 Nov 2025 18:34:01 +0000
 In-Reply-To: <gerrit.1762517501000.I750a46246c0d2447a6691e5c25c4732e3d335a63@...2715...>
 References: <gerrit.1762517501000.I750a46246c0d2447a6691e5c25c4732e3d335a63@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2bcaf87f780146dd3a7b279a0f822cb8a3108920-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <2bcaf87f780146dd3a7b279a0f822cb8a3108920-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fPjuC2e0UMQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="V15wkLCTK14="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: error: Allow status
  argument to check_status to be ssize_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fPjuC2e0UMQ=
+--V15wkLCTK14=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#5) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1357?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+57?usp=3Demail )
 
 Change subject: error: Allow status argument to check_status to be ssize_t
 ......................................................................
@@ -62,7 +58,7 @@ M src/openvpn/forward.h
 4 files changed, 11 insertions(+), 11 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/1357/5
+
 
 diff --git a/src/openvpn/error.c b/src/openvpn/error.c
 index bd588d4..83eb9eb 100644
@@ -176,7 +172,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1357?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I750a46246c0d2447a6691e5c25c4732e3d335a63
@@ -187,115 +183,111 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fPjuC2e0UMQ=
+--V15wkLCTK14=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #5</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1357?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">error: Allow status argument to che=
-ck_status to be ssize_t<br><br>We only check for &lt; 0 so no reason not to=
- allow bigger<br>signed values. This makes it easier to feed result<br>valu=
-es of read/write to it. Fixes a conversion warning<br>in process_outgoing_t=
-un.<br><br>Also changes register_activity to int64_t for similar<br>reasons=
-.<br><br>Change-Id: I750a46246c0d2447a6691e5c25c4732e3d335a63<br>Signed-off=
--by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &=
-lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/=
-+/1357<br>Message-Id: &lt;20251126114047.10280-1-gert@...1296...&gt;<br>URL=
-: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34701=
-.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
-c/openvpn/error.c<br>M src/openvpn/error.h<br>M src/openvpn/forward.c<br>M =
-src/openvpn/forward.h<br>4 files changed, 11 insertions(+), 11 deletions(-)=
-<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn=
- refs/changes/57/1357/5</pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;"><span>diff --git a/src/openvpn/error.c b/src/open=
-vpn/error.c</span><br><span>index bd588d4..83eb9eb 100644</span><br><span>-=
--- a/src/openvpn/error.c</span><br><span>+++ b/src/openvpn/error.c</span><b=
-r><span>@@ -621,14 +621,14 @@</span><br><span>  * from the OS.</span><br><s=
-pan>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-x_check_status(int status, const char *description, struct link_so=
-cket *sock, struct tuntap *tt)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+x_check_status(ssize_t status, const char *description, struct l=
-ink_socket *sock, struct tuntap *tt)</span><br><span> {</span><br><span>   =
-  const char *extended_msg =3D NULL;</span><br><span> </span><br><span>    =
- bool crt_error =3D false;</span><br><span>     int my_errno =3D openvpn_er=
-rno_maybe_crt(&amp;crt_error);</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    msg(x_cs_verbose_level, &quot;%s %s returned=
- %d&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(x=
-_cs_verbose_level, &quot;%s %s returned %zd&quot;,</span><br><span>        =
- sock ? proto2ascii(sock-&gt;info.proto, sock-&gt;info.af, true) : &quot;&q=
-uot;, description, status);</span><br><span> </span><br><span>     if (stat=
-us &lt; 0)</span><br><span>diff --git a/src/openvpn/error.h b/src/openvpn/e=
-rror.h</span><br><span>index 2913498..3088dbb 100644</span><br><span>--- a/=
-src/openvpn/error.h</span><br><span>+++ b/src/openvpn/error.h</span><br><sp=
-an>@@ -307,11 +307,11 @@</span><br><span> </span><br><span> void set_check_=
-status(unsigned int info_level, unsigned int verbose_level);</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void x_check_statu=
-s(int status, const char *description, struct link_socket *sock,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void x_check_status(ssize_t st=
-atus, const char *description, struct link_socket *sock,</span><br><span>  =
-                   struct tuntap *tt);</span><br><span> </span><br><span> s=
-tatic inline void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-chec=
-k_status(int status, const char *description, struct link_socket *sock, str=
-uct tuntap *tt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+chec=
-k_status(ssize_t status, const char *description, struct link_socket *sock,=
- struct tuntap *tt)</span><br><span> {</span><br><span>     if (status &lt;=
- 0 || check_debug_level(x_cs_verbose_level))</span><br><span>     {</span><=
-br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><=
-br><span>index ccb8404..bc600d6 100644</span><br><span>--- a/src/openvpn/fo=
-rward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -167=
-3,6 +1673,10 @@</span><br><span> #undef MAX_ICMPV6LEN</span><br><span> }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if =
-defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span> void</span><br><span> process_ip_header(str=
-uct context *c, unsigned int flags, struct buffer *buf,</span><br><span>   =
-                struct link_socket *sock)</span><br><span>@@ -1915,7 +1919,=
-7 @@</span><br><span>         /*</span><br><span>          * Write to TUN/T=
-AP device.</span><br><span>          */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        int size;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        ssize_t size;</span><br><span> </span><br><span> #i=
-fdef LOG_RW</span><br><span>         if (c-&gt;c2.log_rw)</span><br><span>@=
-@ -1956,7 +1960,7 @@</span><br><span>             if (size !=3D BLEN(&amp;c=
--&gt;c2.to_tun))</span><br><span>             {</span><br><span>           =
-      msg(D_LINK_ERRORS,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                    &quot;TUN/TAP packet was destructively fragmented on=
- write to %s (tried=3D%d,actual=3D%d)&quot;,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+                    &quot;TUN/TAP packet was destr=
-uctively fragmented on write to %s (tried=3D%d,actual=3D%zd)&quot;,</span><=
-br><span>                     c-&gt;c1.tuntap-&gt;actual_name, BLEN(&amp;c-=
-&gt;c2.to_tun), size);</span><br><span>             }</span><br><span> </sp=
-an><br><span>@@ -1977,10 +1981,6 @@</span><br><span>     buf_reset(&amp;c-&=
-gt;c2.to_tun);</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnosti=
-c pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void</span><b=
-r><span> pre_select(struct context *c)</span><br><span> {</span><br><span>d=
-iff --git a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><span>i=
-ndex a575faf..3cd710e 100644</span><br><span>--- a/src/openvpn/forward.h</s=
-pan><br><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -343,7 +343,7 =
-@@</span><br><span> }</span><br><span> </span><br><span> static inline void=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-register_activity(str=
-uct context *c, const int size)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+register_activity(struct context *c, const int64_t size)</span>=
-<br><span> {</span><br><span>     if (c-&gt;options.inactivity_timeout)</sp=
-an><br><span>     {</span><br><span></span><br></pre><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1357?usp=3Demail">change 1357<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1357?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1357?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">error: Allow status argument to check_status to =
+be ssize_t<br><br>We only check for &lt; 0 so no reason not to allow bigger=
+<br>signed values. This makes it easier to feed result<br>values of read/wr=
+ite to it. Fixes a conversion warning<br>in process_outgoing_tun.<br><br>Al=
+so changes register_activity to int64_t for similar<br>reasons.<br><br>Chan=
+ge-Id: I750a46246c0d2447a6691e5c25c4732e3d335a63<br>Signed-off-by: Frank Li=
+chtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1357<br>Mes=
+sage-Id: &lt;20251126114047.10280-1-gert@...1296...&gt;<br>URL: https://www=
+.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34701.html<br>Sign=
+ed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/err=
+or.c<br>M src/openvpn/error.h<br>M src/openvpn/forward.c<br>M src/openvpn/f=
+orward.h<br>4 files changed, 11 insertions(+), 11 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/error.c b/src/openvpn/error.c</span><br><span>i=
+ndex bd588d4..83eb9eb 100644</span><br><span>--- a/src/openvpn/error.c</spa=
+n><br><span>+++ b/src/openvpn/error.c</span><br><span>@@ -621,14 +621,14 @@=
+</span><br><span>  * from the OS.</span><br><span>  */</span><br><span> voi=
+d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-x_check_status(int s=
+tatus, const char *description, struct link_socket *sock, struct tuntap *tt=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+x_check_status(ssi=
+ze_t status, const char *description, struct link_socket *sock, struct tunt=
+ap *tt)</span><br><span> {</span><br><span>     const char *extended_msg =
+=3D NULL;</span><br><span> </span><br><span>     bool crt_error =3D false;<=
+/span><br><span>     int my_errno =3D openvpn_errno_maybe_crt(&amp;crt_erro=
+r);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    msg(x_cs_verbose_level, &quot;%s %s returned %d&quot;,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    msg(x_cs_verbose_level, &quot;%s=
+ %s returned %zd&quot;,</span><br><span>         sock ? proto2ascii(sock-&g=
+t;info.proto, sock-&gt;info.af, true) : &quot;&quot;, description, status);=
+</span><br><span> </span><br><span>     if (status &lt; 0)</span><br><span>=
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h</span><br><span>inde=
+x 2913498..3088dbb 100644</span><br><span>--- a/src/openvpn/error.h</span><=
+br><span>+++ b/src/openvpn/error.h</span><br><span>@@ -307,11 +307,11 @@</s=
+pan><br><span> </span><br><span> void set_check_status(unsigned int info_le=
+vel, unsigned int verbose_level);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-void x_check_status(int status, const char =
+*description, struct link_socket *sock,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+void x_check_status(ssize_t status, const char *descrip=
+tion, struct link_socket *sock,</span><br><span>                     struct=
+ tuntap *tt);</span><br><span> </span><br><span> static inline void</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-check_status(int status, cons=
+t char *description, struct link_socket *sock, struct tuntap *tt)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+check_status(ssize_t status, =
+const char *description, struct link_socket *sock, struct tuntap *tt)</span=
+><br><span> {</span><br><span>     if (status &lt; 0 || check_debug_level(x=
+_cs_verbose_level))</span><br><span>     {</span><br><span>diff --git a/src=
+/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index ccb8404..b=
+c600d6 100644</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+=
+++ b/src/openvpn/forward.c</span><br><span>@@ -1673,6 +1673,10 @@</span><br=
+><span> #undef MAX_ICMPV6LEN</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defi=
+ned(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#prag=
+ma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span> void</span><br><span> process_ip_header(struct context *c, unsigned =
+int flags, struct buffer *buf,</span><br><span>                   struct li=
+nk_socket *sock)</span><br><span>@@ -1915,7 +1919,7 @@</span><br><span>    =
+     /*</span><br><span>          * Write to TUN/TAP device.</span><br><spa=
+n>          */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ int size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s=
+size_t size;</span><br><span> </span><br><span> #ifdef LOG_RW</span><br><sp=
+an>         if (c-&gt;c2.log_rw)</span><br><span>@@ -1956,7 +1960,7 @@</spa=
+n><br><span>             if (size !=3D BLEN(&amp;c-&gt;c2.to_tun))</span><b=
+r><span>             {</span><br><span>                 msg(D_LINK_ERRORS,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    &q=
+uot;TUN/TAP packet was destructively fragmented on write to %s (tried=3D%d,=
+actual=3D%d)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                    &quot;TUN/TAP packet was destructively fragmented on wr=
+ite to %s (tried=3D%d,actual=3D%zd)&quot;,</span><br><span>                =
+     c-&gt;c1.tuntap-&gt;actual_name, BLEN(&amp;c-&gt;c2.to_tun), size);</s=
+pan><br><span>             }</span><br><span> </span><br><span>@@ -1977,10 =
++1981,6 @@</span><br><span>     buf_reset(&amp;c-&gt;c2.to_tun);</span><br>=
+<span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span> void</span><br><span> pre_select(struct =
+context *c)</span><br><span> {</span><br><span>diff --git a/src/openvpn/for=
+ward.h b/src/openvpn/forward.h</span><br><span>index a575faf..3cd710e 10064=
+4</span><br><span>--- a/src/openvpn/forward.h</span><br><span>+++ b/src/ope=
+nvpn/forward.h</span><br><span>@@ -343,7 +343,7 @@</span><br><span> }</span=
+><br><span> </span><br><span> static inline void</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-register_activity(struct context *c, const int s=
+ize)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+register_activi=
+ty(struct context *c, const int64_t size)</span><br><span> {</span><br><spa=
+n>     if (c-&gt;options.inactivity_timeout)</span><br><span>     {</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1357?usp=3Demail">change 1357</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1357?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I750a46246c0d2447a6691e5c25c=
@@ -313,5 +305,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---fPjuC2e0UMQ=--
+--V15wkLCTK14=--
 
