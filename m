@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Nov 2025 11:59:56 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 26 Nov 2025 13:00:04 +0100
+Message-ID: <20251126120009.12191-1-gert@...1296...>
 In-Reply-To: <gerrit.1764157430000.I8e390a276418dda9e7caa6edcd3a9d59d50ce4f8@...2715...>
 References: <gerrit.1764157430000.I8e390a276418dda9e7caa6edcd3a9d59d50ce4f8@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <ee1844e80b60699c4b1c2fbdc609e727477cadac-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XwVCmF7Md5Y="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Changes.rst: Fix
- various syntax errors and typos
+Subject: [Openvpn-devel] [PATCH v2] Changes.rst: Fix various syntax errors
+ and typos
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---XwVCmF7Md5Y=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Mostly people trying to write MarkDown, but this is
+reStructuredText.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1405?usp=3Demail )
+Change-Id: I8e390a276418dda9e7caa6edcd3a9d59d50ce4f8
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1405
+---
 
-Change subject: Changes.rst: Fix various syntax errors and typos
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1405
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1405?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8e390a276418dda9e7caa6edcd3a9d59d50ce4f8
-Gerrit-Change-Number: 1405
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 26 Nov 2025 11:59:56 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---XwVCmF7Md5Y=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1405?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1405?usp=3Demail=
-">change 1405</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1405?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8e390a276418dda9e7caa6edcd3=
-a9d59d50ce4f8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1405 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 26 Nov 2025 11:59:56=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---XwVCmF7Md5Y=--
+        
+diff --git a/Changes.rst b/Changes.rst
+index 9077064..f46f7f1 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -112,7 +112,8 @@
+     can be pinged, can serve a website and more without requiring any
+     elevated permission. This can make testing OpenVPN much easier.
+ 
+-    For more details see [lwipovpn on Gihtub](https://github.com/OpenVPN/lwipovpn).
++    For more details see
++    `lwipovpn on Github <https://github.com/OpenVPN/lwipovpn>`_.
+ 
+ Allow overriding username with ``--override-username``
+     This is intended to allow using auth-gen-token in scenarios where the
+@@ -314,17 +315,17 @@
+   use from "ifconfig", this change repairs functionality (this has
+   been backported to 2.6.15, but is not in earlier 2.6 versions).
+ 
+-- `max-routes-per-client 0` used to be silently upgraded to `1`.  This
++- ``max-routes-per-client 0`` used to be silently upgraded to ``1``.  This
+   now produces an error.
+ 
+-- `ifconfig` and `ifconfig-ipv6` values are now stored in pre-connect
++- ``ifconfig`` and ``ifconfig-ipv6`` values are now stored in pre-connect
+   options cache, and will be restored to pre-connect values on reconnects
+   if the server stops pushing the respective option.
+ 
+-- `tapctl.exe` helper binary on Windows has been reworked to improve
++- ``tapctl.exe`` helper binary on Windows has been reworked to improve
+   help texts (making clear that it can not only do TAP-Adapters but
+   Win-DCO as well), add printing of the hwid to all adapter outputs, and
+-  change the default adapter type created to `ovpn-dco`.
++  change the default adapter type created to ``ovpn-dco``.
+ 
+ Deprecated features
+ -------------------
+@@ -803,7 +804,7 @@
+     wait for the second factor authentication to complete.
+ 
+     This feature currently requires usage of the managent interface
+-    on both client and server side. See the `management-notes.txt`
++    on both client and server side. See the ``management-notes.txt``
+     ``client-pending-auth`` and ``cr-response`` commands for more
+     details.
+ 
+@@ -822,7 +823,7 @@
+ Allow unicode search string in ``--cryptoapicert`` option (Windows)
+ 
+ Support IPv4 configs with /31 netmasks now
+-    (By no longer trying to configure ``broadcast x.x.x.x'' in
++    (By no longer trying to configure ``broadcast x.x.x.x`` in
+     ifconfig calls, /31 support "just works")
+ 
+ New option ``--block-ipv6`` to reject all IPv6 packets (ICMPv6)
 
