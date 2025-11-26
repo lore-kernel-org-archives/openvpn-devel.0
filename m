@@ -1,16 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Nov 2025 11:35:55 +0000
-In-Reply-To: <gerrit.1763574430000.Id429241e1b17a8ff51d9019efc357c910f3bde4c@...2715...>
-References: <gerrit.1763574430000.Id429241e1b17a8ff51d9019efc357c910f3bde4c@...2715...>
+Date: Wed, 26 Nov 2025 11:35:59 +0000
+References: <gerrit.1764156955000.I621622905abd4d5ec41468ec3bade4ad6c1d1f31@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d7264597c5bdb58610625d54d887b4a400a93663-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <2493af4d8e9ae41330f436074f019c31b9c412cf-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pKrd2nhV7R0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change '--multihome'
- behaviour regarding egress interface selection.
+Content-Type: multipart/alternative; boundary="0DLTV2TYAQk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix incorrect RST
+ syntax in Changes.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,387 +18,219 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pKrd2nhV7R0=
+--0DLTV2TYAQk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
-Hello flichtenheld, plaisthos,
+Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1404?usp=3Demail
 
-to look at the new patch set (#5).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+to review the following change.
 
 
-Change subject: Change '--multihome' behaviour regarding egress interface s=
-election.
+Change subject: Fix incorrect RST syntax in Changes.rst
 ......................................................................
 
-Change '--multihome' behaviour regarding egress interface selection.
+Fix incorrect RST syntax in Changes.rst
 
-Traditional OpenVPN ``--multihome`` behaviour is to send packets out the
-same interface that they were received on (copy ipi_ifindex from ingress
-to egress packet info).  For some scenarios this makes sense, for other
-scenarios it is breaking connectivity when there are no routes pointing
-out the ingress interface (intentionally asymmetric traffic).
+Single-backquotes are not allowed.  Change every occurance to double.
 
-For 2.7.0, change the default(!) to always send out packets with
-ipi_ifindex =3D 0, to follow normal system interface selection rules.
-
-Add a flag ``--multihome same-interface`` to restore the pre-2.7 behavior
-of copying ipi_ifindex from ingress to egress packets.  There are use
-cases for this, and we want to give users a chance to read the release
-notes and adjust their setups to "not break after upgrading to 2.7.0".
-
-Github: OpenVPN/openvpn#855
-Github: OpenVPN/openvpn#554
-
-v2: fix whitespace
-v3: turn logic around - new default is "egress ifindex 0" now
-v4: typo fixed in commit message
-v5: fix invalid rst in Changes.rst
-
-Change-Id: Id429241e1b17a8ff51d9019efc357c910f3bde4c
+Change-Id: I621622905abd4d5ec41468ec3bade4ad6c1d1f31
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
 M Changes.rst
-M doc/man-sections/server-options.rst
-M src/openvpn/options.c
-M src/openvpn/socket.c
-M src/openvpn/socket.h
-5 files changed, 33 insertions(+), 10 deletions(-)
+1 file changed, 7 insertions(+), 7 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/1383/5
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/04/1404/1
 
 diff --git a/Changes.rst b/Changes.rst
-index 9077064..40984f5 100644
+index 40984f5..d47c990 100644
 --- a/Changes.rst
 +++ b/Changes.rst
-@@ -326,6 +326,12 @@
+@@ -314,17 +314,17 @@
+   use from "ifconfig", this change repairs functionality (this has
+   been backported to 2.6.15, but is not in earlier 2.6 versions).
+
+-- `max-routes-per-client 0` used to be silently upgraded to `1`.  This
++- ``max-routes-per-client 0`` used to be silently upgraded to ``1``.  This
+   now produces an error.
+
+-- `ifconfig` and `ifconfig-ipv6` values are now stored in pre-connect
++- ``ifconfig`` and ``ifconfig-ipv6`` values are now stored in pre-connect
+   options cache, and will be restored to pre-connect values on reconnects
+   if the server stops pushing the respective option.
+
+-- `tapctl.exe` helper binary on Windows has been reworked to improve
++- ``tapctl.exe`` helper binary on Windows has been reworked to improve
+   help texts (making clear that it can not only do TAP-Adapters but
    Win-DCO as well), add printing of the hwid to all adapter outputs, and
-   change the default adapter type created to `ovpn-dco`.
+-  change the default adapter type created to `ovpn-dco`.
++  change the default adapter type created to ``ovpn-dco``.
 
-+- the default for ``multihome`` egress interface handling has changed.
-+  2.7.0 will default to ipi_ifindex=3D0, that is, leave the decision to the
-+  routing/policy setup of the operating system.  The pre-2.7 behaviour
-+  (force egress =3D ingress interface) can be achieved with the new
-+  ``--multihome same-interface`` sub-option.
-+
- Deprecated features
- -------------------
- ``--opt-verify`` feature removed
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
-options.rst
-index 739be22..3760694 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -342,7 +342,7 @@
-   by ``--ifconfig-ipv6``, OpenVPN will install a /128 host route for the
-   ``ipv6addr`` IP address.
+ - the default for ``multihome`` egress interface handling has changed.
+   2.7.0 will default to ipi_ifindex=3D0, that is, leave the decision to the
+@@ -418,7 +418,7 @@
 
----multihome
-+--multihome [same-interface]
-   Configure a multi-homed UDP server. This option needs to be used when a
-   server has more than one IP address (e.g. multiple interfaces, or
-   secondary IP addresses), and is not using ``--local`` to force binding
-@@ -353,12 +353,18 @@
-   default.
 
-   *Notes:*
--    -  This option is only relevant for UDP servers.
--    -  If you do an IPv6+IPv4 dual-stack bind on a Linux machine with
--       multiple IPv4 address, connections to IPv4 addresses will not
--       work right on kernels before 3.15, due to missing kernel
--       support for the IPv4-mapped case (some distributions have
--       ported this to earlier kernel versions, though).
-+    - This option is only relevant for UDP servers.
-+    - Starting with 2.7.0, OpenVPN will ignore the incoming interface of
-+      the packet, and leave selection of the outgoing interface to the
-+      normal routing/policy mechanisms of the OS ("set ipi_ifindex=3D0").
-+    - if the ``same-interface`` flag is added, OpenVPN will copy the
-+      incoming interface index to the outgoing interface index,
-+      trying to send the packet out over the same interface where it came
-+      in on (=3D restoring earlier OpenVPN behaviour). This might not work
-+      if there are no usable routes on that interface.
-+    - the \*BSD systems use a different API for IPv4 that does not provide
-+      the interface index anyway (IP_RECVDSTADDR), so there the difference
-+      applies only to IPv6.
+ Improved ``--mssfix`` and ``--fragment`` calculation
+-    The ``--mssfix`` and ``--fragment`` options now allow an optional :cod=
+e:`mtu`
++    The ``--mssfix`` and ``--fragment`` options now allow an optional :cod=
+e:``mtu``
+     parameter to specify that different overhead for IPv4/IPv6 should take=
+n into
+     account and the resulting size is specified as the total size of the V=
+PN packets
+     including IP and UDP headers.
+@@ -547,7 +547,7 @@
+ - CHACHA20-POLY1305 is included in the default of ``--data-ciphers`` when =
+available.
+ - Option ``--prng`` is ignored as we rely on the SSL library random number=
+ generator.
+ - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used i=
+n the configuration
+-- :code:`link_mtu` parameter is removed from environment or replaced with =
+0 when scripts are
++- :code:``link_mtu`` parameter is removed from environment or replaced wit=
+h 0 when scripts are
+   called with parameters. This parameter is unreliable and no longer inter=
+nally calculated.
 
- --iroute args
-   Generate an internal route to a specific client. The ``netmask``
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4794315..62f84dd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6335,10 +6335,18 @@
-         options->mlock =3D true;
-     }
- #if ENABLE_IP_PKTINFO
--    else if (streq(p[0], "multihome") && !p[1])
-+    else if (streq(p[0], "multihome") && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->sockflags |=3D SF_USE_IP_PKTINFO;
-+        if (p[1] && streq(p[1], "same-interface"))
-+        {
-+            options->sockflags |=3D SF_PKTINFO_COPY_IIF;
-+        }
-+        else if (p[1])
-+        {
-+            msg(msglevel, "Unknown parameter to --multihome: %s", p[1]);
-+        }
-     }
- #endif
-     else if (streq(p[0], "verb") && p[1] && !p[2])
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 8b6e35e..747c7a7 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2393,7 +2393,8 @@
-         {
- #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
-             struct in_pktinfo *pkti =3D (struct in_pktinfo *)CMSG_DATA(cms=
-g);
--            from->pi.in4.ipi_ifindex =3D pkti->ipi_ifindex;
-+            from->pi.in4.ipi_ifindex =3D
-+                (sock->sockflags & SF_PKTINFO_COPY_IIF) ? pkti->ipi_ifinde=
-x : 0;
-             from->pi.in4.ipi_spec_dst =3D pkti->ipi_spec_dst;
- #elif defined(IP_RECVDSTADDR)
-             from->pi.in4 =3D *(struct in_addr *)CMSG_DATA(cmsg);
-@@ -2406,7 +2407,8 @@
-                  && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in6_pktinfo=
-)))
-         {
-             struct in6_pktinfo *pkti6 =3D (struct in6_pktinfo *)CMSG_DATA(=
-cmsg);
--            from->pi.in6.ipi6_ifindex =3D pkti6->ipi6_ifindex;
-+            from->pi.in6.ipi6_ifindex =3D
-+                (sock->sockflags & SF_PKTINFO_COPY_IIF) ? pkti6->ipi6_ifin=
-dex : 0;
-             from->pi.in6.ipi6_addr =3D pkti6->ipi6_addr;
-         }
-         else if (cmsg !=3D NULL)
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 832d62e..7cf5b72 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -195,6 +195,7 @@
- #define SF_GETADDRINFO_DGRAM (1 << 4)
- #define SF_DCO_WIN           (1 << 5)
- #define SF_PREPEND_SA        (1 << 6)
-+#define SF_PKTINFO_COPY_IIF  (1 << 7)
-     unsigned int sockflags;
-     int mark;
-     const char *bind_dev;
+ - control channel packet maximum size is no longer influenced by
+@@ -809,7 +809,7 @@
+     wait for the second factor authentication to complete.
+
+     This feature currently requires usage of the managent interface
+-    on both client and server side. See the `management-notes.txt`
++    on both client and server side. See the ``management-notes.txt``
+     ``client-pending-auth`` and ``cr-response`` commands for more
+     details.
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1404?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id429241e1b17a8ff51d9019efc357c910f3bde4c
-Gerrit-Change-Number: 1383
-Gerrit-PatchSet: 5
+Gerrit-Change-Id: I621622905abd4d5ec41468ec3bade4ad6c1d1f31
+Gerrit-Change-Number: 1404
+Gerrit-PatchSet: 1
 Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 
---pKrd2nhV7R0=
+--0DLTV2TYAQk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos. </p>
-<p>cron2 <strong>uploaded patch set #5</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail">View Change</=
-a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">Change &#39;--multihome&#39;=
- behaviour regarding egress interface selection.<br><br>Traditional OpenVPN=
- ``--multihome`` behaviour is to send packets out the<br>same interface tha=
-t they were received on (copy ipi_ifindex from ingress<br>to egress packet =
-info).  For some scenarios this makes sense, for other<br>scenarios it is b=
-reaking connectivity when there are no routes pointing<br>out the ingress i=
-nterface (intentionally asymmetric traffic).<br><br>For 2.7.0, change the d=
-efault(!) to always send out packets with<br>ipi_ifindex =3D 0, to follow n=
-ormal system interface selection rules.<br><br>Add a flag ``--multihome sam=
-e-interface`` to restore the pre-2.7 behavior<br>of copying ipi_ifindex fro=
-m ingress to egress packets.  There are use<br>cases for this, and we want =
-to give users a chance to read the release<br>notes and adjust their setups=
- to &quot;not break after upgrading to 2.7.0&quot;.<br><br>Github: OpenVPN/=
-openvpn#855<br>Github: OpenVPN/openvpn#554<br><br>v2: fix whitespace<br>v3:=
- turn logic around - new default is &quot;egress ifindex 0&quot; now<br>v4:=
- typo fixed in commit message<br>v5: fix invalid rst in Changes.rst<br><br>=
-Change-Id: Id429241e1b17a8ff51d9019efc357c910f3bde4c<br>Signed-off-by: Gert=
- Doering &lt;gert@...1296...&gt;<br>---<br>M Changes.rst<br>M doc/man-secti=
-ons/server-options.rst<br>M src/openvpn/options.c<br>M src/openvpn/socket.c=
-<br>M src/openvpn/socket.h<br>5 files changed, 33 insertions(+), 10 deletio=
-ns(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
-envpn refs/changes/83/1383/5</pre><pre style=3D"font-family: monospace,mono=
-space; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Changes.rst=
-</span><br><span>index 9077064..40984f5 100644</span><br><span>--- a/Change=
-s.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -326,6 +326,12 @=
-@</span><br><span>   Win-DCO as well), add printing of the hwid to all adap=
-ter outputs, and</span><br><span>   change the default adapter type created=
- to `ovpn-dco`.</span><br><span> </span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+- the default for ``multihome`` egress interface handling has=
- changed.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  2.7.0 wi=
-ll default to ipi_ifindex=3D0, that is, leave the decision to the</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  routing/policy setup of the=
- operating system.  The pre-2.7 behaviour</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  (force egress =3D ingress interface) can be achieve=
-d with the new</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``-=
--multihome same-interface`` sub-option.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span> Deprecated features</span><br><span> =
--------------------</span><br><span> ``--opt-verify`` feature removed</span=
-><br><span>diff --git a/doc/man-sections/server-options.rst b/doc/man-secti=
-ons/server-options.rst</span><br><span>index 739be22..3760694 100644</span>=
-<br><span>--- a/doc/man-sections/server-options.rst</span><br><span>+++ b/d=
-oc/man-sections/server-options.rst</span><br><span>@@ -342,7 +342,7 @@</spa=
-n><br><span>   by ``--ifconfig-ipv6``, OpenVPN will install a /128 host rou=
-te for the</span><br><span>   ``ipv6addr`` IP address.</span><br><span> </s=
-pan><br><span>---multihome</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+--multihome [same-interface]</span><br><span>   Configure a multi-ho=
-med UDP server. This option needs to be used when a</span><br><span>   serv=
-er has more than one IP address (e.g. multiple interfaces, or</span><br><sp=
-an>   secondary IP addresses), and is not using ``--local`` to force bindin=
-g</span><br><span>@@ -353,12 +353,18 @@</span><br><span>   default.</span><=
-br><span> </span><br><span>   *Notes:*</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    -  This option is only relevant for UDP servers.</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    -  If you do an IPv6+IP=
-v4 dual-stack bind on a Linux machine with</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-       multiple IPv4 address, connections to IPv4 addr=
-esses will not</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-work right on kernels before 3.15, due to missing kernel</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-       support for the IPv4-mapped case =
-(some distributions have</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-       ported this to earlier kernel versions, though).</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    - This option is only relevant f=
-or UDP servers.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-- Starting with 2.7.0, OpenVPN will ignore the incoming interface of</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      the packet, and leav=
-e selection of the outgoing interface to the</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+      normal routing/policy mechanisms of the OS (=
-&quot;set ipi_ifindex=3D0&quot;).</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    - if the ``same-interface`` flag is added, OpenVPN will c=
-opy the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      incomi=
-ng interface index to the outgoing interface index,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      trying to send the packet out over =
-the same interface where it came</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      in on (=3D restoring earlier OpenVPN behaviour). This mi=
-ght not work</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      i=
-f there are no usable routes on that interface.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    - the \*BSD systems use a different API for=
- IPv4 that does not provide</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+      the interface index anyway (IP_RECVDSTADDR), so there the dif=
-ference</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      applie=
-s only to IPv6.</span><br><span> </span><br><span> --iroute args</span><br>=
-<span>   Generate an internal route to a specific client. The ``netmask``</=
-span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</=
-span><br><span>index 4794315..62f84dd 100644</span><br><span>--- a/src/open=
-vpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@=
-@ -6335,10 +6335,18 @@</span><br><span>         options-&gt;mlock =3D true;=
-</span><br><span>     }</span><br><span> #if ENABLE_IP_PKTINFO</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    else if (streq(p[0], &quot;mul=
-tihome&quot;) &amp;&amp; !p[1])</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    else if (streq(p[0], &quot;multihome&quot;) &amp;&amp; !p[2=
-])</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_=
-GENERAL);</span><br><span>         options-&gt;sockflags |=3D SF_USE_IP_PKT=
-INFO;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (p[=
-1] &amp;&amp; streq(p[1], &quot;same-interface&quot;))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            options-&gt;sockflags |=3D SF_PKTINFO_=
-COPY_IIF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else if (p[1=
-])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &=
-quot;Unknown parameter to --multihome: %s&quot;, p[1]);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</span>=
-<br><span> #endif</span><br><span>     else if (streq(p[0], &quot;verb&quot=
-;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>diff --git a/src/openv=
-pn/socket.c b/src/openvpn/socket.c</span><br><span>index 8b6e35e..747c7a7 1=
-00644</span><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/=
-openvpn/socket.c</span><br><span>@@ -2393,7 +2393,8 @@</span><br><span>    =
-     {</span><br><span> #if defined(HAVE_IN_PKTINFO) &amp;&amp; defined(HAV=
-E_IPI_SPEC_DST)</span><br><span>             struct in_pktinfo *pkti =3D (s=
-truct in_pktinfo *)CMSG_DATA(cmsg);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            from-&gt;pi.in4.ipi_ifindex =3D pkti-&gt;ipi_ifin=
-dex;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fro=
-m-&gt;pi.in4.ipi_ifindex =3D</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                (sock-&gt;sockflags &amp; SF_PKTINFO_COPY_IIF) ? p=
-kti-&gt;ipi_ifindex : 0;</span><br><span>             from-&gt;pi.in4.ipi_s=
-pec_dst =3D pkti-&gt;ipi_spec_dst;</span><br><span> #elif defined(IP_RECVDS=
-TADDR)</span><br><span>             from-&gt;pi.in4 =3D *(struct in_addr *)=
-CMSG_DATA(cmsg);</span><br><span>@@ -2406,7 +2407,8 @@</span><br><span>    =
-              &amp;&amp; cmsg-&gt;cmsg_len &gt;=3D CMSG_LEN(sizeof(struct i=
-n6_pktinfo)))</span><br><span>         {</span><br><span>             struc=
-t in6_pktinfo *pkti6 =3D (struct in6_pktinfo *)CMSG_DATA(cmsg);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            from-&gt;pi.in6.ipi6_=
-ifindex =3D pkti6-&gt;ipi6_ifindex;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            from-&gt;pi.in6.ipi6_ifindex =3D</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                (sock-&gt;sockflag=
-s &amp; SF_PKTINFO_COPY_IIF) ? pkti6-&gt;ipi6_ifindex : 0;</span><br><span>=
-             from-&gt;pi.in6.ipi6_addr =3D pkti6-&gt;ipi6_addr;</span><br><=
-span>         }</span><br><span>         else if (cmsg !=3D NULL)</span><br=
-><span>diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br><=
-span>index 832d62e..7cf5b72 100644</span><br><span>--- a/src/openvpn/socket=
-.h</span><br><span>+++ b/src/openvpn/socket.h</span><br><span>@@ -195,6 +19=
-5,7 @@</span><br><span> #define SF_GETADDRINFO_DGRAM (1 &lt;&lt; 4)</span><=
-br><span> #define SF_DCO_WIN           (1 &lt;&lt; 5)</span><br><span> #def=
-ine SF_PREPEND_SA        (1 &lt;&lt; 6)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#define SF_PKTINFO_COPY_IIF  (1 &lt;&lt; 7)</span><br><=
-span>     unsigned int sockflags;</span><br><span>     int mark;</span><br>=
-<span>     const char *bind_dev;</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail"=
->change 1383</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1383?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>cron2 would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1404?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Fix incorrect RST syntax in Changes.rst<br>=
+<br>Single-backquotes are not allowed.  Change every occurance to double.<b=
+r><br>Change-Id: I621622905abd4d5ec41468ec3bade4ad6c1d1f31<br>Signed-off-by=
+: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M Changes.rst<br>1 file ch=
+anged, 7 insertions(+), 7 deletions(-)<br><br></pre><pre class=3D"blocks" s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/04/1404/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/Changes.rst b/Changes.rst</span><br><span>index 40984f5..d47c990 10=
+0644</span><br><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</s=
+pan><br><span>@@ -314,17 +314,17 @@</span><br><span>   use from &quot;ifcon=
+fig&quot;, this change repairs functionality (this has</span><br><span>   b=
+een backported to 2.6.15, but is not in earlier 2.6 versions).</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-- `max-routes-pe=
+r-client 0` used to be silently upgraded to `1`.  This</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+- ``max-routes-per-client 0`` used to be=
+ silently upgraded to ``1``.  This</span><br><span>   now produces an error=
+.</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-- =
+`ifconfig` and `ifconfig-ipv6` values are now stored in pre-connect</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+- ``ifconfig`` and ``ifconf=
+ig-ipv6`` values are now stored in pre-connect</span><br><span>   options c=
+ache, and will be restored to pre-connect values on reconnects</span><br><s=
+pan>   if the server stops pushing the respective option.</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- `tapctl.exe` helper=
+ binary on Windows has been reworked to improve</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+- ``tapctl.exe`` helper binary on Windows has b=
+een reworked to improve</span><br><span>   help texts (making clear that it=
+ can not only do TAP-Adapters but</span><br><span>   Win-DCO as well), add =
+printing of the hwid to all adapter outputs, and</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  change the default adapter type created to `ov=
+pn-dco`.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  change th=
+e default adapter type created to ``ovpn-dco``.</span><br><span> </span><br=
+><span> - the default for ``multihome`` egress interface handling has chang=
+ed.</span><br><span>   2.7.0 will default to ipi_ifindex=3D0, that is, leav=
+e the decision to the</span><br><span>@@ -418,7 +418,7 @@</span><br><span> =
+</span><br><span> </span><br><span> Improved ``--mssfix`` and ``--fragment`=
+` calculation</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The =
+``--mssfix`` and ``--fragment`` options now allow an optional :code:`mtu`</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    The ``--mssfix`` =
+and ``--fragment`` options now allow an optional :code:``mtu``</span><br><s=
+pan>     parameter to specify that different overhead for IPv4/IPv6 should =
+taken into</span><br><span>     account and the resulting size is specified=
+ as the total size of the VPN packets</span><br><span>     including IP and=
+ UDP headers.</span><br><span>@@ -547,7 +547,7 @@</span><br><span> - CHACHA=
+20-POLY1305 is included in the default of ``--data-ciphers`` when available=
+.</span><br><span> - Option ``--prng`` is ignored as we rely on the SSL lib=
+rary random number generator.</span><br><span> - Option ``--nobind`` is def=
+ault when ``--client`` or ``--pull`` is used in the configuration</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-- :code:`link_mtu` parameter is=
+ removed from environment or replaced with 0 when scripts are</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+- :code:``link_mtu`` parameter is=
+ removed from environment or replaced with 0 when scripts are</span><br><sp=
+an>   called with parameters. This parameter is unreliable and no longer in=
+ternally calculated.</span><br><span> </span><br><span> - control channel p=
+acket maximum size is no longer influenced by</span><br><span>@@ -809,7 +80=
+9,7 @@</span><br><span>     wait for the second factor authentication to co=
+mplete.</span><br><span> </span><br><span>     This feature currently requi=
+res usage of the managent interface</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    on both client and server side. See the `management-notes=
+.txt`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    on both cl=
+ient and server side. See the ``management-notes.txt``</span><br><span>    =
+ ``client-pending-auth`` and ``cr-response`` commands for more</span><br><s=
+pan>     details.</span><br><span> </span><br><span></span><br></pre><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1404?usp=3Dema=
+il">change 1404</a>. To unsubscribe, or for help writing mail filters, visi=
+t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1404?usp=3Demail"=
+/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id429241e1b17a8ff51d9019efc3=
-57c910f3bde4c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1383 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I621622905abd4d5ec41468ec3ba=
+de4ad6c1d1f31 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1404 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
 div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 
 </body></html>=
 
---pKrd2nhV7R0=--
+--0DLTV2TYAQk=--
 
