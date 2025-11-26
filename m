@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 26 Nov 2025 10:49:25 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 26 Nov 2025 11:49:32 +0100
+Message-ID: <20251126104938.5612-1-gert@...1296...>
 In-Reply-To: <gerrit.1763880426000.I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca@...2715...>
 References: <gerrit.1763880426000.I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <1feee0196f6f764861cb03f2f4992d3b6a40640c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vNwPUJpqq94="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: iservice: fix off
- by one error
+Subject: [Openvpn-devel] [PATCH v3] iservice: fix off by one error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---vNwPUJpqq94=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: d12fk, plaisthos.
+In case there is more than one non-ignored interface domain, the start
+of the next domain was off by one glyph. That meant that all but the
+first domain was ignored when converting to MULTI_SZ.
 
-cron2 has posted comments on this change by d12fk. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1395?usp=3Demail )
+Reported-by: Marc Heuse <marc@...2953...>
+Reported-by: stephan@...2953...
+Change-Id: I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1395
+---
 
-Change subject: iservice: fix off by one error
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1395
+This mail reflects revision 3 of this Change.
 
-Patch Set 3: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1395?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3ebf30f6d9edc66eb54fb3f1b5634c96d156b1ca
-Gerrit-Change-Number: 1395
-Gerrit-PatchSet: 3
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 26 Nov 2025 10:49:25 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---vNwPUJpqq94=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1395?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1395?usp=3Demail=
-">change 1395</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1395?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3ebf30f6d9edc66eb54fb3f1b56=
-34c96d156b1ca </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1395 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 26 Nov 2025 10:49:25=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---vNwPUJpqq94=--
+        
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 31a7ffa..23d18aa 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2234,7 +2234,8 @@
+                     return NO_ERROR;
+                 }
+ 
+-                pos = comma + 1;
++                /* Comma pos is now +1 after adding leading dot */
++                pos = comma + 2;
+             }
+         }
+     }
 
