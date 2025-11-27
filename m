@@ -1,16 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Nov 2025 11:34:27 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 27 Nov 2025 12:35:12 +0100
+Message-ID: <20251127113517.1352-1-gert@...1296...>
 In-Reply-To: <gerrit.1763838359000.I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b@...2715...>
 References: <gerrit.1763838359000.I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <be34e6049840d2202b43358e2d278916d00ae774-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="f4Ywz7xuTBk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]:
- extract_x509_field_ssl(): verify that X509_NAME is not NULL.
+Subject: [Openvpn-devel] [PATCH v2] extract_x509_field_ssl(): verify that
+ X509_NAME is not NULL.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,88 +14,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---f4Ywz7xuTBk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This seems to be unlikely to ever happen, but this check won't harm
+- as a matter of coding convention, we do not ensure this inside
+extract_x509_field_ssl(), but in the (single) caller.
 
-Attention is currently required from: cron2, plaisthos.
+While at it, fix pre-C99 local-variable indent block, and missing {}
+block in else/#endif construction.
 
-ordex has posted comments on this change by cron2. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1388?usp=3Demail )
+Reported-By: Joshua Rogers <contact@...2949...>
+Found-by: ZeroPath (https://zeropath.com/)
 
-Change subject: extract_x509_field_ssl(): verify that X509_NAME is not NULL.
-......................................................................
+Change-Id: I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1388
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1388
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b
-Gerrit-Change-Number: 1388
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Thu, 27 Nov 2025 11:34:27 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---f4Ywz7xuTBk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail=
-">change 1388</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1e9c7eee06bf5f2e8aed8cd2523=
-684539294ac8b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1388 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Nov 2025 11:34:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---f4Ywz7xuTBk=--
+        
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 40d117b..6cb04ee 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -202,8 +202,8 @@
+     X509_NAME_ENTRY *x509ne = NULL;
+     ASN1_STRING *asn1 = NULL;
+     unsigned char *buf = NULL;
+-    ASN1_OBJECT *field_name_obj = OBJ_txt2obj(field_name, 0);
+ 
++    ASN1_OBJECT *field_name_obj = OBJ_txt2obj(field_name, 0);
+     if (field_name_obj == NULL)
+     {
+         msg(D_TLS_ERRORS, "Invalid X509 attribute name '%s'", field_name);
+@@ -244,11 +244,9 @@
+ 
+     strncpynt(out, (char *)buf, size);
+ 
+-    {
+-        const result_t ret = (strlen((char *)buf) < size) ? SUCCESS : FAILURE;
+-        OPENSSL_free(buf);
+-        return ret;
+-    }
++    const result_t ret = (strlen((char *)buf) < size) ? SUCCESS : FAILURE;
++    OPENSSL_free(buf);
++    return ret;
+ }
+ 
+ result_t
+@@ -278,12 +276,21 @@
+     }
+     else
+ #endif /* ifdef ENABLE_X509ALTUSERNAME */
++    {
++        X509_NAME *x509_subject_name = X509_get_subject_name(peer_cert);
++        if (x509_subject_name == NULL)
++        {
++            msg(D_TLS_ERRORS, "X509 subject name is NULL");
++            return FAILURE;
++        }
++
+         if (FAILURE
+-            == extract_x509_field_ssl(X509_get_subject_name(peer_cert), x509_username_field,
++            == extract_x509_field_ssl(x509_subject_name, x509_username_field,
+                                       common_name, cn_len))
+         {
+             return FAILURE;
+         }
++    }
+ 
+     return SUCCESS;
+ }
 
