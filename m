@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Nov 2025 12:04:29 +0000
+Date: Thu, 27 Nov 2025 12:04:31 +0000
 In-Reply-To: <gerrit.1764239370000.Ib15bd4148872db39a4c8291796a5da211bb20a87@...2715...>
 References: <gerrit.1764239370000.Ib15bd4148872db39a4c8291796a5da211bb20a87@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5f2f5686995f421d0254cb390f5c0ddde512c8d1-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5f2f5686995f421d0254cb390f5c0ddde512c8d1-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0gYfhubJj+k="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="5C+SiDINRHk="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove remainders
  of --no-name-remapping option
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,24 +19,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0gYfhubJj+k=
+--5C+SiDINRHk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+11?usp=3Demail )
 
 Change subject: Remove remainders of --no-name-remapping option
 ......................................................................
@@ -60,7 +50,7 @@ M src/openvpn/options.c
 2 files changed, 2 insertions(+), 4 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/1411/2
+
 
 diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
 options.rst
@@ -99,7 +89,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib15bd4148872db39a4c8291796a5da211bb20a87
@@ -110,67 +100,64 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0gYfhubJj+k=
+--5C+SiDINRHk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to this change.</p><p><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1411?usp=3Demail">View Change</a></p><p>The followi=
-ng approvals got outdated and were removed:
-Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">Remove remainders of --no-na=
-me-remapping option<br><br>This option was removed in 2.5 (commit c3f565f05=
-9) but still showed<br>up in the ``openvpn --help`` text and in a Q&amp;A s=
-ection of the man page.<br><br>Change-Id: Ib15bd4148872db39a4c8291796a5da21=
-1bb20a87<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by=
-: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Gerrit URL: https://gerrit.=
-openvpn.net/c/openvpn/+/1411<br>Message-Id: &lt;20251127115737.3598-1-gert@=
-...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1885...=
-rceforge.net/msg34754.html<br>Signed-off-by: Gert Doering &lt;gert@...1725...=
-..&gt;<br>---<br>M doc/man-sections/script-options.rst<br>M src/openvpn/opt=
-ions.c<br>2 files changed, 2 insertions(+), 4 deletions(-)<br><br></pre><pr=
-e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/=
-1411/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/doc/man-sections/script-options.rst b/doc/man-s=
-ections/script-options.rst</span><br><span>index 670cd33..cadd464 100644</s=
-pan><br><span>--- a/doc/man-sections/script-options.rst</span><br><span>+++=
- b/doc/man-sections/script-options.rst</span><br><span>@@ -571,8 +571,8 @@<=
-/span><br><span>     a filename, etc.</span><br><span> </span><br><span> *Q=
-: Can string remapping be disabled?*</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    Yes, by using the ``--no-name-remapping`` option, howeve=
-r this</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    should be c=
-onsidered an advanced option.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    No.  The options ``--no-name-remapping`` and ``--compat-names=
-`` have</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    been rem=
-oved in 2.5 because they were considered too insecure.</span><br><span> </s=
-pan><br><span> Here is a brief rundown of OpenVPN&#39;s current string type=
-s and the</span><br><span> permitted character class for each string:</span=
-><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span=
-><br><span>index 5e73196..a3fc19d 100644</span><br><span>--- a/src/openvpn/=
-options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -4=
-74,8 +474,6 @@</span><br><span>     &quot;                  for generated t=
-okens can be set.\n&quot;</span><br><span>     &quot;--auth-user-pass-optio=
-nal : Allow connections by clients that don&#39;t\n&quot;</span><br><span> =
-    &quot;                  specify a username/password.\n&quot;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    &quot;--no-name-remapping : =
-(DEPRECATED) Allow Common Name and X509 Subject to include\n&quot;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;                    =
-  any printable character.\n&quot;</span><br><span>     &quot;--client-to-c=
-lient : Internally route client-to-client traffic.\n&quot;</span><br><span>=
-     &quot;--duplicate-cn  : Allow multiple clients with the same common na=
-me to\n&quot;</span><br><span>     &quot;                  concurrently con=
-nect.\n&quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail">change 1411</a>. T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
-type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1411?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Remove remainders of --no-name-remapping option<=
+br><br>This option was removed in 2.5 (commit c3f565f059) but still showed<=
+br>up in the ``openvpn --help`` text and in a Q&amp;A section of the man pa=
+ge.<br><br>Change-Id: Ib15bd4148872db39a4c8291796a5da211bb20a87<br>Signed-o=
+ff-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by: Frank Lichtenheld =
+&lt;frank@...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvp=
+n/+/1411<br>Message-Id: &lt;20251127115737.3598-1-gert@...1296...&gt;<br>UR=
+L: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg3475=
+4.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M d=
+oc/man-sections/script-options.rst<br>M src/openvpn/options.c<br>2 files ch=
+anged, 2 insertions(+), 4 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/scri=
+pt-options.rst</span><br><span>index 670cd33..cadd464 100644</span><br><spa=
+n>--- a/doc/man-sections/script-options.rst</span><br><span>+++ b/doc/man-s=
+ections/script-options.rst</span><br><span>@@ -571,8 +571,8 @@</span><br><s=
+pan>     a filename, etc.</span><br><span> </span><br><span> *Q: Can string=
+ remapping be disabled?*</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    Yes, by using the ``--no-name-remapping`` option, however this</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    should be considered an=
+ advanced option.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  No.  The options ``--no-name-remapping`` and ``--compat-names`` have</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    been removed in 2.5 =
+because they were considered too insecure.</span><br><span> </span><br><spa=
+n> Here is a brief rundown of OpenVPN&#39;s current string types and the</s=
+pan><br><span> permitted character class for each string:</span><br><span>d=
+iff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>i=
+ndex 5e73196..a3fc19d 100644</span><br><span>--- a/src/openvpn/options.c</s=
+pan><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -474,8 +474,6 =
+@@</span><br><span>     &quot;                  for generated tokens can be=
+ set.\n&quot;</span><br><span>     &quot;--auth-user-pass-optional : Allow =
+connections by clients that don&#39;t\n&quot;</span><br><span>     &quot;  =
+                specify a username/password.\n&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &quot;--no-name-remapping : (DEPRECATED=
+) Allow Common Name and X509 Subject to include\n&quot;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &quot;                      any print=
+able character.\n&quot;</span><br><span>     &quot;--client-to-client : Int=
+ernally route client-to-client traffic.\n&quot;</span><br><span>     &quot;=
+--duplicate-cn  : Allow multiple clients with the same common name to\n&quo=
+t;</span><br><span>     &quot;                  concurrently connect.\n&quo=
+t;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1411?usp=3Demail">change 1411</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1411?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ib15bd4148872db39a4c8291796a=
@@ -188,5 +175,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---0gYfhubJj+k=--
+--5C+SiDINRHk=--
 
