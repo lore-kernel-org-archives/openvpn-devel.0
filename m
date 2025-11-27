@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 27 Nov 2025 11:37:05 +0100
-Message-ID: <20251127103710.29341-1-gert@...1296...>
-In-Reply-To: <gerrit.1764176932000.Ic55e1288b0d3160e68eef07ff4edbb070a03dd31@...2715...>
-References: <gerrit.1764176932000.Ic55e1288b0d3160e68eef07ff4edbb070a03dd31@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 27 Nov 2025 10:51:13 +0000
+In-Reply-To: <gerrit.1764176048000.Ie460eec488a8781e3b1ee4f8b2ae2090729ed175@...2715...>
+References: <gerrit.1764176048000.Ie460eec488a8781e3b1ee4f8b2ae2090729ed175@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <cbc97aae848deb3ff51f406e526c89906633d32a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] configure/CMake: Unify Windows handling
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nED1OwFNmys="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Linux: Assume we
+ have a kernel that was release in the last 15 years
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,181 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--nED1OwFNmys=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Some things were detected in configure.ac and just
-hard-coded in CMake. Move the hard-coding to
-syshead.h instead and remove the additional code
-in configure.ac. These are really Windows-specific
-so I think not dynamically detecting is okay.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: Ic55e1288b0d3160e68eef07ff4edbb070a03dd31
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1410
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1408?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Linux: Assume we have a kernel that was release in the last=
+ 15 years
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1410
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index f68ea27..bf1388c 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -411,32 +411,3 @@
- #ifndef _GNU_SOURCE
- # define _GNU_SOURCE 1
- #endif
--
--/* if inttypes.h is included this breaks rc.exe when using the ClangCL
-- * Toolchain as it pulls in a inttypes.h variant for clang that rc.exe does
-- * not understand (#include_next preprocessor directive) */
--#if defined(_WIN32) && !defined(RC_INVOKED)
--#include <inttypes.h>
--typedef uint32_t in_addr_t;
--typedef uint16_t in_port_t;
--
--#define SIGHUP    1
--#define SIGINT    2
--#define SIGUSR1   10
--#define SIGUSR2   12
--#define SIGTERM   15
--#endif
--
--#if defined(_MSC_VER) && !defined(RC_INVOKED)
--#include <BaseTsd.h>
--typedef SSIZE_T ssize_t;
--#define strncasecmp strnicmp
--#define strcasecmp _stricmp
--
--#define S_IRUSR _S_IREAD
--#define S_IWUSR _S_IWRITE
--#define R_OK 4
--#define W_OK 2
--#define X_OK 1
--#define F_OK 0
--#endif
-diff --git a/configure.ac b/configure.ac
-index 60799e0..73b388b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -527,18 +527,6 @@
- 	[[${SOCKET_INCLUDES}]]
- )
- 
--AC_CHECK_TYPES(
--	[in_addr_t],
--	,
--	[AC_DEFINE([in_addr_t], [uint32_t], [Workaround missing in_addr_t])],
--	[[${SOCKET_INCLUDES}]]
--)
--AC_CHECK_TYPES(
--	[in_port_t],
--	,
--	[AC_DEFINE([in_port_t], [uint16_t], [Workaround missing in_port_t])],
--	[[${SOCKET_INCLUDES}]]
--)
- AC_CHECK_TYPE(
- 	[struct msghdr],
- 	[AC_DEFINE([HAVE_MSGHDR], [1], [struct msghdr needed for extended socket error support])],
-@@ -600,48 +588,6 @@
- )
- LDFLAGS="$saved_LDFLAGS"
- 
--dnl We emulate signals in Windows
--AC_CHECK_DECLS(
--	[SIGHUP],
--	,
--	[AC_DEFINE([SIGHUP], [1], [SIGHUP replacement])],
--	[[
--		#include <signal.h>
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGINT],
--	,
--	[AC_DEFINE([SIGINT], [2], [SIGINT replacement])],
--	[[
--		#include <signal.h>
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGUSR1],
--	,
--	[AC_DEFINE([SIGUSR1], [10], [SIGUSR1 replacement])],
--	[[
--		#include <signal.h>
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGUSR2],
--	,
--	[AC_DEFINE([SIGUSR2], [12], [SIGUSR2 replacement])],
--	[[
--		#include <signal.h>
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGTERM],
--	,
--	[AC_DEFINE([SIGTERM], [15], [SIGTERM replacement])],
--	[[
--		#include <signal.h>
--	]]
--)
--
- AC_FUNC_FORK
- 
- AC_CHECK_FUNCS([ \
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index c6f2608..627ba92 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -44,6 +44,35 @@
- #define srandom  srand
- #endif
- 
-+/* if inttypes.h is included this breaks rc.exe when using the ClangCL
-+ * Toolchain as it pulls in a inttypes.h variant for clang that rc.exe does
-+ * not understand (#include_next preprocessor directive) */
-+#if defined(_WIN32) && !defined(RC_INVOKED)
-+#include <inttypes.h>
-+typedef uint32_t in_addr_t;
-+typedef uint16_t in_port_t;
-+
-+#define SIGHUP  1
-+#define SIGINT  2
-+#define SIGUSR1 10
-+#define SIGUSR2 12
-+#define SIGTERM 15
-+#endif
-+
-+#if defined(_MSC_VER) && !defined(RC_INVOKED)
-+#include <BaseTsd.h>
-+typedef SSIZE_T ssize_t;
-+#define strncasecmp strnicmp
-+#define strcasecmp  _stricmp
-+
-+#define S_IRUSR _S_IREAD
-+#define S_IWUSR _S_IWRITE
-+#define R_OK    4
-+#define W_OK    2
-+#define X_OK    1
-+#define F_OK    0
-+#endif
-+
- #if defined(_MSC_VER) && !defined(__clang__) /* Microsoft compiler */
- #define __func__ __FUNCTION__
- #define __attribute__(x)
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie460eec488a8781e3b1ee4f8b2ae2090729ed175
+Gerrit-Change-Number: 1408
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 27 Nov 2025 10:51:13 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--nED1OwFNmys=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail=
+">change 1408</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie460eec488a8781e3b1ee4f8b2a=
+e2090729ed175 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1408 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Nov 2025 10:51:13=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--nED1OwFNmys=--
 
