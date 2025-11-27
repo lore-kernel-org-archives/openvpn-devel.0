@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Nov 2025 11:14:34 +0000
+Date: Thu, 27 Nov 2025 11:14:37 +0000
 In-Reply-To: <gerrit.1764176048000.Ie460eec488a8781e3b1ee4f8b2ae2090729ed175@...2715...>
 References: <gerrit.1764176048000.Ie460eec488a8781e3b1ee4f8b2ae2090729ed175@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6591dbbe4f8381034b41fc379f1d7cf6c1461dea-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <6591dbbe4f8381034b41fc379f1d7cf6c1461dea-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+4C51uQEC6A="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="aKNxG7U+SAo="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Linux: Assume we
  have a kernel that was release in the last 15 years
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+4C51uQEC6A=
+--aKNxG7U+SAo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+08?usp=3Demail )
 
 Change subject: Linux: Assume we have a kernel that was release in the last=
  15 years
@@ -66,7 +62,7 @@ M src/openvpn/tun.h
 10 files changed, 19 insertions(+), 87 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/08/1408/3
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index e812145..c4d50e4 100644
@@ -392,12 +388,12 @@ ap_options *options,
 char *dev_node,
                               struct gc_arena *gc);
 
---=20
+--
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ie460eec488a8781e3b1ee4f8b2ae2090729ed175
@@ -408,284 +404,280 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+4C51uQEC6A=
+--aKNxG7U+SAo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">Linux: Assume we have a kernel that=
- was release in the last 15 years<br><br>Just assume that we have all the l=
-inux headers that<br>were part of linux since 2.6 (or 2.4 in some cases).<b=
-r><br>Simplifies configuration.<br><br>Change-Id: Ie460eec488a8781e3b1ee4f8=
-b2ae2090729ed175<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&g=
-t;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https:/=
-/gerrit.openvpn.net/c/openvpn/+/1408<br>Message-Id: &lt;20251127105125.3045=
-7-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@=
-lists.sourceforge.net/msg34738.html<br>Signed-off-by: Gert Doering &lt;gert=
-@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M config.h.cmake.in<br>M conf=
-igure.ac<br>M src/openvpn/mtu.c<br>M src/openvpn/mtu.h<br>M src/openvpn/opt=
-ions.c<br>M src/openvpn/socket.c<br>M src/openvpn/syshead.h<br>M src/openvp=
-n/tun.c<br>M src/openvpn/tun.h<br>10 files changed, 19 insertions(+), 87 de=
-letions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/08/1408/3</pre><pre style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMa=
-keLists.txt</span><br><span>index e812145..c4d50e4 100644</span><br><span>-=
--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@=
- -145,7 +145,6 @@</span><br><span>     set(TARGET_ANDROID YES)</span><br><s=
-pan>     set(ENABLE_ASYNC_PUSH YES)</span><br><span>     set(ENABLE_SITNL Y=
-ES)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    set(HAVE_LINUX=
-_TYPES_H 1)</span><br><span>     # Wacky workaround as OpenSSL package dete=
-ction is otherwise broken (https://stackoverflow.com/questions/45958214/and=
-roid-cmake-could-not-find-openssl)</span><br><span>     list(APPEND CMAKE_F=
-IND_ROOT_PATH ${OPENSSL_ROOT_DIR})</span><br><span> elseif (${CMAKE_SYSTEM_=
-NAME} STREQUAL &quot;Linux&quot;)</span><br><span>@@ -153,9 +152,6 @@</span=
-><br><span>     set(ENABLE_ASYNC_PUSH YES)</span><br><span>     set(ENABLE_=
-LINUXDCO YES)</span><br><span>     set(ENABLE_SITNL YES)</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    set(HAVE_DECL_SO_MARK YES)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    set(ENABLE_FEATURE_TUN_PERS=
-IST 1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    set(HAVE_LI=
-NUX_TYPES_H 1)</span><br><span>     set(ENABLE_DCO YES)</span><br><span> el=
-seif (${CMAKE_SYSTEM_NAME} STREQUAL &quot;FreeBSD&quot;)</span><br><span>  =
-   set(TARGET_FREEBSD YES)</span><br><span>@@ -258,8 +254,6 @@</span><br><s=
-pan> check_include_files(dmalloc.h HAVE_DMALLOC_H)</span><br><span> check_i=
-nclude_files(fcntl.h HAVE_FCNTL_H)</span><br><span> check_include_files(err=
-.h HAVE_ERR_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_i=
-nclude_files(linux/if_tun.h HAVE_LINUX_IF_TUN_H)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-check_include_files(linux/sockios.h HAVE_LINUX_S=
-OCKIOS_H)</span><br><span> check_include_files(netdb.h HAVE_NETDB_H)</span>=
-<br><span> check_include_files(&quot;${NETEXTRA};netinet/in6.h&quot; HAVE_N=
-ETINET_IN_H)</span><br><span> check_include_files(net/if.h HAVE_NET_IF_H)</=
-span><br><span>diff --git a/config.h.cmake.in b/config.h.cmake.in</span><br=
-><span>index 1c443ab..bf1899c 100644</span><br><span>--- a/config.h.cmake.i=
-n</span><br><span>+++ b/config.h.cmake.in</span><br><span>@@ -20,9 +20,6 @@=
-</span><br><span> /* Enable debugging support (needed for verb&gt;=3D4) */<=
-/span><br><span> #define ENABLE_DEBUG 1</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-/* We have persist tun capability */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmakedefine ENABLE_FEAT=
-URE_TUN_PERSIST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span> /* Enable internal fragmentation support */</span><br><span> #d=
-efine ENABLE_FRAGMENT 1</span><br><span> </span><br><span>@@ -92,10 +89,6 @=
-@</span><br><span> /* Define to 1 if you have the `daemon&#39; function. */=
-</span><br><span> #cmakedefine HAVE_DAEMON</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 if you have the decla=
-ration of `SO_MARK&#39;, and to 0 if you</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-don&#39;t. */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#cmakedefine01 HAVE_DECL_SO_MARK</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span> /* Define to 1 if you have the &lt;=
-direct.h&gt; header file. */</span><br><span> #cmakedefine HAVE_DIRECT_H</s=
-pan><br><span> </span><br><span>@@ -166,15 +159,6 @@</span><br><span> /* De=
-fine to 1 if you have the &lt;limits.h&gt; header file. */</span><br><span>=
- #define HAVE_LIMITS_H 1</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-/* Define to 1 if you have the &lt;linux/if_tun.h&gt; =
-header file. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmake=
-define HAVE_LINUX_IF_TUN_H</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 i=
-f you have the &lt;linux/sockios.h&gt; header file. */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#cmakedefine HAVE_LINUX_SOCKIOS_H</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-/* Define to 1 if you have the &lt;linux/types.h&gt=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1408?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Linux: Assume we have a kernel that was release =
+in the last 15 years<br><br>Just assume that we have all the linux headers =
+that<br>were part of linux since 2.6 (or 2.4 in some cases).<br><br>Simplif=
+ies configuration.<br><br>Change-Id: Ie460eec488a8781e3b1ee4f8b2ae2090729ed=
+175<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-b=
+y: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openv=
+pn.net/c/openvpn/+/1408<br>Message-Id: &lt;20251127105125.30457-1-gert@...1386...=
+296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1535...=
+orge.net/msg34738.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&g=
+t;<br>---<br>M CMakeLists.txt<br>M config.h.cmake.in<br>M configure.ac<br>M=
+ src/openvpn/mtu.c<br>M src/openvpn/mtu.h<br>M src/openvpn/options.c<br>M s=
+rc/openvpn/socket.c<br>M src/openvpn/syshead.h<br>M src/openvpn/tun.c<br>M =
+src/openvpn/tun.h<br>10 files changed, 19 insertions(+), 87 deletions(-)<br=
+><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index e8121=
+45..c4d50e4 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -145,7 +145,6 @@</span><br><span>     =
+set(TARGET_ANDROID YES)</span><br><span>     set(ENABLE_ASYNC_PUSH YES)</sp=
+an><br><span>     set(ENABLE_SITNL YES)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    set(HAVE_LINUX_TYPES_H 1)</span><br><span>     # Wack=
+y workaround as OpenSSL package detection is otherwise broken (https://stac=
+koverflow.com/questions/45958214/android-cmake-could-not-find-openssl)</spa=
+n><br><span>     list(APPEND CMAKE_FIND_ROOT_PATH ${OPENSSL_ROOT_DIR})</spa=
+n><br><span> elseif (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span=
+><br><span>@@ -153,9 +152,6 @@</span><br><span>     set(ENABLE_ASYNC_PUSH Y=
+ES)</span><br><span>     set(ENABLE_LINUXDCO YES)</span><br><span>     set(=
+ENABLE_SITNL YES)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+set(HAVE_DECL_SO_MARK YES)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    set(ENABLE_FEATURE_TUN_PERSIST 1)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    set(HAVE_LINUX_TYPES_H 1)</span><br><span>     set=
+(ENABLE_DCO YES)</span><br><span> elseif (${CMAKE_SYSTEM_NAME} STREQUAL &qu=
+ot;FreeBSD&quot;)</span><br><span>     set(TARGET_FREEBSD YES)</span><br><s=
+pan>@@ -258,8 +254,6 @@</span><br><span> check_include_files(dmalloc.h HAVE=
+_DMALLOC_H)</span><br><span> check_include_files(fcntl.h HAVE_FCNTL_H)</spa=
+n><br><span> check_include_files(err.h HAVE_ERR_H)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-check_include_files(linux/if_tun.h HAVE_LINUX_=
+IF_TUN_H)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_includ=
+e_files(linux/sockios.h HAVE_LINUX_SOCKIOS_H)</span><br><span> check_includ=
+e_files(netdb.h HAVE_NETDB_H)</span><br><span> check_include_files(&quot;${=
+NETEXTRA};netinet/in6.h&quot; HAVE_NETINET_IN_H)</span><br><span> check_inc=
+lude_files(net/if.h HAVE_NET_IF_H)</span><br><span>diff --git a/config.h.cm=
+ake.in b/config.h.cmake.in</span><br><span>index 1c443ab..bf1899c 100644</s=
+pan><br><span>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.=
+in</span><br><span>@@ -20,9 +20,6 @@</span><br><span> /* Enable debugging s=
+upport (needed for verb&gt;=3D4) */</span><br><span> #define ENABLE_DEBUG 1=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* =
+We have persist tun capability */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#cmakedefine ENABLE_FEATURE_TUN_PERSIST</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Enable internal fragme=
+ntation support */</span><br><span> #define ENABLE_FRAGMENT 1</span><br><sp=
+an> </span><br><span>@@ -92,10 +89,6 @@</span><br><span> /* Define to 1 if =
+you have the `daemon&#39; function. */</span><br><span> #cmakedefine HAVE_D=
+AEMON</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-/* Define to 1 if you have the declaration of `SO_MARK&#39;, and to 0 if =
+you</span><br><span style=3D"color: hsl(0, 100%, 40%);">-don&#39;t. */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmakedefine01 HAVE_DECL_S=
+O_MARK</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n> /* Define to 1 if you have the &lt;direct.h&gt; header file. */</span><b=
+r><span> #cmakedefine HAVE_DIRECT_H</span><br><span> </span><br><span>@@ -1=
+66,15 +159,6 @@</span><br><span> /* Define to 1 if you have the &lt;limits.=
+h&gt; header file. */</span><br><span> #define HAVE_LIMITS_H 1</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 i=
+f you have the &lt;linux/if_tun.h&gt; header file. */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#cmakedefine HAVE_LINUX_IF_TUN_H</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-/* Define to 1 if you have the &lt;linux/sockios.h&gt=
 ; header file. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#cma=
-kedefine HAVE_LINUX_TYPES_H</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span> /* Define to 1 if you have the &lt;lzo1x.h&gt; head=
-er file. */</span><br><span> #define HAVE_LZO1X_H 1</span><br><span> </span=
-><br><span>diff --git a/configure.ac b/configure.ac</span><br><span>index 4=
-4c7b65..030f8de 100644</span><br><span>--- a/configure.ac</span><br><span>+=
-++ b/configure.ac</span><br><span>@@ -494,8 +494,8 @@</span><br><span> 	sys=
-/mman.h sys/file.h sys/wait.h \</span><br><span> 	unistd.h libgen.h stropts=
-.h \</span><br><span> 	syslog.h pwd.h grp.h termios.h \</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-	sys/sockio.h sys/uio.h linux/sockios.h \=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	linux/types.h linux/=
-errqueue.h poll.h sys/epoll.h err.h \</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+	sys/sockio.h sys/uio.h \</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+	poll.h sys/epoll.h err.h \</span><br><span> ])</sp=
-an><br><span> </span><br><span> SOCKET_INCLUDES=3D&quot;</span><br><span>@@=
- -587,12 +587,6 @@</span><br><span> 	[AC_MSG_ERROR([struct sockaddr_in6 not=
- found, needed for ipv6 transport support.])],</span><br><span> 	[[${SOCKET=
-_INCLUDES}]]</span><br><span> )</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-AC_CHECK_DECLS(</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	[SO_MARK],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-	,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	[[${SOCKET_INCLUDES}]]</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-)</span><br><span> </span><br><span> save=
-d_LDFLAGS=3D&quot;$LDFLAGS&quot;</span><br><span> LDFLAGS=3D&quot;$LDFLAGS =
--Wl,--wrap=3Dexit&quot;</span><br><span>@@ -717,16 +711,6 @@</span><br><spa=
-n> 	],</span><br><span> 	[have_tap_header=3D&quot;yes&quot;]</span><br><spa=
-n> )</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_CHECK_DECLS(</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-	[TUNSETPERSIST],</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-	[AC_DEFINE([ENABLE_FEATURE=
-_TUN_PERSIST], [1], [We have persist tun capability])],</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-	,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-	[[</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		#=
-ifdef HAVE_LINUX_IF_TUN_H</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-		#include &lt;linux/if_tun.h&gt;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-		#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	]]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-)</span><br><sp=
-an> CFLAGS=3D&quot;${old_CFLAGS}&quot;</span><br><span> test &quot;${have_t=
-ap_header}&quot; =3D &quot;yes&quot; || AC_MSG_ERROR([no tap header could b=
-e found])</span><br><span> </span><br><span>diff --git a/src/openvpn/mtu.c =
-b/src/openvpn/mtu.c</span><br><span>index 9e152df..e080ea9 100644</span><br=
-><span>--- a/src/openvpn/mtu.c</span><br><span>+++ b/src/openvpn/mtu.c</spa=
-n><br><span>@@ -274,6 +274,8 @@</span><br><span> </span><br><span> #if EXTE=
-NDED_SOCKET_ERROR_CAPABILITY</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#include &lt;linux/errqueue.h&gt;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct probehdr<=
-/span><br><span> {</span><br><span>     uint32_t ttl;</span><br><span>diff =
---git a/src/openvpn/mtu.h b/src/openvpn/mtu.h</span><br><span>index 3bbff6f=
-..b690149 100644</span><br><span>--- a/src/openvpn/mtu.h</span><br><span>++=
-+ b/src/openvpn/mtu.h</span><br><span>@@ -262,8 +262,7 @@</span><br><span> =
-</span><br><span> /*</span><br><span>  * EXTENDED_SOCKET_ERROR_CAPABILITY f=
-unctions -- print extra error info</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * on socket errors, such as PMTU size.  As of 2003.05.11, onl=
-y works</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * on Linux 2.=
-4+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * on socket err=
-ors, such as PMTU size.</span><br><span>  */</span><br><span> </span><br><s=
-pan> #if EXTENDED_SOCKET_ERROR_CAPABILITY</span><br><span>diff --git a/src/=
-openvpn/options.c b/src/openvpn/options.c</span><br><span>index 62f84dd..5e=
-73196 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>++=
-+ b/src/openvpn/options.c</span><br><span>@@ -315,7 +315,7 @@</span><br><sp=
-an>     &quot;                  or --fragment max value, whichever is lower=
-.\n&quot;</span><br><span>     &quot;--sndbuf size   : Set the TCP/UDP send=
- buffer size.\n&quot;</span><br><span>     &quot;--rcvbuf size   : Set the =
-TCP/UDP receive buffer size.\n&quot;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#if defined(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)=
-</span><br><span>     &quot;--mark value    : Mark encrypted packets being =
-sent with value. The mark value\n&quot;</span><br><span>     &quot;        =
-          can be matched in policy routing and packetfilter rules.\n&quot;<=
-/span><br><span>     &quot;--bind-dev dev  : Bind to the given device when =
-making connection to a peer or\n&quot;</span><br><span>@@ -768,7 +768,7 @@<=
-/span><br><span>     &quot;                         (for use with --tls-aut=
-h or --tls-crypt).&quot;</span><br><span> #ifdef ENABLE_FEATURE_TUN_PERSIST=
-</span><br><span>     &quot;\n&quot;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    &quot;Tun/tap config mode (available with linux 2.4+):\n=
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;Tun=
-/tap config mode:\n&quot;</span><br><span>     &quot;--mktun         : Crea=
-te a persistent tunnel.\n&quot;</span><br><span>     &quot;--rmtun         =
-: Remove a persistent tunnel.\n&quot;</span><br><span>     &quot;--dev tunX=
-|tapX : tun/tap device\n&quot;</span><br><span>@@ -1792,7 +1792,7 @@</span>=
-<br><span>     SHOW_BOOL(occ);</span><br><span>     SHOW_INT(rcvbuf);</span=
-><br><span>     SHOW_INT(sndbuf);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#if defined(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)</s=
-pan><br><span>     SHOW_INT(mark);</span><br><span> #endif</span><br><span>=
-     SHOW_INT(sockflags);</span><br><span>@@ -6518,7 +6518,7 @@</span><br><=
-span>     }</span><br><span>     else if (streq(p[0], &quot;mark&quot;) &am=
-p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX) &amp;&amp; HAVE_D=
-ECL_SO_MARK</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defi=
-ned(TARGET_LINUX)</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL)=
-;</span><br><span>         options-&gt;mark =3D atoi_warn(p[1], msglevel);<=
-/span><br><span> #endif</span><br><span>diff --git a/src/openvpn/socket.c b=
-/src/openvpn/socket.c</span><br><span>index 747c7a7..46bedf4 100644</span><=
-br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socke=
-t.c</span><br><span>@@ -524,7 +524,7 @@</span><br><span> static inline void=
-</span><br><span> socket_set_mark(socket_descriptor_t sd, int mark)</span><=
-br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if define=
-d(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)</span><br><span>     if =
-(mark &amp;&amp; setsockopt(sd, SOL_SOCKET, SO_MARK, (void *)&amp;mark, siz=
-eof(mark)) !=3D 0)</span><br><span>     {</span><br><span>         msg(M_WA=
-RN, &quot;NOTE: setsockopt SO_MARK=3D%d failed&quot;, mark);</span><br><spa=
-n>diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h</span><br><spa=
-n>index 90045a9..c6f2608 100644</span><br><span>--- a/src/openvpn/syshead.h=
-</span><br><span>+++ b/src/openvpn/syshead.h</span><br><span>@@ -185,26 +18=
-5,19 @@</span><br><span> </span><br><span> #if defined(TARGET_LINUX) || def=
-ined(TARGET_ANDROID)</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#ifdef HAVE_LINUX_IF_TUN_H</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#include &lt;linux/if_tun.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define EXTENDED_SOCKET_ERROR_CAPABILITY =
-1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#ifdef TARGET_LINUX</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#define ENABLE_FEATURE_TUN_PERSIST</s=
-pan><br><span> #endif</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#include &lt;linux/if_tun.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &lt;linux/sockios.h&gt;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef HAV=
-E_NETINET_IP_H</span><br><span> #include &lt;netinet/ip.h&gt;</span><br><sp=
-an> #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#ifdef HAVE_LINUX_SOCKIOS_H</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#include &lt;linux/sockios.h&gt;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE_=
-LINUX_TYPES_H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include=
- &lt;linux/types.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE_LINUX_ERRQUEUE_H</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;linux/errqueue.=
+kedefine HAVE_LINUX_SOCKIOS_H</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Define to =
+1 if you have the &lt;linux/types.h&gt; header file. */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#cmakedefine HAVE_LINUX_TYPES_H</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Define to =
+1 if you have the &lt;lzo1x.h&gt; header file. */</span><br><span> #define =
+HAVE_LZO1X_H 1</span><br><span> </span><br><span>diff --git a/configure.ac =
+b/configure.ac</span><br><span>index 44c7b65..030f8de 100644</span><br><spa=
+n>--- a/configure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ =
+-494,8 +494,8 @@</span><br><span> 	sys/mman.h sys/file.h sys/wait.h \</span=
+><br><span> 	unistd.h libgen.h stropts.h \</span><br><span> 	syslog.h pwd.h=
+ grp.h termios.h \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	sy=
+s/sockio.h sys/uio.h linux/sockios.h \</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-	linux/types.h linux/errqueue.h poll.h sys/epoll.h err.h \=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	sys/sockio.h sys/u=
+io.h \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	poll.h sys/e=
+poll.h err.h \</span><br><span> ])</span><br><span> </span><br><span> SOCKE=
+T_INCLUDES=3D&quot;</span><br><span>@@ -587,12 +587,6 @@</span><br><span> 	=
+[AC_MSG_ERROR([struct sockaddr_in6 not found, needed for ipv6 transport sup=
+port.])],</span><br><span> 	[[${SOCKET_INCLUDES}]]</span><br><span> )</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_CHECK_DECLS(</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-	[SO_MARK],</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	[[${S=
+OCKET_INCLUDES}]]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-)</s=
+pan><br><span> </span><br><span> saved_LDFLAGS=3D&quot;$LDFLAGS&quot;</span=
+><br><span> LDFLAGS=3D&quot;$LDFLAGS -Wl,--wrap=3Dexit&quot;</span><br><spa=
+n>@@ -717,16 +711,6 @@</span><br><span> 	],</span><br><span> 	[have_tap_hea=
+der=3D&quot;yes&quot;]</span><br><span> )</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-AC_CHECK_DECLS(</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-	[TUNSETPERSIST],</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-	[AC_DEFINE([ENABLE_FEATURE_TUN_PERSIST], [1], [We have persist t=
+un capability])],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-	[[</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-		#ifdef HAVE_LINUX_IF_TUN_H</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-		#include &lt;linux/if_tun.h&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-		#endif</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-	]]</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-)</span><br><span> CFLAGS=3D&quot;${old_CFLAGS}&quot;=
+</span><br><span> test &quot;${have_tap_header}&quot; =3D &quot;yes&quot; |=
+| AC_MSG_ERROR([no tap header could be found])</span><br><span> </span><br>=
+<span>diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c</span><br><span>in=
+dex 9e152df..e080ea9 100644</span><br><span>--- a/src/openvpn/mtu.c</span><=
+br><span>+++ b/src/openvpn/mtu.c</span><br><span>@@ -274,6 +274,8 @@</span>=
+<br><span> </span><br><span> #if EXTENDED_SOCKET_ERROR_CAPABILITY</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &l=
+t;linux/errqueue.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> struct probehdr</span><br><span> {</span><br><span>   =
+  uint32_t ttl;</span><br><span>diff --git a/src/openvpn/mtu.h b/src/openvp=
+n/mtu.h</span><br><span>index 3bbff6f..b690149 100644</span><br><span>--- a=
+/src/openvpn/mtu.h</span><br><span>+++ b/src/openvpn/mtu.h</span><br><span>=
+@@ -262,8 +262,7 @@</span><br><span> </span><br><span> /*</span><br><span> =
+ * EXTENDED_SOCKET_ERROR_CAPABILITY functions -- print extra error info</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- * on socket errors, such=
+ as PMTU size.  As of 2003.05.11, only works</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- * on Linux 2.4+.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * on socket errors, such as PMTU size.</span><br><spa=
+n>  */</span><br><span> </span><br><span> #if EXTENDED_SOCKET_ERROR_CAPABIL=
+ITY</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/option=
+s.c</span><br><span>index 62f84dd..5e73196 100644</span><br><span>--- a/src=
+/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><s=
+pan>@@ -315,7 +315,7 @@</span><br><span>     &quot;                  or --f=
+ragment max value, whichever is lower.\n&quot;</span><br><span>     &quot;-=
+-sndbuf size   : Set the TCP/UDP send buffer size.\n&quot;</span><br><span>=
+     &quot;--rcvbuf size   : Set the TCP/UDP receive buffer size.\n&quot;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINU=
+X) &amp;&amp; HAVE_DECL_SO_MARK</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#if defined(TARGET_LINUX)</span><br><span>     &quot;--mark val=
+ue    : Mark encrypted packets being sent with value. The mark value\n&quot=
+;</span><br><span>     &quot;                  can be matched in policy rou=
+ting and packetfilter rules.\n&quot;</span><br><span>     &quot;--bind-dev =
+dev  : Bind to the given device when making connection to a peer or\n&quot;=
+</span><br><span>@@ -768,7 +768,7 @@</span><br><span>     &quot;           =
+              (for use with --tls-auth or --tls-crypt).&quot;</span><br><sp=
+an> #ifdef ENABLE_FEATURE_TUN_PERSIST</span><br><span>     &quot;\n&quot;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;Tun/tap confi=
+g mode (available with linux 2.4+):\n&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    &quot;Tun/tap config mode:\n&quot;</span><br><s=
+pan>     &quot;--mktun         : Create a persistent tunnel.\n&quot;</span>=
+<br><span>     &quot;--rmtun         : Remove a persistent tunnel.\n&quot;<=
+/span><br><span>     &quot;--dev tunX|tapX : tun/tap device\n&quot;</span><=
+br><span>@@ -1792,7 +1792,7 @@</span><br><span>     SHOW_BOOL(occ);</span><=
+br><span>     SHOW_INT(rcvbuf);</span><br><span>     SHOW_INT(sndbuf);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX) =
+&amp;&amp; HAVE_DECL_SO_MARK</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if defined(TARGET_LINUX)</span><br><span>     SHOW_INT(mark);</sp=
+an><br><span> #endif</span><br><span>     SHOW_INT(sockflags);</span><br><s=
+pan>@@ -6518,7 +6518,7 @@</span><br><span>     }</span><br><span>     else =
+if (streq(p[0], &quot;mark&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><=
+br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if de=
+fined(TARGET_LINUX) &amp;&amp; HAVE_DECL_SO_MARK</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)</span><br><span>    =
+     VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span>         options-&gt=
+;mark =3D atoi_warn(p[1], msglevel);</span><br><span> #endif</span><br><spa=
+n>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>=
+index 747c7a7..46bedf4 100644</span><br><span>--- a/src/openvpn/socket.c</s=
+pan><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -524,7 +524,7 @=
+@</span><br><span> static inline void</span><br><span> socket_set_mark(sock=
+et_descriptor_t sd, int mark)</span><br><span> {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX) &amp;&amp; HAVE_DECL_S=
+O_MARK</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(T=
+ARGET_LINUX)</span><br><span>     if (mark &amp;&amp; setsockopt(sd, SOL_SO=
+CKET, SO_MARK, (void *)&amp;mark, sizeof(mark)) !=3D 0)</span><br><span>   =
+  {</span><br><span>         msg(M_WARN, &quot;NOTE: setsockopt SO_MARK=3D%=
+d failed&quot;, mark);</span><br><span>diff --git a/src/openvpn/syshead.h b=
+/src/openvpn/syshead.h</span><br><span>index 90045a9..c6f2608 100644</span>=
+<br><span>--- a/src/openvpn/syshead.h</span><br><span>+++ b/src/openvpn/sys=
+head.h</span><br><span>@@ -185,26 +185,19 @@</span><br><span> </span><br><s=
+pan> #if defined(TARGET_LINUX) || defined(TARGET_ANDROID)</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE_LINUX_IF_=
+TUN_H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;lin=
+ux/if_tun.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#def=
+ine EXTENDED_SOCKET_ERROR_CAPABILITY 1</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#ifdef TARGET_LINUX</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#define ENABLE_FEATURE_TUN_PERSIST</span><br><span> #endif</span><br><span>=
+ </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;linux=
+/if_tun.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inclu=
+de &lt;linux/sockios.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span> #ifdef HAVE_NETINET_IP_H</span><br><span> #include=
+ &lt;netinet/ip.h&gt;</span><br><span> #endif</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE_LINUX_SOCKIOS_H</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;linux/sockios.=
 h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef HAVE_N=
-ETINET_TCP_H</span><br><span> #include &lt;netinet/tcp.h&gt;</span><br><spa=
-n> #endif</span><br><span>@@ -361,15 +354,6 @@</span><br><span> #endif</spa=
-n><br><span> </span><br><span> /*</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * Do we have the capability to report extended socket errors?<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#if defined(HAVE_LINUX_TYPES_H) &amp;&am=
-p; defined(HAVE_LINUX_ERRQUEUE_H)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#define EXTENDED_SOCKET_ERROR_CAPABILITY 1</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#define EXTENDED_SOCKET_ERROR_CAPABILITY 0</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-/*</span><br><span>  * Does this platform support linux-style IP_PKTINFO<=
-/span><br><span>  * or bsd-style IP_RECVDSTADDR ?</span><br><span>  */</spa=
-n><br><span>@@ -397,14 +381,6 @@</span><br><span> #endif</span><br><span> <=
-/span><br><span> /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
- Disable ESEC</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if 0</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#undef EXTENDED_SOCKET_ERROR_CAPABILITY</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define EXTENDED_SOCKET_=
-ERROR_CAPABILITY 0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
-dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span>  * Do we have a sys=
-log capability?</span><br><span>  */</span><br><span> #if defined(HAVE_OPEN=
-LOG) &amp;&amp; defined(HAVE_SYSLOG)</span><br><span>diff --git a/src/openv=
-pn/tun.c b/src/openvpn/tun.c</span><br><span>index 06b7ae5..7c61dcf 100644<=
-/span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/t=
-un.c</span><br><span>@@ -2055,10 +2055,6 @@</span><br><span> </span><br><sp=
-an> #elif defined(TARGET_LINUX)</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#ifndef HAVE_LINUX_SOCKIOS_H</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#error header file linux/sockios.h requi=
-red</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #if !PEDANTIC</=
-span><br><span> </span><br><span> void</span><br><span>@@ -2186,11 +2182,6 =
-@@</span><br><span> </span><br><span> #ifdef ENABLE_FEATURE_TUN_PERSIST</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* TUNS=
-ETGROUP appeared in 2.6.23 */</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#ifndef TUNSETGROUP</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#define TUNSETGROUP _IOW(&#39;T&#39;, 206, int)</span><br><span style=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#ifdef HAVE_LINUX_TYPES_H</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#include &lt;linux/types.h&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#ifdef HAVE_LINUX_ERRQUEUE_H</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#include &lt;linux/errqueue.h&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span> #ifdef HAVE_NETINET_TCP_H</span><br><span> #include &=
+lt;netinet/tcp.h&gt;</span><br><span> #endif</span><br><span>@@ -361,15 +35=
+4,6 @@</span><br><span> #endif</span><br><span> </span><br><span> /*</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- * Do we have the capability=
+ to report extended socket errors?</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if d=
+efined(HAVE_LINUX_TYPES_H) &amp;&amp; defined(HAVE_LINUX_ERRQUEUE_H)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#define EXTENDED_SOCKET_ERRO=
+R_CAPABILITY 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define EXTENDED_SOCKET=
+_ERROR_CAPABILITY 0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
+ndif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span>  * Does this platf=
+orm support linux-style IP_PKTINFO</span><br><span>  * or bsd-style IP_RECV=
+DSTADDR ?</span><br><span>  */</span><br><span>@@ -397,14 +381,6 @@</span><=
+br><span> #endif</span><br><span> </span><br><span> /*</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">- * Disable ESEC</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#if 0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#undef =
+EXTENDED_SOCKET_ERROR_CAPABILITY</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#define EXTENDED_SOCKET_ERROR_CAPABILITY 0</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> void</span><br><span> tuncfg(const char =
-*dev, const char *dev_type, const char *dev_node, int persist_mode,</span><=
-br><span>        const char *username, const char *groupname, const struct =
-tuntap_options *options,</span><br><span>diff --git a/src/openvpn/tun.h b/s=
-rc/openvpn/tun.h</span><br><span>index e13f99f..876f147 100644</span><br><s=
-pan>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.h</span><=
-br><span>@@ -278,9 +278,11 @@</span><br><span> </span><br><span> int read_t=
-un(struct tuntap *tt, uint8_t *buf, int len);</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_FEATURE_TUN_PERSI=
-ST</span><br><span> void tuncfg(const char *dev, const char *dev_type, cons=
-t char *dev_node, int persist_mode,</span><br><span>             const char=
- *username, const char *groupname, const struct tuntap_options *options,</s=
-pan><br><span>             openvpn_net_ctx_t *ctx);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span>=
- const char *guess_tuntap_dev(const char *dev, const char *dev_type, const =
-char *dev_node,</span><br><span>                              struct gc_are=
-na *gc);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail">change 1408</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1408?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</=
+span><br><span>  * Do we have a syslog capability?</span><br><span>  */</sp=
+an><br><span> #if defined(HAVE_OPENLOG) &amp;&amp; defined(HAVE_SYSLOG)</sp=
+an><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><=
+span>index 06b7ae5..7c61dcf 100644</span><br><span>--- a/src/openvpn/tun.c<=
+/span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -2055,10 +2055,6=
+ @@</span><br><span> </span><br><span> #elif defined(TARGET_LINUX)</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef HAVE=
+_LINUX_SOCKIOS_H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#erro=
+r header file linux/sockios.h required</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span> #if !PEDANTIC</span><br><span> </span><br><span> void</=
+span><br><span>@@ -2186,11 +2182,6 @@</span><br><span> </span><br><span> #i=
+fdef ENABLE_FEATURE_TUN_PERSIST</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-/* TUNSETGROUP appeared in 2.6.23 */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#ifndef TUNSETGROUP</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#define TUNSETGROUP _IOW(&#39;T&#3=
+9;, 206, int)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void<=
+/span><br><span> tuncfg(const char *dev, const char *dev_type, const char *=
+dev_node, int persist_mode,</span><br><span>        const char *username, c=
+onst char *groupname, const struct tuntap_options *options,</span><br><span=
+>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br><span>index e=
+13f99f..876f147 100644</span><br><span>--- a/src/openvpn/tun.h</span><br><s=
+pan>+++ b/src/openvpn/tun.h</span><br><span>@@ -278,9 +278,11 @@</span><br>=
+<span> </span><br><span> int read_tun(struct tuntap *tt, uint8_t *buf, int =
+len);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#ifdef ENABLE_FEATURE_TUN_PERSIST</span><br><span> void tuncfg(const ch=
+ar *dev, const char *dev_type, const char *dev_node, int persist_mode,</spa=
+n><br><span>             const char *username, const char *groupname, const=
+ struct tuntap_options *options,</span><br><span>             openvpn_net_c=
+tx_t *ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</=
+span><br><span> </span><br><span> const char *guess_tuntap_dev(const char *=
+dev, const char *dev_type, const char *dev_node,</span><br><span>          =
+                    struct gc_arena *gc);</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1408?usp=
+=3Demail">change 1408</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1408?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ie460eec488a8781e3b1ee4f8b2a=
@@ -703,5 +695,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---+4C51uQEC6A=--
+--aKNxG7U+SAo=--
 
