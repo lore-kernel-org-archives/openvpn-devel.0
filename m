@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Nov 2025 11:59:50 +0000
-In-Reply-To: <gerrit.1763838359000.I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b@...2715...>
-References: <gerrit.1763838359000.I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b@...2715...>
+Date: Thu, 27 Nov 2025 12:04:29 +0000
+In-Reply-To: <gerrit.1764239370000.Ib15bd4148872db39a4c8291796a5da211bb20a87@...2715...>
+References: <gerrit.1764239370000.Ib15bd4148872db39a4c8291796a5da211bb20a87@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <c2ccbbea7df620c8a5b798cd0c3c0be6695b621a-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5f2f5686995f421d0254cb390f5c0ddde512c8d1-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="SC7Us/3elp8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]:
- extract_x509_field_ssl(): verify that X509_NAME is not NULL.
+Content-Type: multipart/alternative; boundary="0gYfhubJj+k="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove remainders
+ of --no-name-remapping option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,218 +19,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---SC7Us/3elp8=
+--0gYfhubJj+k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello ordex, plaisthos,
+Hello flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail
 
-to look at the new patch set (#3).
+to look at the new patch set (#2).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by ordex
+Code-Review+2 by flichtenheld
 
 
-Change subject: extract_x509_field_ssl(): verify that X509_NAME is not NULL.
+Change subject: Remove remainders of --no-name-remapping option
 ......................................................................
 
-extract_x509_field_ssl(): verify that X509_NAME is not NULL.
+Remove remainders of --no-name-remapping option
 
-This seems to be unlikely to ever happen, but this check won't harm
-- as a matter of coding convention, we do not ensure this inside
-extract_x509_field_ssl(), but in the (single) caller.
+This option was removed in 2.5 (commit c3f565f059) but still showed
+up in the ``openvpn --help`` text and in a Q&A section of the man page.
 
-While at it, fix pre-C99 local-variable indent block, and missing {}
-block in else/#endif construction.
-
-Reported-By: Joshua Rogers <contact@...2949...>
-Found-by: ZeroPath (https://zeropath.com/)
-
-Change-Id: I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b
+Change-Id: Ib15bd4148872db39a4c8291796a5da211bb20a87
 Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1388
-Message-Id: <20251127113517.1352-1-gert@...1296...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1411
+Message-Id: <20251127115737.3598-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-748.html
+754.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/ssl_verify_openssl.c
-1 file changed, 14 insertions(+), 7 deletions(-)
+M doc/man-sections/script-options.rst
+M src/openvpn/options.c
+2 files changed, 2 insertions(+), 4 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1388/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/1411/2
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 40d117b..6cb04ee 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -202,8 +202,8 @@
-     X509_NAME_ENTRY *x509ne =3D NULL;
-     ASN1_STRING *asn1 =3D NULL;
-     unsigned char *buf =3D NULL;
--    ASN1_OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
+options.rst
+index 670cd33..cadd464 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -571,8 +571,8 @@
+     a filename, etc.
 
-+    ASN1_OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);
-     if (field_name_obj =3D=3D NULL)
-     {
-         msg(D_TLS_ERRORS, "Invalid X509 attribute name '%s'", field_name);
-@@ -244,11 +244,9 @@
+ *Q: Can string remapping be disabled?*
+-    Yes, by using the ``--no-name-remapping`` option, however this
+-    should be considered an advanced option.
++    No.  The options ``--no-name-remapping`` and ``--compat-names`` have
++    been removed in 2.5 because they were considered too insecure.
 
-     strncpynt(out, (char *)buf, size);
-
--    {
--        const result_t ret =3D (strlen((char *)buf) < size) ? SUCCESS : FA=
-ILURE;
--        OPENSSL_free(buf);
--        return ret;
--    }
-+    const result_t ret =3D (strlen((char *)buf) < size) ? SUCCESS : FAILUR=
-E;
-+    OPENSSL_free(buf);
-+    return ret;
- }
-
- result_t
-@@ -278,12 +276,21 @@
-     }
-     else
- #endif /* ifdef ENABLE_X509ALTUSERNAME */
-+    {
-+        X509_NAME *x509_subject_name =3D X509_get_subject_name(peer_cert);
-+        if (x509_subject_name =3D=3D NULL)
-+        {
-+            msg(D_TLS_ERRORS, "X509 subject name is NULL");
-+            return FAILURE;
-+        }
-+
-         if (FAILURE
--            =3D=3D extract_x509_field_ssl(X509_get_subject_name(peer_cert)=
-, x509_username_field,
-+            =3D=3D extract_x509_field_ssl(x509_subject_name, x509_username=
-_field,
-                                       common_name, cn_len))
-         {
-             return FAILURE;
-         }
-+    }
-
-     return SUCCESS;
- }
+ Here is a brief rundown of OpenVPN's current string types and the
+ permitted character class for each string:
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 5e73196..a3fc19d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -474,8 +474,6 @@
+     "                  for generated tokens can be set.\n"
+     "--auth-user-pass-optional : Allow connections by clients that don't\n"
+     "                  specify a username/password.\n"
+-    "--no-name-remapping : (DEPRECATED) Allow Common Name and X509 Subject=
+ to include\n"
+-    "                      any printable character.\n"
+     "--client-to-client : Internally route client-to-client traffic.\n"
+     "--duplicate-cn  : Allow multiple clients with the same common name to=
+\n"
+     "                  concurrently connect.\n"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b
-Gerrit-Change-Number: 1388
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: Ib15bd4148872db39a4c8291796a5da211bb20a87
+Gerrit-Change-Number: 1411
+Gerrit-PatchSet: 2
 Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---SC7Us/3elp8=
+--0gYfhubJj+k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to this change.</p><p><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1388?usp=3Demail">View Change</a></p><p>The followi=
+oaded patch set #2</strong> to this change.</p><p><a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1411?usp=3Demail">View Change</a></p><p>The followi=
 ng approvals got outdated and were removed:
-Code-Review+2 by ordex</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">extract_x509_field_ssl(): verify th=
-at X509_NAME is not NULL.<br><br>This seems to be unlikely to ever happen, =
-but this check won&#39;t harm<br>- as a matter of coding convention, we do =
-not ensure this inside<br>extract_x509_field_ssl(), but in the (single) cal=
-ler.<br><br>While at it, fix pre-C99 local-variable indent block, and missi=
-ng {}<br>block in else/#endif construction.<br><br>Reported-By: Joshua Roge=
-rs &lt;contact@...2949...&gt;<br>Found-by: ZeroPath (https://zeropath.com/)=
-<br><br>Change-Id: I1e9c7eee06bf5f2e8aed8cd2523684539294ac8b<br>Signed-off-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by: Antonio Quartulli &lt=
-;antonio@...2726...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn=
-/+/1388<br>Message-Id: &lt;20251127113517.1352-1-gert@...1296...&gt;<br>URL=
-: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34748=
-.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
-c/openvpn/ssl_verify_openssl.c<br>1 file changed, 14 insertions(+), 7 delet=
-ions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
-openvpn refs/changes/88/1388/3</pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify_=
-openssl.c b/src/openvpn/ssl_verify_openssl.c</span><br><span>index 40d117b.=
-.6cb04ee 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</spa=
-n><br><span>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -202,=
-8 +202,8 @@</span><br><span>     X509_NAME_ENTRY *x509ne =3D NULL;</span><b=
-r><span>     ASN1_STRING *asn1 =3D NULL;</span><br><span>     unsigned char=
- *buf =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    AS=
-N1_OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);</span><br><span> =
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASN1_OBJECT *fi=
-eld_name_obj =3D OBJ_txt2obj(field_name, 0);</span><br><span>     if (field=
-_name_obj =3D=3D NULL)</span><br><span>     {</span><br><span>         msg(=
-D_TLS_ERRORS, &quot;Invalid X509 attribute name &#39;%s&#39;&quot;, field_n=
-ame);</span><br><span>@@ -244,11 +244,9 @@</span><br><span> </span><br><spa=
-n>     strncpynt(out, (char *)buf, size);</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        const result_t ret =3D (strlen((char *)buf) &=
-lt; size) ? SUCCESS : FAILURE;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        OPENSSL_free(buf);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        return ret;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  const result_t ret =3D (strlen((char *)buf) &lt; size) ? SUCCESS : FAILUR=
-E;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OPENSSL_free(=
-buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret=
-;</span><br><span> }</span><br><span> </span><br><span> result_t</span><br>=
-<span>@@ -278,12 +276,21 @@</span><br><span>     }</span><br><span>     els=
-e</span><br><span> #endif /* ifdef ENABLE_X509ALTUSERNAME */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        X509_NAME *x509_subject_name =3D X509_ge=
-t_subject_name(peer_cert);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        if (x509_subject_name =3D=3D NULL)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            msg(D_TLS_ERRORS, &quot;X509 subject name i=
-s NULL&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       return FAILURE;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span>         if (FAILURE</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            =3D=3D extract_x509_field_ssl(X509_get_subject_name(pe=
-er_cert), x509_username_field,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            =3D=3D extract_x509_field_ssl(x509_subject_name, x50=
-9_username_field,</span><br><span>                                       co=
-mmon_name, cn_len))</span><br><span>         {</span><br><span>            =
- return FAILURE;</span><br><span>         }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>     return=
- SUCCESS;</span><br><span> }</span><br><span></span><br></pre><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail">cha=
-nge 1388</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1388?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Remove remainders of --no-na=
+me-remapping option<br><br>This option was removed in 2.5 (commit c3f565f05=
+9) but still showed<br>up in the ``openvpn --help`` text and in a Q&amp;A s=
+ection of the man page.<br><br>Change-Id: Ib15bd4148872db39a4c8291796a5da21=
+1bb20a87<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by=
+: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Gerrit URL: https://gerrit.=
+openvpn.net/c/openvpn/+/1411<br>Message-Id: &lt;20251127115737.3598-1-gert@=
+...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1885...=
+rceforge.net/msg34754.html<br>Signed-off-by: Gert Doering &lt;gert@...1725...=
+..&gt;<br>---<br>M doc/man-sections/script-options.rst<br>M src/openvpn/opt=
+ions.c<br>2 files changed, 2 insertions(+), 4 deletions(-)<br><br></pre><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/=
+1411/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/doc/man-sections/script-options.rst b/doc/man-s=
+ections/script-options.rst</span><br><span>index 670cd33..cadd464 100644</s=
+pan><br><span>--- a/doc/man-sections/script-options.rst</span><br><span>+++=
+ b/doc/man-sections/script-options.rst</span><br><span>@@ -571,8 +571,8 @@<=
+/span><br><span>     a filename, etc.</span><br><span> </span><br><span> *Q=
+: Can string remapping be disabled?*</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    Yes, by using the ``--no-name-remapping`` option, howeve=
+r this</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    should be c=
+onsidered an advanced option.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    No.  The options ``--no-name-remapping`` and ``--compat-names=
+`` have</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    been rem=
+oved in 2.5 because they were considered too insecure.</span><br><span> </s=
+pan><br><span> Here is a brief rundown of OpenVPN&#39;s current string type=
+s and the</span><br><span> permitted character class for each string:</span=
+><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span=
+><br><span>index 5e73196..a3fc19d 100644</span><br><span>--- a/src/openvpn/=
+options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -4=
+74,8 +474,6 @@</span><br><span>     &quot;                  for generated t=
+okens can be set.\n&quot;</span><br><span>     &quot;--auth-user-pass-optio=
+nal : Allow connections by clients that don&#39;t\n&quot;</span><br><span> =
+    &quot;                  specify a username/password.\n&quot;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &quot;--no-name-remapping : =
+(DEPRECATED) Allow Common Name and X509 Subject to include\n&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;                    =
+  any printable character.\n&quot;</span><br><span>     &quot;--client-to-c=
+lient : Internally route client-to-client traffic.\n&quot;</span><br><span>=
+     &quot;--duplicate-cn  : Allow multiple clients with the same common na=
+me to\n&quot;</span><br><span>     &quot;                  concurrently con=
+nect.\n&quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail">change 1411</a>. T=
+o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
+rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
+type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
+itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1411?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1e9c7eee06bf5f2e8aed8cd2523=
-684539294ac8b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1388 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib15bd4148872db39a4c8291796a=
+5da211bb20a87 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1411 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
 div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -238,5 +188,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---SC7Us/3elp8=--
+--0gYfhubJj+k=--
 
