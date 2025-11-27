@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 27 Nov 2025 10:53:31 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 27 Nov 2025 11:53:37 +0100
+Message-ID: <20251127105343.30723-1-gert@...1296...>
 In-Reply-To: <gerrit.1764176048000.I0da2cc8bbe9e394d1bb55cff496ea3e11584ca20@...2715...>
 References: <gerrit.1764176048000.I0da2cc8bbe9e394d1bb55cff496ea3e11584ca20@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cd5a1c31abad86ea413a3fa9e419e465f2c2edb9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PkDSK6WFM4o="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure/CMake:
- Remove unused checks
+Subject: [Openvpn-devel] [PATCH v2] configure/CMake: Remove unused checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---PkDSK6WFM4o=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Do not run configure checks that we do not
+actually need.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1409?usp=3Demail )
+But add one missing check in CMake for strsep!
 
-Change subject: configure/CMake: Remove unused checks
-......................................................................
+Change-Id: I0da2cc8bbe9e394d1bb55cff496ea3e11584ca20
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1409
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1409
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1409?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0da2cc8bbe9e394d1bb55cff496ea3e11584ca20
-Gerrit-Change-Number: 1409
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 27 Nov 2025 10:53:31 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---PkDSK6WFM4o=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1409?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1409?usp=3Demail=
-">change 1409</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1409?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0da2cc8bbe9e394d1bb55cff496=
-ea3e11584ca20 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1409 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Nov 2025 10:53:31=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---PkDSK6WFM4o=--
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c4d50e4..f101a1b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -240,6 +240,7 @@
+ 
+ check_symbol_exists(chsize io.h HAVE_CHSIZE)
+ check_symbol_exists(getrlimit sys/resource.h HAVE_GETRLIMIT)
++check_symbol_exists(strsep string.h HAVE_STRSEP)
+ 
+ # Some OS (e.g. FreeBSD) need some basic headers to allow
+ # including network headers
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index bf1899c..f68ea27 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -281,9 +281,6 @@
+ /* Define to 1 if you have the <syslog.h> header file. */
+ #cmakedefine HAVE_SYSLOG_H
+ 
+-/* Define to 1 if you have the `system' function. */
+-#undef HAVE_SYSTEM
+-
+ /* Define to 1 if you have the <systemd/sd-daemon.h> header file. */
+ #undef HAVE_SYSTEMD_SD_DAEMON_H
+ 
+@@ -332,12 +329,6 @@
+ /* Define to 1 if you have the <tap-windows.h> header file. */
+ #undef HAVE_TAP_WINDOWS_H
+ 
+-/* Define to 1 if you have the `time' function. */
+-#define HAVE_TIME 1
+-
+-/* Define to 1 if you have the <time.h> header file. */
+-#define HAVE_TIME_H 1
+-
+ /* Define to 1 if you have the <uapi.h> header file. */
+ #undef HAVE_UAPI_H
+ 
+@@ -347,12 +338,6 @@
+ /* Define to 1 if you have the <valgrind/memcheck.h> header file. */
+ #undef HAVE_VALGRIND_MEMCHECK_H
+ 
+-/* Define to 1 if you have the `vfork' function. */
+-#undef HAVE_VFORK
+-
+-/* Define to 1 if you have the <vfork.h> header file. */
+-#undef HAVE_VFORK_H
+-
+ /* Availability of different mbed TLS features and APIs */
+ #cmakedefine HAVE_PSA_CRYPTO_H
+ #cmakedefine HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
+diff --git a/configure.ac b/configure.ac
+index 030f8de..60799e0 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -475,13 +475,7 @@
+ )
+ 
+ AC_C_INLINE
+-AC_TYPE_OFF_T
+-AC_TYPE_PID_T
+-AC_TYPE_SIZE_T
+-AC_TYPE_UID_T
+ AX_TYPE_SOCKLEN_T
+-AC_CHECK_SIZEOF([unsigned int])
+-AC_CHECK_SIZEOF([unsigned long])
+ AC_CHECK_HEADERS([ \
+ 	fcntl.h io.h \
+ 	sys/types.h sys/socket.h \
+@@ -492,7 +486,7 @@
+ AC_CHECK_HEADERS([ \
+ 	sys/time.h sys/ioctl.h sys/stat.h \
+ 	sys/mman.h sys/file.h sys/wait.h \
+-	unistd.h libgen.h stropts.h \
++	libgen.h stropts.h \
+ 	syslog.h pwd.h grp.h termios.h \
+ 	sys/sockio.h sys/uio.h \
+ 	poll.h sys/epoll.h err.h \
+@@ -546,12 +540,6 @@
+ 	[[${SOCKET_INCLUDES}]]
+ )
+ AC_CHECK_TYPE(
+-	[struct iphdr],
+-	[AC_DEFINE([HAVE_IPHDR], [1], [struct iphdr needed for IPv6 support])],
+-	,
+-	[[${SOCKET_INCLUDES}]]
+-)
+-AC_CHECK_TYPE(
+ 	[struct msghdr],
+ 	[AC_DEFINE([HAVE_MSGHDR], [1], [struct msghdr needed for extended socket error support])],
+ 	,
+@@ -657,11 +645,11 @@
+ AC_FUNC_FORK
+ 
+ AC_CHECK_FUNCS([ \
+-	daemon chroot getpwnam setuid nice system dup dup2 \
++	daemon chroot getpwnam setuid nice dup dup2 \
+ 	syslog openlog mlockall getrlimit getgrnam setgid \
+-	setgroups flock time gettimeofday \
++	setgroups flock gettimeofday \
+ 	setsid chdir \
+-	chsize ftruncate execve getpeereid basename dirname access \
++	chsize ftruncate execve getpeereid basename dirname \
+ 	epoll_create strsep \
+ ])
+ 
 
