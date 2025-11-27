@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 27 Nov 2025 18:35:39 +0100
-Message-ID: <20251127173544.31555-1-gert@...1296...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 27 Nov 2025 21:49:58 +0000
 In-Reply-To: <gerrit.1764062094000.Iefc251cb4483c0b9fb9d6a5207db4445cd884d52@...2715...>
 References: <gerrit.1764062094000.Iefc251cb4483c0b9fb9d6a5207db4445cd884d52@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, ralf@...2726...
+Message-ID: <107eccb1d270a8eadcb6e26b5bf9d6fdb7b650b4-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] dco: process messages immediately after
- read
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="bLyPJpx/HUw="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: process
+ messages immediately after read
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,344 +19,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Ralf Lici <ralf@...2726...>
+--bLyPJpx/HUw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Currently, reading and processing of incoming DCO messages are
-decoupled: notifications are read, parsed, and the relevant information
-is stored in fields of dco_context_t for later processing (with the only
-exception being stats). This approach is problematic on Linux, since
-libnl does not allow reading a single netlink message at a time, which
-can result in loss of information when multiple notifications are
-available.
+Attention is currently required from: plaisthos, ralf_lici.
 
-This change adopts a read -> parse -> process paradigm. On Linux,
-processing is now invoked directly from within the parsing callback,
-which libnl calls for each received netlink packet. The other interfaces
-are adapted accordingly to unify the processing model across all
-platforms.
+cron2 has posted comments on this change by ralf_lici. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1403?usp=3Demail )
 
-Reported-by: Stefan Baranoff <stefan.baranoff@...2970...>
-Change-Id: Iefc251cb4483c0b9fb9d6a5207db4445cd884d52
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1403
----
+The change is no longer submittable: Code-Review is unsatisfied now.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: dco: process messages immediately after read
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1403
-This mail reflects revision 6 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 6: Code-Review-2
 
-        
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index e5e8709..cd6e32a 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -127,12 +127,13 @@
- void close_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx);
- 
- /**
-- * Read data from the DCO communication channel (i.e. a control packet)
-+ * Read and process data from the DCO communication channel
-+ * (i.e. a control packet)
-  *
-  * @param dco       the DCO context
-  * @return          0 on success or a negative error code otherwise
-  */
--int dco_do_read(dco_context_t *dco);
-+int dco_read_and_process(dco_context_t *dco);
- 
- /**
-  * Install a DCO in the main event loop
-@@ -305,7 +306,7 @@
- }
- 
- static inline int
--dco_do_read(dco_context_t *dco)
-+dco_read_and_process(dco_context_t *dco)
- {
-     ASSERT(false);
-     return 0;
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index f2a89ac..25deafe 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -578,7 +578,7 @@
- }
- 
- int
--dco_do_read(dco_context_t *dco)
-+dco_read_and_process(dco_context_t *dco)
- {
-     struct ifdrv drv;
-     uint8_t buf[4096];
-@@ -689,6 +689,15 @@
- 
-     nvlist_destroy(nvl);
- 
-+    if (dco->c->mode == CM_TOP)
-+    {
-+        multi_process_incoming_dco(dco);
-+    }
-+    else
-+    {
-+        process_incoming_dco(dco);
-+    }
-+
-     return 0;
- }
- 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 0ae30b1..7c55f98 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -1094,29 +1094,34 @@
-      * message, that stores the type-specific attributes.
-      *
-      * the "dco" object is then filled accordingly with the information
--     * retrieved from the message, so that the rest of the OpenVPN code can
--     * react as need be.
-+     * retrieved from the message, so that *process_incoming_dco can react
-+     * as need be.
-      */
-+    int ret;
-     switch (gnlh->cmd)
-     {
-         case OVPN_CMD_PEER_GET:
-         {
--            return ovpn_handle_peer(dco, attrs);
-+            ret = ovpn_handle_peer(dco, attrs);
-+            break;
-         }
- 
-         case OVPN_CMD_PEER_DEL_NTF:
-         {
--            return ovpn_handle_peer_del_ntf(dco, attrs);
-+            ret = ovpn_handle_peer_del_ntf(dco, attrs);
-+            break;
-         }
- 
-         case OVPN_CMD_PEER_FLOAT_NTF:
-         {
--            return ovpn_handle_peer_float_ntf(dco, attrs);
-+            ret = ovpn_handle_peer_float_ntf(dco, attrs);
-+            break;
-         }
- 
-         case OVPN_CMD_KEY_SWAP_NTF:
-         {
--            return ovpn_handle_key_swap_ntf(dco, attrs);
-+            ret = ovpn_handle_key_swap_ntf(dco, attrs);
-+            break;
-         }
- 
-         default:
-@@ -1125,11 +1130,25 @@
-             return NL_STOP;
-     }
- 
-+    if (ret != NL_OK)
-+    {
-+        return ret;
-+    }
-+
-+    if (dco->c->mode == CM_TOP)
-+    {
-+        multi_process_incoming_dco(dco);
-+    }
-+    else
-+    {
-+        process_incoming_dco(dco);
-+    }
-+
-     return NL_OK;
- }
- 
- int
--dco_do_read(dco_context_t *dco)
-+dco_read_and_process(dco_context_t *dco)
- {
-     msg(D_DCO_DEBUG, __func__);
- 
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index ca5eedf..94f043f 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -690,7 +690,7 @@
- }
- 
- int
--dco_do_read(dco_context_t *dco)
-+dco_read_and_process(dco_context_t *dco)
- {
-     if (dco->ifmode != DCO_MODE_MP)
-     {
-@@ -727,6 +727,15 @@
-             break;
-     }
- 
-+    if (dco->c->mode == CM_TOP)
-+    {
-+        multi_process_incoming_dco(dco);
-+    }
-+    else
-+    {
-+        process_incoming_dco(dco);
-+    }
-+
-     return 0;
- }
- 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index ccb8404..1a68af4 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1243,19 +1243,11 @@
-     }
- }
- 
--static void
--process_incoming_dco(struct context *c)
-+void
-+process_incoming_dco(dco_context_t *dco)
- {
- #if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
--    dco_context_t *dco = &c->c1.tuntap->dco;
--
--    dco_do_read(dco);
--
--    /* no message for us to handle - platform specific code has logged details */
--    if (dco->dco_message_type == 0)
--    {
--        return;
--    }
-+    struct context *c = dco->c;
- 
-     /* FreeBSD currently sends us removal notifcation with the old peer-id in
-      * p2p mode with the ping timeout reason, so ignore that one to not shoot
-@@ -2369,7 +2361,7 @@
-     {
-         if (!IS_SIG(c))
-         {
--            process_incoming_dco(c);
-+            dco_read_and_process(&c->c1.tuntap->dco);
-         }
-     }
- }
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index a575faf..9e9b02e 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -210,6 +210,13 @@
-                                  const struct sockaddr *float_sa);
- 
- /**
-+ * Process an incoming DCO message (from kernel space).
-+ *
-+ * @param dco - Pointer to the structure representing the DCO context.
-+ */
-+void process_incoming_dco(dco_context_t *dco);
-+
-+/**
-  * Write a packet to the external network interface.
-  * @ingroup external_multiplexer
-  *
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 2b944667..153695c 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3263,14 +3263,12 @@
-     multi_signal_instance(m, mi, SIGTERM);
- }
- 
--bool
--multi_process_incoming_dco(struct multi_context *m)
-+void
-+multi_process_incoming_dco(dco_context_t *dco)
- {
--    dco_context_t *dco = &m->top.c1.tuntap->dco;
-+    ASSERT(dco->c->multi);
- 
--    struct multi_instance *mi = NULL;
--
--    int ret = dco_do_read(&m->top.c1.tuntap->dco);
-+    struct multi_context *m = dco->c->multi;
- 
-     int peer_id = dco->dco_message_peer_id;
- 
-@@ -3279,12 +3277,12 @@
-      */
-     if (peer_id < 0)
-     {
--        return ret > 0;
-+        return;
-     }
- 
-     if ((peer_id < m->max_clients) && (m->instances[peer_id]))
-     {
--        mi = m->instances[peer_id];
-+        struct multi_instance *mi = m->instances[peer_id];
-         set_prefix(mi);
-         if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
-         {
-@@ -3325,11 +3323,6 @@
-             "type %d, del_peer_reason %d",
-             peer_id, dco->dco_message_type, dco->dco_del_peer_reason);
-     }
--
--    dco->dco_message_type = 0;
--    dco->dco_message_peer_id = -1;
--    dco->dco_del_peer_reason = -1;
--    return ret > 0;
- }
- #endif /* if defined(ENABLE_DCO) */
- 
-@@ -4462,4 +4455,4 @@
- 
-     return (!ipv6_net_contains_host(&ifconfig_local, o->ifconfig_ipv6_netbits,
-                                     dest));
--}
-\ No newline at end of file
-+}
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index a62b07a..a44f9f2 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -305,13 +305,9 @@
- /**
-  * Process an incoming DCO message (from kernel space).
-  *
-- * @param m            - The single \c multi_context structure.
-- *
-- * @return
-- *  - True, if the message was received correctly.
-- *  - False, if there was an error while reading the message.
-+ * @param dco - Pointer to the structure representing the DCO context.
-  */
--bool multi_process_incoming_dco(struct multi_context *m);
-+void multi_process_incoming_dco(dco_context_t *dco);
- 
- /**************************************************************************/
- /**
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index fe72456..997951e 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -505,7 +505,7 @@
-                 /* incoming data on DCO? */
-                 else if (e->arg == MULTI_IO_DCO)
-                 {
--                    multi_process_incoming_dco(m);
-+                    dco_read_and_process(&m->top.c1.tuntap->dco);
-                 }
- #endif
-                 /* signal received? */
+(1 comment)
+
+Patchset:
+
+PS6:
+Back to the drawing board - see GH issue #918.
+
+With this, we end up overflowing "something in libnl", and with sufficient =
+clients that all exit at the same time, the server exits with out of memory=
+ (in libnl).
+
+The underlying reason is dco_get_peer() being called from the call chain th=
+at follows multi_close_instance(), when called from dco_read_and_process(),=
+ and that clogs sitnl/netlink/something.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iefc251cb4483c0b9fb9d6a5207db4445cd884d52
+Gerrit-Change-Number: 1403
+Gerrit-PatchSet: 6
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Thu, 27 Nov 2025 21:49:58 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--bLyPJpx/HUw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos, ralf_lici. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p>The change is no longer submittable: Code-Review is unsatisfied now.=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1403?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Back to the=
+ drawing board - see GH issue #918.</p><p class=3D"blocks" style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">With this, we end up overflowing &q=
+uot;something in libnl&quot;, and with sufficient clients that all exit at =
+the same time, the server exits with out of memory (in libnl).</p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">The und=
+erlying reason is dco_get_peer() being called from the call chain that foll=
+ows multi_close_instance(), when called from dco_read_and_process(), and th=
+at clogs sitnl/netlink/something.</p></li></ul></li></ul><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail">change 1=
+403</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
+scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1403?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iefc251cb4483c0b9fb9d6a5207d=
+b4445cd884d52 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1403 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 27 Nov 2025 21:49:58=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--bLyPJpx/HUw=--
 
