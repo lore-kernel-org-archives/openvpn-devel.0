@@ -1,11 +1,10 @@
+Date: Mon, 1 Dec 2025 12:11:01 +0100 (CET)
+Message-Id: <202512011111.5B1BB1xM076924@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon,  1 Dec 2025 10:01:03 +0100
-Message-ID: <20251201090110.5487-1-gert@...1296...>
-In-Reply-To: <gerrit.1764370297000.Ic4e233c788b16a862c1fddcf314a3da661072fb5@...2715...>
-References: <gerrit.1764370297000.Ic4e233c788b16a862c1fddcf314a3da661072fb5@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Set UTF-8 as the codepage using manifest
- declaration
+In-Reply-To: <20251201090110.5487-1-gert@...1296...>
+References: <20251201090110.5487-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set UTF-8 as the codepage using
+ manifest declaration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+I have not tested it, nor fully read the documenation and the background
+info - but the explanation makes sense.  Since this does not affect code,
+all I tested was "does it still build?" - and it does (mingw).
 
-Works on Windows 10+. This ensures any UTF-8 string we pass to
-ANSI API will not get interpreted in some local code page
-in effect at runtime.
+I have added a reference to GH #920, as it seems we received multiple
+reports on this.
 
-Although we do not use any such API, OpenSSL dll we link to
-does (e.g., the store API used for reading certificate and
-key from files). OpenSSL may fix this in future versions,
-but this is an easy workaround that looks harmless and appropriate.
+Your patch has been applied to the master branch.
 
-Fixes failure to read certificates when filenames contain non-ascii
-characters reported by: Carsten Mietzsch <Carsten.Mietzsch@...2971...>
+commit bcc7fb2d626ac428401a7877a8cc0098999a077e
+Author: Selva Nair
+Date:   Mon Dec 1 10:01:03 2025 +0100
 
-Ref: https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
+     Set UTF-8 as the codepage using manifest declaration
 
-Change-Id: Ic4e233c788b16a862c1fddcf314a3da661072fb5
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Lev Stipakov <lstipakov@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1413
----
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1413
+     Message-Id: <20251201090110.5487-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34805.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1413
-This mail reflects revision 1 of this Change.
+--
+kind regards,
 
-Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@...277...>
+Gert Doering
 
-        
-diff --git a/src/openvpn/openvpn.manifest b/src/openvpn/openvpn.manifest
-index fa5b3d7..f964152 100644
---- a/src/openvpn/openvpn.manifest
-+++ b/src/openvpn/openvpn.manifest
-@@ -14,6 +14,11 @@
-             <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
-         </application>
-     </compatibility>
-+    <application>
-+        <windowsSettings>
-+            <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
-+        </windowsSettings>
-+    </application>
-     <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
-         <security>
-             <requestedPrivileges>
 
