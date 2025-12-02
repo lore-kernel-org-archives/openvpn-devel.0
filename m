@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 2 Dec 2025 17:03:54 +0000
+Date: Tue, 2 Dec 2025 17:05:11 +0000
 In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
 References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
 Reply-To: arne-openvpn@...1227..., gianmarco@...2726...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <99148851cafd2e9cada1aa78877ca477d6cc8a1d-EmailReviewComments-HTML@...2715...>
+Message-ID: <8feeb0a79b04819a5f428abcc80fb35cd6e9aba0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3WQnEV4Dong="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ohcmIIxcY1c="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: multipeer: introduce
  asymmetric peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: its_Giaan <gianmarco@...2726...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3WQnEV4Dong=
+--ohcmIIxcY1c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,17 +36,17 @@ Change subject: multipeer: introduce asymmetric peer-id
 ......................................................................
 
 
-Patch Set 8: Code-Review-2
+Patch Set 8:
 
 (1 comment)
 
 Patchset:
 
-PS2:=20
-> Before this can proceed anywhere, I need a clear description of the goals=
- and timeline - "is this fo [=E2=80=A6]
-This is to potentially allow two openvpn p2mp instances like two server tal=
-k to each other directly
+PS2:
+> This is to potentially allow two openvpn p2mp instances like two server t=
+alk to each other directly
+This is more 2.8 stuff but having this in 2.7 would not hurt and potiential=
+ly have a bigger compatibility for the multipeer scenarios.
 
 
 
@@ -69,38 +69,37 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 02 Dec 2025 17:03:54 +0000
+Gerrit-Comment-Date: Tue, 02 Dec 2025 17:05:11 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
 Comment-In-Reply-To: cron2 <gert@...1296...>
 
---3WQnEV4Dong=
+--ohcmIIxcY1c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: cron2, flichtenheld, its_Giaan. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1089?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-Before this can proceed anywhere, I need a clear description of the goals a=
-nd timeline - &quot;is this fo [=E2=80=A6]</blockquote></p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This is to pote=
-ntially allow two openvpn p2mp instances like two server talk to each other=
- directly</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1089?usp=3Demail">change 1089</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1089?usp=3Demail"/><meta itemprop=3D"name" content=3D=
-"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1089?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p><blockquote s=
+tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">This=
+ is to potentially allow two openvpn p2mp instances like two server talk to=
+ each other directly</blockquote></p><p class=3D"blocks" style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">This is more 2.8 stuff but having thi=
+s in 2.7 would not hurt and potientially have a bigger compatibility for th=
+e multipeer scenarios.</p></li></ul></li></ul><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">change 1089</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
+ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
+temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -125,14 +124,16 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 02 Dec 2025 17:03:54=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 02 Dec 2025 17:05:11=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
 &gt; </div>
 
 </body></html>=
 
---3WQnEV4Dong=--
+--ohcmIIxcY1c=--
 
