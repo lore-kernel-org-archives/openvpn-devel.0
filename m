@@ -1,11 +1,11 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  3 Dec 2025 13:57:34 +0100
-Message-ID: <20251203125741.29239-1-gert@...1296...>
-In-Reply-To: <gerrit.1757957943000.I34e6b680618a52003d8408852d415c8aeac01feb@...2715...>
-References: <gerrit.1757957943000.I34e6b680618a52003d8408852d415c8aeac01feb@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------8Ef74ENB0wBRqcGIRbCanHHT"
+Message-ID: <4dc3af9a-8a26-4321-829e-6172b1f8acc9@...2722...>
+Date: Wed, 3 Dec 2025 14:42:58 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Clarify some code in epoch with better
- comments
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +14,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+This is a multi-part message in MIME format.
+--------------8Ef74ENB0wBRqcGIRbCanHHT
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Change-Id: I34e6b680618a52003d8408852d415c8aeac01feb
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1190
----
+Meeting summary for 3 December 2025:
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+  *
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1190
-This mail reflects revision 2 of this Change.
+    *Updated: Release 2.7*
+    Release 2.7rc3 was released on 28 November and addresses a local DoS
+    in Windows interactive service.
+    This fix was also made available in a 2.6.17 release.
+    Note that for 2.5 branch we did put the fix in code but didn't build
+    a new Windows installer, as that branch is out of support.
+    We're pretty close to 2.7 being ready for a stable release.
+    Currently however the signing key we use for Windows builds is
+    expiring so we need to get a new one first.
+    Tentatively an rc4 will be coming on December 17. And followed by
+    stable tentatively on January 14.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+  *
 
-        
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 8049b3a..d6b8841 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -97,6 +97,12 @@
-         /* IV starts with packet id to make the IV unique for packet */
-         if (use_epoch_data_format)
-         {
-+            /* Note this does not check aead_usage_limit but can overstep it by
-+             * a few extra blocks in one extra write. This is not affecting the
-+             * security margin as these extra blocks are on a completely
-+             * different order of magnitude than the security margin.
-+             * The next iteration/call to epoch_check_send_iterate will
-+             * iterate the epoch */
-             if (!packet_id_write_epoch(&opt->packet_id.send, ctx->epoch, &iv_buffer))
-             {
-                 msg(D_CRYPT_ERRORS, "ENCRYPT ERROR: packet ID roll over");
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 72c6821..3842615 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -298,7 +298,7 @@
- 
-     /** last epoch_key used for generation of the current send data keys.
-      * As invariant, the epoch of epoch_key_send is always kept >= the epoch of
--     * epoch_key_recv */
-+     * key_ctx_bi.decrypt.epoch  */
-     struct epoch_key epoch_key_send;
- 
-     /** epoch_key used for the highest receive epoch keys */
-@@ -309,7 +309,7 @@
- 
-     /** The limit for AEAD cipher, this is the sum of packets + blocks
-      * that are allowed to be used. Will switch to a new epoch if this
--     * limit is reached*/
-+     * limit is reached. */
-     uint64_t aead_usage_limit;
- 
-     /** Keeps the future epoch data keys for decryption. The current one
+    *Updated: Release 2.6.17*
+    The same local DoS in Windows interactive service was also fixed in
+    2.6 and was released with 2.6.17.
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------8Ef74ENB0wBRqcGIRbCanHHT
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 3 December 2025:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Release 2.7rc3 was released on 28 November and addresses a
+          local DoS in Windows interactive service.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          This fix was also made available in a 2.6.17 release.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Note that for 2.5 branch we did put the fix in code but didn't
+          build a new Windows installer, as that branch is out of
+          support.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We're pretty close to 2.7 being ready for a stable release.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Currently however the signing key we use for Windows builds is
+          expiring so we need to get a new one first.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Tentatively an rc4 will be coming on December 17. And followed
+          by stable tentatively on January 14.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.6.17</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The same local DoS in Windows interactive service was also
+          fixed in 2.6 and was released with 2.6.17.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------8Ef74ENB0wBRqcGIRbCanHHT--
 
