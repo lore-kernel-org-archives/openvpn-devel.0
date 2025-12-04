@@ -1,16 +1,13 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 4 Dec 2025 14:00:35 +0000
-In-Reply-To: <gerrit.1764851842000.I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c@...2715...>
-References: <gerrit.1764851842000.I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <f9027340f8cca580253b4393733a81dd37a93a0d-HTML@...2715...>
+Date: Thu, 4 Dec 2025 15:17:17 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <aTGX7VVc7-vuxr-T@...1296...>
+References: <2021d22e93620793b0fd0e331878121c.20251129190809.1764439689@...2556...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="0YeYkLmfTfijIXss"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1wOLrUUZE7A="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add a section about
- wolfSSL GPLv3 and point out missing TLS PRF support
+In-Reply-To: <2021d22e93620793b0fd0e331878121c.20251129190809.1764439689@...2556...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.7_rc3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,142 +16,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Simon Matter <simon.matter@...2249...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---1wOLrUUZE7A=
-Content-Type: text/plain; charset="UTF-8"
+--0YeYkLmfTfijIXss
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
-16?usp=3Demail )
+Hi,
 
-Change subject: Add a section about wolfSSL GPLv3 and point out missing TLS=
- PRF support
-......................................................................
+On Sat, Nov 29, 2025 at 07:08:09PM +0100, Simon Matter via Openvpn-devel wr=
+ote:
+> The patch is attached to this email. Would be nice if it was considered.
 
-Add a section about wolfSSL GPLv3 and point out missing TLS PRF support
+I have turned this into a proper commit with all the extra references
+we want to have in our codebase.
 
-Change-Id: I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1416
-Message-Id: <20251204124221.15206-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-840.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M README.wolfssl
-1 file changed, 10 insertions(+), 0 deletions(-)
+commit 864aab8a6cb9c473629bab2b6d5d0338d2d64186 (HEAD -> master)
+Author: Simon Matter <simon.matter@...2249...>
+Date:   Thu Dec 4 15:05:27 2025 +0100
 
-
-
-
-diff --git a/README.wolfssl b/README.wolfssl
-index 3918d0f..3e531ae 100644
---- a/README.wolfssl
-+++ b/README.wolfssl
-@@ -28,7 +28,17 @@
-  * blowfish support (BF-CBC), you must use something like
-    cipher AES-128-CBC to avoid trying to use BF-CBC
-  * Windows CryptoAPI support
-+ * No TLS1.0 PRF support (No compaitbility with OpenVPN 2.5 or older or
-+   other build that do not support TLS EKM)
-
-+
-+*************************************************************************
-+Newer wolfSSL versions (5.8.2 and newer) are GPLv3 licensed and this licen=
-se is not
-+compatible with OpenVPN's GPLv2 license.
-+
-+However wolfSSL Inc has granted an exception to combine the wolfSSL library
-+with OpenVPN and OpenVPN-NL (https://github.com/wolfSSL/wolfssl/blob/maste=
-r/LICENSING)
-+with version 5.8.4 and later.
- *************************************************************************
- To build WolfSSL with post-quantum KEMs built in, the following command is=
- used:
+    Add CAP_SYS_NICE to the positive list in systemd service files
+=20=20=20=20
+    This is necessary to make the ``--nice n`` option work for OpenVPN
+    instances started by systemd.
+=20=20=20=20
+    Github: closes OpenVPN/openvpn#834
+=20=20=20=20
+    Signed-off-by: Simon Matter <simon.matter@...2249...>
+    Acked-By: Arne Schwabe <arne@...1227...>
+    Message-Id: <f58b64307a86c62cb20a142ebfb40e56.20251204111659.1764843419=
+@...2556...>
+    URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
+sg34803.html
+    Signed-off-by: Gert Doering <gert@...1296...>
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1416?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c
-Gerrit-Change-Number: 1416
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---1wOLrUUZE7A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1416?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Add a section about wolfSSL GPLv3 and point out =
-missing TLS PRF support<br><br>Change-Id: I4f9a6baf2bdb45e5b79bf13c9f6fce3b=
-7a2e982c<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by=
-: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvp=
-n.net/c/openvpn/+/1416<br>Message-Id: &lt;20251204124221.15206-1-gert@...1711...=
-96...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1357...=
-rge.net/msg34840.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt=
-;<br>---<br>M README.wolfssl<br>1 file changed, 10 insertions(+), 0 deletio=
-ns(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/README.wolfssl b/README.wolfssl</span><br><span>index 3918d=
-0f..3e531ae 100644</span><br><span>--- a/README.wolfssl</span><br><span>+++=
- b/README.wolfssl</span><br><span>@@ -28,7 +28,17 @@</span><br><span>  * bl=
-owfish support (BF-CBC), you must use something like</span><br><span>    ci=
-pher AES-128-CBC to avoid trying to use BF-CBC</span><br><span>  * Windows =
-CryptoAPI support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- No TLS1.0 PRF support (No compaitbility with OpenVPN 2.5 or older or</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+   other build that do no=
-t support TLS EKM)</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+**=
-***********************************************************************</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+Newer wolfSSL versions =
-(5.8.2 and newer) are GPLv3 licensed and this license is not</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+compatible with OpenVPN&#39;s GPLv=
-2 license.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+However wolfSSL Inc has gran=
-ted an exception to combine the wolfSSL library</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+with OpenVPN and OpenVPN-NL (https://github.com=
-/wolfSSL/wolfssl/blob/master/LICENSING)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+with version 5.8.4 and later.</span><br><span> ********=
-*****************************************************************</span><br=
-><span> To build WolfSSL with post-quantum KEMs built in, the following com=
-mand is used:</span><br><span> </span><br><span></span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1416?usp=3Demail">=
-change 1416</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1416?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4f9a6baf2bdb45e5b79bf13c9f6=
-fce3b7a2e982c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1416 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---1wOLrUUZE7A=--
-
+... for the next patch, please learn how to use git for simple changes
+like this - who can do a "diff -u oldfile newfile" can also do a=20
+"git commit ; git format-patch -1" to produce a patch with sufficient
+git stuff around that I have to spend less time on it.
+--0YeYkLmfTfijIXss--
