@@ -1,11 +1,10 @@
+Date: Thu, 4 Dec 2025 15:00:16 +0100 (CET)
+Message-Id: <202512041400.5B4E0G9s026751@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Thu,  4 Dec 2025 14:45:16 +0100
-Message-ID: <20251204134521.20025-1-gert@...1296...>
-In-Reply-To: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
-References: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Fix dco with null cipher being enabled
- without auth none
+In-Reply-To: <20251204124221.15206-1-gert@...1296...>
+References: <20251204124221.15206-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add a section about wolfSSL
+ GPLv3 and point out missing TLS PRF support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Documentation improvements are always welcome :-)
 
-This is a corner case and only the FreeBSD DCO module support the
-none encryption but as long as it supports it, we should only
-enable it when the configuration actually allows to enable it.
+Your patch has been applied to the master branch.
 
-Change-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1369
----
+commit 603fe533a429e99f6b9e39304e0a1a0391af0547
+Author: Arne Schwabe
+Date:   Thu Dec 4 13:42:16 2025 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Add a section about wolfSSL GPLv3 and point out missing TLS PRF support
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1369
-This mail reflects revision 2 of this Change.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1416
+     Message-Id: <20251204124221.15206-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34840.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
 
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 7abdad3..6a1a5c9 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -474,6 +474,18 @@
-             gc_free(&gc);
-             return false;
-         }
-+        /* FreeBSD supports none as cipher type but requires auth none to be
-+         * be also enabled */
-+        if (strcmp(token, "none") == 0 && strcmp(o->authname, "none") != 0)
-+        {
-+            msg(msglevel,
-+                "Note: cipher '%s' in --data-ciphers is only supported "
-+                "with --auth=none by ovpn-dco, disabling data channel "
-+                "offload.",
-+                token);
-+            gc_free(&gc);
-+            return false;
-+        }
-     }
-     gc_free(&gc);
- 
+--
+kind regards,
+
+Gert Doering
+
 
