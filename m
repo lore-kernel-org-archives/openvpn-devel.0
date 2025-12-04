@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu,  4 Dec 2025 13:42:16 +0100
-Message-ID: <20251204124221.15206-1-gert@...1296...>
-In-Reply-To: <gerrit.1764851842000.I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c@...2715...>
-References: <gerrit.1764851842000.I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c@...2715...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Thu, 4 Dec 2025 12:46:04 +0000
+In-Reply-To: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
+References: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
+Reply-To: antonio@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <bc80e278c7347925a752e6e083918abbd3ce8fbd-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Add a section about wolfSSL GPLv3 and
- point out missing TLS PRF support
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="q+iNkR7vH60="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix dco with null
+ cipher being enabled without auth none
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--q+iNkR7vH60=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I4f9a6baf2bdb45e5b79bf13c9f6fce3b7a2e982c
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1416
----
+Attention is currently required from: cron2, plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+ordex has posted comments on this change by plaisthos. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1369?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1416
-This mail reflects revision 1 of this Change.
+Change subject: Fix dco with null cipher being enabled without auth none
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/README.wolfssl b/README.wolfssl
-index 3918d0f..3e531ae 100644
---- a/README.wolfssl
-+++ b/README.wolfssl
-@@ -28,7 +28,17 @@
-  * blowfish support (BF-CBC), you must use something like
-    cipher AES-128-CBC to avoid trying to use BF-CBC
-  * Windows CryptoAPI support
-+ * No TLS1.0 PRF support (No compaitbility with OpenVPN 2.5 or older or
-+   other build that do not support TLS EKM)
- 
-+
-+*************************************************************************
-+Newer wolfSSL versions (5.8.2 and newer) are GPLv3 licensed and this license is not
-+compatible with OpenVPN's GPLv2 license.
-+
-+However wolfSSL Inc has granted an exception to combine the wolfSSL library
-+with OpenVPN and OpenVPN-NL (https://github.com/wolfSSL/wolfssl/blob/master/LICENSING)
-+with version 5.8.4 and later.
- *************************************************************************
- To build WolfSSL with post-quantum KEMs built in, the following command is used:
- 
+Patch Set 2: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3
+Gerrit-Change-Number: 1369
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Comment-Date: Thu, 04 Dec 2025 12:46:04 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--q+iNkR7vH60=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: cron2, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail=
+">change 1369</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1104044701145fa37cea857e2e0=
+e0fcac7a2bee3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1369 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 04 Dec 2025 12:46:04=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--q+iNkR7vH60=--
 
