@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 4 Dec 2025 13:45:09 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu,  4 Dec 2025 14:45:16 +0100
+Message-ID: <20251204134521.20025-1-gert@...1296...>
 In-Reply-To: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
 References: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <29f3cf7cf953946aadeddfe9efe5fad74d6fa6b5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="L4sXC+0CFeI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix dco with null
- cipher being enabled without auth none
+Subject: [Openvpn-devel] [PATCH v2] Fix dco with null cipher being enabled
+ without auth none
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,86 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---L4sXC+0CFeI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
+This is a corner case and only the FreeBSD DCO module support the
+none encryption but as long as it supports it, we should only
+enable it when the configuration actually allows to enable it.
 
-cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1369?usp=3Demail )
+Change-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1369
+---
 
-Change subject: Fix dco with null cipher being enabled without auth none
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1369
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: -Code-Review
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3
-Gerrit-Change-Number: 1369
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Thu, 04 Dec 2025 13:45:09 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---L4sXC+0CFeI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail">View C=
-hange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail">cha=
-nge 1369</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1104044701145fa37cea857e2e0=
-e0fcac7a2bee3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1369 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 04 Dec 2025 13:45:09=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---L4sXC+0CFeI=--
+        
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 7abdad3..6a1a5c9 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -474,6 +474,18 @@
+             gc_free(&gc);
+             return false;
+         }
++        /* FreeBSD supports none as cipher type but requires auth none to be
++         * be also enabled */
++        if (strcmp(token, "none") == 0 && strcmp(o->authname, "none") != 0)
++        {
++            msg(msglevel,
++                "Note: cipher '%s' in --data-ciphers is only supported "
++                "with --auth=none by ovpn-dco, disabling data channel "
++                "offload.",
++                token);
++            gc_free(&gc);
++            return false;
++        }
+     }
+     gc_free(&gc);
+ 
 
