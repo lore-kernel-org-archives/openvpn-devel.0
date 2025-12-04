@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 4 Dec 2025 15:01:47 +0000
+Date: Thu, 4 Dec 2025 15:01:50 +0000
 In-Reply-To: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
 References: <gerrit.1762945572000.I1104044701145fa37cea857e2e0e0fcac7a2bee3@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <f47bb7885d4c2ffdd04c4119d77da41b41479fbe-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <f47bb7885d4c2ffdd04c4119d77da41b41479fbe-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RFulN5HU2+M="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="DkC8vJo/6Yg="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix dco with null
  cipher being enabled without auth none
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,16 +22,12 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RFulN5HU2+M=
+--DkC8vJo/6Yg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by ordex
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/13=
+69?usp=3Demail )
 
 Change subject: Fix dco with null cipher being enabled without auth none
 ......................................................................
@@ -55,7 +51,7 @@ M src/openvpn/dco.c
 1 file changed, 12 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/69/1369/3
+
 
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
 index 7abdad3..6a1a5c9 100644
@@ -88,7 +84,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3
@@ -99,61 +95,58 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---RFulN5HU2+M=
+--DkC8vJo/6Yg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by plaisthos.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1369?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by ordex</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">Fix dco with null cipher being enab=
-led without auth none<br><br>This is a corner case and only the FreeBSD DCO=
- module support the<br>none encryption but as long as it supports it, we sh=
-ould only<br>enable it when the configuration actually allows to enable it.=
-<br><br>Change-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3<br>Signed-off-=
-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Antonio Quartulli &lt=
-;antonio@...2726...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn=
-/+/1369<br>Message-Id: &lt;20251204134521.20025-1-gert@...1296...&gt;<br>UR=
-L: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg3484=
-7.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M s=
-rc/openvpn/dco.c<br>1 file changed, 12 insertions(+), 0 deletions(-)<br><br=
-></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whi=
-te-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/c=
-hanges/69/1369/3</pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c=
-</span><br><span>index 7abdad3..6a1a5c9 100644</span><br><span>--- a/src/op=
-envpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><span>@@ -474=
-,6 +474,18 @@</span><br><span>             gc_free(&amp;gc);</span><br><spa=
-n>             return false;</span><br><span>         }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        /* FreeBSD supports none as cip=
-her type but requires auth none to be</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+         * be also enabled */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        if (strcmp(token, &quot;none&quot;) =3D=
-=3D 0 &amp;&amp; strcmp(o-&gt;authname, &quot;none&quot;) !=3D 0)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                &quot;Note: ciphe=
-r &#39;%s&#39; in --data-ciphers is only supported &quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                &quot;with --auth=3Dn=
-one by ovpn-dco, disabling data channel &quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                &quot;offload.&quot;,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                token);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            gc_free(&amp;g=
-c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retu=
-rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span>     }</span><br><span>     gc_free(&amp;gc);</span><br><sp=
-an> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/1369?usp=3Demail">change 1369</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1369?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1369?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Fix dco with null cipher being enabled without a=
+uth none<br><br>This is a corner case and only the FreeBSD DCO module suppo=
+rt the<br>none encryption but as long as it supports it, we should only<br>=
+enable it when the configuration actually allows to enable it.<br><br>Chang=
+e-Id: I1104044701145fa37cea857e2e0e0fcac7a2bee3<br>Signed-off-by: Arne Schw=
+abe &lt;arne@...1227...&gt;<br>Acked-by: Antonio Quartulli &lt;antonio@...1665...=
+726...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1369<br>Me=
+ssage-Id: &lt;20251204134521.20025-1-gert@...1296...&gt;<br>URL: https://ww=
+w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34847.html<br>Sig=
+ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dc=
+o.c<br>1 file changed, 12 insertions(+), 0 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index=
+ 7abdad3..6a1a5c9 100644</span><br><span>--- a/src/openvpn/dco.c</span><br>=
+<span>+++ b/src/openvpn/dco.c</span><br><span>@@ -474,6 +474,18 @@</span><b=
+r><span>             gc_free(&amp;gc);</span><br><span>             return =
+false;</span><br><span>         }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        /* FreeBSD supports none as cipher type but requires =
+auth none to be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+     * be also enabled */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        if (strcmp(token, &quot;none&quot;) =3D=3D 0 &amp;&amp; strcm=
+p(o-&gt;authname, &quot;none&quot;) !=3D 0)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            msg(msglevel,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                &quot;Note: cipher &#39;%s&#39; in --da=
+ta-ciphers is only supported &quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                &quot;with --auth=3Dnone by ovpn-dco, disab=
+ling data channel &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                &quot;offload.&quot;,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                token);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            gc_free(&amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }=
+</span><br><span>     gc_free(&amp;gc);</span><br><span> </span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1369?usp=3Demail">change 1369</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1369?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I1104044701145fa37cea857e2e0=
@@ -171,5 +164,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---RFulN5HU2+M=--
+--DkC8vJo/6Yg=--
 
