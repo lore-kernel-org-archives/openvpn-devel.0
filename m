@@ -1,11 +1,10 @@
+Date: Sat, 6 Dec 2025 23:38:09 +0100 (CET)
+Message-Id: <202512062238.5B6Mc9ad033764@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sat,  6 Dec 2025 21:58:16 +0100
-Message-ID: <20251206205829.27254-1-gert@...1296...>
-In-Reply-To: <gerrit.1765054252000.I0d592d9d0c7ead296869f933c206c5d55e6cbed1@...2715...>
-References: <gerrit.1765054252000.I0d592d9d0c7ead296869f933c206c5d55e6cbed1@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] mbedtls: gracefully exit if certificate
- file is NULL
+In-Reply-To: <20251206205829.27254-1-gert@...1296...>
+References: <20251206205829.27254-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: mbedtls: gracefully exit if
+ certificate file is NULL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan@...1856...>
+I have not tested if I can reproduce the situation (like with an empty
+inline <cert></cert> cert, or somehow via management interface) or if
+this is caught further upstream - but this check looks quite reasonable,
+and the BBs are fine with it.
 
-Instead of crashing because we feed a NULL pointer to strlen(),
-gracefully exit with an error message.
+Your patch has been applied to the master branch.
 
-While at it, improve the error message a bit.
+commit d7c7caa370ad1fff1cd222e2499a77ea792c8a0e
+Author: Steffan Karger
+Date:   Sat Dec 6 21:58:16 2025 +0100
 
-Change-Id: I0d592d9d0c7ead296869f933c206c5d55e6cbed1
-Reported-By: Joshua Rogers <contact@...2949...>
-Found-by: ZeroPath (https://zeropath.com/)
-Signed-off-by: Steffan Karger <steffan@...1856...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1419
----
+     mbedtls: gracefully exit if certificate file is NULL
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1419
+     Message-Id: <20251206205829.27254-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34864.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1419
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 83fca78..3440319 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -466,10 +466,14 @@
- 
-     if (cert_inline)
-     {
-+        if (!cert_file)
-+        {
-+            msg(M_FATAL, "Cannot load inline certificate: NULL");
-+        }
-         if (!mbed_ok(mbedtls_x509_crt_parse(ctx->crt_chain, (const unsigned char *)cert_file,
-                                             strlen(cert_file) + 1)))
-         {
--            msg(M_FATAL, "Cannot load inline certificate file");
-+            msg(M_FATAL, "Cannot load inline certificate");
-         }
-     }
-     else
+Gert Doering
+
 
