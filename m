@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 5 Dec 2025 17:57:48 +0000
-In-Reply-To: <gerrit.1764946104000.Iffc114939cb37129057e9c4864fae9e09c3c7fe4@...2715...>
-References: <gerrit.1764946104000.Iffc114939cb37129057e9c4864fae9e09c3c7fe4@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
+From: "klemens (Code Review)" <gerrit@...515...>
+Date: Sat, 6 Dec 2025 14:09:11 +0000
+References: <gerrit.1765030148000.I99a6604fdfc682f9609bfe7672aa78285084dcb9@...2715...>
+Reply-To: kn@...2273..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <d1d3ac5274363b4251f83fca4422282a2b7674a0-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <1f710956d50b1334b12149158a463399f86dd84f-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qs9XVPzsWhQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: CMake: For VS build,
- switch from /W2 to /W3
+Content-Type: multipart/alternative; boundary="9EeqCARiaig="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Prevent crash on
+ invalid server-ipv6 argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qs9XVPzsWhQ=
+--9EeqCARiaig=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,118 +29,145 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail
 
-to look at the new patch set (#3).
+to review the following change.
 
 
-Change subject: CMake: For VS build, switch from /W2 to /W3
+Change subject: Prevent crash on invalid server-ipv6 argument
 ......................................................................
 
-CMake: For VS build, switch from /W2 to /W3
+Prevent crash on invalid server-ipv6 argument
 
-But exclude the added checks that currently have failures
-so that we can keep /WX enabled.
-Basically this excludes -Wconversion and -Wsign-compare,
-as expected from our GCC/Clang flags.
+`get_addr_generic()` expects `openvpn_getaddrinfo()` to return a newly
+allocated struct, but getaddrinfo(3) failure leaves `*ai =3D NULL` as-is.
 
-Github: #382
-Change-Id: Iffc114939cb37129057e9c4864fae9e09c3c7fe4
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Unlike free(3), freegetaddrinfo(3) requires a valid struct, thus the
+following is enough to trigger a NULL pointer dereference in libc:
+
+```
+$ openvpn --server-ipv6 ''
+2025-12-06 11:59:18 RESOLVE: Cannot resolve host address: :[AF_INET6] (no a=
+ddress associated with name)
+Segmentation fault (core dumped)
+```
+
+Guard against empty `ai`, i.e. failure, like similar code already does:
+
+```
+$ ./openvpn --server-ipv6 ''
+2025-12-06 12:05:11 RESOLVE: Cannot resolve host address: :[AF_INET6] (no a=
+ddress associated with name)
+Options error: error parsing --server-ipv6 parameter
+Use --help for more information.
+```
+
+Spotted through a configuration typo "server-ipv6 fd00:/64" with 2.6.17,
+reproduced with and tested against 2.7rc3 on OpenBSD/amd64 7.8-current.
+
+Change-Id: I99a6604fdfc682f9609bfe7672aa78285084dcb9
+Signed-off-by: Klemens Nanni <kn@...2273...>
 ---
-M CMakeLists.txt
+M src/openvpn/socket.c
 1 file changed, 4 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17/1417/3
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b3142e4..906fa04 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -85,9 +85,12 @@
-     if (USE_WERROR)
-         add_compile_options(/WX)
-     endif ()
-+    # C4018: signed/unsigned mismatch
-+    # C4244: conversion from 'type1' to 'type2', possible loss of data
-+    # C4267: conversion from 'size_t' to 'type', possible loss of data
-     add_compile_options(
-         /MP
--        /W2
-+        /W3 /wd4018 /wd4267 /wd4244
-         /sdl
-         /Qspectre
-         /guard:cf
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/1418/1
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 46bedf4..80c2895 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -189,7 +189,10 @@
+         *sep =3D '/';
+     }
+ out:
+-    freeaddrinfo(ai);
++    if (ai)
++    {
++        freeaddrinfo(ai);
++    }
+     free(var_host);
+
+     return ret;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iffc114939cb37129057e9c4864fae9e09c3c7fe4
-Gerrit-Change-Number: 1417
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I99a6604fdfc682f9609bfe7672aa78285084dcb9
+Gerrit-Change-Number: 1418
+Gerrit-PatchSet: 1
+Gerrit-Owner: klemens <kn@...2273...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---qs9XVPzsWhQ=
+--9EeqCARiaig=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">CMake: For VS build, switch from /W2 to /W3<br><=
-br>But exclude the added checks that currently have failures<br>so that we =
-can keep /WX enabled.<br>Basically this excludes -Wconversion and -Wsign-co=
-mpare,<br>as expected from our GCC/Clang flags.<br><br>Github: #382<br>Chan=
-ge-Id: Iffc114939cb37129057e9c4864fae9e09c3c7fe4<br>Signed-off-by: Frank Li=
-chtenheld &lt;frank@...2641...&gt;<br>---<br>M CMakeLists.txt<br>1 file cha=
-nged, 4 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
-h://gerrit.openvpn.net:29418/openvpn refs/changes/17/1417/3</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index b3142e4..906fa0=
-4 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLi=
-sts.txt</span><br><span>@@ -85,9 +85,12 @@</span><br><span>     if (USE_WER=
-ROR)</span><br><span>         add_compile_options(/WX)</span><br><span>    =
- endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # C401=
-8: signed/unsigned mismatch</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    # C4244: conversion from &#39;type1&#39; to &#39;type2&#39;, po=
-ssible loss of data</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    # C4267: conversion from &#39;size_t&#39; to &#39;type&#39;, possible l=
-oss of data</span><br><span>     add_compile_options(</span><br><span>     =
-    /MP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /W2</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        /W3 /wd4018 /w=
-d4267 /wd4244</span><br><span>         /sdl</span><br><span>         /Qspec=
-tre</span><br><span>         /guard:cf</span><br><span></span><br></pre><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3D=
-email">change 1417</a>. To unsubscribe, or for help writing mail filters, v=
-isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>klemens would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Prevent crash on invalid server-ipv6 argume=
+nt<br><br>`get_addr_generic()` expects `openvpn_getaddrinfo()` to return a =
+newly<br>allocated struct, but getaddrinfo(3) failure leaves `*ai =3D NULL`=
+ as-is.<br><br>Unlike free(3), freegetaddrinfo(3) requires a valid struct, =
+thus the<br>following is enough to trigger a NULL pointer dereference in li=
+bc:<br><br>```<br>$ openvpn --server-ipv6 &#39;&#39;<br>2025-12-06 11:59:18=
+ RESOLVE: Cannot resolve host address: :[AF_INET6] (no address associated w=
+ith name)<br>Segmentation fault (core dumped)<br>```<br><br>Guard against e=
+mpty `ai`, i.e. failure, like similar code already does:<br><br>```<br>$ ./=
+openvpn --server-ipv6 &#39;&#39;<br>2025-12-06 12:05:11 RESOLVE: Cannot res=
+olve host address: :[AF_INET6] (no address associated with name)<br>Options=
+ error: error parsing --server-ipv6 parameter<br>Use --help for more inform=
+ation.<br>```<br><br>Spotted through a configuration typo &quot;server-ipv6=
+ fd00:/64&quot; with 2.6.17,<br>reproduced with and tested against 2.7rc3 o=
+n OpenBSD/amd64 7.8-current.<br><br>Change-Id: I99a6604fdfc682f9609bfe7672a=
+a78285084dcb9<br>Signed-off-by: Klemens Nanni &lt;kn@...2273...&gt;<br>---<=
+br>M src/openvpn/socket.c<br>1 file changed, 4 insertions(+), 1 deletion(-)=
+<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn=
+ refs/changes/18/1418/1</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/src/openvpn/socket.c b/src/ope=
+nvpn/socket.c</span><br><span>index 46bedf4..80c2895 100644</span><br><span=
+>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</spa=
+n><br><span>@@ -189,7 +189,10 @@</span><br><span>         *sep =3D &#39;/&#=
+39;;</span><br><span>     }</span><br><span> out:</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    freeaddrinfo(ai);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (ai)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        freeaddrinfo(ai);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span>     free(var_host);</span><br><span> <=
+/span><br><span>     return ret;</span><br><span></span><br></pre><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail"=
+>change 1418</a>. To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
+<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
+temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iffc114939cb37129057e9c4864f=
-ae9e09c3c7fe4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1417 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I99a6604fdfc682f9609bfe7672a=
+a78285084dcb9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1418 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: klemens &lt;kn@...2273...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -151,5 +177,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---qs9XVPzsWhQ=--
+--9EeqCARiaig=--
 
