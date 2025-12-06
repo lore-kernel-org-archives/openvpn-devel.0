@@ -1,15 +1,16 @@
-From: "syzzer (Code Review)" <gerrit@...515...>
-Date: Sat, 6 Dec 2025 20:50:57 +0000
-References: <gerrit.1765054252000.I0d592d9d0c7ead296869f933c206c5d55e6cbed1@...2715...>
-Reply-To: steffan@...1856..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <b14bb3437b02b8f9055cee63606faaca60087f12-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 6 Dec 2025 20:54:25 +0000
+In-Reply-To: <gerrit.1765030148000.I99a6604fdfc682f9609bfe7672aa78285084dcb9@...2715...>
+References: <gerrit.1765030148000.I99a6604fdfc682f9609bfe7672aa78285084dcb9@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, kn@...2273...
+Message-ID: <8e7dd426989041710276292d53f9dad7287ed890-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0Znq5AEbdIQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mbedtls: gracefully
- exit if certificate file is NULL
+Content-Type: multipart/alternative; boundary="xO8hSZKHyBU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Prevent crash on
+ invalid server-ipv6 argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,147 +19,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---0Znq5AEbdIQ=
+--xO8hSZKHyBU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: klemens, plaisthos.
 
-Hello plaisthos,
+cron2 has posted comments on this change by klemens. ( http://gerrit.openvp=
+n.net/c/openvpn/+/1418?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1419?usp=3Demail
-
-to review the following change.
-
-
-Change subject: mbedtls: gracefully exit if certificate file is NULL
+Change subject: Prevent crash on invalid server-ipv6 argument
 ......................................................................
 
-mbedtls: gracefully exit if certificate file is NULL
 
-Instead of crashing because we feed a NULL pointer to strlen(),
-gracefully exit with an error message.
+Patch Set 1: Code-Review+2
 
-While at it, improve the error message a bit.
-
-Change-Id: I0d592d9d0c7ead296869f933c206c5d55e6cbed1
-Reported-By: Joshua Rogers <contact@...2949...>
-Found-by: ZeroPath (https://zeropath.com/)
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
-M src/openvpn/ssl_mbedtls.c
-1 file changed, 5 insertions(+), 1 deletion(-)
-
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1419/1
-
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 83fca78..3440319 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -466,10 +466,14 @@
-
-     if (cert_inline)
-     {
-+        if (!cert_file)
-+        {
-+            msg(M_FATAL, "Cannot load inline certificate: NULL");
-+        }
-         if (!mbed_ok(mbedtls_x509_crt_parse(ctx->crt_chain, (const unsigne=
-d char *)cert_file,
-                                             strlen(cert_file) + 1)))
-         {
--            msg(M_FATAL, "Cannot load inline certificate file");
-+            msg(M_FATAL, "Cannot load inline certificate");
-         }
-     }
-     else
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1419?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0d592d9d0c7ead296869f933c206c5d55e6cbed1
-Gerrit-Change-Number: 1419
+Gerrit-Change-Id: I99a6604fdfc682f9609bfe7672aa78285084dcb9
+Gerrit-Change-Number: 1418
 Gerrit-PatchSet: 1
-Gerrit-Owner: syzzer <steffan@...1856...>
+Gerrit-Owner: klemens <kn@...2273...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: klemens <kn@...2273...>
+Gerrit-Comment-Date: Sat, 06 Dec 2025 20:54:25 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---0Znq5AEbdIQ=
+--xO8hSZKHyBU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>syzzer would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1419?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">mbedtls: gracefully exit if certificate fil=
-e is NULL<br><br>Instead of crashing because we feed a NULL pointer to strl=
-en(),<br>gracefully exit with an error message.<br><br>While at it, improve=
- the error message a bit.<br><br>Change-Id: I0d592d9d0c7ead296869f933c206c5=
-d55e6cbed1<br>Reported-By: Joshua Rogers &lt;contact@...2949...&gt;<br>Foun=
-d-by: ZeroPath (https://zeropath.com/)<br>Signed-off-by: Steffan Karger &lt=
-;steffan@...1856...&gt;<br>---<br>M src/openvpn/ssl_mbedtls.c<br>1 file cha=
-nged, 5 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
-h://gerrit.openvpn.net:29418/openvpn refs/changes/19/1419/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span=
->index 83fca78..3440319 100644</span><br><span>--- a/src/openvpn/ssl_mbedtl=
-s.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -466=
-,10 +466,14 @@</span><br><span> </span><br><span>     if (cert_inline)</spa=
-n><br><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (!cert_file)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     msg(M_FATAL, &quot;Cannot load inline certificate: NULL&quot;);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>=
-         if (!mbed_ok(mbedtls_x509_crt_parse(ctx-&gt;crt_chain, (const unsi=
-gned char *)cert_file,</span><br><span>                                    =
-         strlen(cert_file) + 1)))</span><br><span>         {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            msg(M_FATAL, &quot;Canno=
-t load inline certificate file&quot;);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            msg(M_FATAL, &quot;Cannot load inline certif=
-icate&quot;);</span><br><span>         }</span><br><span>     }</span><br><=
-span>     else</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1419?usp=3Demail">change 1419</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1419?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+rently required from: klemens, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail=
+">change 1418</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1418?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0d592d9d0c7ead296869f933c20=
-6c5d55e6cbed1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1419 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I99a6604fdfc682f9609bfe7672a=
+a78285084dcb9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1418 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: syzzer &lt;steffan@...1856...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Owner: klemens &lt;kn@...2273...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: klemens &lt;kn@...2273...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 06 Dec 2025 20:54:25=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---0Znq5AEbdIQ=--
+--xO8hSZKHyBU=--
 
