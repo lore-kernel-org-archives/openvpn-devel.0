@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  8 Dec 2025 20:42:37 +0100
-Message-ID: <20251208194242.17520-1-gert@...1296...>
-In-Reply-To: <gerrit.1765213173000.I317be5253d6563906dd3826421dc81f737beba76@...2715...>
-References: <gerrit.1765213173000.I317be5253d6563906dd3826421dc81f737beba76@...2715...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Dec 2025 19:46:51 +0000
+In-Reply-To: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
+References: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <1f0e21cab9afae019a79e17353f33020cf33eb27-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] configure.ac: Remove use of
- PKCS11_HELPER_LIBS in mbedTLS checks
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="VO6XT71vDa4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: pull-filter:
+ improve documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,89 +19,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--VO6XT71vDa4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This code was copied over and over since many years,
-since commit 9a3f670248d6f519a399e65a7232e2196b5115db
-("Fixed autoconf script to properly detect missing pkcs11
-with polarssl"). It is unclear what exact purpose it
-served back then but probably it is obsolete. It is
-definitely wrong since it means that you get
-PKCS11_HELPER_LIBS even if you do not specify
---enable-pkcs11.
+Attention is currently required from: plaisthos, selvanair.
 
-Change-Id: I317be5253d6563906dd3826421dc81f737beba76
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20250716151857.385959-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32187.html
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1423
-(cherry picked from commit ed690d1d58792f70b86b75b00c09df2ad96babca)
----
+selvanair has posted comments on this change by selvanair. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1415?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
+Change subject: pull-filter: improve documentation
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1423
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 2:
 
-        
-diff --git a/configure.ac b/configure.ac
-index 307329d..e77fd47 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -801,14 +801,6 @@
- 		;;
- esac
- 
--PKG_CHECK_MODULES(
--	[PKCS11_HELPER],
--	[libpkcs11-helper-1 >= 1.11],
--	[have_pkcs11_helper="yes"],
--	[]
--)
--
--
- if test "$enable_dco" != "no"; then
- 	enable_dco_arg="$enable_dco"
- 	if test "${enable_iproute2}" = "yes"; then
-@@ -1022,13 +1014,12 @@
- 				[mbedtls_ssl_init],
- 				[MBEDTLS_LIBS="-lmbedtls -lmbedx509 -lmbedcrypto"],
- 				[AC_MSG_ERROR([Could not find mbed TLS.])],
--				[${PKCS11_HELPER_LIBS}]
- 			)
- 		fi
- 	fi
- 
--	CFLAGS="${MBEDTLS_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}"
--	LIBS="${MBEDTLS_LIBS} ${PKCS11_HELPER_LIBS} ${LIBS}"
-+	CFLAGS="${MBEDTLS_CFLAGS} ${CFLAGS}"
-+	LIBS="${MBEDTLS_LIBS} ${LIBS}"
- 
- 	AC_MSG_CHECKING([mbedtls version])
- 	AC_COMPILE_IFELSE(
-@@ -1399,7 +1390,12 @@
- fi
- 
- if test "${enable_pkcs11}" = "yes"; then
--	test "${have_pkcs11_helper}" != "yes" && AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])
-+	PKG_CHECK_MODULES(
-+		[PKCS11_HELPER],
-+		[libpkcs11-helper-1 >= 1.11],
-+		[have_pkcs11_helper="yes"],
-+		[AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])]
-+	)
- 	OPTIONAL_PKCS11_HELPER_CFLAGS="${PKCS11_HELPER_CFLAGS}"
- 	OPTIONAL_PKCS11_HELPER_LIBS="${PKCS11_HELPER_LIBS}"
- 	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
+(1 comment)
+
+Patchset:
+
+PS2:
+In fact, the following will bypass "pull-filter ignore route "!
+
+push "\"route\" x.y.z.0 255.255.255.0"
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a
+Gerrit-Change-Number: 1415
+Gerrit-PatchSet: 2
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Mon, 08 Dec 2025 19:46:51 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+
+--VO6XT71vDa4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos, selvanair. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1415?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">In fact, the fo=
+llowing will bypass &quot;pull-filter ignore route &quot;!</p><p class=3D"b=
+locks" style=3D"white-space: pre-wrap; word-wrap: break-word;">push &quot;\=
+&quot;route\&quot; x.y.z.0 255.255.255.0&quot;</p></li></ul></li></ul><p>To=
+ view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Dem=
+ail">change 1415</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2c8d40038e52fbdff1c56f93db1=
+e6a2f9255c59a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1415 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Dec 2025 19:46:51=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+
+</body></html>=
+
+--VO6XT71vDa4=--
 
