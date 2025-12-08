@@ -1,16 +1,10 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Dec 2025 19:17:39 +0000
-In-Reply-To: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
-References: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <dd9ff6f03acb57ce4468c2772cbff1747b0cc122-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w3G9onWET+4="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: pull-filter:
- improve documentation
+Date: Mon, 8 Dec 2025 20:28:37 +0100 (CET)
+Message-Id: <202512081928.5B8JSbGw023165@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20251208170320.4696-1-gert@...1296...>
+References: <20251208170320.4696-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: socket: Initialize struct
+ in_addr_t in getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,114 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---w3G9onWET+4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is somewhat of a silly-compiler-syndrome - especially since the 
+last warning in this area was a true positive, now the addition of
+the "if(ai)" clause - which has nothing whatsoever to do with the
+return data or not - causes a warning (that we treat fatal) in mingw,
+and only in the release builds...
 
-Attention is currently required from: cron2, plaisthos.
+But anyway, this is just a 32bit integer, not in the fast path, and
+initializing things is generally a good idea :-)
 
-selvanair has posted comments on this change by selvanair. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1415?usp=3Demail )
+Tested with the (upcoming) GHA mingw+release builds that reproduceably
+fail without this change.
 
-Change subject: pull-filter: improve documentation
-......................................................................
+Your patch has been applied to the master branch.
 
+commit e8dc7f35584df1f1cf920636cd5ac7232f0009a9
+Author: Frank Lichtenheld
+Date:   Mon Dec 8 18:03:13 2025 +0100
 
-Patch Set 2:
+     socket: Initialize struct in_addr_t in getaddr()
 
-(1 comment)
-
-File doc/man-sections/client-options.rst:
-
-http://gerrit.openvpn.net/c/openvpn/+/1415/comment/9beb5395_c14a4c30?usp=3D=
-email :
-PS1, Line 349:   protect against offending options pushed by a server. For =
-example, the
-> Mmmh. [=E2=80=A6]
-Done
-
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1420
+     Message-Id: <20251208170320.4696-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34894.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a
-Gerrit-Change-Number: 1415
-Gerrit-PatchSet: 2
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Mon, 08 Dec 2025 19:17:39 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@...1296...>
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
+Gert Doering
 
---w3G9onWET+4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/client-option=
-s.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1415/comment/9beb5395_c14a4c30?usp=3Demail"=
->Patch Set #1, Line 349:</a> <code style=3D"font-family:monospace,monospace=
-">  protect against offending options pushed by a server. For example, the<=
-/code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px=
- 0; padding: 0 10px;">Mmmh. [=E2=80=A6]</blockquote></p><p class=3D"blocks"=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul>=
-</li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1415?usp=3Demail">change 1415</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-415?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2c8d40038e52fbdff1c56f93db1=
-e6a2f9255c59a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1415 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Dec 2025 19:17:39=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
-&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-
-</body></html>=
-
---w3G9onWET+4=--
 
