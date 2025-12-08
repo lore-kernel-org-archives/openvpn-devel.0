@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  8 Dec 2025 20:40:18 +0100
-Message-ID: <20251208194023.17193-1-gert@...1296...>
-In-Reply-To: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
-References: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Dec 2025 19:41:39 +0000
+In-Reply-To: <gerrit.1765213173000.I5d0da76018e874cda5dbab9202a2b817ad5e4692@...2715...>
+References: <gerrit.1765213173000.I5d0da76018e874cda5dbab9202a2b817ad5e4692@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ yura.uddr@...277...
+Message-ID: <365b60dc935b250d6e42dea098cdddba9095ca81-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] pull-filter: improve documentation
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="7atfog5lkXk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: configure: Try
+ to use pkg-config to detect mbedTLS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,51 +20,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, uddr <yura.uddr@...277...>
 
-From: Selva Nair <selva.nair@...277...>
+--7atfog5lkXk=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Pull-filter uses a simple string comparison and could be defeated by
-unusual formatting of pushed option strings. Document that this
-option is not meant to be used as a security measure.
+Attention is currently required from: flichtenheld, plaisthos, uddr.
 
-Reported by: <aarnav@...2953...>
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1422?usp=3Demail )
 
-Change-Id: I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1415
----
+Change subject: configure: Try to use pkg-config to detect mbedTLS
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1415
-This mail reflects revision 2 of this Change.
+Patch Set 1: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index e8523d9..17f0a6a 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -345,6 +345,14 @@
-   next remote succeeds. To silently ignore an option pushed by the server,
-   use :code:`ignore`.
- 
-+  *Warning:* ``pull-filter`` cannot be relied upon as a security measure to
-+  protect against offending options pushed by a server. For example, the
-+  filter could be defeated by pushing options with extra spaces between
-+  tokens or other formatting variations. In such situations, an "allow-list"
-+  approach using specific ``pull-filter accept`` directives followed by a
-+  generic ``pull-filter ignore`` should be preferred over a "deny-list"
-+  approach. This improves robustness but does not guarantee security.
-+
- --push-peer-info
-   Push additional information about the client to server. The following
-   data is always pushed to the server:
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1422?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I5d0da76018e874cda5dbab9202a2b817ad5e4692
+Gerrit-Change-Number: 1422
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: uddr <yura.uddr@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: uddr <yura.uddr@...277...>
+Gerrit-Comment-Date: Mon, 08 Dec 2025 19:41:39 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--7atfog5lkXk=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos, uddr. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1422?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1422?usp=3Demail=
+">change 1422</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1422?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5d0da76018e874cda5dbab9202a=
+2b817ad5e4692 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1422 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: uddr &lt;yura.uddr@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Dec 2025 19:41:39=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--7atfog5lkXk=--
 
