@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Dec 2025 19:42:28 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon,  8 Dec 2025 20:42:37 +0100
+Message-ID: <20251208194242.17520-1-gert@...1296...>
 In-Reply-To: <gerrit.1765213173000.I317be5253d6563906dd3826421dc81f737beba76@...2715...>
 References: <gerrit.1765213173000.I317be5253d6563906dd3826421dc81f737beba76@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5b07af05d97a77edf1cf5b85a136f3ef00e602b5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fGXVaHIbmWw="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: configure.ac:
- Remove use of PKCS11_HELPER_LIBS in mbedTLS checks
+Subject: [Openvpn-devel] [PATCH v1] configure.ac: Remove use of
+ PKCS11_HELPER_LIBS in mbedTLS checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +14,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---fGXVaHIbmWw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+This code was copied over and over since many years,
+since commit 9a3f670248d6f519a399e65a7232e2196b5115db
+("Fixed autoconf script to properly detect missing pkcs11
+with polarssl"). It is unclear what exact purpose it
+served back then but probably it is obsolete. It is
+definitely wrong since it means that you get
+PKCS11_HELPER_LIBS even if you do not specify
+--enable-pkcs11.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1423?usp=3Demail )
+Change-Id: I317be5253d6563906dd3826421dc81f737beba76
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20250716151857.385959-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg32187.html
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1423
+(cherry picked from commit ed690d1d58792f70b86b75b00c09df2ad96babca)
+---
 
-Change subject: configure.ac: Remove use of PKCS11_HELPER_LIBS in mbedTLS c=
-hecks
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.6.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1423
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1423?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I317be5253d6563906dd3826421dc81f737beba76
-Gerrit-Change-Number: 1423
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 08 Dec 2025 19:42:28 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---fGXVaHIbmWw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1423?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1423?usp=3Demail=
-">change 1423</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1423?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I317be5253d6563906dd3826421d=
-c81f737beba76 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1423 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 08 Dec 2025 19:42:28=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---fGXVaHIbmWw=--
+        
+diff --git a/configure.ac b/configure.ac
+index 307329d..e77fd47 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -801,14 +801,6 @@
+ 		;;
+ esac
+ 
+-PKG_CHECK_MODULES(
+-	[PKCS11_HELPER],
+-	[libpkcs11-helper-1 >= 1.11],
+-	[have_pkcs11_helper="yes"],
+-	[]
+-)
+-
+-
+ if test "$enable_dco" != "no"; then
+ 	enable_dco_arg="$enable_dco"
+ 	if test "${enable_iproute2}" = "yes"; then
+@@ -1022,13 +1014,12 @@
+ 				[mbedtls_ssl_init],
+ 				[MBEDTLS_LIBS="-lmbedtls -lmbedx509 -lmbedcrypto"],
+ 				[AC_MSG_ERROR([Could not find mbed TLS.])],
+-				[${PKCS11_HELPER_LIBS}]
+ 			)
+ 		fi
+ 	fi
+ 
+-	CFLAGS="${MBEDTLS_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}"
+-	LIBS="${MBEDTLS_LIBS} ${PKCS11_HELPER_LIBS} ${LIBS}"
++	CFLAGS="${MBEDTLS_CFLAGS} ${CFLAGS}"
++	LIBS="${MBEDTLS_LIBS} ${LIBS}"
+ 
+ 	AC_MSG_CHECKING([mbedtls version])
+ 	AC_COMPILE_IFELSE(
+@@ -1399,7 +1390,12 @@
+ fi
+ 
+ if test "${enable_pkcs11}" = "yes"; then
+-	test "${have_pkcs11_helper}" != "yes" && AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])
++	PKG_CHECK_MODULES(
++		[PKCS11_HELPER],
++		[libpkcs11-helper-1 >= 1.11],
++		[have_pkcs11_helper="yes"],
++		[AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])]
++	)
+ 	OPTIONAL_PKCS11_HELPER_CFLAGS="${PKCS11_HELPER_CFLAGS}"
+ 	OPTIONAL_PKCS11_HELPER_LIBS="${PKCS11_HELPER_LIBS}"
+ 	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
 
