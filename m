@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 8 Dec 2025 14:41:47 +0000
+Date: Mon, 8 Dec 2025 14:41:50 +0000
 In-Reply-To: <gerrit.1764946104000.Iffc114939cb37129057e9c4864fae9e09c3c7fe4@...2715...>
 References: <gerrit.1764946104000.Iffc114939cb37129057e9c4864fae9e09c3c7fe4@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <28878e5485a49b770387d74c9eba3518e175ac2e-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <28878e5485a49b770387d74c9eba3518e175ac2e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7+JXaY2nhos="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="B1T//4gwKOU="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: CMake: For VS build,
  switch from /W2 to /W3
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7+JXaY2nhos=
+--B1T//4gwKOU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+17?usp=3Demail )
 
 Change subject: CMake: For VS build, switch from /W2 to /W3
 ......................................................................
@@ -57,7 +53,7 @@ M CMakeLists.txt
 1 file changed, 4 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17/1417/4
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index b3142e4..906fa04 100644
@@ -83,7 +79,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Iffc114939cb37129057e9c4864fae9e09c3c7fe4
@@ -94,54 +90,49 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7+JXaY2nhos=
+--B1T//4gwKOU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #4</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1417?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">CMake: For VS build, switch from /W=
-2 to /W3<br><br>But exclude the added checks that currently have failures<b=
-r>so that we can keep /WX enabled.<br>Basically this excludes -Wconversion =
-and -Wsign-compare,<br>as expected from our GCC/Clang flags.<br><br>Github:=
- #382<br>Change-Id: Iffc114939cb37129057e9c4864fae9e09c3c7fe4<br>Signed-off=
--by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &=
-lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/=
-+/1417<br>Message-Id: &lt;20251208113636.9650-1-gert@...1296...&gt;<br>URL:=
- https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34876.=
-html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMa=
-keLists.txt<br>1 file changed, 4 insertions(+), 1 deletion(-)<br><br></pre>=
-<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
-17/1417/4</pre><pre style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><s=
-pan>index b3142e4..906fa04 100644</span><br><span>--- a/CMakeLists.txt</spa=
-n><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -85,9 +85,12 @@</span><=
-br><span>     if (USE_WERROR)</span><br><span>         add_compile_options(=
-/WX)</span><br><span>     endif ()</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    # C4018: signed/unsigned mismatch</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    # C4244: conversion from &#39;type1&#=
-39; to &#39;type2&#39;, possible loss of data</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    # C4267: conversion from &#39;size_t&#39; to =
-&#39;type&#39;, possible loss of data</span><br><span>     add_compile_opti=
-ons(</span><br><span>         /MP</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        /W2</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        /W3 /wd4018 /wd4267 /wd4244</span><br><span>         /sdl</span=
-><br><span>         /Qspectre</span><br><span>         /guard:cf</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/1417?usp=3Demail">change 1417</a>. To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
-s?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1417?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1417?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">CMake: For VS build, switch from /W2 to /W3<br><=
+br>But exclude the added checks that currently have failures<br>so that we =
+can keep /WX enabled.<br>Basically this excludes -Wconversion and -Wsign-co=
+mpare,<br>as expected from our GCC/Clang flags.<br><br>Github: #382<br>Chan=
+ge-Id: Iffc114939cb37129057e9c4864fae9e09c3c7fe4<br>Signed-off-by: Frank Li=
+chtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1417<br>Mes=
+sage-Id: &lt;20251208113636.9650-1-gert@...1296...&gt;<br>URL: https://www.=
+mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34876.html<br>Signe=
+d-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<b=
+r>1 file changed, 4 insertions(+), 1 deletion(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index b3142=
+e4..906fa04 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -85,9 +85,12 @@</span><br><span>     i=
+f (USE_WERROR)</span><br><span>         add_compile_options(/WX)</span><br>=
+<span>     endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    # C4018: signed/unsigned mismatch</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    # C4244: conversion from &#39;type1&#39; to &#39;type=
+2&#39;, possible loss of data</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    # C4267: conversion from &#39;size_t&#39; to &#39;type&#39;, =
+possible loss of data</span><br><span>     add_compile_options(</span><br><=
+span>         /MP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    /W2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /W3 =
+/wd4018 /wd4267 /wd4244</span><br><span>         /sdl</span><br><span>     =
+    /Qspectre</span><br><span>         /guard:cf</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
+417?usp=3Demail">change 1417</a>. To unsubscribe, or for help writing mail =
+filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">s=
+ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
+<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1417=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Iffc114939cb37129057e9c4864f=
@@ -159,5 +150,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---7+JXaY2nhos=--
+--B1T//4gwKOU=--
 
