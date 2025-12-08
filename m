@@ -1,10 +1,16 @@
-Date: Mon, 8 Dec 2025 20:28:37 +0100 (CET)
-Message-Id: <202512081928.5B8JSbGw023165@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251208170320.4696-1-gert@...1296...>
-References: <20251208170320.4696-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: socket: Initialize struct
- in_addr_t in getaddr()
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 8 Dec 2025 19:28:47 +0000
+In-Reply-To: <gerrit.1765212547000.I999916f9561a638214b70cf43de78060e9e0e792@...2715...>
+References: <gerrit.1765212547000.I999916f9561a638214b70cf43de78060e9e0e792@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <66c3516973b1df9bbf027b430d4e6010437bdc88-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="+G5gfnHPy1g="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: socket: Initialize
+ struct in_addr_t in getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is somewhat of a silly-compiler-syndrome - especially since the 
-last warning in this area was a true positive, now the addition of
-the "if(ai)" clause - which has nothing whatsoever to do with the
-return data or not - causes a warning (that we treat fatal) in mingw,
-and only in the release builds...
+--+G5gfnHPy1g=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-But anyway, this is just a 32bit integer, not in the fast path, and
-initializing things is generally a good idea :-)
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1420?usp=3Demail )
 
-Tested with the (upcoming) GHA mingw+release builds that reproduceably
-fail without this change.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-Your patch has been applied to the master branch.
 
-commit e8dc7f35584df1f1cf920636cd5ac7232f0009a9
-Author: Frank Lichtenheld
-Date:   Mon Dec 8 18:03:13 2025 +0100
+Change subject: socket: Initialize struct in_addr_t in getaddr()
+......................................................................
 
-     socket: Initialize struct in_addr_t in getaddr()
+socket: Initialize struct in_addr_t in getaddr()
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1420
-     Message-Id: <20251208170320.4696-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34894.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+We have false-positive "=E2=80=98addr=E2=80=99 may be used uninitialized"
+warnings with MinGW 13.0.0 compiler. Work around them.
 
+Change-Id: I999916f9561a638214b70cf43de78060e9e0e792
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1420
+Message-Id: <20251208170320.4696-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
+894.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/socket.c
+1 file changed, 1 insertion(+), 1 deletion(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/20/1420/2
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 80c2895..3e90833 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -202,7 +202,7 @@
+ getaddr(unsigned int flags, const char *hostname, int resolve_retry_second=
+s, bool *succeeded,
+         struct signal_info *sig_info)
+ {
+-    in_addr_t addr;
++    in_addr_t addr =3D { 0 };
+     int status;
+
+     status =3D get_addr_generic(AF_INET, flags, hostname, &addr, NULL, res=
+olve_retry_seconds,
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1420?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I999916f9561a638214b70cf43de78060e9e0e792
+Gerrit-Change-Number: 1420
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--+G5gfnHPy1g=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1420?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">socket: Initialize struct in_addr_t=
+ in getaddr()<br><br>We have false-positive &quot;=E2=80=98addr=E2=80=99 ma=
+y be used uninitialized&quot;<br>warnings with MinGW 13.0.0 compiler. Work =
+around them.<br><br>Change-Id: I999916f9561a638214b70cf43de78060e9e0e792<br=
+>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Ger=
+t Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net=
+/c/openvpn/+/1420<br>Message-Id: &lt;20251208170320.4696-1-gert@...1296...&=
+gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...475...=
+t/msg34894.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>-=
+--<br>M src/openvpn/socket.c<br>1 file changed, 1 insertion(+), 1 deletion(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/20/1420/2</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/socket.c b/src/o=
+penvpn/socket.c</span><br><span>index 80c2895..3e90833 100644</span><br><sp=
+an>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</s=
+pan><br><span>@@ -202,7 +202,7 @@</span><br><span> getaddr(unsigned int fla=
+gs, const char *hostname, int resolve_retry_seconds, bool *succeeded,</span=
+><br><span>         struct signal_info *sig_info)</span><br><span> {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    in_addr_t addr;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    in_addr_t addr =3D { 0 }=
+;</span><br><span>     int status;</span><br><span> </span><br><span>     s=
+tatus =3D get_addr_generic(AF_INET, flags, hostname, &amp;addr, NULL, resol=
+ve_retry_seconds,</span><br><span></span><br></pre><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1420?usp=3Demail">change 1420</a=
+>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
+//gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1420?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I999916f9561a638214b70cf43de=
+78060e9e0e792 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1420 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--+G5gfnHPy1g=--
 
