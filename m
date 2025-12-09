@@ -1,17 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 9 Dec 2025 14:05:11 +0000
-In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
-References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@...2715...>
-Reply-To: arne-openvpn@...1227..., gianmarco@...2726...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <f01c2d591676b9a0e20db598cb3e3887b3b2bfe5-EmailReviewComments-HTML@...2715...>
+Date: Tue, 9 Dec 2025 14:05:42 +0000
+In-Reply-To: <gerrit.1760995553000.I31ac2a763209114267c35c4a9182a12d8d82f6fe@...2715...>
+References: <gerrit.1760995553000.I31ac2a763209114267c35c4a9182a12d8d82f6fe@...2715...>
+Reply-To: arne-openvpn@...1227..., davidben@...410...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <a1e2d867bd2321656daec4006647cdd03419688b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qekfbHqQMN8="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: multipeer: introduce
- asymmetric peer-id
+Content-Type: multipart/alternative; boundary="Y3gUTitNJEA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: ssl_openssl: Fix
+ some CRL mixups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,109 +19,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: its_Giaan <gianmarco@...2726...>
+To: davidben <davidben@...410...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qekfbHqQMN8=
+--Y3gUTitNJEA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, its_Giaan.
+Attention is currently required from: davidben, flichtenheld.
 
-plaisthos has posted comments on this change by its_Giaan. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1089?usp=3Demail )
+plaisthos has posted comments on this change by davidben. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1289?usp=3Demail )
 
-Change subject: multipeer: introduce asymmetric peer-id
+Change subject: ssl_openssl: Fix some CRL mixups
 ......................................................................
 
 
-Patch Set 9: Code-Review+2
+Patch Set 2:
 
 (1 comment)
 
 Patchset:
 
-PS9:=20
-I accidentially pushed a rebased version to this PR.
+PS2:
+I pushed a rebased version without changes to trigger the building on build=
+bots
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
-Gerrit-Change-Number: 1089
-Gerrit-PatchSet: 9
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I31ac2a763209114267c35c4a9182a12d8d82f6fe
+Gerrit-Change-Number: 1289
+Gerrit-PatchSet: 2
+Gerrit-Owner: davidben <davidben@...410...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 09 Dec 2025 14:05:11 +0000
+Gerrit-Attention: davidben <davidben@...410...>
+Gerrit-Comment-Date: Tue, 09 Dec 2025 14:05:42 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 
---qekfbHqQMN8=
+--Y3gUTitNJEA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, its_Giaan. </p>
-<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1089?tab=3Dcomments&amp;usp=3Demail">Patch Set #9:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I accidenti=
-ally pushed a rebased version to this PR.</p></li></ul></li></ul><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail">=
-change 1089</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1089?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: davidben, flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1289?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I pushed a reba=
+sed version without changes to trigger the building on buildbots</p></li></=
+ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1289?usp=3Demail">change 1289</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dem=
+ail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/1289?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3ba=
-b3f2dff639bf9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1089 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I31ac2a763209114267c35c4a918=
+2a12d8d82f6fe </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1289 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: davidben &lt;davidben@...410...&=
+gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
-726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 09 Dec 2025 14:05:11=
+<div style=3D"display:none"> Gerrit-Attention: davidben &lt;davidben@...2975...=
+...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 09 Dec 2025 14:05:42=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---qekfbHqQMN8=--
+--Y3gUTitNJEA=--
 
