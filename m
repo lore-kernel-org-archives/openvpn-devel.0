@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Tue, 9 Dec 2025 11:19:33 +0000
-In-Reply-To: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
-References: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
+In-Reply-To: <gerrit.1762964572000.I67f5bf53b80f53fd2e349f844479ed172a7b3aa1@...2715...>
+References: <gerrit.1762964572000.I67f5bf53b80f53fd2e349f844479ed172a7b3aa1@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <aa8babd4215dd0dae9e575a55d2e8ec0ffd9cbd3-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <23c5394d1b622c520c026abe85a6c760080ba051-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dSeAITwnRwY="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: tun: Refactor BSD
- write_tun/read_tun
+Content-Type: multipart/alternative; boundary="X4/BiEDgyEI="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: tun: Change return
+ type of write_tun/read_tun to ssize_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dSeAITwnRwY=
+--X4/BiEDgyEI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,215 +32,175 @@ Hello cron2, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1376?usp=3Demail
 
-to look at the new patch set (#7).
+to look at the new patch set (#10).
 
 The following approvals got outdated and were removed:
-Code-Review-1 by cron2
+Code-Review+2 by cron2
 
 
-Change subject: tun: Refactor BSD write_tun/read_tun
+Change subject: tun: Change return type of write_tun/read_tun to ssize_t
 ......................................................................
 
-tun: Refactor BSD write_tun/read_tun
+tun: Change return type of write_tun/read_tun to ssize_t
 
-There was a lot of duplicated code, merge it together.
+So we can directly give back the actual return
+type from write/read. Even if we then cast it
+back to int. The cast should be safe since we
+also specify an int as we also put an int in
+as length.
 
-Change-Id: Ifd9384287648d1f37a625d9ed6a09733208fa56c
+Change-Id: I67f5bf53b80f53fd2e349f844479ed172a7b3aa1
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpn/forward.c
 M src/openvpn/tun.c
-1 file changed, 26 insertions(+), 233 deletions(-)
+M src/openvpn/tun.h
+3 files changed, 28 insertions(+), 56 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1378/7
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1376/10
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 7c61dcf..b4e3cb4 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1685,10 +1685,10 @@
- #endif
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6f1bc0c..913fb92 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1292,11 +1292,6 @@
+ #endif /* if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARG=
+ET_FREEBSD)) */
  }
 
--#if defined(TARGET_OPENBSD) || defined(TARGET_DARWIN)
-+#if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defined(TARGET=
-_NETBSD) || defined(TARGET_OPENBSD) || defined(TARGET_DARWIN)
-
- /*
-- * OpenBSD and Mac OS X when using utun
-+ * BSDs and Mac OS X when using utun
-  * have a slightly incompatible TUN device from
-  * the rest of the world, in that it prepends a
-  * uint32 to the beginning of the IP header
-@@ -1699,10 +1699,8 @@
-  * We strip off this field on reads and
-  * put it back on writes.
-  *
-- * I have not tested TAP devices on OpenBSD,
-- * but I have conditionalized the special
-- * TUN handling code described above to
-- * go away for TAP devices.
-+ * For TAP devices, this is not needed and must
-+ * not be done.
-  */
-
- #include <netinet/ip.h>
-@@ -1733,11 +1731,9 @@
-     {
-         u_int32_t type;
-         struct iovec iv[2];
--        struct openvpn_iphdr *iph;
-+        struct ip *iph =3D (struct ip *)buf;
-
--        iph =3D (struct openvpn_iphdr *)buf;
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
 -
--        if (OPENVPN_IPH_GET_VER(iph->version_len) =3D=3D 6)
-+        if (iph->ip_v =3D=3D 6)
-         {
-             type =3D htonl(AF_INET6);
-         }
-@@ -1784,7 +1780,26 @@
- #pragma GCC diagnostic pop
- #endif
+ /*
+  * Output: c->c2.buf
+  */
+@@ -1323,11 +1318,11 @@
+     if (c->c1.tuntap->backend_driver =3D=3D DRIVER_AFUNIX)
+     {
+         c->c2.buf.len =3D
+-            read_tun_afunix(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.frame.bu=
+f.payload_size);
++            (int)read_tun_afunix(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.fra=
+me.buf.payload_size);
+     }
+     else
+     {
+-        c->c2.buf.len =3D read_tun(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.f=
+rame.buf.payload_size);
++        c->c2.buf.len =3D (int)read_tun(c->c1.tuntap, BPTR(&c->c2.buf), c-=
+>c2.frame.buf.payload_size);
+     }
+ #endif /* ifdef _WIN32 */
 
--#endif /* if defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */
-+/* For MacOS this extra handling is conditional on the UTUN driver.
-+ * So it needs its own read_tun()/write_tun() with the necessary
-+ * checks. They are located in the macOS-specific section below.
-+ */
-+#if !defined(TARGET_DARWIN)
-+int
-+write_tun(struct tuntap *tt, uint8_t *buf, int len)
-+{
-+    return write_tun_header(tt, buf, len);
-+}
-+
-+int
-+read_tun(struct tuntap *tt, uint8_t *buf, int len)
-+{
-+    return read_tun_header(tt, buf, len);
-+}
+@@ -1357,6 +1352,11 @@
+     check_status(c->c2.buf.len, "read from TUN/TAP", NULL, c->c1.tuntap);
+ }
+
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
 +#endif
 +
-+
-+#endif /* defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defined(=
+ /**
+  * Drops UDP packets which OS decided to route via tun.
+  *
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index b4e3cb4..0299285 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1706,8 +1706,8 @@
+ #include <netinet/ip.h>
+ #include <sys/uio.h>
+
+-static inline int
+-header_modify_read_write_return(int len)
++static inline ssize_t
++header_modify_read_write_return(ssize_t len)
+ {
+     if (len > 0)
+     {
+@@ -1719,12 +1719,7 @@
+     }
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+-static int
++static ssize_t
+ write_tun_header(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     if (tt->type =3D=3D DEV_TYPE_TUN)
+@@ -1755,7 +1750,7 @@
+     }
+ }
+
+-static int
++static ssize_t
+ read_tun_header(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     if (tt->type =3D=3D DEV_TYPE_TUN)
+@@ -1776,30 +1771,25 @@
+     }
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ /* For MacOS this extra handling is conditional on the UTUN driver.
+  * So it needs its own read_tun()/write_tun() with the necessary
+  * checks. They are located in the macOS-specific section below.
+  */
+ #if !defined(TARGET_DARWIN)
+-int
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return write_tun_header(tt, buf, len);
+ }
+
+-int
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return read_tun_header(tt, buf, len);
+ }
+ #endif
+
+-
+-#endif /* defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defined(=
 TARGET_NETBSD) || if defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */
++#endif /* if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defin=
+ed(TARGET_NETBSD) || defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */
 
  bool
  tun_name_is_fixed(const char *dev)
-@@ -2679,18 +2694,6 @@
-     argv_free(&argv);
+@@ -2056,13 +2046,13 @@
+     free(tt);
  }
 
 -int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    return write_tun_header(tt, buf, len);
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    return read_tun_header(tt, buf, len);
--}
--
- #elif defined(TARGET_NETBSD)
-
- /*
-@@ -2792,88 +2795,8 @@
-     argv_free(&argv);
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return write(tt->fd, buf, len);
  }
 
--static inline int
--netbsd_modify_read_write_return(int len)
--{
--    if (len > 0)
--    {
--        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
--    }
--    else
--    {
--        return len;
--    }
--}
--
 -int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--        struct openvpn_iphdr *iph;
--
--        iph =3D (struct openvpn_iphdr *)buf;
--
--        if (OPENVPN_IPH_GET_VER(iph->version_len) =3D=3D 6)
--        {
--            type =3D htonl(AF_INET6);
--        }
--        else
--        {
--            type =3D htonl(AF_INET);
--        }
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return netbsd_modify_read_write_return(writev(tt->fd, iv, 2));
--    }
--    else
--    {
--        return write(tt->fd, buf, len);
--    }
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return netbsd_modify_read_write_return(readv(tt->fd, iv, 2));
--    }
--    else
--    {
--        return read(tt->fd, buf, len);
--    }
--}
--
- #elif defined(TARGET_FREEBSD)
-
--static inline int
--freebsd_modify_read_write_return(int len)
--{
--    if (len > 0)
--    {
--        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
--    }
--    else
--    {
--        return len;
--    }
--}
--
- void
- open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
-ct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
-@@ -2946,84 +2869,8 @@
-     argv_free(&argv);
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return read(tt->fd, buf, len);
+@@ -2261,27 +2251,18 @@
+     free(tt);
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -249,155 +209,146 @@ ct tuntap *tt,
 -#endif
 -
 -int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--        struct ip *iph;
--
--        iph =3D (struct ip *)buf;
--
--        if (iph->ip_v =3D=3D 6)
--        {
--            type =3D htonl(AF_INET6);
--        }
--        else
--        {
--            type =3D htonl(AF_INET);
--        }
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return freebsd_modify_read_write_return(writev(tt->fd, iv, 2));
--    }
--    else
--    {
--        return write(tt->fd, buf, len);
--    }
--}
--
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return write(tt->fd, buf, len);
+ }
+
 -int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return freebsd_modify_read_write_return(readv(tt->fd, iv, 2));
--    }
--    else
--    {
--        return read(tt->fd, buf, len);
--    }
--}
--
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return read(tt->fd, buf, len);
+ }
+
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- #elif defined(TARGET_DRAGONFLY)
+ #elif defined(TARGET_SOLARIS)
 
--static inline int
--dragonfly_modify_read_write_return(int len)
--{
--    if (len > 0)
--    {
--        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
--    }
--    else
--    {
--        return len;
--    }
--}
+ #ifndef TUNNEWPPA
+@@ -2606,7 +2587,7 @@
+     argv_free(&argv);
+ }
+
+-int
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     struct strbuf sbuf;
+@@ -2615,7 +2596,7 @@
+     return putmsg(tt->fd, NULL, &sbuf, 0) >=3D 0 ? sbuf.len : -1;
+ }
+
+-int
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     struct strbuf sbuf;
+@@ -3090,11 +3071,6 @@
+     }
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
 -
  void
- open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
-ct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
-@@ -3050,60 +2897,6 @@
+ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ {
+@@ -3118,7 +3094,7 @@
+     gc_free(&gc);
+ }
+
+-int
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     if (tt->backend_driver =3D=3D DRIVER_UTUN)
+@@ -3131,7 +3107,7 @@
+     }
+ }
+
+-int
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     if (tt->backend_driver =3D=3D DRIVER_UTUN)
+@@ -3144,10 +3120,6 @@
+     }
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #elif defined(TARGET_AIX)
+
+ void
+@@ -3270,13 +3242,13 @@
+     argv_free(&argv);
+ }
+
+-int
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return write(tt->fd, buf, len);
+ }
+
+-int
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return read(tt->fd, buf, len);
+@@ -6322,13 +6294,13 @@
      free(tt);
  }
 
 -int
--write_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--        struct ip *iph;
--
--        iph =3D (struct ip *)buf;
--
--        if (iph->ip_v =3D=3D 6)
--        {
--            type =3D htonl(AF_INET6);
--        }
--        else
--        {
--            type =3D htonl(AF_INET);
--        }
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return dragonfly_modify_read_write_return(writev(tt->fd, iv, 2));
--    }
--    else
--    {
--        return write(tt->fd, buf, len);
--    }
--}
--
--int
--read_tun(struct tuntap *tt, uint8_t *buf, int len)
--{
--    if (tt->type =3D=3D DEV_TYPE_TUN)
--    {
--        u_int32_t type;
--        struct iovec iv[2];
--
--        iv[0].iov_base =3D (char *)&type;
--        iv[0].iov_len =3D sizeof(type);
--        iv[1].iov_base =3D buf;
--        iv[1].iov_len =3D len;
--
--        return dragonfly_modify_read_write_return(readv(tt->fd, iv, 2));
--    }
--    else
--    {
--        return read(tt->fd, buf, len);
--    }
--}
--
- #elif defined(TARGET_DARWIN)
++ssize_t
+ write_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return write(tt->fd, buf, len);
+ }
 
- /* Darwin (MacOS X) is mostly "just use the generic stuff", but there
+-int
++ssize_t
+ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ {
+     return read(tt->fd, buf, len);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 876f147..8bc876e 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -274,9 +274,9 @@
+
+ void close_tun_handle(struct tuntap *tt);
+
+-int write_tun(struct tuntap *tt, uint8_t *buf, int len);
++ssize_t write_tun(struct tuntap *tt, uint8_t *buf, int len);
+
+-int read_tun(struct tuntap *tt, uint8_t *buf, int len);
++ssize_t read_tun(struct tuntap *tt, uint8_t *buf, int len);
+
+ #ifdef ENABLE_FEATURE_TUN_PERSIST
+ void tuncfg(const char *dev, const char *dev_type, const char *dev_node, i=
+nt persist_mode,
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1376?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ifd9384287648d1f37a625d9ed6a09733208fa56c
-Gerrit-Change-Number: 1378
-Gerrit-PatchSet: 7
+Gerrit-Change-Id: I67f5bf53b80f53fd2e349f844479ed172a7b3aa1
+Gerrit-Change-Number: 1376
+Gerrit-PatchSet: 10
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -406,335 +357,223 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---dSeAITwnRwY=
+--X4/BiEDgyEI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: cron2, flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #7</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">tun: Refactor BSD write_tun/read_tu=
-n<br><br>There was a lot of duplicated code, merge it together.<br><br>Chan=
-ge-Id: Ifd9384287648d1f37a625d9ed6a09733208fa56c<br>Signed-off-by: Frank Li=
-chtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/tun.c<br>1 file =
-changed, 26 insertions(+), 233 deletions(-)<br><br></pre><pre class=3D"bloc=
-ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
-pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1378/7</pre><pr=
-e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index 7c=
-61dcf..b4e3cb4 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><sp=
-an>+++ b/src/openvpn/tun.c</span><br><span>@@ -1685,10 +1685,10 @@</span><b=
-r><span> #endif</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_OPENBSD) || defined(TARG=
-ET_DARWIN)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defin=
-ed(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || defined(TARGET_NETBSD) |=
-| defined(TARGET_OPENBSD) || defined(TARGET_DARWIN)</span><br><span> </span=
-><br><span> /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Open=
-BSD and Mac OS X when using utun</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * BSDs and Mac OS X when using utun</span><br><span>  * have =
-a slightly incompatible TUN device from</span><br><span>  * the rest of the=
- world, in that it prepends a</span><br><span>  * uint32 to the beginning o=
-f the IP header</span><br><span>@@ -1699,10 +1699,8 @@</span><br><span>  * =
-We strip off this field on reads and</span><br><span>  * put it back on wri=
-tes.</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- * I have not tested TAP devices on OpenBSD,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * but I have conditionalized the special</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * TUN handling code describe=
-d above to</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * go away =
-for TAP devices.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-For TAP devices, this is not needed and must</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * not be done.</span><br><span>  */</span><br><sp=
-an> </span><br><span> #include &lt;netinet/ip.h&gt;</span><br><span>@@ -173=
-3,11 +1731,9 @@</span><br><span>     {</span><br><span>         u_int32_t t=
-ype;</span><br><span>         struct iovec iv[2];</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        struct openvpn_iphdr *iph;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        struct ip *iph =3D (stru=
-ct ip *)buf;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        iph =3D (struct openvpn_iphdr *)buf;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        if (OPENVPN_IPH_GET_VER(iph-&gt;version_len) =3D=3D 6)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (iph-&gt;i=
-p_v =3D=3D 6)</span><br><span>         {</span><br><span>             type =
-=3D htonl(AF_INET6);</span><br><span>         }</span><br><span>@@ -1784,7 =
-+1780,26 @@</span><br><span> #pragma GCC diagnostic pop</span><br><span> #e=
-ndif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#endif /* if defined (TARGET_OPENBSD) || defined(TARGET_DARWIN) */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+/* For MacOS this extra han=
-dling is conditional on the UTUN driver.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * So it needs its own read_tun()/write_tun() with the=
- necessary</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * checks=
-. They are located in the macOS-specific section below.</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#if !defined(TARGET_DARWIN)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+write_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return write_tun_header(tt, buf, len);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+read=
-_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return read_tun_header(tt, buf, len);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#endif /* defined(TARGET_FREEBSD) || d=
-efined(TARGET_DRAGONFLY) || defined(TARGET_NETBSD) || if defined (TARGET_OP=
-ENBSD) || defined(TARGET_DARWIN) */</span><br><span> </span><br><span> bool=
-</span><br><span> tun_name_is_fixed(const char *dev)</span><br><span>@@ -26=
-79,18 +2694,6 @@</span><br><span>     argv_free(&amp;argv);</span><br><span=
-> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-write_tun(struct t=
-untap *tt, uint8_t *buf, int len)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn write_tun_header(tt, buf, len);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<p>flichtenheld <strong>uploaded patch set #10</strong> to this change.</p>=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1376?usp=3Demail">View =
+Change</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">tun: Change return type of write_tu=
+n/read_tun to ssize_t<br><br>So we can directly give back the actual return=
+<br>type from write/read. Even if we then cast it<br>back to int. The cast =
+should be safe since we<br>also specify an int as we also put an int in<br>=
+as length.<br><br>Change-Id: I67f5bf53b80f53fd2e349f844479ed172a7b3aa1<br>S=
+igned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/op=
+envpn/forward.c<br>M src/openvpn/tun.c<br>M src/openvpn/tun.h<br>3 files ch=
+anged, 28 insertions(+), 56 deletions(-)<br><br></pre><pre class=3D"blocks"=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1376/10</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>in=
+dex 6f1bc0c..913fb92 100644</span><br><span>--- a/src/openvpn/forward.c</sp=
+an><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -1292,11 +1292,=
+6 @@</span><br><span> #endif /* if defined(ENABLE_DCO) &amp;&amp; (defined(=
+TARGET_LINUX) || defined(TARGET_FREEBSD)) */</span><br><span> }</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__G=
+NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><span>  * Ou=
+tput: c-&gt;c2.buf</span><br><span>  */</span><br><span>@@ -1323,11 +1318,1=
+1 @@</span><br><span>     if (c-&gt;c1.tuntap-&gt;backend_driver =3D=3D DRI=
+VER_AFUNIX)</span><br><span>     {</span><br><span>         c-&gt;c2.buf.le=
+n =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            read=
+_tun_afunix(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c2.buf), c-&gt;c2.frame.buf.pa=
+yload_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     (int)read_tun_afunix(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c2.buf), c-&gt;c=
+2.frame.buf.payload_size);</span><br><span>     }</span><br><span>     else=
+</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        c-&gt;c2.buf.len =3D read_tun(c-&gt;c1.tuntap, BPTR(&amp;c-&gt;c2=
+.buf), c-&gt;c2.frame.buf.payload_size);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        c-&gt;c2.buf.len =3D (int)read_tun(c-&gt;c1.tu=
+ntap, BPTR(&amp;c-&gt;c2.buf), c-&gt;c2.frame.buf.payload_size);</span><br>=
+<span>     }</span><br><span> #endif /* ifdef _WIN32 */</span><br><span> </=
+span><br><span>@@ -1357,6 +1352,11 @@</span><br><span>     check_status(c-&=
+gt;c2.buf.len, &quot;read from TUN/TAP&quot;, NULL, c-&gt;c1.tuntap);</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored =
+&quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span> /**</span><br><span>  * Drops UDP packets which OS decided to rou=
+te via tun.</span><br><span>  *</span><br><span>diff --git a/src/openvpn/tu=
+n.c b/src/openvpn/tun.c</span><br><span>index b4e3cb4..0299285 100644</span=
+><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c<=
+/span><br><span>@@ -1706,8 +1706,8 @@</span><br><span> #include &lt;netinet=
+/ip.h&gt;</span><br><span> #include &lt;sys/uio.h&gt;</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline int</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-header_modify_read_write_retu=
+rn(int len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static i=
+nline ssize_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+header=
+_modify_read_write_return(ssize_t len)</span><br><span> {</span><br><span> =
+    if (len &gt; 0)</span><br><span>     {</span><br><span>@@ -1719,12 +171=
+9,7 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defin=
+ed(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma =
+GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#p=
+ragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stat=
+ic int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static ssize_=
+t</span><br><span> write_tun_header(struct tuntap *tt, uint8_t *buf, int le=
+n)</span><br><span> {</span><br><span>     if (tt-&gt;type =3D=3D DEV_TYPE_=
+TUN)</span><br><span>@@ -1755,7 +1750,7 @@</span><br><span>     }</span><br=
+><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic ssize_t</span><br><span> read_tun_header(struct tuntap *tt, uint8_t *bu=
+f, int len)</span><br><span> {</span><br><span>     if (tt-&gt;type =3D=3D =
+DEV_TYPE_TUN)</span><br><span>@@ -1776,30 +1771,25 @@</span><br><span>     =
+}</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span> /* For MacOS this extra hand=
+ling is conditional on the UTUN driver.</span><br><span>  * So it needs its=
+ own read_tun()/write_tun() with the necessary</span><br><span>  * checks. =
+They are located in the macOS-specific section below.</span><br><span>  */<=
+/span><br><span> #if !defined(TARGET_DARWIN)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ssize_t</span><br><span> write_tun(struct tuntap *tt, uint8_t *buf, =
+int len)</span><br><span> {</span><br><span>     return write_tun_header(tt=
+, buf, len);</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ssize_t</span><br><span> read_tun(struct tuntap *tt, uint8_t *b=
+uf, int len)</span><br><span> {</span><br><span>     return read_tun_header=
+(tt, buf, len);</span><br><span> }</span><br><span> #endif</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#endif /* defined(TARGET_FREEBSD) || defi=
+ned(TARGET_DRAGONFLY) || defined(TARGET_NETBSD) || if defined (TARGET_OPENB=
+SD) || defined(TARGET_DARWIN) */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif /* if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONF=
+LY) || defined(TARGET_NETBSD) || defined (TARGET_OPENBSD) || defined(TARGET=
+_DARWIN) */</span><br><span> </span><br><span> bool</span><br><span> tun_na=
+me_is_fixed(const char *dev)</span><br><span>@@ -2056,13 +2046,13 @@</span>=
+<br><span>     free(tt);</span><br><span> }</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ssize_t</span><br><span> write_tun(struct tuntap *t=
+t, uint8_t *buf, int len)</span><br><span> {</span><br><span>     return wr=
+ite(tt-&gt;fd, buf, len);</span><br><span> }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ssize_t</span><br><span> read_tun(struct tuntap *t=
+t, uint8_t *buf, int len)</span><br><span> {</span><br><span>     return re=
+ad(tt-&gt;fd, buf, len);</span><br><span>@@ -2261,27 +2251,18 @@</span><br>=
+<span>     free(tt);</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clan=
+g__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagn=
+ostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC=
+ diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> writ=
+e_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><b=
+r><span>     return write(tt-&gt;fd, buf, len);</span><br><span> }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> rea=
+d_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><b=
+r><span>     return read(tt-&gt;fd, buf, len);</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
+_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span> #elif defined(TARGET_SOLARIS)</span><br><span> </span><br>=
+<span> #ifndef TUNNEWPPA</span><br><span>@@ -2606,7 +2587,7 @@</span><br><s=
+pan>     argv_free(&amp;argv);</span><br><span> }</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> write_tun(struct tun=
+tap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><span>     str=
+uct strbuf sbuf;</span><br><span>@@ -2615,7 +2596,7 @@</span><br><span>    =
+ return putmsg(tt-&gt;fd, NULL, &amp;sbuf, 0) &gt;=3D 0 ? sbuf.len : -1;</s=
+pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssi=
+ze_t</span><br><span> read_tun(struct tuntap *tt, uint8_t *buf, int len)</s=
+pan><br><span> {</span><br><span>     struct strbuf sbuf;</span><br><span>@=
+@ -3090,11 +3071,6 @@</span><br><span>     }</span><br><span> }</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__G=
+NUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void</span><br><span> clo=
+se_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)</span><br><span> {</span>=
+<br><span>@@ -3118,7 +3094,7 @@</span><br><span>     gc_free(&amp;gc);</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssize=
+_t</span><br><span> write_tun(struct tuntap *tt, uint8_t *buf, int len)</sp=
+an><br><span> {</span><br><span>     if (tt-&gt;backend_driver =3D=3D DRIVE=
+R_UTUN)</span><br><span>@@ -3131,7 +3107,7 @@</span><br><span>     }</span>=
+<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssize_t=
+</span><br><span> read_tun(struct tuntap *tt, uint8_t *buf, int len)</span>=
+<br><span> {</span><br><span>     if (tt-&gt;backend_driver =3D=3D DRIVER_U=
+TUN)</span><br><span>@@ -3144,10 +3120,6 @@</span><br><span>     }</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> #elif defined(TARGET_AIX)</span><br><s=
+pan> </span><br><span> void</span><br><span>@@ -3270,13 +3242,13 @@</span><=
+br><span>     argv_free(&amp;argv);</span><br><span> }</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> write_tun(struc=
+t tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><span>   =
+  return write(tt-&gt;fd, buf, len);</span><br><span> }</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> read_tun(struc=
+t tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><span>   =
+  return read(tt-&gt;fd, buf, len);</span><br><span>@@ -6322,13 +6294,13 @@=
+</span><br><span>     free(tt);</span><br><span> }</span><br><span> </span>=
 <br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-read_tun(struct tuntap *tt, uint8_t *buf, int =
-len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    return read_tun_header(tt, buf, l=
-en);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif defined(TARGE=
-T_NETBSD)</span><br><span> </span><br><span> /*</span><br><span>@@ -2792,88=
- +2795,8 @@</span><br><span>     argv_free(&amp;argv);</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-stati=
-c inline int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-netbsd_mo=
-dify_read_write_return(int len)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (le=
-n &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        return len &gt; size=
-of(u_int32_t) ? len - sizeof(u_int32_t) : 0;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return len;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tuntap =
-*tt, uint8_t *buf, int len)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&gt=
-;type =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        u_i=
-nt32_t type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        s=
-truct iovec iv[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     struct openvpn_iphdr *iph;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iph=
- =3D (struct openvpn_iphdr *)buf;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (OPENVPN_IPH_GET_VER(iph-&gt;version_len) =3D=3D 6)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            type =3D htonl(AF_INET6);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            type =3D htonl(AF_INET);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[0].i=
-ov_base =3D (char *)&amp;type;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        iv[0].iov_len =3D sizeof(type);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        iv[1].iov_base =3D buf;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_len =3D len;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        return netbsd_modify_read_write_return(wri=
-tev(tt-&gt;fd, iv, 2));</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return write(tt-&gt;fd, buf, len);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-read_tun(struct tuntap=
- *tt, uint8_t *buf, int len)</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&g=
-t;type =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        u_=
-int32_t type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-struct iovec iv[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_base =
-=3D (char *)&amp;type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        iv[0].iov_len =3D sizeof(type);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        iv[1].iov_base =3D buf;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        iv[1].iov_len =3D len;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        return netbsd_modify_read_write_return(readv(tt-&g=
-t;fd, iv, 2));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        return read(tt-&gt;fd, buf, len);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span> #elif defined(TARGET_FREEBSD)</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline int</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-freebsd_modify_read_write_re=
-turn(int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (len &gt; 0)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        return len &gt; sizeof(u_int32_t) ? le=
-n - sizeof(u_int32_t) : 0;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        return len;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span> void</span><br><span> open_tun(const char *dev, const char *=
-dev_type, const char *dev_node, struct tuntap *tt,</span><br><span>        =
-  openvpn_net_ctx_t *ctx)</span><br><span>@@ -2946,84 +2869,8 @@</span><br>=
-<span>     argv_free(&amp;argv);</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || de=
-fined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
-ma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-i=
-nt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tu=
-ntap *tt, uint8_t *buf, int len)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (t=
-t-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  u_int32_t type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    struct iovec iv[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        struct ip *iph;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iph =3D (=
-struct ip *)buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (iph-&gt;ip_v =
-=3D=3D 6)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            type =3D hto=
-nl(AF_INET6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            type =3D htonl(AF_INET);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        iv[0].iov_base =3D (char *)&amp;type;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(ty=
-pe);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov=
-_base =3D buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- iv[1].iov_len =3D len;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return free=
-bsd_modify_read_write_return(writev(tt-&gt;fd, iv, 2));</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ret=
-urn write(tt-&gt;fd, buf, len);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-read_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        u_int32_t type;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        struct iovec iv[2];</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        iv[0].iov_base =3D (char *)&amp;type;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(type);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base=
- =3D buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1=
-].iov_len =3D len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        return freebsd_m=
-odify_read_write_return(readv(tt-&gt;fd, iv, 2));</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return re=
-ad(tt-&gt;fd, buf, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif defined(TARGET_DRA=
-GONFLY)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-static inline int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-dragonfly_modify_read_write_return(int len)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    if (len &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return l=
-en &gt; sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        re=
-turn len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span> void</span><br><span> open_tun=
-(const char *dev, const char *dev_type, const char *dev_node, struct tuntap=
- *tt,</span><br><span>          openvpn_net_ctx_t *ctx)</span><br><span>@@ =
--3050,60 +2897,6 @@</span><br><span>     free(tt);</span><br><span> }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-write_tun(struct tuntap *tt=
-, uint8_t *buf, int len)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tt-&gt;ty=
-pe =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        u_int3=
-2_t type;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        stru=
-ct iovec iv[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  struct ip *iph;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        iph =3D (struct i=
-p *)buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        if (iph-&gt;ip_v =3D=3D 6)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            type =3D htonl(AF_INE=
-T6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            type =3D htonl(AF_INET);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        iv[0].iov_base =3D (char *)&amp;type;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(type);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base =
-=3D buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1]=
-.iov_len =3D len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        return dragonfly_=
-modify_read_write_return(writev(tt-&gt;fd, iv, 2));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        retur=
-n write(tt-&gt;fd, buf, len);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-read_tun(struct tuntap *tt, uint8_t *buf, int len)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        u_int32_t type;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        struct iovec iv[2];</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        iv[0].iov_base =3D (char *)&amp;type;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        iv[0].iov_len =3D sizeof(type);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1].iov_base =
-=3D buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv[1]=
-.iov_len =3D len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        return dragonfly_=
-modify_read_write_return(readv(tt-&gt;fd, iv, 2));</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return r=
-ead(tt-&gt;fd, buf, len);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif defined(=
-TARGET_DARWIN)</span><br><span> </span><br><span> /* Darwin (MacOS X) is mo=
-stly &quot;just use the generic stuff&quot;, but there</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1378?usp=3Demail">change 1378</a>. To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dem=
-ail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1378?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+"color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> write_tun(struct tu=
+ntap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><span>     re=
+turn write(tt-&gt;fd, buf, len);</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ssize_t</span><br><span> read_tun(struct =
+tuntap *tt, uint8_t *buf, int len)</span><br><span> {</span><br><span>     =
+return read(tt-&gt;fd, buf, len);</span><br><span>diff --git a/src/openvpn/=
+tun.h b/src/openvpn/tun.h</span><br><span>index 876f147..8bc876e 100644</sp=
+an><br><span>--- a/src/openvpn/tun.h</span><br><span>+++ b/src/openvpn/tun.=
+h</span><br><span>@@ -274,9 +274,9 @@</span><br><span> </span><br><span> vo=
+id close_tun_handle(struct tuntap *tt);</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-int write_tun(struct tuntap *tt, uint8_=
+t *buf, int len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ss=
+ize_t write_tun(struct tuntap *tt, uint8_t *buf, int len);</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int read_tun(struct =
+tuntap *tt, uint8_t *buf, int len);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ssize_t read_tun(struct tuntap *tt, uint8_t *buf, int len);=
+</span><br><span> </span><br><span> #ifdef ENABLE_FEATURE_TUN_PERSIST</span=
+><br><span> void tuncfg(const char *dev, const char *dev_type, const char *=
+dev_node, int persist_mode,</span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1376?usp=3Demail">chan=
+ge 1376</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
+itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
+rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1376?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifd9384287648d1f37a625d9ed6a=
-09733208fa56c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1378 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I67f5bf53b80f53fd2e349f84447=
+9ed172a7b3aa1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1376 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -752,5 +591,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---dSeAITwnRwY=--
+--X4/BiEDgyEI=--
 
