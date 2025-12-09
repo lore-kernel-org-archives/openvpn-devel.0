@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 9 Dec 2025 09:00:53 +0000
-In-Reply-To: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
-References: <gerrit.1764812658000.I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <705ab28722243a980a8c6e29c09377b42e28b260-HTML@...2715...>
+Date: Tue, 9 Dec 2025 10:49:28 +0000
+In-Reply-To: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
+References: <gerrit.1763122662000.Ifd9384287648d1f37a625d9ed6a09733208fa56c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <87e7cebc24e9dfe525396ac9bb7e58d0bdb9f873-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="L8T3BiRz1HI="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: pull-filter:
- improve documentation
+Content-Type: multipart/alternative; boundary="IBS6s9/wuT0="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: tun: Refactor BSD
+ write_tun/read_tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,138 +19,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
+To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---L8T3BiRz1HI=
+--IBS6s9/wuT0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
-15?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change subject: pull-filter: improve documentation
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1378?usp=3Demail )
+
+Change subject: tun: Refactor BSD write_tun/read_tun
 ......................................................................
 
-pull-filter: improve documentation
 
-Pull-filter uses a simple string comparison and could be defeated by
-unusual formatting of pushed option strings. Document that this
-option is not meant to be used as a security measure.
+Patch Set 5: Code-Review-1
 
-Reported by: <aarnav@...2953...>
+Copied votes on follow-up patch sets have been updated:
+* Code-Review-1 has been copied to patch set 6 (copy condition: "changekind=
+:NO_CHANGE OR changekind:TRIVIAL_REBASE OR is:MIN").
 
-Change-Id: I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1415
-Message-Id: <20251209070218.4467-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34=
-930.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M doc/man-sections/client-options.rst
-1 file changed, 5 insertions(+), 0 deletions(-)
+(3 comments)
+
+Patchset:
+
+PS5:
+I think this is a good change and BB confirms that it works (or worked, a f=
+ew weeks ago).  I think the comments could be improved a bit more...
 
 
+File src/openvpn/tun.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1378/comment/9197213b_fa155467?usp=3D=
+email :
+PS5, Line 1705:  * go away for TAP devices.
+I think this should be reworded ("we *have* tested") to be something like
+
+```
+ * For TAP devices, no extra header is needed, so we need to check for DEV_=
+TYPE_TUN
+```
+
+or so?  Or maybe even shorter "For TAP devices, this is not needed and must=
+ not be done" or so (so it's clear "even if we wanted to keep the code the =
+same, we can't").
 
 
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
-options.rst
-index ca4c8e9..b9ae7ce 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -345,6 +345,11 @@
-   next remote succeeds. To silently ignore an option pushed by the server,
-   use :code:`ignore`.
+http://gerrit.openvpn.net/c/openvpn/+/1378/comment/0f65128b_1360ae44?usp=3D=
+email :
+PS5, Line 1785: #if !defined(TARGET_DARWIN)
+I think this also warrants a comment
 
-+  *Warning:* ``pull-filter`` cannot be relied upon as a security measure to
-+  protect against offending options pushed by a server. For example, the
-+  filter could be defeated by pushing options with extra spaces between
-+  tokens or other formatting variations.
-+
- --push-peer-info
-   Push additional information about the client to server. The following
-   data is always pushed to the server:
+```
+/* MacOS is slightly different again (extra variant for UTUN) so this platf=
+orm
+ * has its own read_tun()/write_tun() with the necessary conditionals below
+ */
+```
+
+(it took me a while to remember and find the specifics, someone else will b=
+e even more confused)
+
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a
-Gerrit-Change-Number: 1415
-Gerrit-PatchSet: 4
-Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Change-Id: Ifd9384287648d1f37a625d9ed6a09733208fa56c
+Gerrit-Change-Number: 1378
+Gerrit-PatchSet: 5
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 09 Dec 2025 10:49:28 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---L8T3BiRz1HI=
+--IBS6s9/wuT0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1415?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">pull-filter: improve documentation<br><br>Pull-f=
-ilter uses a simple string comparison and could be defeated by<br>unusual f=
-ormatting of pushed option strings. Document that this<br>option is not mea=
-nt to be used as a security measure.<br><br>Reported by: &lt;aarnav@...2974...=
-...&gt;<br><br>Change-Id: I2c8d40038e52fbdff1c56f93db1e6a2f9255c59a<br>Sign=
-ed-off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Acked-by: Gert Doerin=
-g &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openv=
-pn/+/1415<br>Message-Id: &lt;20251209070218.4467-1-gert@...1296...&gt;<br>U=
-RL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg349=
-30.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M =
-doc/man-sections/client-options.rst<br>1 file changed, 5 insertions(+), 0 d=
-eletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/clie=
-nt-options.rst</span><br><span>index ca4c8e9..b9ae7ce 100644</span><br><spa=
-n>--- a/doc/man-sections/client-options.rst</span><br><span>+++ b/doc/man-s=
-ections/client-options.rst</span><br><span>@@ -345,6 +345,11 @@</span><br><=
-span>   next remote succeeds. To silently ignore an option pushed by the se=
-rver,</span><br><span>   use :code:`ignore`.</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  *Warning:* ``pull-filter`` can=
-not be relied upon as a security measure to</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  protect against offending options pushed by a ser=
-ver. For example, the</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  filter could be defeated by pushing options with extra spaces between</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  tokens or other for=
-matting variations.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span> --push-peer-info</span><br><span>   Push additional infor=
-mation about the client to server. The following</span><br><span>   data is=
- always pushed to the server:</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail">ch=
-ange 1415</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1415?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1378?usp=3Demail">V=
+iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1378?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I think th=
+is is a good change and BB confirms that it works (or worked, a few weeks a=
+go).  I think the comments could be improved a bit more...</p></li></ul></l=
+i><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1378/comment/9197213b_fa155467?usp=3Demail">Patch Set #5, L=
+ine 1705:</a> <code style=3D"font-family:monospace,monospace"> * go away fo=
+r TAP devices.</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap=
+; word-wrap: break-word;">I think this should be reworded (&quot;we *have* =
+tested&quot;) to be something like</p><pre class=3D"blocks" style=3D"font-f=
+amily: monospace,monospace; white-space: pre-wrap;">```<br> * For TAP devic=
+es, no extra header is needed, so we need to check for DEV_TYPE_TUN<br>```<=
+/pre><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-w=
+ord;">or so?  Or maybe even shorter &quot;For TAP devices, this is not need=
+ed and must not be done&quot; or so (so it&#39;s clear &quot;even if we wan=
+ted to keep the code the same, we can&#39;t&quot;).</p></li><li style=3D"ma=
+rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1378/comment/0f65128b_1360ae44?usp=3D=
+email">Patch Set #5, Line 1785:</a> <code style=3D"font-family:monospace,mo=
+nospace">#if !defined(TARGET_DARWIN)</code></p><p class=3D"blocks" style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">I think this also warrants =
+a comment</p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">```<br>/* MacOS is slightly different again (ext=
+ra variant for UTUN) so this platform<br> * has its own read_tun()/write_tu=
+n() with the necessary conditionals below<br> */<br>```</pre><p class=3D"bl=
+ocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">(it took me a=
+ while to remember and find the specifics, someone else will be even more c=
+onfused)</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1378?usp=3Demail">change 1378</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
+schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
+p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1378?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2c8d40038e52fbdff1c56f93db1=
-e6a2f9255c59a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1415 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd9384287648d1f37a625d9ed6a=
+09733208fa56c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1378 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 09 Dec 2025 10:49:28=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---L8T3BiRz1HI=--
+--IBS6s9/wuT0=--
 
