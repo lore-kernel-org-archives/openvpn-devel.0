@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 10 Dec 2025 08:48:58 +0100
-Message-ID: <20251210074904.27067-1-gert@...1296...>
-In-Reply-To: <gerrit.1765287788000.I78c6f335c635e97bb41d26ed8908a978d7b49387@...2715...>
-References: <gerrit.1765287788000.I78c6f335c635e97bb41d26ed8908a978d7b49387@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 10 Dec 2025 07:50:26 +0000
+In-Reply-To: <gerrit.1765287788000.I59995bf0fd6bc48a738a94e41141ed37d8d637ba@...2715...>
+References: <gerrit.1765287788000.I59995bf0fd6bc48a738a94e41141ed37d8d637ba@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b87dc607438e1f6f91e2664d74c9578d8476c3ad-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Remove some obsolete references to
- --windows-driver
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="77vh+PERCwc="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: Remove some
+ verbose error messages for options deprecated in...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,92 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--77vh+PERCwc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The option doesn't exist anymore so don't point
-people to it.
+Attention is currently required from: flichtenheld, plaisthos.
 
-But add it to the list of unsupported options.
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1427?usp=3Demail )
 
-Change-Id: I78c6f335c635e97bb41d26ed8908a978d7b49387
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1426
----
+Change subject: options: Remove some verbose error messages for options dep=
+recated in 2.4
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1426
-This mail reflects revision 1 of this Change.
+Patch Set 1: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst
-index e8e76eb..821ac07 100644
---- a/doc/man-sections/unsupported-options.rst
-+++ b/doc/man-sections/unsupported-options.rst
-@@ -49,3 +49,8 @@
- --opt-verify
-   Removed in OpenVPN 2.7.  This option does not make sense anymore as option
-   strings may not match due to the introduction of parameters negotiation.
-+
-+--windows-driver
-+  Removed in OpenVPN 2.7. OpenVPN will always use ovpn-dco as the default
-+  driver on Windows. It will fall back to tap-windows6 if options are used
-+  that are incompatible with ovpn-dco.
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-index 2a06ef6..33ebedb 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -89,7 +89,7 @@
- 
-   On Windows, only the names :code:`tun` and :code:`tap` are supported.
-   Selection among multiple installed drivers or driver instances is done
--  with ``--dev-node`` and ``--windows-driver``.
-+  with ``--dev-node``.
- 
- --dev-node node
-   This is a highly system dependent option to influence tun/tap driver
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a3fc19d..1be105b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3905,16 +3905,7 @@
-     }
-     else
-     {
--        if (o->windows_driver == DRIVER_DCO)
--        {
--            msg(M_WARN,
--                "Option --windows-driver ovpn-dco is ignored because Data Channel Offload is disabled");
--            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
--        }
--        else if (o->windows_driver == WINDOWS_DRIVER_UNSPECIFIED)
--        {
--            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
--        }
-+        o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-     }
- #else  /* _WIN32 */
-     if (dco_enabled(o) && o->dev_node)
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 7c61dcf..a7c5ebb 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6061,7 +6061,7 @@
-         if (tt->backend_driver != windows_driver)
-         {
-             msg(M_FATAL,
--                "Adapter '%s' is using %s driver, %s expected. If you want to use this device, adjust --windows-driver.",
-+                "Adapter '%s' is using %s driver, %s expected.",
-                 dev_node, print_tun_backend_driver(windows_driver),
-                 print_tun_backend_driver(tt->backend_driver));
-         }
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1427?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I59995bf0fd6bc48a738a94e41141ed37d8d637ba
+Gerrit-Change-Number: 1427
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Wed, 10 Dec 2025 07:50:26 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--77vh+PERCwc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1427?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1427?usp=3Demail=
+">change 1427</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1427?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I59995bf0fd6bc48a738a94e4114=
+1ed37d8d637ba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1427 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Dec 2025 07:50:26=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--77vh+PERCwc=--
 
