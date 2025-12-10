@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Dec 2025 13:53:32 +0000
+Date: Wed, 10 Dec 2025 13:56:15 +0000
 In-Reply-To: <gerrit.1760995553000.I31ac2a763209114267c35c4a9182a12d8d82f6fe@...2715...>
 References: <gerrit.1760995553000.I31ac2a763209114267c35c4a9182a12d8d82f6fe@...2715...>
 Reply-To: arne-openvpn@...1227..., davidben@...410...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <922313d1038bf5c7297b23f24a74b10b9c22fc8d-EmailReviewComments-HTML@...2715...>
+Message-ID: <fc8e6231e3843d6f6e00eb670b811bf798913a8a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rR/J0xu0Jys="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="kghzbkl6EAU="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: ssl_openssl: Fix
  some CRL mixups
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: davidben <davidben@...410...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rR/J0xu0Jys=
+--kghzbkl6EAU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -42,12 +42,11 @@ Patch Set 2:
 Patchset:
 
 PS2:
-So I debugged this further and the root cause is that tls_root_ctx is share=
-d/copied around between tls_options and key_schedule context. With the old =
-implementation this was not a problem since the pointer never changed. But =
-with the new implementation the pointer is freed and changed in one instanc=
-e and the other instance will then still try to free the old pointer and th=
-at causes a free on an invalid pointer and that segfaults.
+In do_init_crypto_tls we do=20
+
+    to.ssl_ctx =3D c->c1.ks.ssl_ctx;
+
+which copies the context and also the stack
 
 
 
@@ -68,11 +67,11 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: davidben <davidben@...410...>
-Gerrit-Comment-Date: Wed, 10 Dec 2025 13:53:32 +0000
+Gerrit-Comment-Date: Wed, 10 Dec 2025 13:56:15 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 
---rR/J0xu0Jys=
+--kghzbkl6EAU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -84,20 +83,18 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
 e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
 1289?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">So I debugged t=
-his further and the root cause is that tls_root_ctx is shared/copied around=
- between tls_options and key_schedule context. With the old implementation =
-this was not a problem since the pointer never changed. But with the new im=
-plementation the pointer is freed and changed in one instance and the other=
- instance will then still try to free the old pointer and that causes a fre=
-e on an invalid pointer and that segfaults.</p></li></ul></li></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail=
-">change 1289</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">In do_init_cryp=
+to_tls we do </p><pre class=3D"blocks" style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">    to.ssl_ctx =3D c-&gt;c1.ks.ssl_ctx;</pre=
+><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">which copies the context and also the stack</p></li></ul></li></ul><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Dema=
+il">change 1289</a>. To unsubscribe, or for help writing mail filters, visi=
+t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail"=
+/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -118,12 +115,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: davidben &lt;davidben@...2975...=
 ...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Dec 2025 13:53:32=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 10 Dec 2025 13:56:15=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---rR/J0xu0Jys=--
+--kghzbkl6EAU=--
 
