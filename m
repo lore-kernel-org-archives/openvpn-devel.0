@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Dec 2025 09:45:27 +0000
+Date: Wed, 10 Dec 2025 09:45:30 +0000
 In-Reply-To: <gerrit.1765297693000.I6debe8bbedd5a08da417bfee1243a43ef6df7980@...2715...>
 References: <gerrit.1765297693000.I6debe8bbedd5a08da417bfee1243a43ef6df7980@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <125c5c2cde194e32ad6565f6eadb2c035482927f-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <125c5c2cde194e32ad6565f6eadb2c035482927f-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="30Fx6CcwWZc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="DghNOp7X0vQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: iservice: set
  adapter DNS only with search domains
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, selvanair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: d12fk <heiko@...515...>
+Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---30Fx6CcwWZc=
+--DghNOp7X0vQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- d12fk. ( http://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by selvanair
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+29?usp=3Demail )
 
 Change subject: iservice: set adapter DNS only with search domains
 ......................................................................
@@ -66,7 +62,7 @@ M src/openvpnserv/interactive.c
 1 file changed, 12 insertions(+), 4 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/1429/2
+
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
 index 6f04f6b..9327dfa 100644
@@ -102,7 +98,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I6debe8bbedd5a08da417bfee1243a43ef6df7980
@@ -113,71 +109,68 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---30Fx6CcwWZc=
+--DghNOp7X0vQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by d12fk.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by selvanair</p><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">iservice: set adapter DNS only =
-with search domains<br><br>With NRPT the adapter name server configuration =
-is not needed<br>theoretically. However DNS config is not showing with trad=
-itional<br>tools like ipconfig if they are left out. More importantly if<br=
->there are no DNS servers configured for an adapter the adapter<br>specific=
- search domains are not recognized by the Windows resolver.<br><br>However,=
- adding the servers to the adapter has the side effect, that<br>general loo=
-k-ups are now also done using this adapter, which might<br>come as unexpect=
-ed and yield wrong results, if there is some trickery<br>happening with the=
- default DNS, for example.<br><br>As a workaround, set the adapter DNS only=
- when strictly needed.<br><br>Github: OpenVPN/openvpn#473<br><br>Change-Id:=
- I6debe8bbedd5a08da417bfee1243a43ef6df7980<br>Signed-off-by: Heiko Hund &lt=
-;heiko@...2662...&gt;<br>Acked-by: Selva Nair &lt;selva.nair@...277...&gt;<=
-br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1429<br>Message-Id: &=
-lt;20251210072951.25753-1-gert@...1296...&gt;<br>URL: https://www.mail-arch=
-ive.com/openvpn-devel@lists.sourceforge.net/msg34968.html<br>Signed-off-by:=
- Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpnserv/interacti=
-ve.c<br>1 file changed, 12 insertions(+), 4 deletions(-)<br><br></pre><pre =
-class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/29/14=
-29/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/i=
-nteractive.c</span><br><span>index 6f04f6b..9327dfa 100644</span><br><span>=
---- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/i=
-nteractive.c</span><br><span>@@ -2869,11 +2869,19 @@</span><br><span>      =
-   goto out;</span><br><span>     }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* Set name servers */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    err =3D SetNameServerAddresses(iid=
-, msg-&gt;addresses);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Set DNS on th=
-e adapter for search domains to be considered.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     * If split DNS is configured, do this only =
-when search domains</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-     * are given, so that look-ups for other domains do not go over</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+     * the VPN all the time=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    if (msg-&gt;search_domains=
-[0] || !msg-&gt;resolve_domains[0])</span><br><span>     {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        goto out;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        err =3D SetNameServerAddresses(i=
-id, msg-&gt;addresses);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- }</span><br><span>     }</span><br><span> </span><br><span>     /* Set sea=
-rch domains, if any */</span><br><span></span><br></pre><p>To view, visit <=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail">change 14=
-29</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div items=
-cope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail"/><meta itemp=
-rop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1429?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">iservice: set adapter DNS only with search domai=
+ns<br><br>With NRPT the adapter name server configuration is not needed<br>=
+theoretically. However DNS config is not showing with traditional<br>tools =
+like ipconfig if they are left out. More importantly if<br>there are no DNS=
+ servers configured for an adapter the adapter<br>specific search domains a=
+re not recognized by the Windows resolver.<br><br>However, adding the serve=
+rs to the adapter has the side effect, that<br>general look-ups are now als=
+o done using this adapter, which might<br>come as unexpected and yield wron=
+g results, if there is some trickery<br>happening with the default DNS, for=
+ example.<br><br>As a workaround, set the adapter DNS only when strictly ne=
+eded.<br><br>Github: OpenVPN/openvpn#473<br><br>Change-Id: I6debe8bbedd5a08=
+da417bfee1243a43ef6df7980<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...=
+&gt;<br>Acked-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Gerrit URL: ht=
+tps://gerrit.openvpn.net/c/openvpn/+/1429<br>Message-Id: &lt;20251210072951=
+.25753-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-d=
+evel@lists.sourceforge.net/msg34968.html<br>Signed-off-by: Gert Doering &lt=
+;gert@...1296...&gt;<br>---<br>M src/openvpnserv/interactive.c<br>1 file ch=
+anged, 12 insertions(+), 4 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
+.c</span><br><span>index 6f04f6b..9327dfa 100644</span><br><span>--- a/src/=
+openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv/interactive=
+.c</span><br><span>@@ -2869,11 +2869,19 @@</span><br><span>         goto ou=
+t;</span><br><span>     }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    /* Set name servers */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    err =3D SetNameServerAddresses(iid, msg-&gt;=
+addresses);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (er=
+r)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+     * Set DNS on the adapter =
+for search domains to be considered.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+     * If split DNS is configured, do this only when searc=
+h domains</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * are=
+ given, so that look-ups for other domains do not go over</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+     * the VPN all the time.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (msg-&gt;search_domains[0] || !ms=
+g-&gt;resolve_domains[0])</span><br><span>     {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        goto out;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        err =3D SetNameServerAddresses(iid, msg-&g=
+t;addresses);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  if (err)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            goto ou=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
+br><span>     }</span><br><span> </span><br><span>     /* Set search domain=
+s, if any */</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail">change 1429</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
+ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
+temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1429?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I6debe8bbedd5a08da417bfee124=
@@ -195,5 +188,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---30Fx6CcwWZc=--
+--DghNOp7X0vQ=--
 
