@@ -1,16 +1,16 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 10 Dec 2025 15:19:56 +0000
-In-Reply-To: <gerrit.1765279409000.I2c0a0b55ad56e704d4bd19f1fbc1c30c83fae14c@...2715...>
-References: <gerrit.1765279409000.I2c0a0b55ad56e704d4bd19f1fbc1c30c83fae14c@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 10 Dec 2025 15:42:04 +0000
+In-Reply-To: <gerrit.1760995553000.I31ac2a763209114267c35c4a9182a12d8d82f6fe@...2715...>
+References: <gerrit.1760995553000.I31ac2a763209114267c35c4a9182a12d8d82f6fe@...2715...>
+Reply-To: arne-openvpn@...1227..., davidben@...410...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f6ff12c46608f201aac1851599cabff641436df7-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <64dbcb000ef1eba4f68418bf9e47cdcdcdb72241-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="X8dsx5RK9Dk="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Deprecate --fast-io
- option
+Content-Type: multipart/alternative; boundary="mukRu8erLc8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: ssl_openssl: Fix
+ some CRL mixups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,712 +19,520 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: davidben <davidben@...410...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---X8dsx5RK9Dk=
+--mukRu8erLc8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: davidben, flichtenheld.
 
-Hello flichtenheld, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1425?usp=3Demail
-
-to look at the new patch set (#6).
+plaisthos has uploaded a new patch set (#3) to the change originally create=
+d by davidben. ( http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail )
 
 
-Change subject: Deprecate --fast-io option
+Change subject: ssl_openssl: Fix some CRL mixups
 ......................................................................
 
-Deprecate --fast-io option
+ssl_openssl: Fix some CRL mixups
 
-Recent changes to the event loop revealed that
-the --fast-io option is now partially broken and
-may cause "unroutable control packet" issues.
+There are two ways to load CRLs in OpenSSL. They can be loaded at the
+X509_STORE, shared across verifications, or loaded per verification at
+the X509_STORE_CTX.
 
-As agreed during the last hackathon, this patch
-turns --fast-io into a no-op and emits a warning
-when it is used.
+OpenVPN currently does the former. However, it also supports CRL
+reloading, and tries to reload the CRL file before each connection.
+OpenSSL does not really have a good way to unload objects from an
+X509_STORE. OpenVPN currently does it by grabbing the
+STACK_OF(X509_OBJECT) out of the X509_STORE and manually deleting all
+the CRLs from it.
 
-Additionally, the MPP_CONDITIONAL_PRE_SELECT
-flag has been removed as it was part of the
-same code path and no longer needed.
+This mutates an OpenSSL internal object which bumps into problems if
+OpenSSL ever switches to a more efficient representation. See
+https://github.com/openssl/openssl/pull/28599
 
-Change-Id: I2c0a0b55ad56e704d4bd19f1fbc1c30c83fae14c
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+(It's also not thread-safe, though it doesn't look like that impacts
+OpenVPN? Actually even reading that list doesn't work. See
+CVE-2024-0397. This OpenSSL API was simply broken.)
+
+Additionally, this seems to cause two OpenVPN features to not work
+together. I gather backend_tls_ctx_reload_crl is trying to clear the
+CRLs loaded from last time it ran. But tls_ctx_load_ca with a ca_file
+can also load CRLs. tls_ctx_load_ca with ca_path will also pick up CRLs
+and backend_tls_ctx_reload_crl actually ends up clobbering some state
+X509_LOOKUP_hash_dir internally maintains on the X509_STORE. Likewise,
+tls_verify_crl_missing can get confused between
+backend_tls_ctx_reload_crl's crl_file-based CRLs and CRLs from
+tls_ctx_load_ca.
+
+Avoid all this by tracking the two CRLs separately. crl_file-based CRLs
+now go onto a STACK_OF(X509_CRL) tracked on the tls_root_ctx. Now this
+field can be freely reloaded by OpenVPN without reconfiguring OpenSSL.
+Instead, pass the current value into OpenSSL at verification time.  To
+do so, we need to use the SSL_CTX_set_cert_verify_callback, which allows
+swapping out the X509_verify_cert call, and also tweaking the
+X509_STORE_CTX configuration before starting certificate verification.
+
+Context: SSL_CTX_set_cert_verify_callback and the existing
+verify_callback are not the same. SSL_CTX_set_cert_verify_callback wraps
+the verification while verify_callback is called multiple times
+throughout verification. It's too late to reconfigure X509_STORE_CTX in
+verify_callback. verify_callback is usually not what you want.
+Sometimes current_cert and error_depth don't quite line up, and
+cert_hash_remember may end up called multiple times for a single
+certificate.
+
+I suspect some of the other verify_callback logic would also be better
+done in the new callback, but I've left it alone to keep this change
+minimal. verify_callback is really only usable for suppressing errors.
+Application bookkeeping is better down elsewhere.
+
+Signed-off-by: David Benjamin <davidben@...410...>
+Change-Id: I31ac2a763209114267c35c4a9182a12d8d82f6fe
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M doc/man-sections/generic-options.rst
-M doc/man-sections/unsupported-options.rst
-M src/openvpn/forward.c
-M src/openvpn/forward.h
-M src/openvpn/init.c
-M src/openvpn/mudp.c
-M src/openvpn/multi.c
-M src/openvpn/multi.h
-M src/openvpn/openvpn.h
-M src/openvpn/options.c
-M src/openvpn/options.h
-11 files changed, 18 insertions(+), 126 deletions(-)
+M src/openvpn/openssl_compat.h
+M src/openvpn/ssl_openssl.c
+M src/openvpn/ssl_openssl.h
+M src/openvpn/ssl_verify_openssl.c
+4 files changed, 34 insertions(+), 54 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/1425/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/1289/3
 
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
-c-options.rst
-index 882cf28..a9232ce 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -211,18 +211,6 @@
-   ``--show-engines`` standalone option to list the crypto engines which
-   are supported by OpenSSL.
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index b9af132..139eaa6 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -52,21 +52,6 @@
 
----fast-io
--  Optimize TUN/TAP/UDP I/O writes by avoiding a call to
--  poll/epoll/select prior to the write operation. The purpose of such a
--  call would normally be to block until the device or socket is ready to
--  accept the write. Such blocking is unnecessary on some platforms which
--  don't support write blocking on UDP sockets or TUN/TAP devices. In such
--  cases, one can optimize the event loop by avoiding the poll/epoll/select
--  call, improving CPU efficiency by 5% to 10%.
--
--  This option can only be used on non-Windows systems, when ``--proto
--  udp`` is specified, and when ``--shaper`` is *NOT* specified.
--
- --group group
-   Similar to the ``--user`` option, this option changes the group ID of
-   the OpenVPN process to ``group`` after initialization.
-diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/un=
-supported-options.rst
-index b646991..f1332f3 100644
---- a/doc/man-sections/unsupported-options.rst
-+++ b/doc/man-sections/unsupported-options.rst
-@@ -9,6 +9,10 @@
-   Removed in OpenVPN 2.5.  This should be replaced with
-   ``--verify-client-cert none``.
-
-+--fast-io
-+  Ignored since OpenVPN 2.7. This option became broken due to changes
-+  to the event loop.
-+
- --http-proxy-retry
-   Removed in OpenVPN 2.4.  All retries are controlled by ``--max-connect-r=
-etry``.
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 913fb92..492e667 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -2154,13 +2154,12 @@
- }
-
- /*
-- * Wait for I/O events.  Used for both TCP & UDP sockets
-- * in point-to-point mode and for UDP sockets in
-+ * Wait for I/O events.  Used for UDP sockets in
-  * point-to-multipoint mode.
-  */
-
- void
--get_io_flags_dowork_udp(struct context *c, struct multi_io *multi_io, cons=
-t unsigned int flags)
-+get_io_flags_udp(struct context *c, struct multi_io *multi_io, const unsig=
-ned int flags)
- {
-     unsigned int out_socket;
-
-@@ -2168,33 +2167,12 @@
-     multi_io->udp_flags =3D (out_socket << SOCKET_SHIFT);
- }
-
-+/*
-+ * This is the core I/O wait function, used for all I/O waits except
-+ * for the top-level server sockets.
-+ */
- void
--get_io_flags_udp(struct context *c, struct multi_io *multi_io, const unsig=
-ned int flags)
--{
--    multi_io->udp_flags =3D ES_ERROR;
--    if (c->c2.fast_io && (flags & (IOW_TO_TUN | IOW_TO_LINK | IOW_MBUF)))
--    {
--        /* fast path -- only for TUN/TAP/UDP writes */
--        unsigned int ret =3D 0;
--        if (flags & IOW_TO_TUN)
--        {
--            ret |=3D TUN_WRITE;
--        }
--        if (flags & (IOW_TO_LINK | IOW_MBUF))
--        {
--            ret |=3D SOCKET_WRITE;
--        }
--        multi_io->udp_flags =3D ret;
--    }
--    else
--    {
--        /* slow path - delegate to io_wait_dowork_udp to calculate flags */
--        get_io_flags_dowork_udp(c, multi_io, flags);
--    }
--}
--
--void
--io_wait_dowork(struct context *c, const unsigned int flags)
-+io_wait(struct context *c, const unsigned int flags)
- {
-     unsigned int out_socket;
-     unsigned int out_tuntap;
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 06808b9..7f6f666 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -68,12 +68,9 @@
-
- extern counter_type link_write_bytes_global;
-
--void get_io_flags_dowork_udp(struct context *c, struct multi_io *multi_io,
--                             const unsigned int flags);
--
- void get_io_flags_udp(struct context *c, struct multi_io *multi_io, const =
-unsigned int flags);
-
--void io_wait_dowork(struct context *c, const unsigned int flags);
-+void io_wait(struct context *c, const unsigned int flags);
-
- void pre_select(struct context *c);
-
-@@ -382,34 +379,6 @@
-     return flags;
- }
-
--/*
-- * This is the core I/O wait function, used for all I/O waits except
-- * for the top-level server sockets.
+ /* Functionality missing in LibreSSL before 3.5 */
+ #if defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x305000=
+0fL
+-/**
+- * Destroy a X509 object
+- *
+- * @param obj                X509 object
 - */
 -static inline void
--io_wait(struct context *c, const unsigned int flags)
+-X509_OBJECT_free(X509_OBJECT *obj)
 -{
--    if (proto_is_dgram(c->c2.link_sockets[0]->info.proto) && c->c2.fast_io
--        && (flags & (IOW_TO_TUN | IOW_TO_LINK | IOW_MBUF)))
+-    if (obj)
 -    {
--        /* fast path -- only for TUN/TAP/UDP writes */
--        unsigned int ret =3D 0;
--        if (flags & IOW_TO_TUN)
--        {
--            ret |=3D TUN_WRITE;
--        }
--        if (flags & (IOW_TO_LINK | IOW_MBUF))
--        {
--            ret |=3D SOCKET_WRITE;
--        }
--        c->c2.event_set_status =3D ret;
--    }
--    else
--    {
--        /* slow path */
--        io_wait_dowork(c, flags);
+-        X509_OBJECT_free_contents(obj);
+-        OPENSSL_free(obj);
 -    }
 -}
-
- static inline bool
- connection_established(struct context *c)
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index fc079e1..cd01520 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -4139,34 +4139,6 @@
-     }
+-
+ #define EVP_CTRL_AEAD_SET_TAG EVP_CTRL_GCM_SET_TAG
+ #define EVP_CTRL_AEAD_GET_TAG EVP_CTRL_GCM_GET_TAG
+ #endif
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index ba85bc13..75cef79 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -141,6 +141,8 @@
+     ASSERT(NULL !=3D ctx);
+     SSL_CTX_free(ctx->ctx);
+     ctx->ctx =3D NULL;
++    sk_X509_CRL_pop_free(ctx->crls, X509_CRL_free);
++    ctx->crls =3D NULL;
+     unload_xkey_provider(); /* in case it is loaded */
+     free(ctx);
+ }
+@@ -305,6 +307,22 @@
+     return true;
  }
 
--/*
-- * Fast I/O setup.  Fast I/O is an optimization which only works
-- * if all of the following are true:
-- *
-- * (1) The platform is not Windows
-- * (2) --proto udp is enabled
-- * (3) --shaper is disabled
-- */
--static void
--do_setup_fast_io(struct context *c)
--{
--    if (c->options.fast_io)
--    {
--#ifdef _WIN32
--        msg(M_INFO, "NOTE: --fast-io is disabled since we are running on W=
-indows");
--#else
--        if (c->options.shaper)
--        {
--            msg(M_INFO, "NOTE: --fast-io is disabled since we are using --=
-shaper");
--        }
--        else
--        {
--            c->c2.fast_io =3D true;
--        }
--#endif
--    }
--}
--
- static void
- do_signal_on_tls_errors(struct context *c)
++static int
++cert_verify_callback(X509_STORE_CTX *ctx, void *arg)
++{
++    struct tls_session *session;
++    SSL *ssl;
++
++    ssl =3D X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX=
+_idx());
++    ASSERT(ssl);
++    session =3D SSL_get_ex_data(ssl, mydata_index);
++    ASSERT(session);
++
++    /* Configure CRLs. */
++    X509_STORE_CTX_set0_crls(ctx, session->opt->ssl_ctx->crls);
++    return X509_verify_cert(ctx);
++}
++
+ bool
+ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
  {
-@@ -4513,12 +4485,6 @@
+@@ -347,6 +365,7 @@
+         verify_flags =3D SSL_VERIFY_PEER;
      }
- #endif
+     SSL_CTX_set_verify(ctx->ctx, verify_flags, verify_callback);
++    SSL_CTX_set_cert_verify_callback(ctx->ctx, cert_verify_callback, NULL);
 
--    /* should we enable fast I/O? */
--    if (c->mode =3D=3D CM_P2P || c->mode =3D=3D CM_TOP)
+     SSL_CTX_set_info_callback(ctx->ctx, info_callback);
+
+@@ -1321,6 +1340,7 @@
+ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_f=
+ile, bool crl_inline)
+ {
+     BIO *in =3D NULL;
++    STACK_OF(X509_CRL) *crls =3D NULL;
+
+     X509_STORE *store =3D SSL_CTX_get_cert_store(ssl_ctx->ctx);
+     if (!store)
+@@ -1328,20 +1348,8 @@
+         crypto_msg(M_FATAL, "Cannot get certificate store");
+     }
+
+-    /* Always start with a cleared CRL list, for that we
+-     * we need to manually find the CRL object from the stack
+-     * and remove it */
+-    STACK_OF(X509_OBJECT) *objs =3D X509_STORE_get0_objects(store);
+-    for (int i =3D 0; i < sk_X509_OBJECT_num(objs); i++)
 -    {
--        do_setup_fast_io(c);
+-        X509_OBJECT *obj =3D sk_X509_OBJECT_value(objs, i);
+-        ASSERT(obj);
+-        if (X509_OBJECT_get_type(obj) =3D=3D X509_LU_CRL)
+-        {
+-            sk_X509_OBJECT_delete(objs, i);
+-            X509_OBJECT_free(obj);
+-        }
+-    }
++    sk_X509_CRL_pop_free(ssl_ctx->crls, X509_CRL_free);
++    ssl_ctx->crls =3D NULL;
+
+     X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CH=
+ECK_ALL);
+
+@@ -1357,7 +1365,13 @@
+     if (in =3D=3D NULL)
+     {
+         msg(M_WARN, "CRL: cannot read: %s", print_key_filename(crl_file, c=
+rl_inline));
+-        goto end;
++        return;
++    }
++
++    crls =3D sk_X509_CRL_new_null();
++    if (crls =3D=3D NULL)
++    {
++        crypto_msg(M_FATAL, "CRL: cannot create CRL list");
+     }
+
+     int num_crls_loaded =3D 0;
+@@ -1383,18 +1397,14 @@
+             break;
+         }
+
+-        if (!X509_STORE_add_crl(store, crl))
++        if (!sk_X509_CRL_push(crls, crl))
+         {
+-            X509_CRL_free(crl);
+-            crypto_msg(M_WARN, "CRL: cannot add %s to store",
+-                       print_key_filename(crl_file, crl_inline));
+-            break;
++            crypto_msg(M_FATAL, "CRL: cannot add CRL to list");
+         }
+-        X509_CRL_free(crl);
+         num_crls_loaded++;
+     }
+     msg(M_INFO, "CRL: loaded %d CRLs from file %s", num_crls_loaded, crl_f=
+ile);
+-end:
++    ssl_ctx->crls =3D crls;
+     BIO_free(in);
+ }
+
+diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
+index 2c1f36d..e5149dd 100644
+--- a/src/openvpn/ssl_openssl.h
++++ b/src/openvpn/ssl_openssl.h
+@@ -41,6 +41,7 @@
+     SSL_CTX *ctx;
+     time_t crl_last_mtime;
+     off_t crl_last_size;
++    STACK_OF(X509_CRL) *crls;
+ };
+
+ struct key_state_ssl
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index 633f78d..145ec9a 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -799,23 +799,7 @@
+         return false;
+     }
+
+-    X509_STORE *store =3D SSL_CTX_get_cert_store(opt->ssl_ctx->ctx);
+-    if (!store)
+-    {
+-        crypto_msg(M_FATAL, "Cannot get certificate store");
 -    }
 -
-     /* should we throw a signal on TLS errors? */
-     do_signal_on_tls_errors(c);
+-    STACK_OF(X509_OBJECT) *objs =3D X509_STORE_get0_objects(store);
+-    for (int i =3D 0; i < sk_X509_OBJECT_num(objs); i++)
+-    {
+-        X509_OBJECT *obj =3D sk_X509_OBJECT_value(objs, i);
+-        ASSERT(obj);
+-        if (X509_OBJECT_get_type(obj) =3D=3D X509_LU_CRL)
+-        {
+-            return false;
+-        }
+-    }
+-    return true;
++    return opt->ssl_ctx->crls =3D=3D NULL || sk_X509_CRL_num(opt->ssl_ctx-=
+>crls) =3D=3D 0;
+ }
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 5de3af6..92d4dda 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -339,9 +339,7 @@
- multi_process_io_udp(struct multi_context *m, struct link_socket *sock)
- {
-     const unsigned int status =3D m->multi_io->udp_flags;
--    const unsigned int mpp_flags =3D m->top.c2.fast_io
--                                       ? (MPP_CONDITIONAL_PRE_SELECT | MPP=
-_CLOSE_ON_SIGNAL)
--                                       : (MPP_PRE_SELECT | MPP_CLOSE_ON_SI=
-GNAL);
-+    const unsigned int mpp_flags =3D (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL=
-);
-
-     /* UDP port ready to accept write */
-     if (status & SOCKET_WRITE)
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 153695c..d2d9ba8e 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3008,8 +3008,7 @@
-     bool ret =3D true;
-
-     if (!IS_SIG(&mi->context)
--        && ((flags & MPP_PRE_SELECT)
--            || ((flags & MPP_CONDITIONAL_PRE_SELECT) && !ANY_OUT(&mi->cont=
-ext))))
-+        && ((flags & MPP_PRE_SELECT)))
-     {
- #if defined(ENABLE_ASYNC_PUSH)
-         bool was_unauthenticated =3D true;
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index a44f9f2..1209dfb 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -271,10 +271,9 @@
-
- bool multi_process_timeout(struct multi_context *m, const unsigned int mpp=
-_flags);
-
--#define MPP_PRE_SELECT             (1 << 0)
--#define MPP_CONDITIONAL_PRE_SELECT (1 << 1)
--#define MPP_CLOSE_ON_SIGNAL        (1 << 2)
--#define MPP_RECORD_TOUCH           (1 << 3)
-+#define MPP_PRE_SELECT      (1 << 0)
-+#define MPP_CLOSE_ON_SIGNAL (1 << 1)
-+#define MPP_RECORD_TOUCH    (1 << 2)
-
-
- /*************************************************************************=
-*/
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index a198fcf..3e1ae78 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -420,9 +420,6 @@
-     struct env_set *es;
-     bool es_owned;
-
--    /* don't wait for TUN/TAP/UDP to be ready to accept write */
--    bool fast_io;
--
-     /* --ifconfig endpoints to be pushed to client */
-     bool push_request_received;
-     bool push_ifconfig_defined;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2d1f740..d01ec47 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -285,7 +285,6 @@
- #if ENABLE_IP_PKTINFO
-     "--multihome     : Configure a multi-homed UDP server.\n"
- #endif
--    "--fast-io       : Optimize TUN/TAP/UDP writes.\n"
-     "--remap-usr1 s  : On SIGUSR1 signals, remap signal (s=3D'SIGHUP' or '=
-SIGTERM').\n"
-     "--persist-tun   : Keep tun/tap device open across SIGUSR1 or --ping-r=
-estart.\n"
-     "--persist-remote-ip : Keep remote IP address across SIGUSR1 or --ping=
--restart.\n"
-@@ -1795,8 +1794,6 @@
- #endif
-     SHOW_INT(sockflags);
-
--    SHOW_BOOL(fast_io);
--
-     SHOW_INT(comp.alg);
-     SHOW_INT(comp.flags);
-
-@@ -6592,7 +6589,7 @@
-     else if (streq(p[0], "fast-io") && !p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        options->fast_io =3D true;
-+        msg(M_WARN, "DEPRECATED OPTION: --fast-io option ignored.");
-     }
-     else if (streq(p[0], "inactive") && p[1] && !p[3])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index d331033..555d9dd 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -406,9 +406,6 @@
-     int status_file_version;
-     int status_file_update_freq;
-
--    /* optimize TUN/TAP/UDP writes */
--    bool fast_io;
--
-     struct compress_options comp;
-
-     /* buffer sizes */
+ #endif /* defined(ENABLE_CRYPTO_OPENSSL) */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1425?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2c0a0b55ad56e704d4bd19f1fbc1c30c83fae14c
-Gerrit-Change-Number: 1425
-Gerrit-PatchSet: 6
-Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Change-Id: I31ac2a763209114267c35c4a9182a12d8d82f6fe
+Gerrit-Change-Number: 1289
+Gerrit-PatchSet: 3
+Gerrit-Owner: davidben <davidben@...410...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: davidben <davidben@...410...>
 
---X8dsx5RK9Dk=
+--mukRu8erLc8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>its_Giaan <strong>uploaded patch set #6</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1425?usp=3Demail">View Chan=
-ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
-white-space: pre-wrap;">Deprecate --fast-io option<br><br>Recent changes to=
- the event loop revealed that<br>the --fast-io option is now partially brok=
-en and<br>may cause &quot;unroutable control packet&quot; issues.<br><br>As=
- agreed during the last hackathon, this patch<br>turns --fast-io into a no-=
-op and emits a warning<br>when it is used.<br><br>Additionally, the MPP_CON=
-DITIONAL_PRE_SELECT<br>flag has been removed as it was part of the<br>same =
-code path and no longer needed.<br><br>Change-Id: I2c0a0b55ad56e704d4bd19f1=
-fbc1c30c83fae14c<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@...1664...=
-26...&gt;<br>---<br>M doc/man-sections/generic-options.rst<br>M doc/man-sec=
-tions/unsupported-options.rst<br>M src/openvpn/forward.c<br>M src/openvpn/f=
-orward.h<br>M src/openvpn/init.c<br>M src/openvpn/mudp.c<br>M src/openvpn/m=
-ulti.c<br>M src/openvpn/multi.h<br>M src/openvpn/openvpn.h<br>M src/openvpn=
-/options.c<br>M src/openvpn/options.h<br>11 files changed, 18 insertions(+)=
-, 126 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
-.net:29418/openvpn refs/changes/25/1425/6</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sect=
-ions/generic-options.rst b/doc/man-sections/generic-options.rst</span><br><=
-span>index 882cf28..a9232ce 100644</span><br><span>--- a/doc/man-sections/g=
-eneric-options.rst</span><br><span>+++ b/doc/man-sections/generic-options.r=
-st</span><br><span>@@ -211,18 +211,6 @@</span><br><span>   ``--show-engines=
-`` standalone option to list the crypto engines which</span><br><span>   ar=
-e supported by OpenSSL.</span><br><span> </span><br><span>---fast-io</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-  Optimize TUN/TAP/UDP I/O w=
-rites by avoiding a call to</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-  poll/epoll/select prior to the write operation. The purpose of such=
- a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  call would normal=
-ly be to block until the device or socket is ready to</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  accept the write. Such blocking is unnece=
-ssary on some platforms which</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-  don&#39;t support write blocking on UDP sockets or TUN/TAP device=
-s. In such</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  cases, on=
-e can optimize the event loop by avoiding the poll/epoll/select</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-  call, improving CPU efficiency =
-by 5% to 10%.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-  This option can only be use=
-d on non-Windows systems, when ``--proto</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-  udp`` is specified, and when ``--shaper`` is *NOT* spe=
-cified.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an> --group group</span><br><span>   Similar to the ``--user`` option, this=
- option changes the group ID of</span><br><span>   the OpenVPN process to `=
-`group`` after initialization.</span><br><span>diff --git a/doc/man-section=
-s/unsupported-options.rst b/doc/man-sections/unsupported-options.rst</span>=
-<br><span>index b646991..f1332f3 100644</span><br><span>--- a/doc/man-secti=
-ons/unsupported-options.rst</span><br><span>+++ b/doc/man-sections/unsuppor=
-ted-options.rst</span><br><span>@@ -9,6 +9,10 @@</span><br><span>   Removed=
- in OpenVPN 2.5.  This should be replaced with</span><br><span>   ``--verif=
-y-client-cert none``.</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+--fast-io</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  Ignored since OpenVPN 2.7. This option became broken due to cha=
-nges</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to the event =
-loop.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an> --http-proxy-retry</span><br><span>   Removed in OpenVPN 2.4.  All retr=
-ies are controlled by ``--max-connect-retry``.</span><br><span> </span><br>=
-<span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br>=
-<span>index 913fb92..492e667 100644</span><br><span>--- a/src/openvpn/forwa=
-rd.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -2154,1=
-3 +2154,12 @@</span><br><span> }</span><br><span> </span><br><span> /*</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * Wait for I/O events.  U=
-sed for both TCP &amp; UDP sockets</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * in point-to-point mode and for UDP sockets in</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * Wait for I/O events.  Used for=
- UDP sockets in</span><br><span>  * point-to-multipoint mode.</span><br><sp=
-an>  */</span><br><span> </span><br><span> void</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-get_io_flags_dowork_udp(struct context *c, struct=
- multi_io *multi_io, const unsigned int flags)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+get_io_flags_udp(struct context *c, struct multi=
-_io *multi_io, const unsigned int flags)</span><br><span> {</span><br><span=
->     unsigned int out_socket;</span><br><span> </span><br><span>@@ -2168,3=
-3 +2167,12 @@</span><br><span>     multi_io-&gt;udp_flags =3D (out_socket &=
-lt;&lt; SOCKET_SHIFT);</span><br><span> }</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * This is the core I/O wait function, used for all =
-I/O waits except</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-for the top-level server sockets.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ */</span><br><span> void</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-get_io_flags_udp(struct context *c, struct multi_io *mult=
-i_io, const unsigned int flags)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi_=
-io-&gt;udp_flags =3D ES_ERROR;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    if (c-&gt;c2.fast_io &amp;&amp; (flags &amp; (IOW_TO_TUN | IOW=
-_TO_LINK | IOW_MBUF)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* fast=
- path -- only for TUN/TAP/UDP writes */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        unsigned int ret =3D 0;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        if (flags &amp; IOW_TO_TUN)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            ret |=3D TUN_WRITE;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (flags &amp; (IOW_TO_LINK | IOW_=
-MBUF))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            ret |=3D SOCKET=
-_WRITE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        multi_io-&gt;udp_f=
-lags =3D ret;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        /* slow path - delegate to io_wait_dowork_udp=
- to calculate flags */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        get_io_flags_dowork_udp(c, multi_io, flags);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-io_wait_dowork(struct context *c, const un=
-signed int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+io=
-_wait(struct context *c, const unsigned int flags)</span><br><span> {</span=
-><br><span>     unsigned int out_socket;</span><br><span>     unsigned int =
-out_tuntap;</span><br><span>diff --git a/src/openvpn/forward.h b/src/openvp=
-n/forward.h</span><br><span>index 06808b9..7f6f666 100644</span><br><span>-=
--- a/src/openvpn/forward.h</span><br><span>+++ b/src/openvpn/forward.h</spa=
-n><br><span>@@ -68,12 +68,9 @@</span><br><span> </span><br><span> extern co=
-unter_type link_write_bytes_global;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void get_io_flags_dowork_udp(struct context=
- *c, struct multi_io *multi_io,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                             const unsigned int flags);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void get_io_f=
-lags_udp(struct context *c, struct multi_io *multi_io, const unsigned int f=
-lags);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-void io_wait_dowork(struct context *c, const unsigned int flags);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+void io_wait(struct contex=
-t *c, const unsigned int flags);</span><br><span> </span><br><span> void pr=
-e_select(struct context *c);</span><br><span> </span><br><span>@@ -382,34 +=
-379,6 @@</span><br><span>     return flags;</span><br><span> }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- * This is the core I/O wait functi=
-on, used for all I/O waits except</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * for the top-level server sockets.</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-static inline void</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-io_wait(struct context *c, const unsigned int flags)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    if (proto_is_dgram(c-&gt;c2.link_sockets[0]-&gt;info.p=
-roto) &amp;&amp; c-&gt;c2.fast_io</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        &amp;&amp; (flags &amp; (IOW_TO_TUN | IOW_TO_LINK | IOW=
-_MBUF)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        /* fast path -- only =
-for TUN/TAP/UDP writes */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        unsigned int ret =3D 0;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        if (flags &amp; IOW_TO_TUN)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            ret |=3D TUN_WRITE;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        if (flags &amp; (IOW_TO_LINK | IOW_MBUF))</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            ret |=3D SOCKET_WRITE;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        c-&gt;c2.event_set_status =3D ret;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        /* slow path */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        io_wait_dowork(c, flags);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-}</span><br><span> </span><br><span> static inline bool</span><br><s=
-pan> connection_established(struct context *c)</span><br><span>diff --git a=
-/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index fc079e1..cd0=
-1520 100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ b/=
-src/openvpn/init.c</span><br><span>@@ -4139,34 +4139,6 @@</span><br><span> =
-    }</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * Fast I/O setup.  Fast I/O is an optimization which only works</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * if all of the following are=
- true:</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * (1) The platform is not Windows=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * (2) --proto udp is=
- enabled</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * (3) --shap=
-er is disabled</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-do_setup_fast_io(struct context *c)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;options.fast_io)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        msg(M_INFO, &quot;NOTE: --fast-io is disabled si=
-nce we are running on Windows&quot;);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        if (c-&gt;options.shaper)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            msg(M_INFO, &quot;NOTE: --fast-io is disabled since we are usin=
-g --shaper&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            c-&gt;c2.fast_io =3D tru=
-e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span> static void</span><br><span> do_signal_on_tls_errors(struct cont=
-ext *c)</span><br><span> {</span><br><span>@@ -4513,12 +4485,6 @@</span><br=
-><span>     }</span><br><span> #endif</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    /* should we enable fast I/O? */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D =
-CM_P2P || c-&gt;mode =3D=3D CM_TOP)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      do_setup_fast_io(c);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span>     /* should we throw a signal on TLS errors? */</span><br><span>  =
-   do_signal_on_tls_errors(c);</span><br><span> </span><br><span>diff --git=
- a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>index 5de3af6..9=
-2d4dda 100644</span><br><span>--- a/src/openvpn/mudp.c</span><br><span>+++ =
-b/src/openvpn/mudp.c</span><br><span>@@ -339,9 +339,7 @@</span><br><span> m=
-ulti_process_io_udp(struct multi_context *m, struct link_socket *sock)</spa=
-n><br><span> {</span><br><span>     const unsigned int status =3D m-&gt;mul=
-ti_io-&gt;udp_flags;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   const unsigned int mpp_flags =3D m-&gt;top.c2.fast_io</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                                       ?=
- (MPP_CONDITIONAL_PRE_SELECT | MPP_CLOSE_ON_SIGNAL)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                                       : (M=
-PP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    const unsigned int mpp_flags =3D (MPP_PRE_SELECT | MP=
-P_CLOSE_ON_SIGNAL);</span><br><span> </span><br><span>     /* UDP port read=
-y to accept write */</span><br><span>     if (status &amp; SOCKET_WRITE)</s=
-pan><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span>=
-<br><span>index 153695c..d2d9ba8e 100644</span><br><span>--- a/src/openvpn/=
-multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -3008,=
-8 +3008,7 @@</span><br><span>     bool ret =3D true;</span><br><span> </spa=
-n><br><span>     if (!IS_SIG(&amp;mi-&gt;context)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        &amp;&amp; ((flags &amp; MPP_PRE_SELECT=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            || ((fla=
-gs &amp; MPP_CONDITIONAL_PRE_SELECT) &amp;&amp; !ANY_OUT(&amp;mi-&gt;contex=
-t))))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&=
-amp; ((flags &amp; MPP_PRE_SELECT)))</span><br><span>     {</span><br><span=
-> #if defined(ENABLE_ASYNC_PUSH)</span><br><span>         bool was_unauthen=
-ticated =3D true;</span><br><span>diff --git a/src/openvpn/multi.h b/src/op=
-envpn/multi.h</span><br><span>index a44f9f2..1209dfb 100644</span><br><span=
->--- a/src/openvpn/multi.h</span><br><span>+++ b/src/openvpn/multi.h</span>=
-<br><span>@@ -271,10 +271,9 @@</span><br><span> </span><br><span> bool mult=
-i_process_timeout(struct multi_context *m, const unsigned int mpp_flags);</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defi=
-ne MPP_PRE_SELECT             (1 &lt;&lt; 0)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#define MPP_CONDITIONAL_PRE_SELECT (1 &lt;&lt; 1)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MPP_CLOSE_ON_SIG=
-NAL        (1 &lt;&lt; 2)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#define MPP_RECORD_TOUCH           (1 &lt;&lt; 3)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define MPP_PRE_SELECT      (1 &lt;&lt; 0=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MPP_CLOSE_=
-ON_SIGNAL (1 &lt;&lt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#define MPP_RECORD_TOUCH    (1 &lt;&lt; 2)</span><br><span> </span><br=
-><span> </span><br><span> /************************************************=
-**************************/</span><br><span>diff --git a/src/openvpn/openvp=
-n.h b/src/openvpn/openvpn.h</span><br><span>index a198fcf..3e1ae78 100644</=
-span><br><span>--- a/src/openvpn/openvpn.h</span><br><span>+++ b/src/openvp=
-n/openvpn.h</span><br><span>@@ -420,9 +420,6 @@</span><br><span>     struct=
- env_set *es;</span><br><span>     bool es_owned;</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    /* don&#39;t wait for TUN=
-/TAP/UDP to be ready to accept write */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    bool fast_io;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span>     /* --ifconfig endpoints to be pushed to=
- client */</span><br><span>     bool push_request_received;</span><br><span=
->     bool push_ifconfig_defined;</span><br><span>diff --git a/src/openvpn/=
-options.c b/src/openvpn/options.c</span><br><span>index 2d1f740..d01ec47 10=
-0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
-openvpn/options.c</span><br><span>@@ -285,7 +285,6 @@</span><br><span> #if =
-ENABLE_IP_PKTINFO</span><br><span>     &quot;--multihome     : Configure a =
-multi-homed UDP server.\n&quot;</span><br><span> #endif</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    &quot;--fast-io       : Optimize TUN/=
-TAP/UDP writes.\n&quot;</span><br><span>     &quot;--remap-usr1 s  : On SIG=
-USR1 signals, remap signal (s=3D&#39;SIGHUP&#39; or &#39;SIGTERM&#39;).\n&q=
-uot;</span><br><span>     &quot;--persist-tun   : Keep tun/tap device open =
-across SIGUSR1 or --ping-restart.\n&quot;</span><br><span>     &quot;--pers=
-ist-remote-ip : Keep remote IP address across SIGUSR1 or --ping-restart.\n&=
-quot;</span><br><span>@@ -1795,8 +1794,6 @@</span><br><span> #endif</span><=
-br><span>     SHOW_INT(sockflags);</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(fast_io);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     SHOW_INT(comp.alg);=
-</span><br><span>     SHOW_INT(comp.flags);</span><br><span> </span><br><sp=
-an>@@ -6592,7 +6589,7 @@</span><br><span>     else if (streq(p[0], &quot;fa=
-st-io&quot;) &amp;&amp; !p[1])</span><br><span>     {</span><br><span>     =
-    VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        options-&gt;fast_io =3D true;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;DEPRECATED OPTI=
-ON: --fast-io option ignored.&quot;);</span><br><span>     }</span><br><spa=
-n>     else if (streq(p[0], &quot;inactive&quot;) &amp;&amp; p[1] &amp;&amp=
-; !p[3])</span><br><span>     {</span><br><span>diff --git a/src/openvpn/op=
-tions.h b/src/openvpn/options.h</span><br><span>index d331033..555d9dd 1006=
-44</span><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/op=
-envpn/options.h</span><br><span>@@ -406,9 +406,6 @@</span><br><span>     in=
-t status_file_version;</span><br><span>     int status_file_update_freq;</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*=
- optimize TUN/TAP/UDP writes */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    bool fast_io;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span>     struct compress_options comp;</span><br><span> =
-</span><br><span>     /* buffer sizes */</span><br><span></span><br></pre><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1425?usp=
-=3Demail">change 1425</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1425?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: davidben, flichtenheld. </p>
+<p>plaisthos <strong>uploaded patch set #3</strong> to the change originall=
+y created by davidben.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1289?usp=3Demail">View Change</a></p><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">ssl_openssl: Fix some=
+ CRL mixups<br><br>There are two ways to load CRLs in OpenSSL. They can be =
+loaded at the<br>X509_STORE, shared across verifications, or loaded per ver=
+ification at<br>the X509_STORE_CTX.<br><br>OpenVPN currently does the forme=
+r. However, it also supports CRL<br>reloading, and tries to reload the CRL =
+file before each connection.<br>OpenSSL does not really have a good way to =
+unload objects from an<br>X509_STORE. OpenVPN currently does it by grabbing=
+ the<br>STACK_OF(X509_OBJECT) out of the X509_STORE and manually deleting a=
+ll<br>the CRLs from it.<br><br>This mutates an OpenSSL internal object whic=
+h bumps into problems if<br>OpenSSL ever switches to a more efficient repre=
+sentation. See<br>https://github.com/openssl/openssl/pull/28599<br><br>(It&=
+#39;s also not thread-safe, though it doesn&#39;t look like that impacts<br=
+>OpenVPN? Actually even reading that list doesn&#39;t work. See<br>CVE-2024=
+-0397. This OpenSSL API was simply broken.)<br><br>Additionally, this seems=
+ to cause two OpenVPN features to not work<br>together. I gather backend_tl=
+s_ctx_reload_crl is trying to clear the<br>CRLs loaded from last time it ra=
+n. But tls_ctx_load_ca with a ca_file<br>can also load CRLs. tls_ctx_load_c=
+a with ca_path will also pick up CRLs<br>and backend_tls_ctx_reload_crl act=
+ually ends up clobbering some state<br>X509_LOOKUP_hash_dir internally main=
+tains on the X509_STORE. Likewise,<br>tls_verify_crl_missing can get confus=
+ed between<br>backend_tls_ctx_reload_crl&#39;s crl_file-based CRLs and CRLs=
+ from<br>tls_ctx_load_ca.<br><br>Avoid all this by tracking the two CRLs se=
+parately. crl_file-based CRLs<br>now go onto a STACK_OF(X509_CRL) tracked o=
+n the tls_root_ctx. Now this<br>field can be freely reloaded by OpenVPN wit=
+hout reconfiguring OpenSSL.<br>Instead, pass the current value into OpenSSL=
+ at verification time.  To<br>do so, we need to use the SSL_CTX_set_cert_ve=
+rify_callback, which allows<br>swapping out the X509_verify_cert call, and =
+also tweaking the<br>X509_STORE_CTX configuration before starting certifica=
+te verification.<br><br>Context: SSL_CTX_set_cert_verify_callback and the e=
+xisting<br>verify_callback are not the same. SSL_CTX_set_cert_verify_callba=
+ck wraps<br>the verification while verify_callback is called multiple times=
+<br>throughout verification. It&#39;s too late to reconfigure X509_STORE_CT=
+X in<br>verify_callback. verify_callback is usually not what you want.<br>S=
+ometimes current_cert and error_depth don&#39;t quite line up, and<br>cert_=
+hash_remember may end up called multiple times for a single<br>certificate.=
+<br><br>I suspect some of the other verify_callback logic would also be bet=
+ter<br>done in the new callback, but I&#39;ve left it alone to keep this ch=
+ange<br>minimal. verify_callback is really only usable for suppressing erro=
+rs.<br>Application bookkeeping is better down elsewhere.<br><br>Signed-off-=
+by: David Benjamin &lt;davidben@...410...&gt;<br>Change-Id: I31ac2a76320911=
+4267c35c4a9182a12d8d82f6fe<br>Signed-off-by: Arne Schwabe &lt;arne@...2639...=
+..&gt;<br>---<br>M src/openvpn/openssl_compat.h<br>M src/openvpn/ssl_openss=
+l.c<br>M src/openvpn/ssl_openssl.h<br>M src/openvpn/ssl_verify_openssl.c<br=
+>4 files changed, 34 insertions(+), 54 deletions(-)<br><br></pre><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/1289/3<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_com=
+pat.h</span><br><span>index b9af132..139eaa6 100644</span><br><span>--- a/s=
+rc/openvpn/openssl_compat.h</span><br><span>+++ b/src/openvpn/openssl_compa=
+t.h</span><br><span>@@ -52,21 +52,6 @@</span><br><span> </span><br><span> /=
+* Functionality missing in LibreSSL before 3.5 */</span><br><span> #if defi=
+ned(LIBRESSL_VERSION_NUMBER) &amp;&amp; LIBRESSL_VERSION_NUMBER &lt; 0x3050=
+000fL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * Destroy a X509 object</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">- * @param obj                X509 object</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-static inline void</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-X509_OBJECT_free(X509_OBJECT *obj)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (obj)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        X=
+509_OBJECT_free_contents(obj);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        OPENSSL_free(obj);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #def=
+ine EVP_CTRL_AEAD_SET_TAG EVP_CTRL_GCM_SET_TAG</span><br><span> #define EVP=
+_CTRL_AEAD_GET_TAG EVP_CTRL_GCM_GET_TAG</span><br><span> #endif</span><br><=
+span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</sp=
+an><br><span>index ba85bc13..75cef79 100644</span><br><span>--- a/src/openv=
+pn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br>=
+<span>@@ -141,6 +141,8 @@</span><br><span>     ASSERT(NULL !=3D ctx);</span=
+><br><span>     SSL_CTX_free(ctx-&gt;ctx);</span><br><span>     ctx-&gt;ctx=
+ =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sk_X5=
+09_CRL_pop_free(ctx-&gt;crls, X509_CRL_free);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    ctx-&gt;crls =3D NULL;</span><br><span>     u=
+nload_xkey_provider(); /* in case it is loaded */</span><br><span>     free=
+(ctx);</span><br><span> }</span><br><span>@@ -305,6 +307,22 @@</span><br><s=
+pan>     return true;</span><br><span> }</span><br><span> </span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+cert_verify_callback(X509_STORE_CTX *ctx, voi=
+d *arg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_session *sessio=
+n;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SSL *ssl;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ssl =3D X509_STORE_CTX_get_ex_data(ct=
+x, SSL_get_ex_data_X509_STORE_CTX_idx());</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    ASSERT(ssl);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    session =3D SSL_get_ex_data(ssl, mydata_index);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(session);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* Configure CRLs. */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    X509_STORE_CTX_set0_crls(ctx, s=
+ession-&gt;opt-&gt;ssl_ctx-&gt;crls);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    return X509_verify_cert(ctx);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> bool</span><br><span> tls_ctx_set_options=
+(struct tls_root_ctx *ctx, unsigned int ssl_flags)</span><br><span> {</span=
+><br><span>@@ -347,6 +365,7 @@</span><br><span>         verify_flags =3D SS=
+L_VERIFY_PEER;</span><br><span>     }</span><br><span>     SSL_CTX_set_veri=
+fy(ctx-&gt;ctx, verify_flags, verify_callback);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    SSL_CTX_set_cert_verify_callback(ctx-&gt;ct=
+x, cert_verify_callback, NULL);</span><br><span> </span><br><span>     SSL_=
+CTX_set_info_callback(ctx-&gt;ctx, info_callback);</span><br><span> </span>=
+<br><span>@@ -1321,6 +1340,7 @@</span><br><span> backend_tls_ctx_reload_crl=
+(struct tls_root_ctx *ssl_ctx, const char *crl_file, bool crl_inline)</span=
+><br><span> {</span><br><span>     BIO *in =3D NULL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    STACK_OF(X509_CRL) *crls =3D NULL;</s=
+pan><br><span> </span><br><span>     X509_STORE *store =3D SSL_CTX_get_cert=
+_store(ssl_ctx-&gt;ctx);</span><br><span>     if (!store)</span><br><span>@=
+@ -1328,20 +1348,8 @@</span><br><span>         crypto_msg(M_FATAL, &quot;Ca=
+nnot get certificate store&quot;);</span><br><span>     }</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Always start w=
+ith a cleared CRL list, for that we</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-     * we need to manually find the CRL object from the stack=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * and remove it =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    STACK_OF(X509_O=
+BJECT) *objs =3D X509_STORE_get0_objects(store);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; sk_X509_OBJECT_num(=
+objs); i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        X509_OBJECT *obj =
+=3D sk_X509_OBJECT_value(objs, i);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        ASSERT(obj);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        if (X509_OBJECT_get_type(obj) =3D=3D X509_LU_CRL)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            sk_X509_OBJECT_delete(objs,=
+ i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            X509_=
+OBJECT_free(obj);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    sk_X509_CRL_pop_free(ssl_c=
+tx-&gt;crls, X509_CRL_free);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    ssl_ctx-&gt;crls =3D NULL;</span><br><span> </span><br><span> =
+    X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHE=
+CK_ALL);</span><br><span> </span><br><span>@@ -1357,7 +1365,13 @@</span><br=
+><span>     if (in =3D=3D NULL)</span><br><span>     {</span><br><span>    =
+     msg(M_WARN, &quot;CRL: cannot read: %s&quot;, print_key_filename(crl_f=
+ile, crl_inline));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     goto end;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    crls =3D sk_X509_CRL_new_null();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (crls =3D=3D NULL=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        crypto_msg(M_FATAL, &quo=
+t;CRL: cannot create CRL list&quot;);</span><br><span>     }</span><br><spa=
+n> </span><br><span>     int num_crls_loaded =3D 0;</span><br><span>@@ -138=
+3,18 +1397,14 @@</span><br><span>             break;</span><br><span>      =
+   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        if (!X509_STORE_add_crl(store, crl))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        if (!sk_X509_CRL_push(crls, crl))</span><=
+br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          X509_CRL_free(crl);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            crypto_msg(M_WARN, &quot;CRL: cannot add %s to store&qu=
+ot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+      print_key_filename(crl_file, crl_inline));</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            crypto_msg(M_FATAL, &quot;CRL: cannot=
+ add CRL to list&quot;);</span><br><span>         }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        X509_CRL_free(crl);</span><br><span=
+>         num_crls_loaded++;</span><br><span>     }</span><br><span>     ms=
+g(M_INFO, &quot;CRL: loaded %d CRLs from file %s&quot;, num_crls_loaded, cr=
+l_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-end:</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    ssl_ctx-&gt;crls =3D crl=
+s;</span><br><span>     BIO_free(in);</span><br><span> }</span><br><span> <=
+/span><br><span>diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_op=
+enssl.h</span><br><span>index 2c1f36d..e5149dd 100644</span><br><span>--- a=
+/src/openvpn/ssl_openssl.h</span><br><span>+++ b/src/openvpn/ssl_openssl.h<=
+/span><br><span>@@ -41,6 +41,7 @@</span><br><span>     SSL_CTX *ctx;</span>=
+<br><span>     time_t crl_last_mtime;</span><br><span>     off_t crl_last_s=
+ize;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    STACK_OF(X5=
+09_CRL) *crls;</span><br><span> };</span><br><span> </span><br><span> struc=
+t key_state_ssl</span><br><span>diff --git a/src/openvpn/ssl_verify_openssl=
+.c b/src/openvpn/ssl_verify_openssl.c</span><br><span>index 633f78d..145ec9=
+a 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><=
+span>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -799,23 +799=
+,7 @@</span><br><span>         return false;</span><br><span>     }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    X509_ST=
+ORE *store =3D SSL_CTX_get_cert_store(opt-&gt;ssl_ctx-&gt;ctx);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    if (!store)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;Cannot get certificat=
+e store&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    STACK_OF(X509_OBJECT) *objs =3D X509_ST=
+ORE_get0_objects(store);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    for (int i =3D 0; i &lt; sk_X509_OBJECT_num(objs); i++)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        X509_OBJECT *obj =3D sk_X509_OBJECT_value(=
+objs, i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSE=
+RT(obj);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (X=
+509_OBJECT_get_type(obj) =3D=3D X509_LU_CRL)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            return false;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return tr=
+ue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return opt-&=
+gt;ssl_ctx-&gt;crls =3D=3D NULL || sk_X509_CRL_num(opt-&gt;ssl_ctx-&gt;crls=
+) =3D=3D 0;</span><br><span> }</span><br><span> </span><br><span> #endif /*=
+ defined(ENABLE_CRYPTO_OPENSSL) */</span><br><span></span><br></pre><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demai=
+l">change 1289</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1289?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2c0a0b55ad56e704d4bd19f1fbc=
-1c30c83fae14c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1425 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
-..&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I31ac2a763209114267c35c4a918=
+2a12d8d82f6fe </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1289 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: davidben &lt;davidben@...410...&=
+gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -733,8 +541,10 @@ email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: davidben &lt;davidben@...2975...=
+...&gt; </div>
 
 </body></html>=
 
---X8dsx5RK9Dk=--
+--mukRu8erLc8=--
 
