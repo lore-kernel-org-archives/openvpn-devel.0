@@ -1,10 +1,15 @@
-Date: Wed, 10 Dec 2025 12:44:04 +0100 (CET)
-Message-Id: <202512101144.5BABi4oa013014@...2054...>
+Date: Wed, 10 Dec 2025 12:47:31 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAM8w-qEE6vHj=yUOpTFbM7DqPKzUV0NupvEG4rUefY=kNB2DxQ@...278...>
+Message-ID: <aTld0-ETy-6CeeX3@...1296...>
 References: <CAM8w-qEE6vHj=yUOpTFbM7DqPKzUV0NupvEG4rUefY=kNB2DxQ@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: PUSH_UPDATE: fix option reset
- logic in continuation messages
+ <202512101144.5BABi0b0012981@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="E5VH5MyBAIfqF+ef"
+Content-Disposition: inline
+In-Reply-To: <202512101144.5BABi0b0012981@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: PUSH_UPDATE: fix option
+ reset logic in continuation messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Moritz Fain <moritz-openvpn@...2969...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-So, after a bit of work, this is now in - always remember to use 
-"git send-email" to send patches to the list (or use gerrit), as normal
-e-mail clients tend to line-wrap things.  So about 30 lines in the patch
-were wrapped, needing manual repair...
+--E5VH5MyBAIfqF+ef
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have not explicitly tested this with a long server-triggered PUSH_UPDATE
-command ("no infrastructure yet"), but it does pass the unit test - thanks
-for that addition - and the explanation & code make sense (arguably the
-change to update_option() is not really necessary - one could just pass
-in a pointer to o->push_update_options_found - but given that this is
-not code where "keep branches similar" is relevant it does not make
-a big difference either way).
+Hi,
 
-Also, Marco has ACKed this (twice *cough*), and it's his code ;-)
+On Wed, Dec 10, 2025 at 12:44:00PM +0100, Gert Doering wrote:
+> Your patch has been applied to the master branch.
+>=20
+> commit d3c7d6cf560e52f8951c70abf05bd4151a29e0ff
+> Author: Moritz Fain
+> Date:   Mon Dec 1 15:04:18 2025 +0100
 
-Your patch has been applied to the master branch.
+This mail erroneously escaped.  The correct one is the other one, with
 
-commit 309c2332c353e741d0b696112891cbe0a8e4080f
-Author: Moritz Fain
+commit 309c2332c353e741d0b696112891cbe0a8e4080f (origin/master, origin/HEAD)
+Author: Moritz Fain <moritz-openvpn@...2969...>
 Date:   Mon Dec 1 15:04:18 2025 +0100
 
-     PUSH_UPDATE: fix option reset logic in continuation messages
+    PUSH_UPDATE: fix option reset logic in continuation messages
 
-     Acked-by: Marco Baffo <marco@...2726...>
-     Message-Id: <CAM8w-qEE6vHj=yUOpTFbM7DqPKzUV0NupvEG4rUefY=kNB2DxQ@...278...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg34814.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+apologies.
 
+gert
 
---
-kind regards,
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Gert Doering
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--E5VH5MyBAIfqF+ef
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmk5XdEACgkQHYKe/spW
+KBJ6MgwAr8zIiMm15yXHrj3cd/LM2kcf5B95oWuxGcJX7uKheWxJLAss0LTS6CNO
+hA+S2yD9IKBcECGDOJxOIJGn3fBu9hXQbjwqGmSpje5u1ZXayQneHEKiV0VD1L2Q
+Vmvi7DQj9XstKNTL8e5CYZOMcWg6WJuYb7SfC5IERB6CWjzigdcnKB5dYb/N1OMu
+0aeRhmdJtnF/K14cg+oWoq8sex3uh3j6Ac6XkPFEC/aqxKtmBXR/8o7+wiMH75Y0
+k5pxHOZwzFmtQRdS6bKB0/vAtB+YXmhnQ1Q0QVBDdyvYdmXIwCXIFuVpq9Bo/PDK
+TakSJVPtdFkDAHkwG9eGfmmo4uMyKc8gQQg+zhKLFJRd/9D/n/cAzoZ+s3V5fq8B
+2bD/io4GzVkiTp1nNvJfwLTDyArTT7eU8lqPLf3MNsAaHHP3lwnZdNtnPgPBJRif
+c2RswxDUdlx8ipdJ0vJ6H5/giSqsczkt86tn3uKDoMhvMat7mU3dzKF7HQNxgjeS
+CRig9I3V
+=D24E
+-----END PGP SIGNATURE-----
+
+--E5VH5MyBAIfqF+ef--
 
