@@ -1,5 +1,5 @@
-Date: Wed, 10 Dec 2025 12:44:00 +0100 (CET)
-Message-Id: <202512101144.5BABi0b0012981@...2054...>
+Date: Wed, 10 Dec 2025 12:44:04 +0100 (CET)
+Message-Id: <202512101144.5BABi4oa013014@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <CAM8w-qEE6vHj=yUOpTFbM7DqPKzUV0NupvEG4rUefY=kNB2DxQ@...278...>
 References: <CAM8w-qEE6vHj=yUOpTFbM7DqPKzUV0NupvEG4rUefY=kNB2DxQ@...278...>
@@ -23,7 +23,7 @@ So, after a bit of work, this is now in - always remember to use
 e-mail clients tend to line-wrap things.  So about 30 lines in the patch
 were wrapped, needing manual repair...
 
-I have not explicitly tested this with a server-triggered PUSH_UPDATE
+I have not explicitly tested this with a long server-triggered PUSH_UPDATE
 command ("no infrastructure yet"), but it does pass the unit test - thanks
 for that addition - and the explanation & code make sense (arguably the
 change to update_option() is not really necessary - one could just pass
@@ -31,11 +31,11 @@ in a pointer to o->push_update_options_found - but given that this is
 not code where "keep branches similar" is relevant it does not make
 a big difference either way).
 
-Also, Marco has ACKed this, and it's his code ;-)
+Also, Marco has ACKed this (twice *cough*), and it's his code ;-)
 
 Your patch has been applied to the master branch.
 
-commit d3c7d6cf560e52f8951c70abf05bd4151a29e0ff
+commit 309c2332c353e741d0b696112891cbe0a8e4080f
 Author: Moritz Fain
 Date:   Mon Dec 1 15:04:18 2025 +0100
 
