@@ -1,15 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 11 Dec 2025 11:36:39 +0000
-In-Reply-To: <gerrit.1765381324000.I21251a42f94fa1d9de083d2acd95b887658c5760@...2715...>
-References: <gerrit.1765381324000.I21251a42f94fa1d9de083d2acd95b887658c5760@...2715...>
+Date: Thu, 11 Dec 2025 11:37:11 +0000
+References: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
-Message-ID: <e28fb7d86390cee7e4d2a4d52046557f4fb16b73-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <61a86e8ff6ee7cce0015bc40d3e4e1a3a2b15b71-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BXoOUswBZIY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change ssl_ctx in
- struct tls_options to be a pointer
+Content-Type: multipart/alternative; boundary="EcyrHo77czA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow test-crypt to
+ work without --secret argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,488 +19,510 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---BXoOUswBZIY=
+--EcyrHo77czA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded a new patch set (#4). ( http://gerrit.openvpn.net/c/=
-openvpn/+/1431?usp=3Demail )
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1435?usp=3Demail )
 
 
-Change subject: Change ssl_ctx in struct tls_options to be a pointer
+Change subject: Allow test-crypt to work without --secret argument
 ......................................................................
 
-Change ssl_ctx in struct tls_options to be a pointer
+Allow test-crypt to work without --secret argument
 
-The SSL CTX is shared between all of the instances. So any change to the
-SSL CTX will affect all instances. Currently the CRL is also reloaded
-potentially multiple times as each copy of tls_root_ctx has its own
-crl_last_mtime and crl_last_size values that will be checked if the CRL
-reload is necessary.
+The --test-crypto still requires the --secret argument. Since --secret
+will be removed in OpenVPN 2.8 but we want to keep test-crypt, remove
+the dependency of test-crypto on --static.
 
-Changing it to a pointer will make it more clear that this is shared
-and also the CRL being reload multiple times.
+Instead we will just generate a random key for this selftest method.
 
-Change-Id: I21251a42f94fa1d9de083d2acd95b887658c5760
+Change-Id: I72947bd4f0213fd118327f740daeb1d86ae166de
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+M Changes.rst
+M doc/man-sections/generic-options.rst
+M src/openvpn/crypto.c
+M src/openvpn/crypto.h
 M src/openvpn/init.c
-M src/openvpn/openvpn.h
-M src/openvpn/ssl.c
-M src/openvpn/ssl.h
-M src/openvpn/ssl_common.h
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_openssl.c
-M src/openvpn/ssl_verify_mbedtls.c
-M src/openvpn/ssl_verify_openssl.c
-9 files changed, 36 insertions(+), 26 deletions(-)
+M src/openvpn/options.c
+M tests/t_lpback.sh
+7 files changed, 75 insertions(+), 14 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/1431/4
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1435/1
+
+diff --git a/Changes.rst b/Changes.rst
+index 32efbe7..1a92b94 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -338,6 +338,9 @@
+   (force egress =3D ingress interface) can be achieved with the new
+   ``--multihome same-interface`` sub-option.
+
++- The ``test-crypto`` option no longer requires a ``--secret`` argument and
++  will automatically generate a random key.
++
+ Deprecated features
+ -------------------
+ ``--opt-verify`` feature removed
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
+c-options.rst
+index 882cf28..b6e513d 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -439,13 +439,13 @@
+   The typical usage of ``--test-crypto`` would be something like this:
+   ::
+
+-     openvpn --test-crypto --secret key
++     openvpn --test-crypto
+
+   or
+
+   ::
+
+-     openvpn --test-crypto --secret key --verb 9
++     openvpn --test-crypto --verb 9
+
+   This option is very useful to test OpenVPN after it has been ported to a
+   new platform, or to isolate problems in the compiler, OpenSSL crypto
+@@ -453,6 +453,10 @@
+   problems with encryption and authentication can be debugged
+   independently of network and tunnel issues.
+
++  Older versions of OpenVPN used the ``--secret`` argument to specify a
++  static key for this test. Newer version generate a random key for the
++  test.
++
+ --tmp-dir dir
+   Specify a directory ``dir`` for temporary files instead of the default
+   :code:`TMPDIR` (or "/tmp" if unset). Note that it must be writable by th=
+e main
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index e43bc6c..ddf3c17 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1325,6 +1325,18 @@
+     secure_memzero(&key2, sizeof(key2));
+ }
+
++void
++generate_test_crypto_random_key(const struct key_type *key_type, struct ke=
+y_ctx_bi *ctx,
++                                const char *key_name)
++{
++    struct key2 key2;
++    key2.n =3D 2;
++    generate_key_random(&key2.keys[0]);
++    generate_key_random(&key2.keys[1]);
++    init_key_ctx_bi(ctx, &key2, KEY_DIRECTION_BIDIRECTIONAL, key_type, key=
+_name);
++}
++
++
+ /* header and footer for static key file */
+ static const char static_key_head[] =3D "-----BEGIN OpenVPN Static key V1-=
+----";
+ static const char static_key_foot[] =3D "-----END OpenVPN Static key V1---=
+--";
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 9424fd7..6670deb 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -632,6 +632,13 @@
+                              const char *key_file, bool key_inline, const =
+int key_direction,
+                              const char *key_name, const char *opt_name, s=
+truct key2 *keydata);
+
++/**
++ * Generate a random key and initialise ctx to be used the in the crypto r=
+andom
++ * test
++ */
++void generate_test_crypto_random_key(const struct key_type *key_type, stru=
+ct key_ctx_bi *ctx,
++                                     const char *key_name);
++
+ /*
+  * Inline functions
+  */
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index fc079e1..0dcc5ad 100644
+index fc079e1..2b7cfc2 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2964,9 +2964,10 @@
- key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)
- {
-     free_key_ctx_bi(&ks->static_key);
--    if (tls_ctx_initialised(&ks->ssl_ctx) && free_ssl_ctx)
-+    if (tls_ctx_initialised(ks->ssl_ctx) && free_ssl_ctx)
-     {
--        tls_ctx_free(&ks->ssl_ctx);
-+        tls_ctx_free(ks->ssl_ctx);
-+        free(ks->ssl_ctx);
-         free_key_ctx(&ks->auth_token_key);
-     }
-     CLEAR(*ks);
-@@ -3121,14 +3122,14 @@
+@@ -2997,6 +2997,33 @@
+ #endif
+ }
+
++
++static void
++do_init_crypto_test(struct context *c, const unsigned int flags)
++{
++    const struct options *options =3D &c->options;
++    ASSERT(options->test_crypto);
++
++    init_crypto_pre(c, flags);
++
++    /* Initialize packet ID tracking */
++    // packet_id_init(&c->c2.crypto_options.packet_id, options->replay_win=
+dow, options->replay_time,
++    //                "STATIC", 0);
++    c->c2.crypto_options.flags |=3D CO_PACKET_ID_LONG_FORM;
++
++    ASSERT(!key_ctx_bi_defined(&c->c1.ks.static_key));
++
++    /* Init cipher and hash algorithm */
++    init_key_type(&c->c1.ks.key_type, options->ciphername, options->authna=
+me,
++                  options->test_crypto, true);
++
++    generate_test_crypto_random_key(&c->c1.ks.key_type, &c->c1.ks.static_k=
+ey,
++                                    "test crypto key");
++
++    /* Get key schedule */
++    c->c2.crypto_options.key_ctx_bi =3D c->c1.ks.static_key;
++}
++
+ /*
+  * Static Key Mode (using a pre-shared key)
+  */
+@@ -3004,7 +3031,7 @@
+ do_init_crypto_static(struct context *c, const unsigned int flags)
  {
      const struct options *options =3D &c->options;
+-    ASSERT(options->shared_secret_file);
++    ASSERT(options->shared_secret_file || options->test_crypto);
 
--    if (!tls_ctx_initialised(&c->c1.ks.ssl_ctx))
-+    if (!tls_ctx_initialised(c->c1.ks.ssl_ctx))
+     init_crypto_pre(c, flags);
+
+@@ -3027,10 +3054,18 @@
+         init_key_type(&c->c1.ks.key_type, options->ciphername, options->au=
+thname,
+                       options->test_crypto, true);
+
+-        /* Read cipher and hmac keys from shared secret file */
+-        crypto_read_openvpn_key(&c->c1.ks.key_type, &c->c1.ks.static_key,
+-                                options->shared_secret_file, options->shar=
+ed_secret_file_inline,
+-                                options->key_direction, "Static Key Encryp=
+tion", "secret", NULL);
++        if (!options->shared_secret_file && options->test_crypto)
++        {
++            generate_test_crypto_random_key(&c->c1.ks.key_type, &c->c1.ks.=
+static_key,
++                                            "test crypto key");
++        }
++        else
++        {
++            /* Read cipher and hmac keys from shared secret file */
++            crypto_read_openvpn_key(&c->c1.ks.key_type, &c->c1.ks.static_k=
+ey,
++                                    options->shared_secret_file, options->=
+shared_secret_file_inline,
++                                    options->key_direction, "Static Key En=
+cryption", "secret", NULL);
++        }
+     }
+     else
      {
-         /*
-          * Initialize the OpenSSL library's global
--         * SSL context.
--         */
--        init_ssl(options, &(c->c1.ks.ssl_ctx), c->c0 && c->c0->uid_gid_chr=
-oot_set);
--        if (!tls_ctx_initialised(&c->c1.ks.ssl_ctx))
-+         * SSL context. */
-+        ASSERT(NULL =3D=3D c->c1.ks.ssl_ctx);
-+        c->c1.ks.ssl_ctx =3D init_ssl(options, c->c0 && c->c0->uid_gid_chr=
-oot_set);
-+        if (!tls_ctx_initialised(c->c1.ks.ssl_ctx))
-         {
-             switch (auth_retry_get())
-             {
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index a198fcf..2c1547b 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -60,7 +60,7 @@
-     struct key_ctx_bi static_key;
+@@ -3501,6 +3536,10 @@
+     {
+         do_init_crypto_static(c, flags);
+     }
++    else if (c->options.test_crypto)
++    {
++        do_init_crypto_test(c, flags);
++    }
+     else if (c->options.tls_server || c->options.tls_client)
+     {
+         do_init_crypto_tls(c, flags);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2d1f740..b430065 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2283,11 +2283,7 @@
+=20
+     init_options(&defaults, true);
 
-     /* our global SSL context */
--    struct tls_root_ctx ssl_ctx;
-+    struct tls_root_ctx *ssl_ctx;
-
-     /* optional TLS control channel wrapping */
-     struct key_type tls_auth_key_type;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 741f40a..9d3a6ef 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -507,11 +507,9 @@
-  * Initialize SSL context.
-  * All files are in PEM format.
-  */
--void
--init_ssl(const struct options *options, struct tls_root_ctx *new_ctx, bool=
- in_chroot)
-+struct tls_root_ctx *
-+init_ssl(const struct options *options, bool in_chroot)
- {
--    ASSERT(NULL !=3D new_ctx);
--
-     tls_clear_error();
-
-     if (key_is_external(options))
-@@ -519,6 +517,9 @@
-         load_xkey_provider();
+-    if (options->test_crypto)
+-    {
+-        notnull(options->shared_secret_file, "key file (--secret)");
+-    }
+-    else
++    if (!options->test_crypto)
+     {
+         notnull(options->dev, "TUN/TAP device (--dev)");
+     }
+@@ -2701,7 +2697,7 @@
+         msg(M_USAGE, "specify only one of --tls-server, --tls-client, or -=
+-secret");
      }
 
-+    struct tls_root_ctx *new_ctx;
-+    ALLOC_OBJ_CLEAR(new_ctx, struct tls_root_ctx);
-+
-     if (options->tls_server)
+-    if (!options->tls_server && !options->tls_client)
++    if (!options->tls_server && !options->tls_client && !options->test_cry=
+pto)
      {
-         tls_ctx_server_new(new_ctx);
-@@ -664,12 +665,13 @@
- #endif
+         msglvl_t msglevel =3D M_USAGE;
+         if (options->allow_deprecated_insecure_static_crypto)
+diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
+index 8ab3973..eb6a72f 100755
+--- a/tests/t_lpback.sh
++++ b/tests/t_lpback.sh
+@@ -95,7 +95,7 @@
+ for cipher in ${CIPHERS}
+ do
+     test_start "Testing cipher ${cipher}... "
+-    ( "${openvpn}" --test-crypto --secret key.$$  --allow-deprecated-insec=
+ure-static-crypto --cipher ${cipher} ) >log.$$ 2>&1
++    ( "${openvpn}" --test-crypto --cipher ${cipher} ) >log.$$ 2>&1
+     test_end $? log.$$
+ done
 
-     tls_clear_error();
--    return;
-+    return new_ctx;
-
- err:
-     tls_clear_error();
-     tls_ctx_free(new_ctx);
--    return;
-+    free(new_ctx);
-+    return NULL;
- }
-
- /*
-@@ -821,7 +823,7 @@
-      * Build TLS object that reads/writes ciphertext
-      * to/from memory BIOs.
-      */
--    key_state_ssl_init(&ks->ks_ssl, &session->opt->ssl_ctx, session->opt->=
-server, session);
-+    key_state_ssl_init(&ks->ks_ssl, session->opt->ssl_ctx, session->opt->s=
-erver, session);
-
-     /* Set control-channel initiation mode */
-     ks->initial_opcode =3D session->initial_opcode;
-@@ -872,11 +874,12 @@
-
-     /*
-      * Attempt CRL reload before TLS negotiation. Won't be performed if
--     * the file was not modified since the last reload
-+     * the file was not modified since the last reload. This affects
-+     * all instances sharing the same context
-      */
-     if (session->opt->crl_file && !(session->opt->ssl_flags & SSLF_CRL_VER=
-IFY_DIR))
-     {
--        tls_ctx_reload_crl(&session->opt->ssl_ctx, session->opt->crl_file,
-+        tls_ctx_reload_crl(session->opt->ssl_ctx, session->opt->crl_file,
-                            session->opt->crl_file_inline);
-     }
- }
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index db8a798..9ee9f38 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -144,7 +144,7 @@
-  * Build master SSL context object that serves for the whole of OpenVPN
-  * instantiation
-  */
--void init_ssl(const struct options *options, struct tls_root_ctx *ctx, boo=
-l in_chroot);
-+struct tls_root_ctx *init_ssl(const struct options *options, bool in_chroo=
-t);
-
- /** @addtogroup control_processor
-  *  @{ */
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 3129299..32643b4 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -305,8 +305,10 @@
-  */
- struct tls_options
- {
--    /* our master TLS context from which all SSL objects derived */
--    struct tls_root_ctx ssl_ctx;
-+    /* our master TLS context from which all SSL objects derived,
-+     * this context is shared between all instances so point
-+     * the real master context */
-+    struct tls_root_ctx *ssl_ctx;
-
-     /* data channel cipher, hmac, and key lengths */
-     struct key_type key_type;
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 3440319..28b92ed 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -157,8 +157,10 @@
- bool
- tls_ctx_initialised(struct tls_root_ctx *ctx)
- {
--    ASSERT(NULL !=3D ctx);
--    return ctx->initialised;
-+    /* either this should be NULL or should be non-null and then have a
-+     * valid TLS ctx inside as well */
-+    ASSERT(NULL =3D=3D ctx || ctx->initialised);
-+    return ctx !=3D NULL;
- }
- #if !defined(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)
- /*
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index a4a6863..48bbdfc 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -147,8 +147,10 @@
- bool
- tls_ctx_initialised(struct tls_root_ctx *ctx)
- {
--    ASSERT(NULL !=3D ctx);
--    return NULL !=3D ctx->ctx;
-+    /* either this should be NULL or should be non-null and then have a
-+     * valid TLS ctx inside as well */
-+    ASSERT(ctx =3D=3D NULL || ctx->ctx !=3D NULL);
-+    return ctx !=3D NULL;
- }
-
- bool
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
-tls.c
-index 250c806..b7de550 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -572,7 +572,7 @@
- tls_verify_crl_missing(const struct tls_options *opt)
- {
-     if (opt->crl_file && !(opt->ssl_flags & SSLF_CRL_VERIFY_DIR)
--        && (opt->ssl_ctx.crl =3D=3D NULL || opt->ssl_ctx.crl->version =3D=
-=3D 0))
-+        && (opt->ssl_ctx->crl =3D=3D NULL || opt->ssl_ctx->crl->version =
-=3D=3D 0))
-     {
-         return true;
-     }
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 6cb04ee..633f78d 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -799,7 +799,7 @@
-         return false;
-     }
-
--    X509_STORE *store =3D SSL_CTX_get_cert_store(opt->ssl_ctx.ctx);
-+    X509_STORE *store =3D SSL_CTX_get_cert_store(opt->ssl_ctx->ctx);
-     if (!store)
-     {
-         crypto_msg(M_FATAL, "Cannot get certificate store");
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1431?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I21251a42f94fa1d9de083d2acd95b887658c5760
-Gerrit-Change-Number: 1431
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: I72947bd4f0213fd118327f740daeb1d86ae166de
+Gerrit-Change-Number: 1435
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---BXoOUswBZIY=
+--EcyrHo77czA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
->uploaded patch set #4</strong> to this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1431?usp=3Demail">View Change</a></p><pre class=
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1435?usp=3Demail">View Change</a></p><pre class=
 =3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">Change ssl_ctx in struct tls_options to be a pointer<br><br>The SSL CTX=
- is shared between all of the instances. So any change to the<br>SSL CTX wi=
-ll affect all instances. Currently the CRL is also reloaded<br>potentially =
-multiple times as each copy of tls_root_ctx has its own<br>crl_last_mtime a=
-nd crl_last_size values that will be checked if the CRL<br>reload is necess=
-ary.<br><br>Changing it to a pointer will make it more clear that this is s=
-hared<br>and also the CRL being reload multiple times.<br><br>Change-Id: I2=
-1251a42f94fa1d9de083d2acd95b887658c5760<br>Signed-off-by: Arne Schwabe &lt;=
-arne@...1227...&gt;<br>---<br>M src/openvpn/init.c<br>M src/openvpn/openvpn=
-.h<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl.h<br>M src/openvpn/ssl_commo=
-n.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_openssl.c<br>M src/=
-openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/ssl_verify_openssl.c<br>9 fil=
-es changed, 36 insertions(+), 26 deletions(-)<br><br></pre><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/31/1431/4</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>inde=
-x fc079e1..0dcc5ad 100644</span><br><span>--- a/src/openvpn/init.c</span><b=
-r><span>+++ b/src/openvpn/init.c</span><br><span>@@ -2964,9 +2964,10 @@</sp=
-an><br><span> key_schedule_free(struct key_schedule *ks, bool free_ssl_ctx)=
-</span><br><span> {</span><br><span>     free_key_ctx_bi(&amp;ks-&gt;static=
-_key);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tls_ctx=
-_initialised(&amp;ks-&gt;ssl_ctx) &amp;&amp; free_ssl_ctx)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (tls_ctx_initialised(ks-&gt;s=
-sl_ctx) &amp;&amp; free_ssl_ctx)</span><br><span>     {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        tls_ctx_free(&amp;ks-&gt;ssl_ctx)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_ctx_fr=
-ee(ks-&gt;ssl_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        free(ks-&gt;ssl_ctx);</span><br><span>         free_key_ctx(&amp;ks=
--&gt;auth_token_key);</span><br><span>     }</span><br><span>     CLEAR(*ks=
-);</span><br><span>@@ -3121,14 +3122,14 @@</span><br><span> {</span><br><sp=
-an>     const struct options *options =3D &amp;c-&gt;options;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tls_ctx_=
-initialised(&amp;c-&gt;c1.ks.ssl_ctx))</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (!tls_ctx_initialised(c-&gt;c1.ks.ssl_ctx))</span=
-><br><span>     {</span><br><span>         /*</span><br><span>          * I=
-nitialize the OpenSSL library&#39;s global</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-         * SSL context.</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        init_ssl(options, &amp;(c-&gt;c1.ks.ssl_ctx), c-&gt;c0=
- &amp;&amp; c-&gt;c0-&gt;uid_gid_chroot_set);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        if (!tls_ctx_initialised(&amp;c-&gt;c1.ks.s=
-sl_ctx))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * =
-SSL context. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    ASSERT(NULL =3D=3D c-&gt;c1.ks.ssl_ctx);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        c-&gt;c1.ks.ssl_ctx =3D init_ssl(options, =
-c-&gt;c0 &amp;&amp; c-&gt;c0-&gt;uid_gid_chroot_set);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (!tls_ctx_initialised(c-&gt;c1=
-.ks.ssl_ctx))</span><br><span>         {</span><br><span>             switc=
-h (auth_retry_get())</span><br><span>             {</span><br><span>diff --=
-git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h</span><br><span>index a=
-198fcf..2c1547b 100644</span><br><span>--- a/src/openvpn/openvpn.h</span><b=
-r><span>+++ b/src/openvpn/openvpn.h</span><br><span>@@ -60,7 +60,7 @@</span=
-><br><span>     struct key_ctx_bi static_key;</span><br><span> </span><br><=
-span>     /* our global SSL context */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    struct tls_root_ctx ssl_ctx;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    struct tls_root_ctx *ssl_ctx;</span><br><=
-span> </span><br><span>     /* optional TLS control channel wrapping */</sp=
-an><br><span>     struct key_type tls_auth_key_type;</span><br><span>diff -=
--git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 741f40a.=
-.9d3a6ef 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++=
- b/src/openvpn/ssl.c</span><br><span>@@ -507,11 +507,9 @@</span><br><span> =
- * Initialize SSL context.</span><br><span>  * All files are in PEM format.=
-</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-init_ssl(const st=
-ruct options *options, struct tls_root_ctx *new_ctx, bool in_chroot)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+struct tls_root_ctx *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+init_ssl(const struct op=
-tions *options, bool in_chroot)</span><br><span> {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D new_ctx);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     tls_clear_error=
-();</span><br><span> </span><br><span>     if (key_is_external(options))</s=
-pan><br><span>@@ -519,6 +517,9 @@</span><br><span>         load_xkey_provid=
-er();</span><br><span>     }</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    struct tls_root_ctx *new_ctx;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(new_ctx, struc=
-t tls_root_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span>     if (options-&gt;tls_server)</span><br><span>     {</span=
-><br><span>         tls_ctx_server_new(new_ctx);</span><br><span>@@ -664,12=
- +665,13 @@</span><br><span> #endif</span><br><span> </span><br><span>     =
-tls_clear_error();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
-new_ctx;</span><br><span> </span><br><span> err:</span><br><span>     tls_c=
-lear_error();</span><br><span>     tls_ctx_free(new_ctx);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    return;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    free(new_ctx);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    return NULL;</span><br><span> }</span><br><s=
-pan> </span><br><span> /*</span><br><span>@@ -821,7 +823,7 @@</span><br><sp=
-an>      * Build TLS object that reads/writes ciphertext</span><br><span>  =
-    * to/from memory BIOs.</span><br><span>      */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    key_state_ssl_init(&amp;ks-&gt;ks_ssl, =
-&amp;session-&gt;opt-&gt;ssl_ctx, session-&gt;opt-&gt;server, session);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_state_ssl_init(=
-&amp;ks-&gt;ks_ssl, session-&gt;opt-&gt;ssl_ctx, session-&gt;opt-&gt;server=
-, session);</span><br><span> </span><br><span>     /* Set control-channel i=
-nitiation mode */</span><br><span>     ks-&gt;initial_opcode =3D session-&g=
-t;initial_opcode;</span><br><span>@@ -872,11 +874,12 @@</span><br><span> </=
-span><br><span>     /*</span><br><span>      * Attempt CRL reload before TL=
-S negotiation. Won&#39;t be performed if</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-     * the file was not modified since the last reload</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * the file was n=
-ot modified since the last reload. This affects</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * all instances sharing the same context</=
-span><br><span>      */</span><br><span>     if (session-&gt;opt-&gt;crl_fi=
-le &amp;&amp; !(session-&gt;opt-&gt;ssl_flags &amp; SSLF_CRL_VERIFY_DIR))</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        tls_ctx_reload_crl(&amp;session-&gt;opt-&gt;ssl_ctx, session-&gt;op=
-t-&gt;crl_file,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    tls_ctx_reload_crl(session-&gt;opt-&gt;ssl_ctx, session-&gt;opt-&gt;crl=
-_file,</span><br><span>                            session-&gt;opt-&gt;crl_=
-file_inline);</span><br><span>     }</span><br><span> }</span><br><span>dif=
-f --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h</span><br><span>index db8a7=
-98..9ee9f38 100644</span><br><span>--- a/src/openvpn/ssl.h</span><br><span>=
-+++ b/src/openvpn/ssl.h</span><br><span>@@ -144,7 +144,7 @@</span><br><span=
->  * Build master SSL context object that serves for the whole of OpenVPN</=
-span><br><span>  * instantiation</span><br><span>  */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void init_ssl(const struct options *options=
-, struct tls_root_ctx *ctx, bool in_chroot);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+struct tls_root_ctx *init_ssl(const struct options=
- *options, bool in_chroot);</span><br><span> </span><br><span> /** @addtogr=
-oup control_processor</span><br><span>  *  @{ */</span><br><span>diff --git=
- a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>inde=
-x 3129299..32643b4 100644</span><br><span>--- a/src/openvpn/ssl_common.h</s=
-pan><br><span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -305,8 +305=
-,10 @@</span><br><span>  */</span><br><span> struct tls_options</span><br><=
-span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* our mas=
-ter TLS context from which all SSL objects derived */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct tls_root_ctx ssl_ctx;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* our master TLS context =
-from which all SSL objects derived,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+     * this context is shared between all instances so poin=
-t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * the real ma=
-ster context */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-struct tls_root_ctx *ssl_ctx;</span><br><span> </span><br><span>     /* dat=
-a channel cipher, hmac, and key lengths */</span><br><span>     struct key_=
-type key_type;</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src=
-/openvpn/ssl_mbedtls.c</span><br><span>index 3440319..28b92ed 100644</span>=
-<br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn=
-/ssl_mbedtls.c</span><br><span>@@ -157,8 +157,10 @@</span><br><span> bool</=
-span><br><span> tls_ctx_initialised(struct tls_root_ctx *ctx)</span><br><sp=
-an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL =
-!=3D ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return =
-ctx-&gt;initialised;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    /* either this should be NULL or should be non-null and then have a</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * valid TLS ctx i=
-nside as well */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- ASSERT(NULL =3D=3D ctx || ctx-&gt;initialised);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    return ctx !=3D NULL;</span><br><span> }</=
-span><br><span> #if !defined(MBEDTLS_SSL_KEYING_MATERIAL_EXPORT)</span><br>=
-<span> /*</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/open=
-vpn/ssl_openssl.c</span><br><span>index a4a6863..48bbdfc 100644</span><br><=
-span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_=
-openssl.c</span><br><span>@@ -147,8 +147,10 @@</span><br><span> bool</span>=
-<br><span> tls_ctx_initialised(struct tls_root_ctx *ctx)</span><br><span> {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D =
-ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return NULL =
-!=3D ctx-&gt;ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  /* either this should be NULL or should be non-null and then have a</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+     * valid TLS ctx insi=
-de as well */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    AS=
-SERT(ctx =3D=3D NULL || ctx-&gt;ctx !=3D NULL);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return ctx !=3D NULL;</span><br><span> }</s=
-pan><br><span> </span><br><span> bool</span><br><span>diff --git a/src/open=
-vpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><br><span=
->index 250c806..b7de550 100644</span><br><span>--- a/src/openvpn/ssl_verify=
-_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</span><br=
-><span>@@ -572,7 +572,7 @@</span><br><span> tls_verify_crl_missing(const st=
-ruct tls_options *opt)</span><br><span> {</span><br><span>     if (opt-&gt;=
-crl_file &amp;&amp; !(opt-&gt;ssl_flags &amp; SSLF_CRL_VERIFY_DIR)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; (opt-&gt;ss=
-l_ctx.crl =3D=3D NULL || opt-&gt;ssl_ctx.crl-&gt;version =3D=3D 0))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; (opt-&gt=
-;ssl_ctx-&gt;crl =3D=3D NULL || opt-&gt;ssl_ctx-&gt;crl-&gt;version =3D=3D =
-0))</span><br><span>     {</span><br><span>         return true;</span><br>=
-<span>     }</span><br><span>diff --git a/src/openvpn/ssl_verify_openssl.c =
-b/src/openvpn/ssl_verify_openssl.c</span><br><span>index 6cb04ee..633f78d 1=
-00644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><spa=
-n>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -799,7 +799,7 @=
-@</span><br><span>         return false;</span><br><span>     }</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    X509_STORE =
-*store =3D SSL_CTX_get_cert_store(opt-&gt;ssl_ctx.ctx);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    X509_STORE *store =3D SSL_CTX_get_c=
-ert_store(opt-&gt;ssl_ctx-&gt;ctx);</span><br><span>     if (!store)</span>=
-<br><span>     {</span><br><span>         crypto_msg(M_FATAL, &quot;Cannot =
-get certificate store&quot;);</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1431?usp=3Demail">ch=
-ange 1431</a>. To unsubscribe, or for help writing mail filters, visit <a h=
-ref=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1431?usp=3Demail"/><met=
-a itemprop=3D"name" content=3D"View Change"/></div></div>
+p;">Allow test-crypt to work without --secret argument<br><br>The --test-cr=
+ypto still requires the --secret argument. Since --secret<br>will be remove=
+d in OpenVPN 2.8 but we want to keep test-crypt, remove<br>the dependency o=
+f test-crypto on --static.<br><br>Instead we will just generate a random ke=
+y for this selftest method.<br><br>Change-Id: I72947bd4f0213fd118327f740dae=
+b1d86ae166de<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<=
+br>M Changes.rst<br>M doc/man-sections/generic-options.rst<br>M src/openvpn=
+/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openvp=
+n/options.c<br>M tests/t_lpback.sh<br>7 files changed, 75 insertions(+), 14=
+ deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
+29418/openvpn refs/changes/35/1435/1</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Cha=
+nges.rst</span><br><span>index 32efbe7..1a92b94 100644</span><br><span>--- =
+a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -338,6 +=
+338,9 @@</span><br><span>   (force egress =3D ingress interface) can be ach=
+ieved with the new</span><br><span>   ``--multihome same-interface`` sub-op=
+tion.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+- The ``test-crypto`` option no longer requires a ``--secret`` argument=
+ and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  will automati=
+cally generate a random key.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span> Deprecated features</span><br><span> -----------=
+--------</span><br><span> ``--opt-verify`` feature removed</span><br><span>=
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
+c-options.rst</span><br><span>index 882cf28..b6e513d 100644</span><br><span=
+>--- a/doc/man-sections/generic-options.rst</span><br><span>+++ b/doc/man-s=
+ections/generic-options.rst</span><br><span>@@ -439,13 +439,13 @@</span><br=
+><span>   The typical usage of ``--test-crypto`` would be something like th=
+is:</span><br><span>   ::</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-     openvpn --test-crypto --secret key</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     openvpn --test-crypto</span>=
+<br><span> </span><br><span>   or</span><br><span> </span><br><span>   ::</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+openvpn --test-crypto --secret key --verb 9</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+     openvpn --test-crypto --verb 9</span><br><span=
+> </span><br><span>   This option is very useful to test OpenVPN after it h=
+as been ported to a</span><br><span>   new platform, or to isolate problems=
+ in the compiler, OpenSSL crypto</span><br><span>@@ -453,6 +453,10 @@</span=
+><br><span>   problems with encryption and authentication can be debugged</=
+span><br><span>   independently of network and tunnel issues.</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Older version=
+s of OpenVPN used the ``--secret`` argument to specify a</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  static key for this test. Newer vers=
+ion generate a random key for the</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  test.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> --tmp-dir dir</span><br><span>   Specify a directory ``=
+dir`` for temporary files instead of the default</span><br><span>   :code:`=
+TMPDIR` (or &quot;/tmp&quot; if unset). Note that it must be writable by th=
+e main</span><br><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/cryp=
+to.c</span><br><span>index e43bc6c..ddf3c17 100644</span><br><span>--- a/sr=
+c/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><sp=
+an>@@ -1325,6 +1325,18 @@</span><br><span>     secure_memzero(&amp;key2, si=
+zeof(key2));</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+generate_test_crypto_random_key(const struct key_type *key_t=
+ype, struct key_ctx_bi *ctx,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                                const char *key_name)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    struct key2 key2;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    key2.n =3D 2;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    generate_key_random(&amp;key2.keys[0]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    generate_key_random(&a=
+mp;key2.keys[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  init_key_ctx_bi(ctx, &amp;key2, KEY_DIRECTION_BIDIRECTIONAL, key_type, ke=
+y_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span> /* header and footer for stati=
+c key file */</span><br><span> static const char static_key_head[] =3D &quo=
+t;-----BEGIN OpenVPN Static key V1-----&quot;;</span><br><span> static cons=
+t char static_key_foot[] =3D &quot;-----END OpenVPN Static key V1-----&quot=
+;;</span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h=
+</span><br><span>index 9424fd7..6670deb 100644</span><br><span>--- a/src/op=
+envpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@=
+@ -632,6 +632,13 @@</span><br><span>                              const cha=
+r *key_file, bool key_inline, const int key_direction,</span><br><span>    =
+                          const char *key_name, const char *opt_name, struc=
+t key2 *keydata);</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Generate a random key and initialise ctx to be used the in the crypto ra=
+ndom</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * test</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void generate_test_crypto_random_key(cons=
+t struct key_type *key_type, struct key_ctx_bi *ctx,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                     cons=
+t char *key_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span> /*</span><br><span>  * Inline functions</span><br><span>  =
+*/</span><br><span>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</sp=
+an><br><span>index fc079e1..2b7cfc2 100644</span><br><span>--- a/src/openvp=
+n/init.c</span><br><span>+++ b/src/openvpn/init.c</span><br><span>@@ -2997,=
+6 +2997,33 @@</span><br><span> #endif</span><br><span> }</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+do_init_crypto_test(struct context *c, const un=
+signed int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct opt=
+ions *options =3D &amp;c-&gt;options;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    ASSERT(options-&gt;test_crypto);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    init_crypto_pre(c, flags);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* Initialize packet ID tracking */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    // packet_id_init(&amp;c-&gt;c2.crypto_opti=
+ons.packet_id, options-&gt;replay_window, options-&gt;replay_time,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    //                &quot;=
+STATIC&quot;, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  c-&gt;c2.crypto_options.flags |=3D CO_PACKET_ID_LONG_FORM;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    ASSERT(!key_ctx_bi_defined(&amp;c-&gt;c1.ks.stati=
+c_key));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /* Init cipher and hash al=
+gorithm */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_=
+key_type(&amp;c-&gt;c1.ks.key_type, options-&gt;ciphername, options-&gt;aut=
+hname,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+     options-&gt;test_crypto, true);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  generate_test_crypto_random_key(&amp;c-&gt;c1.ks.key_type, &amp;c-&gt;c1.=
+ks.static_key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                               &quot;test crypto key&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* Get key schedule */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    c-&gt;c2.crypto_options.key_ctx_bi =3D c-&=
+gt;c1.ks.static_key;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
+ /*</span><br><span>  * Static Key Mode (using a pre-shared key)</span><br>=
+<span>  */</span><br><span>@@ -3004,7 +3031,7 @@</span><br><span> do_init_c=
+rypto_static(struct context *c, const unsigned int flags)</span><br><span> =
+{</span><br><span>     const struct options *options =3D &amp;c-&gt;options=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(options-&=
+gt;shared_secret_file);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    ASSERT(options-&gt;shared_secret_file || options-&gt;test_crypto);<=
+/span><br><span> </span><br><span>     init_crypto_pre(c, flags);</span><br=
+><span> </span><br><span>@@ -3027,10 +3054,18 @@</span><br><span>         i=
+nit_key_type(&amp;c-&gt;c1.ks.key_type, options-&gt;ciphername, options-&gt=
+;authname,</span><br><span>                       options-&gt;test_crypto, =
+true);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        /* Read cipher and hmac keys from shared secret file */</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_read_openvpn_ke=
+y(&amp;c-&gt;c1.ks.key_type, &amp;c-&gt;c1.ks.static_key,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                                options=
+-&gt;shared_secret_file, options-&gt;shared_secret_file_inline,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                                o=
+ptions-&gt;key_direction, &quot;Static Key Encryption&quot;, &quot;secret&q=
+uot;, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ if (!options-&gt;shared_secret_file &amp;&amp; options-&gt;test_crypto)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            generate_test_crypto=
+_random_key(&amp;c-&gt;c1.ks.key_type, &amp;c-&gt;c1.ks.static_key,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+                 &quot;test crypto key&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            /* Read cipher and hmac keys from shared secret file */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            crypto_read_ope=
+nvpn_key(&amp;c-&gt;c1.ks.key_type, &amp;c-&gt;c1.ks.static_key,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                              =
+      options-&gt;shared_secret_file, options-&gt;shared_secret_file_inline=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+                  options-&gt;key_direction, &quot;Static Key Encryption&qu=
+ot;, &quot;secret&quot;, NULL);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        }</span><br><span>     }</span><br><span>     else</spa=
+n><br><span>     {</span><br><span>@@ -3501,6 +3536,10 @@</span><br><span> =
+    {</span><br><span>         do_init_crypto_static(c, flags);</span><br><=
+span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else=
+ if (c-&gt;options.test_crypto)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      do_init_crypto_test(c, flags);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span>     else if (c-&gt;options.tls_serv=
+er || c-&gt;options.tls_client)</span><br><span>     {</span><br><span>    =
+     do_init_crypto_tls(c, flags);</span><br><span>diff --git a/src/openvpn=
+/options.c b/src/openvpn/options.c</span><br><span>index 2d1f740..b430065 1=
+00644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src=
+/openvpn/options.c</span><br><span>@@ -2283,11 +2283,7 @@</span><br><span> =
+</span><br><span>     init_options(&amp;defaults, true);</span><br><span> <=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;te=
+st_crypto)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        notnull(options-&gt=
+;shared_secret_file, &quot;key file (--secret)&quot;);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (!options-&gt;test_crypto)</span><br><span>     {</span><br><s=
+pan>         notnull(options-&gt;dev, &quot;TUN/TAP device (--dev)&quot;);<=
+/span><br><span>     }</span><br><span>@@ -2701,7 +2697,7 @@</span><br><spa=
+n>         msg(M_USAGE, &quot;specify only one of --tls-server, --tls-clien=
+t, or --secret&quot;);</span><br><span>     }</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    if (!options-&gt;tls_server &=
+amp;&amp; !options-&gt;tls_client)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (!options-&gt;tls_server &amp;&amp; !options-&gt;tls_=
+client &amp;&amp; !options-&gt;test_crypto)</span><br><span>     {</span><b=
+r><span>         msglvl_t msglevel =3D M_USAGE;</span><br><span>         if=
+ (options-&gt;allow_deprecated_insecure_static_crypto)</span><br><span>diff=
+ --git a/tests/t_lpback.sh b/tests/t_lpback.sh</span><br><span>index 8ab397=
+3..eb6a72f 100755</span><br><span>--- a/tests/t_lpback.sh</span><br><span>+=
+++ b/tests/t_lpback.sh</span><br><span>@@ -95,7 +95,7 @@</span><br><span> f=
+or cipher in ${CIPHERS}</span><br><span> do</span><br><span>     test_start=
+ &quot;Testing cipher ${cipher}... &quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    ( &quot;${openvpn}&quot; --test-crypto --secret key=
+.$$  --allow-deprecated-insecure-static-crypto --cipher ${cipher} ) &gt;log=
+.$$ 2&gt;&amp;1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+( &quot;${openvpn}&quot; --test-crypto --cipher ${cipher} ) &gt;log.$$ 2&gt=
+;&amp;1</span><br><span>     test_end $? log.$$</span><br><span> done</span=
+><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail">change 1435</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
+ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
+temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I21251a42f94fa1d9de083d2acd9=
-5b887658c5760 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1431 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I72947bd4f0213fd118327f740da=
+eb1d86ae166de </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1435 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -509,5 +530,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---BXoOUswBZIY=--
+--EcyrHo77czA=--
 
