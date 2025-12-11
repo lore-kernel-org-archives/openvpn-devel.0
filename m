@@ -1,13 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 11 Dec 2025 11:37:11 +0000
+Date: Thu, 11 Dec 2025 11:38:01 +0000
+In-Reply-To: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
 References: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
-Message-ID: <61a86e8ff6ee7cce0015bc40d3e4e1a3a2b15b71-HTML@...2715...>
+Message-ID: <071ede272fbdf411101497127228a1229be46767-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EcyrHo77czA="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow test-crypt to
+Content-Type: multipart/alternative; boundary="EXdDfVc+WEE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow test-crypto to
  work without --secret argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,18 +20,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---EcyrHo77czA=
+--EXdDfVc+WEE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
-c/openvpn/+/1435?usp=3Demail )
+plaisthos has uploaded a new patch set (#2). ( http://gerrit.openvpn.net/c/=
+openvpn/+/1435?usp=3Demail )
 
 
-Change subject: Allow test-crypt to work without --secret argument
+Change subject: Allow test-crypto to work without --secret argument
 ......................................................................
 
-Allow test-crypt to work without --secret argument
+Allow test-crypto to work without --secret argument
 
 The --test-crypto still requires the --secret argument. Since --secret
 will be removed in OpenVPN 2.8 but we want to keep test-crypt, remove
@@ -51,8 +52,7 @@ M tests/t_lpback.sh
 7 files changed, 75 insertions(+), 14 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1435/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1435/2
 
 diff --git a/Changes.rst b/Changes.rst
 index 32efbe7..1a92b94 100644
@@ -289,104 +289,104 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I72947bd4f0213fd118327f740daeb1d86ae166de
 Gerrit-Change-Number: 1435
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---EcyrHo77czA=
+--EXdDfVc+WEE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
-oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1435?usp=3Demail">View Change</a></p><pre class=
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
+>uploaded patch set #2</strong> to this change.</p><p><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1435?usp=3Demail">View Change</a></p><pre class=
 =3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">Allow test-crypt to work without --secret argument<br><br>The --test-cr=
-ypto still requires the --secret argument. Since --secret<br>will be remove=
-d in OpenVPN 2.8 but we want to keep test-crypt, remove<br>the dependency o=
-f test-crypto on --static.<br><br>Instead we will just generate a random ke=
-y for this selftest method.<br><br>Change-Id: I72947bd4f0213fd118327f740dae=
-b1d86ae166de<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<=
-br>M Changes.rst<br>M doc/man-sections/generic-options.rst<br>M src/openvpn=
-/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openvp=
-n/options.c<br>M tests/t_lpback.sh<br>7 files changed, 75 insertions(+), 14=
- deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/35/1435/1</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Cha=
-nges.rst</span><br><span>index 32efbe7..1a92b94 100644</span><br><span>--- =
-a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -338,6 +=
-338,9 @@</span><br><span>   (force egress =3D ingress interface) can be ach=
-ieved with the new</span><br><span>   ``--multihome same-interface`` sub-op=
-tion.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+- The ``test-crypto`` option no longer requires a ``--secret`` argument=
- and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  will automati=
-cally generate a random key.</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span> Deprecated features</span><br><span> -----------=
---------</span><br><span> ``--opt-verify`` feature removed</span><br><span>=
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
-c-options.rst</span><br><span>index 882cf28..b6e513d 100644</span><br><span=
->--- a/doc/man-sections/generic-options.rst</span><br><span>+++ b/doc/man-s=
-ections/generic-options.rst</span><br><span>@@ -439,13 +439,13 @@</span><br=
-><span>   The typical usage of ``--test-crypto`` would be something like th=
-is:</span><br><span>   ::</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-     openvpn --test-crypto --secret key</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+     openvpn --test-crypto</span>=
-<br><span> </span><br><span>   or</span><br><span> </span><br><span>   ::</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-openvpn --test-crypto --secret key --verb 9</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     openvpn --test-crypto --verb 9</span><br><span=
-> </span><br><span>   This option is very useful to test OpenVPN after it h=
-as been ported to a</span><br><span>   new platform, or to isolate problems=
- in the compiler, OpenSSL crypto</span><br><span>@@ -453,6 +453,10 @@</span=
-><br><span>   problems with encryption and authentication can be debugged</=
-span><br><span>   independently of network and tunnel issues.</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Older version=
-s of OpenVPN used the ``--secret`` argument to specify a</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  static key for this test. Newer vers=
-ion generate a random key for the</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  test.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span> --tmp-dir dir</span><br><span>   Specify a directory ``=
-dir`` for temporary files instead of the default</span><br><span>   :code:`=
-TMPDIR` (or &quot;/tmp&quot; if unset). Note that it must be writable by th=
-e main</span><br><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/cryp=
-to.c</span><br><span>index e43bc6c..ddf3c17 100644</span><br><span>--- a/sr=
-c/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><sp=
-an>@@ -1325,6 +1325,18 @@</span><br><span>     secure_memzero(&amp;key2, si=
-zeof(key2));</span><br><span> }</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+generate_test_crypto_random_key(const struct key_type *key_t=
-ype, struct key_ctx_bi *ctx,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                                const char *key_name)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    struct key2 key2;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    key2.n =3D 2;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    generate_key_random(&amp;key2.keys[0]);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    generate_key_random(&a=
-mp;key2.keys[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  init_key_ctx_bi(ctx, &amp;key2, KEY_DIRECTION_BIDIRECTIONAL, key_type, ke=
-y_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span> /* header and footer for stati=
-c key file */</span><br><span> static const char static_key_head[] =3D &quo=
-t;-----BEGIN OpenVPN Static key V1-----&quot;;</span><br><span> static cons=
-t char static_key_foot[] =3D &quot;-----END OpenVPN Static key V1-----&quot=
-;;</span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h=
-</span><br><span>index 9424fd7..6670deb 100644</span><br><span>--- a/src/op=
-envpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@=
-@ -632,6 +632,13 @@</span><br><span>                              const cha=
-r *key_file, bool key_inline, const int key_direction,</span><br><span>    =
-                          const char *key_name, const char *opt_name, struc=
-t key2 *keydata);</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * Generate a random key and initialise ctx to be used the in the crypto ra=
-ndom</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * test</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+p;">Allow test-crypto to work without --secret argument<br><br>The --test-c=
+rypto still requires the --secret argument. Since --secret<br>will be remov=
+ed in OpenVPN 2.8 but we want to keep test-crypt, remove<br>the dependency =
+of test-crypto on --static.<br><br>Instead we will just generate a random k=
+ey for this selftest method.<br><br>Change-Id: I72947bd4f0213fd118327f740da=
+eb1d86ae166de<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---=
+<br>M Changes.rst<br>M doc/man-sections/generic-options.rst<br>M src/openvp=
+n/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openv=
+pn/options.c<br>M tests/t_lpback.sh<br>7 files changed, 75 insertions(+), 1=
+4 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
+:29418/openvpn refs/changes/35/1435/2</pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Ch=
+anges.rst</span><br><span>index 32efbe7..1a92b94 100644</span><br><span>---=
+ a/Changes.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -338,6 =
++338,9 @@</span><br><span>   (force egress =3D ingress interface) can be ac=
+hieved with the new</span><br><span>   ``--multihome same-interface`` sub-o=
+ption.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+- The ``test-crypto`` option no longer requires a ``--secret`` argumen=
+t and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  will automat=
+ically generate a random key.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span> Deprecated features</span><br><span> ----------=
+---------</span><br><span> ``--opt-verify`` feature removed</span><br><span=
+>diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/gener=
+ic-options.rst</span><br><span>index 882cf28..b6e513d 100644</span><br><spa=
+n>--- a/doc/man-sections/generic-options.rst</span><br><span>+++ b/doc/man-=
+sections/generic-options.rst</span><br><span>@@ -439,13 +439,13 @@</span><b=
+r><span>   The typical usage of ``--test-crypto`` would be something like t=
+his:</span><br><span>   ::</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-     openvpn --test-crypto --secret key</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     openvpn --test-crypto</span=
+><br><span> </span><br><span>   or</span><br><span> </span><br><span>   ::<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+ openvpn --test-crypto --secret key --verb 9</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     openvpn --test-crypto --verb 9</span><br><spa=
+n> </span><br><span>   This option is very useful to test OpenVPN after it =
+has been ported to a</span><br><span>   new platform, or to isolate problem=
+s in the compiler, OpenSSL crypto</span><br><span>@@ -453,6 +453,10 @@</spa=
+n><br><span>   problems with encryption and authentication can be debugged<=
+/span><br><span>   independently of network and tunnel issues.</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Older versio=
+ns of OpenVPN used the ``--secret`` argument to specify a</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  static key for this test. Newer ver=
+sion generate a random key for the</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  test.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> --tmp-dir dir</span><br><span>   Specify a directory `=
+`dir`` for temporary files instead of the default</span><br><span>   :code:=
+`TMPDIR` (or &quot;/tmp&quot; if unset). Note that it must be writable by t=
+he main</span><br><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/cry=
+pto.c</span><br><span>index e43bc6c..ddf3c17 100644</span><br><span>--- a/s=
+rc/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><s=
+pan>@@ -1325,6 +1325,18 @@</span><br><span>     secure_memzero(&amp;key2, s=
+izeof(key2));</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+generate_test_crypto_random_key(const struct key_type *key_=
+type, struct key_ctx_bi *ctx,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                                const char *key_name)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    struct key2 key2;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    key2.n =3D 2;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    generate_key_random(&amp;key2.keys[0]);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    generate_key_random(&=
+amp;key2.keys[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   init_key_ctx_bi(ctx, &amp;key2, KEY_DIRECTION_BIDIRECTIONAL, key_type, k=
+ey_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span> /* header and footer for stat=
+ic key file */</span><br><span> static const char static_key_head[] =3D &qu=
+ot;-----BEGIN OpenVPN Static key V1-----&quot;;</span><br><span> static con=
+st char static_key_foot[] =3D &quot;-----END OpenVPN Static key V1-----&quo=
+t;;</span><br><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.=
+h</span><br><span>index 9424fd7..6670deb 100644</span><br><span>--- a/src/o=
+penvpn/crypto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>=
+@@ -632,6 +632,13 @@</span><br><span>                              const ch=
+ar *key_file, bool key_inline, const int key_direction,</span><br><span>   =
+                           const char *key_name, const char *opt_name, stru=
+ct key2 *keydata);</span><br><span> </span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * Generate a random key and initialise ctx to be used the in the crypto r=
+andom</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * test</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+void generate_test_crypto_random_key(cons=
 t struct key_type *key_type, struct key_ctx_bi *ctx,</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+                                     cons=
@@ -516,13 +516,13 @@ temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
 p://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail"/><meta itemprop=3D"nam=
 e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I72947bd4f0213fd118327f740da=
 eb1d86ae166de </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1435 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -530,5 +530,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---EcyrHo77czA=--
+--EXdDfVc+WEE=--
 
