@@ -1,14 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 11 Dec 2025 11:43:51 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 11 Dec 2025 11:46:26 +0000
 In-Reply-To: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
 References: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <469540553ebdf3fbf37e3b2fe01281c0ee8ca138-EmailReviewComments-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <f165ea5484a97649f6318e70bd51b04913f8a65a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5tJM2x6UrqQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Y1Y956q6g5A="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow test-crypto to
  work without the --secret argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,14 +22,14 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---5tJM2x6UrqQ=
+--Y1Y956q6g5A=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1435?usp=3Demail )
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1435?usp=3Demail )
 
 Change subject: Allow test-crypto to work without the --secret argument
 ......................................................................
@@ -39,16 +39,13 @@ Patch Set 3: Code-Review-1
 
 (1 comment)
 
-Patchset:
+File src/openvpn/init.c:
 
-PS3:
-please do also remove the
-
-```
-"${openvpn}" --genkey secret key.$$
-```
-
-etc. from t_lpback.sh then
+http://gerrit.openvpn.net/c/openvpn/+/1435/comment/b759d66f_128a83d7?usp=3D=
+email :
+PS3, Line 3528:     else if (c->options.test_crypto)
+Why not do this test first and remove all handling of test-crypto from do_i=
+nit_crypto_static?
 
 
 
@@ -65,13 +62,14 @@ Gerrit-Change-Number: 1435
 Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Thu, 11 Dec 2025 11:43:51 +0000
+Gerrit-Comment-Date: Thu, 11 Dec 2025 11:46:26 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---5tJM2x6UrqQ=
+--Y1Y956q6g5A=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -81,22 +79,22 @@ rently required from: plaisthos. </p>
 rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
 </p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail">V=
 iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1435?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">please do a=
-lso remove the</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">```<br>&quot;${openvpn}&quot; --genkey secret key.$$<br>=
-```</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break=
--word;">etc. from t_lpback.sh then</p></li></ul></li></ul><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail">change =
-1435</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1435?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul=
+ style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1435/comment/b759d66f_128a83d7?usp=3Demail">Patch Set #3=
+, Line 3528:</a> <code style=3D"font-family:monospace,monospace">    else i=
+f (c-&gt;options.test_crypto)</code></p><p class=3D"blocks" style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">Why not do this test first and rem=
+ove all handling of test-crypto from do_init_crypto_static?</p></li></ul></=
+li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1435?usp=3Demail">change 1435</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">=
+settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
+><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
+n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/143=
+5?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
+v>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -109,16 +107,18 @@ eb1d86ae166de </div>
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 11 Dec 2025 11:43:51=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 11 Dec 2025 11:46:26=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---5tJM2x6UrqQ=--
+--Y1Y956q6g5A=--
 
