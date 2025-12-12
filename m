@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 12 Dec 2025 13:03:46 +0100
-Message-ID: <20251212120352.17402-1-gert@...1296...>
-In-Reply-To: <gerrit.1765383841000.Icab68a5fd1b6288955f0073179f1ddde1468d951@...2715...>
-References: <gerrit.1765383841000.Icab68a5fd1b6288955f0073179f1ddde1468d951@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 12 Dec 2025 12:06:31 +0000
+In-Reply-To: <gerrit.1765467748000.I4f95edd7ce2098180aa620a231727217f333a12d@...2715...>
+References: <gerrit.1765467748000.I4f95edd7ce2098180aa620a231727217f333a12d@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <8ebe554906d200be81ffd7afbc4eba1fd8ab1fed-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] mbuf: Add unit tests
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Mt/C0OZaENg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: buffer: Change
+ limits for array_mult_safe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,365 +19,189 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--Mt/C0OZaENg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-While fixing the conversion warning I was
-somewhat confused how this works, so added
-UTs to verify I understood it.
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1436?usp=3Demail )
 
-v2:
- - disable assert test for MS VS
- - add define for memory-intensive UTs and
-   only enable it by default for CMake builds,
-   so we do not break a lot of builds out there
-   due to memory allocation failures
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-Change-Id: Icab68a5fd1b6288955f0073179f1ddde1468d951
+
+Change subject: buffer: Change limits for array_mult_safe
+......................................................................
+
+buffer: Change limits for array_mult_safe
+
+- Lower the limit to 1GB on 32bit systems.
+  The limit of 4GB-1 makes no sense on systems that usually
+  don't allow a single process to allocate anything near to
+  this limit.
+- Increate the limit from 4GB-1 to 4GB on other systems. It
+  makes no difference in protection but makes it much easier
+  to use the limit in other contexts, e.g. if dividing it.
+
+Change-Id: I4f95edd7ce2098180aa620a231727217f333a12d
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1432
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1436
+Message-Id: <20251212100920.7671-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35=
+044.html
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
+M src/openvpn/buffer.c
+M src/openvpn/buffer.h
+2 files changed, 13 insertions(+), 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1432
-This mail reflects revision 3 of this Change.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/1436/2
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 906fa04..bdb1904 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -633,6 +633,7 @@
-     endif ()
- endif ()
- 
-+option(UT_ALLOW_BIG_ALLOC "Allow unit-tests to use > 1 GB of memory" ON)
- 
- if (BUILD_TESTING)
-     find_package(cmocka CONFIG)
-@@ -649,6 +650,7 @@
-         "test_buffer"
-         "test_crypto"
-         "test_dhcp"
-+        "test_mbuf"
-         "test_misc"
-         "test_ncp"
-         "test_options_parse"
-@@ -739,6 +741,9 @@
-         # for compat with IDEs like Clion that ignore the tests properties
-         # for the environment variable srcdir when running tests as fallback
-         target_compile_definitions(${test_name} PRIVATE "UNIT_TEST_SOURCEDIR=\"${_UT_SOURCE_DIR}\"")
-+        if (UT_ALLOW_BIG_ALLOC)
-+            target_compile_definitions(${test_name} PRIVATE UNIT_TEST_ALLOW_BIG_ALLOC)
-+        endif ()
- 
-         if (NOT ${test_name} STREQUAL "test_buffer")
-             target_sources(${test_name} PRIVATE
-@@ -800,6 +805,12 @@
-             src/openvpn/xkey_provider.c
-     )
- 
-+    target_sources(test_mbuf PRIVATE
-+        tests/unit_tests/openvpn/mock_get_random.c
-+        src/openvpn/buffer.c
-+        src/openvpn/mbuf.c
-+        )
-+
-     target_sources(test_misc PRIVATE
-         tests/unit_tests/openvpn/mock_get_random.c
-         src/openvpn/options_util.c
-diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf.c
-index 448124c..42858ec 100644
---- a/src/openvpn/mbuf.c
-+++ b/src/openvpn/mbuf.c
-@@ -42,6 +42,8 @@
- struct mbuf_set *
- mbuf_init(unsigned int size)
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 293622f..40baca6 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -39,7 +39,7 @@
+ size_t
+ array_mult_safe(const size_t m1, const size_t m2, const size_t extra)
  {
-+    ASSERT(size <= MBUF_SIZE_MAX);
-+
-     struct mbuf_set *ret;
-     ALLOC_OBJ_CLEAR(ret, struct mbuf_set);
-     ret->capacity = adjust_power_of_2(size);
-@@ -121,6 +123,7 @@
-     bool ret = false;
-     if (ms)
-     {
-+        ASSERT(item);
-         while (ms->len)
-         {
-             *item = ms->array[ms->head];
-diff --git a/src/openvpn/mbuf.h b/src/openvpn/mbuf.h
-index 7f8c1b7..f741e21 100644
---- a/src/openvpn/mbuf.h
-+++ b/src/openvpn/mbuf.h
-@@ -36,6 +36,8 @@
- struct multi_instance;
- 
- #define MBUF_INDEX(head, offset, size) (((head) + (offset)) & ((size) - 1))
-+/* limited by adjust_power_of_2 and array_mult_safe */
-+#define MBUF_SIZE_MAX                  (ALLOC_SIZE_MAX / sizeof(struct mbuf_item))
- 
- struct mbuf_buffer
- {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index d01ec47..24c3e92 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -62,6 +62,7 @@
- #include "options_util.h"
- #include "tun_afunix.h"
- #include "domain_helper.h"
-+#include "mbuf.h"
- 
- #include <ctype.h>
- 
-@@ -7552,7 +7553,7 @@
-     else if (streq(p[0], "bcast-buffers") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        atoi_constrained(p[1], &options->n_bcast_buf, p[0], 1, INT_MAX, msglevel);
-+        atoi_constrained(p[1], &options->n_bcast_buf, p[0], 1, MBUF_SIZE_MAX, msglevel);
-     }
-     else if (streq(p[0], "tcp-queue-limit") && p[1] && !p[2])
-     {
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 0f13172..7aeea47 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -6,9 +6,22 @@
- 
- AM_TESTS_ENVIRONMENT = export LSAN_OPTIONS=suppressions=$(srcdir)/input/leak_suppr.txt;
- 
--test_binaries = argv_testdriver buffer_testdriver crypto_testdriver dhcp_testdriver packet_id_testdriver auth_token_testdriver \
--	ncp_testdriver misc_testdriver options_parse_testdriver pkt_testdriver ssl_testdriver \
--	user_pass_testdriver push_update_msg_testdriver provider_testdriver socket_testdriver
-+test_binaries = argv_testdriver \
-+	auth_token_testdriver \
-+	buffer_testdriver \
-+	crypto_testdriver \
-+	dhcp_testdriver \
-+	ncp_testdriver \
-+	mbuf_testdriver \
-+	misc_testdriver \
-+	options_parse_testdriver \
-+	packet_id_testdriver \
-+	pkt_testdriver \
-+	provider_testdriver \
-+	push_update_msg_testdriver \
-+	socket_testdriver \
-+	ssl_testdriver \
-+	user_pass_testdriver
- 
- if HAVE_LD_WRAP_SUPPORT
- if !WIN32
-@@ -327,6 +340,20 @@
- 	$(top_srcdir)/src/compat/compat-strsep.c \
- 	$(top_srcdir)/src/openvpn/ssl_util.c
- 
-+mbuf_testdriver_CFLAGS  = \
-+	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
-+	-DSOURCEDIR=\"$(top_srcdir)\" @TEST_CFLAGS@
-+
-+mbuf_testdriver_LDFLAGS = @TEST_LDFLAGS@
-+
-+mbuf_testdriver_SOURCES = test_mbuf.c \
-+	mock_msg.c test_common.h  \
-+	mock_get_random.c \
-+	$(top_srcdir)/src/openvpn/buffer.c \
-+	$(top_srcdir)/src/openvpn/win32-util.c \
-+	$(top_srcdir)/src/openvpn/platform.c \
-+	$(top_srcdir)/src/openvpn/mbuf.c
-+
- misc_testdriver_CFLAGS  = \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
- 	-DSOURCEDIR=\"$(top_srcdir)\" @TEST_CFLAGS@
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index 25a8def..8855e5b 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -386,7 +386,7 @@
- 
-     /* Instead of trying to trick the compiler here, disable the warnings
-      * for this unit test. We know that the results will be truncated
--     * and we want to test that. Not we need the clang as clang-cl (msvc) does
-+     * and we want to test that. Note we need the clang as clang-cl (msvc) does
-      * not define __GNUC__ like it does under UNIX(-like) platforms */
- #if defined(__GNUC__) || defined(__clang__)
- /* some clang version do not understand -Wformat-truncation, so ignore the
-diff --git a/tests/unit_tests/openvpn/test_mbuf.c b/tests/unit_tests/openvpn/test_mbuf.c
-new file mode 100644
-index 0000000..cba4da7
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_mbuf.c
-@@ -0,0 +1,160 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2025 OpenVPN Inc. <sales@...2722...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
+-    const size_t limit =3D 0xFFFFFFFF;
++    const size_t limit =3D ALLOC_SIZE_MAX;
+     unsigned long long res =3D
+         (unsigned long long)m1 * (unsigned long long)m2 + (unsigned long l=
+ong)extra;
+     if (unlikely(m1 > limit) || unlikely(m2 > limit) || unlikely(extra > l=
+imit)
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index ab2a29d..1dbe0b2 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -1044,6 +1044,18 @@
+  * Allocate memory to hold a structure
+  */
+
++/* When allocating arrays make sure we do not use a excessive amount
++ * of memory.
 + */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
++#if UINTPTR_MAX <=3D UINT32_MAX
++/* 1 GB on 32bit systems, they usually can only allocate 2 GB for the
++ * whole process.
++ */
++#define ALLOC_SIZE_MAX (1u << 30)
++#else
++#define ALLOC_SIZE_MAX ((size_t)1 << 32) /* 4 GB */
 +#endif
 +
-+#include "syshead.h"
-+
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+#include "buffer.h"
-+#include "multi.h"
-+#include "mbuf.h"
-+#include "test_common.h"
-+
-+static void
-+test_mbuf_init(void **state)
-+{
-+    struct mbuf_set *ms = mbuf_init(256);
-+    assert_int_equal(ms->capacity, 256);
-+    assert_false(mbuf_defined(ms));
-+    assert_non_null(ms->array);
-+    mbuf_free(ms);
-+
-+    ms = mbuf_init(257);
-+    assert_int_equal(ms->capacity, 512);
-+    mbuf_free(ms);
-+
-+#ifdef UNIT_TEST_ALLOW_BIG_ALLOC /* allocates up to 2GB of memory */
-+    ms = mbuf_init(MBUF_SIZE_MAX);
-+    assert_int_equal(ms->capacity, MBUF_SIZE_MAX);
-+    mbuf_free(ms);
-+
-+/* NOTE: expect_assert_failure does not seem to work with MSVC */
-+#ifndef _MSC_VER
-+    expect_assert_failure(mbuf_init(MBUF_SIZE_MAX + 1));
-+#endif
-+#endif
-+}
-+
-+static void
-+test_mbuf_add_remove(void **state)
-+{
-+    struct mbuf_set *ms = mbuf_init(4);
-+    assert_int_equal(ms->capacity, 4);
-+    assert_false(mbuf_defined(ms));
-+    assert_non_null(ms->array);
-+
-+    /* instances */
-+    struct multi_instance mi = { 0 };
-+    struct multi_instance mi2 = { 0 };
-+    /* buffers */
-+    struct buffer buf = alloc_buf(16);
-+    struct mbuf_buffer *mbuf_buf = mbuf_alloc_buf(&buf);
-+    assert_int_equal(mbuf_buf->refcount, 1);
-+    struct mbuf_buffer *mbuf_buf2 = mbuf_alloc_buf(&buf);
-+    assert_int_equal(mbuf_buf2->refcount, 1);
-+    free_buf(&buf);
-+    /* items */
-+    struct mbuf_item mb_item = { .buffer = mbuf_buf, .instance = &mi };
-+    struct mbuf_item mb_item2 = { .buffer = mbuf_buf2, .instance = &mi2 };
-+
-+    mbuf_add_item(ms, &mb_item);
-+    assert_int_equal(mbuf_buf->refcount, 2);
-+    assert_int_equal(mbuf_buf2->refcount, 1);
-+    assert_int_equal(mbuf_len(ms), 1);
-+    assert_int_equal(mbuf_maximum_queued(ms), 1);
-+    assert_int_equal(ms->head, 0);
-+    assert_ptr_equal(mbuf_peek(ms), &mi);
-+
-+    mbuf_add_item(ms, &mb_item2);
-+    assert_int_equal(mbuf_buf->refcount, 2);
-+    assert_int_equal(mbuf_buf2->refcount, 2);
-+    assert_int_equal(mbuf_len(ms), 2);
-+    assert_int_equal(mbuf_maximum_queued(ms), 2);
-+    assert_int_equal(ms->head, 0);
-+    assert_ptr_equal(mbuf_peek(ms), &mi);
-+
-+    mbuf_add_item(ms, &mb_item2);
-+    assert_int_equal(mbuf_buf->refcount, 2);
-+    assert_int_equal(mbuf_buf2->refcount, 3);
-+    assert_int_equal(mbuf_len(ms), 3);
-+    assert_int_equal(mbuf_maximum_queued(ms), 3);
-+    assert_int_equal(ms->head, 0);
-+    assert_ptr_equal(mbuf_peek(ms), &mi);
-+
-+    mbuf_add_item(ms, &mb_item2);
-+    mbuf_add_item(ms, &mb_item2); /* overflow, first item gets removed */
-+    assert_int_equal(mbuf_buf->refcount, 1);
-+    assert_int_equal(mbuf_buf2->refcount, 5);
-+    assert_int_equal(mbuf_len(ms), 4);
-+    assert_int_equal(mbuf_maximum_queued(ms), 4);
-+    assert_int_equal(ms->head, 1);
-+    assert_ptr_equal(mbuf_peek(ms), &mi2);
-+
-+    mbuf_add_item(ms, &mb_item);
-+    assert_int_equal(mbuf_buf->refcount, 2);
-+    assert_int_equal(mbuf_buf2->refcount, 4);
-+    assert_int_equal(mbuf_len(ms), 4);
-+    assert_int_equal(mbuf_maximum_queued(ms), 4);
-+    assert_int_equal(ms->head, 2);
-+    assert_ptr_equal(mbuf_peek(ms), &mi2);
-+
-+    struct mbuf_item out_item;
-+    assert_true(mbuf_extract_item(ms, &out_item));
-+    assert_ptr_equal(out_item.instance, mb_item2.instance);
-+    assert_int_equal(mbuf_buf->refcount, 2);
-+    assert_int_equal(mbuf_buf2->refcount, 4);
-+    assert_int_equal(mbuf_len(ms), 3);
-+    assert_int_equal(mbuf_maximum_queued(ms), 4);
-+    assert_int_equal(ms->head, 3);
-+    assert_ptr_equal(mbuf_peek(ms), &mi2);
-+    mbuf_free_buf(out_item.buffer);
-+
-+    mbuf_dereference_instance(ms, &mi2);
-+    assert_int_equal(mbuf_buf->refcount, 2);
-+    assert_int_equal(mbuf_buf2->refcount, 1);
-+    assert_int_equal(mbuf_len(ms), 3);
-+    assert_int_equal(mbuf_maximum_queued(ms), 4);
-+    assert_int_equal(ms->head, 3);
-+    assert_ptr_equal(mbuf_peek(ms), &mi);
-+
-+    mbuf_free(ms);
-+    assert_int_equal(mbuf_buf->refcount, 1);
-+    mbuf_free_buf(mbuf_buf);
-+    assert_int_equal(mbuf_buf2->refcount, 1);
-+    mbuf_free_buf(mbuf_buf2);
-+}
-+
-+int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] = {
-+        cmocka_unit_test(test_mbuf_init),
-+        cmocka_unit_test(test_mbuf_add_remove),
-+    };
-+
-+    return cmocka_run_group_tests_name("mbuf", tests, NULL, NULL);
-+}
+ #define ALLOC_OBJ(dptr, type)                                       \
+     {                                                               \
+         check_malloc_return((dptr) =3D (type *)malloc(sizeof(type))); \
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1436?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I4f95edd7ce2098180aa620a231727217f333a12d
+Gerrit-Change-Number: 1436
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--Mt/C0OZaENg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1436?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">buffer: Change limits for array_mul=
+t_safe<br><br>- Lower the limit to 1GB on 32bit systems.<br>  The limit of =
+4GB-1 makes no sense on systems that usually<br>  don&#39;t allow a single =
+process to allocate anything near to<br>  this limit.<br>- Increate the lim=
+it from 4GB-1 to 4GB on other systems. It<br>  makes no difference in prote=
+ction but makes it much easier<br>  to use the limit in other contexts, e.g=
+. if dividing it.<br><br>Change-Id: I4f95edd7ce2098180aa620a231727217f333a1=
+2d<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by=
+: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvp=
+n.net/c/openvpn/+/1436<br>Message-Id: &lt;20251212100920.7671-1-gert@...1826...=
+6...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1768...=
+ge.net/msg35044.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;=
+<br>---<br>M src/openvpn/buffer.c<br>M src/openvpn/buffer.h<br>2 files chan=
+ged, 13 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
+h://gerrit.openvpn.net:29418/openvpn refs/changes/36/1436/2</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><span>index 293=
+622f..40baca6 100644</span><br><span>--- a/src/openvpn/buffer.c</span><br><=
+span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -39,7 +39,7 @@</span><br=
+><span> size_t</span><br><span> array_mult_safe(const size_t m1, const size=
+_t m2, const size_t extra)</span><br><span> {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    const size_t limit =3D 0xFFFFFFFF;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const size_t limit =3D ALLOC=
+_SIZE_MAX;</span><br><span>     unsigned long long res =3D</span><br><span>=
+         (unsigned long long)m1 * (unsigned long long)m2 + (unsigned long l=
+ong)extra;</span><br><span>     if (unlikely(m1 &gt; limit) || unlikely(m2 =
+&gt; limit) || unlikely(extra &gt; limit)</span><br><span>diff --git a/src/=
+openvpn/buffer.h b/src/openvpn/buffer.h</span><br><span>index ab2a29d..1dbe=
+0b2 100644</span><br><span>--- a/src/openvpn/buffer.h</span><br><span>+++ b=
+/src/openvpn/buffer.h</span><br><span>@@ -1044,6 +1044,18 @@</span><br><spa=
+n>  * Allocate memory to hold a structure</span><br><span>  */</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* When alloca=
+ting arrays make sure we do not use a excessive amount</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * of memory.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#if UINTPTR_MAX &lt;=3D UINT32_MAX</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/* 1 GB on 32bit systems, they usually can only=
+ allocate 2 GB for the</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * whole process.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define ALLOC_S=
+IZE_MAX (1u &lt;&lt; 30)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define A=
+LLOC_SIZE_MAX ((size_t)1 &lt;&lt; 32) /* 4 GB */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> #define ALLOC_OBJ(dptr, type)            =
+                           \</span><br><span>     {                        =
+                                       \</span><br><span>         check_mal=
+loc_return((dptr) =3D (type *)malloc(sizeof(type))); \</span><br><span></sp=
+an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1436?usp=3Demail">change 1436</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dem=
+ail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/1436?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4f95edd7ce2098180aa620a2317=
+27217f333a12d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1436 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--Mt/C0OZaENg=--
 
