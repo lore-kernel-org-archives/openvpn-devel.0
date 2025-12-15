@@ -3,11 +3,11 @@ In-Reply-To: <gerrit.1765571645000.Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae@...
 References: <gerrit.1765571645000.Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae@...2715...>
 Reply-To: max@...2606..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <6e7024155197f1a344f53f6d849a343cc83d2ad6-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <4e3eb21f8bc4d1476df9bb45b7544f249ceffd60-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YKGksJiGtY4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="TpQL4MCMAe0="; charset=UTF-8
 Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Add support for
  Mbed TLS 4
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,11 +18,11 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Date: Mon, 15 Dec 2025 12:11:50 -0000
+Date: Mon, 15 Dec 2025 14:46:28 -0000
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YKGksJiGtY4=
+--TpQL4MCMAe0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
 
 
 Change subject: Add support for Mbed TLS 4
@@ -70,10 +70,10 @@ M src/openvpn/syshead.h
 M tests/Makefile.am
 M tests/unit_tests/openvpn/Makefile.am
 M tests/unit_tests/openvpn/test_common.h
-14 files changed, 2,450 insertions(+), 700 deletions(-)
+14 files changed, 2,452 insertions(+), 702 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1441/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1441/3
 
 diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
 index db87dfc..1caed27 100644
@@ -3955,13 +3955,20 @@ rt_chain, ssl_ctx->priv_key));
 
  const char *
 diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index 8380a116..882a8e7 100644
+index 8380a116..50ac865 100644
 --- a/src/openvpn/ssl_mbedtls.h
 +++ b/src/openvpn/ssl_mbedtls.h
-@@ -116,7 +116,9 @@
+@@ -112,11 +112,13 @@
+  */
+ struct tls_root_ctx
+ {
+-    bool initialised;                      /**< True if the context has be=
+en initialised */
++    bool initialised; /**< True if the context has been initialised */
 
-     int endpoint;                          /**< Whether or not this is a s=
+-    int endpoint;                          /**< Whether or not this is a s=
 erver or a client */
++    int endpoint;     /**< Whether or not this is a server or a client */
 
 +#if MBEDTLS_VERSION_NUMBER < 0x04000000
      mbedtls_dhm_context *dhm_ctx;          /**< Diffie-Helmann-Merkle cont=
@@ -4297,19 +4304,19 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae
 Gerrit-Change-Number: 1441
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: MaxF <max@...2606...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---YKGksJiGtY4=
+--TpQL4MCMAe0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>MaxF <strong>uploaded patch set #2</strong> to this change.</p><p><a hre=
+<p>MaxF <strong>uploaded patch set #3</strong> to this change.</p><p><a hre=
 f=3D"http://gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail">View Change</a=
 ></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
 -space: pre-wrap;">Add support for Mbed TLS 4<br><br>This commit adds suppo=
@@ -4329,9 +4336,9 @@ _legacy.h<br>M src/openvpn/mbedtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<=
 br>M src/openvpn/ssl_mbedtls.h<br>M src/openvpn/ssl_verify_mbedtls.c<br>M s=
 rc/openvpn/syshead.h<br>M tests/Makefile.am<br>M tests/unit_tests/openvpn/M=
 akefile.am<br>M tests/unit_tests/openvpn/test_common.h<br>14 files changed,=
- 2,450 insertions(+), 700 deletions(-)<br><br></pre><pre class=3D"blocks" s=
+ 2,452 insertions(+), 702 deletions(-)<br><br></pre><pre class=3D"blocks" s=
 tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
-ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1441/2</pre><pre sty=
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1441/3</pre><pre sty=
 le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
 --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am</span><br><span>i=
 ndex db87dfc..1caed27 100644</span><br><span>--- a/src/openvpn/Makefile.am<=
@@ -8056,23 +8063,30 @@ hanism to list supported curves.&quot;);</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</s=
 pan><br><span> }</span><br><span> </span><br><span> const char *</span><br>=
 <span>diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h</s=
-pan><br><span>index 8380a116..882a8e7 100644</span><br><span>--- a/src/open=
+pan><br><span>index 8380a116..50ac865 100644</span><br><span>--- a/src/open=
 vpn/ssl_mbedtls.h</span><br><span>+++ b/src/openvpn/ssl_mbedtls.h</span><br=
-><span>@@ -116,7 +116,9 @@</span><br><span> </span><br><span>     int endpo=
-int;                          /**&lt; Whether or not this is a server or a =
-client */</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     mbe=
-dtls_dhm_context *dhm_ctx;          /**&lt; Diffie-Helmann-Merkle context *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><=
-span>     mbedtls_x509_crt *crt_chain;           /**&lt; Local Certificate =
-chain */</span><br><span>     mbedtls_x509_crt *ca_chain;            /**&lt=
-; CA chain for remote verification */</span><br><span>     mbedtls_pk_conte=
-xt *priv_key;          /**&lt; Local private key */</span><br><span>diff --=
-git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</=
-span><br><span>index 250c806..2b5a0ca 100644</span><br><span>--- a/src/open=
-vpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedt=
-ls.c</span><br><span>@@ -34,13 +34,22 @@</span><br><span> </span><br><span>=
- #if defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span> </span><br><span style=
+><span>@@ -112,11 +112,13 @@</span><br><span>  */</span><br><span> struct t=
+ls_root_ctx</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    bool initialised;                      /**&lt; True if the con=
+text has been initialised */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    bool initialised; /**&lt; True if the context has been initial=
+ised */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    int endpoint;                          /**&lt; Whether or not this =
+is a server or a client */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    int endpoint;     /**&lt; Whether or not this is a server or a c=
+lient */</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     mbed=
+tls_dhm_context *dhm_ctx;          /**&lt; Diffie-Helmann-Merkle context */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
+pan>     mbedtls_x509_crt *crt_chain;           /**&lt; Local Certificate c=
+hain */</span><br><span>     mbedtls_x509_crt *ca_chain;            /**&lt;=
+ CA chain for remote verification */</span><br><span>     mbedtls_pk_contex=
+t *priv_key;          /**&lt; Local private key */</span><br><span>diff --g=
+it a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</s=
+pan><br><span>index 250c806..2b5a0ca 100644</span><br><span>--- a/src/openv=
+pn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtl=
+s.c</span><br><span>@@ -34,13 +34,22 @@</span><br><span> </span><br><span> =
+#if defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span> </span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/version.h&gt;</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</s=
@@ -8370,7 +8384,7 @@ ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
 <div style=3D"display:none"> Gerrit-Change-Id: Ib251d546d993b96ed3bd8cb9111=
 bcc627cdb0fae </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1441 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
 v>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -8382,5 +8396,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---YKGksJiGtY4=--
+--TpQL4MCMAe0=--
 
