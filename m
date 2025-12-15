@@ -1,10 +1,10 @@
-Date: Mon, 15 Dec 2025 16:31:37 +0100 (CET)
-Message-Id: <202512151531.5BFFVb8R058528@...2054...>
+Date: Mon, 15 Dec 2025 16:35:47 +0100 (CET)
+Message-Id: <202512151535.5BFFZlso058834@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20251215144656.17299-1-gert@...1296...>
-References: <20251215144656.17299-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: schedule: Rework documentation
- for schedule_add_entry
+In-Reply-To: <20251215150500.18898-1-gert@...1296...>
+References: <20251215150500.18898-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: multi: Fix wrong sigma value in
+ multi_push_restart_schedule_exit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-"Just documentation", but to +2 that I had to actually read into all these
-macros... "yep, this sounds easier to understand and factually correct" :-)
+Indeed, the original code looks wrong here, according to the new 
+documentation just added :-) - interesting functions we have there.
 
-Nothing to test here, comment only (and BB confirms that nothing sneaked
-in that could break a compile).
+Stared-at-code, not tested beyond "BB says it's all green".
 
 Your patch has been applied to the master branch.
 
-commit 223192a092eacda12ee1ac93fd017bd43fb60f01
+commit 310c6b9e789a102b71ad9d4ba56bc11d1c8a0a73
 Author: Frank Lichtenheld
-Date:   Mon Dec 15 15:46:50 2025 +0100
+Date:   Mon Dec 15 16:04:54 2025 +0100
 
-     schedule: Rework documentation for schedule_add_entry
+     multi: Fix wrong sigma value in multi_push_restart_schedule_exit
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1439
-     Message-Id: <20251215144656.17299-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35070.html
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1311
+     Message-Id: <20251215150500.18898-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35075.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
