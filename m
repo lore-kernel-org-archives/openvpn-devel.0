@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 15 Dec 2025 15:58:35 +0100
-Message-ID: <20251215145840.18310-1-gert@...1296...>
-In-Reply-To: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
-References: <gerrit.1761570487000.I88cd7e1ebb49e97db33bad75c4fbbe23d196e964@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 15 Dec 2025 15:04:46 +0000
+In-Reply-To: <gerrit.1761570487000.I62b8263f18c4e2e7f5ecacb4616737f5ba836303@...2715...>
+References: <gerrit.1761570487000.I62b8263f18c4e2e7f5ecacb4616737f5ba836303@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <a24a9f64fb403fd160aa3910fd4acf880c7b5d85-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v9] multi: Fix various conversion warnings
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="WTMaKEcH2CA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: multi: Fix wrong
+ sigma value in multi_push_restart_schedule_exit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,102 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--WTMaKEcH2CA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Mostly make required casts explicit.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I88cd7e1ebb49e97db33bad75c4fbbe23d196e964
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1313
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1311?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: multi: Fix wrong sigma value in multi_push_restart_schedule=
+_exit
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1313
-This mail reflects revision 9 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Patch Set 9: Code-Review+2
 
-        
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 20d72c1..92eac6f 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -245,11 +245,6 @@
- 
- #endif
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- #ifdef ENABLE_ASYNC_PUSH
- static uint32_t
- /*
-@@ -2809,8 +2804,8 @@
- multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
- {
-     char buffer[INOTIFY_EVENT_BUFFER_SIZE];
--    size_t buffer_i = 0;
--    int r = read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);
-+    ssize_t buffer_i = 0;
-+    ssize_t r = read(m->top.c2.inotify_fd, buffer, INOTIFY_EVENT_BUFFER_SIZE);
- 
-     while (buffer_i < r)
-     {
-@@ -2942,21 +2937,23 @@
- static inline unsigned int
- compute_wakeup_sigma(const struct timeval *delta)
- {
-+    ASSERT(delta->tv_sec >= 0);
-+    ASSERT(delta->tv_usec >= 0);
-     if (delta->tv_sec < 1)
-     {
-         /* if < 1 sec, fuzz = # of microseconds / 8 */
--        return delta->tv_usec >> 3;
-+        return (unsigned int)(delta->tv_usec >> 3);
-     }
-     else
-     {
-         /* if < 10 minutes, fuzz = 13.1% of timeout */
-         if (delta->tv_sec < 600)
-         {
--            return delta->tv_sec << 17;
-+            return (unsigned int)(delta->tv_sec << 17);
-         }
-         else
-         {
--            return 120000000; /* if >= 10 minutes, fuzz = 2 minutes */
-+            return 120 * 1000000; /* if >= 10 minutes, fuzz = 2 minutes */
-         }
-     }
- }
-@@ -3743,7 +3740,7 @@
- 
-         for (i = 0; i < parm.packet_size; ++i)
-         {
--            ASSERT(buf_write_u8(&buf, get_random() & 0xFF));
-+            ASSERT(buf_write_u8(&buf, (uint8_t)(get_random() & 0xFF)));
-         }
- 
-         for (i = 0; i < parm.n_packets; ++i)
-@@ -3959,10 +3956,6 @@
-     return count;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static void
- management_delete_event(void *arg, event_t event)
- {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1311?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I62b8263f18c4e2e7f5ecacb4616737f5ba836303
+Gerrit-Change-Number: 1311
+Gerrit-PatchSet: 9
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 15 Dec 2025 15:04:46 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--WTMaKEcH2CA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1311?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1311?usp=3Demail=
+">change 1311</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1311?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I62b8263f18c4e2e7f5ecacb4616=
+737f5ba836303 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1311 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 15 Dec 2025 15:04:46=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--WTMaKEcH2CA=--
 
