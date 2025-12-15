@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 15 Dec 2025 17:05:35 +0100
-Message-ID: <20251215160541.24237-1-gert@...1296...>
-In-Reply-To: <gerrit.1765538409000.I123002255b37160d48ef6481f68a89d03073236b@...2715...>
-References: <gerrit.1765538409000.I123002255b37160d48ef6481f68a89d03073236b@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 15 Dec 2025 16:06:41 +0000
+In-Reply-To: <gerrit.1765381324000.I21251a42f94fa1d9de083d2acd95b887658c5760@...2715...>
+References: <gerrit.1765381324000.I21251a42f94fa1d9de083d2acd95b887658c5760@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641..., max@...2606...
+Message-ID: <78e8c28e7ca28138c70405e339cc810c6721b659-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] buffer: Change buf_prepend and
- buf_advance to accept ssize_t for length
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="/GGj+BUeZXA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change ssl_ctx in
+ struct tls_options to be a pointer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,112 +19,176 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--/GGj+BUeZXA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We already have tests to make sure the value is sane.
-Changing the argument to ssize_t allows to use it in
-more places without needing to do a cast before the
-checks.
+Attention is currently required from: MaxF, flichtenheld.
 
-Change-Id: I123002255b37160d48ef6481f68a89d03073236b
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1437
----
+plaisthos has posted comments on this change by plaisthos. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1431?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Change ssl_ctx in struct tls_options to be a pointer
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1437
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 5:
 
-        
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 293622f..aae4104 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -789,7 +789,7 @@
- {
-     if (buf_string_match_head_str(src, match))
-     {
--        buf_advance(src, (int)strlen(match));
-+        buf_advance(src, strlen(match));
-         return true;
-     }
-     else
-@@ -1312,7 +1312,7 @@
- }
- 
- void
--buffer_list_advance(struct buffer_list *ol, int n)
-+buffer_list_advance(struct buffer_list *ol, ssize_t n)
- {
-     if (ol->head)
-     {
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index ab2a29d..5444dfd 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -601,26 +601,26 @@
-  */
- 
- static inline uint8_t *
--buf_prepend(struct buffer *buf, int size)
-+buf_prepend(struct buffer *buf, ssize_t size)
- {
-     if (!buf_valid(buf) || size < 0 || size > buf->offset)
-     {
-         return NULL;
-     }
--    buf->offset -= size;
--    buf->len += size;
-+    buf->offset -= (int)size;
-+    buf->len += (int)size;
-     return BPTR(buf);
- }
- 
- static inline bool
--buf_advance(struct buffer *buf, int size)
-+buf_advance(struct buffer *buf, ssize_t size)
- {
-     if (!buf_valid(buf) || size < 0 || buf->len < size)
-     {
-         return false;
-     }
--    buf->offset += size;
--    buf->len -= size;
-+    buf->offset += (int)size;
-+    buf->len -= (int)size;
-     return true;
- }
- 
-@@ -1175,7 +1175,7 @@
-  */
- struct buffer *buffer_list_peek(struct buffer_list *ol);
- 
--void buffer_list_advance(struct buffer_list *ol, int n);
-+void buffer_list_advance(struct buffer_list *ol, ssize_t n);
- 
- void buffer_list_pop(struct buffer_list *ol);
- 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 31e7c25..917f871 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -596,7 +596,7 @@
-         {
-             dmsg(D_PS_PROXY_DEBUG, "PORT SHARE PROXY: partial write[%d], tried=%d got=%zd", (int)sd,
-                  pc->buf.len, status);
--            buf_advance(&pc->buf, (int)status);
-+            buf_advance(&pc->buf, status);
-             return IOSTAT_EAGAIN_ON_WRITE;
-         }
-         else
+(5 comments)
+
+File src/openvpn/init.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1431/comment/503ce1bd_d2891ac8?usp=3D=
+email :
+PS4, Line 3129:          * SSL context. */
+> Please leave `*/` on its own line for consistency
+Done
+
+
+File src/openvpn/ssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1431/comment/e4e71a9c_3b3e27a7?usp=3D=
+email :
+PS4, Line 878: all instances sharing the same context
+> I'm a bit confused here. [=E2=80=A6]
+yeah. I tried to word it better.
+
+
+http://gerrit.openvpn.net/c/openvpn/+/1431/comment/ac721aa5_fc4cd00e?usp=3D=
+email :
+PS4, Line 878:      * all instances sharing the same context
+> Please add missing ". [=E2=80=A6]
+Done
+
+
+File src/openvpn/ssl_common.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/1431/comment/42a32659_134db4a7?usp=3D=
+email :
+PS4, Line 308:     /* our master TLS context from which all SSL objects der=
+ived,
+> "are derived"?
+Done
+
+
+http://gerrit.openvpn.net/c/openvpn/+/1431/comment/2e35660d_ac9baf46?usp=3D=
+email :
+PS4, Line 309:      * this context is shared between all instances so point
+> "points to"?
+Done
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1431?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I21251a42f94fa1d9de083d2acd95b887658c5760
+Gerrit-Change-Number: 1431
+Gerrit-PatchSet: 5
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: MaxF <max@...2606...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Mon, 15 Dec 2025 16:06:41 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: MaxF <max@...2606...>
+
+--/GGj+BUeZXA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: MaxF, flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1431?usp=3Demail">View =
+Change</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1431/comment/503ce1bd_d2891ac8?usp=3Demail">Patch Set #4, L=
+ine 3129:</a> <code style=3D"font-family:monospace,monospace">         * SS=
+L context. */</code></p><p><blockquote style=3D"border-left: 1px solid #aaa=
+; margin: 10px 0; padding: 0 10px;">Please leave `*/` on its own line for c=
+onsistency</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margin: 0; =
+padding: 0;"><p>File src/openvpn/ssl.c:</p><ul style=3D"list-style: none; p=
+adding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
+n-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1431/comme=
+nt/e4e71a9c_3b3e27a7?usp=3Demail">Patch Set #4, Line 878:</a> <code style=
+=3D"font-family:monospace,monospace">all instances sharing the same context=
+</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10p=
+x 0; padding: 0 10px;">I&#39;m a bit confused here. [=E2=80=A6]</blockquote=
+></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-w=
+ord;">yeah. I tried to word it better.</p></li><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1431/comment/ac721aa5_fc4cd00e?usp=3Demail">Patch =
+Set #4, Line 878:</a> <code style=3D"font-family:monospace,monospace">     =
+* all instances sharing the same context</code></p><p><blockquote style=3D"=
+border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Please add m=
+issing &quot;. [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li styl=
+e=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_common.h:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1431/comment/42a32659_134db4a7?usp=3Demail">Patch Set #4, Line=
+ 308:</a> <code style=3D"font-family:monospace,monospace">    /* our master=
+ TLS context from which all SSL objects derived,</code></p><p><blockquote s=
+tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">&quo=
+t;are derived&quot;?</blockquote></p><p class=3D"blocks" style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; =
+padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1431/comment/2e35660d_ac9baf46?usp=3Demail">Pa=
+tch Set #4, Line 309:</a> <code style=3D"font-family:monospace,monospace"> =
+    * this context is shared between all instances so point</code></p><p><b=
+lockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 =
+10px;">&quot;points to&quot;?</blockquote></p><p class=3D"blocks" style=3D"=
+white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1431?usp=
+=3Demail">change 1431</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1431?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I21251a42f94fa1d9de083d2acd9=
+5b887658c5760 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1431 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 15 Dec 2025 16:06:41=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
+t; </div>
+
+</body></html>=
+
+--/GGj+BUeZXA=--
 
