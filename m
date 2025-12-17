@@ -1,16 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Dec 2025 08:27:06 +0000
-In-Reply-To: <gerrit.1765959951000.I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5@...2715...>
-References: <gerrit.1765959951000.I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <81328a74d2b869ab20d02adb6e69997f518f4856-EmailReplacePatchSet-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Dec 2025 12:09:50 +0000
+References: <gerrit.1765973388000.I47fc0dc93a7ed6b71feb611194cee02a81d91769@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
+Message-ID: <3b2377a9b9fc6f81c5c33fb0a7df572e0e5a1c6e-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5jL7Oufs3vQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Add check for
- bind-dev in DCO options
+Content-Type: multipart/alternative; boundary="dgtZc98FhQc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Ensure wolfSSL uses
+ old pre 1.1.0 OpenSSL path for getting ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,127 +17,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---5jL7Oufs3vQ=
+--dgtZc98FhQc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
-
-Hello plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail
-
-to look at the new patch set (#2).
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1448?usp=3Demail )
 
 
-Change subject: Add check for bind-dev in DCO options
+Change subject: Ensure wolfSSL uses old pre 1.1.0 OpenSSL path for getting =
+ciphers
 ......................................................................
 
-Add check for bind-dev in DCO options
+Ensure wolfSSL uses old pre 1.1.0 OpenSSL path for getting ciphers
 
-Github: OpenVPN/openvpn#683
+Normally when wolfSSL is compiled with --enable-openvpn it reports an
+OpenSSL version before 1.1.0. When compiled normally it reports an
+OpenSSL version higher than this.
 
-Change-Id: I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5
+So explicitly check for wolfSSL instead of relying on its OpenSSL version
+trickery.
+
+Change-Id: I47fc0dc93a7ed6b71feb611194cee02a81d91769
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/dco.c
-1 file changed, 6 insertions(+), 0 deletions(-)
+M src/openvpn/ssl_openssl.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/1447/2
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index e41d59f..06d5920 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -317,6 +317,12 @@
-         }
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/48/1448/1
+
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 48bbdfc..35b75eb 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2547,7 +2547,7 @@
+         crypto_msg(M_FATAL, "Cannot create SSL object");
      }
 
-+    if (o->bind_dev)
-+    {
-+        msg(msglevel, "Note: bind-dev not supported with DCO, disabling da=
-ta channel offload");
-+        return false;
-+    }
-+
- #if defined(_WIN32)
-     if (o->mode =3D=3D MODE_SERVER)
-     {
+-#if OPENSSL_VERSION_NUMBER < 0x1010000fL || defined(OPENSSL_IS_AWSLC)
++#if OPENSSL_VERSION_NUMBER < 0x1010000fL || defined(OPENSSL_IS_AWSLC) || d=
+efined(ENABLE_CRYPTO_WOLFSSL)
+     STACK_OF(SSL_CIPHER) *sk =3D SSL_get_ciphers(ssl);
+ #else
+     STACK_OF(SSL_CIPHER) *sk =3D SSL_get1_supported_ciphers(ssl);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1448?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5
-Gerrit-Change-Number: 1447
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Branch: master
+Gerrit-Change-Id: I47fc0dc93a7ed6b71feb611194cee02a81d91769
+Gerrit-Change-Number: 1448
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---5jL7Oufs3vQ=
+--dgtZc98FhQc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail">View Change</=
-a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">Add check for bind-dev in DCO options<br><br>Github: Op=
-enVPN/openvpn#683<br><br>Change-Id: I5d5fca3f5f7a724b4f9ec98832d3a785459f36=
-a5<br>---<br>M src/openvpn/dco.c<br>1 file changed, 6 insertions(+), 0 dele=
-tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418=
-/openvpn refs/changes/47/1447/2</pre><pre style=3D"font-family: monospace,m=
-onospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/sr=
-c/openvpn/dco.c</span><br><span>index e41d59f..06d5920 100644</span><br><sp=
-an>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><b=
-r><span>@@ -317,6 +317,12 @@</span><br><span>         }</span><br><span>   =
-  }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (o-&gt;bind_dev)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-msg(msglevel, &quot;Note: bind-dev not supported with DCO, disabling data c=
-hannel offload&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> #if defined(_WIN32)</span><br><span>     if (o-&gt;mode =3D=3D MOD=
-E_SERVER)</span><br><span>     {</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail"=
->change 1447</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1448?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Ensure wolfSSL uses old pre 1.1.0 OpenSSL path for getting ciphers<br><=
+br>Normally when wolfSSL is compiled with --enable-openvpn it reports an<br=
+>OpenSSL version before 1.1.0. When compiled normally it reports an<br>Open=
+SSL version higher than this.<br><br>So explicitly check for wolfSSL instea=
+d of relying on its OpenSSL version<br>trickery.<br><br>Change-Id: I47fc0dc=
+93a7ed6b71feb611194cee02a81d91769<br>Signed-off-by: Arne Schwabe &lt;arne@...220...=
+..1227...&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 1 in=
+sertion(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
+openvpn.net:29418/openvpn refs/changes/48/1448/1</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/o=
+penvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br><span>index 48bb=
+dfc..35b75eb 100644</span><br><span>--- a/src/openvpn/ssl_openssl.c</span><=
+br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@@ -2547,7 +2547,7=
+ @@</span><br><span>         crypto_msg(M_FATAL, &quot;Cannot create SSL ob=
+ject&quot;);</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#if OPENSSL_VERSION_NUMBER &lt; 0x1010000fL=
+ || defined(OPENSSL_IS_AWSLC)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#if OPENSSL_VERSION_NUMBER &lt; 0x1010000fL || defined(OPENSSL_IS=
+_AWSLC) || defined(ENABLE_CRYPTO_WOLFSSL)</span><br><span>     STACK_OF(SSL=
+_CIPHER) *sk =3D SSL_get_ciphers(ssl);</span><br><span> #else</span><br><sp=
+an>     STACK_OF(SSL_CIPHER) *sk =3D SSL_get1_supported_ciphers(ssl);</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1448?usp=3Demail">change 1448</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1448?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5d5fca3f5f7a724b4f9ec98832d=
-3a785459f36a5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1447 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I47fc0dc93a7ed6b71feb611194c=
+ee02a81d91769 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1448 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 
 </body></html>=
 
---5jL7Oufs3vQ=--
+--dgtZc98FhQc=--
 
