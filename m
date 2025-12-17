@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 17 Dec 2025 14:53:16 +0000
+Date: Wed, 17 Dec 2025 14:53:30 +0000
 In-Reply-To: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
 References: <gerrit.1765453028000.I72947bd4f0213fd118327f740daeb1d86ae166de@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., max@...2606..., gert@...1296...
-Message-ID: <7b96fe75e960bdd5ee7767a60c95401bf56fe9c5-EmailReviewComments-HTML@...2715...>
+Message-ID: <a64a400d67bdcd3d829c0e3cdb11a58cae518e97-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JygR68MDhSA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="bZVjswC67uE="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow test-crypto to
  work without the --secret argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: MaxF <max@...2606...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JygR68MDhSA=
+--bZVjswC67uE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -40,12 +40,12 @@ Patch Set 6:
 
 File src/openvpn/init.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1435/comment/5ca3c174_73dab1c5?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1435/comment/c8751373_284a2f3c?usp=3D=
 email :
 PS5, Line 3002: do_init_crypto_test(struct context *c, const unsigned int f=
 lags)
-> This function isn't called before do_test_crypto runs. [=E2=80=A6]
-You are right. I am not entirely sure why it even worked.
+> You are right. I am not entirely sure why it even worked.
+Done
 
 
 
@@ -68,12 +68,13 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Wed, 17 Dec 2025 14:53:16 +0000
+Gerrit-Comment-Date: Wed, 17 Dec 2025 14:53:30 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
 Comment-In-Reply-To: MaxF <max@...2606...>
 
---JygR68MDhSA=
+--bZVjswC67uE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -84,21 +85,20 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init.c:</p><ul sty=
 le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
  16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/1435/comment/5ca3c174_73dab1c5?usp=3Demail">Patch Set #5, Li=
+et/c/openvpn/+/1435/comment/c8751373_284a2f3c?usp=3Demail">Patch Set #5, Li=
 ne 3002:</a> <code style=3D"font-family:monospace,monospace">do_init_crypto=
 _test(struct context *c, const unsigned int flags)</code></p><p><blockquote=
- style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Th=
-is function isn&#39;t called before do_test_crypto runs. [=E2=80=A6]</block=
-quote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">You are right. I am not entirely sure why it even worked.</p></l=
-i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1435?usp=3Demail">change 1435</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
-=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1435?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
+ style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Yo=
+u are right. I am not entirely sure why it even worked.</blockquote></p><p =
+class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Do=
+ne</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1435?usp=3Demail">change 1435</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1435?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -123,14 +123,16 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
 </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Dec 2025 14:53:16=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 17 Dec 2025 14:53:30=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: MaxF &lt;max@...2606...&g=
 t; </div>
 
 </body></html>=
 
---JygR68MDhSA=--
+--bZVjswC67uE=--
 
