@@ -1,16 +1,15 @@
-From: "mandree (Code Review)" <gerrit@...515...>
-Date: Tue, 16 Dec 2025 19:46:58 +0000
-In-Reply-To: <gerrit.1765907598000.Ia6c3f0395bd6cd67064fe77420d9df2b66763049@...2715...>
-References: <gerrit.1765907598000.Ia6c3f0395bd6cd67064fe77420d9df2b66763049@...2715...>
-Reply-To: matthias.andree@...68..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c3db9f170d945716f7d563149f2371ad3e055251-EmailReviewComments-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 17 Dec 2025 08:25:55 +0000
+References: <gerrit.1765959951000.I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <3a06bff0c2c0a8c5f15cd9e9c866a4088ceb69c3-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GO0sm8GO/HY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_verify_openssl:
- Avoid conversion warning in x509_verify_cert_ku
+Content-Type: multipart/alternative; boundary="ggqWAAzUods="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Add check for
+ bind-dev in DCO options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,120 +18,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GO0sm8GO/HY=
+--ggqWAAzUods=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
-mandree has posted comments on this change by flichtenheld. ( http://gerrit=
-.openvpn.net/c/openvpn/+/1445?usp=3Demail )
+Hello plaisthos,
 
-Change subject: ssl_verify_openssl: Avoid conversion warning in x509_verify=
-_cert_ku
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Add check for bind-dev in DCO options
 ......................................................................
 
+Add check for bind-dev in DCO options
 
-Patch Set 1:
-
-(1 comment)
-
-File src/openvpn/ssl_verify_openssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1445/comment/c27d7464_b4c44732?usp=3D=
-email :
-PS1, Line 696:     for (int i =3D 0; i < 8; i++)
-> I don't seem to have the ASN1_BIT_STRING_get_bit() manpage handy, but if =
-the compiler is unhappy about the nku |=3D line, make the literals unsigned=
-, as in nku |=3D 1u << (7u - i) while i is some unsigned type (such as size=
-_t).
-So the 2nd argument to ASN1_BIT_STRING_get_bit() wants to be a literal "int=
-" so this one change in the "for" would be OK.
+Change-Id: I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5
+---
+M src/openvpn/dco.c
+1 file changed, 6 insertions(+), 0 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/1447/1
+
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index e41d59f..06d5920 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -317,6 +317,12 @@
+         }
+     }
+
++    if (o->bind_dev)
++    {
++        msg(msglevel, "Note: bind-dev not supported with DCO, disabling da=
+ta channel offload");
++        return false;
++    }
++
+ #if defined(_WIN32)
+     if (o->mode =3D=3D MODE_SERVER)
+     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1445?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia6c3f0395bd6cd67064fe77420d9df2b66763049
-Gerrit-Change-Number: 1445
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5
+Gerrit-Change-Number: 1447
 Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: mandree <matthias.andree@...68...>
+Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 16 Dec 2025 19:46:58 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: mandree <matthias.andree@...68...>
 
---GO0sm8GO/HY=
+--ggqWAAzUods=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1445?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_verify_openssl=
-.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; =
-padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1445/comment/c27d7464_b4c44732?usp=3Demail">Pa=
-tch Set #1, Line 696:</a> <code style=3D"font-family:monospace,monospace"> =
-   for (int i =3D 0; i &lt; 8; i++)</code></p><blockquote class=3D"blocks" =
-style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p =
-class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I =
-don&#39;t seem to have the ASN1_BIT_STRING_get_bit() manpage handy, but if =
-the compiler is unhappy about the nku |=3D line, make the literals unsigned=
-, as in nku |=3D 1u &lt;&lt; (7u - i) while i is some unsigned type (such a=
-s size_t).<br>So the 2nd argument to ASN1_BIT_STRING_get_bit() wants to be =
-a literal &quot;int&quot; so this one change in the &quot;for&quot; would b=
-e OK.</p></blockquote></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1445?usp=3Demail">change 1445</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+rently required from: plaisthos. </p>
+<p>cron2 would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Add check for bind-dev in DCO options<br><b=
+r>Change-Id: I5d5fca3f5f7a724b4f9ec98832d3a785459f36a5<br>---<br>M src/open=
+vpn/dco.c<br>1 file changed, 6 insertions(+), 0 deletions(-)<br><br></pre><=
+pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/4=
+7/1447/1</pre><pre style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c</span><=
+br><span>index e41d59f..06d5920 100644</span><br><span>--- a/src/openvpn/dc=
+o.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><span>@@ -317,6 +317,=
+12 @@</span><br><span>         }</span><br><span>     }</span><br><span> </=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;bind_de=
+v)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;Not=
+e: bind-dev not supported with DCO, disabling data channel offload&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #if defined(_W=
+IN32)</span><br><span>     if (o-&gt;mode =3D=3D MODE_SERVER)</span><br><sp=
+an>     {</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail">change 1447</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
 =3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
 type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1445?usp=3Demail"/><meta itemprop=3D"name" =
+/gerrit.openvpn.net/c/openvpn/+/1447?usp=3Demail"/><meta itemprop=3D"name" =
 content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia6c3f0395bd6cd67064fe77420d=
-9df2b66763049 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1445 </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5d5fca3f5f7a724b4f9ec98832d=
+3a785459f36a5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1447 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: mandree &lt;matthias.andree@...220...=
-..68...&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 16 Dec 2025 19:46:58=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: mandree &lt;matthias.andr=
-ee@...68...&gt; </div>
 
 </body></html>=
 
---GO0sm8GO/HY=--
+--ggqWAAzUods=--
 
