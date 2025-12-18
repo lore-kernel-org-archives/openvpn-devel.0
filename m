@@ -1,13 +1,14 @@
 From: "mrbff (Code Review)" <gerrit@...515...>
-Date: Thu, 18 Dec 2025 15:20:10 +0000
+Date: Thu, 18 Dec 2025 15:27:16 +0000
+In-Reply-To: <gerrit.1766071205000.I88f37e47026a7d7ea0f7c6bde1d79d32c14e5297@...2715...>
 References: <gerrit.1766071205000.I88f37e47026a7d7ea0f7c6bde1d79d32c14e5297@...2715...>
 Reply-To: marco@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <093e7078915f3182b53d524f2f83b8ae3d40331c-HTML@...2715...>
+Message-ID: <4a66eed136245ffc6acf3ecd0f0966b0f247d44a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KPOuYXB9uPw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="sMaabhtdOsI="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: PUSH_UPDATE: add DCO
  and iroutes support on server
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KPOuYXB9uPw=
+--sMaabhtdOsI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,12 +30,11 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1450?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#3).
 
 
 Change subject: PUSH_UPDATE: add DCO and iroutes support on server
@@ -72,8 +72,7 @@ M tests/unit_tests/openvpn/test_push_update_msg.c
 9 files changed, 377 insertions(+), 142 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/1450/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/1450/3
 
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
 index 6a1a5c9..eccfac2 100644
@@ -299,7 +298,7 @@ dr *vpn_ipv4, struct in6_addr *vpn_ipv6, int flags);
  }
 
 diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index d1ad092..6bee21b 100644
+index d1ad092..af20ab8 100644
 --- a/src/openvpn/dco_freebsd.c
 +++ b/src/openvpn/dco_freebsd.c
 @@ -559,6 +559,12 @@
@@ -310,7 +309,7 @@ index d1ad092..6bee21b 100644
 +dco_update_peer_addr(dco_context_t *dco, unsigned int peerid, struct in_ad=
 dr *vpn_ipv4, struct in6_addr *vpn_ipv6, int flags)
 +{
-+    return 0
++    return 0;
 +}
 +
  static void
@@ -379,17 +378,17 @@ ETFAMILY
 ciated
   * with the "ovpn-dco" netlink family.
 diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 94f043f..6a1806d 100644
+index 94f043f..1a11927 100644
 --- a/src/openvpn/dco_win.c
 +++ b/src/openvpn/dco_win.c
 @@ -526,6 +526,12 @@
  }
-=20
+
  int
 +dco_update_peer_addr(dco_context_t *dco, unsigned int peerid, struct in_ad=
 dr *vpn_ipv4, struct in6_addr *vpn_ipv6, int flags)
 +{
-+    return 0
++    return 0;
 +}
 +
 +int
@@ -935,275 +934,275 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1450?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I88f37e47026a7d7ea0f7c6bde1d79d32c14e5297
 Gerrit-Change-Number: 1450
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 3
 Gerrit-Owner: mrbff <marco@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---KPOuYXB9uPw=
+--sMaabhtdOsI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>mrbff would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1450?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">PUSH_UPDATE: add DCO and iroutes support on=
- server<br><br>Renamed update_vhash() to update_vaddr().<br>Moved the -ifco=
-nfig logic from send_single_push_update() to update_vaddr().<br>Changed can=
-ary logic to use the current value of ifconfig (if present) as<br>canary. A=
-dded logic in the update_vaddr() to not unlearn and re-learn the same<br>ad=
-dress.<br><br>Added logic to update the peer&#39;s virtual address(es) in t=
-he DCO to the current<br>value(s) after sending a PUSH_UPDATE message on Li=
-nux.<br>Added dco_multi_update_peer_addr() and dco_update_peer_addr() to do=
- so.<br><br>Added logic to update iroutes after changing the peer&#39;s vir=
-tual address(es).<br>Divided dco_delete_iroutes() in _v4() and _v6() to bet=
-ter updating iroutes.<br><br>Change-Id: I88f37e47026a7d7ea0f7c6bde1d79d32c1=
-4e5297<br>Signed-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M s=
-rc/openvpn/dco.c<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M=
- src/openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/multi.=
-c<br>M src/openvpn/multi.h<br>M src/openvpn/push_util.c<br>M tests/unit_tes=
-ts/openvpn/test_push_update_msg.c<br>9 files changed, 377 insertions(+), 14=
-2 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
-:29418/openvpn refs/changes/50/1450/1</pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.=
-c b/src/openvpn/dco.c</span><br><span>index 6a1a5c9..eccfac2 100644</span><=
-br><span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</s=
-pan><br><span>@@ -658,6 +658,41 @@</span><br><span>     return 0;</span><br=
-><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_mult=
-i_update_peer_addr(struct multi_context *m, struct multi_instance *mi, int =
-flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (!flags)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
-t context *c =3D &amp;mi-&gt;context;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    int peer_id =3D c-&gt;c2.tls_multi-&gt;dco_peer_id;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /* In server mode we need to fetch t=
-he remote addresses from the push config */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct in_addr vpn_ip4 =3D { 0 };</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    struct in_addr *vpn_addr4 =3D=
- NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt=
-;c2.push_ifconfig_defined)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- vpn_ip4.s_addr =3D htonl(c-&gt;c2.push_ifconfig_local);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        vpn_addr4 =3D &amp;vpn_ip4;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    struct in6_addr *vpn_addr6 =3D NULL;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.push_ifconfig_ipv=
-6_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        vpn_addr6 =3D &=
-amp;c-&gt;c2.push_ifconfig_ipv6_local;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =
-=3D dco_update_peer_addr(&amp;c-&gt;c1.tuntap-&gt;dco, peer_id, vpn_addr4, =
-vpn_addr6, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (ret &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return =
-ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span> void</span><br><span> dco_install_iroute(struct multi_=
-context *m, struct multi_instance *mi, struct mroute_addr *addr)</span><br>=
-<span> {</span><br><span>@@ -723,7 +758,7 @@</span><br><span> }</span><br><=
-span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-dco_delete_iroutes(struct multi_context *m, struct multi_instance *m=
-i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_delete_iroute=
-s_v4(struct multi_context *m, struct multi_instance *mi)</span><br><span> {=
-</span><br><span> #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || d=
-efined(_WIN32)</span><br><span>     if (!dco_enabled(&amp;m-&gt;top.options=
-))</span><br><span>@@ -734,7 +769,7 @@</span><br><span> </span><br><span>  =
-   struct context *c =3D &amp;mi-&gt;context;</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if (mi-&gt;context.c2.push_if=
-config_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (c-&gt;c2.push_ifconfig_defined)</span><br><span>     {</span><br><span>=
-         for (const struct iroute *ir =3D c-&gt;options.iroutes; ir; ir =3D=
- ir-&gt;next)</span><br><span>         {</span><br><span>@@ -742,7 +777,7 @=
-@</span><br><span>             dco_win_del_iroute_ipv4(&amp;c-&gt;c1.tuntap=
--&gt;dco, htonl(ir-&gt;network), ir-&gt;netbits);</span><br><span> #else</s=
-pan><br><span>             net_route_v4_del(&amp;m-&gt;top.net_ctx, &amp;ir=
--&gt;network, ir-&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                             &amp;mi-&gt;context.c2.push_ifconfig_l=
-ocal, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                             &amp;c-&gt;c2.push_ifcon=
-fig_local, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span>            =
-                  DCO_IROUTE_METRIC);</span><br><span> #endif</span><br><sp=
-an>         }</span><br><span>@@ -750,7 +785,7 @@</span><br><span> #if !def=
-ined(_WIN32)</span><br><span>         /* Check if we added a host route as =
-the assigned client IP address was</span><br><span>          * not in the o=
-n link scope defined by --ifconfig */</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        in_addr_t ifconfig_local =3D mi-&gt;context.c2.push=
-_ifconfig_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     in_addr_t ifconfig_local =3D c-&gt;c2.push_ifconfig_local;</span><br><=
-span> </span><br><span>         if (multi_check_push_ifconfig_extra_route(m=
-i, htonl(ifconfig_local)))</span><br><span>         {</span><br><span>@@ -7=
-61,8 +796,22 @@</span><br><span>         }</span><br><span> #endif</span><b=
-r><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
-f /* if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32)=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mi-&gt;con=
-text.c2.push_ifconfig_ipv6_defined)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+dco_delete_iroutes_v6(struct multi_context *m, struct multi_instance *mi)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX) || defined(T=
-ARGET_FREEBSD) || defined(_WIN32)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (!dco_enabled(&amp;m-&gt;top.options))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    ASSERT(TUNNEL_TYPE(mi-&gt;context.c1.tuntap) =3D=3D DEV_TYPE_TU=
-N);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct context *c =3D &amp;mi-&=
-gt;context;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.push_ifcon=
-fig_ipv6_defined)</span><br><span>     {</span><br><span>         for (cons=
-t struct iroute_ipv6 *ir6 =3D c-&gt;options.iroutes_ipv6; ir6; ir6 =3D ir6-=
-&gt;next)</span><br><span>         {</span><br><span>@@ -770,7 +819,7 @@</s=
-pan><br><span>             dco_win_del_iroute_ipv6(&amp;c-&gt;c1.tuntap-&gt=
-;dco, ir6-&gt;network, ir6-&gt;netbits);</span><br><span> #else</span><br><=
-span>             net_route_v6_del(&amp;m-&gt;top.net_ctx, &amp;ir6-&gt;net=
-work, ir6-&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                             &amp;mi-&gt;context.c2.push_ifconfig_ipv6_loc=
-al, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                             &amp;c-&gt;c2.push_ifconfi=
-g_ipv6_local, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span>         =
-                     DCO_IROUTE_METRIC);</span><br><span> #endif</span><br>=
-<span>         }</span><br><span>@@ -778,7 +827,7 @@</span><br><span>      =
-   /* Checked if we added a host route as the assigned client IP address wa=
-s</span><br><span>          * outside the --ifconfig-ipv6 tun interface con=
-fig */</span><br><span> #if !defined(_WIN32)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        struct in6_addr *dest =3D &amp;mi-&gt;contex=
-t.c2.push_ifconfig_ipv6_local;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        struct in6_addr *dest =3D &amp;c-&gt;c2.push_ifconfig_ip=
-v6_local;</span><br><span>         if (multi_check_push_ifconfig_ipv6_extra=
-_route(mi, dest))</span><br><span>         {</span><br><span>             /=
-* On windows we do not install these routes, so we also do not need to dele=
-te them */</span><br><span>diff --git a/src/openvpn/dco.h b/src/openvpn/dco=
-.h</span><br><span>index cd6e32a..3bc28a8 100644</span><br><span>--- a/src/=
-openvpn/dco.h</span><br><span>+++ b/src/openvpn/dco.h</span><br><span>@@ -1=
-91,6 +191,30 @@</span><br><span>                  int keepalive_timeout, in=
-t mss);</span><br><span> </span><br><span> /**</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * Update the peer&#39;s virtual address(es) in =
-the DCO to the current value(s)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
-aram dco       DCO device contect</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @param peerid    the ID of the peer to be modified</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param vpn_ipv4  new IPv=
-4 or NULL to remove the outdated one, only used when `(1 &lt;&lt; AF_INET)`=
- flag is present</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param vpn_ipv6  new IPv6 or NULL to remove the outdated one, only used whe=
-n `(1 &lt;&lt; AF_INET6)` flag is present</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * @param flags     `(1 &lt;&lt; AF_INET)`, `(1 &lt;&=
-lt; AF_INET6)` or `(1 &lt;&lt; AF_INET) | (1 &lt;&lt; AF_INET6)` depending =
-on wich address has changed</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @return int      the DCO message status on success or a negative=
+<p>mrbff <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1450?usp=3Demail">View Change</=
+a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">PUSH_UPDATE: add DCO and iroutes support on server<br><=
+br>Renamed update_vhash() to update_vaddr().<br>Moved the -ifconfig logic f=
+rom send_single_push_update() to update_vaddr().<br>Changed canary logic to=
+ use the current value of ifconfig (if present) as<br>canary. Added logic i=
+n the update_vaddr() to not unlearn and re-learn the same<br>address.<br><b=
+r>Added logic to update the peer&#39;s virtual address(es) in the DCO to th=
+e current<br>value(s) after sending a PUSH_UPDATE message on Linux.<br>Adde=
+d dco_multi_update_peer_addr() and dco_update_peer_addr() to do so.<br><br>=
+Added logic to update iroutes after changing the peer&#39;s virtual address=
+(es).<br>Divided dco_delete_iroutes() in _v4() and _v6() to better updating=
+ iroutes.<br><br>Change-Id: I88f37e47026a7d7ea0f7c6bde1d79d32c14e5297<br>Si=
+gned-off-by: Marco Baffo &lt;marco@...2726...&gt;<br>---<br>M src/openvpn/d=
+co.c<br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn=
+/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/multi.c<br>M src/o=
+penvpn/multi.h<br>M src/openvpn/push_util.c<br>M tests/unit_tests/openvpn/t=
+est_push_update_msg.c<br>9 files changed, 377 insertions(+), 142 deletions(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openv=
+pn refs/changes/50/1450/3</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.c b/src/open=
+vpn/dco.c</span><br><span>index 6a1a5c9..eccfac2 100644</span><br><span>---=
+ a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span><br><spa=
+n>@@ -658,6 +658,41 @@</span><br><span>     return 0;</span><br><span> }</s=
+pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+int<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_multi_update_pee=
+r_addr(struct multi_context *m, struct multi_instance *mi, int flags)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!flags)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct context =
+*c =3D &amp;mi-&gt;context;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    int peer_id =3D c-&gt;c2.tls_multi-&gt;dco_peer_id;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    /* In server mode we need to fetch the remote =
+addresses from the push config */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    struct in_addr vpn_ip4 =3D { 0 };</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct in_addr *vpn_addr4 =3D NULL;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.push=
+_ifconfig_defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        vpn_ip4=
+.s_addr =3D htonl(c-&gt;c2.push_ifconfig_local);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        vpn_addr4 =3D &amp;vpn_ip4;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct in6_addr *vpn_addr6 =3D NULL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.push_ifconfig_ipv6_defin=
+ed)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        vpn_addr6 =3D &amp;c-&=
+gt;c2.push_ifconfig_ipv6_local;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D dco_u=
+pdate_peer_addr(&amp;c-&gt;c1.tuntap-&gt;dco, peer_id, vpn_addr4, vpn_addr6=
+, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (re=
+t &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        return ret;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span> void</span><br><span> dco_install_iroute(struct multi_context *=
+m, struct multi_instance *mi, struct mroute_addr *addr)</span><br><span> {<=
+/span><br><span>@@ -723,7 +758,7 @@</span><br><span> }</span><br><span> </s=
+pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dc=
+o_delete_iroutes(struct multi_context *m, struct multi_instance *mi)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+dco_delete_iroutes_v4(stru=
+ct multi_context *m, struct multi_instance *mi)</span><br><span> {</span><b=
+r><span> #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_W=
+IN32)</span><br><span>     if (!dco_enabled(&amp;m-&gt;top.options))</span>=
+<br><span>@@ -734,7 +769,7 @@</span><br><span> </span><br><span>     struct=
+ context *c =3D &amp;mi-&gt;context;</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    if (mi-&gt;context.c2.push_ifconfig_de=
+fined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt=
+;c2.push_ifconfig_defined)</span><br><span>     {</span><br><span>         =
+for (const struct iroute *ir =3D c-&gt;options.iroutes; ir; ir =3D ir-&gt;n=
+ext)</span><br><span>         {</span><br><span>@@ -742,7 +777,7 @@</span><=
+br><span>             dco_win_del_iroute_ipv4(&amp;c-&gt;c1.tuntap-&gt;dco,=
+ htonl(ir-&gt;network), ir-&gt;netbits);</span><br><span> #else</span><br><=
+span>             net_route_v4_del(&amp;m-&gt;top.net_ctx, &amp;ir-&gt;netw=
+ork, ir-&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                            &amp;mi-&gt;context.c2.push_ifconfig_local, c-&=
+gt;c1.tuntap-&gt;actual_name, 0,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                             &amp;c-&gt;c2.push_ifconfig_local=
+, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span>                     =
+         DCO_IROUTE_METRIC);</span><br><span> #endif</span><br><span>      =
+   }</span><br><span>@@ -750,7 +785,7 @@</span><br><span> #if !defined(_WIN=
+32)</span><br><span>         /* Check if we added a host route as the assig=
+ned client IP address was</span><br><span>          * not in the on link sc=
+ope defined by --ifconfig */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        in_addr_t ifconfig_local =3D mi-&gt;context.c2.push_ifconfig=
+_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        in_a=
+ddr_t ifconfig_local =3D c-&gt;c2.push_ifconfig_local;</span><br><span> </s=
+pan><br><span>         if (multi_check_push_ifconfig_extra_route(mi, htonl(=
+ifconfig_local)))</span><br><span>         {</span><br><span>@@ -761,8 +796=
+,22 @@</span><br><span>         }</span><br><span> #endif</span><br><span> =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if d=
+efined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32) */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (mi-&gt;context.c2.p=
+ush_ifconfig_ipv6_defined)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_dele=
+te_iroutes_v6(struct multi_context *m, struct multi_instance *mi)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX) || defined(TARGET_FRE=
+EBSD) || defined(_WIN32)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (!dco_enabled(&amp;m-&gt;top.options))</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   ASSERT(TUNNEL_TYPE(mi-&gt;context.c1.tuntap) =3D=3D DEV_TYPE_TUN);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    struct context *c =3D &amp;mi-&gt;contex=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;c2.push_ifconfig_ipv6_=
+defined)</span><br><span>     {</span><br><span>         for (const struct =
+iroute_ipv6 *ir6 =3D c-&gt;options.iroutes_ipv6; ir6; ir6 =3D ir6-&gt;next)=
+</span><br><span>         {</span><br><span>@@ -770,7 +819,7 @@</span><br><=
+span>             dco_win_del_iroute_ipv6(&amp;c-&gt;c1.tuntap-&gt;dco, ir6=
+-&gt;network, ir6-&gt;netbits);</span><br><span> #else</span><br><span>    =
+         net_route_v6_del(&amp;m-&gt;top.net_ctx, &amp;ir6-&gt;network, ir6=
+-&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                     &amp;mi-&gt;context.c2.push_ifconfig_ipv6_local, c-&gt=
+;c1.tuntap-&gt;actual_name, 0,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                             &amp;c-&gt;c2.push_ifconfig_ipv6_lo=
+cal, c-&gt;c1.tuntap-&gt;actual_name, 0,</span><br><span>                  =
+            DCO_IROUTE_METRIC);</span><br><span> #endif</span><br><span>   =
+      }</span><br><span>@@ -778,7 +827,7 @@</span><br><span>         /* Che=
+cked if we added a host route as the assigned client IP address was</span><=
+br><span>          * outside the --ifconfig-ipv6 tun interface config */</s=
+pan><br><span> #if !defined(_WIN32)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        struct in6_addr *dest =3D &amp;mi-&gt;context.c2.push=
+_ifconfig_ipv6_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        struct in6_addr *dest =3D &amp;c-&gt;c2.push_ifconfig_ipv6_local;=
+</span><br><span>         if (multi_check_push_ifconfig_ipv6_extra_route(mi=
+, dest))</span><br><span>         {</span><br><span>             /* On wind=
+ows we do not install these routes, so we also do not need to delete them *=
+/</span><br><span>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span>=
+<br><span>index cd6e32a..3bc28a8 100644</span><br><span>--- a/src/openvpn/d=
+co.h</span><br><span>+++ b/src/openvpn/dco.h</span><br><span>@@ -191,6 +191=
+,30 @@</span><br><span>                  int keepalive_timeout, int mss);</=
+span><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Update the peer&#39;s virtual address(es) in the DCO t=
+o the current value(s)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param dco =
+      DCO device contect</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * @param peerid    the ID of the peer to be modified</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * @param vpn_ipv4  new IPv4 or NULL=
+ to remove the outdated one, only used when `(1 &lt;&lt; AF_INET)` flag is =
+present</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param vp=
+n_ipv6  new IPv6 or NULL to remove the outdated one, only used when `(1 &lt=
+;&lt; AF_INET6)` flag is present</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * @param flags     `(1 &lt;&lt; AF_INET)`, `(1 &lt;&lt; AF_IN=
+ET6)` or `(1 &lt;&lt; AF_INET) | (1 &lt;&lt; AF_INET6)` depending on wich a=
+ddress has changed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* @return int      the DCO message status on success or a negative error co=
+de otherwise</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_addr(dco_context_t *dco=
+, unsigned int peerid, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6,=
+ int flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Update the peer&#39;s virtual address(=
+es) in the DCO to the current value(s)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * @param m         server multi context</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @param mi        peer multi instnace</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @param flags     `(1 &lt;&lt;=
+ AF_INET)`, `(1 &lt;&lt; AF_INET6)` or `(1 &lt;&lt; AF_INET) | (1 &lt;&lt; =
+AF_INET6)` depending on wich address has changed</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * @return int      0 on success or a negative=
  error code otherwise</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
 >+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_addr(dco_conte=
-xt_t *dco, unsigned int peerid, struct in_addr *vpn_ipv4, struct in6_addr *=
-vpn_ipv6, int flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * Update the peer&#39;s virtual =
-address(es) in the DCO to the current value(s)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * @param m         server multi context</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * @param mi        peer multi instnace</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param flags     `(1 =
-&lt;&lt; AF_INET)`, `(1 &lt;&lt; AF_INET6)` or `(1 &lt;&lt; AF_INET) | (1 &=
-lt;&lt; AF_INET6)` depending on wich address has changed</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @return int      0 on success or a =
-negative error code otherwise</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_multi_update_peer_=
-addr(struct multi_context *m, struct multi_instance *mi, int flags);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+/**</span><br><span>  * Remove a peer from DC=
-O</span><br><span>  *</span><br><span>  * @param c         the main instanc=
-e context of the peer to remove</span><br><span>@@ -218,12 +242,20 @@</span=
-><br><span>                         struct mroute_addr *addr);</span><br><s=
-pan> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * Remove all routes added through the specified client</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * Remove all IPv4 routes added th=
-rough the specified client</span><br><span>  *</span><br><span>  * @param m=
-         the server context</span><br><span>  * @param mi        the client=
- instance for which routes have to be removed</span><br><span>  */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-void dco_delete_iroutes(struct=
- multi_context *m, struct multi_instance *mi);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+void dco_delete_iroutes_v4(struct multi_context =
-*m, struct multi_instance *mi);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Remove all IPv6 rout=
-es added through the specified client</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @param m         the server context</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param mi        the client instance for which route=
-s have to be removed</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void dco_delete=
-_iroutes_v6(struct multi_context *m, struct multi_instance *mi);</span><br>=
-<span> </span><br><span> /**</span><br><span>  * Update traffic statistics =
-for all peers</span><br><span>@@ -361,7 +393,12 @@</span><br><span> }</span=
-><br><span> </span><br><span> static inline void</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-dco_delete_iroutes(struct multi_context *m, stru=
-ct multi_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+dco_delete_iroutes_v4(struct multi_context *m, struct multi_instance *mi=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+static inline void</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+dco_delete_iroutes_v6(struct multi_context *m, struct multi_instance *mi)<=
-/span><br><span> {</span><br><span> }</span><br><span> </span><br><span>dif=
-f --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><=
-span>index d1ad092..6bee21b 100644</span><br><span>--- a/src/openvpn/dco_fr=
-eebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ =
--559,6 +559,12 @@</span><br><span>     return ret;</span><br><span> }</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_addr(dc=
-o_context_t *dco, unsigned int peerid, struct in_addr *vpn_ipv4, struct in6=
-_addr *vpn_ipv6, int flags)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
- 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span=
-><br><span> dco_update_peer_stat(struct multi_context *m, uint32_t peerid, =
-const nvlist_t *nvl)</span><br><span> {</span><br><span>diff --git a/src/op=
-envpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>index 2664029..=
-eb9e4f9 100644</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><spa=
-n>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -684,6 +684,50 @@</span>=
-<br><span>     return ret;</span><br><span> }</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+dco_update_peer_addr(dco_context_t *dco, unsign=
-ed int peerid, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6, int fla=
-gs)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: pee=
-r-id %d&quot;, __func__, peerid);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (!flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, O=
-VPN_CMD_PEER_SET);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (!nl_msg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return -EN=
-OMEM;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    struct nlattr *attr =3D nla_nest_start(nl_m=
-sg, OVPN_A_PEER);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  int ret =3D -EMSGSIZE;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, peerid);</span><br><span style=
+<span style=3D"color: hsl(120, 100%, 40%);">+dco_multi_update_peer_addr(str=
+uct multi_context *m, struct multi_instance *mi, int flags);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/**</span><br><span>  * Remove a peer from DCO</span>=
+<br><span>  *</span><br><span>  * @param c         the main instance contex=
+t of the peer to remove</span><br><span>@@ -218,12 +242,20 @@</span><br><sp=
+an>                         struct mroute_addr *addr);</span><br><span> </s=
+pan><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+Remove all routes added through the specified client</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Remove all IPv4 routes added through t=
+he specified client</span><br><span>  *</span><br><span>  * @param m       =
+  the server context</span><br><span>  * @param mi        the client instan=
+ce for which routes have to be removed</span><br><span>  */</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-void dco_delete_iroutes(struct multi_=
+context *m, struct multi_instance *mi);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+void dco_delete_iroutes_v4(struct multi_context *m, str=
+uct multi_instance *mi);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * Remove all IPv6 routes adde=
+d through the specified client</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
+ram m         the server context</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * @param mi        the client instance for which routes have =
+to be removed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+void dco_delete_iroute=
+s_v6(struct multi_context *m, struct multi_instance *mi);</span><br><span> =
+</span><br><span> /**</span><br><span>  * Update traffic statistics for all=
+ peers</span><br><span>@@ -361,7 +393,12 @@</span><br><span> }</span><br><s=
+pan> </span><br><span> static inline void</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-dco_delete_iroutes(struct multi_context *m, struct mult=
+i_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_=
+delete_iroutes_v4(struct multi_context *m, struct multi_instance *mi)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic inline void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_=
+delete_iroutes_v6(struct multi_context *m, struct multi_instance *mi)</span=
+><br><span> {</span><br><span> }</span><br><span> </span><br><span>diff --g=
+it a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span>=
+index d1ad092..af20ab8 100644</span><br><span>--- a/src/openvpn/dco_freebsd=
+.c</span><br><span>+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -559,=
+6 +559,12 @@</span><br><span>     return ret;</span><br><span> }</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_addr(dco_con=
+text_t *dco, unsigned int peerid, struct in_addr *vpn_ipv4, struct in6_addr=
+ *vpn_ipv6, int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br=
+><span> dco_update_peer_stat(struct multi_context *m, uint32_t peerid, cons=
+t nvlist_t *nvl)</span><br><span> {</span><br><span>diff --git a/src/openvp=
+n/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>index 2664029..eb9e=
+4f9 100644</span><br><span>--- a/src/openvpn/dco_linux.c</span><br><span>++=
++ b/src/openvpn/dco_linux.c</span><br><span>@@ -684,6 +684,50 @@</span><br>=
+<span>     return ret;</span><br><span> }</span><br><span> </span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+dco_update_peer_addr(dco_context_t *dco, unsigned i=
+nt peerid, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6, int flags)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: peer-id=
+ %d&quot;, __func__, peerid);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!=
+flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVP=
+N_CMD_PEER_SET);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (!nl_msg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return -ENOM=
+EM;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    struct nlattr *attr =3D nla_nest_start(nl_msg=
+, OVPN_A_PEER);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+int ret =3D -EMSGSIZE;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    NLA_PUT_U32(nl_msg, OVPN_A_PEER_ID, peerid);</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+    if (flags &amp; (1 &lt;&lt; AF_INET))</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
@@ -1234,36 +1233,36 @@ n parses the reply provided by the kernel to the CTRL_CMD_GETFAMILY</span><=
 br><span>  * message. We parse the reply and we retrieve the multicast grou=
 p ID associated</span><br><span>  * with the &quot;ovpn-dco&quot; netlink f=
 amily.</span><br><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco=
-_win.c</span><br><span>index 94f043f..6a1806d 100644</span><br><span>--- a/=
+_win.c</span><br><span>index 94f043f..1a11927 100644</span><br><span>--- a/=
 src/openvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br=
 ><span>@@ -526,6 +526,12 @@</span><br><span> }</span><br><span> </span><br>=
 <span> int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_updat=
 e_peer_addr(dco_context_t *dco, unsigned int peerid, struct in_addr *vpn_ip=
 v4, struct in6_addr *vpn_ipv6, int flags)</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+int</span><br><span> dco_new_key(dco_con=
-text_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,</span><br=
-><span>             const uint8_t *encrypt_key, const uint8_t *encrypt_iv, =
-const uint8_t *decrypt_key,</span><br><span>             const uint8_t *dec=
-rypt_iv, const char *ciphername, bool epoch)</span><br><span>diff --git a/s=
-rc/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 329d0a3..878=
-871f 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b=
-/src/openvpn/multi.c</span><br><span>@@ -476,6 +476,40 @@</span><br><span> =
-    set_prefix(mi);</span><br><span> }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+multi_del_iroutes_v4(struct multi_context *m, =
-struct multi_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (TUN=
-NEL_TYPE(mi-&gt;context.c1.tuntap) !=3D DEV_TYPE_TUN)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct =
-iroute *ir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    dco_delete_iroutes_v4(m=
-, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (ir =
+;">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+int</span><br><span> dco_new_key(dco_co=
+ntext_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,</span><b=
+r><span>             const uint8_t *encrypt_key, const uint8_t *encrypt_iv,=
+ const uint8_t *decrypt_key,</span><br><span>             const uint8_t *de=
+crypt_iv, const char *ciphername, bool epoch)</span><br><span>diff --git a/=
+src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 329d0a3..87=
+8871f 100644</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ =
+b/src/openvpn/multi.c</span><br><span>@@ -476,6 +476,40 @@</span><br><span>=
+     set_prefix(mi);</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+multi_del_iroutes_v4(struct multi_context *m,=
+ struct multi_instance *mi)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (TU=
+NNEL_TYPE(mi-&gt;context.c1.tuntap) !=3D DEV_TYPE_TUN)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct=
+ iroute *ir;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    dco_delete_iroutes_v4(=
+m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (ir =
 =3D mi-&gt;context.options.iroutes; ir !=3D NULL; ir =3D ir-&gt;next)</span=
 ><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+        mroute_helper_del_iroute46(m-&g=
@@ -1770,13 +1769,13 @@ ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
 penvpn.net/c/openvpn/+/1450?usp=3Demail"/><meta itemprop=3D"name" content=
 =3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I88f37e47026a7d7ea0f7c6bde1d=
 79d32c14e5297 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1450 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@...2726...&gt; <=
 /div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -1788,5 +1787,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---KPOuYXB9uPw=--
+--sMaabhtdOsI=--
 
