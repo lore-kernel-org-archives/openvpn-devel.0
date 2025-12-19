@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 19 Dec 2025 15:37:37 +0000
-References: <gerrit.1766158651000.I1f5724476862935284f620c54afa510eea03e3f9@...2715...>
+Date: Fri, 19 Dec 2025 17:29:43 +0000
+References: <gerrit.1766165378000.Ic1e84ef6fb613851861a695bfbdbc1c32970a398@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <60c85dd0967e811ecbdc91f12d254fda46f90b00-HTML@...2715...>
+Message-ID: <6452df85b8afaa0028776d20a28bda5e468ad786-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hLZ9uwFdF8I="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove NTLM support
+Content-Type: multipart/alternative; boundary="GQGNEDfpdpE="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove --mtu-test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,7 +20,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hLZ9uwFdF8I=
+--GQGNEDfpdpE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -31,1876 +31,1173 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1454?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Remove NTLM support
+Change subject: Remove --mtu-test
 ......................................................................
 
-Remove NTLM support
+Remove --mtu-test
 
-Since Microsoft has abandonded this I think it is time
-for us to do the same for OpenVPN 2.8.
+This option doesn't seem to have worked right at least since
+the merge of commit fb76954a232decc86e071a76861c1e4fdd2507ab
+which was merged before 2.6.0. Clearly noone cares enough
+about this feature maintain or even test it. So let's not
+pretend and get rid of it.
 
-Leaves a stub ntlm_support in to make cross-branch
-t_client.rc easier to maintain.
-
-Change-Id: I1f5724476862935284f620c54afa510eea03e3f9
+Change-Id: Ic1e84ef6fb613851861a695bfbdbc1c32970a398
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M CMakeLists.txt
-M config.h.cmake.in
-M configure.ac
-M doc/doxygen/openvpn.doxyfile.in
-M doc/man-sections/proxy-options.rst
-M src/openvpn/Makefile.am
-D src/openvpn/ntlm.c
-D src/openvpn/ntlm.h
+M doc/man-sections/link-options.rst
+M doc/man-sections/unsupported-options.rst
+M src/openvpn/forward.c
+M src/openvpn/init.c
+M src/openvpn/occ.c
+M src/openvpn/occ.h
+M src/openvpn/openvpn.h
 M src/openvpn/options.c
-M src/openvpn/proxy.c
-M src/openvpn/proxy.h
-M src/openvpn/syshead.h
-M tests/Makefile.am
-M tests/ntlm_support.c
-14 files changed, 9 insertions(+), 625 deletions(-)
+8 files changed, 5 insertions(+), 338 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1453/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/54/1454/1
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bdad173..f96103c 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -506,8 +506,6 @@
-     src/openvpn/multi.h
-     src/openvpn/multi_io.h
-     src/openvpn/multi_io.c
--    src/openvpn/ntlm.c
--    src/openvpn/ntlm.h
-     src/openvpn/occ.c
-     src/openvpn/occ.h
-     src/openvpn/openvpn.c
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 01bbadc..cb0169d 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -35,9 +35,6 @@
- /* Enable dns-updown script hook */
- #cmakedefine ENABLE_DNS_UPDOWN
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opti=
+ons.rst
+index edda1ca..062be45 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -222,13 +222,6 @@
 
--/* Enable NTLMv2 proxy support */
--#define ENABLE_NTLM 1
--
- /* Enable management server capability */
- #define ENABLE_MANAGEMENT 1
+   :code:`yes`     Always DF (Don't Fragment)
 
-diff --git a/configure.ac b/configure.ac
-index f363e0f..50a3cea 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -102,13 +102,6 @@
- )
+---mtu-test
+-  To empirically measure MTU on connection startup, add the ``--mtu-test``
+-  option to your configuration. OpenVPN will send ping packets of various
+-  sizes to the remote peer and measure the largest packets which were
+-  successfully received. The ``--mtu-test`` process normally takes about 3
+-  minutes to complete.
+-
+ --nobind
+   Do not bind to local address and port. The IP stack will allocate a
+   dynamic port for returning packets. Since the value of the dynamic port
+diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/un=
+supported-options.rst
+index f1332f3..d1bcf6e 100644
+--- a/doc/man-sections/unsupported-options.rst
++++ b/doc/man-sections/unsupported-options.rst
+@@ -35,6 +35,9 @@
+ --max-routes
+   Removed in OpenVPN 2.4.  The limit was removed.
 
- AC_ARG_ENABLE(
--	[ntlm],
--	[AS_HELP_STRING([--disable-ntlm], [disable NTLMv2 proxy support @<:@defau=
-lt=3Dyes@:>@])],
--	,
--	[enable_ntlm=3D"yes"]
--)
--
--AC_ARG_ENABLE(
- 	[plugins],
- 	[AS_HELP_STRING([--disable-plugins], [disable plug-in support @<:@default=
-=3Dyes@:>@])],
- 	,
-@@ -1201,7 +1194,6 @@
- test "${enable_fragment}" =3D "yes" && AC_DEFINE([ENABLE_FRAGMENT], [1], [=
-Enable internal fragmentation support])
- test "${enable_port_share}" =3D "yes" && AC_DEFINE([ENABLE_PORT_SHARE], [1=
-], [Enable TCP Server port sharing])
- test "${enable_dns_updown_by_default}" =3D "yes" && AC_DEFINE([ENABLE_DNS_=
-UPDOWN_BY_DEFAULT], [1], [Enable dns-updown hook by default])
--test "${enable_ntlm}" =3D "yes" && AC_DEFINE([ENABLE_NTLM], [1], [Enable N=
-TLMv2 proxy support])
- test "${enable_crypto_ofb_cfb}" =3D "yes" && AC_DEFINE([ENABLE_OFB_CFB_MOD=
-E], [1], [Enable OFB and CFB cipher modes])
- OPTIONAL_CRYPTO_CFLAGS=3D"${OPTIONAL_CRYPTO_CFLAGS} ${CRYPTO_CFLAGS}"
- OPTIONAL_CRYPTO_LIBS=3D"${OPTIONAL_CRYPTO_LIBS} ${CRYPTO_LIBS}"
-diff --git a/doc/doxygen/openvpn.doxyfile.in b/doc/doxygen/openvpn.doxyfile=
-.in
-index bdbc608..5b8e262 100644
---- a/doc/doxygen/openvpn.doxyfile.in
-+++ b/doc/doxygen/openvpn.doxyfile.in
-@@ -2212,7 +2212,6 @@
- # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
++--mtu-test
++  This option was broken in OpenVPN 2.6 and was removed in OpenVPN 2.7.
++
+ --ncp-disable
+   Removed in OpenVPN 2.6.  This option mainly served a role as debug option
+   when NCP was first introduced.  It should no longer be necessary.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 492e667..586809a 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -810,9 +810,6 @@
+     /* Should we send an OCC_REQUEST message? */
+     check_send_occ_req(c);
 
- PREDEFINED             =3D _WIN32 \
--                         NTLM \
-                          USE_LZO \
-                          ENABLE_FRAGMENT \
-                          P2MP \
-diff --git a/doc/man-sections/proxy-options.rst b/doc/man-sections/proxy-op=
-tions.rst
-index 38c4578..7123838 100644
---- a/doc/man-sections/proxy-options.rst
-+++ b/doc/man-sections/proxy-options.rst
-@@ -7,7 +7,7 @@
-   ``--http-proxy-user-pass`` option (See `INLINE FILE SUPPORT`_).
+-    /* Should we send an MTU load test? */
+-    check_send_occ_load_test(c);
+-
+     /* Should we send an OCC_EXIT message to remote? */
+     if (c->c2.explicit_exit_notification_time_wait)
+     {
+@@ -993,11 +990,6 @@
+     {
+         c->c2.link_read_bytes +=3D c->c2.buf.len;
+         link_read_bytes_global +=3D c->c2.buf.len;
+-        c->c2.original_recv_size =3D c->c2.buf.len;
+-    }
+-    else
+-    {
+-        c->c2.original_recv_size =3D 0;
+     }
 
-   The last optional argument is an ``auth-method`` which should be one
--  of :code:`none`, :code:`basic`, or :code:`ntlm2`.
-+  of :code:`none`, :code:`basic`.
+ #ifdef ENABLE_DEBUG
+@@ -1168,8 +1160,6 @@
+         if (c->c2.buf.len > 0)
+         {
+             c->c2.link_read_bytes_auth +=3D c->c2.buf.len;
+-            c->c2.max_recv_size_local =3D
+-                max_int(c->c2.original_recv_size, c->c2.max_recv_size_loca=
+l);
+         }
 
-   HTTP Digest authentication is supported as well, but only via the
-   :code:`auto` or :code:`auto-nct` flags (below).  This must replace
-@@ -31,8 +31,6 @@
-      http-proxy proxy.example.net 3128 authfile.txt
-      # basic authentication, ask user for credentials
-      http-proxy proxy.example.net 3128 stdin
--     # NTLM authentication, load credentials from file
--     http-proxy proxy.example.net 3128 authfile.txt ntlm2
-      # determine which authentication is required, ask user for credentials
-      http-proxy proxy.example.net 3128 auto
-      # determine which authentication is required, but reject basic
-@@ -47,9 +45,8 @@
-      password
-      </http-proxy-user-pass>
+         /* Did we just receive an openvpn ping packet? */
+@@ -1825,7 +1815,6 @@
 
--  Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.
--  :code:`ntlm` now is an alias for :code:`ntlm2`; i.e. OpenVPN will always
--  attempt to use NTLMv2 authentication.
-+  Note that support for NTLMv1 proxies was removed with OpenVPN 2.7
-+  and support for NTLMv2 proxies was removed with OpenVPN 2.8.
+             if (size > 0)
+             {
+-                c->c2.max_send_size_local =3D max_int(size, c->c2.max_send=
+_size_local);
+                 c->c2.link_write_bytes +=3D size;
+                 link_write_bytes_global +=3D size;
+             }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index ee198ce..ee5b427 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1378,12 +1378,6 @@
+             event_timeout_init(&c->c2.occ_interval, OCC_INTERVAL_SECONDS, =
+now);
+         }
 
- --http-proxy-user-pass userpass
-   Overwrite the username/password information for ``--http-proxy``. If spe=
-cified
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index db87dfc..8443807 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -99,7 +99,6 @@
- 	networking_iproute2.c networking_iproute2.h \
- 	networking_sitnl.c networking_sitnl.h \
- 	networking.h \
--	ntlm.c ntlm.h \
- 	occ.c occ.h \
- 	openssl_compat.h \
- 	pkcs11.c pkcs11.h pkcs11_backend.h \
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-deleted file mode 100644
-index 8e913dc..0000000
---- a/src/openvpn/ntlm.c
-+++ /dev/null
-@@ -1,395 +0,0 @@
--/*
-- *  ntlm proxy support for OpenVPN
-- *
-- *  Copyright (C) 2004 William Preston
-- *
-- *  *NTLMv2 support and domain name parsing by Miroslav Zajic, Nextsoft s.=
-r.o.*
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License as published by
-- *  the Free Software Foundation; either version 2 of the License, or
-- *  (at your option) any later version.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, see <https://www.gnu.org/licenses/>.
-- */
+-        if (c->options.mtu_test)
+-        {
+-            event_timeout_init(&c->c2.occ_mtu_load_test_interval, OCC_MTU_=
+LOAD_INTERVAL_SECONDS,
+-                               now);
+-        }
 -
--#ifdef HAVE_CONFIG_H
--#include "config.h"
--#endif
+         /* initialize packet_id persistence timer */
+         if (c->options.packet_id_file)
+         {
+diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
+index 78013ae..6730c39 100644
+--- a/src/openvpn/occ.c
++++ b/src/openvpn/occ.c
+@@ -54,92 +54,6 @@
+ const uint8_t occ_magic[] =3D { 0x28, 0x7f, 0x34, 0x6b, 0xd4, 0xef, 0x7a, =
+0x81,
+                               0x2d, 0x56, 0xb8, 0xd3, 0xaf, 0xc5, 0x45, 0x=
+9c };
+
+-static const struct mtu_load_test mtu_load_test_sequence[] =3D {
 -
--#include "syshead.h"
+-    { OCC_MTU_LOAD_REQUEST, -1000 },
+-    { OCC_MTU_LOAD, -1000 },
+-    { OCC_MTU_LOAD_REQUEST, -1000 },
+-    { OCC_MTU_LOAD, -1000 },
+-    { OCC_MTU_LOAD_REQUEST, -1000 },
+-    { OCC_MTU_LOAD, -1000 },
 -
--#if NTLM
+-    { OCC_MTU_LOAD_REQUEST, -750 },
+-    { OCC_MTU_LOAD, -750 },
+-    { OCC_MTU_LOAD_REQUEST, -750 },
+-    { OCC_MTU_LOAD, -750 },
+-    { OCC_MTU_LOAD_REQUEST, -750 },
+-    { OCC_MTU_LOAD, -750 },
 -
--#include "common.h"
--#include "buffer.h"
--#include "misc.h"
--#include "socket.h"
--#include "fdmisc.h"
--#include "proxy.h"
--#include "ntlm.h"
--#include "base64.h"
--#include "crypto.h"
+-    { OCC_MTU_LOAD_REQUEST, -500 },
+-    { OCC_MTU_LOAD, -500 },
+-    { OCC_MTU_LOAD_REQUEST, -500 },
+-    { OCC_MTU_LOAD, -500 },
+-    { OCC_MTU_LOAD_REQUEST, -500 },
+-    { OCC_MTU_LOAD, -500 },
 -
--#include "memdbg.h"
+-    { OCC_MTU_LOAD_REQUEST, -400 },
+-    { OCC_MTU_LOAD, -400 },
+-    { OCC_MTU_LOAD_REQUEST, -400 },
+-    { OCC_MTU_LOAD, -400 },
+-    { OCC_MTU_LOAD_REQUEST, -400 },
+-    { OCC_MTU_LOAD, -400 },
 -
+-    { OCC_MTU_LOAD_REQUEST, -300 },
+-    { OCC_MTU_LOAD, -300 },
+-    { OCC_MTU_LOAD_REQUEST, -300 },
+-    { OCC_MTU_LOAD, -300 },
+-    { OCC_MTU_LOAD_REQUEST, -300 },
+-    { OCC_MTU_LOAD, -300 },
 -
--/* 64bit datatype macros */
--#ifdef _MSC_VER
--/* MS compilers */
--#define UINTEGER64 __int64
--#define UINT64(c)  c##Ui64
--#else
--/* Non MS compilers */
--#define UINTEGER64 unsigned long long
--#define UINT64(c)  c##LL
--#endif
+-    { OCC_MTU_LOAD_REQUEST, -200 },
+-    { OCC_MTU_LOAD, -200 },
+-    { OCC_MTU_LOAD_REQUEST, -200 },
+-    { OCC_MTU_LOAD, -200 },
+-    { OCC_MTU_LOAD_REQUEST, -200 },
+-    { OCC_MTU_LOAD, -200 },
 -
+-    { OCC_MTU_LOAD_REQUEST, -150 },
+-    { OCC_MTU_LOAD, -150 },
+-    { OCC_MTU_LOAD_REQUEST, -150 },
+-    { OCC_MTU_LOAD, -150 },
+-    { OCC_MTU_LOAD_REQUEST, -150 },
+-    { OCC_MTU_LOAD, -150 },
 -
--static void
--gen_md4_hash(const uint8_t *data, int data_len, uint8_t *result)
--{
--    /* result is 16 byte md4 hash */
--    uint8_t md[MD4_DIGEST_LENGTH];
+-    { OCC_MTU_LOAD_REQUEST, -100 },
+-    { OCC_MTU_LOAD, -100 },
+-    { OCC_MTU_LOAD_REQUEST, -100 },
+-    { OCC_MTU_LOAD, -100 },
+-    { OCC_MTU_LOAD_REQUEST, -100 },
+-    { OCC_MTU_LOAD, -100 },
 -
--    md_full("MD4", data, data_len, md);
--    memcpy(result, md, MD4_DIGEST_LENGTH);
--}
+-    { OCC_MTU_LOAD_REQUEST, -50 },
+-    { OCC_MTU_LOAD, -50 },
+-    { OCC_MTU_LOAD_REQUEST, -50 },
+-    { OCC_MTU_LOAD, -50 },
+-    { OCC_MTU_LOAD_REQUEST, -50 },
+-    { OCC_MTU_LOAD, -50 },
 -
--static void
--gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key, uint8_=
-t *result)
--{
--    hmac_ctx_t *hmac_ctx =3D hmac_ctx_new();
+-    { OCC_MTU_LOAD_REQUEST, 0 },
+-    { OCC_MTU_LOAD, 0 },
+-    { OCC_MTU_LOAD_REQUEST, 0 },
+-    { OCC_MTU_LOAD, 0 },
+-    { OCC_MTU_LOAD_REQUEST, 0 },
+-    { OCC_MTU_LOAD, 0 },
 -
--    hmac_ctx_init(hmac_ctx, key, "MD5");
--    hmac_ctx_update(hmac_ctx, data, data_len);
--    hmac_ctx_final(hmac_ctx, result);
--    hmac_ctx_cleanup(hmac_ctx);
--    hmac_ctx_free(hmac_ctx);
--}
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
+-    { OCC_MTU_REQUEST, 0 },
 -
+-    { -1, 0 }
+-};
+-
+ void
+ check_send_occ_req_dowork(struct context *c)
+ {
+@@ -153,8 +67,7 @@
+              */
+             msg(D_SHOW_OCC,
+                 "NOTE: failed to obtain options consistency info from peer=
+ -- "
+-                "this could occur if the remote peer is running a version =
+of " PACKAGE_NAME
+-                " before 1.5-beta8 or if there is a network connectivity p=
+roblem, and will not necessarily prevent " PACKAGE_NAME
++                "this could occur if there is a network connectivity probl=
+em, and will not necessarily prevent " PACKAGE_NAME
+                 " from running (" counter_format " bytes received from pee=
+r, " counter_format
+                 " bytes authenticated data channel traffic) -- you can dis=
+able the options consistency "
+                 "check with --disable-occ.",
+@@ -174,45 +87,6 @@
+     }
+ }
+
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
--static void
--gen_timestamp(uint8_t *timestamp)
+-void
+-check_send_occ_load_test_dowork(struct context *c)
 -{
--    /* Copies 8 bytes long timestamp into "timestamp" buffer.
--     * Timestamp is Little-endian, 64-bit signed value representing the
--     * number of tenths of a microsecond since January 1, 1601.
--     */
--
--    UINTEGER64 timestamp_ull;
--
--    timestamp_ull =3D openvpn_time(NULL);
--    timestamp_ull =3D (timestamp_ull + UINT64(11644473600)) * UINT64(10000=
-000);
--
--    /* store little endian value */
--    timestamp[0] =3D timestamp_ull & UINT64(0xFF);
--    timestamp[1] =3D (timestamp_ull >> 8) & UINT64(0xFF);
--    timestamp[2] =3D (timestamp_ull >> 16) & UINT64(0xFF);
--    timestamp[3] =3D (timestamp_ull >> 24) & UINT64(0xFF);
--    timestamp[4] =3D (timestamp_ull >> 32) & UINT64(0xFF);
--    timestamp[5] =3D (timestamp_ull >> 40) & UINT64(0xFF);
--    timestamp[6] =3D (timestamp_ull >> 48) & UINT64(0xFF);
--    timestamp[7] =3D (timestamp_ull >> 56) & UINT64(0xFF);
--}
--
--static void
--gen_nonce(unsigned char *nonce)
--{
--    /* Generates 8 random bytes to be used as client nonce */
--    int i;
--
--    for (i =3D 0; i < 8; i++)
+-    if (connection_established(c))
 -    {
--        nonce[i] =3D (unsigned char)get_random();
--    }
--}
+-        const struct mtu_load_test *entry;
 -
--static void
--my_strupr(char *str)
--{
--    /* converts string to uppercase in place */
--
--    while (*str)
--    {
--        *str =3D toupper(*str);
--        str++;
--    }
--}
--
--/**
-- * This function expects a null-terminated string in src and will
-- * copy it (including the terminating NUL byte),
-- * alternating it with 0 to dst.
-- *
-- * This basically will transform a ASCII string into valid UTF-16.
-- * Characters that are 8bit in src, will get the same treatment, resulting=
- in
-- * invalid or wrong unicode code points.
-- *
-- * @note the function will blindly assume that dst has double
-- * the space of src.
-- * @return  the length of the number of bytes written to dst
-- */
--static int
--unicodize(char *dst, const char *src)
--{
--    /* not really unicode... */
--    int i =3D 0;
--    do
--    {
--        dst[i++] =3D *src;
--        dst[i++] =3D 0;
--    } while (*src++);
--
--    return i;
--}
--
--static void
--add_security_buffer(int sb_offset, void *data, int length, unsigned char *=
-msg_buf, int *msg_bufpos,
--                    size_t msg_bufsize)
--{
--    if (*msg_bufpos + length > msg_bufsize)
--    {
--        msg(M_WARN, "NTLM: security buffer too big for message buffer");
--        return;
--    }
--    /* Adds security buffer data to a message and sets security buffer's
--     * offset and length */
--    msg_buf[sb_offset] =3D (unsigned char)length;
--    msg_buf[sb_offset + 2] =3D msg_buf[sb_offset];
--    msg_buf[sb_offset + 4] =3D (unsigned char)(*msg_bufpos & 0xff);
--    msg_buf[sb_offset + 5] =3D (unsigned char)((*msg_bufpos >> 8) & 0xff);
--    memcpy(&msg_buf[*msg_bufpos], data, msg_buf[sb_offset]);
--    *msg_bufpos +=3D length;
--}
--
--const char *
--ntlm_phase_1(const struct http_proxy_info *p, struct gc_arena *gc)
--{
--    struct buffer out =3D alloc_buf_gc(96, gc);
--    /* try a minimal NTLM handshake
--     *
--     * https://davenport.sourceforge.net/ntlm.html
--     *
--     * This message contains only the NTLMSSP signature,
--     * the NTLM message type,
--     * and the minimal set of flags (Negotiate NTLM and Negotiate OEM).
--     *
--     */
--    buf_printf(&out, "%s", "TlRMTVNTUAABAAAAAgIAAA=3D=3D");
--    return (BSTR(&out));
--}
--
--const char *
--ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2, struct =
-gc_arena *gc)
--{
--    /* NTLM handshake
--     *
--     * https://davenport.sourceforge.net/ntlm.html
--     *
--     */
--
--    char pwbuf[sizeof(p->up.password) * 2]; /* for unicode password */
--    uint8_t phase3[464];
--
--    uint8_t md4_hash[MD4_DIGEST_LENGTH + 5];
--    uint8_t challenge[8];
--    int i, ret_val;
--
--    uint8_t ntlmv2_response[256];
--    char userdomain_u[256]; /* for uppercase unicode username and domain */
--    char userdomain[128];   /* the same as previous but ascii */
--    uint8_t ntlmv2_hash[MD5_DIGEST_LENGTH];
--    uint8_t ntlmv2_hmacmd5[16];
--    uint8_t *ntlmv2_blob =3D ntlmv2_response + 16; /* inside ntlmv2_respon=
-se, length: 128 */
--    int ntlmv2_blob_size =3D 0;
--    int phase3_bufpos =3D 0x40;                    /* offset to next secur=
-ity buffer data to be added */
--    size_t len;
--
--    char domain[128];
--    char username[128];
--    char *separator;
--
--    ASSERT(strlen(p->up.username) > 0);
--    ASSERT(strlen(p->up.password) > 0);
--
--    /* username parsing */
--    separator =3D strchr(p->up.username, '\\');
--    if (separator =3D=3D NULL)
--    {
--        strncpy(username, p->up.username, sizeof(username) - 1);
--        username[sizeof(username) - 1] =3D 0;
--        domain[0] =3D 0;
--    }
--    else
--    {
--        strncpy(username, separator + 1, sizeof(username) - 1);
--        username[sizeof(username) - 1] =3D 0;
--        len =3D separator - p->up.username;
--        if (len > sizeof(domain) - 1)
+-        if (!c->c2.occ_mtu_load_n_tries)
 -        {
--            len =3D sizeof(domain) - 1;
--        }
--        strncpy(domain, p->up.username, len);
--        domain[len] =3D 0;
--    }
--
--
--    /* fill 1st 16 bytes with md4 hash, disregard terminating null */
--    int unicode_len =3D unicodize(pwbuf, p->up.password) - 2;
--    gen_md4_hash((uint8_t *)pwbuf, unicode_len, md4_hash);
--
--    /* pad to 21 bytes */
--    memset(md4_hash + MD4_DIGEST_LENGTH, 0, 5);
--
--    /* If the decoded challenge is shorter than required by the protocol,
--     * the missing bytes will be NULL, as buf2 is known to be zeroed
--     * when this decode happens.
--     */
--    uint8_t buf2[512]; /* decoded reply from proxy */
--    CLEAR(buf2);
--    ret_val =3D openvpn_base64_decode(phase_2, buf2, -1);
--    if (ret_val < 0)
--    {
--        msg(M_WARN, "NTLM: base64 decoding of phase 2 response failed");
--        return NULL;
--    }
--
--    /* extract the challenge from bytes 24-31 */
--    for (i =3D 0; i < 8; i++)
--    {
--        challenge[i] =3D buf2[i + 24];
--    }
--
--    /* Generate NTLMv2 response */
--    int tib_len;
--
--    /* NTLMv2 hash */
--    strcpy(userdomain, username);
--    my_strupr(userdomain);
--    if (strlen(username) + strlen(domain) < sizeof(userdomain))
--    {
--        strcat(userdomain, domain);
--    }
--    else
--    {
--        msg(M_INFO, "NTLM: Username or domain too long");
--    }
--    unicodize(userdomain_u, userdomain);
--    gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_hash=
-, ntlmv2_hash);
--
--    /* NTLMv2 Blob */
--    memset(ntlmv2_blob, 0, 128);       /* Clear blob buffer */
--    ntlmv2_blob[0x00] =3D 1;             /* Signature */
--    ntlmv2_blob[0x01] =3D 1;             /* Signature */
--    ntlmv2_blob[0x04] =3D 0;             /* Reserved */
--    gen_timestamp(&ntlmv2_blob[0x08]); /* 64-bit Timestamp */
--    gen_nonce(&ntlmv2_blob[0x10]);     /* 64-bit Client Nonce */
--    ntlmv2_blob[0x18] =3D 0;             /* Unknown, zero should work */
--
--    /* Add target information block to the blob */
--
--    /* Check for Target Information block */
--    /* The NTLM spec instructs to interpret these 4 consecutive bytes as a
--     * 32bit long integer. However, no endianness is specified.
--     * The code here and that found in other NTLM implementations point
--     * towards the assumption that the byte order on the wire has to
--     * match the order on the sending and receiving hosts. Probably NTLM h=
-as
--     * been thought to be always running on x86_64/i386 machine thus
--     * implying Little-Endian everywhere.
--     *
--     * This said, in case of future changes, we should keep in mind that t=
-he
--     * byte order on the wire for the NTLM header is LE.
--     */
--    const size_t hoff =3D 0x14;
--    unsigned long flags =3D
--        buf2[hoff] | (buf2[hoff + 1] << 8) | (buf2[hoff + 2] << 16) | (buf=
-2[hoff + 3] << 24);
--    if ((flags & 0x00800000) =3D=3D 0x00800000)
--    {
--        tib_len =3D buf2[0x28]; /* Get Target Information block size */
--        if (tib_len + 0x1c + 16 > sizeof(ntlmv2_response))
--        {
--            msg(M_WARN, "NTLM: target information buffer too long for resp=
-onse (len=3D%d)", tib_len);
--            return NULL;
+-            msg(M_INFO,
+-                "NOTE: Beginning empirical MTU test -- results should be a=
+vailable in 3 to 4 minutes.");
 -        }
 -
+-        entry =3D &mtu_load_test_sequence[c->c2.occ_mtu_load_n_tries++];
+-        if (entry->op >=3D 0)
 -        {
--            uint8_t *tib_ptr;
--            uint8_t tib_pos =3D buf2[0x2c];
--            if (tib_pos + tib_len > sizeof(buf2))
+-            c->c2.occ_op =3D entry->op;
+-            size_t payload_size =3D
+-                frame_calculate_payload_size(&c->c2.frame, &c->options, &c=
+->c1.ks.key_type);
+-            size_t header_size =3D
+-                frame_calculate_protocol_header_size(&c->c1.ks.key_type, &=
+c->options, false);
+-
+-            c->c2.occ_mtu_load_size =3D payload_size + header_size;
+-        }
+-        else
+-        {
+-            msg(M_INFO, "NOTE: failed to empirically measure MTU (requires=
+ " PACKAGE_NAME
+-                        " 1.5 or higher at other end of connection).");
+-            event_timeout_clear(&c->c2.occ_mtu_load_test_interval);
+-            c->c2.occ_mtu_load_n_tries =3D 0;
+-        }
+-    }
+-}
+-
+ void
+ check_send_occ_msg_dowork(struct context *c)
+ {
+@@ -252,84 +126,6 @@
+             doit =3D true;
+             break;
+=20
+-        case OCC_MTU_REQUEST:
+-            if (!buf_write_u8(&c->c2.buf, OCC_MTU_REQUEST))
 -            {
--                msg(M_ERR,
--                    "NTLM: phase 2 response from server too long (need %d =
-bytes at offset %u)",
--                    tib_len, tib_pos);
--                return NULL;
+-                break;
 -            }
--            /* Get Target Information block pointer */
--            tib_ptr =3D buf2 + tib_pos;
--            /* Copy Target Information block into the blob */
--            memcpy(&ntlmv2_blob[0x1c], tib_ptr, tib_len);
+-            dmsg(D_PACKET_CONTENT, "SENT OCC_MTU_REQUEST");
+-            doit =3D true;
+-            break;
+-
+-        case OCC_MTU_REPLY:
+-            if (!buf_write_u8(&c->c2.buf, OCC_MTU_REPLY))
+-            {
+-                break;
+-            }
+-            if (!buf_write_u16(&c->c2.buf, c->c2.max_recv_size_local))
+-            {
+-                break;
+-            }
+-            if (!buf_write_u16(&c->c2.buf, c->c2.max_send_size_local))
+-            {
+-                break;
+-            }
+-            dmsg(D_PACKET_CONTENT, "SENT OCC_MTU_REPLY");
+-            doit =3D true;
+-            break;
+-
+-        case OCC_MTU_LOAD_REQUEST:
+-            if (!buf_write_u8(&c->c2.buf, OCC_MTU_LOAD_REQUEST))
+-            {
+-                break;
+-            }
+-            if (!buf_write_u16(&c->c2.buf, c->c2.occ_mtu_load_size))
+-            {
+-                break;
+-            }
+-            dmsg(D_PACKET_CONTENT, "SENT OCC_MTU_LOAD_REQUEST");
+-            doit =3D true;
+-            break;
+-
+-        case OCC_MTU_LOAD:
+-        {
+-            int need_to_add;
+-
+-            if (!buf_write_u8(&c->c2.buf, OCC_MTU_LOAD))
+-            {
+-                break;
+-            }
+-            size_t proto_hdr, payload_hdr;
+-            const struct key_type *kt =3D &c->c1.ks.key_type;
+-
+-            /* OCC message have comp/fragment headers but not ethernet hea=
+ders */
+-            payload_hdr =3D frame_calculate_payload_overhead(0, &c->option=
+s, kt);
+-
+-            /* Since we do not know the payload size we just pass 0 as siz=
+e here */
+-            proto_hdr =3D frame_calculate_protocol_header_size(kt, &c->opt=
+ions, false);
+-
+-            need_to_add =3D min_int(c->c2.occ_mtu_load_size, c->c2.frame.b=
+uf.payload_size)
+-                          - OCC_STRING_SIZE - sizeof(uint8_t) /* occ opcod=
+e */
+-                          - payload_hdr - proto_hdr;
+-
+-            while (need_to_add > 0)
+-            {
+-                /*
+-                 * Fill the load test packet with pseudo-random bytes.
+-                 */
+-                if (!buf_write_u8(&c->c2.buf, get_random() & 0xFF))
+-                {
+-                    break;
+-                }
+-                --need_to_add;
+-            }
+-            dmsg(D_PACKET_CONTENT, "SENT OCC_MTU_LOAD min_int(%d,%d)-%d-%d=
+-%d-%d) size=3D%d",
+-                 c->c2.occ_mtu_load_size, c->c2.frame.buf.payload_size, OC=
+C_STRING_SIZE,
+-                 (int)sizeof(uint8_t), (int)payload_hdr, (int)proto_hdr, B=
+LEN(&c->c2.buf));
+-            doit =3D true;
 -        }
--    }
--    else
--    {
--        tib_len =3D 0;
--    }
+-        break;
 -
--    /* Unknown, zero works */
--    ntlmv2_blob[0x1c + tib_len] =3D 0;
--
--    /* Get blob length */
--    ntlmv2_blob_size =3D 0x20 + tib_len;
--
--    /* Add challenge from message 2 */
--    memcpy(&ntlmv2_response[8], challenge, 8);
--
--    /* hmac-md5 */
--    gen_hmac_md5(&ntlmv2_response[8], ntlmv2_blob_size + 8, ntlmv2_hash, n=
-tlmv2_hmacmd5);
--
--    /* Add hmac-md5 result to the blob.
--     * Note: This overwrites challenge previously written at
--     * ntlmv2_response[8..15] */
--    memcpy(ntlmv2_response, ntlmv2_hmacmd5, MD5_DIGEST_LENGTH);
--
--    memset(phase3, 0, sizeof(phase3));   /* clear reply */
--
--    strcpy((char *)phase3, "NTLMSSP\0"); /* signature */
--    phase3[8] =3D 3;                       /* type 3 */
--
--    /* NTLMv2 response */
--    add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 16, phas=
-e3, &phase3_bufpos,
--                        sizeof(phase3));
--
--    /* username in ascii */
--    add_security_buffer(0x24, username, strlen(username), phase3, &phase3_=
-bufpos, sizeof(phase3));
--
--    /* Set domain. If <domain> is empty, default domain will be used
--     * (i.e. proxy's domain) */
--    add_security_buffer(0x1c, domain, strlen(domain), phase3, &phase3_bufp=
-os, sizeof(phase3));
--
--    /* other security buffers will be empty */
--    phase3[0x10] =3D phase3_bufpos; /* lm not used */
--    phase3[0x30] =3D phase3_bufpos; /* no workstation name supplied */
--    phase3[0x38] =3D phase3_bufpos; /* no session key */
--
--    /* flags */
--    phase3[0x3c] =3D 0x02; /* negotiate oem */
--    phase3[0x3d] =3D 0x02; /* negotiate ntlm */
--
--    return ((const char *)make_base64_string2((unsigned char *)phase3, pha=
-se3_bufpos, gc));
--}
--
+         case OCC_EXIT:
+             if (!buf_write_u8(&c->c2.buf, OCC_EXIT))
+             {
+@@ -352,10 +148,6 @@
+     c->c2.occ_op =3D -1;
+ }
+
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
--#endif /* if NTLM */
-diff --git a/src/openvpn/ntlm.h b/src/openvpn/ntlm.h
-deleted file mode 100644
-index b0a6821..0000000
---- a/src/openvpn/ntlm.h
-+++ /dev/null
-@@ -1,12 +0,0 @@
--#ifndef NTLM_H
--#define NTLM_H
 -
--#if NTLM
--
--const char *ntlm_phase_1(const struct http_proxy_info *p, struct gc_arena =
-*gc);
--
--const char *ntlm_phase_3(const struct http_proxy_info *p, const char *phas=
-e_2, struct gc_arena *gc);
--
--#endif
--
--#endif
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 34af0d3..dabb75b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -158,8 +158,7 @@
-     "                  through an HTTP proxy at address s and port p.\n"
-     "                  If proxy authentication is required,\n"
-     "                  up is a file containing username/password on 2 line=
-s, or\n"
--    "                  'stdin' to prompt from console.  Add auth=3D'ntlm2'=
- if\n"
--    "                  the proxy requires NTLM authentication.\n"
-+    "                  'stdin' to prompt from console.\n"
-     "--http-proxy s p 'auto[-nct]' : Like the above directive, but automat=
-ically\n"
-     "                  determine auth method and query for username/passwo=
-rd\n"
-     "                  if needed.  auto-nct disables weak proxy auth metho=
-ds.\n"
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index ff6ea5a..957a4f2 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -35,7 +35,6 @@
- #include "proxy.h"
- #include "base64.h"
- #include "httpdigest.h"
--#include "ntlm.h"
- #include "memdbg.h"
- #include "forward.h"
+ void
+ process_received_occ_msg(struct context *c)
+ {
+@@ -367,20 +159,6 @@
+             c->c2.occ_op =3D OCC_REPLY;
+             break;
 
-@@ -348,14 +347,6 @@
-                 ret =3D HTTP_AUTH_DIGEST;
-             }
- #endif
--#if NTLM
--            else if (!strncmp(buf + 20, "NTLM", 4))
+-        case OCC_MTU_REQUEST:
+-            dmsg(D_PACKET_CONTENT, "RECEIVED OCC_MTU_REQUEST");
+-            c->c2.occ_op =3D OCC_MTU_REPLY;
+-            break;
+-
+-        case OCC_MTU_LOAD_REQUEST:
+-            dmsg(D_PACKET_CONTENT, "RECEIVED OCC_MTU_LOAD_REQUEST");
+-            c->c2.occ_mtu_load_size =3D buf_read_u16(&c->c2.buf);
+-            if (c->c2.occ_mtu_load_size >=3D 0)
 -            {
--                msg(D_PROXY, "PROXY AUTH NTLM: '%s'", buf);
--                *data =3D NULL;
--                ret =3D HTTP_AUTH_NTLM2;
+-                c->c2.occ_op =3D OCC_MTU_LOAD;
 -            }
--#endif
-         }
-     }
- }
-@@ -511,40 +502,20 @@
-         {
-             p->auth_method =3D HTTP_AUTH_BASIC;
-         }
--#if NTLM
--        else if (!strcmp(o->auth_method_string, "ntlm"))
--        {
--            msg(M_WARN,
--                "NTLM v1 authentication has been removed in OpenVPN 2.7. W=
-ill try to use NTLM v2 authentication.");
--            p->auth_method =3D HTTP_AUTH_NTLM2;
--        }
--        else if (!strcmp(o->auth_method_string, "ntlm2"))
--        {
--            p->auth_method =3D HTTP_AUTH_NTLM2;
--        }
--#endif
-         else
-         {
-             msg(M_FATAL, "ERROR: unknown HTTP authentication method: '%s'"=
-, o->auth_method_string);
-         }
-     }
-
--    /* When basic or NTLMv2 authentication is requested, get credentials n=
-ow.
-+    /* When basic authentication is requested, get credentials now.
-      * In case of "auto" negotiation credentials will be retrieved later o=
-nce
-      * we know whether we need any. */
--    if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_NTLM2)
-+    if (p->auth_method =3D=3D HTTP_AUTH_BASIC)
-     {
-         get_user_pass_http(p, p->options.first_time);
-     }
-
--#if !NTLM
--    if (p->auth_method =3D=3D HTTP_AUTH_NTLM2)
--    {
--        msg(M_FATAL,
--            "Sorry, this version of " PACKAGE_NAME " was built without NTL=
-M Proxy support.");
--    }
--#endif
+-            break;
 -
-     p->defined =3D true;
-     return p;
- }
-@@ -638,8 +609,7 @@
-     volatile int *signal_received =3D &sig_info->signal_received;
+         case OCC_REPLY:
+             dmsg(D_PACKET_CONTENT, "RECEIVED OCC_REPLY");
+             if (c->options.occ && !TLS_MODE(c) && c->c2.options_string_rem=
+ote)
+@@ -395,30 +173,6 @@
+             event_timeout_clear(&c->c2.occ_interval);
+             break;
 
-     /* get user/pass if not previously given */
--    if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_DIGEST
--        || p->auth_method =3D=3D HTTP_AUTH_NTLM2)
-+    if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_DIGEST)
-     {
-         get_user_pass_http(p, false);
-
-@@ -692,25 +662,6 @@
-                 }
-                 break;
-
--#if NTLM
--            case HTTP_AUTH_NTLM2:
--                /* keep-alive connection */
--                snprintf(buf, sizeof(buf), "Proxy-Connection: Keep-Alive");
--                if (!send_line_crlf(sd, buf))
--                {
--                    goto error;
--                }
--
--                snprintf(buf, sizeof(buf), "Proxy-Authorization: NTLM %s",=
- ntlm_phase_1(p, &gc));
--                msg(D_PROXY, "Attempting NTLM Proxy-Authorization phase 1"=
-);
--                dmsg(D_SHOW_KEYS, "Send to HTTP proxy: '%s'", buf);
--                if (!send_line_crlf(sd, buf))
--                {
--                    goto error;
--                }
--                break;
--#endif
--
-             default:
-                 ASSERT(0);
-         }
-@@ -749,112 +700,6 @@
-         {
-             processed =3D true;
-         }
--        else if (p->auth_method =3D=3D HTTP_AUTH_NTLM2 && !processed) /* c=
-heck for NTLM */
--        {
--#if NTLM
--            /* look for the phase 2 response */
--            char buf2[512];
--            while (true)
+-        case OCC_MTU_REPLY:
+-            dmsg(D_PACKET_CONTENT, "RECEIVED OCC_MTU_REPLY");
+-            c->c2.max_recv_size_remote =3D buf_read_u16(&c->c2.buf);
+-            c->c2.max_send_size_remote =3D buf_read_u16(&c->c2.buf);
+-            if (c->options.mtu_test && c->c2.max_recv_size_remote > 0
+-                && c->c2.max_send_size_remote > 0)
 -            {
--                if (!recv_line(sd, buf, sizeof(buf),
--                               get_server_poll_remaining_time(server_poll_=
-timeout), true, NULL,
--                               signal_received))
+-                msg(M_INFO,
+-                    "NOTE: Empirical MTU test completed [Tried,Actual] loc=
+al->remote=3D[%d,%d] remote->local=3D[%d,%d]",
+-                    c->c2.max_send_size_local, c->c2.max_recv_size_remote,
+-                    c->c2.max_send_size_remote, c->c2.max_recv_size_local);
+-                if (!c->options.ce.fragment && (proto_is_dgram(c->options.=
+ce.proto))
+-                    && c->c2.max_send_size_local > TUN_MTU_MIN
+-                    && (c->c2.max_recv_size_remote < c->c2.max_send_size_l=
+ocal
+-                        || c->c2.max_recv_size_local < c->c2.max_send_size=
+_remote))
 -                {
--                    goto error;
--                }
--                chomp(buf);
--                msg(D_PROXY, "HTTP proxy returned: '%s'", buf);
--
--                char get[80];
--                CLEAR(buf2);
--                snprintf(get, sizeof(get), "%%*s NTLM %%%zus", sizeof(buf2=
-) - 1);
--                nparms =3D sscanf(buf, get, buf2);
--
--                /* check for "Proxy-Authenticate: NTLM TlRM..." */
--                if (nparms =3D=3D 1)
--                {
--                    /* parse buf2 */
--                    msg(D_PROXY, "auth string: '%s'", buf2);
--                    break;
+-                    msg(M_INFO,
+-                        "NOTE: This connection is unable to accommodate a =
+UDP packet size of %d. Consider using --fragment or --mssfix options as a w=
+orkaround.",
+-                        c->c2.max_send_size_local);
 -                }
 -            }
--            /* if we are here then auth string was got */
--            msg(D_PROXY, "Received NTLM Proxy-Authorization phase 2 respon=
-se");
+-            event_timeout_clear(&c->c2.occ_mtu_load_test_interval);
+-            break;
 -
--            /* receive and discard everything else */
--            while (recv_line(sd, NULL, 0, 2, true, NULL, signal_received))
--            {
--            }
--
--            /* now send the phase 3 reply */
--
--            /* format HTTP CONNECT message */
--            snprintf(buf, sizeof(buf), "CONNECT %s:%s HTTP/%s", host, port,
--                     p->options.http_version);
--
--            msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
--
--            /* send HTTP CONNECT message to proxy */
--            if (!send_line_crlf(sd, buf))
--            {
--                goto error;
--            }
--
--            /* keep-alive connection */
--            snprintf(buf, sizeof(buf), "Proxy-Connection: Keep-Alive");
--            if (!send_line_crlf(sd, buf))
--            {
--                goto error;
--            }
--
--            /* send HOST etc, */
--            if (!add_proxy_headers(p, sd, host))
--            {
--                goto error;
--            }
--
--            msg(D_PROXY, "Attempting NTLM Proxy-Authorization phase 3");
--            {
--                const char *np3 =3D ntlm_phase_3(p, buf2, &gc);
--                if (!np3)
--                {
--                    msg(D_PROXY,
--                        "NTLM Proxy-Authorization phase 3 failed: received=
- corrupted data from proxy server");
--                    goto error;
--                }
--                snprintf(buf, sizeof(buf), "Proxy-Authorization: NTLM %s",=
- np3);
--            }
--
--            msg(D_PROXY, "Send to HTTP proxy: '%s'", buf);
--            if (!send_line_crlf(sd, buf))
--            {
--                goto error;
--            }
--            /* ok so far... */
--            /* send empty CR, LF */
--            if (!send_crlf(sd))
--            {
--                goto error;
--            }
--
--            /* receive reply from proxy */
--            if (!recv_line(sd, buf, sizeof(buf),
--                           get_server_poll_remaining_time(server_poll_time=
-out), true, NULL,
--                           signal_received))
--            {
--                goto error;
--            }
--
--            /* remove trailing CR, LF */
--            chomp(buf);
--
--            msg(D_PROXY, "HTTP proxy returned: '%s'", buf);
--
--            /* parse return string */
--            nparms =3D sscanf(buf, "%*s %d", &status);
--            processed =3D true;
--#endif /* if NTLM */
--        }
- #if PROXY_DIGEST_AUTH
-         else if (p->auth_method =3D=3D HTTP_AUTH_DIGEST && !processed)
-         {
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index d14725c..238a32e 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -31,7 +31,7 @@
- #define HTTP_AUTH_BASIC  1
- #define HTTP_AUTH_DIGEST 2
- /* #define HTTP_AUTH_NTLM   3 removed in OpenVPN 2.7 */
--#define HTTP_AUTH_NTLM2  4
-+/* #define HTTP_AUTH_NTLM2  4 removed in OpenVPN 2.8 */
- #define HTTP_AUTH_N      5 /* number of HTTP_AUTH methods */
+         case OCC_EXIT:
+             dmsg(D_STREAM_ERRORS, "OCC exit message received by peer");
+             register_signal(c->sig, SIGUSR1, "remote-exit");
+diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h
+index 369d94e..2b816ec 100644
+--- a/src/openvpn/occ.h
++++ b/src/openvpn/occ.h
+@@ -45,39 +45,12 @@
+ #define OCC_INTERVAL_SECONDS 10
+ #define OCC_N_TRIES          12
 
- struct http_custom_header
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 627ba92..82452f3 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -488,13 +488,6 @@
- #endif
-
- /*
-- * Should we include NTLM proxy functionality
+-/*
+- * Other OCC protocol opcodes used to estimate the MTU empirically.
 - */
--#ifdef ENABLE_NTLM
--#define NTLM 1
--#endif
+-#define OCC_MTU_LOAD_REQUEST 2 /* Ask peer to send a big packet to us */
+-#define OCC_MTU_LOAD         3 /* Send a big packet to peer */
+-#define OCC_MTU_REQUEST                                           \
+-    4                          /* Ask peer to tell us the largest \
+-                                * packet it has received from us so far */
+-#define OCC_MTU_REPLY 5        /* Send largest packet size to peer */
 -
 -/*
-  * Should we include proxy digest auth functionality
+- * Process one command from mtu_load_test_sequence
+- * once every n seconds, if --mtu-test is specified.
+- */
+-#define OCC_MTU_LOAD_INTERVAL_SECONDS 3
+-
++/* 2 - 5 removed (OCC MTU Test) */
+ /*
+  * Send an exit message to remote.
   */
- #define PROXY_DIGEST_AUTH 1
-diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 4b4bcaa..005ac35 100644
---- a/tests/Makefile.am
-+++ b/tests/Makefile.am
-@@ -49,12 +49,4 @@
- ntlm_support_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/c=
-ompat -I$(top_srcdir)/tests/unit_tests/openvpn -DNO_CMOCKA @TEST_CFLAGS@
- ntlm_support_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn $(OPTI=
-ONAL_CRYPTO_LIBS)
- ntlm_support_SOURCES =3D ntlm_support.c \
--	unit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h \
--	$(top_srcdir)/src/openvpn/buffer.c \
--	$(top_srcdir)/src/openvpn/crypto.c \
--	$(top_srcdir)/src/openvpn/crypto_epoch.c \
--	$(top_srcdir)/src/openvpn/crypto_openssl.c \
--	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
--	$(top_srcdir)/src/openvpn/otime.c \
--	$(top_srcdir)/src/openvpn/packet_id.c \
--	$(top_srcdir)/src/openvpn/platform.c
-+	unit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h
-diff --git a/tests/ntlm_support.c b/tests/ntlm_support.c
-index 7007051..61e5090 100644
---- a/tests/ntlm_support.c
-+++ b/tests/ntlm_support.c
-@@ -26,30 +26,10 @@
+ #define OCC_EXIT 6
 
- #include "syshead.h"
+-/*
+- * Used to conduct a load test command sequence
+- * of UDP connection for empirical MTU measurement.
+- */
+-struct mtu_load_test
+-{
+-    int op;    /* OCC opcode to send to peer */
+-    int delta; /* determine packet size to send by using
+-                * this delta against currently
+-                * configured MTU */
+-};
+-
+ extern const uint8_t occ_magic[];
 
--#include "crypto.h"
- #include "error.h"
+ static inline bool
+@@ -90,8 +63,6 @@
 
- int
- main(void)
- {
--#ifdef NTLM
--#if defined(ENABLE_CRYPTO_OPENSSL)
--    provider_t *legacy =3D crypto_load_provider("legacy");
--    provider_t *def =3D crypto_load_provider("default");
--#endif
--    if (!md_valid("MD4"))
--    {
--        msg(M_FATAL, "MD4 not supported");
--    }
--    if (!md_valid("MD5"))
--    {
--        msg(M_FATAL, "MD5 not supported");
--    }
--#if defined(ENABLE_CRYPTO_OPENSSL)
--    crypto_unload_provider("legacy", legacy);
--    crypto_unload_provider("default", def);
--#endif
--#else /* ifdef NTLM */
-     msg(M_FATAL, "NTLM support not compiled in");
--#endif
+ void check_send_occ_req_dowork(struct context *c);
+
+-void check_send_occ_load_test_dowork(struct context *c);
+-
+ void check_send_occ_msg_dowork(struct context *c);
+
+ /*
+@@ -119,20 +90,6 @@
  }
 
+ /*
+- * Should we send an MTU load test?
+- */
+-static inline void
+-check_send_occ_load_test(struct context *c)
+-{
+-    if (event_timeout_defined(&c->c2.occ_mtu_load_test_interval)
+-        && event_timeout_trigger(&c->c2.occ_mtu_load_test_interval, &c->c2=
+.timeval,
+-                                 (!TO_LINK_DEF(c) && c->c2.occ_op < 0) ? E=
+TT_DEFAULT : 0))
+-    {
+-        check_send_occ_load_test_dowork(c);
+-    }
+-}
+-
+-/*
+  * Should we send an OCC message?
+  */
+ static inline void
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 9325e21..c1cdb5a 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -301,23 +301,6 @@
+     struct event_timeout occ_interval;
+
+     /*
+-     * Keep track of maximum packet size received so far
+-     * (of authenticated packets).
+-     */
+-    int original_recv_size;   /* temporary */
+-    int max_recv_size_local;  /* max packet size received */
+-    int max_recv_size_remote; /* max packet size received by remote */
+-    int max_send_size_local;  /* max packet size sent */
+-    int max_send_size_remote; /* max packet size sent by remote */
+-
+-
+-    /* remote wants us to send back a load test packet of this size */
+-    int occ_mtu_load_size;
+-
+-    struct event_timeout occ_mtu_load_test_interval;
+-    int occ_mtu_load_n_tries;
+-
+-    /*
+      * TLS-mode crypto objects.
+      */
+     struct tls_multi *tls_multi; /**< TLS state structure for this VPN
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 34af0d3..e3bcbc7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -305,7 +305,6 @@
+     "                  'no'    -- Never send DF (Don't Fragment) frames\n"
+     "                  'maybe' -- Use per-route hints\n"
+     "                  'yes'   -- Always DF (Don't Fragment)\n"
+-    "--mtu-test      : Empirically measure and report MTU.\n"
+ #ifdef ENABLE_FRAGMENT
+     "--fragment max  : Enable internal datagram fragmentation so that no U=
+DP\n"
+     "                  datagrams are sent which are larger than max bytes.=
+\n"
+@@ -6479,11 +6478,6 @@
+         VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
+         options->ce.mtu_discover_type =3D translate_mtu_discover_type_name=
+(p[1]);
+     }
+-    else if (streq(p[0], "mtu-test") && !p[1])
+-    {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->mtu_test =3D true;
+-    }
+     else if (streq(p[0], "nice") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_NICE);
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1454?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1f5724476862935284f620c54afa510eea03e3f9
-Gerrit-Change-Number: 1453
+Gerrit-Change-Id: Ic1e84ef6fb613851861a695bfbdbc1c32970a398
+Gerrit-Change-Number: 1454
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---hLZ9uwFdF8I=
+--GQGNEDfpdpE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1454?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Remove NTLM support<br><br>Since Microsoft =
-has abandonded this I think it is time<br>for us to do the same for OpenVPN=
- 2.8.<br><br>Leaves a stub ntlm_support in to make cross-branch<br>t_client=
-.rc easier to maintain.<br><br>Change-Id: I1f5724476862935284f620c54afa510e=
-ea03e3f9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>--=
--<br>M CMakeLists.txt<br>M config.h.cmake.in<br>M configure.ac<br>M doc/dox=
-ygen/openvpn.doxyfile.in<br>M doc/man-sections/proxy-options.rst<br>M src/o=
-penvpn/Makefile.am<br>D src/openvpn/ntlm.c<br>D src/openvpn/ntlm.h<br>M src=
-/openvpn/options.c<br>M src/openvpn/proxy.c<br>M src/openvpn/proxy.h<br>M s=
-rc/openvpn/syshead.h<br>M tests/Makefile.am<br>M tests/ntlm_support.c<br>14=
- files changed, 9 insertions(+), 625 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1453/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index =
-bdad173..f96103c 100644</span><br><span>--- a/CMakeLists.txt</span><br><spa=
-n>+++ b/CMakeLists.txt</span><br><span>@@ -506,8 +506,6 @@</span><br><span>=
-     src/openvpn/multi.h</span><br><span>     src/openvpn/multi_io.h</span>=
-<br><span>     src/openvpn/multi_io.c</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    src/openvpn/ntlm.c</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    src/openvpn/ntlm.h</span><br><span>     src/openvpn/oc=
-c.c</span><br><span>     src/openvpn/occ.h</span><br><span>     src/openvpn=
-/openvpn.c</span><br><span>diff --git a/config.h.cmake.in b/config.h.cmake.=
-in</span><br><span>index 01bbadc..cb0169d 100644</span><br><span>--- a/conf=
-ig.h.cmake.in</span><br><span>+++ b/config.h.cmake.in</span><br><span>@@ -3=
-5,9 +35,6 @@</span><br><span> /* Enable dns-updown script hook */</span><br=
-><span> #cmakedefine ENABLE_DNS_UPDOWN</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-/* Enable NTLMv2 proxy support */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_NTLM 1</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Enable =
-management server capability */</span><br><span> #define ENABLE_MANAGEMENT =
-1</span><br><span> </span><br><span>diff --git a/configure.ac b/configure.a=
-c</span><br><span>index f363e0f..50a3cea 100644</span><br><span>--- a/confi=
-gure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -102,13 +102,=
-6 @@</span><br><span> )</span><br><span> </span><br><span> AC_ARG_ENABLE(</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-	[ntlm],</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-	[AS_HELP_STRING([--disable-ntlm], [=
-disable NTLMv2 proxy support @&lt;:@default=3Dyes@:&gt;@])],</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-	,</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	[enable_ntlm=3D&quot;yes&quot;]</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_ARG_EN=
-ABLE(</span><br><span> 	[plugins],</span><br><span> 	[AS_HELP_STRING([--dis=
-able-plugins], [disable plug-in support @&lt;:@default=3Dyes@:&gt;@])],</sp=
-an><br><span> 	,</span><br><span>@@ -1201,7 +1194,6 @@</span><br><span> tes=
-t &quot;${enable_fragment}&quot; =3D &quot;yes&quot; &amp;&amp; AC_DEFINE([=
-ENABLE_FRAGMENT], [1], [Enable internal fragmentation support])</span><br><=
-span> test &quot;${enable_port_share}&quot; =3D &quot;yes&quot; &amp;&amp; =
-AC_DEFINE([ENABLE_PORT_SHARE], [1], [Enable TCP Server port sharing])</span=
-><br><span> test &quot;${enable_dns_updown_by_default}&quot; =3D &quot;yes&=
-quot; &amp;&amp; AC_DEFINE([ENABLE_DNS_UPDOWN_BY_DEFAULT], [1], [Enable dns=
--updown hook by default])</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-test &quot;${enable_ntlm}&quot; =3D &quot;yes&quot; &amp;&amp; AC_DEFIN=
-E([ENABLE_NTLM], [1], [Enable NTLMv2 proxy support])</span><br><span> test =
-&quot;${enable_crypto_ofb_cfb}&quot; =3D &quot;yes&quot; &amp;&amp; AC_DEFI=
-NE([ENABLE_OFB_CFB_MODE], [1], [Enable OFB and CFB cipher modes])</span><br=
-><span> OPTIONAL_CRYPTO_CFLAGS=3D&quot;${OPTIONAL_CRYPTO_CFLAGS} ${CRYPTO_C=
-FLAGS}&quot;</span><br><span> OPTIONAL_CRYPTO_LIBS=3D&quot;${OPTIONAL_CRYPT=
-O_LIBS} ${CRYPTO_LIBS}&quot;</span><br><span>diff --git a/doc/doxygen/openv=
-pn.doxyfile.in b/doc/doxygen/openvpn.doxyfile.in</span><br><span>index bdbc=
-608..5b8e262 100644</span><br><span>--- a/doc/doxygen/openvpn.doxyfile.in</=
-span><br><span>+++ b/doc/doxygen/openvpn.doxyfile.in</span><br><span>@@ -22=
-12,7 +2212,6 @@</span><br><span> # This tag requires that the tag ENABLE_PR=
-EPROCESSING is set to YES.</span><br><span> </span><br><span> PREDEFINED   =
-          =3D _WIN32 \</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                         NTLM \</span><br><span>                          =
-USE_LZO \</span><br><span>                          ENABLE_FRAGMENT \</span=
-><br><span>                          P2MP \</span><br><span>diff --git a/do=
-c/man-sections/proxy-options.rst b/doc/man-sections/proxy-options.rst</span=
-><br><span>index 38c4578..7123838 100644</span><br><span>--- a/doc/man-sect=
-ions/proxy-options.rst</span><br><span>+++ b/doc/man-sections/proxy-options=
-.rst</span><br><span>@@ -7,7 +7,7 @@</span><br><span>   ``--http-proxy-user=
--pass`` option (See `INLINE FILE SUPPORT`_).</span><br><span> </span><br><s=
-pan>   The last optional argument is an ``auth-method`` which should be one=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  of :code:`none`, :c=
-ode:`basic`, or :code:`ntlm2`.</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  of :code:`none`, :code:`basic`.</span><br><span> </span><br><s=
-pan>   HTTP Digest authentication is supported as well, but only via the</s=
-pan><br><span>   :code:`auto` or :code:`auto-nct` flags (below).  This must=
- replace</span><br><span>@@ -31,8 +31,6 @@</span><br><span>      http-proxy=
- proxy.example.net 3128 authfile.txt</span><br><span>      # basic authenti=
-cation, ask user for credentials</span><br><span>      http-proxy proxy.exa=
-mple.net 3128 stdin</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-   # NTLM authentication, load credentials from file</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-     http-proxy proxy.example.net 3128 auth=
-file.txt ntlm2</span><br><span>      # determine which authentication is re=
-quired, ask user for credentials</span><br><span>      http-proxy proxy.exa=
-mple.net 3128 auto</span><br><span>      # determine which authentication i=
-s required, but reject basic</span><br><span>@@ -47,9 +45,8 @@</span><br><s=
-pan>      password</span><br><span>      &lt;/http-proxy-user-pass&gt;</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Note t=
-hat support for NTLMv1 proxies was removed with OpenVPN 2.7.</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-  :code:`ntlm` now is an alias for :=
-code:`ntlm2`; i.e. OpenVPN will always</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-  attempt to use NTLMv2 authentication.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  Note that support for NTLMv1 proxies=
- was removed with OpenVPN 2.7</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  and support for NTLMv2 proxies was removed with OpenVPN 2.8.</s=
-pan><br><span> </span><br><span> --http-proxy-user-pass userpass</span><br>=
-<span>   Overwrite the username/password information for ``--http-proxy``. =
-If specified</span><br><span>diff --git a/src/openvpn/Makefile.am b/src/ope=
-nvpn/Makefile.am</span><br><span>index db87dfc..8443807 100644</span><br><s=
-pan>--- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefil=
-e.am</span><br><span>@@ -99,7 +99,6 @@</span><br><span> 	networking_iproute=
-2.c networking_iproute2.h \</span><br><span> 	networking_sitnl.c networking=
-_sitnl.h \</span><br><span> 	networking.h \</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	ntlm.c ntlm.h \</span><br><span> 	occ.c occ.h \</spa=
-n><br><span> 	openssl_compat.h \</span><br><span> 	pkcs11.c pkcs11.h pkcs11=
-_backend.h \</span><br><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/=
-ntlm.c</span><br><span>deleted file mode 100644</span><br><span>index 8e913=
-dc..0000000</span><br><span>--- a/src/openvpn/ntlm.c</span><br><span>+++ /d=
-ev/null</span><br><span>@@ -1,395 +0,0 @@</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- *  ntlm proxy support for OpenVPN</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  C=
-opyright (C) 2004 William Preston</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  *NT=
-LMv2 support and domain name parsing by Miroslav Zajic, Nextsoft s.r.o.*</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *  This program is free software; you can =
-redistribute it and/or modify</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- *  it under the terms of the GNU General Public License as publish=
-ed by</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  the Free Sof=
-tware Foundation; either version 2 of the License, or</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *  (at your option) any later version.</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *  This program is distributed in the hope=
- that it will be useful,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- *  MERCHANTABILITY or FITN=
-ESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">- *  GNU General Public License for more details.</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- *  You should have received a copy of the GNU Gen=
-eral Public License along</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- *  with this program; if not, see &lt;https://www.gnu.org/licenses/&gt=
-;.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#include &quot;config.h&quot;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &qu=
-ot;syshead.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#if NTLM</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#include &quot;common.h&quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#include &quot;buffer.h&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#include &quot;misc.h&quot;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#include &quot;socket.h&quot;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;fdmisc.h&quot=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;proxy=
-.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quo=
-t;ntlm.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#includ=
-e &quot;base64.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#include &quot;crypto.h&quot;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &qu=
-ot;memdbg.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-/* 64bit datatype macros */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#ifdef _MSC_VER</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-/* MS compilers */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#define UINTEGER64 __int64</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define UINT64(c)  c##Ui64</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-/* Non MS compilers */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#define UINTEGER64 unsigned long long</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#define UINT64(c)  c##LL</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-gen_md4_hash(const uint8_t=
- *data, int data_len, uint8_t *result)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- /* result is 16 byte md4 hash */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    uint8_t md[MD4_DIGEST_LENGTH];</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    md_full(&quot;MD4&quot;, data, data_len, md);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    memcpy(result, md, MD4_DIGEST_LENGTH);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key, uint8=
-_t *result)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    hmac_ctx_t *hmac_ctx =3D h=
-mac_ctx_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    hmac_ctx_init(hmac_ctx, =
-key, &quot;MD5&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    hmac_ctx_update(hmac_ctx, data, data_len);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    hmac_ctx_final(hmac_ctx, result);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    hmac_ctx_cleanup(hmac_ctx);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    hmac_ctx_free(hmac_=
-ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignore=
-d &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-gen_timestamp(uint8_t *timestamp)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    /* Copies 8 bytes long timestamp into &quot;t=
-imestamp&quot; buffer.</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--     * Timestamp is Little-endian, 64-bit signed value representing the</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-     * number of tenths =
-of a microsecond since January 1, 1601.</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    UINTEGER64 ti=
-mestamp_ull;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    timestamp_ull =3D openvpn_=
-time(NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    timest=
-amp_ull =3D (timestamp_ull + UINT64(11644473600)) * UINT64(10000000);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    /* store little endian value */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    timestamp[0] =3D timestamp_ull=
- &amp; UINT64(0xFF);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   timestamp[1] =3D (timestamp_ull &gt;&gt; 8) &amp; UINT64(0xFF);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    timestamp[2] =3D (timestam=
-p_ull &gt;&gt; 16) &amp; UINT64(0xFF);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    timestamp[3] =3D (timestamp_ull &gt;&gt; 24) &amp; UIN=
-T64(0xFF);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    timesta=
-mp[4] =3D (timestamp_ull &gt;&gt; 32) &amp; UINT64(0xFF);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    timestamp[5] =3D (timestamp_ull &gt=
-;&gt; 40) &amp; UINT64(0xFF);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    timestamp[6] =3D (timestamp_ull &gt;&gt; 48) &amp; UINT64(0xFF)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    timestamp[7] =3D=
- (timestamp_ull &gt;&gt; 56) &amp; UINT64(0xFF);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-gen_nonce(unsigned char =
-*nonce)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    /* Generates 8 random bytes to=
- be used as client nonce */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; 8=
-; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        nonce[i] =3D (unsigned =
-char)get_random();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-my_strupr(char *str)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* converts =
-string to uppercase in place */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while (=
-*str)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        *str =3D toupper(*str);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        str++;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- * This function expects a =
-null-terminated string in src and will</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">- * copy it (including the terminating NUL byte),</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- * alternating it with 0 to dst=
-.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">- * This basically will transform a ASCI=
-I string into valid UTF-16.</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- * Characters that are 8bit in src, will get the same treatment, resu=
-lting in</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * invalid or=
- wrong unicode code points.</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @note the =
-function will blindly assume that dst has double</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- * the space of src.</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * @return  the length of the number of bytes wri=
-tten to dst</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-unicodize(char *dst, const char *src)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* not really unicode... */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    int i =3D 0;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    do</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        dst[i++] =3D *src;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        dst[i++] =3D 0;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    } while (*src++);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-add_security_buffer(int sb_offset, void *data, int length, unsigned=
- char *msg_buf, int *msg_bufpos,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                    size_t msg_bufsize)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    if (*msg_bufpos + length &gt; msg_bufsize)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        msg(M_WARN, &quot;NTLM: security buffer too big f=
-or message buffer&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Adds securi=
-ty buffer data to a message and sets security buffer&#39;s</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-     * offset and length */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    msg_buf[sb_offset] =3D (unsi=
-gned char)length;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-msg_buf[sb_offset + 2] =3D msg_buf[sb_offset];</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    msg_buf[sb_offset + 4] =3D (unsigned char)(*ms=
-g_bufpos &amp; 0xff);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    msg_buf[sb_offset + 5] =3D (unsigned char)((*msg_bufpos &gt;&gt; 8) &am=
-p; 0xff);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    memcpy(&=
-amp;msg_buf[*msg_bufpos], data, msg_buf[sb_offset]);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    *msg_bufpos +=3D length;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-co=
-nst char *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ntlm_phase_=
-1(const struct http_proxy_info *p, struct gc_arena *gc)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    struct buffer out =3D alloc_buf_gc(96, gc);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    /* try a minimal NTLM handshake=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     *</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-     * https://davenport.sourceforge=
-.net/ntlm.html</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     *<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * This message co=
-ntains only the NTLMSSP signature,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-     * the NTLM message type,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-     * and the minimal set of flags (Negotiate NTLM an=
-d Negotiate OEM).</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    buf_printf(&amp;out, &quot;%s=
-&quot;, &quot;TlRMTVNTUAABAAAAAgIAAA=3D=3D&quot;);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    return (BSTR(&amp;out));</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-const=
- char *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ntlm_phase_3(c=
-onst struct http_proxy_info *p, const char *phase_2, struct gc_arena *gc)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* NTLM handshake</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-     *</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-     * https://davenport.sourceforge.net/ntlm.html</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-     *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- char pwbuf[sizeof(p-&gt;up.password) * 2]; /* for unicode password */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t phase3[464];</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    uint8_t md4_hash[MD4_DIGEST_LENGTH + 5]=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t challeng=
-e[8];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i, ret_v=
-al;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    uint8_t ntlmv2_response[256];</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    char userdomain_u[256];=
- /* for uppercase unicode username and domain */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    char userdomain[128];   /* the same as previ=
-ous but ascii */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    u=
-int8_t ntlmv2_hash[MD5_DIGEST_LENGTH];</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    uint8_t ntlmv2_hmacmd5[16];</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    uint8_t *ntlmv2_blob =3D ntlmv2_response + 1=
-6; /* inside ntlmv2_response, length: 128 */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    int ntlmv2_blob_size =3D 0;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    int phase3_bufpos =3D 0x40;           =
-         /* offset to next security buffer data to be added */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    size_t len;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    char domain[128];</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    char username[128];</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    char *separator;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    AS=
-SERT(strlen(p-&gt;up.username) &gt; 0);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    ASSERT(strlen(p-&gt;up.password) &gt; 0);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    /* username parsing */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    separator =3D strchr(p-&gt;up.username, &#39;=
-\\&#39;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (sepa=
-rator =3D=3D NULL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        strncpy(use=
-rname, p-&gt;up.username, sizeof(username) - 1);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        username[sizeof(username) - 1] =3D 0;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        domain[0] =3D 0;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        strncpy(username, separator + 1, sizeof(username) - 1);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        username[sizeof(=
-username) - 1] =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        len =3D separator - p-&gt;up.username;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        if (len &gt; sizeof(domain) - 1)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            len =3D sizeof(domain) - 1;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        strncpy(domain, p-&gt;up.user=
-name, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        do=
-main[len] =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    /* fill 1st 16 bytes with md4 hash, disregard terminating n=
-ull */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int unicode=
-_len =3D unicodize(pwbuf, p-&gt;up.password) - 2;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    gen_md4_hash((uint8_t *)pwbuf, unicode_len,=
- md4_hash);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    /* pad to 21 bytes */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    memset(md4_hash + MD4_D=
-IGEST_LENGTH, 0, 5);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* If the decoded =
-challenge is shorter than required by the protocol,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-     * the missing bytes will be NULL, as b=
-uf2 is known to be zeroed</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-     * when this decode happens.</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    uint8_t buf2[512]; /* decoded reply from proxy */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    CLEAR(buf2);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    ret_val =3D openvpn_base64_decode(phase_2, =
-buf2, -1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ret=
-_val &lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot=
-;NTLM: base64 decoding of phase 2 response failed&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        return NULL;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  /* extract the challenge from bytes 24-31 */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; 8; i++)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        challenge[i] =3D buf2[i + 24];</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    /* Generate NTLMv2 response */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    int tib_len;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* NTLMv2=
- hash */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    strcpy(us=
-erdomain, username);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   my_strupr(userdomain);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (strlen(username) + strlen(domain) &lt; sizeof(userdomain))</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        strcat(userdomain, domain);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        msg(M_INFO, &quot;NTLM: Username or domain too long&quot;);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    unicodize(userdomain_u, userdomain);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gen_hmac_md5((uint8=
-_t *)userdomain_u, 2 * strlen(userdomain), md4_hash, ntlmv2_hash);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    /* NTLMv2 Blob */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    memset(ntlmv2_blob, 0, 128);       /* Clear blo=
-b buffer */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ntlmv2=
-_blob[0x00] =3D 1;             /* Signature */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    ntlmv2_blob[0x01] =3D 1;             /* Signat=
-ure */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ntlmv2_blob=
-[0x04] =3D 0;             /* Reserved */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    gen_timestamp(&amp;ntlmv2_blob[0x08]); /* 64-bit Tim=
-estamp */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gen_nonc=
-e(&amp;ntlmv2_blob[0x10]);     /* 64-bit Client Nonce */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    ntlmv2_blob[0x18] =3D 0;            =
- /* Unknown, zero should work */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Add=
- target information block to the blob */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  /* Check for Target Information block */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    /* The NTLM spec instructs to interpret these 4 co=
-nsecutive bytes as a</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-    * 32bit long integer. However, no endianness is specified.</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-     * The code here and that foun=
-d in other NTLM implementations point</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-     * towards the assumption that the byte order on the wi=
-re has to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * match=
- the order on the sending and receiving hosts. Probably NTLM has</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-     * been thought to be always=
- running on x86_64/i386 machine thus</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-     * implying Little-Endian everywhere.</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-     *</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-     * This said, in case of future changes, we should =
-keep in mind that the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-     * byte order on the wire for the NTLM header is LE.</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    const size_t hoff =3D 0x14;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    unsigned long flags =3D</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        buf2[hoff] | (buf2[hoff + 1] =
-&lt;&lt; 8) | (buf2[hoff + 2] &lt;&lt; 16) | (buf2[hoff + 3] &lt;&lt; 24);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((flags &amp; 0=
-x00800000) =3D=3D 0x00800000)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-tib_len =3D buf2[0x28]; /* Get Target Information block size */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        if (tib_len + 0x1c + 16 &=
-gt; sizeof(ntlmv2_response))</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       msg(M_WARN, &quot;NTLM: target information buffer too long for respo=
-nse (len=3D%d)&quot;, tib_len);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            return NULL;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            uint8_t *tib_ptr;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            uint8_t tib_=
-pos =3D buf2[0x2c];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          if (tib_pos + tib_len &gt; sizeof(buf2))</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                msg(M_ERR,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                    &quot;NTLM: phase 2 response =
-from server too long (need %d bytes at offset %u)&quot;,</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                    tib_len, tib_pos);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                return =
-NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Get Targe=
-t Information block pointer */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            tib_ptr =3D buf2 + tib_pos;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            /* Copy Target Information block int=
-o the blob */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    memcpy(&amp;ntlmv2_blob[0x1c], tib_ptr, tib_len);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        tib_len =3D 0;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    /* Unknown, zero works */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    ntlmv2_blob[0x1c + tib_len] =3D 0;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    /* Get blob length */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    ntlmv2_blob_size =3D 0x20 + tib_len;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    /* Add challenge from message 2 */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    memcpy(&amp;ntlmv2_response[8], ch=
-allenge, 8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    /* hmac-md5 */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    gen_hmac_md5(&amp;ntlmv2_resp=
-onse[8], ntlmv2_blob_size + 8, ntlmv2_hash, ntlmv2_hmacmd5);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    /* Add hmac-md5 result to the blob.</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-     * Note: This overwrites challenge =
-previously written at</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-     * ntlmv2_response[8..15] */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    memcpy(ntlmv2_response, ntlmv2_hmacmd5, MD5_DIGEST_LENGTH);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    memset(phase3, 0, sizeof(phase3));   /*=
- clear reply */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    strcpy((char *)phase3, =
-&quot;NTLMSSP\0&quot;); /* signature */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    phase3[8] =3D 3;                       /* type 3 */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    /* NTLMv2 response */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    add_security_buffer(0x14, ntlmv2_re=
-sponse, ntlmv2_blob_size + 16, phase3, &amp;phase3_bufpos,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                        sizeof(phase3)=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    /* username in ascii */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    add_security_buffer(0x24, user=
-name, strlen(username), phase3, &amp;phase3_bufpos, sizeof(phase3));</span>=
+ospace; white-space: pre-wrap;">Remove --mtu-test<br><br>This option doesn&=
+#39;t seem to have worked right at least since<br>the merge of commit fb769=
+54a232decc86e071a76861c1e4fdd2507ab<br>which was merged before 2.6.0. Clear=
+ly noone cares enough<br>about this feature maintain or even test it. So le=
+t&#39;s not<br>pretend and get rid of it.<br><br>Change-Id: Ic1e84ef6fb6138=
+51861a695bfbdbc1c32970a398<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1186...=
+.2641...&gt;<br>---<br>M doc/man-sections/link-options.rst<br>M doc/man-sec=
+tions/unsupported-options.rst<br>M src/openvpn/forward.c<br>M src/openvpn/i=
+nit.c<br>M src/openvpn/occ.c<br>M src/openvpn/occ.h<br>M src/openvpn/openvp=
+n.h<br>M src/openvpn/options.c<br>8 files changed, 5 insertions(+), 338 del=
+etions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
+8/openvpn refs/changes/54/1454/1</pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/link=
+-options.rst b/doc/man-sections/link-options.rst</span><br><span>index edda=
+1ca..062be45 100644</span><br><span>--- a/doc/man-sections/link-options.rst=
+</span><br><span>+++ b/doc/man-sections/link-options.rst</span><br><span>@@=
+ -222,13 +222,6 @@</span><br><span> </span><br><span>   :code:`yes`     Alw=
+ays DF (Don&#39;t Fragment)</span><br><span> </span><br><span>---mtu-test</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  To empirically measur=
+e MTU on connection startup, add the ``--mtu-test``</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  option to your configuration. OpenVPN wil=
+l send ping packets of various</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  sizes to the remote peer and measure the largest packets which w=
+ere</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  successfully rec=
+eived. The ``--mtu-test`` process normally takes about 3</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  minutes to complete.</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> --nobind</span><br><s=
+pan>   Do not bind to local address and port. The IP stack will allocate a<=
+/span><br><span>   dynamic port for returning packets. Since the value of t=
+he dynamic port</span><br><span>diff --git a/doc/man-sections/unsupported-o=
+ptions.rst b/doc/man-sections/unsupported-options.rst</span><br><span>index=
+ f1332f3..d1bcf6e 100644</span><br><span>--- a/doc/man-sections/unsupported=
+-options.rst</span><br><span>+++ b/doc/man-sections/unsupported-options.rst=
+</span><br><span>@@ -35,6 +35,9 @@</span><br><span> --max-routes</span><br>=
+<span>   Removed in OpenVPN 2.4.  The limit was removed.</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+--mtu-test</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  This option was broken in O=
+penVPN 2.6 and was removed in OpenVPN 2.7.</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span> --ncp-disable</span><br><span>   R=
+emoved in OpenVPN 2.6.  This option mainly served a role as debug option</s=
+pan><br><span>   when NCP was first introduced.  It should no longer be nec=
+essary.</span><br><span>diff --git a/src/openvpn/forward.c b/src/openvpn/fo=
+rward.c</span><br><span>index 492e667..586809a 100644</span><br><span>--- a=
+/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><b=
+r><span>@@ -810,9 +810,6 @@</span><br><span>     /* Should we send an OCC_R=
+EQUEST message? */</span><br><span>     check_send_occ_req(c);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Should we=
+ send an MTU load test? */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    check_send_occ_load_test(c);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span>     /* Should we send an OCC_EXIT message=
+ to remote? */</span><br><span>     if (c-&gt;c2.explicit_exit_notification=
+_time_wait)</span><br><span>     {</span><br><span>@@ -993,11 +990,6 @@</sp=
+an><br><span>     {</span><br><span>         c-&gt;c2.link_read_bytes +=3D =
+c-&gt;c2.buf.len;</span><br><span>         link_read_bytes_global +=3D c-&g=
+t;c2.buf.len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+c-&gt;c2.original_recv_size =3D c-&gt;c2.buf.len;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c-&gt;c2.=
+original_recv_size =3D 0;</span><br><span>     }</span><br><span> </span><b=
+r><span> #ifdef ENABLE_DEBUG</span><br><span>@@ -1168,8 +1160,6 @@</span><b=
+r><span>         if (c-&gt;c2.buf.len &gt; 0)</span><br><span>         {</s=
+pan><br><span>             c-&gt;c2.link_read_bytes_auth +=3D c-&gt;c2.buf.=
+len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c-&gt=
+;c2.max_recv_size_local =3D</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                max_int(c-&gt;c2.original_recv_size, c-&gt;c2.max_rec=
+v_size_local);</span><br><span>         }</span><br><span> </span><br><span=
+>         /* Did we just receive an openvpn ping packet? */</span><br><span=
+>@@ -1825,7 +1815,6 @@</span><br><span> </span><br><span>             if (s=
+ize &gt; 0)</span><br><span>             {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                c-&gt;c2.max_send_size_local =3D max_i=
+nt(size, c-&gt;c2.max_send_size_local);</span><br><span>                 c-=
+&gt;c2.link_write_bytes +=3D size;</span><br><span>                 link_wr=
+ite_bytes_global +=3D size;</span><br><span>             }</span><br><span>=
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index =
+ee198ce..ee5b427 100644</span><br><span>--- a/src/openvpn/init.c</span><br>=
+<span>+++ b/src/openvpn/init.c</span><br><span>@@ -1378,12 +1378,6 @@</span=
+><br><span>             event_timeout_init(&amp;c-&gt;c2.occ_interval, OCC_=
+INTERVAL_SECONDS, now);</span><br><span>         }</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c-&gt;options.mt=
+u_test)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            event_timeout_=
+init(&amp;c-&gt;c2.occ_mtu_load_test_interval, OCC_MTU_LOAD_INTERVAL_SECOND=
+S,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+            now);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+>         /* initialize packet_id persistence timer */</span><br><span>    =
+     if (c-&gt;options.packet_id_file)</span><br><span>         {</span><br=
+><span>diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c</span><br><span>i=
+ndex 78013ae..6730c39 100644</span><br><span>--- a/src/openvpn/occ.c</span>=
+<br><span>+++ b/src/openvpn/occ.c</span><br><span>@@ -54,92 +54,6 @@</span>=
+<br><span> const uint8_t occ_magic[] =3D { 0x28, 0x7f, 0x34, 0x6b, 0xd4, 0x=
+ef, 0x7a, 0x81,</span><br><span>                               0x2d, 0x56, =
+0xb8, 0xd3, 0xaf, 0xc5, 0x45, 0x9c };</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-static const struct mtu_load_test mtu_loa=
+d_test_sequence[] =3D {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_=
+REQUEST, -1000 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{ OCC_MTU_LOAD, -1000 },</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    { OCC_MTU_LOAD_REQUEST, -1000 },</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    { OCC_MTU_LOAD, -1000 },</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -1000 },</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -1000 },</span>=
 <br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    /* Set domain. If &lt;domain&gt; is empty, de=
-fault domain will be used</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-     * (i.e. proxy&#39;s domain) */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    add_security_buffer(0x1c, domain, strlen(domain), pha=
-se3, &amp;phase3_bufpos, sizeof(phase3));</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   /* other security buffers will be empty */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    phase3[0x10] =3D phase3_bufpos; /* lm not used =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    phase3[0x30] =
-=3D phase3_bufpos; /* no workstation name supplied */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    phase3[0x38] =3D phase3_bufpos; /* no s=
-ession key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    /* flags */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    phase3[0x3c] =3D 0x02; /* negot=
-iate oem */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    phase3=
-[0x3d] =3D 0x02; /* negotiate ntlm */</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
-eturn ((const char *)make_base64_string2((unsigned char *)phase3, phase3_bu=
-fpos, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif /* if NTLM */</span><br><span>di=
-ff --git a/src/openvpn/ntlm.h b/src/openvpn/ntlm.h</span><br><span>deleted =
-file mode 100644</span><br><span>index b0a6821..0000000</span><br><span>---=
- a/src/openvpn/ntlm.h</span><br><span>+++ /dev/null</span><br><span>@@ -1,1=
-2 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef NTLM=
-_H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define NTLM_H</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#if NTLM</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-const =
-char *ntlm_phase_1(const struct http_proxy_info *p, struct gc_arena *gc);</=
+lor: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -750 },</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -750 },</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -=
+750 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_L=
+OAD, -750 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC=
+_MTU_LOAD_REQUEST, -750 },</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    { OCC_MTU_LOAD, -750 },</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_=
+MTU_LOAD_REQUEST, -500 },</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    { OCC_MTU_LOAD, -500 },</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    { OCC_MTU_LOAD_REQUEST, -500 },</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -500 },</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -500 },</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -500 },</=
 span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-const char *ntlm_phase_3(const struct http_=
-proxy_info *p, const char *phase_2, struct gc_arena *gc);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><spa=
-n>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><spa=
-n>index 34af0d3..dabb75b 100644</span><br><span>--- a/src/openvpn/options.c=
-</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -158,8 +158=
-,7 @@</span><br><span>     &quot;                  through an HTTP proxy at=
- address s and port p.\n&quot;</span><br><span>     &quot;                 =
- If proxy authentication is required,\n&quot;</span><br><span>     &quot;  =
-                up is a file containing username/password on 2 lines, or\n&=
-quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;      =
-            &#39;stdin&#39; to prompt from console.  Add auth=3D&#39;ntlm2&=
-#39; if\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &q=
-uot;                  the proxy requires NTLM authentication.\n&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;               =
-   &#39;stdin&#39; to prompt from console.\n&quot;</span><br><span>     &qu=
-ot;--http-proxy s p &#39;auto[-nct]&#39; : Like the above directive, but au=
-tomatically\n&quot;</span><br><span>     &quot;                  determine =
-auth method and query for username/password\n&quot;</span><br><span>     &q=
-uot;                  if needed.  auto-nct disables weak proxy auth methods=
-.\n&quot;</span><br><span>diff --git a/src/openvpn/proxy.c b/src/openvpn/pr=
-oxy.c</span><br><span>index ff6ea5a..957a4f2 100644</span><br><span>--- a/s=
-rc/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><br><spa=
-n>@@ -35,7 +35,6 @@</span><br><span> #include &quot;proxy.h&quot;</span><br=
-><span> #include &quot;base64.h&quot;</span><br><span> #include &quot;httpd=
-igest.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include=
- &quot;ntlm.h&quot;</span><br><span> #include &quot;memdbg.h&quot;</span><b=
-r><span> #include &quot;forward.h&quot;</span><br><span> </span><br><span>@=
-@ -348,14 +347,6 @@</span><br><span>                 ret =3D HTTP_AUTH_DIGE=
-ST;</span><br><span>             }</span><br><span> #endif</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#if NTLM</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            else if (!strncmp(buf + 20, &quot;NTLM&=
-quot;, 4))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg=
-(D_PROXY, &quot;PROXY AUTH NTLM: &#39;%s&#39;&quot;, buf);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                *data =3D NULL;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                ret =3D HTTP=
-_AUTH_NTLM2;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
-<span>         }</span><br><span>     }</span><br><span> }</span><br><span>=
-@@ -511,40 +502,20 @@</span><br><span>         {</span><br><span>          =
-   p-&gt;auth_method =3D HTTP_AUTH_BASIC;</span><br><span>         }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#if NTLM</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        else if (!strcmp(o-&gt;auth_metho=
-d_string, &quot;ntlm&quot;))</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       msg(M_WARN,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-             &quot;NTLM v1 authentication has been removed in OpenVPN 2.7. =
-Will try to use NTLM v2 authentication.&quot;);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            p-&gt;auth_method =3D HTTP_AUTH_NTLM2=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        else if (!strcmp(o-&gt;a=
-uth_method_string, &quot;ntlm2&quot;))</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            p-&gt;auth_method =3D HTTP_AUTH_NTLM2;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#endif</span><br><span>         else</span><br><span>=
-         {</span><br><span>             msg(M_FATAL, &quot;ERROR: unknown H=
-TTP authentication method: &#39;%s&#39;&quot;, o-&gt;auth_method_string);</=
-span><br><span>         }</span><br><span>     }</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    /* When basic or NTLMv2 au=
-thentication is requested, get credentials now.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    /* When basic authentication is requested, =
-get credentials now.</span><br><span>      * In case of &quot;auto&quot; ne=
-gotiation credentials will be retrieved later once</span><br><span>      * =
-we know whether we need any. */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC || p-&gt;auth_me=
-thod =3D=3D HTTP_AUTH_NTLM2)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC)</span><br><span>=
-     {</span><br><span>         get_user_pass_http(p, p-&gt;options.first_t=
-ime);</span><br><span>     }</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#if !NTLM</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    if (p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        msg(M_FATAL,</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            &quot;Sorry, this version of &quot; PAC=
-KAGE_NAME &quot; was built without NTLM Proxy support.&quot;);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span>     p-&gt;defined =3D true;</span><br><span>   =
-  return p;</span><br><span> }</span><br><span>@@ -638,8 +609,7 @@</span><b=
-r><span>     volatile int *signal_received =3D &amp;sig_info-&gt;signal_rec=
-eived;</span><br><span> </span><br><span>     /* get user/pass if not previ=
-ously given */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC || p-&gt;auth_method =3D=3D HTTP_=
-AUTH_DIGEST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ||=
- p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC || =
-p-&gt;auth_method =3D=3D HTTP_AUTH_DIGEST)</span><br><span>     {</span><br=
-><span>         get_user_pass_http(p, false);</span><br><span> </span><br><=
-span>@@ -692,25 +662,6 @@</span><br><span>                 }</span><br><spa=
-n>                 break;</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#if NTLM</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            case HTTP_AUTH_NTLM2:</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                /* keep-alive connection */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                snprintf(buf, si=
-zeof(buf), &quot;Proxy-Connection: Keep-Alive&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                if (!send_line_crlf(sd, buf=
-))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    got=
-o error;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                snprintf(buf, sizeof(b=
-uf), &quot;Proxy-Authorization: NTLM %s&quot;, ntlm_phase_1(p, &amp;gc));</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(D_P=
-ROXY, &quot;Attempting NTLM Proxy-Authorization phase 1&quot;);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                dmsg(D_SHOW_KEYS,=
- &quot;Send to HTTP proxy: &#39;%s&#39;&quot;, buf);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                if (!send_line_crlf(sd, buf=
-))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    got=
-o error;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                b=
-reak;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>             d=
-efault:</span><br><span>                 ASSERT(0);</span><br><span>       =
-  }</span><br><span>@@ -749,112 +700,6 @@</span><br><span>         {</span>=
-<br><span>             processed =3D true;</span><br><span>         }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        else if (p-&gt;auth=
-_method =3D=3D HTTP_AUTH_NTLM2 &amp;&amp; !processed) /* check for NTLM */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#if NTLM</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            /* look for the phase 2 response */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            char buf2=
-[512];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            whi=
-le (true)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (=
-!recv_line(sd, buf, sizeof(buf),</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                               get_server_poll_remaining_time(se=
-rver_poll_timeout), true, NULL,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                               signal_received))</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                    goto error;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                chomp(buf);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                msg(D_PROXY, &=
-quot;HTTP proxy returned: &#39;%s&#39;&quot;, buf);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -400 },</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -400 },</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQU=
+EST, -400 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC=
+_MTU_LOAD, -400 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ { OCC_MTU_LOAD_REQUEST, -400 },</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    { OCC_MTU_LOAD, -400 },</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{ OCC_MTU_LOAD_REQUEST, -300 },</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    { OCC_MTU_LOAD, -300 },</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -300 },</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -300 },</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -300 },</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -30=
+0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -200 },</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -200=
+ },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD=
+_REQUEST, -200 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{ OCC_MTU_LOAD, -200 },</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    { OCC_MTU_LOAD_REQUEST, -200 },</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    { OCC_MTU_LOAD, -200 },</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    { OCC_MTU_LOAD_REQUEST, -150 },</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    { OCC_MTU_LOAD, -150 },</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -150 },</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -150 },</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -150 }=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, =
+-150 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -100 },=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -=
+100 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_L=
+OAD_REQUEST, -100 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   { OCC_MTU_LOAD, -100 },</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    { OCC_MTU_LOAD_REQUEST, -100 },</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    { OCC_MTU_LOAD, -100 },</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    { OCC_MTU_LOAD_REQUEST, -50 },</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    { OCC_MTU_LOAD, -50 },</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -50 },</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -50 },</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, -50 },<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, -5=
+0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUEST, 0 },</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD, 0 },</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_LOAD_REQUE=
+ST, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU=
+_LOAD, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_=
+MTU_LOAD_REQUEST, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    { OCC_MTU_LOAD, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_REQ=
+UEST, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { OCC_M=
+TU_REQUEST, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+ OCC_MTU_REQUEST, 0 },</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    { OCC_MTU_REQUEST, 0 },</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    { OCC_MTU_REQUEST, 0 },</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    { OCC_MTU_REQUEST, 0 },</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    { OCC_MTU_REQUEST, 0 },</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    { OCC_MTU_REQUEST, 0 },</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_REQUEST, 0 },</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    { OCC_MTU_REQUEST, 0 },</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    { -1, 0 }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span> void</span><br><span> check_send_occ_req_dowork(struct contex=
+t *c)</span><br><span> {</span><br><span>@@ -153,8 +67,7 @@</span><br><span=
+>              */</span><br><span>             msg(D_SHOW_OCC,</span><br><s=
+pan>                 &quot;NOTE: failed to obtain options consistency info =
+from peer -- &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              &quot;this could occur if the remote peer is running a versio=
+n of &quot; PACKAGE_NAME</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                &quot; before 1.5-beta8 or if there is a network connect=
+ivity problem, and will not necessarily prevent &quot; PACKAGE_NAME</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;this =
+could occur if there is a network connectivity problem, and will not necess=
+arily prevent &quot; PACKAGE_NAME</span><br><span>                 &quot; f=
+rom running (&quot; counter_format &quot; bytes received from peer, &quot; =
+counter_format</span><br><span>                 &quot; bytes authenticated =
+data channel traffic) -- you can disable the options consistency &quot;</sp=
+an><br><span>                 &quot;check with --disable-occ.&quot;,</span>=
+<br><span>@@ -174,45 +87,6 @@</span><br><span>     }</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if def=
+ined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-check_send_occ_load_test_dowork(struct context *c)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (connection_established(c))</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        const struct mtu_load_test *entry;</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                char get[80];</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                CLEAR(buf2);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                snprintf(get, sizeof(get), &quot;=
-%%*s NTLM %%%zus&quot;, sizeof(buf2) - 1);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                nparms =3D sscanf(buf, get, buf2);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                /* check for &quot;Proxy-Authe=
-nticate: NTLM TlRM...&quot; */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                if (nparms =3D=3D 1)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                    /* parse buf2 */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                    msg(D_PROXY, &quot;a=
-uth string: &#39;%s&#39;&quot;, buf2);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                    break;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            /* if we are here then auth string was got */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(D_PROXY, &quo=
-t;Received NTLM Proxy-Authorization phase 2 response&quot;);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            /* receive and discard everything else */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            while (recv_l=
-ine(sd, NULL, 0, 2, true, NULL, signal_received))</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   /* now send the phase 3 reply */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     /* format HTTP CONNECT message */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            snprintf(buf, sizeof(buf), &quot;CONNECT %s:%s=
- HTTP/%s&quot;, host, port,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                     p-&gt;options.http_version);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            msg(D_PROXY, &quot;Send to HTTP proxy: &#39;%s&#39=
-;&quot;, buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            /* send HTTP CON=
-NECT message to proxy */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            if (!send_line_crlf(sd, buf))</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                goto error;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    /* keep-alive connection */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            snprintf(buf, sizeof(buf), &quot;Proxy-Connection: Ke=
-ep-Alive&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       if (!send_line_crlf(sd, buf))</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                goto error;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* s=
-end HOST etc, */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       if (!add_proxy_headers(p, sd, host))</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                goto error;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   msg(D_PROXY, &quot;Attempting NTLM Proxy-Authorization phase 3&quot;);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                const char *np3=
- =3D ntlm_phase_3(p, buf2, &amp;gc);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                if (!np3)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                    msg(D_PROXY,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                        &quot;NTLM Proxy-Authoriz=
-ation phase 3 failed: received corrupted data from proxy server&quot;);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    goto =
-error;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                snp=
-rintf(buf, sizeof(buf), &quot;Proxy-Authorization: NTLM %s&quot;, np3);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            msg(D_PROXY, &quot;Send to HTTP proxy: &#3=
-9;%s&#39;&quot;, buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            if (!send_line_crlf(sd, buf))</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                goto error;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            /* ok so far... */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            /* send empty CR, LF */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            if (!send_crlf(sd))</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                goto error;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            /* receive reply from proxy */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            if (!recv_line(sd, buf, sizeo=
-f(buf),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-             get_server_poll_remaining_time(server_poll_timeout), true, NUL=
-L,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
-        signal_received))</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-            goto error;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* remove trail=
-ing CR, LF */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    chomp(buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(D_PROXY, &q=
-uot;HTTP proxy returned: &#39;%s&#39;&quot;, buf);</span><br><span style=3D=
+%, 40%);">-        if (!c-&gt;c2.occ_mtu_load_n_tries)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            msg(M_INFO,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                &quot;NOTE: Beginning empirical MTU =
+test -- results should be available in 3 to 4 minutes.&quot;);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D=
 "color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            /* parse return string */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            nparms =3D sscanf(buf, &quot;%*s %d&quo=
-t;, &amp;status);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        processed =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#endif /* if NTLM */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        }</span><br><span> #if PROXY_DIGEST_AUTH</span><br><span>     =
-    else if (p-&gt;auth_method =3D=3D HTTP_AUTH_DIGEST &amp;&amp; !processe=
-d)</span><br><span>         {</span><br><span>diff --git a/src/openvpn/prox=
-y.h b/src/openvpn/proxy.h</span><br><span>index d14725c..238a32e 100644</sp=
-an><br><span>--- a/src/openvpn/proxy.h</span><br><span>+++ b/src/openvpn/pr=
-oxy.h</span><br><span>@@ -31,7 +31,7 @@</span><br><span> #define HTTP_AUTH_=
-BASIC  1</span><br><span> #define HTTP_AUTH_DIGEST 2</span><br><span> /* #d=
-efine HTTP_AUTH_NTLM   3 removed in OpenVPN 2.7 */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#define HTTP_AUTH_NTLM2  4</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/* #define HTTP_AUTH_NTLM2  4 removed i=
-n OpenVPN 2.8 */</span><br><span> #define HTTP_AUTH_N      5 /* number of H=
-TTP_AUTH methods */</span><br><span> </span><br><span> struct http_custom_h=
-eader</span><br><span>diff --git a/src/openvpn/syshead.h b/src/openvpn/sysh=
-ead.h</span><br><span>index 627ba92..82452f3 100644</span><br><span>--- a/s=
-rc/openvpn/syshead.h</span><br><span>+++ b/src/openvpn/syshead.h</span><br>=
-<span>@@ -488,13 +488,6 @@</span><br><span> #endif</span><br><span> </span>=
-<br><span> /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Shoul=
-d we include NTLM proxy functionality</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
-fdef ENABLE_NTLM</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defi=
-ne NTLM 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-/*</span><br><span>  * Should we include proxy d=
-igest auth functionality</span><br><span>  */</span><br><span> #define PROX=
-Y_DIGEST_AUTH 1</span><br><span>diff --git a/tests/Makefile.am b/tests/Make=
-file.am</span><br><span>index 4b4bcaa..005ac35 100644</span><br><span>--- a=
-/tests/Makefile.am</span><br><span>+++ b/tests/Makefile.am</span><br><span>=
-@@ -49,12 +49,4 @@</span><br><span> ntlm_support_CFLAGS  =3D -I$(top_srcdir=
-)/src/openvpn -I$(top_srcdir)/src/compat -I$(top_srcdir)/tests/unit_tests/o=
-penvpn -DNO_CMOCKA @TEST_CFLAGS@</span><br><span> ntlm_support_LDFLAGS =3D =
-@TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn $(OPTIONAL_CRYPTO_LIBS)</span><b=
-r><span> ntlm_support_SOURCES =3D ntlm_support.c \</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-	unit_tests/openvpn/mock_msg.c unit_tests/open=
-vpn/mock_msg.h \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(to=
-p_srcdir)/src/openvpn/buffer.c \</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-	$(top_srcdir)/src/openvpn/crypto.c \</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-	$(top_srcdir)/src/openvpn/crypto_epoch.c \</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(top_srcdir)/src/openvpn=
-/crypto_openssl.c \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$=
-(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	$(top_srcdir)/src/openvpn/otime.c \</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-	$(top_srcdir)/src/openvpn/packet_id.c=
- \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(top_srcdir)/src/=
-openvpn/platform.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
-unit_tests/openvpn/mock_msg.c unit_tests/openvpn/mock_msg.h</span><br><span=
->diff --git a/tests/ntlm_support.c b/tests/ntlm_support.c</span><br><span>i=
-ndex 7007051..61e5090 100644</span><br><span>--- a/tests/ntlm_support.c</sp=
-an><br><span>+++ b/tests/ntlm_support.c</span><br><span>@@ -26,30 +26,10 @@=
-</span><br><span> </span><br><span> #include &quot;syshead.h&quot;</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &qu=
-ot;crypto.h&quot;</span><br><span> #include &quot;error.h&quot;</span><br><=
-span> </span><br><span> int</span><br><span> main(void)</span><br><span> {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef NTLM</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_OPENSS=
-L)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    provider_t *leg=
-acy =3D crypto_load_provider(&quot;legacy&quot;);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    provider_t *def =3D crypto_load_provider(&q=
-uot;default&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-ndif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!md_valid=
-(&quot;MD4&quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_FATAL=
-, &quot;MD4 not supported&quot;);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (!md_valid(&quot;MD5&quot;))</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  msg(M_FATAL, &quot;MD5 not supported&quot;);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    crypto_unload_provider(&quot;legacy&quot;, legacy=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_unload_p=
-rovider(&quot;default&quot;, def);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-lse /* ifdef NTLM */</span><br><span>     msg(M_FATAL, &quot;NTLM support n=
-ot compiled in&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#endif</span><br><span> }</span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail">chang=
-e 1453</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+40%);">-        entry =3D &amp;mtu_load_test_sequence[c-&gt;c2.occ_mtu_load=
+_n_tries++];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
+f (entry-&gt;op &gt;=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     c-&gt;c2.occ_op =3D entry-&gt;op;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            size_t payload_size =3D</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                frame_calculate_payload_siz=
+e(&amp;c-&gt;c2.frame, &amp;c-&gt;options, &amp;c-&gt;c1.ks.key_type);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            size_t header_=
+size =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   frame_calculate_protocol_header_size(&amp;c-&gt;c1.ks.key_type, &amp;c-&=
+gt;options, false);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c-&gt;c2.oc=
+c_mtu_load_size =3D payload_size + header_size;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     msg(M_INFO, &quot;NOTE: failed to empirically measure MTU (requires &q=
+uot; PACKAGE_NAME</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                    &quot; 1.5 or higher at other end of connection).&quot;=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            event_t=
+imeout_clear(&amp;c-&gt;c2.occ_mtu_load_test_interval);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            c-&gt;c2.occ_mtu_load_n_tries=
+ =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span> void</span><br><span> check_send_occ_msg_dow=
+ork(struct context *c)</span><br><span> {</span><br><span>@@ -252,84 +126,6=
+ @@</span><br><span>             doit =3D true;</span><br><span>           =
+  break;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        case OCC_MTU_REQUEST:</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            if (!buf_write_u8(&amp;c-&gt;c2.buf, OCC_MTU_REQUE=
+ST))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                break;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_PACKET_CONTEN=
+T, &quot;SENT OCC_MTU_REQUEST&quot;);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            doit =3D true;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     case OCC_MTU_REPLY:</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            if (!buf_write_u8(&amp;c-&gt;c2.buf, OCC_MTU_REPLY))</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                break;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            if (!buf_write_u16(&amp;c-&gt;c=
+2.buf, c-&gt;c2.max_recv_size_local))</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                break;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            if (!buf_write_u16(&amp;c-&gt;c2.buf, c-&gt;c2.max_send_size_l=
+ocal))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                break;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_PACKET_CONT=
+ENT, &quot;SENT OCC_MTU_REPLY&quot;);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            doit =3D true;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     case OCC_MTU_LOAD_REQUEST:</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            if (!buf_write_u8(&amp;c-&gt;c2.buf, OCC_MTU_LOAD_REQ=
+UEST))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                break;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            if (!buf_write_u16=
+(&amp;c-&gt;c2.buf, c-&gt;c2.occ_mtu_load_size))</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                break;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            dmsg(D_PACKET_CONTENT, &quot;SENT OCC_MTU_LOAD_REQU=
+EST&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  doit =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        case OCC_MTU_LOAD:</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            int need_to_add;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            if (!buf_write_u8(&amp;c-&gt;c2.buf, O=
+CC_MTU_LOAD))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            size_t prot=
+o_hdr, payload_hdr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          const struct key_type *kt =3D &amp;c-&gt;c1.ks.key_type;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            /* OCC message have comp/fragment heade=
+rs but not ethernet headers */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            payload_hdr =3D frame_calculate_payload_overhead(0, &a=
+mp;c-&gt;options, kt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Since=
+ we do not know the payload size we just pass 0 as size here */</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            proto_hdr =3D frame_c=
+alculate_protocol_header_size(kt, &amp;c-&gt;options, false);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            need_to_add =3D min_int(c-&gt;c2.occ_mtu_loa=
+d_size, c-&gt;c2.frame.buf.payload_size)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                          - OCC_STRING_SIZE - sizeof(uin=
+t8_t) /* occ opcode */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                          - payload_hdr - proto_hdr;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            while (need_to_add &gt; 0)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                /*</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                 * Fill the load test packet with pseudo-r=
+andom bytes.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+        */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+     if (!buf_write_u8(&amp;c-&gt;c2.buf, get_random() &amp; 0xFF))</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                    break;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                --need_to_add;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_PACKET_CONTE=
+NT, &quot;SENT OCC_MTU_LOAD min_int(%d,%d)-%d-%d-%d-%d) size=3D%d&quot;,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                 c-&gt;c=
+2.occ_mtu_load_size, c-&gt;c2.frame.buf.payload_size, OCC_STRING_SIZE,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                 (int)size=
+of(uint8_t), (int)payload_hdr, (int)proto_hdr, BLEN(&amp;c-&gt;c2.buf));</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            doit =3D tru=
+e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        break;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         case OCC_EXI=
+T:</span><br><span>             if (!buf_write_u8(&amp;c-&gt;c2.buf, OCC_EX=
+IT))</span><br><span>             {</span><br><span>@@ -352,10 +148,6 @@</s=
+pan><br><span>     c-&gt;c2.occ_op =3D -1;</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNU=
+C__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span> void</span><br><span> process_received_occ_msg(struct context =
+*c)</span><br><span> {</span><br><span>@@ -367,20 +159,6 @@</span><br><span=
+>             c-&gt;c2.occ_op =3D OCC_REPLY;</span><br><span>             b=
+reak;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        case OCC_MTU_REQUEST:</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            dmsg(D_PACKET_CONTENT, &quot;RECEIVED OCC_MTU_REQUEST=
+&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c=
+-&gt;c2.occ_op =3D OCC_MTU_REPLY;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            break;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case=
+ OCC_MTU_LOAD_REQUEST:</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            dmsg(D_PACKET_CONTENT, &quot;RECEIVED OCC_MTU_LOAD_REQUEST&quo=
+t;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c-&gt=
+;c2.occ_mtu_load_size =3D buf_read_u16(&amp;c-&gt;c2.buf);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            if (c-&gt;c2.occ_mtu_load_=
+size &gt;=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+  c-&gt;c2.occ_op =3D OCC_MTU_LOAD;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            break;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span>         case OCC_REPLY:</span><br><span>             d=
+msg(D_PACKET_CONTENT, &quot;RECEIVED OCC_REPLY&quot;);</span><br><span>    =
+         if (c-&gt;options.occ &amp;&amp; !TLS_MODE(c) &amp;&amp; c-&gt;c2.=
+options_string_remote)</span><br><span>@@ -395,30 +173,6 @@</span><br><span=
+>             event_timeout_clear(&amp;c-&gt;c2.occ_interval);</span><br><s=
+pan>             break;</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        case OCC_MTU_REPLY:</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            dmsg(D_PACKET_CONTENT, &quot;RECEIVED=
+ OCC_MTU_REPLY&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            c-&gt;c2.max_recv_size_remote =3D buf_read_u16(&amp;c-&gt;c2.b=
+uf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c-&gt=
+;c2.max_send_size_remote =3D buf_read_u16(&amp;c-&gt;c2.buf);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            if (c-&gt;options.mtu_t=
+est &amp;&amp; c-&gt;c2.max_recv_size_remote &gt; 0</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                &amp;&amp; c-&gt;c2.max_sen=
+d_size_remote &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        msg(M_INFO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                  &quot;NOTE: Empirical MTU test completed [Tried,Actual] l=
+ocal-&gt;remote=3D[%d,%d] remote-&gt;local=3D[%d,%d]&quot;,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                    c-&gt;c2.max_send=
+_size_local, c-&gt;c2.max_recv_size_remote,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                    c-&gt;c2.max_send_size_remote, c-=
+&gt;c2.max_recv_size_local);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                if (!c-&gt;options.ce.fragment &amp;&amp; (proto_is_=
+dgram(c-&gt;options.ce.proto))</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                    &amp;&amp; c-&gt;c2.max_send_size_local &gt; T=
+UN_MTU_MIN</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+         &amp;&amp; (c-&gt;c2.max_recv_size_remote &lt; c-&gt;c2.max_send_s=
+ize_local</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+            || c-&gt;c2.max_recv_size_local &lt; c-&gt;c2.max_send_size_rem=
+ote))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
+msg(M_INFO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+              &quot;NOTE: This connection is unable to accommodate a UDP pa=
+cket size of %d. Consider using --fragment or --mssfix options as a workaro=
+und.&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+              c-&gt;c2.max_send_size_local);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            event_timeout_clear(&amp;c-&gt;c2.occ_mtu_load_test_=
+interval);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an>         case OCC_EXIT:</span><br><span>             dmsg(D_STREAM_ERROR=
+S, &quot;OCC exit message received by peer&quot;);</span><br><span>        =
+     register_signal(c-&gt;sig, SIGUSR1, &quot;remote-exit&quot;);</span><b=
+r><span>diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h</span><br><span>=
+index 369d94e..2b816ec 100644</span><br><span>--- a/src/openvpn/occ.h</span=
+><br><span>+++ b/src/openvpn/occ.h</span><br><span>@@ -45,39 +45,12 @@</spa=
+n><br><span> #define OCC_INTERVAL_SECONDS 10</span><br><span> #define OCC_N=
+_TRIES          12</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * O=
+ther OCC protocol opcodes used to estimate the MTU empirically.</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#define OCC_MTU_LOAD_REQUEST 2 /* Ask peer to send =
+a big packet to us */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#define OCC_MTU_LOAD         3 /* Send a big packet to peer */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#define OCC_MTU_REQUEST           =
+                                \</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    4                          /* Ask peer to tell us the large=
+st \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+               * packet it has received from us so far */</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#define OCC_MTU_REPLY 5        /* Send =
+largest packet size to peer */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- * Process one command from mtu=
+_load_test_sequence</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+ once every n seconds, if --mtu-test is specified.</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#define OCC_MTU_LOAD_INTERVAL_SECONDS 3</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/* 2 - 5 removed (OCC MTU Test) */</span><br><span> /*</span><br>=
+<span>  * Send an exit message to remote.</span><br><span>  */</span><br><s=
+pan> #define OCC_EXIT 6</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- * Used to conduct a load test command sequence</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- * of UDP connection for empirical MTU measureme=
+nt.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-struct mtu_load_test</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    int op;    /* OCC opcode to send to peer */</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    int delta; /* determine pac=
+ket size to send by using</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                * this delta against currently</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                * configured MTU */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span> extern const uint8_t occ_magic[];=
+</span><br><span> </span><br><span> static inline bool</span><br><span>@@ -=
+90,8 +63,6 @@</span><br><span> </span><br><span> void check_send_occ_req_do=
+work(struct context *c);</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-void check_send_occ_load_test_dowork(struct context *c=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> v=
+oid check_send_occ_msg_dowork(struct context *c);</span><br><span> </span><=
+br><span> /*</span><br><span>@@ -119,20 +90,6 @@</span><br><span> }</span><=
+br><span> </span><br><span> /*</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * Should we send an MTU load test?</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-static inline void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-check_send_occ_load_test(struct context *c)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    if (event_timeout_defined(&amp;c-&gt;c2.occ_mtu_load_test_interval)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; ev=
+ent_timeout_trigger(&amp;c-&gt;c2.occ_mtu_load_test_interval, &amp;c-&gt;c2=
+.timeval,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+                     (!TO_LINK_DEF(c) &amp;&amp; c-&gt;c2.occ_op &lt; 0) ? =
+ETT_DEFAULT : 0))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        check_send_o=
+cc_load_test_dowork(c);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-/*</span><br><span>  * Should we send an OCC message?</=
+span><br><span>  */</span><br><span> static inline void</span><br><span>dif=
+f --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h</span><br><span>ind=
+ex 9325e21..c1cdb5a 100644</span><br><span>--- a/src/openvpn/openvpn.h</spa=
+n><br><span>+++ b/src/openvpn/openvpn.h</span><br><span>@@ -301,23 +301,6 @=
+@</span><br><span>     struct event_timeout occ_interval;</span><br><span> =
+</span><br><span>     /*</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-     * Keep track of maximum packet size received so far</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-     * (of authenticated packets).</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    int original_recv_size;   /* tempo=
+rary */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int max_re=
+cv_size_local;  /* max packet size received */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    int max_recv_size_remote; /* max packet size r=
+eceived by remote */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   int max_send_size_local;  /* max packet size sent */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    int max_send_size_remote; /* max pack=
+et size sent by remote */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    /* remote wants us to send back a =
+load test packet of this size */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    int occ_mtu_load_size;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    s=
+truct event_timeout occ_mtu_load_test_interval;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    int occ_mtu_load_n_tries;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    /*</span><br><span>      * TLS-mode crypto objects.</span>=
+<br><span>      */</span><br><span>     struct tls_multi *tls_multi; /**&lt=
+; TLS state structure for this VPN</span><br><span>diff --git a/src/openvpn=
+/options.c b/src/openvpn/options.c</span><br><span>index 34af0d3..e3bcbc7 1=
+00644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src=
+/openvpn/options.c</span><br><span>@@ -305,7 +305,6 @@</span><br><span>    =
+ &quot;                  &#39;no&#39;    -- Never send DF (Don&#39;t Fragme=
+nt) frames\n&quot;</span><br><span>     &quot;                  &#39;maybe&=
+#39; -- Use per-route hints\n&quot;</span><br><span>     &quot;            =
+      &#39;yes&#39;   -- Always DF (Don&#39;t Fragment)\n&quot;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &quot;--mtu-test      : Empir=
+ically measure and report MTU.\n&quot;</span><br><span> #ifdef ENABLE_FRAGM=
+ENT</span><br><span>     &quot;--fragment max  : Enable internal datagram f=
+ragmentation so that no UDP\n&quot;</span><br><span>     &quot;            =
+      datagrams are sent which are larger than max bytes.\n&quot;</span><br=
+><span>@@ -6479,11 +6478,6 @@</span><br><span>         VERIFY_PERMISSION(OP=
+T_P_MTU | OPT_P_CONNECTION);</span><br><span>         options-&gt;ce.mtu_di=
+scover_type =3D translate_mtu_discover_type_name(p[1]);</span><br><span>   =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (streq=
+(p[0], &quot;mtu-test&quot;) &amp;&amp; !p[1])</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        options-&gt;mtu_test =3D true;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span>     el=
+se if (streq(p[0], &quot;nice&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</spa=
+n><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_NICE);<=
+/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1454?usp=3Demail">change 1454</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1454?usp=3Demail"/><meta itemprop=3D"name" content=3D=
+"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1f5724476862935284f620c54af=
-a510eea03e3f9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1453 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic1e84ef6fb613851861a695bfbd=
+bc1c32970a398 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1454 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -1913,5 +1210,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---hLZ9uwFdF8I=--
+--GQGNEDfpdpE=--
 
