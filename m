@@ -1,14 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 8 Jan 2026 12:41:12 +0000
-References: <gerrit.1767876064000.I5c06dc13e9d8ab73997f79b13c30ee8949e5e993@...2715...>
-Reply-To: frank@...2641..., openvpn-devel@lists.sourceforge.net
-Message-ID: <04bc06f0a8831cf6d06114dcbeaefffd1e9ab379-HTML@...2715...>
+Date: Thu, 8 Jan 2026 13:36:56 +0000
+In-Reply-To: <gerrit.1767808679000.Ib517457015b754d59aeb70827c4795aa6154728c@...2715...>
+References: <gerrit.1767808679000.Ib517457015b754d59aeb70827c4795aa6154728c@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <99612b2afb69a01f68badb8f279b3c7ab7afca1f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qe+rLVJeyRo="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Ensure that all
- unit tests use unbuffered stdout and stderr
+Content-Type: multipart/alternative; boundary="4Swf2QWic+Q="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Factor
+ out the string conversion from GetItfDnsDomains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,628 +19,551 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qe+rLVJeyRo=
+--4Swf2QWic+Q=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2.
+Attention is currently required from: plaisthos.
 
-flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
-et/c/openvpn/+/1461?usp=3Demail )
+Hello plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1458?usp=3Demail
+
+to look at the new patch set (#4).
 
 
-Change subject: Ensure that all unit tests use unbuffered stdout and stderr
+Change subject: openvpnserv: Factor out the string conversion from GetItfDn=
+sDomains
 ......................................................................
 
-Ensure that all unit tests use unbuffered stdout and stderr
+openvpnserv: Factor out the string conversion from GetItfDnsDomains
 
-stderr is normally always unbuffered but stdout can be buffered. Especially,
-when stdout is redirected it will become buffered while it is normally
-unbuffered when connected to a terminal. This mean that if the unit exits
-prematurely, the output in the buffered output will be lost.
+Mostly so that we can actually test it. Since that
+code does some in-place conversions a test would be
+good.
 
-As the unit test x_msg mock implementation prints even fatal on stdout
-we ensure with this setup method that stdout is also unbuffered.
-
-Change-Id: I5c06dc13e9d8ab73997f79b13c30ee8949e5e993
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20240123104358.495517-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
-122.html
-Signed-off-by: Gert Doering <gert@...1296...>
-(cherry picked from commit 7869617a0f85089fb5e6fbe2db6f03542a8f33f4)
+Change-Id: Ib517457015b754d59aeb70827c4795aa6154728c
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M tests/unit_tests/openvpn/test_argv.c
-M tests/unit_tests/openvpn/test_auth_token.c
-M tests/unit_tests/openvpn/test_buffer.c
-A tests/unit_tests/openvpn/test_common.h
-M tests/unit_tests/openvpn/test_crypto.c
-M tests/unit_tests/openvpn/test_cryptoapi.c
-M tests/unit_tests/openvpn/test_misc.c
-M tests/unit_tests/openvpn/test_ncp.c
-M tests/unit_tests/openvpn/test_packet_id.c
-M tests/unit_tests/openvpn/test_pkt.c
-M tests/unit_tests/openvpn/test_provider.c
-M tests/unit_tests/openvpn/test_tls_crypt.c
-12 files changed, 63 insertions(+), 0 deletions(-)
+M src/openvpnserv/interactive.c
+1 file changed, 101 insertions(+), 72 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/1458/4
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/1461/1
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 8b817ed..00657b0 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2143,6 +2143,106 @@
+ }
 
-diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvp=
-n/test_argv.c
-index 1b18ac0..33b3dec 100644
---- a/tests/unit_tests/openvpn/test_argv.c
-+++ b/tests/unit_tests/openvpn/test_argv.c
-@@ -12,6 +12,7 @@
-
- #include "argv.h"
- #include "buffer.h"
-+#include "test_common.h"
-
- /* Defines for use in the tests and the mock parse_line() */
- #define PATH1       "/s p a c e"
-@@ -252,6 +253,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test(argv_printf__multiple_spaces_in_format__parsed_as=
-_one),
-         cmocka_unit_test(argv_printf_cat__multiple_spaces_in_format__parse=
-d_as_one),
-diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
-openvpn/test_auth_token.c
-index a027330..3a3cb69 100644
---- a/tests/unit_tests/openvpn/test_auth_token.c
-+++ b/tests/unit_tests/openvpn/test_auth_token.c
-@@ -35,6 +35,7 @@
- #include <cmocka.h>
-
- #include "auth_token.c"
-+#include "test_common.h"
-
- struct test_context {
-     struct tls_multi multi;
-@@ -407,6 +408,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test_setup_teardown(auth_token_basic_test, setup, tear=
-down),
-         cmocka_unit_test_setup_teardown(auth_token_fail_invalid_key, setup=
-, teardown),
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/open=
-vpn/test_buffer.c
-index df1fdcb..c30ba42 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -32,6 +32,7 @@
-
- #include "buffer.h"
- #include "buffer.c"
-+#include "test_common.h"
-
- static void
- test_buffer_strprefix(void **state)
-@@ -369,6 +370,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test(test_buffer_strprefix),
-         cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separat=
-or_empty,
-diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/open=
-vpn/test_common.h
-new file mode 100644
-index 0000000..50e16d6
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_common.h
-@@ -0,0 +1,40 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
+ /**
++ * Convert interface specific domain suffix(es) from comma-separated
++ * string to MULTI_SZ string.
 + *
-+ *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ * The \p domains paramter will be set to a MULTI_SZ domains string.
++ * In case of an error \p size is set to 0 and the contents of \p domains
++ * are invalid.
++ * Note that domains are deleted from the string if they match a search do=
+main.
 + *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
++ * @param[in]     search_domains  optional list of search domains
++ * @param[in,out] domains         buffer that contains the input comma-sep=
+arated
++ *                                string and will contain the MULTI_SZ out=
+put string
++ * @param[in,out] size            pointer to size of the input string in b=
+ytes. Will be
++ *                                set to the size of the string returned, =
+including
++ *                                the terminating zeros or 0.
++ * @param[in]     buf_size        size of the \p domains buffer
 + *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ * @return LSTATUS NO_ERROR if the domain suffix(es) were read successfull=
+y,
++ *         ERROR_FILE_NOT_FOUND if no domain was found for the interface,
++ *         ERROR_MORE_DATA if the list did not fit into the buffer
 + */
++static LSTATUS
++ConvertItfDnsDomains(PCWSTR search_domains, PWSTR domains, PDWORD size, co=
+nst DWORD buf_size)
++{
++    const DWORD glyph_size =3D sizeof(*domains);
++    const DWORD buf_len =3D buf_size / glyph_size;
 +
-+#include <stdio.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
++    /*
++     * Found domain(s), now convert them:
++     *   - prefix each domain with a dot
++     *   - convert comma separated list to MULTI_SZ
++     */
++    PWCHAR pos =3D domains;
++    while (TRUE)
++    {
++        /* Terminate the domain at the next comma */
++        PWCHAR comma =3D wcschr(pos, ',');
++        if (comma)
++        {
++            *comma =3D '\0';
++        }
++
++        DWORD domain_len =3D (DWORD)wcslen(pos);
++        DWORD domain_size =3D domain_len * glyph_size;
++        DWORD converted_size =3D (DWORD)(pos - domains) * glyph_size;
++
++        /* Ignore itf domains which match a pushed search domain */
++        if (ListContainsDomain(search_domains, pos, domain_len))
++        {
++            if (comma)
++            {
++                /* Overwrite the ignored domain with remaining one(s) */
++                memmove(pos, comma + 1, buf_size - converted_size);
++                *size -=3D domain_size + glyph_size;
++                continue;
++            }
++            else
++            {
++                /* This was the last domain */
++                *pos =3D '\0';
++                *size -=3D domain_size;
++                return wcslen(domains) ? NO_ERROR : ERROR_FILE_NOT_FOUND;
++            }
++        }
++
++        /* Add space for the leading dot */
++        domain_len +=3D 1;
++        domain_size +=3D glyph_size;
++
++        /* Space for the terminating zeros */
++        const DWORD extra_size =3D 2 * glyph_size;
++
++        /* Check for enough space to convert this domain */
++        if (converted_size + domain_size + extra_size > buf_size)
++        {
++            /* Domain doesn't fit, bad luck if it's the first one */
++            *pos =3D '\0';
++            *size =3D converted_size =3D=3D 0 ? 0 : converted_size + glyph=
+_size;
++            return ERROR_MORE_DATA;
++        }
++
++        /* Prefix domain at pos with the dot */
++        memmove(pos + 1, pos, buf_size - converted_size - glyph_size);
++        domains[buf_len - 1] =3D '\0';
++        *pos =3D '.';
++        *size +=3D glyph_size;
++
++        if (!comma)
++        {
++            /* Conversion is done */
++            *(pos + domain_len) =3D '\0';
++            *size +=3D glyph_size;
++            return NO_ERROR;
++        }
++
++        /* Comma pos is now +1 after adding leading dot */
++        pos =3D comma + 2;
++    }
++}
 +
 +/**
-+ * Sets up the environment for unit tests like making both stderr and stdo=
-ut
-+ * non-buffered to avoid messages getting lost if the program exits early.
-+ *
-+ * This has a openvpn prefix to avoid confusion with cmocka's unit_test_se=
-tup_*
-+ * methods
-+ */
-+void
-+openvpn_unit_test_setup()
-+{
-+    assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0);
-+    assert_int_equal(setvbuf(stderr, NULL, _IONBF, BUFSIZ), 0);
-+}
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
-vpn/test_crypto.c
-index 4b1627a..ff639678 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -39,6 +39,7 @@
- #include "ssl_backend.h"
+  * Return interface specific domain suffix(es)
+  *
+  * The \p domains paramter will be set to a MULTI_SZ domains string.
+@@ -2174,7 +2274,6 @@
+     LSTATUS err =3D ERROR_FILE_NOT_FOUND;
+     const DWORD buf_size =3D *size;
+     const DWORD glyph_size =3D sizeof(*domains);
+-    const DWORD buf_len =3D buf_size / glyph_size;
+     PWSTR values[] =3D { L"SearchList", L"Domain", L"DhcpDomainSearchList"=
+, L"DhcpDomain", NULL };
 
- #include "mss.h"
-+#include "test_common.h"
-
- static const char testtext[] =3D "Dummy text to test PEM encoding";
-
-@@ -479,6 +480,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test(crypto_pem_encode_decode_loopback),
-         cmocka_unit_test(crypto_translate_cipher_names),
-diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/o=
-penvpn/test_cryptoapi.c
-index 18e38d0..e5f6557 100644
---- a/tests/unit_tests/openvpn/test_cryptoapi.c
-+++ b/tests/unit_tests/openvpn/test_cryptoapi.c
-@@ -40,6 +40,7 @@
- #include <openssl/core_names.h>
- #include <openssl/evp.h>
- #include <openssl/pkcs12.h>
-+#include "test_common.h"
-
- #include <cryptoapi.h>
- #include <cryptoapi.c> /* pull-in the whole file to test static functions =
+     for (int i =3D 0; values[i]; i++)
+@@ -2183,77 +2282,7 @@
+         err =3D RegGetValueW(itf, NULL, values[i], RRF_RT_REG_SZ, NULL, (P=
+BYTE)domains, size);
+         if (!err && *size > glyph_size && domains[(*size / glyph_size) - 1=
+] =3D=3D '\0' && wcschr(domains, '.'))
+         {
+-            /*
+-             * Found domain(s), now convert them:
+-             *   - prefix each domain with a dot
+-             *   - convert comma separated list to MULTI_SZ
+-             */
+-            PWCHAR pos =3D domains;
+-            while (TRUE)
+-            {
+-                /* Terminate the domain at the next comma */
+-                PWCHAR comma =3D wcschr(pos, ',');
+-                if (comma)
+-                {
+-                    *comma =3D '\0';
+-                }
+-
+-                DWORD domain_len =3D (DWORD)wcslen(pos);
+-                DWORD domain_size =3D domain_len * glyph_size;
+-                DWORD converted_size =3D (DWORD)(pos - domains) * glyph_si=
+ze;
+-
+-                /* Ignore itf domains which match a pushed search domain */
+-                if (ListContainsDomain(search_domains, pos, domain_len))
+-                {
+-                    if (comma)
+-                    {
+-                        /* Overwrite the ignored domain with remaining one=
+(s) */
+-                        memmove(pos, comma + 1, buf_size - converted_size);
+-                        *size -=3D domain_size + glyph_size;
+-                        continue;
+-                    }
+-                    else
+-                    {
+-                        /* This was the last domain */
+-                        *pos =3D '\0';
+-                        *size -=3D domain_size;
+-                        return wcslen(domains) ? NO_ERROR : ERROR_FILE_NOT=
+_FOUND;
+-                    }
+-                }
+-
+-                /* Add space for the leading dot */
+-                domain_len +=3D 1;
+-                domain_size +=3D glyph_size;
+-
+-                /* Space for the terminating zeros */
+-                const DWORD extra_size =3D 2 * glyph_size;
+-
+-                /* Check for enough space to convert this domain */
+-                if (converted_size + domain_size + extra_size > buf_size)
+-                {
+-                    /* Domain doesn't fit, bad luck if it's the first one =
 */
-@@ -582,6 +583,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test(test_parse_hexstring),
-         cmocka_unit_test(import_certs),
-diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
-n/test_misc.c
-index eac3466..68ca9b6 100644
---- a/tests/unit_tests/openvpn/test_misc.c
-+++ b/tests/unit_tests/openvpn/test_misc.c
-@@ -36,6 +36,7 @@
+-                    *pos =3D '\0';
+-                    *size =3D converted_size =3D=3D 0 ? 0 : converted_size=
+ + glyph_size;
+-                    return ERROR_MORE_DATA;
+-                }
+-
+-                /* Prefix domain at pos with the dot */
+-                memmove(pos + 1, pos, buf_size - converted_size - glyph_si=
+ze);
+-                domains[buf_len - 1] =3D '\0';
+-                *pos =3D '.';
+-                *size +=3D glyph_size;
+-
+-                if (!comma)
+-                {
+-                    /* Conversion is done */
+-                    *(pos + domain_len) =3D '\0';
+-                    *size +=3D glyph_size;
+-                    return NO_ERROR;
+-                }
+-
+-                /* Comma pos is now +1 after adding leading dot */
+-                pos =3D comma + 2;
+-            }
++            return ConvertItfDnsDomains(search_domains, domains, size, buf=
+_size);
+         }
+     }
 
- #include "ssl_util.h"
- #include "options_util.h"
-+#include "test_common.h"
-
- static void
- test_compat_lzo_string(void **state)
-@@ -117,5 +118,6 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     return cmocka_run_group_tests(misc_tests, NULL, NULL);
- }
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
-/test_ncp.c
-index 9e26c74..a8e1021 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -35,6 +35,7 @@
- #include <cmocka.h>
-
- #include "ssl_ncp.c"
-+#include "test_common.h"
-
- /* Defines for use in the tests and the mock parse_line() */
-
-@@ -272,6 +273,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
- #if defined(ENABLE_CRYPTO_OPENSSL)
-     OpenSSL_add_all_algorithms();
- #endif
-diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
-penvpn/test_packet_id.c
-index 2a2a973..ff3f788 100644
---- a/tests/unit_tests/openvpn/test_packet_id.c
-+++ b/tests/unit_tests/openvpn/test_packet_id.c
-@@ -35,6 +35,7 @@
-
- #include "packet_id.h"
- #include "reliable.h"
-+#include "test_common.h"
-
- struct test_packet_id_write_data {
-     struct {
-@@ -273,6 +274,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test_setup_teardown(test_packet_id_write_short,
-                                         test_packet_id_write_setup,
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn=
-/test_pkt.c
-index 62abafa..3a68c56 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -33,6 +33,7 @@
- #include <string.h>
- #include <setjmp.h>
- #include <cmocka.h>
-+#include "test_common.h"
-
- #include "crypto.h"
- #include "options.h"
-@@ -778,6 +779,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test(test_verify_hmac_none),
-         cmocka_unit_test(test_tls_decrypt_lite_none),
-diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/op=
-envpn/test_provider.c
-index 8a0b816..934b2d3b 100644
---- a/tests/unit_tests/openvpn/test_provider.c
-+++ b/tests/unit_tests/openvpn/test_provider.c
-@@ -40,6 +40,8 @@
- #include <openssl/core_names.h>
- #include <openssl/evp.h>
-
-+#include "test_common.h"
-+
- struct management *management; /* global */
- static int mgmt_callback_called;
-
-@@ -119,6 +121,7 @@
- static void
- init_test()
- {
-+    openvpn_unit_test_setup();
-     prov[0] =3D OSSL_PROVIDER_load(NULL, "default");
-     OSSL_PROVIDER_add_builtin(NULL, prov_name, xkey_provider_init);
-     prov[1] =3D OSSL_PROVIDER_load(NULL, prov_name);
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
-penvpn/test_tls_crypt.c
-index 3eac04c..5eb864e 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -34,6 +34,7 @@
- #include <setjmp.h>
- #include <cmocka.h>
-
-+#include "test_common.h"
- #include "tls_crypt.c"
-
- /* Define this function here as dummy since including the ssl_*.c files
-@@ -673,6 +674,7 @@
- int
- main(void)
- {
-+    openvpn_unit_test_setup();
-     const struct CMUnitTest tests[] =3D {
-         cmocka_unit_test_setup_teardown(tls_crypt_loopback,
-                                         test_tls_crypt_setup,
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1461?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1458?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I5c06dc13e9d8ab73997f79b13c30ee8949e5e993
-Gerrit-Change-Number: 1461
-Gerrit-PatchSet: 1
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib517457015b754d59aeb70827c4795aa6154728c
+Gerrit-Change-Number: 1458
+Gerrit-PatchSet: 4
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---qe+rLVJeyRo=
+--4Swf2QWic+Q=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2. </p>
-<p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1461?usp=3Demail">View Ch=
-ange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">Ensure that all unit tests use unbuffered stdout =
-and stderr<br><br>stderr is normally always unbuffered but stdout can be bu=
-ffered. Especially,<br>when stdout is redirected it will become buffered wh=
-ile it is normally<br>unbuffered when connected to a terminal. This mean th=
-at if the unit exits<br>prematurely, the output in the buffered output will=
- be lost.<br><br>As the unit test x_msg mock implementation prints even fat=
-al on stdout<br>we ensure with this setup method that stdout is also unbuff=
-ered.<br><br>Change-Id: I5c06dc13e9d8ab73997f79b13c30ee8949e5e993<br>Acked-=
-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;202401231=
-04358.495517-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/op=
-envpn-devel@lists.sourceforge.net/msg28122.html<br>Signed-off-by: Gert Doer=
-ing &lt;gert@...1296...&gt;<br>(cherry picked from commit 7869617a0f85089fb=
-5e6fbe2db6f03542a8f33f4)<br>---<br>M tests/unit_tests/openvpn/test_argv.c<b=
-r>M tests/unit_tests/openvpn/test_auth_token.c<br>M tests/unit_tests/openvp=
-n/test_buffer.c<br>A tests/unit_tests/openvpn/test_common.h<br>M tests/unit=
-_tests/openvpn/test_crypto.c<br>M tests/unit_tests/openvpn/test_cryptoapi.c=
-<br>M tests/unit_tests/openvpn/test_misc.c<br>M tests/unit_tests/openvpn/te=
-st_ncp.c<br>M tests/unit_tests/openvpn/test_packet_id.c<br>M tests/unit_tes=
-ts/openvpn/test_pkt.c<br>M tests/unit_tests/openvpn/test_provider.c<br>M te=
-sts/unit_tests/openvpn/test_tls_crypt.c<br>12 files changed, 63 insertions(=
-+), 0 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
-.net:29418/openvpn refs/changes/61/1461/1</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/tests/unit_t=
-ests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c</span><br><=
-span>index 1b18ac0..33b3dec 100644</span><br><span>--- a/tests/unit_tests/o=
-penvpn/test_argv.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_argv=
-.c</span><br><span>@@ -12,6 +12,7 @@</span><br><span> </span><br><span> #in=
-clude &quot;argv.h&quot;</span><br><span> #include &quot;buffer.h&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_com=
-mon.h&quot;</span><br><span> </span><br><span> /* Defines for use in the te=
-sts and the mock parse_line() */</span><br><span> #define PATH1       &quot=
-;/s p a c e&quot;</span><br><span>@@ -252,6 +253,7 @@</span><br><span> int<=
-/span><br><span> main(void)</span><br><span> {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span> =
-    const struct CMUnitTest tests[] =3D {</span><br><span>         cmocka_u=
-nit_test(argv_printf__multiple_spaces_in_format__parsed_as_one),</span><br>=
-<span>         cmocka_unit_test(argv_printf_cat__multiple_spaces_in_format_=
-_parsed_as_one),</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
-_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>=
-index a027330..3a3cb69 100644</span><br><span>--- a/tests/unit_tests/openvp=
-n/test_auth_token.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_aut=
-h_token.c</span><br><span>@@ -35,6 +35,7 @@</span><br><span> #include &lt;c=
-mocka.h&gt;</span><br><span> </span><br><span> #include &quot;auth_token.c&=
-quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot=
-;test_common.h&quot;</span><br><span> </span><br><span> struct test_context=
- {</span><br><span>     struct tls_multi multi;</span><br><span>@@ -407,6 +=
-408,7 @@</span><br><span> int</span><br><span> main(void)</span><br><span> =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit_t=
-est_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</sp=
-an><br><span>         cmocka_unit_test_setup_teardown(auth_token_basic_test=
-, setup, teardown),</span><br><span>         cmocka_unit_test_setup_teardow=
-n(auth_token_fail_invalid_key, setup, teardown),</span><br><span>diff --git=
- a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_b=
-uffer.c</span><br><span>index df1fdcb..c30ba42 100644</span><br><span>--- a=
-/tests/unit_tests/openvpn/test_buffer.c</span><br><span>+++ b/tests/unit_te=
-sts/openvpn/test_buffer.c</span><br><span>@@ -32,6 +32,7 @@</span><br><span=
-> </span><br><span> #include &quot;buffer.h&quot;</span><br><span> #include=
- &quot;buffer.c&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#include &quot;test_common.h&quot;</span><br><span> </span><br><span> sta=
-tic void</span><br><span> test_buffer_strprefix(void **state)</span><br><sp=
-an>@@ -369,6 +370,7 @@</span><br><span> int</span><br><span> main(void)</sp=
-an><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-openvpn_unit_test_setup();</span><br><span>     const struct CMUnitTest tes=
-ts[] =3D {</span><br><span>         cmocka_unit_test(test_buffer_strprefix)=
-,</span><br><span>         cmocka_unit_test_setup_teardown(test_buffer_list=
-_aggregate_separator_empty,</span><br><span>diff --git a/tests/unit_tests/o=
-penvpn/test_common.h b/tests/unit_tests/openvpn/test_common.h</span><br><sp=
-an>new file mode 100644</span><br><span>index 0000000..50e16d6</span><br><s=
-pan>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_commo=
-n.h</span><br><span>@@ -0,0 +1,40 @@</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *  OpenVPN -- An application to securely tunnel IP networks</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP p=
-ort, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *             session authentication and key exchange,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet e=
-ncryption, packet authentication, and</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *             packet compression.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  Copyright (C) 2016-2021 Fox Crypto B.V. &lt;openvpn@...1186...=
-.2507...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free=
- software; you can redistribute it and/or modify</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Publ=
-ic License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  as published by the Free Software Foundation.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *  This program is distributed in the hope that it will be u=
-seful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHO=
-UT ANY WARRANTY; without even the implied warranty of</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PART=
-ICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *  GNU General Public License for more details.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  You should have received a copy of the GNU General Pub=
-lic License along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  with this program; if not, write to the Free Software Foundation, Inc.,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Stree=
-t, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt=
-;stdio.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#includ=
-e &lt;setjmp.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-include &lt;cmocka.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * Sets up the environment for=
- unit tests like making both stderr and stdout</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * non-buffered to avoid messages getting lost i=
-f the program exits early.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This ha=
-s a openvpn prefix to avoid confusion with cmocka&#39;s unit_test_setup_*</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * methods</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+openvpn_unit_test_setup()</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(setvbuf(=
-stderr, NULL, _IONBF, BUFSIZ), 0);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
-_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><span>index 4b=
-1627a..ff639678 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_=
-crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto.c</span=
-><br><span>@@ -39,6 +39,7 @@</span><br><span> #include &quot;ssl_backend.h&=
-quot;</span><br><span> </span><br><span> #include &quot;mss.h&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common.=
-h&quot;</span><br><span> </span><br><span> static const char testtext[] =3D=
- &quot;Dummy text to test PEM encoding&quot;;</span><br><span> </span><br><=
-span>@@ -479,6 +480,7 @@</span><br><span> int</span><br><span> main(void)</=
-span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  openvpn_unit_test_setup();</span><br><span>     const struct CMUnitTest t=
-ests[] =3D {</span><br><span>         cmocka_unit_test(crypto_pem_encode_de=
-code_loopback),</span><br><span>         cmocka_unit_test(crypto_translate_=
-cipher_names),</span><br><span>diff --git a/tests/unit_tests/openvpn/test_c=
-ryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>inde=
-x 18e38d0..e5f6557 100644</span><br><span>--- a/tests/unit_tests/openvpn/te=
-st_cryptoapi.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_cryptoap=
-i.c</span><br><span>@@ -40,6 +40,7 @@</span><br><span> #include &lt;openssl=
-/core_names.h&gt;</span><br><span> #include &lt;openssl/evp.h&gt;</span><br=
-><span> #include &lt;openssl/pkcs12.h&gt;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span><br><span> <=
-/span><br><span> #include &lt;cryptoapi.h&gt;</span><br><span> #include &lt=
-;cryptoapi.c&gt; /* pull-in the whole file to test static functions */</spa=
-n><br><span>@@ -582,6 +583,7 @@</span><br><span> int</span><br><span> main(=
-void)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    openvpn_unit_test_setup();</span><br><span>     const struct CMUni=
-tTest tests[] =3D {</span><br><span>         cmocka_unit_test(test_parse_he=
-xstring),</span><br><span>         cmocka_unit_test(import_certs),</span><b=
-r><span>diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_test=
-s/openvpn/test_misc.c</span><br><span>index eac3466..68ca9b6 100644</span><=
-br><span>--- a/tests/unit_tests/openvpn/test_misc.c</span><br><span>+++ b/t=
-ests/unit_tests/openvpn/test_misc.c</span><br><span>@@ -36,6 +36,7 @@</span=
-><br><span> </span><br><span> #include &quot;ssl_util.h&quot;</span><br><sp=
-an> #include &quot;options_util.h&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span><br><span> </s=
-pan><br><span> static void</span><br><span> test_compat_lzo_string(void **s=
-tate)</span><br><span>@@ -117,5 +118,6 @@</span><br><span> int</span><br><s=
-pan> main(void)</span><br><span> {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span>     return c=
-mocka_run_group_tests(misc_tests, NULL, NULL);</span><br><span> }</span><br=
-><span>diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/=
-openvpn/test_ncp.c</span><br><span>index 9e26c74..a8e1021 100644</span><br>=
-<span>--- a/tests/unit_tests/openvpn/test_ncp.c</span><br><span>+++ b/tests=
-/unit_tests/openvpn/test_ncp.c</span><br><span>@@ -35,6 +35,7 @@</span><br>=
-<span> #include &lt;cmocka.h&gt;</span><br><span> </span><br><span> #includ=
-e &quot;ssl_ncp.c&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#include &quot;test_common.h&quot;</span><br><span> </span><br><span> /=
-* Defines for use in the tests and the mock parse_line() */</span><br><span=
-> </span><br><span>@@ -272,6 +273,7 @@</span><br><span> int</span><br><span=
-> main(void)</span><br><span> {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    openvpn_unit_test_setup();</span><br><span> #if defined(ENA=
-BLE_CRYPTO_OPENSSL)</span><br><span>     OpenSSL_add_all_algorithms();</spa=
-n><br><span> #endif</span><br><span>diff --git a/tests/unit_tests/openvpn/t=
-est_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c</span><br><span=
->index 2a2a973..ff3f788 100644</span><br><span>--- a/tests/unit_tests/openv=
-pn/test_packet_id.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pac=
-ket_id.c</span><br><span>@@ -35,6 +35,7 @@</span><br><span> </span><br><spa=
-n> #include &quot;packet_id.h&quot;</span><br><span> #include &quot;reliabl=
-e.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
-quot;test_common.h&quot;</span><br><span> </span><br><span> struct test_pac=
-ket_id_write_data {</span><br><span>     struct {</span><br><span>@@ -273,6=
- +274,7 @@</span><br><span> int</span><br><span> main(void)</span><br><span=
-> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit=
-_test_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</=
-span><br><span>         cmocka_unit_test_setup_teardown(test_packet_id_writ=
-e_short,</span><br><span>                                         test_pack=
-et_id_write_setup,</span><br><span>diff --git a/tests/unit_tests/openvpn/te=
-st_pkt.c b/tests/unit_tests/openvpn/test_pkt.c</span><br><span>index 62abaf=
-a..3a68c56 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pkt.c=
-</span><br><span>+++ b/tests/unit_tests/openvpn/test_pkt.c</span><br><span>=
-@@ -33,6 +33,7 @@</span><br><span> #include &lt;string.h&gt;</span><br><spa=
-n> #include &lt;setjmp.h&gt;</span><br><span> #include &lt;cmocka.h&gt;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_com=
-mon.h&quot;</span><br><span> </span><br><span> #include &quot;crypto.h&quot=
-;</span><br><span> #include &quot;options.h&quot;</span><br><span>@@ -778,6=
- +779,7 @@</span><br><span> int</span><br><span> main(void)</span><br><span=
-> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit=
-_test_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</=
-span><br><span>         cmocka_unit_test(test_verify_hmac_none),</span><br>=
-<span>         cmocka_unit_test(test_tls_decrypt_lite_none),</span><br><spa=
-n>diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/=
-openvpn/test_provider.c</span><br><span>index 8a0b816..934b2d3b 100644</spa=
-n><br><span>--- a/tests/unit_tests/openvpn/test_provider.c</span><br><span>=
-+++ b/tests/unit_tests/openvpn/test_provider.c</span><br><span>@@ -40,6 +40=
-,8 @@</span><br><span> #include &lt;openssl/core_names.h&gt;</span><br><spa=
-n> #include &lt;openssl/evp.h&gt;</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct m=
-anagement *management; /* global */</span><br><span> static int mgmt_callba=
-ck_called;</span><br><span> </span><br><span>@@ -119,6 +121,7 @@</span><br>=
-<span> static void</span><br><span> init_test()</span><br><span> {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit_test_setup(=
-);</span><br><span>     prov[0] =3D OSSL_PROVIDER_load(NULL, &quot;default&=
-quot;);</span><br><span>     OSSL_PROVIDER_add_builtin(NULL, prov_name, xke=
-y_provider_init);</span><br><span>     prov[1] =3D OSSL_PROVIDER_load(NULL,=
- prov_name);</span><br><span>diff --git a/tests/unit_tests/openvpn/test_tls=
-_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>index =
-3eac04c..5eb864e 100644</span><br><span>--- a/tests/unit_tests/openvpn/test=
-_tls_crypt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_tls_crypt.=
-c</span><br><span>@@ -34,6 +34,7 @@</span><br><span> #include &lt;setjmp.h&=
-gt;</span><br><span> #include &lt;cmocka.h&gt;</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common.h&q=
-uot;</span><br><span> #include &quot;tls_crypt.c&quot;</span><br><span> </s=
-pan><br><span> /* Define this function here as dummy since including the ss=
-l_*.c files</span><br><span>@@ -673,6 +674,7 @@</span><br><span> int</span>=
-<br><span> main(void)</span><br><span> {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span>     co=
-nst struct CMUnitTest tests[] =3D {</span><br><span>         cmocka_unit_te=
-st_setup_teardown(tls_crypt_loopback,</span><br><span>                     =
-                    test_tls_crypt_setup,</span><br><span></span><br></pre>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1461?usp=
-=3Demail">change 1461</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1461?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #4</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1458?usp=3Demail">View C=
+hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">openvpnserv: Factor out the string conversion fr=
+om GetItfDnsDomains<br><br>Mostly so that we can actually test it. Since th=
+at<br>code does some in-place conversions a test would be<br>good.<br><br>C=
+hange-Id: Ib517457015b754d59aeb70827c4795aa6154728c<br>Signed-off-by: Frank=
+ Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpnserv/interacti=
+ve.c<br>1 file changed, 101 insertions(+), 72 deletions(-)<br><br></pre><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/=
+1458/4</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv=
+/interactive.c</span><br><span>index 8b817ed..00657b0 100644</span><br><spa=
+n>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnserv=
+/interactive.c</span><br><span>@@ -2143,6 +2143,106 @@</span><br><span> }</=
+span><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Convert interface specific domain suffix(es) from comm=
+a-separated</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * strin=
+g to MULTI_SZ string.</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * The \p domai=
+ns paramter will be set to a MULTI_SZ domains string.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * In case of an error \p size is set to =
+0 and the contents of \p domains</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * are invalid.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * Note that domains are deleted from the string if they match a s=
+earch domain.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param[in]     searc=
+h_domains  optional list of search domains</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @param[in,out] domains         buffer that contai=
+ns the input comma-separated</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *                                string and will contain the MULT=
+I_SZ output string</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* @param[in,out] size            pointer to size of the input string in byt=
+es. Will be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *      =
+                          set to the size of the string returned, including=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *                 =
+               the terminating zeros or 0.</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @param[in]     buf_size        size of the \p dom=
+ains buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return LSTATUS NO_ERR=
+OR if the domain suffix(es) were read successfully,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *         ERROR_FILE_NOT_FOUND if no dom=
+ain was found for the interface,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *         ERROR_MORE_DATA if the list did not fit into the bu=
+ffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+static LSTATUS</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ConvertItfDnsDomains(PCWSTR search_d=
+omains, PWSTR domains, PDWORD size, const DWORD buf_size)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const DWORD glyph_size =3D sizeof(*domains);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    const DWORD buf_len =
+=3D buf_size / glyph_size;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Found domain(s), n=
+ow convert them:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+  *   - prefix each domain with a dot</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+     *   - convert comma separated list to MULTI_SZ</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    PWCHAR pos =3D domains;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    while (TRUE)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        /* Terminate the domain at the next co=
+mma */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        PWCHA=
+R comma =3D wcschr(pos, &#39;,&#39;);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        if (comma)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            *comma =3D &#39;\0&#39;;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   DWORD domain_len =3D (DWORD)wcslen(pos);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        DWORD domain_size =3D domain_len * glyph_si=
+ze;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        DWORD co=
+nverted_size =3D (DWORD)(pos - domains) * glyph_size;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        /* Ignore itf domains which match a pushed search do=
+main */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+ListContainsDomain(search_domains, pos, domain_len))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            if (comma)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                /* Overwrite the ignored domain with r=
+emaining one(s) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               memmove(pos, comma + 1, buf_size - converted_size);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                *size -=3D d=
+omain_size + glyph_size;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                continue;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+            /* This was the last domain */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                *pos =3D &#39;\0&#39;;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                *size -=3D domain=
+_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+   return wcslen(domains) ? NO_ERROR : ERROR_FILE_NOT_FOUND;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        /* Add space for the leading dot */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        domain_len +=3D 1;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        domain_size +=3D glyph_size;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        /* Space for the terminating zer=
+os */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const =
+DWORD extra_size =3D 2 * glyph_size;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      /* Check for enough space to convert this domain */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if (converted_size + domain_s=
+ize + extra_size &gt; buf_size)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            /* Domain doesn&#39;t fit, bad luck if it&#39;s the first one=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *pos=
+ =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           *size =3D converted_size =3D=3D 0 ? 0 : converted_size + glyph_s=
+ize;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ret=
+urn ERROR_MORE_DATA;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        /* Prefix domain at =
+pos with the dot */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        memmove(pos + 1, pos, buf_size - converted_size - glyph_size);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        domains[buf_len =
+- 1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        *pos =3D &#39;.&#39;;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        *size +=3D glyph_size;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        if (!comma)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       /* Conversion is done */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            *(pos + domain_len) =3D &#39;\0&#39;;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            *size +=3D glyph_size=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return=
+ NO_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        /* Comma pos is now +1 after a=
+dding leading dot */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        pos =3D comma + 2;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span>  * Return interface =
+specific domain suffix(es)</span><br><span>  *</span><br><span>  * The \p d=
+omains paramter will be set to a MULTI_SZ domains string.</span><br><span>@=
+@ -2174,7 +2274,6 @@</span><br><span>     LSTATUS err =3D ERROR_FILE_NOT_FO=
+UND;</span><br><span>     const DWORD buf_size =3D *size;</span><br><span> =
+    const DWORD glyph_size =3D sizeof(*domains);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    const DWORD buf_len =3D buf_size / glyph_siz=
+e;</span><br><span>     PWSTR values[] =3D { L&quot;SearchList&quot;, L&quo=
+t;Domain&quot;, L&quot;DhcpDomainSearchList&quot;, L&quot;DhcpDomain&quot;,=
+ NULL };</span><br><span> </span><br><span>     for (int i =3D 0; values[i]=
+; i++)</span><br><span>@@ -2183,77 +2282,7 @@</span><br><span>         err =
+=3D RegGetValueW(itf, NULL, values[i], RRF_RT_REG_SZ, NULL, (PBYTE)domains,=
+ size);</span><br><span>         if (!err &amp;&amp; *size &gt; glyph_size =
+&amp;&amp; domains[(*size / glyph_size) - 1] =3D=3D &#39;\0&#39; &amp;&amp;=
+ wcschr(domains, &#39;.&#39;))</span><br><span>         {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            /*</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-             * Found domain(s), now convert th=
+em:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             *   -=
+ prefix each domain with a dot</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-             *   - convert comma separated list to MULTI_SZ</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-             */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            PWCHAR pos =3D domains=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            while (T=
+RUE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                /* Termin=
+ate the domain at the next comma */</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                PWCHAR comma =3D wcschr(pos, &#39;,&#39;);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (comm=
+a)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    *co=
+mma =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                DWORD dom=
+ain_len =3D (DWORD)wcslen(pos);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                DWORD domain_size =3D domain_len * glyph_size;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                DWORD co=
+nverted_size =3D (DWORD)(pos - domains) * glyph_size;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                /* Ignore itf domains which match a pushed searc=
+h domain */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+      if (ListContainsDomain(search_domains, pos, domain_len))</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                    if (comma)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                        /* Ov=
+erwrite the ignored domain with remaining one(s) */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                        memmove(pos, comma =
++ 1, buf_size - converted_size);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                        *size -=3D domain_size + glyph_size;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                        c=
+ontinue;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+       else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+          {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+              /* This was the last domain */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                        *pos =3D &#39;\0&#39;;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                        *si=
+ze -=3D domain_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                       return wcslen(domains) ? NO_ERROR : ERROR_FILE_NOT_F=
+OUND;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                /* Add space for the lead=
+ing dot */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+     domain_len +=3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                domain_size +=3D glyph_size;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                /* Space for the terminating zeros */</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                const DWORD extra_size =
+=3D 2 * glyph_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                /* Chec=
+k for enough space to convert this domain */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                if (converted_size + domain_size + e=
+xtra_size &gt; buf_size)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                   /* Domain doesn&#39;t fit, bad luck if it&#39;s the firs=
+t one */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+       *pos =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                    *size =3D converted_size =3D=3D 0 ? 0 : convert=
+ed_size + glyph_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                    return ERROR_MORE_DATA;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             /* Prefix domain at pos with the dot */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                memmove(pos + 1, pos, buf_s=
+ize - converted_size - glyph_size);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                domains[buf_len - 1] =3D &#39;\0&#39;;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                *pos =3D &#3=
+9;.&#39;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    *size +=3D glyph_size;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+if (!comma)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+      /* Conversion is done */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                    *(pos + domain_len) =3D &#39;\0&#39;;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                    *size +=3D=
+ glyph_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+           return NO_ERROR;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                /* =
+Comma pos is now +1 after adding leading dot */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                pos =3D comma + 2;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            return ConvertItfDnsDomains(s=
+earch_domains, domains, size, buf_size);</span><br><span>         }</span><=
+br><span>     }</span><br><span> </span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1458?usp=3Demail=
+">change 1458</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1458?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5c06dc13e9d8ab73997f79b13c3=
-0ee8949e5e993 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1461 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib517457015b754d59aeb70827c4=
+795aa6154728c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1458 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: plaisthos &lt;arne-openvpn@...2639...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---qe+rLVJeyRo=--
+--4Swf2QWic+Q=--
 
