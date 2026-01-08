@@ -1,15 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 8 Jan 2026 12:41:15 +0000
-References: <gerrit.1767876064000.Ifb6594700db71d219643a29c581099c778bcbbc6@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <846fe7e5c60222a3b32edb12ce93a066644a50a2-HTML@...2715...>
+Date: Thu, 8 Jan 2026 12:41:12 +0000
+References: <gerrit.1767876064000.I5c06dc13e9d8ab73997f79b13c30ee8949e5e993@...2715...>
+Reply-To: frank@...2641..., openvpn-devel@lists.sourceforge.net
+Message-ID: <04bc06f0a8831cf6d06114dcbeaefffd1e9ab379-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uzbjdhlrqaA="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]:
- tests/unit_tests: Port to cmocka 2.0.0 API
+Content-Type: multipart/alternative; boundary="qe+rLVJeyRo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Ensure that all
+ unit tests use unbuffered stdout and stderr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,396 +17,628 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---uzbjdhlrqaA=
+--qe+rLVJeyRo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, plaisthos.
+Attention is currently required from: cron2.
 
-Hello plaisthos,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1462?usp=3Demail
-
-to review the following change.
+flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
+et/c/openvpn/+/1461?usp=3Demail )
 
 
-Change subject: tests/unit_tests: Port to cmocka 2.0.0 API
+Change subject: Ensure that all unit tests use unbuffered stdout and stderr
 ......................................................................
 
-tests/unit_tests: Port to cmocka 2.0.0 API
+Ensure that all unit tests use unbuffered stdout and stderr
 
-But add compat layer so that we can still build
-against older versions of cmocka. Mostly this is
-trivial but the custom check function changed its
-prototype, so that requires some more work.
+stderr is normally always unbuffered but stdout can be buffered. Especially,
+when stdout is redirected it will become buffered while it is normally
+unbuffered when connected to a terminal. This mean that if the unit exits
+prematurely, the output in the buffered output will be lost.
 
-This backport commit additionally includes the fix
-for test_tls_crypt from commit
-6246f2113f6e1fda13bca8de863dd5cc396ab6ef since the
-other test fixes from the original commit are not
-relevant to release/2.6.
+As the unit test x_msg mock implementation prints even fatal on stdout
+we ensure with this setup method that stdout is also unbuffered.
 
-Change-Id: Ifb6594700db71d219643a29c581099c778bcbbc6
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1449
-Message-Id: <20251218104042.5961-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35=
-144.html
+Change-Id: I5c06dc13e9d8ab73997f79b13c30ee8949e5e993
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Message-Id: <20240123104358.495517-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg28=
+122.html
 Signed-off-by: Gert Doering <gert@...1296...>
-(cherry picked from commit 6db186e0b1d9783ea96e8a945a47fd23b45e4778)
+(cherry picked from commit 7869617a0f85089fb5e6fbe2db6f03542a8f33f4)
 ---
-M CMakeLists.txt
-M config.h.cmake.in
-M configure.ac
-M tests/unit_tests/openvpn/test_common.h
+M tests/unit_tests/openvpn/test_argv.c
+M tests/unit_tests/openvpn/test_auth_token.c
+M tests/unit_tests/openvpn/test_buffer.c
+A tests/unit_tests/openvpn/test_common.h
+M tests/unit_tests/openvpn/test_crypto.c
+M tests/unit_tests/openvpn/test_cryptoapi.c
+M tests/unit_tests/openvpn/test_misc.c
+M tests/unit_tests/openvpn/test_ncp.c
+M tests/unit_tests/openvpn/test_packet_id.c
+M tests/unit_tests/openvpn/test_pkt.c
+M tests/unit_tests/openvpn/test_provider.c
 M tests/unit_tests/openvpn/test_tls_crypt.c
-5 files changed, 49 insertions(+), 12 deletions(-)
+12 files changed, 63 insertions(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/62/1462/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/1461/1
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f7cb5a7..6983d111 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -291,6 +291,18 @@
-     )
- set(HAVE_CONFIG_VERSION_H YES)
+diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvp=
+n/test_argv.c
+index 1b18ac0..33b3dec 100644
+--- a/tests/unit_tests/openvpn/test_argv.c
++++ b/tests/unit_tests/openvpn/test_argv.c
+@@ -12,6 +12,7 @@
 
-+if (BUILD_TESTING)
-+    find_package(cmocka CONFIG)
-+    if (TARGET cmocka::cmocka)
-+        set(CMOCKA_LIBRARIES cmocka::cmocka)
-+    else ()
-+        pkg_search_module(cmocka cmocka REQUIRED IMPORTED_TARGET)
-+        set(CMOCKA_LIBRARIES PkgConfig::cmocka)
-+    endif ()
-+    set(CMAKE_REQUIRED_LIBRARIES ${CMOCKA_LIBRARIES})
-+    check_include_files(cmocka_version.h HAVE_CMOCKA_VERSION_H)
-+endif ()
-+
- configure_file(config.h.cmake.in config.h)
- configure_file(include/openvpn-plugin.h.in openvpn-plugin.h)
- # TODO we should remove the need for this, and always include config.h
-@@ -541,14 +553,6 @@
+ #include "argv.h"
+ #include "buffer.h"
++#include "test_common.h"
 
+ /* Defines for use in the tests and the mock parse_line() */
+ #define PATH1       "/s p a c e"
+@@ -252,6 +253,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test(argv_printf__multiple_spaces_in_format__parsed_as=
+_one),
+         cmocka_unit_test(argv_printf_cat__multiple_spaces_in_format__parse=
+d_as_one),
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
+openvpn/test_auth_token.c
+index a027330..3a3cb69 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -35,6 +35,7 @@
+ #include <cmocka.h>
 
- if (BUILD_TESTING)
--    find_package(cmocka CONFIG)
--    if (TARGET cmocka::cmocka)
--        set(CMOCKA_LIBRARIES cmocka::cmocka)
--    else ()
--        pkg_search_module(cmocka cmocka REQUIRED IMPORTED_TARGET)
--        set(CMOCKA_LIBRARIES PkgConfig::cmocka)
--    endif ()
--
-     set(unit_tests
-         "test_auth_token"
-         "test_buffer"
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index cedc5be..bf60d39 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -86,6 +86,9 @@
- /* git version information in config-version.h */
- #cmakedefine HAVE_CONFIG_VERSION_H
+ #include "auth_token.c"
++#include "test_common.h"
 
-+/* cmocka version information available in cmocka_version.h (>=3D 2.0.0) */
-+#cmakedefine HAVE_CMOCKA_VERSION_H
-+
- /* Define to 1 if you have the `daemon' function. */
- #cmakedefine HAVE_DAEMON
+ struct test_context {
+     struct tls_multi multi;
+@@ -407,6 +408,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test_setup_teardown(auth_token_basic_test, setup, tear=
+down),
+         cmocka_unit_test_setup_teardown(auth_token_fail_invalid_key, setup=
+, teardown),
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/open=
+vpn/test_buffer.c
+index df1fdcb..c30ba42 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -32,6 +32,7 @@
 
-diff --git a/configure.ac b/configure.ac
-index e77fd47..fb8d530 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1525,7 +1525,16 @@
- 	[have_cmocka=3D"yes"],
- 	[AC_MSG_WARN([cmocka.pc not found on the system using pkg-config ${pkg_co=
-nfig_found}.  Unit tests disabled])]
- )
--AM_CONDITIONAL([ENABLE_UNITTESTS], [test "${enable_unit_tests}" =3D "yes" =
--a "${have_cmocka}" =3D "yes" ])
-+AM_CONDITIONAL([ENABLE_UNITTESTS], [false])
-+if test "${enable_unit_tests}" =3D "yes" -a "${have_cmocka}" =3D "yes"; th=
-en
-+   AM_CONDITIONAL([ENABLE_UNITTESTS], [true])
-+
-+   saved_CFLAGS=3D"${CFLAGS}"
-+   CFLAGS=3D"${CFLAGS} ${CMOCKA_CFLAGS}"
-+   # detect cmocka < 2.0.0 that had no cmocka_version.h
-+   AC_CHECK_HEADERS([cmocka_version.h])
-+   CFLAGS=3D"${saved_CFLAGS}"
-+fi
- AC_SUBST([ENABLE_UNITTESTS])
+ #include "buffer.h"
+ #include "buffer.c"
++#include "test_common.h"
 
- TEST_LDFLAGS=3D"${OPTIONAL_CRYPTO_LIBS} ${OPTIONAL_PKCS11_HELPER_LIBS}"
+ static void
+ test_buffer_strprefix(void **state)
+@@ -369,6 +370,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test(test_buffer_strprefix),
+         cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separat=
+or_empty,
 diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/open=
 vpn/test_common.h
-index 50e16d6..e5e4420 100644
---- a/tests/unit_tests/openvpn/test_common.h
+new file mode 100644
+index 0000000..50e16d6
+--- /dev/null
 +++ b/tests/unit_tests/openvpn/test_common.h
-@@ -25,6 +25,27 @@
+@@ -0,0 +1,40 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#include <stdio.h>
++#include <setjmp.h>
++#include <cmocka.h>
++
++/**
++ * Sets up the environment for unit tests like making both stderr and stdo=
+ut
++ * non-buffered to avoid messages getting lost if the program exits early.
++ *
++ * This has a openvpn prefix to avoid confusion with cmocka's unit_test_se=
+tup_*
++ * methods
++ */
++void
++openvpn_unit_test_setup()
++{
++    assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0);
++    assert_int_equal(setvbuf(stderr, NULL, _IONBF, BUFSIZ), 0);
++}
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index 4b1627a..ff639678 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -39,6 +39,7 @@
+ #include "ssl_backend.h"
+
+ #include "mss.h"
++#include "test_common.h"
+
+ static const char testtext[] =3D "Dummy text to test PEM encoding";
+
+@@ -479,6 +480,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test(crypto_pem_encode_decode_loopback),
+         cmocka_unit_test(crypto_translate_cipher_names),
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/o=
+penvpn/test_cryptoapi.c
+index 18e38d0..e5f6557 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -40,6 +40,7 @@
+ #include <openssl/core_names.h>
+ #include <openssl/evp.h>
+ #include <openssl/pkcs12.h>
++#include "test_common.h"
+
+ #include <cryptoapi.h>
+ #include <cryptoapi.c> /* pull-in the whole file to test static functions =
+*/
+@@ -582,6 +583,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test(test_parse_hexstring),
+         cmocka_unit_test(import_certs),
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
+n/test_misc.c
+index eac3466..68ca9b6 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -36,6 +36,7 @@
+
+ #include "ssl_util.h"
+ #include "options_util.h"
++#include "test_common.h"
+
+ static void
+ test_compat_lzo_string(void **state)
+@@ -117,5 +118,6 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     return cmocka_run_group_tests(misc_tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
+/test_ncp.c
+index 9e26c74..a8e1021 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -35,6 +35,7 @@
+ #include <cmocka.h>
+
+ #include "ssl_ncp.c"
++#include "test_common.h"
+
+ /* Defines for use in the tests and the mock parse_line() */
+
+@@ -272,6 +273,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+ #if defined(ENABLE_CRYPTO_OPENSSL)
+     OpenSSL_add_all_algorithms();
+ #endif
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
+penvpn/test_packet_id.c
+index 2a2a973..ff3f788 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -35,6 +35,7 @@
+
+ #include "packet_id.h"
+ #include "reliable.h"
++#include "test_common.h"
+
+ struct test_packet_id_write_data {
+     struct {
+@@ -273,6 +274,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test_setup_teardown(test_packet_id_write_short,
+                                         test_packet_id_write_setup,
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn=
+/test_pkt.c
+index 62abafa..3a68c56 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -33,6 +33,7 @@
+ #include <string.h>
+ #include <setjmp.h>
+ #include <cmocka.h>
++#include "test_common.h"
+
+ #include "crypto.h"
+ #include "options.h"
+@@ -778,6 +779,7 @@
+ int
+ main(void)
+ {
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test(test_verify_hmac_none),
+         cmocka_unit_test(test_tls_decrypt_lite_none),
+diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/op=
+envpn/test_provider.c
+index 8a0b816..934b2d3b 100644
+--- a/tests/unit_tests/openvpn/test_provider.c
++++ b/tests/unit_tests/openvpn/test_provider.c
+@@ -40,6 +40,8 @@
+ #include <openssl/core_names.h>
+ #include <openssl/evp.h>
+
++#include "test_common.h"
++
+ struct management *management; /* global */
+ static int mgmt_callback_called;
+
+@@ -119,6 +121,7 @@
+ static void
+ init_test()
+ {
++    openvpn_unit_test_setup();
+     prov[0] =3D OSSL_PROVIDER_load(NULL, "default");
+     OSSL_PROVIDER_add_builtin(NULL, prov_name, xkey_provider_init);
+     prov[1] =3D OSSL_PROVIDER_load(NULL, prov_name);
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
+penvpn/test_tls_crypt.c
+index 3eac04c..5eb864e 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -34,6 +34,7 @@
  #include <setjmp.h>
  #include <cmocka.h>
 
-+/* Do we use cmocka < 2.0.0? */
-+#ifndef HAVE_CMOCKA_VERSION_H
-+#define HAVE_OLD_CMOCKA_API 1
-+/* compat with various versions of cmocka.h
-+ * Older versions have LargestIntegralType. Newer
-+ * versions use uintmax_t. But LargestIntegralType
-+ * is not guaranteed to be equal to uintmax_t, so
-+ * we can't use that unconditionally. So we only use
-+ * it if cmocka.h does not define LargestIntegralType.
-+ */
-+#ifndef LargestIntegralType
-+#define LargestIntegralType uintmax_t
-+#endif
-+/* redefine 2.x API in terms of 1.x API */
-+#define CMockaValueData             LargestIntegralType
-+#define check_expected_uint         check_expected
-+#define expect_uint_value           expect_value
-+#define expect_check_data           expect_check
-+#define cast_ptr_to_cmocka_value(x) (x)
-+#endif
-+
- /**
-  * Sets up the environment for unit tests like making both stderr and stdo=
-ut
-  * non-buffered to avoid messages getting lost if the program exits early.
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
-penvpn/test_tls_crypt.c
-index 5eb864e..bf5a8ce 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -112,8 +112,8 @@
- __wrap_buffer_write_file(const char *filename, const struct buffer *buf)
- {
-     const char *pem =3D BSTR(buf);
--    check_expected(filename);
--    check_expected(pem);
-+    check_expected_ptr(filename);
-+    check_expected_ptr(pem);
++#include "test_common.h"
+ #include "tls_crypt.c"
 
-     return mock_type(bool);
- }
-@@ -121,7 +121,7 @@
- struct buffer
- __wrap_buffer_read_from_file(const char *filename, struct gc_arena *gc)
+ /* Define this function here as dummy since including the ssl_*.c files
+@@ -673,6 +674,7 @@
+ int
+ main(void)
  {
--    check_expected(filename);
-+    check_expected_ptr(filename);
-
-     const char *pem_str =3D mock_ptr_type(const char *);
-     struct buffer ret =3D alloc_buf_gc(strlen(pem_str) + 1, gc);
++    openvpn_unit_test_setup();
+     const struct CMUnitTest tests[] =3D {
+         cmocka_unit_test_setup_teardown(tls_crypt_loopback,
+                                         test_tls_crypt_setup,
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1462?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1461?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ifb6594700db71d219643a29c581099c778bcbbc6
-Gerrit-Change-Number: 1462
+Gerrit-Change-Id: I5c06dc13e9d8ab73997f79b13c30ee8949e5e993
+Gerrit-Change-Number: 1461
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 
---uzbjdhlrqaA=
+--qe+rLVJeyRo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1462?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">tests/unit_tests: Port to cmocka 2.0.0 API<=
-br><br>But add compat layer so that we can still build<br>against older ver=
-sions of cmocka. Mostly this is<br>trivial but the custom check function ch=
-anged its<br>prototype, so that requires some more work.<br><br>This backpo=
-rt commit additionally includes the fix<br>for test_tls_crypt from commit<b=
-r>6246f2113f6e1fda13bca8de863dd5cc396ab6ef since the<br>other test fixes fr=
-om the original commit are not<br>relevant to release/2.6.<br><br>Change-Id=
-: Ifb6594700db71d219643a29c581099c778bcbbc6<br>Signed-off-by: Frank Lichten=
-held &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...=
-&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1449<br>Message-=
-Id: &lt;20251218104042.5961-1-gert@...1296...&gt;<br>URL: https://www.mail-=
-archive.com/openvpn-devel@lists.sourceforge.net/msg35144.html<br>Signed-off=
--by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry picked from commit 6db=
-186e0b1d9783ea96e8a945a47fd23b45e4778)<br>---<br>M CMakeLists.txt<br>M conf=
-ig.h.cmake.in<br>M configure.ac<br>M tests/unit_tests/openvpn/test_common.h=
-<br>M tests/unit_tests/openvpn/test_tls_crypt.c<br>5 files changed, 49 inse=
-rtions(+), 12 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
--family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-.openvpn.net:29418/openvpn refs/changes/62/1462/1</pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMak=
-eLists.txt b/CMakeLists.txt</span><br><span>index f7cb5a7..6983d111 100644<=
-/span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt</=
-span><br><span>@@ -291,6 +291,18 @@</span><br><span>     )</span><br><span>=
- set(HAVE_CONFIG_VERSION_H YES)</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+if (BUILD_TESTING)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    find_package(cmocka CONFIG)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (TARGET cmocka::cmocka)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        set(CMOCKA_LIBR=
-ARIES cmocka::cmocka)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    else ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  pkg_search_module(cmocka cmocka REQUIRED IMPORTED_TARGET)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        set(CMOCKA_LIBRARIES PkgCon=
-fig::cmocka)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    end=
-if ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    set(CMAKE_=
-REQUIRED_LIBRARIES ${CMOCKA_LIBRARIES})</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    check_include_files(cmocka_version.h HAVE_CMOCKA_VE=
-RSION_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> conf=
-igure_file(config.h.cmake.in config.h)</span><br><span> configure_file(incl=
-ude/openvpn-plugin.h.in openvpn-plugin.h)</span><br><span> # TODO we should=
- remove the need for this, and always include config.h</span><br><span>@@ -=
-541,14 +553,6 @@</span><br><span> </span><br><span> </span><br><span> if (B=
-UILD_TESTING)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    find=
-_package(cmocka CONFIG)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    if (TARGET cmocka::cmocka)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        set(CMOCKA_LIBRARIES cmocka::cmocka)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    else ()</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        pkg_search_module(cmocka cmocka REQUIRED IM=
-PORTED_TARGET)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- set(CMOCKA_LIBRARIES PkgConfig::cmocka)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    endif ()</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span>     set(unit_tests</span><br><span>         &qu=
-ot;test_auth_token&quot;</span><br><span>         &quot;test_buffer&quot;</=
-span><br><span>diff --git a/config.h.cmake.in b/config.h.cmake.in</span><br=
-><span>index cedc5be..bf60d39 100644</span><br><span>--- a/config.h.cmake.i=
-n</span><br><span>+++ b/config.h.cmake.in</span><br><span>@@ -86,6 +86,9 @@=
-</span><br><span> /* git version information in config-version.h */</span><=
-br><span> #cmakedefine HAVE_CONFIG_VERSION_H</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/* cmocka version information av=
-ailable in cmocka_version.h (&gt;=3D 2.0.0) */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#cmakedefine HAVE_CMOCKA_VERSION_H</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* Define to 1 =
-if you have the `daemon&#39; function. */</span><br><span> #cmakedefine HAV=
-E_DAEMON</span><br><span> </span><br><span>diff --git a/configure.ac b/conf=
-igure.ac</span><br><span>index e77fd47..fb8d530 100644</span><br><span>--- =
-a/configure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -1525,=
-7 +1525,16 @@</span><br><span> 	[have_cmocka=3D&quot;yes&quot;],</span><br>=
-<span> 	[AC_MSG_WARN([cmocka.pc not found on the system using pkg-config ${=
-pkg_config_found}.  Unit tests disabled])]</span><br><span> )</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-AM_CONDITIONAL([ENABLE_UNITTESTS], =
-[test &quot;${enable_unit_tests}&quot; =3D &quot;yes&quot; -a &quot;${have_=
-cmocka}&quot; =3D &quot;yes&quot; ])</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+AM_CONDITIONAL([ENABLE_UNITTESTS], [false])</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+if test &quot;${enable_unit_tests}=
-&quot; =3D &quot;yes&quot; -a &quot;${have_cmocka}&quot; =3D &quot;yes&quot=
-;; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   AM_CONDIT=
-IONAL([ENABLE_UNITTESTS], [true])</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   sa=
-ved_CFLAGS=3D&quot;${CFLAGS}&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+   CFLAGS=3D&quot;${CFLAGS} ${CMOCKA_CFLAGS}&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+   # detect cmocka &lt; 2.0.0=
- that had no cmocka_version.h</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+   AC_CHECK_HEADERS([cmocka_version.h])</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+   CFLAGS=3D&quot;${saved_CFLAGS}&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><br><span> AC_SU=
-BST([ENABLE_UNITTESTS])</span><br><span> </span><br><span> TEST_LDFLAGS=3D&=
-quot;${OPTIONAL_CRYPTO_LIBS} ${OPTIONAL_PKCS11_HELPER_LIBS}&quot;</span><br=
-><span>diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tes=
-ts/openvpn/test_common.h</span><br><span>index 50e16d6..e5e4420 100644</spa=
-n><br><span>--- a/tests/unit_tests/openvpn/test_common.h</span><br><span>++=
-+ b/tests/unit_tests/openvpn/test_common.h</span><br><span>@@ -25,6 +25,27 =
-@@</span><br><span> #include &lt;setjmp.h&gt;</span><br><span> #include &lt=
-;cmocka.h&gt;</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* Do we use cmocka &lt; 2.0.0? */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#ifndef HAVE_CMOCKA_VERSION_H</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define HAVE_OLD_CMOCKA_API 1</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* compat with various versi=
-ons of cmocka.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * O=
-lder versions have LargestIntegralType. Newer</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * versions use uintmax_t. But LargestIntegralTyp=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * is not guarante=
-ed to be equal to uintmax_t, so</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * we can&#39;t use that unconditionally. So we only use</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * it if cmocka.h does not=
- define LargestIntegralType.</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef=
- LargestIntegralType</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#define LargestIntegralType uintmax_t</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+/* redefine 2.x API in terms of 1.x API */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#define CMockaValueData             LargestInt=
-egralType</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define ch=
-eck_expected_uint         check_expected</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#define expect_uint_value           expect_value</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#define expect_check_data=
-           expect_check</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#define cast_ptr_to_cmocka_value(x) (x)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span> /**</span><br><span>  * Sets up the environmen=
-t for unit tests like making both stderr and stdout</span><br><span>  * non=
--buffered to avoid messages getting lost if the program exits early.</span>=
-<br><span>diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/un=
-it_tests/openvpn/test_tls_crypt.c</span><br><span>index 5eb864e..bf5a8ce 10=
-0644</span><br><span>--- a/tests/unit_tests/openvpn/test_tls_crypt.c</span>=
-<br><span>+++ b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>@=
-@ -112,8 +112,8 @@</span><br><span> __wrap_buffer_write_file(const char *fi=
-lename, const struct buffer *buf)</span><br><span> {</span><br><span>     c=
-onst char *pem =3D BSTR(buf);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    check_expected(filename);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    check_expected(pem);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    check_expected_ptr(filename);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    check_expected_ptr(pem);</span><br><=
-span> </span><br><span>     return mock_type(bool);</span><br><span> }</spa=
-n><br><span>@@ -121,7 +121,7 @@</span><br><span> struct buffer</span><br><s=
-pan> __wrap_buffer_read_from_file(const char *filename, struct gc_arena *gc=
-)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   check_expected(filename);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    check_expected_ptr(filename);</span><br><span> </span><br><spa=
-n>     const char *pem_str =3D mock_ptr_type(const char *);</span><br><span=
->     struct buffer ret =3D alloc_buf_gc(strlen(pem_str) + 1, gc);</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1462?usp=3Demail">change 1462</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1462?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+rently required from: cron2. </p>
+<p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1461?usp=3Demail">View Ch=
+ange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">Ensure that all unit tests use unbuffered stdout =
+and stderr<br><br>stderr is normally always unbuffered but stdout can be bu=
+ffered. Especially,<br>when stdout is redirected it will become buffered wh=
+ile it is normally<br>unbuffered when connected to a terminal. This mean th=
+at if the unit exits<br>prematurely, the output in the buffered output will=
+ be lost.<br><br>As the unit test x_msg mock implementation prints even fat=
+al on stdout<br>we ensure with this setup method that stdout is also unbuff=
+ered.<br><br>Change-Id: I5c06dc13e9d8ab73997f79b13c30ee8949e5e993<br>Acked-=
+by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;202401231=
+04358.495517-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/op=
+envpn-devel@lists.sourceforge.net/msg28122.html<br>Signed-off-by: Gert Doer=
+ing &lt;gert@...1296...&gt;<br>(cherry picked from commit 7869617a0f85089fb=
+5e6fbe2db6f03542a8f33f4)<br>---<br>M tests/unit_tests/openvpn/test_argv.c<b=
+r>M tests/unit_tests/openvpn/test_auth_token.c<br>M tests/unit_tests/openvp=
+n/test_buffer.c<br>A tests/unit_tests/openvpn/test_common.h<br>M tests/unit=
+_tests/openvpn/test_crypto.c<br>M tests/unit_tests/openvpn/test_cryptoapi.c=
+<br>M tests/unit_tests/openvpn/test_misc.c<br>M tests/unit_tests/openvpn/te=
+st_ncp.c<br>M tests/unit_tests/openvpn/test_packet_id.c<br>M tests/unit_tes=
+ts/openvpn/test_pkt.c<br>M tests/unit_tests/openvpn/test_provider.c<br>M te=
+sts/unit_tests/openvpn/test_tls_crypt.c<br>12 files changed, 63 insertions(=
++), 0 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
+.net:29418/openvpn refs/changes/61/1461/1</pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;"><span>diff --git a/tests/unit_t=
+ests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c</span><br><=
+span>index 1b18ac0..33b3dec 100644</span><br><span>--- a/tests/unit_tests/o=
+penvpn/test_argv.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_argv=
+.c</span><br><span>@@ -12,6 +12,7 @@</span><br><span> </span><br><span> #in=
+clude &quot;argv.h&quot;</span><br><span> #include &quot;buffer.h&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_com=
+mon.h&quot;</span><br><span> </span><br><span> /* Defines for use in the te=
+sts and the mock parse_line() */</span><br><span> #define PATH1       &quot=
+;/s p a c e&quot;</span><br><span>@@ -252,6 +253,7 @@</span><br><span> int<=
+/span><br><span> main(void)</span><br><span> {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span> =
+    const struct CMUnitTest tests[] =3D {</span><br><span>         cmocka_u=
+nit_test(argv_printf__multiple_spaces_in_format__parsed_as_one),</span><br>=
+<span>         cmocka_unit_test(argv_printf_cat__multiple_spaces_in_format_=
+_parsed_as_one),</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
+_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>=
+index a027330..3a3cb69 100644</span><br><span>--- a/tests/unit_tests/openvp=
+n/test_auth_token.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_aut=
+h_token.c</span><br><span>@@ -35,6 +35,7 @@</span><br><span> #include &lt;c=
+mocka.h&gt;</span><br><span> </span><br><span> #include &quot;auth_token.c&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot=
+;test_common.h&quot;</span><br><span> </span><br><span> struct test_context=
+ {</span><br><span>     struct tls_multi multi;</span><br><span>@@ -407,6 +=
+408,7 @@</span><br><span> int</span><br><span> main(void)</span><br><span> =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit_t=
+est_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</sp=
+an><br><span>         cmocka_unit_test_setup_teardown(auth_token_basic_test=
+, setup, teardown),</span><br><span>         cmocka_unit_test_setup_teardow=
+n(auth_token_fail_invalid_key, setup, teardown),</span><br><span>diff --git=
+ a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_b=
+uffer.c</span><br><span>index df1fdcb..c30ba42 100644</span><br><span>--- a=
+/tests/unit_tests/openvpn/test_buffer.c</span><br><span>+++ b/tests/unit_te=
+sts/openvpn/test_buffer.c</span><br><span>@@ -32,6 +32,7 @@</span><br><span=
+> </span><br><span> #include &quot;buffer.h&quot;</span><br><span> #include=
+ &quot;buffer.c&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#include &quot;test_common.h&quot;</span><br><span> </span><br><span> sta=
+tic void</span><br><span> test_buffer_strprefix(void **state)</span><br><sp=
+an>@@ -369,6 +370,7 @@</span><br><span> int</span><br><span> main(void)</sp=
+an><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+openvpn_unit_test_setup();</span><br><span>     const struct CMUnitTest tes=
+ts[] =3D {</span><br><span>         cmocka_unit_test(test_buffer_strprefix)=
+,</span><br><span>         cmocka_unit_test_setup_teardown(test_buffer_list=
+_aggregate_separator_empty,</span><br><span>diff --git a/tests/unit_tests/o=
+penvpn/test_common.h b/tests/unit_tests/openvpn/test_common.h</span><br><sp=
+an>new file mode 100644</span><br><span>index 0000000..50e16d6</span><br><s=
+pan>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_commo=
+n.h</span><br><span>@@ -0,0 +1,40 @@</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  OpenVPN -- An application to securely tunnel IP networks</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP p=
+ort, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *             session authentication and key exchange,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet e=
+ncryption, packet authentication, and</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *             packet compression.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  Copyright (C) 2016-2021 Fox Crypto B.V. &lt;openvpn@...1186...=
+.2507...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free=
+ software; you can redistribute it and/or modify</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Publ=
+ic License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  as published by the Free Software Foundation.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *  This program is distributed in the hope that it will be u=
+seful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHO=
+UT ANY WARRANTY; without even the implied warranty of</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PART=
+ICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  GNU General Public License for more details.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  You should have received a copy of the GNU General Pub=
+lic License along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  with this program; if not, write to the Free Software Foundation, Inc.,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Stree=
+t, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt=
+;stdio.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#includ=
+e &lt;setjmp.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+include &lt;cmocka.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * Sets up the environment for=
+ unit tests like making both stderr and stdout</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * non-buffered to avoid messages getting lost i=
+f the program exits early.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This ha=
+s a openvpn prefix to avoid confusion with cmocka&#39;s unit_test_setup_*</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * methods</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+openvpn_unit_test_setup()</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(setvbuf(=
+stderr, NULL, _IONBF, BUFSIZ), 0);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
+_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><span>index 4b=
+1627a..ff639678 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_=
+crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto.c</span=
+><br><span>@@ -39,6 +39,7 @@</span><br><span> #include &quot;ssl_backend.h&=
+quot;</span><br><span> </span><br><span> #include &quot;mss.h&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common.=
+h&quot;</span><br><span> </span><br><span> static const char testtext[] =3D=
+ &quot;Dummy text to test PEM encoding&quot;;</span><br><span> </span><br><=
+span>@@ -479,6 +480,7 @@</span><br><span> int</span><br><span> main(void)</=
+span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  openvpn_unit_test_setup();</span><br><span>     const struct CMUnitTest t=
+ests[] =3D {</span><br><span>         cmocka_unit_test(crypto_pem_encode_de=
+code_loopback),</span><br><span>         cmocka_unit_test(crypto_translate_=
+cipher_names),</span><br><span>diff --git a/tests/unit_tests/openvpn/test_c=
+ryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>inde=
+x 18e38d0..e5f6557 100644</span><br><span>--- a/tests/unit_tests/openvpn/te=
+st_cryptoapi.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_cryptoap=
+i.c</span><br><span>@@ -40,6 +40,7 @@</span><br><span> #include &lt;openssl=
+/core_names.h&gt;</span><br><span> #include &lt;openssl/evp.h&gt;</span><br=
+><span> #include &lt;openssl/pkcs12.h&gt;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span><br><span> <=
+/span><br><span> #include &lt;cryptoapi.h&gt;</span><br><span> #include &lt=
+;cryptoapi.c&gt; /* pull-in the whole file to test static functions */</spa=
+n><br><span>@@ -582,6 +583,7 @@</span><br><span> int</span><br><span> main(=
+void)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    openvpn_unit_test_setup();</span><br><span>     const struct CMUni=
+tTest tests[] =3D {</span><br><span>         cmocka_unit_test(test_parse_he=
+xstring),</span><br><span>         cmocka_unit_test(import_certs),</span><b=
+r><span>diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_test=
+s/openvpn/test_misc.c</span><br><span>index eac3466..68ca9b6 100644</span><=
+br><span>--- a/tests/unit_tests/openvpn/test_misc.c</span><br><span>+++ b/t=
+ests/unit_tests/openvpn/test_misc.c</span><br><span>@@ -36,6 +36,7 @@</span=
+><br><span> </span><br><span> #include &quot;ssl_util.h&quot;</span><br><sp=
+an> #include &quot;options_util.h&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span><br><span> </s=
+pan><br><span> static void</span><br><span> test_compat_lzo_string(void **s=
+tate)</span><br><span>@@ -117,5 +118,6 @@</span><br><span> int</span><br><s=
+pan> main(void)</span><br><span> {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span>     return c=
+mocka_run_group_tests(misc_tests, NULL, NULL);</span><br><span> }</span><br=
+><span>diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/=
+openvpn/test_ncp.c</span><br><span>index 9e26c74..a8e1021 100644</span><br>=
+<span>--- a/tests/unit_tests/openvpn/test_ncp.c</span><br><span>+++ b/tests=
+/unit_tests/openvpn/test_ncp.c</span><br><span>@@ -35,6 +35,7 @@</span><br>=
+<span> #include &lt;cmocka.h&gt;</span><br><span> </span><br><span> #includ=
+e &quot;ssl_ncp.c&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#include &quot;test_common.h&quot;</span><br><span> </span><br><span> /=
+* Defines for use in the tests and the mock parse_line() */</span><br><span=
+> </span><br><span>@@ -272,6 +273,7 @@</span><br><span> int</span><br><span=
+> main(void)</span><br><span> {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    openvpn_unit_test_setup();</span><br><span> #if defined(ENA=
+BLE_CRYPTO_OPENSSL)</span><br><span>     OpenSSL_add_all_algorithms();</spa=
+n><br><span> #endif</span><br><span>diff --git a/tests/unit_tests/openvpn/t=
+est_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c</span><br><span=
+>index 2a2a973..ff3f788 100644</span><br><span>--- a/tests/unit_tests/openv=
+pn/test_packet_id.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pac=
+ket_id.c</span><br><span>@@ -35,6 +35,7 @@</span><br><span> </span><br><spa=
+n> #include &quot;packet_id.h&quot;</span><br><span> #include &quot;reliabl=
+e.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
+quot;test_common.h&quot;</span><br><span> </span><br><span> struct test_pac=
+ket_id_write_data {</span><br><span>     struct {</span><br><span>@@ -273,6=
+ +274,7 @@</span><br><span> int</span><br><span> main(void)</span><br><span=
+> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit=
+_test_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</=
+span><br><span>         cmocka_unit_test_setup_teardown(test_packet_id_writ=
+e_short,</span><br><span>                                         test_pack=
+et_id_write_setup,</span><br><span>diff --git a/tests/unit_tests/openvpn/te=
+st_pkt.c b/tests/unit_tests/openvpn/test_pkt.c</span><br><span>index 62abaf=
+a..3a68c56 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pkt.c=
+</span><br><span>+++ b/tests/unit_tests/openvpn/test_pkt.c</span><br><span>=
+@@ -33,6 +33,7 @@</span><br><span> #include &lt;string.h&gt;</span><br><spa=
+n> #include &lt;setjmp.h&gt;</span><br><span> #include &lt;cmocka.h&gt;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_com=
+mon.h&quot;</span><br><span> </span><br><span> #include &quot;crypto.h&quot=
+;</span><br><span> #include &quot;options.h&quot;</span><br><span>@@ -778,6=
+ +779,7 @@</span><br><span> int</span><br><span> main(void)</span><br><span=
+> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit=
+_test_setup();</span><br><span>     const struct CMUnitTest tests[] =3D {</=
+span><br><span>         cmocka_unit_test(test_verify_hmac_none),</span><br>=
+<span>         cmocka_unit_test(test_tls_decrypt_lite_none),</span><br><spa=
+n>diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/=
+openvpn/test_provider.c</span><br><span>index 8a0b816..934b2d3b 100644</spa=
+n><br><span>--- a/tests/unit_tests/openvpn/test_provider.c</span><br><span>=
++++ b/tests/unit_tests/openvpn/test_provider.c</span><br><span>@@ -40,6 +40=
+,8 @@</span><br><span> #include &lt;openssl/core_names.h&gt;</span><br><spa=
+n> #include &lt;openssl/evp.h&gt;</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct m=
+anagement *management; /* global */</span><br><span> static int mgmt_callba=
+ck_called;</span><br><span> </span><br><span>@@ -119,6 +121,7 @@</span><br>=
+<span> static void</span><br><span> init_test()</span><br><span> {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit_test_setup(=
+);</span><br><span>     prov[0] =3D OSSL_PROVIDER_load(NULL, &quot;default&=
+quot;);</span><br><span>     OSSL_PROVIDER_add_builtin(NULL, prov_name, xke=
+y_provider_init);</span><br><span>     prov[1] =3D OSSL_PROVIDER_load(NULL,=
+ prov_name);</span><br><span>diff --git a/tests/unit_tests/openvpn/test_tls=
+_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>index =
+3eac04c..5eb864e 100644</span><br><span>--- a/tests/unit_tests/openvpn/test=
+_tls_crypt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_tls_crypt.=
+c</span><br><span>@@ -34,6 +34,7 @@</span><br><span> #include &lt;setjmp.h&=
+gt;</span><br><span> #include &lt;cmocka.h&gt;</span><br><span> </span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common.h&q=
+uot;</span><br><span> #include &quot;tls_crypt.c&quot;</span><br><span> </s=
+pan><br><span> /* Define this function here as dummy since including the ss=
+l_*.c files</span><br><span>@@ -673,6 +674,7 @@</span><br><span> int</span>=
+<br><span> main(void)</span><br><span> {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span>     co=
+nst struct CMUnitTest tests[] =3D {</span><br><span>         cmocka_unit_te=
+st_setup_teardown(tls_crypt_loopback,</span><br><span>                     =
+                    test_tls_crypt_setup,</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1461?usp=
+=3Demail">change 1461</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1461?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifb6594700db71d219643a29c581=
-099c778bcbbc6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1462 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5c06dc13e9d8ab73997f79b13c3=
+0ee8949e5e993 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1461 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: plaisthos &lt;arne-openvpn@...2639...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
 
 </body></html>=
 
---uzbjdhlrqaA=--
+--qe+rLVJeyRo=--
 
