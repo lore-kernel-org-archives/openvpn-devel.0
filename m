@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 8 Jan 2026 12:26:07 +0000
-In-Reply-To: <gerrit.1767808679000.I33583e51e1143c53fbe0aef16546fa3f602b17c0@...2715...>
-References: <gerrit.1767808679000.I33583e51e1143c53fbe0aef16546fa3f602b17c0@...2715...>
+Date: Thu, 8 Jan 2026 12:29:39 +0000
+References: <gerrit.1767875377000.Ibc964c13724316ca96276ba6b7d34dbbfcf52064@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <a92ca21fe3f8ad65c7ebc91cf14272687543b29b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <970cb20104185eed6a00c248c6fd923439fb2043-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OffDHVT3Ekc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Add a
- first unit test
+Content-Type: multipart/alternative; boundary="oEVl+JLzg40="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix building
+ test_tls_crypt with cmocka 2.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---OffDHVT3Ekc=
+--oEVl+JLzg40=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,580 +29,134 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1459?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1460?usp=3Demail
 
-to look at the new patch set (#3).
+to review the following change.
 
 
-Change subject: openvpnserv: Add a first unit test
+Change subject: Fix building test_tls_crypt with cmocka 2.0
 ......................................................................
 
-openvpnserv: Add a first unit test
+Fix building test_tls_crypt with cmocka 2.0
 
-This adds the required build infrastructure
-and adds tests for two functions related to
-GetItfDnsDomains().
+This was missed in commit
+6db186e0b1d9783ea96e8a945a47fd23b45e4778 since we
+only built with cmocka 2.0 on macOS and that doesn't
+build test_tls_crypt.
 
-Change-Id: I33583e51e1143c53fbe0aef16546fa3f602b17c0
+Now that we build with cmocka 2.0 also on Debian Sid
+we noticed the additional issues.
+
+Change-Id: Ibc964c13724316ca96276ba6b7d34dbbfcf52064
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M configure.ac
-M src/openvpnserv/CMakeLists.txt
-M tests/unit_tests/Makefile.am
-M tests/unit_tests/openvpn/test_common.h
-A tests/unit_tests/openvpnserv/Makefile.am
-A tests/unit_tests/openvpnserv/test_openvpnserv.c
-6 files changed, 173 insertions(+), 2 deletions(-)
+M tests/unit_tests/openvpn/test_tls_crypt.c
+1 file changed, 3 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1459/3
 
-diff --git a/configure.ac b/configure.ac
-index 8ba5673..d3d548b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1460,6 +1460,7 @@
-         tests/unit_tests/Makefile
-         tests/unit_tests/example_test/Makefile
-         tests/unit_tests/openvpn/Makefile
-+        tests/unit_tests/openvpnserv/Makefile
-         tests/unit_tests/plugins/Makefile
-         tests/unit_tests/plugins/auth-pam/Makefile
- 	sample/Makefile
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index 2c8f310..67a89ef 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -74,3 +74,44 @@
- endif()
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1460/1
 
- add_dependencies(openvpnserv msg_mc_gen)
-+
-+if (BUILD_TESTING)
-+    set(unit_tests
-+        "test_openvpnserv"
-+    )
-+
-+    foreach (test_name ${unit_tests})
-+        add_test(${test_name} ${test_name})
-+        add_executable(${test_name}
-+            ../../tests/unit_tests/openvpnserv/${test_name}.c
-+            ${MC_GEN_DIR}/eventmsg.h
-+        )
-+
-+        target_link_libraries(${test_name} PUBLIC ${CMOCKA_LIBRARIES})
-+        target_include_directories(${test_name} PRIVATE
-+            .
-+            ../../include
-+            ../openvpn
-+            ${MC_GEN_DIR}
-+            ../../tests/unit_tests/openvpn
-+        )
-+        target_compile_options(${test_name} PRIVATE
-+            -D_UNICODE
-+            -UNTDDI_VERSION
-+            -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA
-+        )
-+        target_link_libraries(${test_name} PRIVATE
-+            advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib
-+            shlwapi.lib netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcc=
-h.lib)
-+        if (MINGW)
-+            target_compile_options(${test_name} PRIVATE -municode)
-+            target_link_options(${test_name} PRIVATE -municode)
-+        endif ()
-+    endforeach()
-+
-+    target_sources(test_openvpnserv PRIVATE
-+        common.c
-+        validate.c
-+        ../openvpn/wfp_block.c ../openvpn/wfp_block.h
-+    )
-+endif ()
-diff --git a/tests/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am
-index 33fefaa..ce6278e 100644
---- a/tests/unit_tests/Makefile.am
-+++ b/tests/unit_tests/Makefile.am
-@@ -1,5 +1,5 @@
- AUTOMAKE_OPTIONS =3D foreign
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
+penvpn/test_tls_crypt.c
+index 4a80a4c..730841e 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -110,8 +110,8 @@
+ __wrap_buffer_write_file(const char *filename, const struct buffer *buf)
+ {
+     const char *pem =3D BSTR(buf);
+-    check_expected(filename);
+-    check_expected(pem);
++    check_expected_ptr(filename);
++    check_expected_ptr(pem);
 
- if ENABLE_UNITTESTS
--SUBDIRS =3D example_test openvpn plugins
-+SUBDIRS =3D example_test openvpn openvpnserv plugins
- endif
-diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/open=
-vpn/test_common.h
-index f898e89..156e5a9 100644
---- a/tests/unit_tests/openvpn/test_common.h
-+++ b/tests/unit_tests/openvpn/test_common.h
-@@ -20,8 +20,9 @@
-  *  with this program; if not, see <https://www.gnu.org/licenses/>.
-  */
+     return mock_type(bool);
+ }
+@@ -119,7 +119,7 @@
+ struct buffer
+ __wrap_buffer_read_from_file(const char *filename, struct gc_arena *gc)
+ {
+-    check_expected(filename);
++    check_expected_ptr(filename);
 
--#include <stdio.h>
- #include <setjmp.h>
-+#include <stdio.h>
-+#include <stdlib.h>
- #include <cmocka.h>
-
- /* Do we use cmocka < 2.0.0? */
-diff --git a/tests/unit_tests/openvpnserv/Makefile.am b/tests/unit_tests/op=
-envpnserv/Makefile.am
-new file mode 100644
-index 0000000..5758cd4
---- /dev/null
-+++ b/tests/unit_tests/openvpnserv/Makefile.am
-@@ -0,0 +1,15 @@
-+AUTOMAKE_OPTIONS =3D foreign
-+
-+EXTRA_DIST =3D input
-+
-+AM_TESTSUITE_SUMMARY_HEADER =3D ' for $(PACKAGE_STRING) service Unit-Tests'
-+
-+if WIN32
-+test_binaries =3D openvpnserv_testdriver
-+endif
-+
-+openvpnserv_testdriver_CFLAGS  =3D -I$(top_srcdir)/include -I$(top_srcdir)=
-/src/openvpn -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpnserv @TE=
-ST_CFLAGS@
-+openvpnserv_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/open=
-vpn
-+openvpnserv_testdriver_SOURCES =3D test_openvpnserv.c \
-+	$(top_srcdir)/src/openvpnserv/common.c
-+
-diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv.c b/tests/unit_t=
-ests/openvpnserv/test_openvpnserv.c
-new file mode 100644
-index 0000000..348de4f
---- /dev/null
-+++ b/tests/unit_tests/openvpnserv/test_openvpnserv.c
-@@ -0,0 +1,113 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2025 Frank Lichtenheld <frank@...2641...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by t=
-he
-+ *  Free Software Foundation, either version 2 of the License,
-+ *  or (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
-+ */
-+
-+#include <setjmp.h>
-+#include <cmocka.h>
-+#include "test_common.h"
-+
-+#include <winsock2.h>
-+#include <windows.h>
-+
-+#include "interactive.c"
-+
-+BOOL
-+ReportStatusToSCMgr(SERVICE_STATUS_HANDLE service, SERVICE_STATUS *status)
-+{
-+    return TRUE;
-+}
-+
-+static void
-+test_list_contains_domain(void **state)
-+{
-+    PCWSTR domain =3D L"openvpn.net";
-+    size_t domain_len =3D wcslen(domain);
-+    assert_true(ListContainsDomain(domain, domain, domain_len));
-+    assert_true(ListContainsDomain(L"openvpn.com,openvpn.net", domain, dom=
-ain_len));
-+    assert_true(ListContainsDomain(L"openvpn.net,openvpn.com", domain, dom=
-ain_len));
-+
-+    assert_false(ListContainsDomain(L"openvpn.com", domain, domain_len));
-+    assert_false(ListContainsDomain(L"internal.openvpn.net", domain, domai=
-n_len));
-+}
-+
-+#define BUF_SIZE 64
-+static void
-+test_convert_itf_dns_domains(void **state)
-+{
-+    DWORD size, orig_size, len, res_len;
-+    LSTATUS err;
-+    const DWORD glyph_size =3D sizeof(wchar_t);
-+
-+    wchar_t domains_1[BUF_SIZE] =3D L"openvpn.com";
-+    len =3D (DWORD)wcslen(domains_1) + 1;
-+    size =3D orig_size =3D len * glyph_size;
-+    wchar_t domains_1_res[BUF_SIZE] =3D L".openvpn.com";
-+    res_len =3D len + 2; /* adds . and \0 */
-+    err =3D ConvertItfDnsDomains(L"openvpn.net", domains_1, &size, BUF_SIZ=
-E);
-+    assert_memory_equal(domains_1, domains_1_res, size);
-+    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(err, NO_ERROR);
-+
-+    wchar_t domains_2[BUF_SIZE] =3D L"openvpn.com,openvpn.net";
-+    len =3D (DWORD)wcslen(domains_2) + 1;
-+    size =3D orig_size =3D len * glyph_size;
-+    wchar_t domains_2_res[BUF_SIZE] =3D L".openvpn.com";
-+    res_len =3D (DWORD)wcslen(domains_2_res) + 2;
-+    err =3D ConvertItfDnsDomains(L"openvpn.net", domains_2, &size, BUF_SIZ=
-E);
-+    assert_memory_equal(domains_2, domains_2_res, size);
-+    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(err, NO_ERROR);
-+
-+    wchar_t domains_3[BUF_SIZE] =3D L"openvpn.com,openvpn.net";
-+    len =3D (DWORD)wcslen(domains_3) + 1;
-+    size =3D orig_size =3D len * glyph_size;
-+    wchar_t domains_3_res[BUF_SIZE] =3D L".openvpn.net";
-+    res_len =3D (DWORD)wcslen(domains_3_res) + 2;
-+    err =3D ConvertItfDnsDomains(L"openvpn.com", domains_3, &size, BUF_SIZ=
-E);
-+    assert_memory_equal(domains_3, domains_3_res, size);
-+    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(err, NO_ERROR);
-+
-+    wchar_t domains_4[BUF_SIZE] =3D L"openvpn.com,openvpn.net";
-+    len =3D (DWORD)wcslen(domains_4) + 1;
-+    size =3D orig_size =3D len * glyph_size;
-+    wchar_t domains_4_res[BUF_SIZE] =3D L".openvpn.com\0.openvpn.net";
-+    res_len =3D len + 3; /* adds two . and one \0 */
-+    err =3D ConvertItfDnsDomains(NULL, domains_4, &size, BUF_SIZE);
-+    assert_memory_equal(domains_4, domains_4_res, size);
-+    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(err, NO_ERROR);
-+}
-+
-+int
-+wmain(void)
-+{
-+    openvpn_unit_test_setup();
-+    const struct CMUnitTest tests[] =3D {
-+        cmocka_unit_test(test_list_contains_domain),
-+        cmocka_unit_test(test_convert_itf_dns_domains),
-+    };
-+
-+    int ret =3D cmocka_run_group_tests_name("openvpnserv tests", tests, NU=
-LL, NULL);
-+
-+    return ret;
-+}
+     const char *pem_str =3D mock_ptr_type(const char *);
+     struct buffer ret =3D alloc_buf_gc(strlen(pem_str) + 1, gc);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1459?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1460?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I33583e51e1143c53fbe0aef16546fa3f602b17c0
-Gerrit-Change-Number: 1459
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: Ibc964c13724316ca96276ba6b7d34dbbfcf52064
+Gerrit-Change-Number: 1460
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---OffDHVT3Ekc=
+--oEVl+JLzg40=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1459?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">openvpnserv: Add a first unit test<br><br>This a=
-dds the required build infrastructure<br>and adds tests for two functions r=
-elated to<br>GetItfDnsDomains().<br><br>Change-Id: I33583e51e1143c53fbe0aef=
-16546fa3f602b17c0<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
-gt;<br>---<br>M configure.ac<br>M src/openvpnserv/CMakeLists.txt<br>M tests=
-/unit_tests/Makefile.am<br>M tests/unit_tests/openvpn/test_common.h<br>A te=
-sts/unit_tests/openvpnserv/Makefile.am<br>A tests/unit_tests/openvpnserv/te=
-st_openvpnserv.c<br>6 files changed, 173 insertions(+), 2 deletions(-)<br><=
-br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
-/changes/59/1459/3</pre><pre style=3D"font-family: monospace,monospace; whi=
-te-space: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac</span><=
-br><span>index 8ba5673..d3d548b 100644</span><br><span>--- a/configure.ac</=
-span><br><span>+++ b/configure.ac</span><br><span>@@ -1460,6 +1460,7 @@</sp=
-an><br><span>         tests/unit_tests/Makefile</span><br><span>         te=
-sts/unit_tests/example_test/Makefile</span><br><span>         tests/unit_te=
-sts/openvpn/Makefile</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        tests/unit_tests/openvpnserv/Makefile</span><br><span>         tes=
-ts/unit_tests/plugins/Makefile</span><br><span>         tests/unit_tests/pl=
-ugins/auth-pam/Makefile</span><br><span> 	sample/Makefile</span><br><span>d=
-iff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt=
-</span><br><span>index 2c8f310..67a89ef 100644</span><br><span>--- a/src/op=
-envpnserv/CMakeLists.txt</span><br><span>+++ b/src/openvpnserv/CMakeLists.t=
-xt</span><br><span>@@ -74,3 +74,44 @@</span><br><span> endif()</span><br><s=
-pan> </span><br><span> add_dependencies(openvpnserv msg_mc_gen)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+if (BUILD_TESTING)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    set(unit_tests</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        &quot;test_openvpnserv&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    foreach (test_name ${unit_tests})</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        add_test(${test_name} ${test_name})</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        add_executable(${t=
-est_name}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  ../../tests/unit_tests/openvpnserv/${test_name}.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            ${MC_GEN_DIR}/eventmsg.h</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        target_link_libraries(${test_name} PUBLIC ${C=
-MOCKA_LIBRARIES})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      target_include_directories(${test_name} PRIVATE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            .</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            ../../include</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            ../openvpn</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            ${MC_GEN_DIR}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            ../../tests/unit_tes=
-ts/openvpn</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        )=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        target_comp=
-ile_options(${test_name} PRIVATE</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            -D_UNICODE</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            -UNTDDI_VERSION</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        target_link_libraries(${t=
-est_name} PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            shlwapi.lib=
- netapi32.lib ws2_32.lib ntdll.lib ole32.lib pathcch.lib)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if (MINGW)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            target_compile_options(${t=
-est_name} PRIVATE -municode)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            target_link_options(${test_name} PRIVATE -municode)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        endif ()</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    endforeach()</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    target_sources(test_openvpnserv PRIVATE</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        common.c</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        validate.c</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        ../openvpn/wfp_bloc=
-k.c ../openvpn/wfp_block.h</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif (=
-)</span><br><span>diff --git a/tests/unit_tests/Makefile.am b/tests/unit_te=
-sts/Makefile.am</span><br><span>index 33fefaa..ce6278e 100644</span><br><sp=
-an>--- a/tests/unit_tests/Makefile.am</span><br><span>+++ b/tests/unit_test=
-s/Makefile.am</span><br><span>@@ -1,5 +1,5 @@</span><br><span> AUTOMAKE_OPT=
-IONS =3D foreign</span><br><span> </span><br><span> if ENABLE_UNITTESTS</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-SUBDIRS =3D example_test =
-openvpn plugins</span><br><span style=3D"color: hsl(120, 100%, 40%);">+SUBD=
-IRS =3D example_test openvpn openvpnserv plugins</span><br><span> endif</sp=
-an><br><span>diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/un=
-it_tests/openvpn/test_common.h</span><br><span>index f898e89..156e5a9 10064=
-4</span><br><span>--- a/tests/unit_tests/openvpn/test_common.h</span><br><s=
-pan>+++ b/tests/unit_tests/openvpn/test_common.h</span><br><span>@@ -20,8 +=
-20,9 @@</span><br><span>  *  with this program; if not, see &lt;https://www=
-.gnu.org/licenses/&gt;.</span><br><span>  */</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#include &lt;stdio.h&gt;</span><br=
-><span> #include &lt;setjmp.h&gt;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#include &lt;stdio.h&gt;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &lt;stdlib.h&gt;</span><br><span> #include &lt;=
-cmocka.h&gt;</span><br><span> </span><br><span> /* Do we use cmocka &lt; 2.=
-0.0? */</span><br><span>diff --git a/tests/unit_tests/openvpnserv/Makefile.=
-am b/tests/unit_tests/openvpnserv/Makefile.am</span><br><span>new file mode=
- 100644</span><br><span>index 0000000..5758cd4</span><br><span>--- /dev/nul=
-l</span><br><span>+++ b/tests/unit_tests/openvpnserv/Makefile.am</span><br>=
-<span>@@ -0,0 +1,15 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+AUTOMAKE_OPTIONS =3D foreign</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+EXTRA_D=
-IST =3D input</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+AM_TESTSUITE_SUMMARY_HEAD=
-ER =3D &#39; for $(PACKAGE_STRING) service Unit-Tests&#39;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+if WIN32</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+test_binaries =3D openvpnserv_testdriver</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+endif</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ope=
-nvpnserv_testdriver_CFLAGS  =3D -I$(top_srcdir)/include -I$(top_srcdir)/src=
-/openvpn -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpnserv @TEST_C=
-FLAGS@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+openvpnserv_t=
-estdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+openvpnserv_testdriver_SOURCES=
- =3D test_openvpnserv.c \</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+	$(top_srcdir)/src/openvpnserv/common.c</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span>diff --git a/tests/unit_tests/op=
-envpnserv/test_openvpnserv.c b/tests/unit_tests/openvpnserv/test_openvpnser=
-v.c</span><br><span>new file mode 100644</span><br><span>index 0000000..348=
-de4f</span><br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/o=
-penvpnserv/test_openvpnserv.c</span><br><span>@@ -0,0 +1,113 @@</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel=
- IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
-        over a single UDP port, with support for SSL/TLS-based</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ *             session authentic=
-ation and key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *             packet encryption, packet authentication, and</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *             packet compress=
-ion.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 Frank Lic=
-htenheld &lt;frank@...2641...&gt;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
- This program is free software; you can redistribute it and/or modify</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of=
- the GNU General Public License as published by the</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  Free Software Foundation, either vers=
-ion 2 of the License,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  or (at your option) any later version.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *  This program is distributed in the hope that it will be useful,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY=
- WARRANTY; without even the implied warranty of</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR=
- PURPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  GNU General Public License for more details.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *  You should have received a copy of the GNU General Public Li=
-cense along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with=
- this program; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#include &lt;setjmp.h&gt;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#include &lt;cmocka.h&gt;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#include &quot;test_common.h&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &lt;winsock2.h&gt;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#include &lt;windows.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &quot;interactive.c&quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Repo=
-rtStatusToSCMgr(SERVICE_STATUS_HANDLE service, SERVICE_STATUS *status)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return TRUE;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
- void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_list_cont=
-ains_domain(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    PCWSTR d=
-omain =3D L&quot;openvpn.net&quot;;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    size_t domain_len =3D wcslen(domain);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    assert_true(ListContainsDomain(do=
-main, domain, domain_len));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    assert_true(ListContainsDomain(L&quot;openvpn.com,openvpn.net&q=
-uot;, domain, domain_len));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    assert_true(ListContainsDomain(L&quot;openvpn.net,openvpn.com&q=
-uot;, domain, domain_len));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-false(ListContainsDomain(L&quot;openvpn.com&quot;, domain, domain_len));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ListC=
-ontainsDomain(L&quot;internal.openvpn.net&quot;, domain, domain_len));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#define BUF_SIZE 64</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+test_convert_itf_dns_domains(void **state)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    DWORD size, orig_size, len, res_len;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    LSTATUS err;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    const DWORD glyph_size =3D sizeof(wchar_=
-t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    wchar_t domains_1[BUF_SIZE] =3D=
- L&quot;openvpn.com&quot;;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    len =3D (DWORD)wcslen(domains_1) + 1;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    size =3D orig_size =3D len * glyph_size;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    wchar_t domains_1=
-_res[BUF_SIZE] =3D L&quot;.openvpn.com&quot;;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    res_len =3D len + 2; /* adds . and \0 */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =3D ConvertItfDn=
-sDomains(L&quot;openvpn.net&quot;, domains_1, &amp;size, BUF_SIZE);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(dom=
-ains_1, domains_1_res, size);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    assert_int_equal(size, res_len * glyph_size);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(err, NO_ERROR)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    wchar_t domains_2[BUF_SIZE] =3D L=
-&quot;openvpn.com,openvpn.net&quot;;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    len =3D (DWORD)wcslen(domains_2) + 1;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    size =3D orig_size =3D len * gly=
-ph_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    wchar_t=
- domains_2_res[BUF_SIZE] =3D L&quot;.openvpn.com&quot;;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    res_len =3D (DWORD)wcslen(domains_2=
-_res) + 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    err =
-=3D ConvertItfDnsDomains(L&quot;openvpn.net&quot;, domains_2, &amp;size, BU=
-F_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-memory_equal(domains_2, domains_2_res, size);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    assert_int_equal(size, res_len * glyph_size);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equa=
-l(err, NO_ERROR);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    wchar_t domains_3=
-[BUF_SIZE] =3D L&quot;openvpn.com,openvpn.net&quot;;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    len =3D (DWORD)wcslen(domains_3) + 1;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size =3D orig_s=
-ize =3D len * glyph_size;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    wchar_t domains_3_res[BUF_SIZE] =3D L&quot;.openvpn.net&quot;;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    res_len =3D (DWORD=
-)wcslen(domains_3_res) + 2;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    err =3D ConvertItfDnsDomains(L&quot;openvpn.com&quot;, domains_=
-3, &amp;size, BUF_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_memory_equal(domains_3, domains_3_res, size);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(size, res_le=
-n * glyph_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- assert_int_equal(err, NO_ERROR);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    w=
-char_t domains_4[BUF_SIZE] =3D L&quot;openvpn.com,openvpn.net&quot;;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    len =3D (DWORD)wcslen(=
-domains_4) + 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-size =3D orig_size =3D len * glyph_size;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    wchar_t domains_4_res[BUF_SIZE] =3D L&quot;.openvp=
-n.com\0.openvpn.net&quot;;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    res_len =3D len + 3; /* adds two . and one \0 */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    err =3D ConvertItfDnsDomains(NU=
-LL, domains_4, &amp;size, BUF_SIZE);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_memory_equal(domains_4, domains_4_res, size);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(=
-size, res_len * glyph_size);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_int_equal(err, NO_ERROR);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+wmain(void)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const struct CMUnitTest tests[] =3D {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit=
-_test(test_list_contains_domain),</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        cmocka_unit_test(test_convert_itf_dns_domains),</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    int ret =3D cmocka_run_group_tests_name(&quot;openvpn=
-serv tests&quot;, tests, NULL, NULL);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1459?usp=3Demail">change 1459</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1459?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1460?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Fix building test_tls_crypt with cmocka 2.0=
+<br><br>This was missed in commit<br>6db186e0b1d9783ea96e8a945a47fd23b45e47=
+78 since we<br>only built with cmocka 2.0 on macOS and that doesn&#39;t<br>=
+build test_tls_crypt.<br><br>Now that we build with cmocka 2.0 also on Debi=
+an Sid<br>we noticed the additional issues.<br><br>Change-Id: Ibc964c137243=
+16ca96276ba6b7d34dbbfcf52064<br>Signed-off-by: Frank Lichtenheld &lt;frank@=
+...2641...&gt;<br>---<br>M tests/unit_tests/openvpn/test_tls_crypt.c<br>1 f=
+ile changed, 3 insertions(+), 3 deletions(-)<br><br></pre><pre class=3D"blo=
+cks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
+ pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1460/1</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/=
+openvpn/test_tls_crypt.c</span><br><span>index 4a80a4c..730841e 100644</spa=
+n><br><span>--- a/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span=
+>+++ b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>@@ -110,8 =
++110,8 @@</span><br><span> __wrap_buffer_write_file(const char *filename, c=
+onst struct buffer *buf)</span><br><span> {</span><br><span>     const char=
+ *pem =3D BSTR(buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   check_expected(filename);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    check_expected(pem);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    check_expected_ptr(filename);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    check_expected_ptr(pem);</span><br><span> </s=
+pan><br><span>     return mock_type(bool);</span><br><span> }</span><br><sp=
+an>@@ -119,7 +119,7 @@</span><br><span> struct buffer</span><br><span> __wr=
+ap_buffer_read_from_file(const char *filename, struct gc_arena *gc)</span><=
+br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    check_=
+expected(filename);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    check_expected_ptr(filename);</span><br><span> </span><br><span>     co=
+nst char *pem_str =3D mock_ptr_type(const char *);</span><br><span>     str=
+uct buffer ret =3D alloc_buf_gc(strlen(pem_str) + 1, gc);</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1460?usp=3Demail">change 1460</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1460?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I33583e51e1143c53fbe0aef1654=
-6fa3f602b17c0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1459 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibc964c13724316ca96276ba6b7d=
+34dbbfcf52064 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1460 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -615,5 +168,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---OffDHVT3Ekc=--
+--oEVl+JLzg40=--
 
