@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Fri, 9 Jan 2026 16:23:56 +0000
+Date: Fri, 9 Jan 2026 16:27:09 +0000
 In-Reply-To: <gerrit.1767974222000.Ie59e03ce01575acaeaf690f582eb5cfa80eb37fc@...2715...>
 References: <gerrit.1767974222000.Ie59e03ce01575acaeaf690f582eb5cfa80eb37fc@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <0f53a34babd80adfb03bc30b39d5fbda9205f8a5-EmailReviewComments-HTML@...2715...>
+Message-ID: <66fca2ae185d2473f4ac165ea5c49ef3aae9f047-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KzyHxqMQ/mE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="I+BYy25XNro="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: configure.ac: Clean
  up systemd support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KzyHxqMQ/mE=
+--I+BYy25XNro=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,7 +35,16 @@ Change subject: configure.ac: Clean up systemd support
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 1:
+
+(1 comment)
+
+Patchset:
+
+PS1:
+v216 seems to be truly ancient (https://github.com/systemd/systemd/tree/v21=
+6) and like 12 years old
+
 
 
 --
@@ -53,27 +62,32 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 09 Jan 2026 16:23:56 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Fri, 09 Jan 2026 16:27:09 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
---KzyHxqMQ/mE=
+--I+BYy25XNro=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1463?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1463?usp=3Demail=
-">change 1463</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1463?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1463?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1463?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">v216 seems to b=
+e truly ancient (https://github.com/systemd/systemd/tree/v216) and like 12 =
+years old</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1463?usp=3Demail">change 1463</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1463?usp=3Demail"/><meta itemprop=3D"name" content=3D=
+"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -90,12 +104,12 @@ b5cfa80eb37fc </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 09 Jan 2026 16:23:56=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 09 Jan 2026 16:27:09=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---KzyHxqMQ/mE=--
+--I+BYy25XNro=--
 
