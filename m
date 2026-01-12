@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 12 Jan 2026 15:47:47 +0000
-In-Reply-To: <gerrit.1768227015000.I89dcab24ba510094ce1672e382960bf15def310a@...2715...>
-References: <gerrit.1768227015000.I89dcab24ba510094ce1672e382960bf15def310a@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <bedd6810ab55bb0cda3adf140efed960c6af74c2-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Mon, 12 Jan 2026 18:11:12 +0100
+Message-ID: <20260112171122.3994-1-gert@...1296...>
+In-Reply-To: <gerrit.1768227561000.I0aca7e7d9aa190541f11745cf72193cb6b39540a@...2715...>
+References: <gerrit.1768227561000.I0aca7e7d9aa190541f11745cf72193cb6b39540a@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NAdu7wn/f/k="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Require
- script-security 2 when using unix: tun
+Subject: [Openvpn-devel] [PATCH v1] socks: Replace magic "10" for socks
+ header with macro
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,83 +14,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---NAdu7wn/f/k=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: plaisthos.
+So that it is easier to check that we indeed
+have reserved this prior to assuming we have.
 
-flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1465?usp=3Demail )
+Github: openvpn-private-issues#4
+Change-Id: I0aca7e7d9aa190541f11745cf72193cb6b39540a
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1467
+---
 
-Change subject: Require script-security 2 when using unix: tun
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1467
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I89dcab24ba510094ce1672e382960bf15def310a
-Gerrit-Change-Number: 1465
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 12 Jan 2026 15:47:47 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---NAdu7wn/f/k=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail=
-">change 1465</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I89dcab24ba510094ce1672e3829=
-60bf15def310a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1465 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 12 Jan 2026 15:47:47=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---NAdu7wn/f/k=--
+        
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b690dff..4c23170 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2927,7 +2927,7 @@
+     headroom += 4;
+ 
+     /* socks proxy header */
+-    headroom += 10;
++    headroom += SOCKS_UDPv4_HEADROOM;
+ 
+     /* compression header and fragment header (part of the encrypted payload) */
+     headroom += 1 + 1;
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 67ae67f..e5db8ab 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -66,11 +66,11 @@
+ 
+     bool tlsmode = options->tls_server || options->tls_client;
+ 
+-    /* A socks proxy adds 10 byte of extra header to each packet
++    /* A socks proxy adds extra header to each packet
+      * (we only support Socks with IPv4, this value is different for IPv6) */
+     if (options->ce.socks_proxy_server && proto_is_udp(options->ce.proto))
+     {
+-        header_size += 10;
++        header_size += SOCKS_UDPv4_HEADROOM;
+     }
+ 
+     /* TCP stream based packets have a 16 bit length field */
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index 29a7d04..ca8109c 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -94,6 +94,11 @@
+  */
+ #define PAYLOAD_ALIGN 4
+ 
++/*
++ * How many bytes we prepend for a SOCKS UDP proxy.
++ * This only handles IPv4 right now.
++ */
++#define SOCKS_UDPv4_HEADROOM 10
+ 
+ /**************************************************************************/
+ /**
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 1e99c9a..078b4e1 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -434,7 +434,7 @@
+ }
+ 
+ /*
+- * Remove the 10 byte socks5 header from an incoming
++ * Remove the socks5 header from an incoming
+  * UDP packet, setting *from to the source address.
+  *
+  * Run after UDP read.
+@@ -444,7 +444,7 @@
+ {
+     int atyp;
+ 
+-    if (BLEN(buf) < 10)
++    if (BLEN(buf) < SOCKS_UDPv4_HEADROOM)
+     {
+         goto error;
+     }
+@@ -471,7 +471,7 @@
+ }
+ 
+ /*
+- * Add a 10 byte socks header prior to UDP write.
++ * Add a socks header prior to UDP write.
+  * *to is the destination address.
+  *
+  * Run before UDP write.
+@@ -481,11 +481,11 @@
+ socks_process_outgoing_udp(struct buffer *buf, const struct link_socket_actual *to)
+ {
+     /*
+-     * Get a 10 byte subset buffer prepended to buf --
++     * Get a subset buffer prepended to buf --
+      * we expect these bytes will be here because
+      * we always allocate space for these bytes
+      */
+-    struct buffer head = buf_sub(buf, 10, true);
++    struct buffer head = buf_sub(buf, SOCKS_UDPv4_HEADROOM, true);
+ 
+     /* crash if not enough headroom in buf */
+     ASSERT(buf_defined(&head));
+@@ -496,5 +496,5 @@
+     buf_write(&head, &to->dest.addr.in4.sin_addr, sizeof(to->dest.addr.in4.sin_addr));
+     buf_write(&head, &to->dest.addr.in4.sin_port, sizeof(to->dest.addr.in4.sin_port));
+ 
+-    return 10;
++    return SOCKS_UDPv4_HEADROOM;
+ }
 
