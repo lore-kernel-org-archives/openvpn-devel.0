@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 12 Jan 2026 15:37:39 +0000
+Date: Mon, 12 Jan 2026 15:47:47 +0000
 In-Reply-To: <gerrit.1768227015000.I89dcab24ba510094ce1672e382960bf15def310a@...2715...>
 References: <gerrit.1768227015000.I89dcab24ba510094ce1672e382960bf15def310a@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <9ae0927a87df1a806cf534b34685b10f3bf26aa8-EmailReviewComments-HTML@...2715...>
+Message-ID: <bedd6810ab55bb0cda3adf140efed960c6af74c2-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ReHAdySycs0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="NAdu7wn/f/k="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Require
  script-security 2 when using unix: tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ReHAdySycs0=
+--NAdu7wn/f/k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,16 +35,7 @@ Change subject: Require script-security 2 when using unix: tun
 ......................................................................
 
 
-Patch Set 1:
-
-(1 comment)
-
-Patchset:
-
-PS1:
-Small issue: Error message is `ERROR: failure executing process for tun:: d=
-isallowed by script-security setting`. There seems to be an additional `:`.
-
+Patch Set 1: Code-Review+2
 
 
 --
@@ -59,36 +50,30 @@ Gerrit-Change-Id: I89dcab24ba510094ce1672e382960bf15def310a
 Gerrit-Change-Number: 1465
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 12 Jan 2026 15:37:39 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Comment-Date: Mon, 12 Jan 2026 15:47:47 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---ReHAdySycs0=
+--NAdu7wn/f/k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1465?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Small issue: Er=
-ror message is `ERROR: failure executing process for tun:: disallowed by sc=
-ript-security setting`. There seems to be an additional `:`.</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1465?usp=3Demail">change 1465</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/14=
-65?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail=
+">change 1465</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1465?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -99,18 +84,18 @@ iv>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: flichtenheld &lt;frank@...2641...&g=
-t; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 12 Jan 2026 15:37:39=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 12 Jan 2026 15:47:47=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---ReHAdySycs0=--
+--NAdu7wn/f/k=--
 
