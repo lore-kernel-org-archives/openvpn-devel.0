@@ -1,11 +1,10 @@
+Date: Tue, 13 Jan 2026 09:46:35 +0100 (CET)
+Message-Id: <202601130846.60D8kZ7m006347@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 13 Jan 2026 08:27:45 +0100
-Message-ID: <20260113072750.16015-1-gert@...1296...>
-In-Reply-To: <gerrit.1768227015000.I89dcab24ba510094ce1672e382960bf15def310a@...2715...>
-References: <gerrit.1768227015000.I89dcab24ba510094ce1672e382960bf15def310a@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Require script-security 2 when using
- unix: tun
+In-Reply-To: <20260113072750.16015-1-gert@...1296...>
+References: <20260113072750.16015-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Require script-security 2 when
+ using unix: tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +15,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Change makes sense ("all external program invocations guarded by 
+--script-security") though that's more for consistency than for actual
+security against "someone nasty hands you an openvpn config file and
+asks you to run it, unchecked, on a linux system, as root".
 
-Since this executes an executable from an arbitrary path, it should follow
-the same rules as other scripts/executable.
+Tested on a t_client test set that uses --dev unix: for "ping around"
+tests - testing "as is" now yields:
 
-Reported-By: Petr Simecek, Pavel Kohout and Stanislav Fort from Aisle Research
-Change-Id: I89dcab24ba510094ce1672e382960bf15def310a
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1465
----
+   2026-01-13 09:34:40 WARNING: External program may not be called unless '--script-security 2' or higher is enabled. See --help text or man page for detailed info.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+.. which is what we want to see.  Adding that makes it work.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1465
-This mail reflects revision 1 of this Change.
+(I have seen the remark from Frank about the message, but that's existing
+code and not part of this patch - for the sake of saving time I decided to
+merge this "as is", we can always improve the message in a separate patch)
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+Your patch has been applied to the master branch.
 
-        
-diff --git a/src/openvpn/tun_afunix.c b/src/openvpn/tun_afunix.c
-index c410480..a67a472 100644
---- a/src/openvpn/tun_afunix.c
-+++ b/src/openvpn/tun_afunix.c
-@@ -61,7 +61,10 @@
- 
-     argv_printf(&argv, "%s", program);
- 
--    tt->afunix.childprocess = openvpn_execve_check(&argv, env, S_NOWAITPID, msgprefix);
-+    /* exit when executing fails to easier spot errors here and treat this
-+     * command like an external script */
-+    int flags = S_NOWAITPID | S_SCRIPT | S_FATAL;
-+    tt->afunix.childprocess = openvpn_execve_check(&argv, env, flags, msgprefix);
-     if (!openvpn_waitpid_check(tt->afunix.childprocess, msgprefix, M_WARN))
-     {
-         tt->afunix.childprocess = 0;
+commit 4a15d4e51ddb58fbc7a2b2369f30e51616a2a591
+Author: Arne Schwabe
+Date:   Tue Jan 13 08:27:45 2026 +0100
+
+     Require script-security 2 when using unix: tun
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1465
+     Message-Id: <20260113072750.16015-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35223.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
