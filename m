@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 13 Jan 2026 11:50:19 +0000
+Date: Tue, 13 Jan 2026 11:52:04 +0000
 In-Reply-To: <gerrit.1768304582000.I0141945469dd11340bfb42ec37a3c5f90ed0ff52@...2715...>
 References: <gerrit.1768304582000.I0141945469dd11340bfb42ec37a3c5f90ed0ff52@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <1e51b8d1910b5c9c599a3853878ca063dbdcbd77-EmailReviewComments-HTML@...2715...>
+Message-ID: <77fe2e0cbbea92c9feba5b9a907e1f5b5a720fec-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lnwtrxRAkNU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="TLZYau8ZmG4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: Remove old
  "dynamic remote" feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---lnwtrxRAkNU=
+--TLZYau8ZmG4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,7 +35,7 @@ Change subject: socket: Remove old "dynamic remote" feature
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 1: -Code-Review
 
 
 --
@@ -53,27 +53,27 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 13 Jan 2026 11:50:19 +0000
+Gerrit-Comment-Date: Tue, 13 Jan 2026 11:52:04 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---lnwtrxRAkNU=
+--TLZYau8ZmG4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail=
-">change 1468</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #ddd;">-Code-Review</span></p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail">View C=
+hange</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, v=
+isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail">cha=
+nge 1468</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -90,12 +90,12 @@ p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1468?usp=3Demail"/>=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 13 Jan 2026 11:50:19=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 13 Jan 2026 11:52:04=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---lnwtrxRAkNU=--
+--TLZYau8ZmG4=--
 
