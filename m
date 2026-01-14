@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 14 Jan 2026 11:15:01 +0000
+Date: Wed, 14 Jan 2026 11:15:05 +0000
 In-Reply-To: <gerrit.1765800034000.I3f661cf305c52652e430b8d219df5186dd8ea4f7@...2715...>
 References: <gerrit.1765800034000.I3f661cf305c52652e430b8d219df5186dd8ea4f7@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <d773c63222d61d69778c12f436731dc1316e8609-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <d773c63222d61d69778c12f436731dc1316e8609-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="CK6deYukc4Q="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="WW213mY0fRk="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: remove
  ENABLE_X509ALTUSERNAME conditional
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,24 +19,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CK6deYukc4Q=
+--WW213mY0fRk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1442?usp=3Demail
-
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+42?usp=3Demail )
 
 Change subject: remove ENABLE_X509ALTUSERNAME conditional
 ......................................................................
@@ -77,7 +67,7 @@ M src/openvpn/ssl_verify_openssl.c
 11 files changed, 10 insertions(+), 50 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/1442/2
+
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index bdad173..e25ecae 100644
@@ -362,7 +352,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1442?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I3f661cf305c52652e430b8d219df5186dd8ea4f7
@@ -372,43 +362,40 @@ Gerrit-Owner: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---CK6deYukc4Q=
+--WW213mY0fRk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to this change.</p><p><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1442?usp=3Demail">View Change</a></p><p>The followi=
-ng approvals got outdated and were removed:
-Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">remove ENABLE_X509ALTUSERNAME c=
-onditional<br><br>This is one of the #ifdef producing compile-time variants=
- that make the<br>code harder to read and harder to test.  The extra code s=
-ize due to<br>turning it on is marginal.<br><br>The mbedTLS backend does no=
-t (yet) support it.  To cope with that,<br>add a minimum function x509_user=
-name_field_ext_supported() that always<br>returns &quot;false&quot;, and om=
-it the --x509-username-field from the help<br>text if ENABLE_CRYPTO_MBEDTLS=
-.  Implement this on another day.<br><br>Github: closes OpenVPN/openvpn#917=
-<br><br>Change-Id: I3f661cf305c52652e430b8d219df5186dd8ea4f7<br>Signed-off-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>Acked-by: Arne Schwabe &lt;arne=
--openvpn@...1227...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn=
-/+/1442<br>Message-Id: &lt;20260114110452.4976-1-gert@...1296...&gt;<br>URL=
-: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35237=
-.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CM=
-akeLists.txt<br>M Changes.rst<br>M config.h.cmake.in<br>M configure.ac<br>M=
- src/openvpn/init.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<b=
-r>M src/openvpn/ssl_common.h<br>M src/openvpn/ssl_verify_backend.h<br>M src=
-/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/ssl_verify_openssl.c<br>11 f=
-iles changed, 10 insertions(+), 50 deletions(-)<br><br></pre><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/1442/2</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index bdad=
-173..e25ecae 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>++=
-+ b/CMakeLists.txt</span><br><span>@@ -325,8 +325,6 @@</span><br><span>    =
-     target_link_libraries(${target} PUBLIC ${wolfssl_LINK_LIBRARIES})</spa=
-n><br><span>         target_include_directories(${target} PRIVATE ${wolfssl=
-_INCLUDE_DIRS}/wolfssl)</span><br><span>     else ()</span><br><span style=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1442?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">remove ENABLE_X509ALTUSERNAME conditional<br><br=
+>This is one of the #ifdef producing compile-time variants that make the<br=
+>code harder to read and harder to test.  The extra code size due to<br>tur=
+ning it on is marginal.<br><br>The mbedTLS backend does not (yet) support i=
+t.  To cope with that,<br>add a minimum function x509_username_field_ext_su=
+pported() that always<br>returns &quot;false&quot;, and omit the --x509-use=
+rname-field from the help<br>text if ENABLE_CRYPTO_MBEDTLS.  Implement this=
+ on another day.<br><br>Github: closes OpenVPN/openvpn#917<br><br>Change-Id=
+: I3f661cf305c52652e430b8d219df5186dd8ea4f7<br>Signed-off-by: Gert Doering =
+&lt;gert@...1296...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...2639...=
+..&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1442<br>Messag=
+e-Id: &lt;20260114110452.4976-1-gert@...1296...&gt;<br>URL: https://www.mai=
+l-archive.com/openvpn-devel@lists.sourceforge.net/msg35237.html<br>Signed-o=
+ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M=
+ Changes.rst<br>M config.h.cmake.in<br>M configure.ac<br>M src/openvpn/init=
+.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/openvpn/s=
+sl_common.h<br>M src/openvpn/ssl_verify_backend.h<br>M src/openvpn/ssl_veri=
+fy_mbedtls.c<br>M src/openvpn/ssl_verify_openssl.c<br>11 files changed, 10 =
+insertions(+), 50 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index bdad1=
+73..e25ecae 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
+ b/CMakeLists.txt</span><br><span>@@ -325,8 +325,6 @@</span><br><span>     =
+    target_link_libraries(${target} PUBLIC ${wolfssl_LINK_LIBRARIES})</span=
+><br><span>         target_include_directories(${target} PRIVATE ${wolfssl_=
+INCLUDE_DIRS}/wolfssl)</span><br><span>     else ()</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-        set(ENABLE_X509ALTUSERNAME YES)</sp=
 an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>        =
  find_package(OpenSSL REQUIRED)</span><br><span>         target_link_librar=
@@ -612,7 +599,7 @@ chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
 net/c/openvpn/+/1442?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
 Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I3f661cf305c52652e430b8d219d=
@@ -628,5 +615,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---CK6deYukc4Q=--
+--WW213mY0fRk=--
 
