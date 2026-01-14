@@ -1,14 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 14 Jan 2026 14:37:44 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 14 Jan 2026 14:38:51 +0000
 In-Reply-To: <gerrit.1762862118000.I509ea79990305f39e3385136fc0d9e5fbfa68e6c@...2715...>
 References: <gerrit.1762862118000.I509ea79990305f39e3385136fc0d9e5fbfa68e6c@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
-Message-ID: <4685bc38214dd7f47360c9862fe65f678b439768-EmailReviewComments-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <e173bbbc46f76a33f9da90a3449d25ae0ff5bceb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cUICCWtFmro="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="IAJ/x+0arYo="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mudp: fix handling
  of multiple UDP socket flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,39 +21,35 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: its_Giaan <gianmarco@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---cUICCWtFmro=
+--IAJ/x+0arYo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: its_Giaan, plaisthos.
 
-flichtenheld has posted comments on this change by its_Giaan. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1365?usp=3Demail )
+cron2 has posted comments on this change by its_Giaan. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1365?usp=3Demail )
 
 Change subject: mudp: fix handling of multiple UDP socket flags
 ......................................................................
 
 
-Patch Set 3: Code-Review-2
+Patch Set 3:
 
 (1 comment)
 
 Patchset:
 
-PS3:=20
-Just documenting the state of this change since many discussions only seem =
-to have happened in IRC:
+PS3:
+So, the reason why I have not progressed this is that I wonder if it has an=
+y effect at all - from staring at the code, my understanding is that nothin=
+g afterwards ever checks `udp_flags`, so it does not really matter what we =
+put in.  That is, the `udp_flags` part of this change.
 
-It is unclear whether this fix is correct.
-* If the flags are not cleared but preserved will the code actually handle =
-them later?
-* If yes, why not replace the `else if` with just `if` and handle them dire=
-ctly?
-* If no, this patch does nothing.
-
-So this needs more testing and/or more explanation.
+Doing both branches at the same time, if both have work to do, might be a g=
+ood thing.
 
 
 
@@ -70,44 +67,40 @@ Gerrit-PatchSet: 3
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: its_Giaan <gianmarco@...2726...>
-Gerrit-Comment-Date: Wed, 14 Jan 2026 14:37:44 +0000
+Gerrit-Comment-Date: Wed, 14 Jan 2026 14:38:51 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 
---cUICCWtFmro=
+--IAJ/x+0arYo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: its_Giaan, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1365?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1365?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Just docume=
-nting the state of this change since many discussions only seem to have hap=
-pened in IRC:</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">It is unclear whether this fix is correct.</p><ul class=
-=3D"blocks"><li>If the flags are not cleared but preserved will the code ac=
-tually handle them later?</li><li>If yes, why not replace the `else if` wit=
-h just `if` and handle them directly?</li><li>If no, this patch does nothin=
-g.</li></ul><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">So this needs more testing and/or more explanation.</p></li></=
-ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/1365?usp=3Demail">change 1365</a>. To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dem=
-ail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1365?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1365?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1365?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">So, the reason =
+why I have not progressed this is that I wonder if it has any effect at all=
+ - from staring at the code, my understanding is that nothing afterwards ev=
+er checks `udp_flags`, so it does not really matter what we put in.  That i=
+s, the `udp_flags` part of this change.</p><p class=3D"blocks" style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">Doing both branches at the same=
+ time, if both have work to do, might be a good thing.</p></li></ul></li></=
+ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1365?=
+usp=3Demail">change 1365</a>. To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1365?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -122,18 +115,19 @@ d9e5fbfa68e6c </div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
 726...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 14 Jan 2026 14:37:44=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 14 Jan 2026 14:38:51=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---cUICCWtFmro=--
+--IAJ/x+0arYo=--
 
