@@ -1,16 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 14 Jan 2026 09:54:49 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 14 Jan 2026 11:20:45 +0100
+Message-ID: <20260114102052.940-1-gert@...1296...>
 In-Reply-To: <gerrit.1768377240000.Idbd0a47ba4d297a833a350611a23f19fd9a797b5@...2715...>
 References: <gerrit.1768377240000.Idbd0a47ba4d297a833a350611a23f19fd9a797b5@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <8fa4d4ac5598982defe7678101952af908a60c21-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2tA7ONKR3vQ="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Repair interaction
- between DCO and persist-tun after reconnection
+Subject: [Openvpn-devel] [PATCH v2] Repair interaction between DCO and
+ persist-tun after reconnection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---2tA7ONKR3vQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+When --persist-tun is active, openvpn userland on Linux and FreeBSD fails
+to re-enable "poll for DCO events" after a reconnect (e.g. triggered by
+a ping timeout).  The reconnect will still work fine, but the *next*
+DCO event notification from the kernel will not be received by OpenVPN
+userland, and so the system will get into an inconsistent state (Userland
+assumes "all is well", kernel DCO has disconnected the peer, connection
+is broken until the next tls-renegotion and/or manual restart, *and* the
+next DCO key setup might fail due to "peer id gone").
 
-Attention is currently required from: cron2, plaisthos.
+This only affects client side, --server tun is always "persistent", and
+there is no "full restart" (and the code path in question is also
+only used for client and p2p server).
 
-ordex has posted comments on this change by cron2. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1473?usp=3Demail )
+The root cause is an incorrect check for "is this interface up?" when
+calling dco_event_set() in forard.c::io_wait() - "c2.did_open_tun" is
+only true if the tun interface was actually configured on this reconnect,
+which it isn't if --persist-tun is active.  Replace with a check for
+"do we have a tuntap structure, and if yes, do we have active DCO?"
+which reflects the original intent much better.
 
-Change subject: Repair interaction between DCO and persist-tun after reconn=
-ection
-......................................................................
+The original code also had a check for "out_socket & EVENT_READ" there,
+which did to some extend avoid calling dco_event_set() for every single
+UDP packet sent and received by userland - but this only worked on initial
+connection, and is always true on reconnect, so this condition was removed
+for simplicity.  We should come back here...
 
+v2:
+  - some language fixes on the commit message
+  - do not check ->dco.open in forward.c, as this is not available if
+    not on FreeBSD, or if compiled with --disable-dco.
+    FreeBSD DCO does the "if (!dco || !dco->open)" check in dco_event_set()
+    anyway, so it's not needed, and Linux DCO has "dco->nl_sock", which is
+    also reliably set/unset, and checked by dco_event_set() already.
 
-Patch Set 2: Code-Review+2
+Github: OpenVPN/openvpn#947
 
+Change-Id: Idbd0a47ba4d297a833a350611a23f19fd9a797b5
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1473
+---
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1473?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Idbd0a47ba4d297a833a350611a23f19fd9a797b5
-Gerrit-Change-Number: 1473
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Wed, 14 Jan 2026 09:54:49 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1473
+This mail reflects revision 2 of this Change.
 
---2tA7ONKR3vQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by line for the author was added as per our policy.
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1473?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1473?usp=3Demail=
-">change 1473</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1473?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Idbd0a47ba4d297a833a350611a2=
-3f19fd9a797b5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1473 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 14 Jan 2026 09:54:49=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---2tA7ONKR3vQ=--
+        
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index d208c21..39ac3b3 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2197,7 +2197,7 @@
+     multi_io_process_flags(c, c->c2.event_set, flags, &out_socket, &out_tuntap);
+ 
+ #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+-    if (out_socket & EVENT_READ && c->c2.did_open_tun)
++    if (c->c1.tuntap)
+     {
+         dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)dco_shift);
+     }
 
