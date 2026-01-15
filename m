@@ -1,16 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 15 Jan 2026 09:28:50 +0000
-In-Reply-To: <gerrit.1768318939000.I5eac1b31ae40eb957e2c12ca6c37b491fef32847@...2715...>
-References: <gerrit.1768318939000.I5eac1b31ae40eb957e2c12ca6c37b491fef32847@...2715...>
+Date: Thu, 15 Jan 2026 09:29:57 +0000
+In-Reply-To: <gerrit.1766165378000.Ic1e84ef6fb613851861a695bfbdbc1c32970a398@...2715...>
+References: <gerrit.1766165378000.Ic1e84ef6fb613851861a695bfbdbc1c32970a398@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <3152b9a5e4ebfa6d7959316c5f152b15700a29c3-EmailReviewComments-HTML@...2715...>
+Message-ID: <97741ee3261c59260326b439cd0dc8d0843b009b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DZ9FUw5vFiI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: port-share: Check
- return value of fork()
+Content-Type: multipart/alternative; boundary="jV3hyrU1JCg="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove --mtu-test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +21,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DZ9FUw5vFiI=
+--jV3hyrU1JCg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
 cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1470?usp=3Demail )
+penvpn.net/c/openvpn/+/1454?usp=3Demail )
 
-Change subject: port-share: Check return value of fork()
+Change subject: Remove --mtu-test
 ......................................................................
 
 
@@ -39,27 +38,25 @@ Patch Set 1: Code-Review-1
 
 (1 comment)
 
-File src/openvpn/ps.c:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/1470/comment/15ae06d2_c91866a0?usp=3D=
-email :
-PS1, Line 814:     {
-why this extra bracket level?  To ensure scoping for "status"?  Not sure I =
-find this a good change... since we try to get rid of these constructs else=
-where it's confusing me, at least.
+PS1:
+I would prefer to have it repaired.  I regularily see weird MTU issues (lik=
+e in DB train wifi) and an easy way to have openvpn test MTU would be welco=
+me.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1454?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I5eac1b31ae40eb957e2c12ca6c37b491fef32847
-Gerrit-Change-Number: 1470
+Gerrit-Change-Id: Ic1e84ef6fb613851861a695bfbdbc1c32970a398
+Gerrit-Change-Number: 1454
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
@@ -67,11 +64,11 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 15 Jan 2026 09:28:50 +0000
+Gerrit-Comment-Date: Thu, 15 Jan 2026 09:29:57 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---DZ9FUw5vFiI=
+--jV3hyrU1JCg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -79,31 +76,30 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: flichtenheld, plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1454?usp=3Demail">V=
 iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ps.c:</p><ul s=
-tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
- 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1470/comment/15ae06d2_c91866a0?usp=3Demail">Patch Set #1, =
-Line 814:</a> <code style=3D"font-family:monospace,monospace">    {</code><=
-/p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wor=
-d;">why this extra bracket level?  To ensure scoping for &quot;status&quot;=
-?  Not sure I find this a good change... since we try to get rid of these c=
-onstructs elsewhere it&#39;s confusing me, at least.</p></li></ul></li></ul=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?us=
-p=3Demail">change 1470</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1454?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I would pre=
+fer to have it repaired.  I regularily see weird MTU issues (like in DB tra=
+in wifi) and an easy way to have openvpn test MTU would be welcome.</p></li=
+></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1454?usp=3Demail">change 1454</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1454?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5eac1b31ae40eb957e2c12ca6c3=
-7b491fef32847 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1470 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic1e84ef6fb613851861a695bfbd=
+bc1c32970a398 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1454 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -117,12 +113,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 15 Jan 2026 09:28:50=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 15 Jan 2026 09:29:57=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---DZ9FUw5vFiI=--
+--jV3hyrU1JCg=--
 
