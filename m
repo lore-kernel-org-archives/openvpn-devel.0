@@ -1,10 +1,16 @@
-Date: Mon, 19 Jan 2026 18:09:27 +0100 (CET)
-Message-Id: <202601191709.60JH9RpP046939@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260119122556.15225-1-gert@...1296...>
-References: <20260119122556.15225-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: socket: Avoid conversion
- warning in get_addr_generic
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 19 Jan 2026 17:11:58 +0000
+In-Reply-To: <gerrit.1768318939000.I5eac1b31ae40eb957e2c12ca6c37b491fef32847@...2715...>
+References: <gerrit.1768318939000.I5eac1b31ae40eb957e2c12ca6c37b491fef32847@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <7869631d22551e915673dc228293fa36606d6f0e-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="E//oiUaoVaE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: port-share: Check
+ return value of fork()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Easy enough, simplifies things, and while it doesn't "get rid of #pragma",
-it at least reduces the non-monitored scope.
+--E//oiUaoVaE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Good find, ipv6_addr_safe_hexplusbits() :-)
+Attention is currently required from: flichtenheld, plaisthos.
 
-Your patch has been applied to the master branch.
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1470?usp=3Demail )
 
-commit 2cc00e80bca26c1c7129fa45e48714ca68b56b28
-Author: Frank Lichtenheld
-Date:   Mon Jan 19 13:25:51 2026 +0100
+Change subject: port-share: Check return value of fork()
+......................................................................
 
-     socket: Avoid conversion warning in get_addr_generic
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1475
-     Message-Id: <20260119122556.15225-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35324.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Patch Set 2: Code-Review+2
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I5eac1b31ae40eb957e2c12ca6c37b491fef32847
+Gerrit-Change-Number: 1470
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 19 Jan 2026 17:11:58 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
+--E//oiUaoVaE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail=
+">change 1470</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5eac1b31ae40eb957e2c12ca6c3=
+7b491fef32847 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1470 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 Jan 2026 17:11:58=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--E//oiUaoVaE=--
 
