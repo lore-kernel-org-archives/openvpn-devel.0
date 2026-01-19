@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 19 Jan 2026 17:11:58 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 19 Jan 2026 18:12:11 +0100
+Message-ID: <20260119171216.6100-1-gert@...1296...>
 In-Reply-To: <gerrit.1768318939000.I5eac1b31ae40eb957e2c12ca6c37b491fef32847@...2715...>
 References: <gerrit.1768318939000.I5eac1b31ae40eb957e2c12ca6c37b491fef32847@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <7869631d22551e915673dc228293fa36606d6f0e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="E//oiUaoVaE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: port-share: Check
- return value of fork()
+Subject: [Openvpn-devel] [PATCH v2] port-share: Check return value of fork()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---E//oiUaoVaE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+While here, do some small C11 code cleanup.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1470?usp=3Demail )
+Reported-By: Joshua Rogers <contact@...2949...>
+Found-By: ZeroPath (https://zeropath.com)
+Github: openvpn-private-issues#12
+Change-Id: I5eac1b31ae40eb957e2c12ca6c37b491fef32847
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1470
+---
 
-Change subject: port-share: Check return value of fork()
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1470
+This mail reflects revision 2 of this Change.
 
-Patch Set 2: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I5eac1b31ae40eb957e2c12ca6c37b491fef32847
-Gerrit-Change-Number: 1470
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 19 Jan 2026 17:11:58 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---E//oiUaoVaE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail=
-">change 1470</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1470?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5eac1b31ae40eb957e2c12ca6c3=
-7b491fef32847 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1470 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 Jan 2026 17:11:58=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---E//oiUaoVaE=--
+        
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index ed2d5c9f..e4c5794 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -800,12 +800,9 @@
+ port_share_open(const char *host, const char *port, const int max_initial_buf,
+                 const char *journal_dir)
+ {
+-    pid_t pid;
+     socket_descriptor_t fd[2];
+     struct openvpn_sockaddr hostaddr;
+     struct port_share *ps;
+-    int status;
+-    struct addrinfo *ai;
+ 
+     ALLOC_OBJ_CLEAR(ps, struct port_share);
+     ps->foreground_fd = -1;
+@@ -814,9 +811,9 @@
+     /*
+      * Get host's IP address
+      */
+-
+-    status =
+-        openvpn_getaddrinfo(GETADDR_RESOLVE | GETADDR_FATAL, host, port, 0, NULL, AF_UNSPEC, &ai);
++    struct addrinfo *ai;
++    int status = openvpn_getaddrinfo(GETADDR_RESOLVE | GETADDR_FATAL, host, port,
++                                     0, NULL, AF_UNSPEC, &ai);
+     ASSERT(status == 0);
+     ASSERT(sizeof(hostaddr.addr) >= ai->ai_addrlen);
+     memcpy(&hostaddr.addr.sa, ai->ai_addr, ai->ai_addrlen);
+@@ -836,19 +833,22 @@
+      */
+     if (socketpair(PF_UNIX, SOCK_DGRAM, 0, fd) == -1)
+     {
+-        msg(M_WARN, "PORT SHARE: socketpair call failed");
++        msg(M_WARN | M_ERRNO, "PORT SHARE: socketpair call failed");
+         goto error;
+     }
+ 
+     /*
+      * Fork off background proxy process.
+      */
+-    pid = fork();
++    pid_t pid = fork();
+ 
+-    if (pid)
++    if (pid < 0)
+     {
+-        int status;
+-
++        msg(M_WARN | M_ERRNO, "PORT SHARE: fork failed");
++        goto error;
++    }
++    else if (pid)
++    {
+         /*
+          * Foreground Process
+          */
+@@ -862,7 +862,7 @@
+         set_cloexec(fd[0]);
+ 
+         /* wait for background child process to initialize */
+-        status = recv_control(fd[0]);
++        int status = recv_control(fd[0]);
+         if (status == RESPONSE_INIT_SUCCEEDED)
+         {
+             /* note that this will cause possible EAGAIN when writing to
 
