@@ -1,9 +1,11 @@
 From: Ralf Lici <ralf@...2726...>
-Date: Mon, 19 Jan 2026 14:13:58 +0100
-Message-ID: <20260119131400.424161-1-ralf@...2726...>
+Date: Mon, 19 Jan 2026 14:14:00 +0100
+Message-ID: <20260119131400.424161-3-ralf@...2726...>
+In-Reply-To: <20260119131400.424161-1-ralf@...2726...>
+References: <20260119131400.424161-1-ralf@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn net 1/3] ovpn: set sk_user_data before
- overriding callbacks
+Subject: [Openvpn-devel] [PATCH ovpn net 3/3] ovpn: use sk_buff_head
+ properly in ovpn_net_xmit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,113 +19,149 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>
 
-During initialization, we override some socket callbacks and set
-sk_user_data to ovpn_sock. Currently these two operations are decoupled:
-the callbacks are overridden before sk_user_data is set, leaving a
-potentially ill-formed state while socket ownership is not yet complete.
-For example, if a packet arrives after ovpn_udp_socket_attach has been
-called but before ovpn_socket_new finishes, ovpn_udp_encap_recv may be
-invoked without a configured sk_user_data pointer.
+The current code builds an sk_buff_head after GSO segmentation but then
+treats it as a raw skb list: accessing elements via skb_list.next and
+breaking the list circularity by setting skb_list.prev->next to NULL.
 
-Set sk_user_data before overriding the callbacks so that it can be
-accessed safely from them. Since we already check that the socket has no
-sk_user_data before setting it, this remains safe even if an interrupt
-accesses the socket after sk_user_data is set but before the callbacks
-are overridden.
+Clean this up by changing ovpn_send to take an sk_buff_head parameter
+and use standard sk_buff_head APIs. Introduce ovpn_send_one helper to
+wrap single skbs in an sk_buff_head for ovpn_xmit_special.
 
 Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
- drivers/net/ovpn/socket.c | 38 +++++++++++++++++++++-----------------
- drivers/net/ovpn/tcp.c    |  1 +
- drivers/net/ovpn/udp.c    |  1 +
- 3 files changed, 23 insertions(+), 17 deletions(-)
+ drivers/net/ovpn/io.c | 74 +++++++++++++++++++++++++++----------------
+ 1 file changed, 46 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-index 9750871ab65c..053b8abe5619 100644
---- a/drivers/net/ovpn/socket.c
-+++ b/drivers/net/ovpn/socket.c
-@@ -200,6 +200,22 @@ struct ovpn_socket *ovpn_socket_new(struct socket *sock, struct ovpn_peer *peer)
- 	ovpn_sock->sk = sk;
- 	kref_init(&ovpn_sock->refcount);
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index c59501344d97..249751cd630b 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -329,8 +329,8 @@ static bool ovpn_encrypt_one(struct ovpn_peer *peer, struct sk_buff *skb)
+ 	return true;
+ }
  
-+	/* TCP sockets are per-peer, therefore they are linked to their unique
-+	 * peer
-+	 */
-+	if (sk->sk_protocol == IPPROTO_TCP) {
-+		INIT_WORK(&ovpn_sock->tcp_tx_work, ovpn_tcp_tx_work);
-+		ovpn_sock->peer = peer;
-+		ovpn_peer_hold(peer);
-+	} else if (sk->sk_protocol == IPPROTO_UDP) {
-+		/* in UDP we only link the ovpn instance since the socket is
-+		 * shared among multiple peers
-+		 */
-+		ovpn_sock->ovpn = peer->ovpn;
-+		netdev_hold(peer->ovpn->dev, &ovpn_sock->dev_tracker,
-+			    GFP_KERNEL);
+-/* send skb to connected peer, if any */
+-static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
++/* send skb_list to connected peer, if any */
++static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff_head *skb_list,
+ 		      struct ovpn_peer *peer)
+ {
+ 	struct sk_buff *curr, *next;
+@@ -338,7 +338,8 @@ static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 	/* this might be a GSO-segmented skb list: process each skb
+ 	 * independently
+ 	 */
+-	skb_list_walk_safe(skb, curr, next) {
++	skb_queue_walk_safe(skb_list, curr, next) {
++		__skb_unlink(curr, skb_list);
+ 		if (unlikely(!ovpn_encrypt_one(peer, curr))) {
+ 			dev_dstats_tx_dropped(ovpn->dev);
+ 			kfree_skb(curr);
+@@ -368,6 +369,26 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (unlikely(!proto || skb->protocol != proto))
+ 		goto drop;
+ 
++	/* retrieve peer serving the destination IP of this packet */
++	peer = ovpn_peer_get_by_dst(ovpn, skb);
++	if (unlikely(!peer)) {
++		switch (skb->protocol) {
++		case htons(ETH_P_IP):
++			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
++					    netdev_name(ovpn->dev),
++					    &ip_hdr(skb)->daddr);
++			break;
++		case htons(ETH_P_IPV6):
++			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
++					    netdev_name(ovpn->dev),
++					    &ipv6_hdr(skb)->daddr);
++			break;
++		}
++		goto drop;
 +	}
++	/* dst was needed for peer selection - it can now be dropped */
++	skb_dst_drop(skb);
 +
- 	/* the newly created ovpn_socket is holding reference to sk,
- 	 * therefore we increase its refcounter.
- 	 *
-@@ -212,29 +228,17 @@ struct ovpn_socket *ovpn_socket_new(struct socket *sock, struct ovpn_peer *peer)
- 
- 	ret = ovpn_socket_attach(ovpn_sock, sock, peer);
- 	if (ret < 0) {
-+		if (sk->sk_protocol == IPPROTO_TCP)
-+			ovpn_peer_put(peer);
-+		else if (sk->sk_protocol == IPPROTO_UDP)
-+			netdev_put(peer->ovpn->dev, &ovpn_sock->dev_tracker);
-+
- 		sock_put(sk);
- 		kfree(ovpn_sock);
- 		ovpn_sock = ERR_PTR(ret);
- 		goto sock_release;
+ 	if (skb_is_gso(skb)) {
+ 		segments = skb_gso_segment(skb, 0);
+ 		if (IS_ERR(segments)) {
+@@ -381,8 +402,9 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		skb = segments;
  	}
  
--	/* TCP sockets are per-peer, therefore they are linked to their unique
--	 * peer
--	 */
--	if (sk->sk_protocol == IPPROTO_TCP) {
--		INIT_WORK(&ovpn_sock->tcp_tx_work, ovpn_tcp_tx_work);
--		ovpn_sock->peer = peer;
--		ovpn_peer_hold(peer);
--	} else if (sk->sk_protocol == IPPROTO_UDP) {
--		/* in UDP we only link the ovpn instance since the socket is
--		 * shared among multiple peers
--		 */
--		ovpn_sock->ovpn = peer->ovpn;
--		netdev_hold(peer->ovpn->dev, &ovpn_sock->dev_tracker,
--			    GFP_KERNEL);
--	}
+-	/* from this moment on, "skb" might be a list */
 -
--	rcu_assign_sk_user_data(sk, ovpn_sock);
- sock_release:
- 	release_sock(sk);
- 	return ovpn_sock;
-diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-index 0d7f30360d87..e078f9b39122 100644
---- a/drivers/net/ovpn/tcp.c
-+++ b/drivers/net/ovpn/tcp.c
-@@ -487,6 +487,7 @@ int ovpn_tcp_socket_attach(struct ovpn_socket *ovpn_sock,
- 	/* make sure no pre-existing encapsulation handler exists */
- 	if (ovpn_sock->sk->sk_user_data)
- 		return -EBUSY;
-+	rcu_assign_sk_user_data(ovpn_sock->sk, ovpn_sock);
++	/* "skb" might be a raw list of skbs, transform it into a proper
++	 * sk_buff_head list
++	 */
+ 	__skb_queue_head_init(&skb_list);
+ 	skb_list_walk_safe(skb, curr, next) {
+ 		skb_mark_not_on_list(curr);
+@@ -399,40 +421,36 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		tx_bytes += curr->len;
+ 		__skb_queue_tail(&skb_list, curr);
+ 	}
+-	skb_list.prev->next = NULL;
++	skb = NULL;
  
- 	/* only a fully connected socket is expected. Connection should be
- 	 * handled in userspace
-diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-index d6a0f7a0b75d..272b535ecaad 100644
---- a/drivers/net/ovpn/udp.c
-+++ b/drivers/net/ovpn/udp.c
-@@ -386,6 +386,7 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
- 			   struct ovpn_priv *ovpn)
- {
- 	struct udp_tunnel_sock_cfg cfg = {
-+		.sk_user_data = ovpn_sock,
- 		.encap_type = UDP_ENCAP_OVPNINUDP,
- 		.encap_rcv = ovpn_udp_encap_recv,
- 		.encap_destroy = ovpn_udp_encap_destroy,
+-	/* retrieve peer serving the destination IP of this packet */
+-	peer = ovpn_peer_get_by_dst(ovpn, skb);
+-	if (unlikely(!peer)) {
+-		switch (skb->protocol) {
+-		case htons(ETH_P_IP):
+-			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
+-					    netdev_name(ovpn->dev),
+-					    &ip_hdr(skb)->daddr);
+-			break;
+-		case htons(ETH_P_IPV6):
+-			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
+-					    netdev_name(ovpn->dev),
+-					    &ipv6_hdr(skb)->daddr);
+-			break;
+-		}
++	if (unlikely(skb_queue_empty(&skb_list)))
+ 		goto drop;
+-	}
+-	/* dst was needed for peer selection - it can now be dropped */
+-	skb_dst_drop(skb);
+ 
+ 	ovpn_peer_stats_increment_tx(&peer->vpn_stats, tx_bytes);
+-	ovpn_send(ovpn, skb_list.next, peer);
++	ovpn_send(ovpn, &skb_list, peer);
+ 
+ 	return NETDEV_TX_OK;
+ 
+ drop:
+ 	dev_dstats_tx_dropped(ovpn->dev);
+-	skb_tx_error(skb);
+-	kfree_skb_list(skb);
++	if (skb) {
++		skb_tx_error(skb);
++		kfree_skb_list(skb);
++	}
+ 	return NETDEV_TX_OK;
+ }
+ 
++/* wrap a single skb in a list in order to pass it to ovpn_send */
++static void ovpn_send_one(struct ovpn_priv *ovpn, struct sk_buff *skb,
++			  struct ovpn_peer *peer)
++{
++	struct sk_buff_head list;
++
++	__skb_queue_head_init(&list);
++	__skb_queue_tail(&list, skb);
++	ovpn_send(ovpn, &list, peer);
++}
++
+ /**
+  * ovpn_xmit_special - encrypt and transmit an out-of-band message to peer
+  * @peer: peer to send the message to
+@@ -464,5 +482,5 @@ void ovpn_xmit_special(struct ovpn_peer *peer, const void *data,
+ 	skb->priority = TC_PRIO_BESTEFFORT;
+ 	__skb_put_data(skb, data, len);
+ 
+-	ovpn_send(ovpn, skb, peer);
++	ovpn_send_one(ovpn, skb, peer);
+ }
 -- 
 2.52.0
 
