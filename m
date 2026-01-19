@@ -1,11 +1,14 @@
-From: Ralf Lici <ralf@...2726...>
-Date: Mon, 19 Jan 2026 14:14:00 +0100
-Message-ID: <20260119131400.424161-3-ralf@...2726...>
-In-Reply-To: <20260119131400.424161-1-ralf@...2726...>
-References: <20260119131400.424161-1-ralf@...2726...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 19 Jan 2026 13:56:33 +0000
+References: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
+Message-ID: <3c5d98d1fbb84eab52fb37ece49faf06cee213a1-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn net 3/3] ovpn: use sk_buff_head
- properly in ovpn_net_xmit
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="SObHlLYqOJk="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix rare crash when
+ read buffer are not initialised and read is still...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,155 +17,192 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The current code builds an sk_buff_head after GSO segmentation but then
-treats it as a raw skb list: accessing elements via skb_list.next and
-breaking the list circularity by setting skb_list.prev->next to NULL.
+--SObHlLYqOJk=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Clean this up by changing ovpn_send to take an sk_buff_head parameter
-and use standard sk_buff_head APIs. Introduce ovpn_send_one helper to
-wrap single skbs in an sk_buff_head for ovpn_xmit_special.
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1477?usp=3Demail )
 
-Signed-off-by: Ralf Lici <ralf@...2726...>
+
+Change subject: Fix rare crash when read buffer are not initialised and rea=
+d is still signalled
+......................................................................
+
+Fix rare crash when read buffer are not initialised and read is still signa=
+lled
+
+This assertion happens when we do not expect a read event from the socket a=
+nd
+then in link_socket_read_tcp the function stream_buf_get_next can trigger
+an assert on ASSERT(buf_defined(&sb->next));
+
+To avoid this weird corner case, just always initialise the read buffer
+whether or not we expect a read to occur.
+
+Reproducing this bug requires very special circumstances. The reproduction =
+is
+   openvpn --cert server-secp384r1.crt  --key server-secp384r1.key \
+   --dev ml-tan --dev-type tap --tun-mtu 1400 --config ~/fp --topology subn=
+et \
+   --port 2201 --verb 3  --mode server  --tls-server --proto tcp6-server
+   --ifconfig 10.0.0.1 255.255.255.0
+
+as the server side and
+
+  openvpn --client --proto tcp --remote poseidon --port 2201 --dev tap
+
+The client side must be on Linux. Other platform do not reproduce this
+bug.
+
+Note that the client will not configure any IP or IPv6 on the interface
+and will also not bring up the interface. The server must also send at least
+one real data packet to the client (no keepalive ping). Just having the
+interface up normally produces enough traffic.
+
+Now forcefully reset the TCP connection. E.g. by executing on the server
+
+    sudo ss --kill sport 2201
+
+This will now trigger the assertion. This happens since OpenVPN waits
+forever to get a write back from the poll from the tun/tap device but
+this never happens since the device is not up.
+
+As long as we do not get back the tun device for writing, we also do
+not put the socket back into the EVENT_READ state. And this also means
+that code to initialise the read buffer (stream_buf_set_next) is never
+run.
+
+But the reset on the TCP socket triggers the TCP socket to be available
+for read, even if it is just for a read of 0 bytes to indicate the reset.
+So the link_socket_read_tcp will run into the assert.
+
+Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- drivers/net/ovpn/io.c | 74 +++++++++++++++++++++++++++----------------
- 1 file changed, 46 insertions(+), 28 deletions(-)
+M src/openvpn/socket.c
+1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index c59501344d97..249751cd630b 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -329,8 +329,8 @@ static bool ovpn_encrypt_one(struct ovpn_peer *peer, struct sk_buff *skb)
- 	return true;
- }
- 
--/* send skb to connected peer, if any */
--static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
-+/* send skb_list to connected peer, if any */
-+static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff_head *skb_list,
- 		      struct ovpn_peer *peer)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1477/1
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 093f822..0858e64 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2927,7 +2927,11 @@
  {
- 	struct sk_buff *curr, *next;
-@@ -338,7 +338,8 @@ static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
- 	/* this might be a GSO-segmented skb list: process each skb
- 	 * independently
- 	 */
--	skb_list_walk_safe(skb, curr, next) {
-+	skb_queue_walk_safe(skb_list, curr, next) {
-+		__skb_unlink(curr, skb_list);
- 		if (unlikely(!ovpn_encrypt_one(peer, curr))) {
- 			dev_dstats_tx_dropped(ovpn->dev);
- 			kfree_skb(curr);
-@@ -368,6 +369,26 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 	if (unlikely(!proto || skb->protocol != proto))
- 		goto drop;
- 
-+	/* retrieve peer serving the destination IP of this packet */
-+	peer = ovpn_peer_get_by_dst(ovpn, skb);
-+	if (unlikely(!peer)) {
-+		switch (skb->protocol) {
-+		case htons(ETH_P_IP):
-+			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
-+					    netdev_name(ovpn->dev),
-+					    &ip_hdr(skb)->daddr);
-+			break;
-+		case htons(ETH_P_IPV6):
-+			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
-+					    netdev_name(ovpn->dev),
-+					    &ipv6_hdr(skb)->daddr);
-+			break;
-+		}
-+		goto drop;
-+	}
-+	/* dst was needed for peer selection - it can now be dropped */
-+	skb_dst_drop(skb);
-+
- 	if (skb_is_gso(skb)) {
- 		segments = skb_gso_segment(skb, 0);
- 		if (IS_ERR(segments)) {
-@@ -381,8 +402,9 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 		skb = segments;
- 	}
- 
--	/* from this moment on, "skb" might be a list */
--
-+	/* "skb" might be a raw list of skbs, transform it into a proper
-+	 * sk_buff_head list
-+	 */
- 	__skb_queue_head_init(&skb_list);
- 	skb_list_walk_safe(skb, curr, next) {
- 		skb_mark_not_on_list(curr);
-@@ -399,40 +421,36 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 		tx_bytes += curr->len;
- 		__skb_queue_tail(&skb_list, curr);
- 	}
--	skb_list.prev->next = NULL;
-+	skb = NULL;
- 
--	/* retrieve peer serving the destination IP of this packet */
--	peer = ovpn_peer_get_by_dst(ovpn, skb);
--	if (unlikely(!peer)) {
--		switch (skb->protocol) {
--		case htons(ETH_P_IP):
--			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
--					    netdev_name(ovpn->dev),
--					    &ip_hdr(skb)->daddr);
--			break;
--		case htons(ETH_P_IPV6):
--			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
--					    netdev_name(ovpn->dev),
--					    &ipv6_hdr(skb)->daddr);
--			break;
--		}
-+	if (unlikely(skb_queue_empty(&skb_list)))
- 		goto drop;
--	}
--	/* dst was needed for peer selection - it can now be dropped */
--	skb_dst_drop(skb);
- 
- 	ovpn_peer_stats_increment_tx(&peer->vpn_stats, tx_bytes);
--	ovpn_send(ovpn, skb_list.next, peer);
-+	ovpn_send(ovpn, &skb_list, peer);
- 
- 	return NETDEV_TX_OK;
- 
- drop:
- 	dev_dstats_tx_dropped(ovpn->dev);
--	skb_tx_error(skb);
--	kfree_skb_list(skb);
-+	if (skb) {
-+		skb_tx_error(skb);
-+		kfree_skb_list(skb);
-+	}
- 	return NETDEV_TX_OK;
- }
- 
-+/* wrap a single skb in a list in order to pass it to ovpn_send */
-+static void ovpn_send_one(struct ovpn_priv *ovpn, struct sk_buff *skb,
-+			  struct ovpn_peer *peer)
-+{
-+	struct sk_buff_head list;
-+
-+	__skb_queue_head_init(&list);
-+	__skb_queue_tail(&list, skb);
-+	ovpn_send(ovpn, &list, peer);
-+}
-+
- /**
-  * ovpn_xmit_special - encrypt and transmit an out-of-band message to peer
-  * @peer: peer to send the message to
-@@ -464,5 +482,5 @@ void ovpn_xmit_special(struct ovpn_peer *peer, const void *data,
- 	skb->priority = TC_PRIO_BESTEFFORT;
- 	__skb_put_data(skb, data, len);
- 
--	ovpn_send(ovpn, skb, peer);
-+	ovpn_send_one(ovpn, skb, peer);
- }
--- 
-2.52.0
+     if (s)
+     {
+-        if ((rwflags & EVENT_READ) && !stream_buf_read_setup(s))
++        /* Always setup the buffer to be able to get a read. There are cor=
+ner cases
++         * where the socket select/poll returns a socket for read when we =
+do not
++         * expect it, e.g. a read of len 0 when the socket receives a rese=
+t */
++        const bool read_setup =3D stream_buf_read_setup(s);
++        if ((rwflags & EVENT_READ) && !read_setup)
+         {
+             ASSERT(!persistent);
+             rwflags &=3D ~EVENT_READ;
 
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
+Gerrit-Change-Number: 1477
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--SObHlLYqOJk=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1477?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Fix rare crash when read buffer are not initialised and read is still s=
+ignalled<br><br>This assertion happens when we do not expect a read event f=
+rom the socket and<br>then in link_socket_read_tcp the function stream_buf_=
+get_next can trigger<br>an assert on ASSERT(buf_defined(&amp;sb-&gt;next));=
+<br><br>To avoid this weird corner case, just always initialise the read bu=
+ffer<br>whether or not we expect a read to occur.<br><br>Reproducing this b=
+ug requires very special circumstances. The reproduction is<br>   openvpn -=
+-cert server-secp384r1.crt  --key server-secp384r1.key \<br>   --dev ml-tan=
+ --dev-type tap --tun-mtu 1400 --config ~/fp --topology subnet \<br>   --po=
+rt 2201 --verb 3  --mode server  --tls-server --proto tcp6-server<br>   --i=
+fconfig 10.0.0.1 255.255.255.0<br><br>as the server side and<br><br>  openv=
+pn --client --proto tcp --remote poseidon --port 2201 --dev tap<br><br>The =
+client side must be on Linux. Other platform do not reproduce this<br>bug.<=
+br><br>Note that the client will not configure any IP or IPv6 on the interf=
+ace<br>and will also not bring up the interface. The server must also send =
+at least<br>one real data packet to the client (no keepalive ping). Just ha=
+ving the<br>interface up normally produces enough traffic.<br><br>Now force=
+fully reset the TCP connection. E.g. by executing on the server<br><br>    =
+sudo ss --kill sport 2201<br><br>This will now trigger the assertion. This =
+happens since OpenVPN waits<br>forever to get a write back from the poll fr=
+om the tun/tap device but<br>this never happens since the device is not up.=
+<br><br>As long as we do not get back the tun device for writing, we also d=
+o<br>not put the socket back into the EVENT_READ state. And this also means=
+<br>that code to initialise the read buffer (stream_buf_set_next) is never<=
+br>run.<br><br>But the reset on the TCP socket triggers the TCP socket to b=
+e available<br>for read, even if it is just for a read of 0 bytes to indica=
+te the reset.<br>So the link_socket_read_tcp will run into the assert.<br><=
+br>Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc<br>Signed-off-by: A=
+rne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/socket.c<br>1 f=
+ile changed, 5 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"bloc=
+ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
+pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1477/1</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>in=
+dex 093f822..0858e64 100644</span><br><span>--- a/src/openvpn/socket.c</spa=
+n><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -2927,7 +2927,11 =
+@@</span><br><span> {</span><br><span>     if (s)</span><br><span>     {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        if ((rwflags &am=
+p; EVENT_READ) &amp;&amp; !stream_buf_read_setup(s))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /* Always setup the buffer to be =
+able to get a read. There are corner cases</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+         * where the socket select/poll returns a so=
+cket for read when we do not</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+         * expect it, e.g. a read of len 0 when the socket receive=
+s a reset */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ const bool read_setup =3D stream_buf_read_setup(s);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if ((rwflags &amp; EVENT_READ) &a=
+mp;&amp; !read_setup)</span><br><span>         {</span><br><span>          =
+   ASSERT(!persistent);</span><br><span>             rwflags &amp;=3D ~EVEN=
+T_READ;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">change 1477</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e1798=
+65e3dbd0dbfbc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1477 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--SObHlLYqOJk=--
 
