@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 19 Jan 2026 12:25:42 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 19 Jan 2026 13:25:51 +0100
+Message-ID: <20260119122556.15225-1-gert@...1296...>
 In-Reply-To: <gerrit.1768578994000.I5ad13bc6674b3403251cc552d1f2c0f057431817@...2715...>
 References: <gerrit.1768578994000.I5ad13bc6674b3403251cc552d1f2c0f057431817@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <1b571cd89f83f0ae285ae72c68092d0ab0762a03-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mz67vaBzn0A="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Avoid
- conversion warning in get_addr_generic
+Subject: [Openvpn-devel] [PATCH v1] socket: Avoid conversion warning in
+ get_addr_generic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +14,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---mz67vaBzn0A=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+We already check earlier that bits is smaller that
+max_bits, so the cast is safe.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1475?usp=3Demail )
+While reviewing the callers, remove some unused
+variables.
 
-Change subject: socket: Avoid conversion warning in get_addr_generic
-......................................................................
+Change-Id: I5ad13bc6674b3403251cc552d1f2c0f057431817
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1475
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 1: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1475
+This mail reflects revision 1 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1475?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I5ad13bc6674b3403251cc552d1f2c0f057431817
-Gerrit-Change-Number: 1475
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 19 Jan 2026 12:25:42 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---mz67vaBzn0A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1475?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1475?usp=3Demail=
-">change 1475</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1475?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5ad13bc6674b3403251cc552d1f=
-2c0f057431817 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1475 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 Jan 2026 12:25:42=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---mz67vaBzn0A=--
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index cede758..85669e0 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1144,10 +1144,7 @@
+ static bool
+ ipv6_addr_safe_hexplusbits(const char *ipv6_prefix_spec)
+ {
+-    struct in6_addr t_addr;
+-    unsigned int t_bits;
+-
+-    return get_ipv6_addr(ipv6_prefix_spec, &t_addr, &t_bits, M_WARN);
++    return get_ipv6_addr(ipv6_prefix_spec, NULL, NULL, M_WARN);
+ }
+ 
+ static char *
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 093f822..331249d 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -72,11 +72,6 @@
+     }
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ /*
+  * Functions related to the translation of DNS names to IP addresses.
+  */
+@@ -180,7 +175,7 @@
+ 
+     if (netbits)
+     {
+-        *netbits = bits;
++        *netbits = (unsigned int)bits;
+     }
+ 
+     /* restore '/' separator, if any */
+@@ -683,6 +678,11 @@
+     }
+ }
+ 
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
+ static void
+ create_socket(struct link_socket *sock, struct addrinfo *addr)
+ {
+@@ -738,6 +738,10 @@
+     bind_local(sock, addr->ai_family);
+ }
+ 
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic pop
++#endif
++
+ #ifdef TARGET_ANDROID
+ static void
+ protect_fd_nonlocal(int fd, const struct sockaddr *addr)
+@@ -861,10 +865,6 @@
+     gc_free(&gc);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static socket_descriptor_t
+ socket_listen_accept(socket_descriptor_t sd, struct link_socket_actual *act,
+                      const struct addrinfo *local, bool do_listen,
 
