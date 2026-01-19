@@ -1,17 +1,11 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Mon, 19 Jan 2026 20:57:18 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 19 Jan 2026 22:49:03 +0100
+Message-ID: <20260119214908.27729-1-gert@...1296...>
 In-Reply-To: <gerrit.1767808679000.I864cd4a718886f437b72e93d0286f90fcb73592b@...2715...>
 References: <gerrit.1767808679000.I864cd4a718886f437b72e93d0286f90fcb73592b@...2715...>
-Reply-To: heiko@...515..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <954a88e3736fa9f5857413e181e13ce1f21cc90c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3O+0QRlLnZU="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
- conversion warnings in interactive.c
+Subject: [Openvpn-devel] [PATCH v4] openvpnserv: Fix conversion warnings in
+ interactive.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,113 +14,210 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---3O+0QRlLnZU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Mostly DWORD vs. size_t conversions where we have no
+choice but to cast.
 
-d12fk has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1457?usp=3Demail )
+Change-Id: I864cd4a718886f437b72e93d0286f90fcb73592b
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Heiko Hund <heiko@...515...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1457
+---
 
-Change subject: openvpnserv: Fix conversion warnings in interactive.c
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1457
+This mail reflects revision 4 of this Change.
 
-Patch Set 4: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Heiko Hund <heiko@...515...>
 
-(1 comment)
-
-File src/openvpnserv/interactive.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1457/comment/0e9049bb_dd642e67?usp=3D=
-email :
-PS4, Line 1387:  * Return correct length for regex value to set for string
-I think you mean Registry not Regex
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1457?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I864cd4a718886f437b72e93d0286f90fcb73592b
-Gerrit-Change-Number: 1457
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: d12fk <heiko@...515...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 19 Jan 2026 20:57:18 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---3O+0QRlLnZU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1457?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactiv=
-e.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0;=
- padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/1457/comment/0e9049bb_dd642e67?usp=3Demail">P=
-atch Set #4, Line 1387:</a> <code style=3D"font-family:monospace,monospace"=
-> * Return correct length for regex value to set for string</code></p><p cl=
-ass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I th=
-ink you mean Registry not Regex</p></li></ul></li></ul><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/1457?usp=3Demail">change 145=
-7</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1457?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I864cd4a718886f437b72e93d028=
-6f90fcb73592b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1457 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 19 Jan 2026 20:57:18=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---3O+0QRlLnZU=--
+        
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index aa7da00..b53207bc 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -1383,10 +1383,20 @@
+     return TRUE;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
++/**
++ * Return correct length for regex value to set for string
++ *
++ */
++static DWORD
++RegWStringSize(PCWSTR string)
++{
++    size_t length = (wcslen(string) + 1) * sizeof(wchar_t);
++    if (length > UINT_MAX)
++    {
++        length = UINT_MAX;
++    }
++    return (DWORD)length;
++}
+ 
+ /**
+  * Prepare DNS domain "SearchList" registry value, so additional
+@@ -1413,7 +1423,7 @@
+         return TRUE;
+     }
+ 
+-    DWORD size = (wcslen(list) + 1) * sizeof(*list);
++    DWORD size = RegWStringSize(list);
+     LSTATUS err = RegSetValueExW(key, L"InitialSearchList", 0, REG_SZ, (PBYTE)list, size);
+     if (err)
+     {
+@@ -1474,7 +1484,7 @@
+         wcsncpy(list, domains, wcslen(domains) + 1);
+     }
+ 
+-    size = (wcslen(list) + 1) * sizeof(list[0]);
++    size = RegWStringSize(list);
+     err = RegSetValueExW(key, L"SearchList", 0, REG_SZ, (PBYTE)list, size);
+     if (err)
+     {
+@@ -1515,7 +1525,7 @@
+         goto out;
+     }
+ 
+-    size = (wcslen(list) + 1) * sizeof(list[0]);
++    size = RegWStringSize(list);
+     err = RegSetValueExW(key, L"SearchList", 0, REG_SZ, (PBYTE)list, size);
+     if (err)
+     {
+@@ -1579,14 +1589,14 @@
+         }
+ 
+         /* If the search list is back to its initial state reset it */
+-        if (wcsncmp(list, initial, wcslen(list)) == 0)
++        if (wcsncmp(list, initial, list_len) == 0)
+         {
+             ResetDnsSearchDomains(key);
+             return;
+         }
+     }
+ 
+-    size = (list_len + 1) * sizeof(list[0]);
++    size = RegWStringSize(list);
+     err = RegSetValueExW(key, L"SearchList", 0, REG_SZ, (PBYTE)list, size);
+     if (err)
+     {
+@@ -1751,7 +1761,7 @@
+         goto out;
+     }
+ 
+-    err = RegSetValueExA(itf, "NameServer", 0, REG_SZ, (PBYTE)value, strlen(value) + 1);
++    err = RegSetValueExA(itf, "NameServer", 0, REG_SZ, (PBYTE)value, (DWORD)strlen(value) + 1);
+     if (err)
+     {
+         MsgToEventLog(M_SYSERR, L"%S: could not set name servers '%S' for %s family %d (%lu)",
+@@ -1807,7 +1817,7 @@
+     int addr_len = msg->addr_len;
+ 
+     /* sanity check */
+-    const size_t max_addrs = _countof(msg->addr);
++    const int max_addrs = _countof(msg->addr);
+     if (addr_len > max_addrs)
+     {
+         addr_len = max_addrs;
+@@ -1949,7 +1959,7 @@
+         short family = families[i];
+ 
+         /* Create a comma sparated list of addresses of this family */
+-        int offset = 0;
++        size_t offset = 0;
+         char addr_list[NRPT_ADDR_SIZE * NRPT_ADDR_NUM];
+         for (int j = 0; j < NRPT_ADDR_NUM && addresses[j][0]; j++)
+         {
+@@ -2085,9 +2095,9 @@
+ 
+             size_t addr_len = strlen(pos);
+             pos += addr_len;
+-            s -= addr_len;
++            s -= (DWORD)addr_len;
+         }
+-        s = strlen(addrs) + 1;
++        s = (DWORD)strlen(addrs) + 1;
+     }
+ 
+     if (strchr(addrs, ':'))
+@@ -2163,7 +2173,8 @@
+ 
+     LSTATUS err = ERROR_FILE_NOT_FOUND;
+     const DWORD buf_size = *size;
+-    const size_t glyph_size = sizeof(*domains);
++    const DWORD glyph_size = sizeof(*domains);
++    const DWORD buf_len = buf_size / glyph_size;
+     PWSTR values[] = { L"SearchList", L"Domain", L"DhcpDomainSearchList", L"DhcpDomain", NULL };
+ 
+     for (int i = 0; values[i]; i++)
+@@ -2178,7 +2189,6 @@
+              *   - convert comma separated list to MULTI_SZ
+              */
+             PWCHAR pos = domains;
+-            const DWORD buf_len = buf_size / glyph_size;
+             while (TRUE)
+             {
+                 /* Terminate the domain at the next comma */
+@@ -2188,9 +2198,9 @@
+                     *comma = '\0';
+                 }
+ 
+-                size_t domain_len = wcslen(pos);
+-                size_t domain_size = domain_len * glyph_size;
+-                size_t converted_size = (pos - domains) * glyph_size;
++                DWORD domain_len = (DWORD)wcslen(pos);
++                DWORD domain_size = domain_len * glyph_size;
++                DWORD converted_size = (DWORD)(pos - domains) * glyph_size;
+ 
+                 /* Ignore itf domains which match a pushed search domain */
+                 if (ListContainsDomain(search_domains, pos, domain_len))
+@@ -2216,7 +2226,7 @@
+                 domain_size += glyph_size;
+ 
+                 /* Space for the terminating zeros */
+-                size_t extra_size = 2 * glyph_size;
++                const DWORD extra_size = 2 * glyph_size;
+ 
+                 /* Check for enough space to convert this domain */
+                 if (converted_size + domain_size + extra_size > buf_size)
+@@ -2450,7 +2460,7 @@
+ 
+     /* Set DNS Server address */
+     err = RegSetValueExA(rule_key, "GenericDNSServers", 0, REG_SZ, (PBYTE)address,
+-                         strlen(address) + 1);
++                         (DWORD)strlen(address) + 1);
+     if (err)
+     {
+         goto out;
+@@ -2571,7 +2581,7 @@
+     if (domains[0])
+     {
+         size_t domains_len = strlen(domains);
+-        dom_size = domains_len + 2; /* len + the trailing NULs */
++        dom_size = (DWORD)domains_len + 2; /* len + the trailing NULs */
+ 
+         wide_domains = utf8to16_size(domains, dom_size);
+         dom_size *= sizeof(*wide_domains);
+@@ -2628,10 +2638,6 @@
+     return err;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ /**
+  * Return the registry key where NRPT rules are stored
+  *
 
