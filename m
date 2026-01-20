@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 20 Jan 2026 17:48:42 +0000
-In-Reply-To: <gerrit.1768578994000.I7be7427480d3540d43dd818eddb6eb5860956459@...2715...>
-References: <gerrit.1768578994000.I7be7427480d3540d43dd818eddb6eb5860956459@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <95767954d67cd0b136647bdf04a1daafaa040aea-EmailReplacePatchSet-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 20 Jan 2026 18:02:37 +0000
+In-Reply-To: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+References: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <f2b2940288d200a7fd63e6c6c08018da9e24aa59-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Zg2v4pHiYyQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: Fix various
- conversion warnings
+Content-Type: multipart/alternative; boundary="vPHObYDq6TA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Merge
+ stream_buf_get_next and stream_buf_set_next
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,720 +19,640 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Zg2v4pHiYyQ=
+--vPHObYDq6TA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-Hello plaisthos,
+Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#3).
 
 
-Change subject: socket: Fix various conversion warnings
+Change subject: Merge stream_buf_get_next and stream_buf_set_next
 ......................................................................
 
-socket: Fix various conversion warnings
+Merge stream_buf_get_next and stream_buf_set_next
 
-- We assume that addrinfo->ai_family always fits
-  into a sa_family_t, so we do not check those.
-- Reduce places where we explicitly pass ai_family
-  and prefer sock->info.af.
-- Make sure that --bind-dev has a suitable length.
-- Treat PROTO_* as uint8_t where possible (however,
-  much code uses proto =3D -1 for various error handling).
-- Some of the usual "recv* returns ssize_t not int"
-  adaptions.
+The stream_buf_set_next prepares a buffer in the stream_buf
+structure that will be retrieved by stream_buf_get the next
+time it is used.
 
-Change-Id: I7be7427480d3540d43dd818eddb6eb5860956459
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+This temporary copy of the buffer is unnecessary as the buffer
+next can also be constructed on the fly.
+
+This also fixes a rare crash when read buffer are not initialised and
+read is still signalled as the initialisation of next will now happen whene=
+ver
+it is required.
+
+This assertion happens when we do not expect a read event from the socket a=
+nd
+then in link_socket_read_tcp the function stream_buf_get_next can trigger
+an assert on ASSERT(buf_defined(&sb->next));
+
+To avoid this weird corner case, just always initialise the read buffer
+whether or not we expect a read to occur.
+
+This also adds documentation about the methods and field associated with
+the stream_buf structure.
+
+Reproducing this bug requires very special circumstances. The reproduction =
+is
+   openvpn --cert server-secp384r1.crt  --key server-secp384r1.key \
+   --dev ml-tan --dev-type tap --tun-mtu 1400 --config ~/fp --topology subn=
+et \
+   --port 2201 --verb 3  --mode server  --tls-server --proto tcp6-server
+   --ifconfig 10.0.0.1 255.255.255.0
+
+as the server side and
+
+  openvpn --client --proto tcp --remote poseidon --port 2201 --dev tap
+
+The client side must be on Linux. Other platform do not reproduce this
+bug.
+
+Note that the client will not configure any IP or IPv6 on the interface
+and will also not bring up the interface. The server must also send at least
+one real data packet to the client (no keepalive ping). Just having the
+interface up normally produces enough traffic.
+
+Now forcefully reset the TCP connection. E.g. by executing on the server
+
+    sudo ss --kill sport 2201
+
+This will now trigger the assertion. This happens since OpenVPN waits
+forever to get a write back from the poll from the tun/tap device but
+this never happens since the device is not up.
+
+As long as we do not get back the tun device for writing, we also do
+not put the socket back into the EVENT_READ state. And this also means
+that code to initialise the read buffer (stream_buf_set_next) is never
+run.
+
+But the reset on the TCP socket triggers the TCP socket to be available
+for read, even if it is just for a read of 0 bytes to indicate the reset.
+So the link_socket_read_tcp will run into the assert.
+
+Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
 ---
-M src/openvpn/options.c
 M src/openvpn/socket.c
 M src/openvpn/socket.h
-M src/openvpn/socket_util.c
-4 files changed, 50 insertions(+), 55 deletions(-)
+2 files changed, 84 insertions(+), 40 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1476/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/1477/3
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 85669e0..0f2bd03 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6515,7 +6515,15 @@
-     else if (streq(p[0], "bind-dev") && p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_SOCKFLAGS);
--        options->bind_dev =3D p[1];
-+        if (strlen(p[1]) <=3D IFNAMSIZ)
-+        {
-+            options->bind_dev =3D p[1];
-+        }
-+        else
-+        {
-+            msg(msglevel, "argument to --bind-dev is longer than allowed %=
-u", IFNAMSIZ);
-+            goto err;
-+        }
-     }
- #endif
-     else if (streq(p[0], "txqueuelen") && p[1] && !p[2])
-@@ -6601,11 +6609,9 @@
-     }
-     else if (streq(p[0], "proto") && p[1] && !p[2])
-     {
--        int proto;
--        sa_family_t af;
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
--        proto =3D ascii2proto(p[1]);
--        af =3D ascii2af(p[1]);
-+        int proto =3D ascii2proto(p[1]);
-+        sa_family_t af =3D ascii2af(p[1]);
-         if (proto < 0)
-         {
-             msg(msglevel, "Bad protocol: '%s'. Allowed protocols with --pr=
-oto option: %s", p[1],
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 331249d..a214093 100644
+index f8c0b5c..c6d5ee9 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -661,28 +661,23 @@
+@@ -44,9 +44,7 @@
+ bool
+ sockets_read_residual(const struct context *c)
+ {
+-    int i;
+-
+-    for (i =3D 0; i < c->c1.link_sockets_num; i++)
++    for (int i =3D 0; i < c->c1.link_sockets_num; i++)
+     {
+         if (c->c2.link_sockets[i]->stream_buf.residual_fully_formed)
+         {
+@@ -2065,13 +2063,19 @@
+  * stream connection.
+  */
+
++/**
++ * resets the stream buffer to be setup for the next round of
++ * reassembling a packet
++ *
++ * But still leaves the current packet in sb->buf to be potentially
++ * read.
++ */
+ static inline void
+ stream_buf_reset(struct stream_buf *sb)
+ {
+     dmsg(D_STREAM_DEBUG, "STREAM: RESET");
+     sb->residual_fully_formed =3D false;
+     sb->buf =3D sb->buf_init;
+-    buf_reset(&sb->next);
+     sb->len =3D -1;
  }
 
- static void
--bind_local(struct link_socket *sock, const sa_family_t ai_family)
-+bind_local(struct link_socket *sock)
+@@ -2093,19 +2097,35 @@
+     dmsg(D_STREAM_DEBUG, "STREAM: INIT maxlen=3D%d", sb->maxlen);
+ }
+
+-static inline void
+-stream_buf_set_next(struct stream_buf *sb)
++/**
++ * Return a buffer that is backed by the same backend as sb->buf that
++ * determines where the next read should be done by also having the
++ * right offset into sb->buf
++ * @param sb the stream buffer from which to construct the next buffer
++ */
++static inline struct buffer
++stream_buf_get_next(struct stream_buf *sb)
  {
-     /* bind to local address/port */
-     if (sock->bind_local)
+     /* set up 'next' for next i/o read */
+-    sb->next =3D sb->buf;
+-    sb->next.offset =3D sb->buf.offset + sb->buf.len;
+-    sb->next.len =3D (sb->len >=3D 0 ? sb->len : sb->maxlen) - sb->buf.len;
+-    dmsg(D_STREAM_DEBUG, "STREAM: SET NEXT, buf=3D[%d,%d] next=3D[%d,%d] l=
+en=3D%d maxlen=3D%d",
+-         sb->buf.offset, sb->buf.len, sb->next.offset, sb->next.len, sb->l=
+en, sb->maxlen);
+-    ASSERT(sb->next.len > 0);
+-    ASSERT(buf_safe(&sb->buf, sb->next.len));
++    struct buffer next;
++    next =3D sb->buf;
++    next.offset =3D sb->buf.offset + sb->buf.len;
++    next.len =3D (sb->len >=3D 0 ? sb->len : sb->maxlen) - sb->buf.len;
++    dmsg(D_STREAM_DEBUG, "STREAM: GET NEXT, buf=3D[%d,%d] next=3D[%d,%d] l=
+en=3D%d maxlen=3D%d",
++         sb->buf.offset, sb->buf.len, next.offset, next.len, sb->len, sb->=
+maxlen);
++    ASSERT(next.len > 0);
++    ASSERT(buf_safe(&sb->buf, next.len));
++    return next;
+ }
+
++/**
++ * Sets the parameter buf to  the current buffer of sb->buf.
++ * This function assumes that caller already checked if the packet in sb->=
+buf
++ * is fully assembled.
++ *
++ * @param sb    stream buffer to operate on
++ * @param buf   buffer to point to the contents of buf
++ */
+ static inline void
+ stream_buf_get_final(struct stream_buf *sb, struct buffer *buf)
+ {
+@@ -2114,33 +2134,36 @@
+     *buf =3D sb->buf;
+ }
+
+-static inline void
+-stream_buf_get_next(struct stream_buf *sb, struct buffer *buf)
+-{
+-    dmsg(D_STREAM_DEBUG, "STREAM: GET NEXT len=3D%d", buf_defined(&sb->nex=
+t) ? sb->next.len : -1);
+-    ASSERT(buf_defined(&sb->next));
+-    *buf =3D sb->next;
+-}
+-
+ bool
+ stream_buf_read_setup_dowork(struct stream_buf *sb)
+ {
+     if (sb->residual.len && !sb->residual_fully_formed)
      {
-         if (sock->socks_proxy && sock->info.proto =3D=3D PROTO_UDP)
+-        ASSERT(buf_copy(sb->buf, &sock->stream_buf.residual));
++        ASSERT(buf_copy(&sb->buf, &sb->residual));
+         ASSERT(buf_init(&sb->residual, 0));
+         sb->residual_fully_formed =3D stream_buf_added(sb, 0);
+         dmsg(D_STREAM_DEBUG, "STREAM: RESIDUAL FULLY FORMED [%s], len=3D%d=
+",
+-             stream_buf->residual_fully_formed ? "YES" : "NO", sb->residua=
+l.len);
++             sb->residual_fully_formed ? "YES" : "NO", sb->residual.len);
+     }
+
+-    if (!sb->residual_fully_formed)
+-    {
+-        stream_buf_set_next(sb);
+-    }
+     return !sb->residual_fully_formed;
+ }
+
++/**
++ * This will determine if sb->buf contains a full packet. It will also
++ * move anything in sb->buf beyond a full beyond packet to sb->residual
++ *
++ * If this is the first time the function is called with a valid buffer
++ * and port sharing is enabled the function will also determine if this
++ * is OpenVPN protocol or not and store the result in sb->port_share_state.
++ *
++ * If a packet is outside of the allowed range is detected, the error state
++ * on sb is set.
++ *
++ * @param sb the stream buffer
++ * @param length_added The length that has been added to sb->buf
++ * @return true if sb->buf contains fully reassembled packet
++ */
+ static bool
+ stream_buf_added(struct stream_buf *sb, int length_added)
+ {
+@@ -2203,7 +2226,6 @@
+     else
+     {
+         dmsg(D_STREAM_DEBUG, "STREAM: ADD returned FALSE (have=3D%d need=
+=3D%d)", sb->buf.len, sb->len);
+-        stream_buf_set_next(sb);
+         return false;
+     }
+ }
+@@ -2273,8 +2295,7 @@
+         sockethandle_t sh =3D { .s =3D sock->sd };
+         len =3D sockethandle_finalize(sh, &sock->reads, buf, NULL);
+ #else
+-        struct buffer frag;
+-        stream_buf_get_next(&sock->stream_buf, &frag);
++        struct buffer frag =3D stream_buf_get_next(&sock->stream_buf);
+         len =3D recv(sock->sd, BPTR(&frag), BLEN(&frag), MSG_NOSIGNAL);
+ #endif
+
+@@ -2550,7 +2571,7 @@
+         }
+         else if (proto_is_tcp(sock->info.proto))
          {
--            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, ai_fami=
-ly, "SOCKS", false);
-+            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, sock->i=
-nfo.af, "SOCKS", false);
+-            stream_buf_get_next(&sock->stream_buf, &sock->reads.buf);
++            sock->reads.buf =3D stream_buf_get_next(&sock->stream_buf);
          }
          else
          {
--            socket_bind(sock->sd, sock->info.lsa->bind_local, ai_family, "=
-TCP/UDP",
-+            socket_bind(sock->sd, sock->info.lsa->bind_local, sock->info.a=
-f, "TCP/UDP",
-                         sock->info.bind_ipv6_only);
-         }
-     }
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static void
- create_socket(struct link_socket *sock, struct addrinfo *addr)
- {
-@@ -714,7 +709,7 @@
-     }
-     /* Set af field of sock->info, so it always reflects the address family
-      * of the created socket */
--    sock->info.af =3D addr->ai_family;
-+    sock->info.af =3D (sa_family_t)addr->ai_family;
-
-     /* set socket buffers based on --sndbuf and --rcvbuf options */
-     socket_set_buffers(sock->sd, &sock->socket_buffer_sizes, true);
-@@ -726,8 +721,9 @@
-     if (sock->bind_dev)
-     {
-         msg(M_INFO, "Using bind-dev %s", sock->bind_dev);
-+        /* Note: We verify strlen of bind_dev in options parsing */
-         if (setsockopt(sock->sd, SOL_SOCKET, SO_BINDTODEVICE, sock->bind_d=
-ev,
--                       strlen(sock->bind_dev) + 1)
-+                       (socklen_t)(strlen(sock->bind_dev) + 1))
-             !=3D 0)
-         {
-             msg(M_WARN | M_ERRNO, "WARN: setsockopt SO_BINDTODEVICE=3D%s f=
-ailed", sock->bind_dev);
-@@ -735,13 +731,9 @@
-     }
- #endif
-
--    bind_local(sock, addr->ai_family);
-+    bind_local(sock);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #ifdef TARGET_ANDROID
- static void
- protect_fd_nonlocal(int fd, const struct sockaddr *addr)
-@@ -1144,7 +1136,7 @@
-
- static void stream_buf_close(struct stream_buf *sb);
-
--static bool stream_buf_added(struct stream_buf *sb, int length_added);
-+static bool stream_buf_added(struct stream_buf *sb, ssize_t length_added);
-
- /* For stream protocols, allocate a buffer to build up packet.
-  * Called after frame has been finalized. */
-@@ -1173,13 +1165,8 @@
-     }
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static void
--resolve_bind_local(struct link_socket *sock, const sa_family_t af)
-+resolve_bind_local(struct link_socket *sock)
- {
-     struct gc_arena gc =3D gc_new();
-
-@@ -1195,12 +1182,12 @@
-         }
-
-         /* will return AF_{INET|INET6}from local_host */
--        status =3D get_cached_dns_entry(sock->dns_cache, sock->local_host,=
- sock->local_port, af,
-+        status =3D get_cached_dns_entry(sock->dns_cache, sock->local_host,=
- sock->local_port, sock->info.af,
-                                       flags, &sock->info.lsa->bind_local);
-
-         if (status)
-         {
--            status =3D openvpn_getaddrinfo(flags, sock->local_host, sock->=
-local_port, 0, NULL, af,
-+            status =3D openvpn_getaddrinfo(flags, sock->local_host, sock->=
-local_port, 0, NULL, sock->info.af,
-                                          &sock->info.lsa->bind_local);
-         }
-
-@@ -1221,7 +1208,7 @@
-             /* the resolved 'local entry' might have a different family th=
-an
-              * what was globally configured
-              */
--            sock->info.af =3D sock->info.lsa->bind_local->ai_family;
-+            sock->info.af =3D (sa_family_t)sock->info.lsa->bind_local->ai_=
-family;
-         }
-     }
-
-@@ -1417,7 +1404,8 @@
-=20
-     sock->mark =3D o->mark;
-     sock->bind_dev =3D o->bind_dev;
--    sock->info.proto =3D proto;
-+    ASSERT(proto >=3D 0 && proto < PROTO_N);
-+    sock->info.proto =3D (uint8_t)proto;
-     sock->info.af =3D o->ce.af;
-     sock->info.remote_float =3D o->ce.remote_float;
-     sock->info.lsa =3D &c->c1.link_socket_addrs[sock_index];
-@@ -1483,7 +1471,7 @@
-     {
-         if (sock->bind_local)
-         {
--            resolve_bind_local(sock, sock->info.af);
-+            resolve_bind_local(sock);
-         }
-         resolve_remote(sock, 1, NULL);
-     }
-@@ -1744,9 +1732,9 @@
-              * and we should not connect a remote */
-             if (sock->info.af =3D=3D AF_UNSPEC)
-             {
-+                sock->info.af =3D (sa_family_t)sock->info.lsa->bind_local-=
->ai_family;
-                 msg(M_WARN, "Could not determine IPv4/IPv6 protocol. Using=
- %s",
--                    addr_family_name(sock->info.lsa->bind_local->ai_family=
-));
--                sock->info.af =3D sock->info.lsa->bind_local->ai_family;
-+                    addr_family_name(sock->info.af));
-             }
-             create_socket(sock, sock->info.lsa->bind_local);
-         }
-@@ -2142,12 +2130,13 @@
- }
-
- static bool
--stream_buf_added(struct stream_buf *sb, int length_added)
-+stream_buf_added(struct stream_buf *sb, ssize_t length_added)
- {
--    dmsg(D_STREAM_DEBUG, "STREAM: ADD length_added=3D%d", length_added);
-+    dmsg(D_STREAM_DEBUG, "STREAM: ADD length_added=3D%zd", length_added);
-     if (length_added > 0)
-     {
--        sb->buf.len +=3D length_added;
-+        ASSERT(sb->buf.len + length_added <=3D INT_MAX);
-+        sb->buf.len +=3D (int)length_added;
-     }
-
-     /* if length unknown, see if we can get the length prefix from
-@@ -2253,7 +2242,7 @@
- int
- link_socket_read_tcp(struct link_socket *sock, struct buffer *buf)
- {
--    int len =3D 0;
-+    ssize_t len =3D 0;
-
-     if (!sock->stream_buf.residual_fully_formed)
-     {
-@@ -2284,7 +2273,7 @@
-         }
-         if (len <=3D 0)
-         {
--            return buf->len =3D len;
-+            return buf->len =3D (int)len;
-         }
-     }
-
-@@ -2334,13 +2323,15 @@
-     mesg.msg_name =3D &from->dest.addr;
-     mesg.msg_namelen =3D fromlen;
-     mesg.msg_control =3D pktinfo_buf;
--    mesg.msg_controllen =3D sizeof pktinfo_buf;
--    buf->len =3D recvmsg(sock->sd, &mesg, 0);
--    if (buf->len >=3D 0)
-+    mesg.msg_controllen =3D (socklen_t)sizeof(pktinfo_buf);
-+    ssize_t len =3D recvmsg(sock->sd, &mesg, 0);
-+    ASSERT(len >=3D INT_MIN && len <=3D INT_MAX);
-+    /* Note that we communicate recvmsg failure to caller here */
-+    buf->len =3D (int)len;
-+    if (len >=3D 0)
-     {
--        struct cmsghdr *cmsg;
-         fromlen =3D mesg.msg_namelen;
--        cmsg =3D CMSG_FIRSTHDR(&mesg);
-+        struct cmsghdr *cmsg =3D CMSG_FIRSTHDR(&mesg);
-         if (cmsg !=3D NULL && CMSG_NXTHDR(&mesg, cmsg) =3D=3D NULL
- #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
-             && cmsg->cmsg_level =3D=3D SOL_IP && cmsg->cmsg_type =3D=3D IP=
-_PKTINFO
-@@ -2375,8 +2366,8 @@
-         else if (cmsg !=3D NULL)
-         {
-             msg(M_WARN,
--                "CMSG received that cannot be parsed (cmsg_level=3D%d, cms=
-g_type=3D%d, cmsg=3Dlen=3D%d)",
--                (int)cmsg->cmsg_level, (int)cmsg->cmsg_type, (int)cmsg->cm=
-sg_len);
-+                "CMSG received that cannot be parsed (cmsg_level=3D%d, cms=
-g_type=3D%d, cmsg=3Dlen=3D%zu)",
-+                cmsg->cmsg_level, cmsg->cmsg_type, (size_t)cmsg->cmsg_len);
-         }
-     }
-
-@@ -2403,8 +2394,8 @@
-     else
- #endif
-     {
--        buf->len =3D recvfrom(sock->sd, BPTR(buf), buf_forward_capacity(bu=
-f), 0, &from->dest.addr.sa,
--                            &fromlen);
-+        buf->len =3D (int)recvfrom(sock->sd, BPTR(buf), buf_forward_capaci=
-ty(buf),
-+                                 0, &from->dest.addr.sa, &fromlen);
-     }
-     /* FIXME: won't do anything when sock->info.af =3D=3D AF_UNSPEC */
-     if (buf->len >=3D 0 && expectedlen && fromlen !=3D expectedlen)
-@@ -2423,8 +2414,9 @@
- ssize_t
- link_socket_write_tcp(struct link_socket *sock, struct buffer *buf, struct=
- link_socket_actual *to)
- {
--    packet_size_type len =3D BLEN(buf);
--    dmsg(D_STREAM_DEBUG, "STREAM: WRITE %d offset=3D%d", (int)len, buf->of=
-fset);
-+    ASSERT(BLEN(buf) >=3D 0 && BLEN(buf) <=3D PACKET_SIZE_MAX);
-+    packet_size_type len =3D (packet_size_type)BLEN(buf);
-+    dmsg(D_STREAM_DEBUG, "STREAM: WRITE %u offset=3D%d", len, buf->offset);
-     ASSERT(len <=3D sock->stream_buf.maxlen);
-     len =3D htonps(len);
-     ASSERT(buf_write_prepend(buf, &len, sizeof(len)));
-@@ -2435,10 +2427,6 @@
- #endif
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #if ENABLE_IP_PKTINFO
-
- ssize_t
 diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 850064d..192a03c 100644
+index 8664666f..f2bf906 100644
 --- a/src/openvpn/socket.h
 +++ b/src/openvpn/socket.h
-@@ -54,6 +54,7 @@
-  */
-
- typedef uint16_t packet_size_type;
-+#define PACKET_SIZE_MAX UINT16_MAX
-
- /* convert a packet_size_type from host to network order */
- #define htonps(x) htons(x)
-diff --git a/src/openvpn/socket_util.c b/src/openvpn/socket_util.c
-index 0194f38..913ac69 100644
---- a/src/openvpn/socket_util.c
-+++ b/src/openvpn/socket_util.c
-@@ -356,7 +356,7 @@
-     const char *short_form;
-     const char *display_form;
-     sa_family_t proto_af;
--    int proto;
-+    uint8_t proto;
+@@ -95,23 +95,41 @@
+     int mtu_changed; /* Set to true when mtu value is changed */
  };
 
- /* Indexed by PROTO_x */
+-/*
+- * Used to extract packets encapsulated in streams into a buffer,
+- * in this case IP packets embedded in a TCP stream.
++/**
++ * struct used to extract packets encapsulated in streams into a buffer,
++ * in this case OpenVPN packets (data or control) embedded in a TCP stream.
++ *
++ * This struct is used to packetise the TCP stream into the
++ * OpenVPN packet. Each OpenVPN packet has a two-byte header determining
++ * the length of the packet.
+  */
+ struct stream_buf
+ {
++    /* Buffer to hold the initial buffer that will be used to reset buf */
+     struct buffer buf_init;
++
++    /** buffer holding the excess bytes that are not part of the
++     *  packet. */
+     struct buffer residual;
++
++    /** Maximum length of a packet that we accept */
+     int maxlen;
++
++    /** The buffer in buf contains a full packet without a header. Any
++     * extra data is in residual */
+     bool residual_fully_formed;
+
++    /** Holds the data of the current packet. This might be a partial pack=
+et */
+     struct buffer buf;
+-    struct buffer next;
+-    int len;    /* -1 if not yet known */
+
+-    bool error; /* if true, fatal TCP error has occurred,
+-                 *  requiring that connection be restarted */
++    /** -1 if not yet known. Otherwise holds the length of the
++     *   packet. If >=3D 0, buf is already moved past the initial
++     *  size header */
++    int len;
++
++    /** if true, a fatal TCP error has occurred,
++     *  requiring that connection be restarted */
++    bool error;
+ #if PORT_SHARE
+ #define PS_DISABLED 0
+ #define PS_ENABLED  1
+@@ -529,9 +547,14 @@
+ }
+
+ /**
++ * Will try to check if the buffers in stream form a
++ * full packet. Will return true if further reads are
++ * required and other false. (full packet is ready)
+  *
+- * @param sock
+- * @return
++ * With UDP we always return true as there is no reassembly.
++ *
++ * @param sb    the stream buffer that should be worked on
++ * @return      true if more reads are required.
+  */
+ bool stream_buf_read_setup_dowork(struct stream_buf *sb);
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7be7427480d3540d43dd818eddb6eb5860956459
-Gerrit-Change-Number: 1476
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
+Gerrit-Change-Number: 1477
+Gerrit-PatchSet: 3
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---Zg2v4pHiYyQ=
+--vPHObYDq6TA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #4</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">socket: Fix various conversion warnings<br><br>-=
- We assume that addrinfo-&gt;ai_family always fits<br>  into a sa_family_t,=
- so we do not check those.<br>- Reduce places where we explicitly pass ai_f=
-amily<br>  and prefer sock-&gt;info.af.<br>- Make sure that --bind-dev has =
-a suitable length.<br>- Treat PROTO_* as uint8_t where possible (however,<b=
-r>  much code uses proto =3D -1 for various error handling).<br>- Some of t=
-he usual &quot;recv* returns ssize_t not int&quot;<br>  adaptions.<br><br>C=
-hange-Id: I7be7427480d3540d43dd818eddb6eb5860956459<br>Signed-off-by: Frank=
- Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>=
-M src/openvpn/socket.c<br>M src/openvpn/socket.h<br>M src/openvpn/socket_ut=
-il.c<br>4 files changed, 50 insertions(+), 55 deletions(-)<br><br></pre><pr=
-e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/=
-1476/4</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</=
-span><br><span>index 85669e0..0f2bd03 100644</span><br><span>--- a/src/open=
-vpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@=
-@ -6515,7 +6515,15 @@</span><br><span>     else if (streq(p[0], &quot;bind-=
-dev&quot;) &amp;&amp; p[1])</span><br><span>     {</span><br><span>        =
- VERIFY_PERMISSION(OPT_P_SOCKFLAGS);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        options-&gt;bind_dev =3D p[1];</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (strlen(p[1]) &lt;=3D IFNAMSIZ=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            options-&gt;bind=
-_dev =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;=
-argument to --bind-dev is longer than allowed %u&quot;, IFNAMSIZ);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            goto err;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>=
-     }</span><br><span> #endif</span><br><span>     else if (streq(p[0], &q=
-uot;txqueuelen&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>@@ =
--6601,11 +6609,9 @@</span><br><span>     }</span><br><span>     else if (st=
-req(p[0], &quot;proto&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><s=
-pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int=
- proto;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        sa_fam=
-ily_t af;</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_=
-CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        p=
-roto =3D ascii2proto(p[1]);</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        af =3D ascii2af(p[1]);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        int proto =3D ascii2proto(p[1]);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        sa_family_t af =3D ascii2af(p=
-[1]);</span><br><span>         if (proto &lt; 0)</span><br><span>         {=
-</span><br><span>             msg(msglevel, &quot;Bad protocol: &#39;%s&#39=
-;. Allowed protocols with --proto option: %s&quot;, p[1],</span><br><span>d=
-iff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>ind=
-ex 331249d..a214093 100644</span><br><span>--- a/src/openvpn/socket.c</span=
-><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -661,28 +661,23 @@=
-</span><br><span> }</span><br><span> </span><br><span> static void</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-bind_local(struct link_socket =
-*sock, const sa_family_t ai_family)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+bind_local(struct link_socket *sock)</span><br><span> {</sp=
-an><br><span>     /* bind to local address/port */</span><br><span>     if =
-(sock-&gt;bind_local)</span><br><span>     {</span><br><span>         if (s=
-ock-&gt;socks_proxy &amp;&amp; sock-&gt;info.proto =3D=3D PROTO_UDP)</span>=
-<br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           socket_bind(sock-&gt;ctrl_sd, sock-&gt;info.lsa-&gt;bind_local, =
-ai_family, &quot;SOCKS&quot;, false);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            socket_bind(sock-&gt;ctrl_sd, sock-&gt;info.l=
-sa-&gt;bind_local, sock-&gt;info.af, &quot;SOCKS&quot;, false);</span><br><=
-span>         }</span><br><span>         else</span><br><span>         {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            socket_bind(=
-sock-&gt;sd, sock-&gt;info.lsa-&gt;bind_local, ai_family, &quot;TCP/UDP&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            sock=
-et_bind(sock-&gt;sd, sock-&gt;info.lsa-&gt;bind_local, sock-&gt;info.af, &q=
-uot;TCP/UDP&quot;,</span><br><span>                         sock-&gt;info.b=
-ind_ipv6_only);</span><br><span>         }</span><br><span>     }</span><br=
-><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wco=
-nversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> stat=
-ic void</span><br><span> create_socket(struct link_socket *sock, struct add=
-rinfo *addr)</span><br><span> {</span><br><span>@@ -714,7 +709,7 @@</span><=
-br><span>     }</span><br><span>     /* Set af field of sock-&gt;info, so i=
-t always reflects the address family</span><br><span>      * of the created=
- socket */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sock-&g=
-t;info.af =3D addr-&gt;ai_family;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    sock-&gt;info.af =3D (sa_family_t)addr-&gt;ai_family;</sp=
-an><br><span> </span><br><span>     /* set socket buffers based on --sndbuf=
- and --rcvbuf options */</span><br><span>     socket_set_buffers(sock-&gt;s=
-d, &amp;sock-&gt;socket_buffer_sizes, true);</span><br><span>@@ -726,8 +721=
-,9 @@</span><br><span>     if (sock-&gt;bind_dev)</span><br><span>     {</s=
-pan><br><span>         msg(M_INFO, &quot;Using bind-dev %s&quot;, sock-&gt;=
-bind_dev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /=
-* Note: We verify strlen of bind_dev in options parsing */</span><br><span>=
-         if (setsockopt(sock-&gt;sd, SOL_SOCKET, SO_BINDTODEVICE, sock-&gt;=
-bind_dev,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-           strlen(sock-&gt;bind_dev) + 1)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                       (socklen_t)(strlen(sock-&gt;bi=
-nd_dev) + 1))</span><br><span>             !=3D 0)</span><br><span>        =
- {</span><br><span>             msg(M_WARN | M_ERRNO, &quot;WARN: setsockop=
-t SO_BINDTODEVICE=3D%s failed&quot;, sock-&gt;bind_dev);</span><br><span>@@=
- -735,13 +731,9 @@</span><br><span>     }</span><br><span> #endif</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bind_loca=
-l(sock, addr-&gt;ai_family);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    bind_local(sock);</span><br><span> }</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defi=
-ned(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma=
- GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-ndif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>=
- #ifdef TARGET_ANDROID</span><br><span> static void</span><br><span> protec=
-t_fd_nonlocal(int fd, const struct sockaddr *addr)</span><br><span>@@ -1144=
-,7 +1136,7 @@</span><br><span> </span><br><span> static void stream_buf_clo=
-se(struct stream_buf *sb);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-static bool stream_buf_added(struct stream_buf *sb, =
-int length_added);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic bool stream_buf_added(struct stream_buf *sb, ssize_t length_added);</=
-span><br><span> </span><br><span> /* For stream protocols, allocate a buffe=
-r to build up packet.</span><br><span>  * Called after frame has been final=
-ized. */</span><br><span>@@ -1173,13 +1165,8 @@</span><br><span>     }</spa=
-n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot=
-;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-ndif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>=
- static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-resolve_b=
-ind_local(struct link_socket *sock, const sa_family_t af)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+resolve_bind_local(struct link_socket=
- *sock)</span><br><span> {</span><br><span>     struct gc_arena gc =3D gc_n=
-ew();</span><br><span> </span><br><span>@@ -1195,12 +1182,12 @@</span><br><=
-span>         }</span><br><span> </span><br><span>         /* will return A=
-F_{INET|INET6}from local_host */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        status =3D get_cached_dns_entry(sock-&gt;dns_cache, sock=
--&gt;local_host, sock-&gt;local_port, af,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        status =3D get_cached_dns_entry(sock-&gt;dns_=
-cache, sock-&gt;local_host, sock-&gt;local_port, sock-&gt;info.af,</span><b=
-r><span>                                       flags, &amp;sock-&gt;info.ls=
-a-&gt;bind_local);</span><br><span> </span><br><span>         if (status)</=
-span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            status =3D openvpn_getaddrinfo(flags, sock-&gt;local_host, =
-sock-&gt;local_port, 0, NULL, af,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            status =3D openvpn_getaddrinfo(flags, sock-&gt;lo=
-cal_host, sock-&gt;local_port, 0, NULL, sock-&gt;info.af,</span><br><span> =
-                                         &amp;sock-&gt;info.lsa-&gt;bind_lo=
-cal);</span><br><span>         }</span><br><span> </span><br><span>@@ -1221=
-,7 +1208,7 @@</span><br><span>             /* the resolved &#39;local entry=
-&#39; might have a different family than</span><br><span>              * wh=
-at was globally configured</span><br><span>              */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            sock-&gt;info.af =3D sock=
--&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            sock-&gt;info.af =3D (sa_family_t)sock-=
-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>         }</span=
-><br><span>     }</span><br><span> </span><br><span>@@ -1417,7 +1404,8 @@</=
-span><br><span> </span><br><span>     sock-&gt;mark =3D o-&gt;mark;</span><=
-br><span>     sock-&gt;bind_dev =3D o-&gt;bind_dev;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;info.proto =3D proto;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(proto &gt;=3D 0 &=
-amp;&amp; proto &lt; PROTO_N);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    sock-&gt;info.proto =3D (uint8_t)proto;</span><br><span>    =
- sock-&gt;info.af =3D o-&gt;ce.af;</span><br><span>     sock-&gt;info.remot=
-e_float =3D o-&gt;ce.remote_float;</span><br><span>     sock-&gt;info.lsa =
-=3D &amp;c-&gt;c1.link_socket_addrs[sock_index];</span><br><span>@@ -1483,7=
- +1471,7 @@</span><br><span>     {</span><br><span>         if (sock-&gt;bi=
-nd_local)</span><br><span>         {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            resolve_bind_local(sock, sock-&gt;info.af);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            resolve_bind=
-_local(sock);</span><br><span>         }</span><br><span>         resolve_r=
-emote(sock, 1, NULL);</span><br><span>     }</span><br><span>@@ -1744,9 +17=
-32,9 @@</span><br><span>              * and we should not connect a remote =
-*/</span><br><span>             if (sock-&gt;info.af =3D=3D AF_UNSPEC)</spa=
-n><br><span>             {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                sock-&gt;info.af =3D (sa_family_t)sock-&gt;info.lsa-=
-&gt;bind_local-&gt;ai_family;</span><br><span>                 msg(M_WARN, =
-&quot;Could not determine IPv4/IPv6 protocol. Using %s&quot;,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                    addr_family_nam=
-e(sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                sock-&gt;info.af =3D sock-&=
-gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    addr_family_name(sock-&gt;info.af=
-));</span><br><span>             }</span><br><span>             create_sock=
-et(sock, sock-&gt;info.lsa-&gt;bind_local);</span><br><span>         }</spa=
-n><br><span>@@ -2142,12 +2130,13 @@</span><br><span> }</span><br><span> </s=
-pan><br><span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-stream_buf_added(struct stream_buf *sb, int length_added)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+stream_buf_added(struct stream_b=
-uf *sb, ssize_t length_added)</span><br><span> {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    dmsg(D_STREAM_DEBUG, &quot;STREAM: ADD lengt=
-h_added=3D%d&quot;, length_added);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    dmsg(D_STREAM_DEBUG, &quot;STREAM: ADD length_added=3D%z=
-d&quot;, length_added);</span><br><span>     if (length_added &gt; 0)</span=
+<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">View Chan=
+ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">Merge stream_buf_get_next and stream_buf_set_next<b=
+r><br>The stream_buf_set_next prepares a buffer in the stream_buf<br>struct=
+ure that will be retrieved by stream_buf_get the next<br>time it is used.<b=
+r><br>This temporary copy of the buffer is unnecessary as the buffer<br>nex=
+t can also be constructed on the fly.<br><br>This also fixes a rare crash w=
+hen read buffer are not initialised and<br>read is still signalled as the i=
+nitialisation of next will now happen whenever<br>it is required.<br><br>Th=
+is assertion happens when we do not expect a read event from the socket and=
+<br>then in link_socket_read_tcp the function stream_buf_get_next can trigg=
+er<br>an assert on ASSERT(buf_defined(&amp;sb-&gt;next));<br><br>To avoid t=
+his weird corner case, just always initialise the read buffer<br>whether or=
+ not we expect a read to occur.<br><br>This also adds documentation about t=
+he methods and field associated with<br>the stream_buf structure.<br><br>Re=
+producing this bug requires very special circumstances. The reproduction is=
+<br>   openvpn --cert server-secp384r1.crt  --key server-secp384r1.key \<br=
+>   --dev ml-tan --dev-type tap --tun-mtu 1400 --config ~/fp --topology sub=
+net \<br>   --port 2201 --verb 3  --mode server  --tls-server --proto tcp6-=
+server<br>   --ifconfig 10.0.0.1 255.255.255.0<br><br>as the server side an=
+d<br><br>  openvpn --client --proto tcp --remote poseidon --port 2201 --dev=
+ tap<br><br>The client side must be on Linux. Other platform do not reprodu=
+ce this<br>bug.<br><br>Note that the client will not configure any IP or IP=
+v6 on the interface<br>and will also not bring up the interface. The server=
+ must also send at least<br>one real data packet to the client (no keepaliv=
+e ping). Just having the<br>interface up normally produces enough traffic.<=
+br><br>Now forcefully reset the TCP connection. E.g. by executing on the se=
+rver<br><br>    sudo ss --kill sport 2201<br><br>This will now trigger the =
+assertion. This happens since OpenVPN waits<br>forever to get a write back =
+from the poll from the tun/tap device but<br>this never happens since the d=
+evice is not up.<br><br>As long as we do not get back the tun device for wr=
+iting, we also do<br>not put the socket back into the EVENT_READ state. And=
+ this also means<br>that code to initialise the read buffer (stream_buf_set=
+_next) is never<br>run.<br><br>But the reset on the TCP socket triggers the=
+ TCP socket to be available<br>for read, even if it is just for a read of 0=
+ bytes to indicate the reset.<br>So the link_socket_read_tcp will run into =
+the assert.<br><br>Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc<br>=
+---<br>M src/openvpn/socket.c<br>M src/openvpn/socket.h<br>2 files changed,=
+ 84 insertions(+), 40 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/77/1477/3</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index f8c=
+0b5c..c6d5ee9 100644</span><br><span>--- a/src/openvpn/socket.c</span><br><=
+span>+++ b/src/openvpn/socket.c</span><br><span>@@ -44,9 +44,7 @@</span><br=
+><span> bool</span><br><span> sockets_read_residual(const struct context *c=
+)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; c-&gt;c1=
+.link_sockets_num; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    for (int i =3D 0; i &lt; c-&gt;c1.link_sockets_num; i++)</span><br>=
+<span>     {</span><br><span>         if (c-&gt;c2.link_sockets[i]-&gt;stre=
+am_buf.residual_fully_formed)</span><br><span>         {</span><br><span>@@=
+ -2065,13 +2063,19 @@</span><br><span>  * stream connection.</span><br><spa=
+n>  */</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * resets t=
+he stream buffer to be setup for the next round of</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * reassembling a packet</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * But still leaves the current packet in sb-&gt;buf to =
+be potentially</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * re=
+ad.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><s=
+pan> static inline void</span><br><span> stream_buf_reset(struct stream_buf=
+ *sb)</span><br><span> {</span><br><span>     dmsg(D_STREAM_DEBUG, &quot;ST=
+REAM: RESET&quot;);</span><br><span>     sb-&gt;residual_fully_formed =3D f=
+alse;</span><br><span>     sb-&gt;buf =3D sb-&gt;buf_init;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    buf_reset(&amp;sb-&gt;next);</span=
+><br><span>     sb-&gt;len =3D -1;</span><br><span> }</span><br><span> </sp=
+an><br><span>@@ -2093,19 +2097,35 @@</span><br><span>     dmsg(D_STREAM_DEB=
+UG, &quot;STREAM: INIT maxlen=3D%d&quot;, sb-&gt;maxlen);</span><br><span> =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-st=
+atic inline void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-strea=
+m_buf_set_next(struct stream_buf *sb)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * Return a buffer that is backed by the same backend as sb-&gt;buf that<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * determines where =
+the next read should be done by also having the</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * right offset into sb-&gt;buf</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * @param sb the stream buffer from=
+ which to construct the next buffer</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static inline struct buffer</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+stream_buf_get_next(struct stream_buf *sb)</span><br><span> {</span=
+><br><span>     /* set up &#39;next&#39; for next i/o read */</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    sb-&gt;next =3D sb-&gt;buf;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    sb-&gt;next.offset =
+=3D sb-&gt;buf.offset + sb-&gt;buf.len;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    sb-&gt;next.len =3D (sb-&gt;len &gt;=3D 0 ? sb-&gt;le=
+n : sb-&gt;maxlen) - sb-&gt;buf.len;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    dmsg(D_STREAM_DEBUG, &quot;STREAM: SET NEXT, buf=3D[%d,%=
+d] next=3D[%d,%d] len=3D%d maxlen=3D%d&quot;,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-         sb-&gt;buf.offset, sb-&gt;buf.len, sb-&gt;=
+next.offset, sb-&gt;next.len, sb-&gt;len, sb-&gt;maxlen);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    ASSERT(sb-&gt;next.len &gt; 0);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(buf_safe(&amp;=
+sb-&gt;buf, sb-&gt;next.len));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    struct buffer next;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    next =3D sb-&gt;buf;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    next.offset =3D sb-&gt;buf.offset + sb-&gt;buf.len;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    next.len =3D (s=
+b-&gt;len &gt;=3D 0 ? sb-&gt;len : sb-&gt;maxlen) - sb-&gt;buf.len;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_STREAM_DEBUG, &q=
+uot;STREAM: GET NEXT, buf=3D[%d,%d] next=3D[%d,%d] len=3D%d maxlen=3D%d&quo=
+t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         sb-&gt;=
+buf.offset, sb-&gt;buf.len, next.offset, next.len, sb-&gt;len, sb-&gt;maxle=
+n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(next.=
+len &gt; 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASS=
+ERT(buf_safe(&amp;sb-&gt;buf, next.len));</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    return next;</span><br><span> }</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * Sets the parameter buf to  the c=
+urrent buffer of sb-&gt;buf.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * This function assumes that caller already checked if the packet=
+ in sb-&gt;buf</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * is=
+ fully assembled.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sb    str=
+eam buffer to operate on</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * @param buf   buffer to point to the contents of buf</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> static inline =
+void</span><br><span> stream_buf_get_final(struct stream_buf *sb, struct bu=
+ffer *buf)</span><br><span> {</span><br><span>@@ -2114,33 +2134,36 @@</span=
+><br><span>     *buf =3D sb-&gt;buf;</span><br><span> }</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline void</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-stream_buf_get_next(struct=
+ stream_buf *sb, struct buffer *buf)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    d=
+msg(D_STREAM_DEBUG, &quot;STREAM: GET NEXT len=3D%d&quot;, buf_defined(&amp=
+;sb-&gt;next) ? sb-&gt;next.len : -1);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    ASSERT(buf_defined(&amp;sb-&gt;next));</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    *buf =3D sb-&gt;next;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> stream_buf_re=
+ad_setup_dowork(struct stream_buf *sb)</span><br><span> {</span><br><span> =
+    if (sb-&gt;residual.len &amp;&amp; !sb-&gt;residual_fully_formed)</span=
 ><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    sb-&gt;buf.len +=3D length_added;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        ASSERT(sb-&gt;buf.len + length_added &lt;=3D INT_=
-MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sb-&gt=
-;buf.len +=3D (int)length_added;</span><br><span>     }</span><br><span> </=
-span><br><span>     /* if length unknown, see if we can get the length pref=
-ix from</span><br><span>@@ -2253,7 +2242,7 @@</span><br><span> int</span><b=
-r><span> link_socket_read_tcp(struct link_socket *sock, struct buffer *buf)=
-</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  int len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- ssize_t len =3D 0;</span><br><span> </span><br><span>     if (!sock-&gt;st=
-ream_buf.residual_fully_formed)</span><br><span>     {</span><br><span>@@ -=
-2284,7 +2273,7 @@</span><br><span>         }</span><br><span>         if (l=
-en &lt;=3D 0)</span><br><span>         {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            return buf-&gt;len =3D len;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            return buf-&gt;len =3D (=
-int)len;</span><br><span>         }</span><br><span>     }</span><br><span>=
- </span><br><span>@@ -2334,13 +2323,15 @@</span><br><span>     mesg.msg_nam=
-e =3D &amp;from-&gt;dest.addr;</span><br><span>     mesg.msg_namelen =3D fr=
-omlen;</span><br><span>     mesg.msg_control =3D pktinfo_buf;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    mesg.msg_controllen =3D sizeof =
-pktinfo_buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf-&=
-gt;len =3D recvmsg(sock-&gt;sd, &amp;mesg, 0);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (buf-&gt;len &gt;=3D 0)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    mesg.msg_controllen =3D (socklen_t)=
-sizeof(pktinfo_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    ssize_t len =3D recvmsg(sock-&gt;sd, &amp;mesg, 0);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    ASSERT(len &gt;=3D INT_MIN &amp;&a=
-mp; len &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    /* Note that we communicate recvmsg failure to caller here */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf-&gt;len =3D (in=
-t)len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (len &=
-gt;=3D 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        struct cmsghdr *cmsg;</span><br><span>         fromlen =
-=3D mesg.msg_namelen;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        cmsg =3D CMSG_FIRSTHDR(&amp;mesg);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        struct cmsghdr *cmsg =3D CMSG_FIRSTHDR(&amp;=
-mesg);</span><br><span>         if (cmsg !=3D NULL &amp;&amp; CMSG_NXTHDR(&=
-amp;mesg, cmsg) =3D=3D NULL</span><br><span> #if defined(HAVE_IN_PKTINFO) &=
-amp;&amp; defined(HAVE_IPI_SPEC_DST)</span><br><span>             &amp;&amp=
-; cmsg-&gt;cmsg_level =3D=3D SOL_IP &amp;&amp; cmsg-&gt;cmsg_type =3D=3D IP=
-_PKTINFO</span><br><span>@@ -2375,8 +2366,8 @@</span><br><span>         els=
-e if (cmsg !=3D NULL)</span><br><span>         {</span><br><span>          =
-   msg(M_WARN,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-         &quot;CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_t=
-ype=3D%d, cmsg=3Dlen=3D%d)&quot;,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                (int)cmsg-&gt;cmsg_level, (int)cmsg-&gt;cmsg_ty=
-pe, (int)cmsg-&gt;cmsg_len);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                &quot;CMSG received that cannot be parsed (cmsg_le=
-vel=3D%d, cmsg_type=3D%d, cmsg=3Dlen=3D%zu)&quot;,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                cmsg-&gt;cmsg_level, cmsg-&g=
-t;cmsg_type, (size_t)cmsg-&gt;cmsg_len);</span><br><span>         }</span><=
-br><span>     }</span><br><span> </span><br><span>@@ -2403,8 +2394,8 @@</sp=
-an><br><span>     else</span><br><span> #endif</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf-&gt;len =3D rec=
-vfrom(sock-&gt;sd, BPTR(buf), buf_forward_capacity(buf), 0, &amp;from-&gt;d=
-est.addr.sa,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-                   &amp;fromlen);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        buf-&gt;len =3D (int)recvfrom(sock-&gt;sd, BPTR(buf),=
- buf_forward_capacity(buf),</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                                 0, &amp;from-&gt;dest.addr.sa, &am=
-p;fromlen);</span><br><span>     }</span><br><span>     /* FIXME: won&#39;t=
- do anything when sock-&gt;info.af =3D=3D AF_UNSPEC */</span><br><span>    =
- if (buf-&gt;len &gt;=3D 0 &amp;&amp; expectedlen &amp;&amp; fromlen !=3D e=
-xpectedlen)</span><br><span>@@ -2423,8 +2414,9 @@</span><br><span> ssize_t<=
-/span><br><span> link_socket_write_tcp(struct link_socket *sock, struct buf=
-fer *buf, struct link_socket_actual *to)</span><br><span> {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    packet_size_type len =3D BLEN(buf=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_STREAM_D=
-EBUG, &quot;STREAM: WRITE %d offset=3D%d&quot;, (int)len, buf-&gt;offset);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(BLEN(buf)=
- &gt;=3D 0 &amp;&amp; BLEN(buf) &lt;=3D PACKET_SIZE_MAX);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    packet_size_type len =3D (packet_=
-size_type)BLEN(buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    dmsg(D_STREAM_DEBUG, &quot;STREAM: WRITE %u offset=3D%d&quot;, len, bu=
-f-&gt;offset);</span><br><span>     ASSERT(len &lt;=3D sock-&gt;stream_buf.=
-maxlen);</span><br><span>     len =3D htonps(len);</span><br><span>     ASS=
-ERT(buf_write_prepend(buf, &amp;len, sizeof(len)));</span><br><span>@@ -243=
-5,10 +2427,6 @@</span><br><span> #endif</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__=
-) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span> #if ENABLE_IP_PKTINFO</span><br><span> </span><br><span> ssize_t<=
-/span><br><span>diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h</s=
-pan><br><span>index 850064d..192a03c 100644</span><br><span>--- a/src/openv=
-pn/socket.h</span><br><span>+++ b/src/openvpn/socket.h</span><br><span>@@ -=
-54,6 +54,7 @@</span><br><span>  */</span><br><span> </span><br><span> typed=
-ef uint16_t packet_size_type;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#define PACKET_SIZE_MAX UINT16_MAX</span><br><span> </span><br><s=
-pan> /* convert a packet_size_type from host to network order */</span><br>=
-<span> #define htonps(x) htons(x)</span><br><span>diff --git a/src/openvpn/=
-socket_util.c b/src/openvpn/socket_util.c</span><br><span>index 0194f38..91=
-3ac69 100644</span><br><span>--- a/src/openvpn/socket_util.c</span><br><spa=
-n>+++ b/src/openvpn/socket_util.c</span><br><span>@@ -356,7 +356,7 @@</span=
-><br><span>     const char *short_form;</span><br><span>     const char *di=
-splay_form;</span><br><span>     sa_family_t proto_af;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    int proto;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    uint8_t proto;</span><br><span> };</span><b=
-r><span> </span><br><span> /* Indexed by PROTO_x */</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1476?usp=3Demail">change 1476</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-476?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+    ASSERT(buf_copy(sb-&gt;buf, &amp;sock-&gt;stream_buf.residual));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(buf_copy(&a=
+mp;sb-&gt;buf, &amp;sb-&gt;residual));</span><br><span>         ASSERT(buf_=
+init(&amp;sb-&gt;residual, 0));</span><br><span>         sb-&gt;residual_fu=
+lly_formed =3D stream_buf_added(sb, 0);</span><br><span>         dmsg(D_STR=
+EAM_DEBUG, &quot;STREAM: RESIDUAL FULLY FORMED [%s], len=3D%d&quot;,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-             stream_buf-&gt;=
+residual_fully_formed ? &quot;YES&quot; : &quot;NO&quot;, sb-&gt;residual.l=
+en);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             sb=
+-&gt;residual_fully_formed ? &quot;YES&quot; : &quot;NO&quot;, sb-&gt;resid=
+ual.len);</span><br><span>     }</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (!sb-&gt;residual_fully_formed)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        stream_buf_set_next(sb);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span>     retur=
+n !sb-&gt;residual_fully_formed;</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * This will determine if sb-&gt;buf cont=
+ains a full packet. It will also</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * move anything in sb-&gt;buf beyond a full beyond packet to =
+sb-&gt;residual</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If this is the fir=
+st time the function is called with a valid buffer</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * and port sharing is enabled the function =
+will also determine if this</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * is OpenVPN protocol or not and store the result in sb-&gt;port_s=
+hare_state.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If a packet is outside=
+ of the allowed range is detected, the error state</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * on sb is set.</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * @param sb the stream buffer</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * @param length_added The length that has been added=
+ to sb-&gt;buf</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @r=
+eturn true if sb-&gt;buf contains fully reassembled packet</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> static bool</sp=
+an><br><span> stream_buf_added(struct stream_buf *sb, int length_added)</sp=
+an><br><span> {</span><br><span>@@ -2203,7 +2226,6 @@</span><br><span>     =
+else</span><br><span>     {</span><br><span>         dmsg(D_STREAM_DEBUG, &=
+quot;STREAM: ADD returned FALSE (have=3D%d need=3D%d)&quot;, sb-&gt;buf.len=
+, sb-&gt;len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ stream_buf_set_next(sb);</span><br><span>         return false;</span><br>=
+<span>     }</span><br><span> }</span><br><span>@@ -2273,8 +2295,7 @@</span=
+><br><span>         sockethandle_t sh =3D { .s =3D sock-&gt;sd };</span><br=
+><span>         len =3D sockethandle_finalize(sh, &amp;sock-&gt;reads, buf,=
+ NULL);</span><br><span> #else</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        struct buffer frag;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        stream_buf_get_next(&amp;sock-&gt;stream_buf, &amp;f=
+rag);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct=
+ buffer frag =3D stream_buf_get_next(&amp;sock-&gt;stream_buf);</span><br><=
+span>         len =3D recv(sock-&gt;sd, BPTR(&amp;frag), BLEN(&amp;frag), M=
+SG_NOSIGNAL);</span><br><span> #endif</span><br><span> </span><br><span>@@ =
+-2550,7 +2571,7 @@</span><br><span>         }</span><br><span>         else=
+ if (proto_is_tcp(sock-&gt;info.proto))</span><br><span>         {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            stream_buf_get_nex=
+t(&amp;sock-&gt;stream_buf, &amp;sock-&gt;reads.buf);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            sock-&gt;reads.buf =3D stream=
+_buf_get_next(&amp;sock-&gt;stream_buf);</span><br><span>         }</span><=
+br><span>         else</span><br><span>         {</span><br><span>diff --gi=
+t a/src/openvpn/socket.h b/src/openvpn/socket.h</span><br><span>index 86646=
+66f..f2bf906 100644</span><br><span>--- a/src/openvpn/socket.h</span><br><s=
+pan>+++ b/src/openvpn/socket.h</span><br><span>@@ -95,23 +95,41 @@</span><b=
+r><span>     int mtu_changed; /* Set to true when mtu value is changed */</=
+span><br><span> };</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * U=
+sed to extract packets encapsulated in streams into a buffer,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- * in this case IP packets embedded=
+ in a TCP stream.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * struct used to =
+extract packets encapsulated in streams into a buffer,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * in this case OpenVPN packets (data or=
+ control) embedded in a TCP stream.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* This struct is used to packetise the TCP stream into the</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * OpenVPN packet. Each OpenVPN pack=
+et has a two-byte header determining</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * the length of the packet.</span><br><span>  */</span><b=
+r><span> struct stream_buf</span><br><span> {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    /* Buffer to hold the initial buffer that wil=
+l be used to reset buf */</span><br><span>     struct buffer buf_init;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /** buffer holding the excess bytes t=
+hat are not part of the</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+     *  packet. */</span><br><span>     struct buffer residual;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /** Maximum length of a packet that we acc=
+ept */</span><br><span>     int maxlen;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    /** The buffer in buf contains a full packet without a header. Any</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * extra data is in=
+ residual */</span><br><span>     bool residual_fully_formed;</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** Holds t=
+he data of the current packet. This might be a partial packet */</span><br>=
+<span>     struct buffer buf;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    struct buffer next;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    int len;    /* -1 if not yet known */</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool error; /* if true,=
+ fatal TCP error has occurred,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                 *  requiring that connection be restarted */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** -1 if not yet kn=
+own. Otherwise holds the length of the</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+     *   packet. If &gt;=3D 0, buf is already moved past=
+ the initial</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
+ size header */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+int len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /** if true, a fatal TCP e=
+rror has occurred,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+    *  requiring that connection be restarted */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    bool error;</span><br><span> #if PORT_SHAR=
+E</span><br><span> #define PS_DISABLED 0</span><br><span> #define PS_ENABLE=
+D  1</span><br><span>@@ -529,9 +547,14 @@</span><br><span> }</span><br><spa=
+n> </span><br><span> /**</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * Will try to check if the buffers in stream form a</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * full packet. Will return true if f=
+urther reads are</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+required and other false. (full packet is ready)</span><br><span>  *</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- * @param sock</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- * @return</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * With UDP we always return true as there i=
+s no reassembly.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sb    the =
+stream buffer that should be worked on</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * @return      true if more reads are required.</span><=
+br><span>  */</span><br><span> bool stream_buf_read_setup_dowork(struct str=
+eam_buf *sb);</span><br><span> </span><br><span></span><br></pre><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">=
+change 1477</a>. To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><=
+div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
+emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7be7427480d3540d43dd818eddb=
-6eb5860956459 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1476 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e1798=
+65e3dbd0dbfbc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1477 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
@@ -740,5 +660,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---Zg2v4pHiYyQ=--
+--vPHObYDq6TA=--
 
