@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 20 Jan 2026 12:00:27 +0000
-In-Reply-To: <gerrit.1767808679000.I864cd4a718886f437b72e93d0286f90fcb73592b@...2715...>
-References: <gerrit.1767808679000.I864cd4a718886f437b72e93d0286f90fcb73592b@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <d867c5637a50e9948ab2a74128f1c66549b51ccc-EmailReviewComments-HTML@...2715...>
+Date: Tue, 20 Jan 2026 12:19:50 +0000
+References: <gerrit.1768911587000.Iac4af315c6d7798f09a27383fc0a755a874b9881@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <0c5febadbaf32966026b319129a40816fc83ebce-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4Yh1dSJBibE="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: Fix
- conversion warnings in interactive.c
+Content-Type: multipart/alternative; boundary="VCzoEmnO/Vs="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: reliable: Avoid
+ conversion warning in reliable_send_timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,116 +18,167 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4Yh1dSJBibE=
+--VCzoEmnO/Vs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, d12fk, plaisthos.
+Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change by flichtenheld. ( http://g=
-errit.openvpn.net/c/openvpn/+/1457?usp=3Demail )
+Hello plaisthos,
 
-Change subject: openvpnserv: Fix conversion warnings in interactive.c
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1480?usp=3Demail
+
+to review the following change.
+
+
+Change subject: reliable: Avoid conversion warning in reliable_send_timeout
 ......................................................................
 
+reliable: Avoid conversion warning in reliable_send_timeout
 
-Patch Set 5:
+It is not realistic that this produced big values
+and we already discard negative values. So just use
+whatever we get.
 
-(1 comment)
-
-File src/openvpnserv/interactive.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1457/comment/834b3ca5_a2c05ba2?usp=3D=
-email :
-PS4, Line 1387:  * Return correct length for regex value to set for string
-> I think you mean Registry not Regex
-Done
+Change-Id: Iac4af315c6d7798f09a27383fc0a755a874b9881
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/reliable.c
+1 file changed, 1 insertion(+), 10 deletions(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/1480/1
+
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 52adacf..690e50d 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -687,11 +687,6 @@
+     }
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ /* in how many seconds should we wake up to check for timeout */
+ /* if we return BIG_TIMEOUT, nothing to wait for */
+ interval_t
+@@ -713,7 +708,7 @@
+             }
+             else
+             {
+-                ret =3D min_int(ret, e->next_try - local_now);
++                ret =3D min_int(ret, (int)(e->next_try - local_now));
+             }
+         }
+     }
+@@ -724,10 +719,6 @@
+     return ret;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ /*
+  * Enable an incoming buffer previously returned by a get function as acti=
+ve.
+  */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1457?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1480?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I864cd4a718886f437b72e93d0286f90fcb73592b
-Gerrit-Change-Number: 1457
-Gerrit-PatchSet: 5
+Gerrit-Change-Id: Iac4af315c6d7798f09a27383fc0a755a874b9881
+Gerrit-Change-Number: 1480
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: d12fk <heiko@...515...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Tue, 20 Jan 2026 12:00:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: d12fk <heiko@...515...>
 
---4Yh1dSJBibE=
+--VCzoEmnO/Vs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, d12fk, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1457?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1457/comment/834b3ca5_a2c05ba2?usp=3Demail">Patch=
- Set #4, Line 1387:</a> <code style=3D"font-family:monospace,monospace"> * =
-Return correct length for regex value to set for string</code></p><p><block=
-quote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px=
-;">I think you mean Registry not Regex</blockquote></p><p class=3D"blocks" =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1457?usp=3Demail">change 1457</a>. To unsubscribe, or for help writing mai=
-l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
->settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
-"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
-on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/14=
-57?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1480?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">reliable: Avoid conversion warning in relia=
+ble_send_timeout<br><br>It is not realistic that this produced big values<b=
+r>and we already discard negative values. So just use<br>whatever we get.<b=
+r><br>Change-Id: Iac4af315c6d7798f09a27383fc0a755a874b9881<br>Signed-off-by=
+: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/reliab=
+le.c<br>1 file changed, 1 insertion(+), 10 deletions(-)<br><br></pre><pre c=
+lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/148=
+0/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;"><span>diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c</s=
+pan><br><span>index 52adacf..690e50d 100644</span><br><span>--- a/src/openv=
+pn/reliable.c</span><br><span>+++ b/src/openvpn/reliable.c</span><br><span>=
+@@ -687,11 +687,6 @@</span><br><span>     }</span><br><span> }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GN=
+UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* in how many seconds sh=
+ould we wake up to check for timeout */</span><br><span> /* if we return BI=
+G_TIMEOUT, nothing to wait for */</span><br><span> interval_t</span><br><sp=
+an>@@ -713,7 +708,7 @@</span><br><span>             }</span><br><span>     =
+        else</span><br><span>             {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                ret =3D min_int(ret, e-&gt;next_try -=
+ local_now);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         ret =3D min_int(ret, (int)(e-&gt;next_try - local_now));</span><br=
+><span>             }</span><br><span>         }</span><br><span>     }</sp=
+an><br><span>@@ -724,10 +719,6 @@</span><br><span>     return ret;</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> /*</span><br><span>  * Enable an incom=
+ing buffer previously returned by a get function as active.</span><br><span=
+>  */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/1480?usp=3Demail">change 1480</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"=
+http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1480?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I864cd4a718886f437b72e93d028=
-6f90fcb73592b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1457 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iac4af315c6d7798f09a27383fc0=
+a755a874b9881 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1480 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 20 Jan 2026 12:00:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: d12fk &lt;heiko@...515...=
-&gt; </div>
 
 </body></html>=
 
---4Yh1dSJBibE=--
+--VCzoEmnO/Vs=--
 
