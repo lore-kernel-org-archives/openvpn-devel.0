@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 21 Jan 2026 17:15:58 +0000
-In-Reply-To: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
-References: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
+Date: Wed, 21 Jan 2026 17:16:06 +0000
+References: <gerrit.1769015758000.Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <6c7d060bfdef00cea726bb8bef10ab815567b925-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <c4fb34027044d50850b83f27fe9f59b60fb99cd2-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Kuel6SRM3bA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: Fix conversion
- issues related to timeout in send_auth_pending_m...
+Content-Type: multipart/alternative; boundary="CTtD45hvz9M="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: status: Avoid
+ conversion warnings in status_read
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,49 +21,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Kuel6SRM3bA=
+--CTtD45hvz9M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld.
+Attention is currently required from: plaisthos.
 
-Hello cron2, plaisthos,
+Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail
 
-to look at the new patch set (#10).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by cron2
+to review the following change.
 
 
-Change subject: push: Fix conversion issues related to timeout in send_auth=
-_pending_messages
+Change subject: status: Avoid conversion warnings in status_read
 ......................................................................
 
-push: Fix conversion issues related to timeout in send_auth_pending_messages
+status: Avoid conversion warnings in status_read
 
-Add additional checking to make sure that the required
-casts are safe.
+Just use explicit casts. len is limited by BCAP and
+c is limited by being from buf_read_u8. So they are
+safe.
 
-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
+Change-Id: Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/push.c
-M src/openvpn/ssl_verify.c
-2 files changed, 13 insertions(+), 7 deletions(-)
+M src/openvpn/status.c
+1 file changed, 3 insertions(+), 14 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1293/10
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 25df48d..551a5c7 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -429,11 +429,6 @@
-     gc_free(&gc);
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/1485/1
+
+diff --git a/src/openvpn/status.c b/src/openvpn/status.c
+index 3f57244..9a1b2fa 100644
+--- a/src/openvpn/status.c
++++ b/src/openvpn/status.c
+@@ -206,11 +206,6 @@
+     return ret;
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -72,171 +69,145 @@ index 25df48d..551a5c7 100644
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
- bool
- send_auth_pending_messages(struct tls_multi *tls_multi, struct tls_session=
- *session,
-                            const char *extra, unsigned int timeout)
-@@ -449,7 +444,12 @@
-     /* Calculate the maximum timeout and subtract the time we already wait=
-ed */
-     unsigned int max_timeout =3D
-         max_uint(tls_multi->opt.renegotiate_seconds / 2, tls_multi->opt.ha=
-ndshake_window);
--    max_timeout =3D max_timeout - (now - ks->initial);
-+    time_t time_elapsed =3D now - ks->initial;
-+    if (time_elapsed < 0 || time_elapsed >=3D (time_t)max_timeout)
-+    {
-+        return false;
-+    }
-+    max_timeout -=3D (unsigned int)time_elapsed;
-     timeout =3D min_uint(max_timeout, timeout);
+ #define STATUS_PRINTF_MAXLEN 512
 
-     struct gc_arena gc =3D gc_new();
-@@ -738,6 +738,11 @@
-     return true;
- }
-
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
-+
- static bool
- send_push_options(struct context *c, struct buffer *buf, struct push_list =
-*push_list, int safe_cap,
-                   bool *push_sent, bool *multi_push)
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 0b02a2f..c74d555 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -911,8 +911,9 @@
-             buf_chomp(iv_buf);
-             buf_chomp(extra_buf);
-
-+            errno =3D 0;
-             long timeout =3D strtol(BSTR(timeout_buf), NULL, 10);
--            if (timeout <=3D 0)
-+            if (timeout <=3D 0 || timeout > UINT_MAX || errno)
+ void
+@@ -274,16 +269,14 @@
+             /* read more of file into buffer */
+             if (c =3D=3D -1)
              {
-                 msg(M_WARN, "could not parse auth pending file timeout");
-                 buffer_list_free(lines);
+-                int len;
+-
+                 ASSERT(buf_init(&so->read_buf, 0));
+-                len =3D read(so->fd, BPTR(&so->read_buf), BCAP(&so->read_b=
+uf));
++                ssize_t len =3D read(so->fd, BPTR(&so->read_buf), BCAP(&so=
+->read_buf));
+                 if (len <=3D 0)
+                 {
+                     break;
+                 }
+
+-                ASSERT(buf_inc_len(&so->read_buf, len));
++                ASSERT(buf_inc_len(&so->read_buf, (int)len));
+                 continue;
+             }
+
+@@ -299,7 +292,7 @@
+                 break;
+             }
+
+-            buf_write_u8(buf, c);
++            buf_write_u8(buf, (uint8_t)c);
+         }
+
+         buf_null_terminate(buf);
+@@ -307,7 +300,3 @@
+
+     return ret;
+ }
+-
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
-Gerrit-Change-Number: 1293
-Gerrit-PatchSet: 10
+Gerrit-Change-Id: Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9
+Gerrit-Change-Number: 1485
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---Kuel6SRM3bA=
+--CTtD45hvz9M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld. </p>
-<p>flichtenheld <strong>uploaded patch set #10</strong> to this change.</p>=
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail">View =
-Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">push: Fix conversion issues related=
- to timeout in send_auth_pending_messages<br><br>Add additional checking to=
- make sure that the required<br>casts are safe.<br><br>Change-Id: Icc31b7fa=
-0da86220df45552aecc15dc6c769cd54<br>Signed-off-by: Frank Lichtenheld &lt;fr=
-ank@...2641...&gt;<br>---<br>M src/openvpn/push.c<br>M src/openvpn/ssl_veri=
-fy.c<br>2 files changed, 13 insertions(+), 7 deletions(-)<br><br></pre><pre=
- class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1=
-293/10</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><=
-br><span>index 25df48d..551a5c7 100644</span><br><span>--- a/src/openvpn/pu=
-sh.c</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -429,11 +4=
-29,6 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
-_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> s=
-end_auth_pending_messages(struct tls_multi *tls_multi, struct tls_session *=
-session,</span><br><span>                            const char *extra, uns=
-igned int timeout)</span><br><span>@@ -449,7 +444,12 @@</span><br><span>   =
-  /* Calculate the maximum timeout and subtract the time we already waited =
-*/</span><br><span>     unsigned int max_timeout =3D</span><br><span>      =
-   max_uint(tls_multi-&gt;opt.renegotiate_seconds / 2, tls_multi-&gt;opt.ha=
-ndshake_window);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
-ax_timeout =3D max_timeout - (now - ks-&gt;initial);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    time_t time_elapsed =3D now - ks-&gt;=
-initial;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tim=
-e_elapsed &lt; 0 || time_elapsed &gt;=3D (time_t)max_timeout)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    max_timeout -=3D (unsigned int)time_elapsed;</span><br>=
-<span>     timeout =3D min_uint(max_timeout, timeout);</span><br><span> </s=
-pan><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>@@ -738=
-,6 +738,11 @@</span><br><span>     return true;</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
-d(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static bool<=
-/span><br><span> send_push_options(struct context *c, struct buffer *buf, s=
-truct push_list *push_list, int safe_cap,</span><br><span>                 =
-  bool *push_sent, bool *multi_push)</span><br><span>diff --git a/src/openv=
-pn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>index 0b02a2f..c=
-74d555 100644</span><br><span>--- a/src/openvpn/ssl_verify.c</span><br><spa=
-n>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -911,8 +911,9 @@</span>=
-<br><span>             buf_chomp(iv_buf);</span><br><span>             buf_=
-chomp(extra_buf);</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            errno =3D 0;</span><br><span>             long =
-timeout =3D strtol(BSTR(timeout_buf), NULL, 10);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            if (timeout &lt;=3D 0)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            if (timeout &lt;=3D 0=
- || timeout &gt; UINT_MAX || errno)</span><br><span>             {</span><b=
-r><span>                 msg(M_WARN, &quot;could not parse auth pending fil=
-e timeout&quot;);</span><br><span>                 buffer_list_free(lines);=
-</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1293?usp=3Demail">change 1293</a>. To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
-net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:=
-//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
-ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1293?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">status: Avoid conversion warnings in status=
+_read<br><br>Just use explicit casts. len is limited by BCAP and<br>c is li=
+mited by being from buf_read_u8. So they are<br>safe.<br><br>Change-Id: Iff=
+1343a2f8cc7e32b8f36b359a00248e4dc3e8c9<br>Signed-off-by: Frank Lichtenheld =
+&lt;frank@...2641...&gt;<br>---<br>M src/openvpn/status.c<br>1 file changed=
+, 3 insertions(+), 14 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/85/1485/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/status.c b/src/openvpn/status.c</span><br><span>index 3f5=
+7244..9a1b2fa 100644</span><br><span>--- a/src/openvpn/status.c</span><br><=
+span>+++ b/src/openvpn/status.c</span><br><span>@@ -206,11 +206,6 @@</span>=
+<br><span>     return ret;</span><br><span> }</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(=
+__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC=
+ diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
+ma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span> #define STATUS_PRINTF_MAXLEN 512</span><br>=
+<span> </span><br><span> void</span><br><span>@@ -274,16 +269,14 @@</span><=
+br><span>             /* read more of file into buffer */</span><br><span> =
+            if (c =3D=3D -1)</span><br><span>             {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                int len;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>                 =
+ASSERT(buf_init(&amp;so-&gt;read_buf, 0));</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                len =3D read(so-&gt;fd, BPTR(&amp;so-&=
+gt;read_buf), BCAP(&amp;so-&gt;read_buf));</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                ssize_t len =3D read(so-&gt;fd, BPTR=
+(&amp;so-&gt;read_buf), BCAP(&amp;so-&gt;read_buf));</span><br><span>      =
+           if (len &lt;=3D 0)</span><br><span>                 {</span><br>=
+<span>                     break;</span><br><span>                 }</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+      ASSERT(buf_inc_len(&amp;so-&gt;read_buf, len));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                ASSERT(buf_inc_len(&amp;s=
+o-&gt;read_buf, (int)len));</span><br><span>                 continue;</spa=
+n><br><span>             }</span><br><span> </span><br><span>@@ -299,7 +292=
+,7 @@</span><br><span>                 break;</span><br><span>             =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          buf_write_u8(buf, c);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            buf_write_u8(buf, (uint8_t)c);</span><br><span>    =
+     }</span><br><span> </span><br><span>         buf_null_terminate(buf);<=
+/span><br><span>@@ -307,7 +300,3 @@</span><br><span> </span><br><span>     =
+return ret;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
+__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#endif</span><br><span></span><br></pre><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail">change 148=
+5</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc=
-15dc6c769cd54 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1293 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iff1343a2f8cc7e32b8f36b359a0=
+0248e4dc3e8c9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1485 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---Kuel6SRM3bA=--
+--CTtD45hvz9M=--
 
