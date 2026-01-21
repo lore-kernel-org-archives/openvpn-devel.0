@@ -1,11 +1,16 @@
-Date: Wed, 21 Jan 2026 17:48:26 +0100
-From: Sabrina Dubroca <sd@...2891...>
-Message-ID: <aXEDWpwGYp1V2Tro@...2915...>
-References: <20260119131400.424161-1-ralf@...2726...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 21 Jan 2026 17:15:58 +0000
+In-Reply-To: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
+References: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <6c7d060bfdef00cea726bb8bef10ab815567b925-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-In-Reply-To: <20260119131400.424161-1-ralf@...2726...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn net 1/3] ovpn: set sk_user_data
- before overriding callbacks
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Kuel6SRM3bA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: Fix conversion
+ issues related to timeout in send_auth_pending_m...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,138 +19,224 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Ralf Lici <ralf@...2726...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-2026-01-19, 14:13:58 +0100, Ralf Lici wrote:
-> During initialization, we override some socket callbacks and set
-> sk_user_data to ovpn_sock. Currently these two operations are decoupled:
-> the callbacks are overridden before sk_user_data is set, leaving a
-> potentially ill-formed state while socket ownership is not yet complete.
-> For example, if a packet arrives after ovpn_udp_socket_attach has been
-> called but before ovpn_socket_new finishes, ovpn_udp_encap_recv may be
-> invoked without a configured sk_user_data pointer.
+--Kuel6SRM3bA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since all the callbacks check whether sk_user_data is set before doing
-anything, can you describe the problem?
+Attention is currently required from: cron2, flichtenheld.
 
-> Set sk_user_data before overriding the callbacks so that it can be
-> accessed safely from them. Since we already check that the socket has no
-> sk_user_data before setting it, this remains safe even if an interrupt
-> accesses the socket after sk_user_data is set but before the callbacks
-> are overridden.
+Hello cron2, plaisthos,
 
-A Fixes: tag would be good to add here. (probably f6226ae7a0cd ("ovpn:
-introduce the ovpn_socket object"), don't worry too much about which
-exact patch within the initial series is best)
+I'd like you to reexamine a change. Please visit
 
-> Signed-off-by: Ralf Lici <ralf@...2726...>
-> ---
->  drivers/net/ovpn/socket.c | 38 +++++++++++++++++++++-----------------
->  drivers/net/ovpn/tcp.c    |  1 +
->  drivers/net/ovpn/udp.c    |  1 +
->  3 files changed, 23 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-> index 9750871ab65c..053b8abe5619 100644
-> --- a/drivers/net/ovpn/socket.c
-> +++ b/drivers/net/ovpn/socket.c
-> @@ -200,6 +200,22 @@ struct ovpn_socket *ovpn_socket_new(struct socket *sock, struct ovpn_peer *peer)
->  	ovpn_sock->sk = sk;
->  	kref_init(&ovpn_sock->refcount);
->  
-> +	/* TCP sockets are per-peer, therefore they are linked to their unique
-> +	 * peer
-> +	 */
-> +	if (sk->sk_protocol == IPPROTO_TCP) {
-> +		INIT_WORK(&ovpn_sock->tcp_tx_work, ovpn_tcp_tx_work);
-> +		ovpn_sock->peer = peer;
-> +		ovpn_peer_hold(peer);
-> +	} else if (sk->sk_protocol == IPPROTO_UDP) {
-> +		/* in UDP we only link the ovpn instance since the socket is
-> +		 * shared among multiple peers
-> +		 */
-> +		ovpn_sock->ovpn = peer->ovpn;
-> +		netdev_hold(peer->ovpn->dev, &ovpn_sock->dev_tracker,
-> +			    GFP_KERNEL);
-> +	}
-> +
+    http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
 
-Can you add a few words in the commit message to describe why this
-needs to be moved?
+to look at the new patch set (#10).
 
->  	/* the newly created ovpn_socket is holding reference to sk,
->  	 * therefore we increase its refcounter.
->  	 *
-> @@ -212,29 +228,17 @@ struct ovpn_socket *ovpn_socket_new(struct socket *sock, struct ovpn_peer *peer)
->  
->  	ret = ovpn_socket_attach(ovpn_sock, sock, peer);
->  	if (ret < 0) {
-> +		if (sk->sk_protocol == IPPROTO_TCP)
-> +			ovpn_peer_put(peer);
-> +		else if (sk->sk_protocol == IPPROTO_UDP)
-> +			netdev_put(peer->ovpn->dev, &ovpn_sock->dev_tracker);
-> +
->  		sock_put(sk);
->  		kfree(ovpn_sock);
->  		ovpn_sock = ERR_PTR(ret);
->  		goto sock_release;
->  	}
->  
-> -	/* TCP sockets are per-peer, therefore they are linked to their unique
-> -	 * peer
-> -	 */
-> -	if (sk->sk_protocol == IPPROTO_TCP) {
-> -		INIT_WORK(&ovpn_sock->tcp_tx_work, ovpn_tcp_tx_work);
-> -		ovpn_sock->peer = peer;
-> -		ovpn_peer_hold(peer);
-> -	} else if (sk->sk_protocol == IPPROTO_UDP) {
-> -		/* in UDP we only link the ovpn instance since the socket is
-> -		 * shared among multiple peers
-> -		 */
-> -		ovpn_sock->ovpn = peer->ovpn;
-> -		netdev_hold(peer->ovpn->dev, &ovpn_sock->dev_tracker,
-> -			    GFP_KERNEL);
-> -	}
-> -
-> -	rcu_assign_sk_user_data(sk, ovpn_sock);
->  sock_release:
->  	release_sock(sk);
->  	return ovpn_sock;
-> diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-> index 0d7f30360d87..e078f9b39122 100644
-> --- a/drivers/net/ovpn/tcp.c
-> +++ b/drivers/net/ovpn/tcp.c
-> @@ -487,6 +487,7 @@ int ovpn_tcp_socket_attach(struct ovpn_socket *ovpn_sock,
->  	/* make sure no pre-existing encapsulation handler exists */
->  	if (ovpn_sock->sk->sk_user_data)
->  		return -EBUSY;
-> +	rcu_assign_sk_user_data(ovpn_sock->sk, ovpn_sock);
+The following approvals got outdated and were removed:
+Code-Review-1 by cron2
 
-And reset sk_user_data to NULL in the error cases that can happen
-later in ovpn_tcp_socket_attach?
 
->  	/* only a fully connected socket is expected. Connection should be
->  	 * handled in userspace
-> diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-> index d6a0f7a0b75d..272b535ecaad 100644
-> --- a/drivers/net/ovpn/udp.c
-> +++ b/drivers/net/ovpn/udp.c
-> @@ -386,6 +386,7 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
->  			   struct ovpn_priv *ovpn)
->  {
->  	struct udp_tunnel_sock_cfg cfg = {
-> +		.sk_user_data = ovpn_sock,
->  		.encap_type = UDP_ENCAP_OVPNINUDP,
->  		.encap_rcv = ovpn_udp_encap_recv,
->  		.encap_destroy = ovpn_udp_encap_destroy,
-> -- 
-> 2.52.0
-> 
+Change subject: push: Fix conversion issues related to timeout in send_auth=
+_pending_messages
+......................................................................
 
--- 
-Sabrina
+push: Fix conversion issues related to timeout in send_auth_pending_messages
+
+Add additional checking to make sure that the required
+casts are safe.
+
+Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/push.c
+M src/openvpn/ssl_verify.c
+2 files changed, 13 insertions(+), 7 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1293/10
+
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 25df48d..551a5c7 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -429,11 +429,6 @@
+     gc_free(&gc);
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ bool
+ send_auth_pending_messages(struct tls_multi *tls_multi, struct tls_session=
+ *session,
+                            const char *extra, unsigned int timeout)
+@@ -449,7 +444,12 @@
+     /* Calculate the maximum timeout and subtract the time we already wait=
+ed */
+     unsigned int max_timeout =3D
+         max_uint(tls_multi->opt.renegotiate_seconds / 2, tls_multi->opt.ha=
+ndshake_window);
+-    max_timeout =3D max_timeout - (now - ks->initial);
++    time_t time_elapsed =3D now - ks->initial;
++    if (time_elapsed < 0 || time_elapsed >=3D (time_t)max_timeout)
++    {
++        return false;
++    }
++    max_timeout -=3D (unsigned int)time_elapsed;
+     timeout =3D min_uint(max_timeout, timeout);
+
+     struct gc_arena gc =3D gc_new();
+@@ -738,6 +738,11 @@
+     return true;
+ }
+
++#if defined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++
+ static bool
+ send_push_options(struct context *c, struct buffer *buf, struct push_list =
+*push_list, int safe_cap,
+                   bool *push_sent, bool *multi_push)
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 0b02a2f..c74d555 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -911,8 +911,9 @@
+             buf_chomp(iv_buf);
+             buf_chomp(extra_buf);
+
++            errno =3D 0;
+             long timeout =3D strtol(BSTR(timeout_buf), NULL, 10);
+-            if (timeout <=3D 0)
++            if (timeout <=3D 0 || timeout > UINT_MAX || errno)
+             {
+                 msg(M_WARN, "could not parse auth pending file timeout");
+                 buffer_list_free(lines);
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
+Gerrit-Change-Number: 1293
+Gerrit-PatchSet: 10
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--Kuel6SRM3bA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: cron2, flichtenheld. </p>
+<p>flichtenheld <strong>uploaded patch set #10</strong> to this change.</p>=
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1293?usp=3Demail">View =
+Change</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">push: Fix conversion issues related=
+ to timeout in send_auth_pending_messages<br><br>Add additional checking to=
+ make sure that the required<br>casts are safe.<br><br>Change-Id: Icc31b7fa=
+0da86220df45552aecc15dc6c769cd54<br>Signed-off-by: Frank Lichtenheld &lt;fr=
+ank@...2641...&gt;<br>---<br>M src/openvpn/push.c<br>M src/openvpn/ssl_veri=
+fy.c<br>2 files changed, 13 insertions(+), 7 deletions(-)<br><br></pre><pre=
+ class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1=
+293/10</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><=
+br><span>index 25df48d..551a5c7 100644</span><br><span>--- a/src/openvpn/pu=
+sh.c</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -429,11 +4=
+29,6 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
+_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> s=
+end_auth_pending_messages(struct tls_multi *tls_multi, struct tls_session *=
+session,</span><br><span>                            const char *extra, uns=
+igned int timeout)</span><br><span>@@ -449,7 +444,12 @@</span><br><span>   =
+  /* Calculate the maximum timeout and subtract the time we already waited =
+*/</span><br><span>     unsigned int max_timeout =3D</span><br><span>      =
+   max_uint(tls_multi-&gt;opt.renegotiate_seconds / 2, tls_multi-&gt;opt.ha=
+ndshake_window);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
+ax_timeout =3D max_timeout - (now - ks-&gt;initial);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    time_t time_elapsed =3D now - ks-&gt;=
+initial;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tim=
+e_elapsed &lt; 0 || time_elapsed &gt;=3D (time_t)max_timeout)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    max_timeout -=3D (unsigned int)time_elapsed;</span><br>=
+<span>     timeout =3D min_uint(max_timeout, timeout);</span><br><span> </s=
+pan><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>@@ -738=
+,6 +738,11 @@</span><br><span>     return true;</span><br><span> }</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if define=
+d(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static bool<=
+/span><br><span> send_push_options(struct context *c, struct buffer *buf, s=
+truct push_list *push_list, int safe_cap,</span><br><span>                 =
+  bool *push_sent, bool *multi_push)</span><br><span>diff --git a/src/openv=
+pn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>index 0b02a2f..c=
+74d555 100644</span><br><span>--- a/src/openvpn/ssl_verify.c</span><br><spa=
+n>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -911,8 +911,9 @@</span>=
+<br><span>             buf_chomp(iv_buf);</span><br><span>             buf_=
+chomp(extra_buf);</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            errno =3D 0;</span><br><span>             long =
+timeout =3D strtol(BSTR(timeout_buf), NULL, 10);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            if (timeout &lt;=3D 0)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (timeout &lt;=3D 0=
+ || timeout &gt; UINT_MAX || errno)</span><br><span>             {</span><b=
+r><span>                 msg(M_WARN, &quot;could not parse auth pending fil=
+e timeout&quot;);</span><br><span>                 buffer_list_free(lines);=
+</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/1293?usp=3Demail">change 1293</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1293?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icc31b7fa0da86220df45552aecc=
+15dc6c769cd54 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1293 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--Kuel6SRM3bA=--
 
