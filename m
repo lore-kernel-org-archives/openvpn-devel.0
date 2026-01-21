@@ -1,15 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 21 Jan 2026 14:30:01 +0000
-References: <gerrit.1769005798000.I575d65912ce9065a0b0868e73998b4a9aece62af@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <d6e22260461a867b03a51880dbef1a4ab13ed9ca-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------qWke3g0qhgg6fHgEi5U0GbxE"
+Message-ID: <fb52a434-7619-479b-bb2f-76a923e22cbe@...2722...>
+Date: Wed, 21 Jan 2026 20:41:18 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EGGS92ykTfI="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: manage: Do not
- trigger actions on management disconnect if not authen...
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,154 +14,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---EGGS92ykTfI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------qWke3g0qhgg6fHgEi5U0GbxE
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: plaisthos.
+Meeting summary for 21 January 2026:
 
-Hello plaisthos,
+  *
 
-I'd like you to do a code review.
-Please visit
+    *Updated: community meetup 2026*
+    When: exact date to be determined, a poll will be sent out to
+    regular members. Roughly in september/october timeframe.
+    Dates can be entered
+    here:https://nuudel.digitalcourage.de/VnbRxE6iKdWECLbW
+    Where: Tentatively in Paderborn, Germany.
+    Meeting room:
+    Potentiallyhttps://www.welcome-hotels.com/en/hotels/paderborn/events/
+    Beer: recommendation against local paderborner beer, although it is
+    cheap.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1484?usp=3Demail
+  *
 
-to review the following change.
+    *Updated: Release 2.7*
+    OpenVPN 2.7rc5 was released 15 January.
+    The stable release 2.7.0 is currently planned for 28 January.
+    Possible caveat - we did receive a security report very recently
+    that hasn't been evaluated yet, so it might delay the release a bit
+    if it's real.
 
+  *
 
-Change subject: manage: Do not trigger actions on management disconnect if =
-not authenticated
-......................................................................
+    *Updated: mbedtls support*
+    The plan is to get to mbedtls4 implementation in OpenVPN 2.7 in some
+    version after 2.7.0.
+    In ongoing work MaxF reports that --dh is not possible/needed with
+    mbedtls, so will come up with some solution for users with configs
+    that have it.
 
-manage: Do not trigger actions on management disconnect if not authenticated
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-If the management interface requires authentication via password
-and the remote did not specify it, do not do trigger actions
-requested by --management-forget-disconnect and --management-signal
-on disconnect.
+Kind regards,
+Johan Draaisma
 
-Reported-By: Joshua Rogers <contact@...2949...>
-Found-By: ZeroPath (https://zeropath.com)
-Github: openvpn-private-issues#5
-Change-Id: I575d65912ce9065a0b0868e73998b4a9aece62af
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/manage.c
-1 file changed, 3 insertions(+), 2 deletions(-)
+--------------qWke3g0qhgg6fHgEi5U0GbxE
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 21 January 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            community meetup 2026</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          When: exact date to be determined, a poll will be sent out to
+          regular members. Roughly in september/october timeframe.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Dates can be entered here:<span> </span><a
+            href="https://nuudel.digitalcourage.de/VnbRxE6iKdWECLbW"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://nuudel.digitalcourage.de/VnbRxE6iKdWECLbW</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Where: Tentatively in Paderborn, Germany.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Meeting room: Potentially<span> </span><a
+href="https://www.welcome-hotels.com/en/hotels/paderborn/events/"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://www.welcome-hotels.com/en/hotels/paderborn/events/</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Beer: recommendation against local paderborner beer, although
+          it is cheap.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          OpenVPN 2.7rc5 was released 15 January.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The stable release 2.7.0 is currently planned for 28 January.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Possible caveat - we did receive a security report very
+          recently that hasn't been evaluated yet, so it might delay the
+          release a bit if it's real.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            mbedtls support</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The plan is to get to mbedtls4 implementation in OpenVPN 2.7
+          in some version after 2.7.0.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          In ongoing work MaxF reports that --dh is not possible/needed
+          with mbedtls, so will come up with some solution for users
+          with configs that have it.</p>
+      </li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/84/1484/1
-
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 8fa8784..37ae6b3 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2073,13 +2073,14 @@
-     }
-     if (!exiting)
-     {
--        if (man->settings.flags & MF_FORGET_DISCONNECT)
-+        if (man->settings.flags & MF_FORGET_DISCONNECT && !man_password_ne=
-eded(man))
-         {
-+            msg(D_MANAGEMENT, "MANAGEMENT: Reset authentication on disconn=
-ect");
-             ssl_purge_auth(false);
-             (void)ssl_clean_auth_token();
-         }
-
--        if (man->settings.flags & MF_SIGNAL)
-+        if (man->settings.flags & MF_SIGNAL && !man_password_needed(man))
-         {
-             int mysig =3D man_mod_signal(man, SIGUSR1);
-             if (mysig >=3D 0)
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1484?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I575d65912ce9065a0b0868e73998b4a9aece62af
-Gerrit-Change-Number: 1484
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-
---EGGS92ykTfI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1484?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">manage: Do not trigger actions on managemen=
-t disconnect if not authenticated<br><br>If the management interface requir=
-es authentication via password<br>and the remote did not specify it, do not=
- do trigger actions<br>requested by --management-forget-disconnect and --ma=
-nagement-signal<br>on disconnect.<br><br>Reported-By: Joshua Rogers &lt;con=
-tact@...2949...&gt;<br>Found-By: ZeroPath (https://zeropath.com)<br>Github:=
- openvpn-private-issues#5<br>Change-Id: I575d65912ce9065a0b0868e73998b4a9ae=
-ce62af<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<=
-br>M src/openvpn/manage.c<br>1 file changed, 3 insertions(+), 2 deletions(-=
-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
-n refs/changes/84/1484/1</pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/manage.c b/src/op=
-envpn/manage.c</span><br><span>index 8fa8784..37ae6b3 100644</span><br><spa=
-n>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</sp=
-an><br><span>@@ -2073,13 +2073,14 @@</span><br><span>     }</span><br><span=
->     if (!exiting)</span><br><span>     {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        if (man-&gt;settings.flags &amp; MF_FORGET_DIS=
-CONNECT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
-(man-&gt;settings.flags &amp; MF_FORGET_DISCONNECT &amp;&amp; !man_password=
-_needed(man))</span><br><span>         {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            msg(D_MANAGEMENT, &quot;MANAGEMENT: Reset =
-authentication on disconnect&quot;);</span><br><span>             ssl_purge=
-_auth(false);</span><br><span>             (void)ssl_clean_auth_token();</s=
-pan><br><span>         }</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        if (man-&gt;settings.flags &amp; MF_SIGNAL)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (man-&gt;se=
-ttings.flags &amp; MF_SIGNAL &amp;&amp; !man_password_needed(man))</span><b=
-r><span>         {</span><br><span>             int mysig =3D man_mod_signa=
-l(man, SIGUSR1);</span><br><span>             if (mysig &gt;=3D 0)</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1484?usp=3Demail">change 1484</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1484?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I575d65912ce9065a0b0868e7399=
-8b4a9aece62af </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1484 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-
-</body></html>=
-
---EGGS92ykTfI=--
+--------------qWke3g0qhgg6fHgEi5U0GbxE--
 
