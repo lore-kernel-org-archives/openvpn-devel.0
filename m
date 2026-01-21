@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 21 Jan 2026 13:18:30 +0100
-Message-ID: <20260121121830.27244-1-frank@...2641...>
-In-Reply-To: <gerrit.1760441635000.I54b11a5540fb236580a3b80c6d1e8678b24bd852@...2715...>
-References: <gerrit.1760441635000.I54b11a5540fb236580a3b80c6d1e8678b24bd852@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 21 Jan 2026 12:24:46 +0000
+In-Reply-To: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+References: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <62ed183c82425f42f1081e6ed048a525b2eeee06-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Silence compiler truncation warning by
- checking snprintf return value
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="NMfgNamsLEs="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Merge
+ stream_buf_get_next and stream_buf_set_next
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +19,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--NMfgNamsLEs=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On the more recent mingw compilers (homebrew mingw 13.0.0, GCC 15.2.0) the
-compiler complains about a potential truncation in these two places.
+Attention is currently required from: plaisthos.
 
-  src/openvpn/tun.c:3806:57:
-  error: '%s' directive output may be truncated writing up
-  to 255 bytes into a region of size 178
-  [-Werror=format-truncation=]
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1477?usp=3Demail )
 
-This not very helpful but checking the snprintf return value
-will make the compiler not warn about this.
+Change subject: Merge stream_buf_get_next and stream_buf_set_next
+......................................................................
 
-Change-Id: I54b11a5540fb236580a3b80c6d1e8678b24bd852
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1272
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 3:
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1272
-This mail reflects revision 4 of this Change.
+(1 comment)
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+File src/openvpn/socket.c:
 
-        
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 0399b4a..e38df3e 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3558,7 +3558,13 @@
-             msg(M_FATAL, "Error enumerating registry subkeys of key: %s", ADAPTER_KEY);
-         }
- 
--        snprintf(unit_string, sizeof(unit_string), "%s\\%s", ADAPTER_KEY, enum_name);
-+        int ret = snprintf(unit_string, sizeof(unit_string), "%s\\%s", ADAPTER_KEY, enum_name);
-+
-+        if (ret < 0 || ret >= sizeof(unit_string))
-+        {
-+            msg(M_WARN, "Error constructing unit string for %s", enum_name);
-+            continue;
-+        }
- 
-         status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, unit_string, 0, KEY_READ, &unit_key);
- 
-@@ -3667,8 +3673,15 @@
-             msg(M_FATAL, "Error enumerating registry subkeys of key: %s", NETWORK_CONNECTIONS_KEY);
-         }
- 
--        snprintf(connection_string, sizeof(connection_string), "%s\\%s\\Connection",
--                 NETWORK_CONNECTIONS_KEY, enum_name);
-+        int ret = snprintf(connection_string, sizeof(connection_string), "%s\\%s\\Connection",
-+                           NETWORK_CONNECTIONS_KEY, enum_name);
-+
-+        if (ret < 0 || ret >= sizeof(connection_string))
-+        {
-+            msg(M_WARN, "Error constructing connection string for %s", enum_name);
-+            continue;
-+        }
-+
- 
-         status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, connection_string, 0, KEY_READ, &connection_key);
- 
+http://gerrit.openvpn.net/c/openvpn/+/1477/comment/ed6fb644_c5d3eb95?usp=3D=
+email :
+PS3, Line 2070:  * But still leaves the current packet in sb->buf to be pot=
+entially
+Will not report all individual occurrences but all instances of something l=
+ike this could use a `\c` or `\p` so that this is formatted as code. Would =
+make it easier to read I think.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
+Gerrit-Change-Number: 1477
+Gerrit-PatchSet: 3
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 21 Jan 2026 12:24:46 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+
+--NMfgNamsLEs=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1477/comment/ed6fb644_c5d3eb95?usp=3Demail">Patch Set #3, =
+Line 2070:</a> <code style=3D"font-family:monospace,monospace"> * But still=
+ leaves the current packet in sb-&gt;buf to be potentially</code></p><p cla=
+ss=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Will =
+not report all individual occurrences but all instances of something like t=
+his could use a `\c` or `\p` so that this is formatted as code. Would make =
+it easier to read I think.</p></li></ul></li></ul><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">change 1477</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e1798=
+65e3dbd0dbfbc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1477 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 21 Jan 2026 12:24:46=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+
+</body></html>=
+
+--NMfgNamsLEs=--
 
