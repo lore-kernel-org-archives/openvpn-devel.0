@@ -1,12 +1,10 @@
-Message-ID: <9b8571ef18c4f2dc1e1b5d166e0206c48dcb914d.camel@...2726...>
-From: Ralf Lici <ralf@...2726...>
-Date: Thu, 22 Jan 2026 13:39:21 +0100
-In-Reply-To: <aXEDWpwGYp1V2Tro@...2915...>
-References: <20260119131400.424161-1-ralf@...2726...>
- <aXEDWpwGYp1V2Tro@...2915...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Thu, 22 Jan 2026 14:30:50 +0100
+Message-ID: <20260122133050.117000-1-frank@...2641...>
+In-Reply-To: <gerrit.1768911679000.Idbb5c0fff759a2e645a8b4f62266509e32e3a44e@...2715...>
+References: <gerrit.1768911679000.Idbb5c0fff759a2e645a8b4f62266509e32e3a44e@...2715...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH ovpn net 1/3] ovpn: set sk_user_data
- before overriding callbacks
+Subject: [Openvpn-devel] [PATCH v3] route: Fix conversion warnings on BSDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,160 +13,267 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Sabrina Dubroca <sd@...2891...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne-openvpn@...1227...>
 
-On Wed, 2026-01-21 at 17:48 +0100, Sabrina Dubroca wrote:
-> 2026-01-19, 14:13:58 +0100, Ralf Lici wrote:
-> > During initialization, we override some socket callbacks and set
-> > sk_user_data to ovpn_sock. Currently these two operations are
-> > decoupled:
-> > the callbacks are overridden before sk_user_data is set, leaving a
-> > potentially ill-formed state while socket ownership is not yet
-> > complete.
-> > For example, if a packet arrives after ovpn_udp_socket_attach has
-> > been
-> > called but before ovpn_socket_new finishes, ovpn_udp_encap_recv may
-> > be
-> > invoked without a configured sk_user_data pointer.
->=20
-> Since all the callbacks check whether sk_user_data is set before doing
-> anything, can you describe the problem?
+Mostly just use better types. And in
+some places remove overloading of
+variables with nicer C11 code.
 
-True, but if we receive UDP traffic before the socket setup is
-completed, we get some net_err_ratelimited messages in the logs. While
-this is not necessarily a real bug, setting user_data before the
-callbacks ensures we do not hit this situation and avoids polluting the
-logs. This should also be safe, since no other user is "owning" the
-socket at that point.
+Change-Id: Idbb5c0fff759a2e645a8b4f62266509e32e3a44e
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1481
+---
 
-I will update the commit message with this info.
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-> > Set sk_user_data before overriding the callbacks so that it can be
-> > accessed safely from them. Since we already check that the socket
-> > has no
-> > sk_user_data before setting it, this remains safe even if an
-> > interrupt
-> > accesses the socket after sk_user_data is set but before the
-> > callbacks
-> > are overridden.
->=20
-> A Fixes: tag would be good to add here. (probably f6226ae7a0cd ("ovpn:
-> introduce the ovpn_socket object"), don't worry too much about which
-> exact patch within the initial series is best)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1481
+This mail reflects revision 3 of this Change.
 
-Sure, I'll add it.
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-> > Signed-off-by: Ralf Lici <ralf@...2726...>
-> > ---
-> > =C2=A0drivers/net/ovpn/socket.c | 38 +++++++++++++++++++++-------------=
---
-> > --
-> > =C2=A0drivers/net/ovpn/tcp.c=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
-> > =C2=A0drivers/net/ovpn/udp.c=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
-> > =C2=A03 files changed, 23 insertions(+), 17 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-> > index 9750871ab65c..053b8abe5619 100644
-> > --- a/drivers/net/ovpn/socket.c
-> > +++ b/drivers/net/ovpn/socket.c
-> > @@ -200,6 +200,22 @@ struct ovpn_socket *ovpn_socket_new(struct
-> > socket *sock, struct ovpn_peer *peer)
-> > =C2=A0	ovpn_sock->sk =3D sk;
-> > =C2=A0	kref_init(&ovpn_sock->refcount);
-> > =C2=A0
-> > +	/* TCP sockets are per-peer, therefore they are linked to
-> > their unique
-> > +	 * peer
-> > +	 */
-> > +	if (sk->sk_protocol =3D=3D IPPROTO_TCP) {
-> > +		INIT_WORK(&ovpn_sock->tcp_tx_work,
-> > ovpn_tcp_tx_work);
-> > +		ovpn_sock->peer =3D peer;
-> > +		ovpn_peer_hold(peer);
-> > +	} else if (sk->sk_protocol =3D=3D IPPROTO_UDP) {
-> > +		/* in UDP we only link the ovpn instance since the
-> > socket is
-> > +		 * shared among multiple peers
-> > +		 */
-> > +		ovpn_sock->ovpn =3D peer->ovpn;
-> > +		netdev_hold(peer->ovpn->dev, &ovpn_sock-
-> > >dev_tracker,
-> > +			=C2=A0=C2=A0=C2=A0 GFP_KERNEL);
-> > +	}
-> > +
->=20
-> Can you add a few words in the commit message to describe why this
-> needs to be moved?
-
-Of course, I'll specify why this was moved.
-
-> > =C2=A0	/* the newly created ovpn_socket is holding reference to
-> > sk,
-> > =C2=A0	 * therefore we increase its refcounter.
-> > =C2=A0	 *
-> > @@ -212,29 +228,17 @@ struct ovpn_socket *ovpn_socket_new(struct
-> > socket *sock, struct ovpn_peer *peer)
-> > =C2=A0
-> > =C2=A0	ret =3D ovpn_socket_attach(ovpn_sock, sock, peer);
-> > =C2=A0	if (ret < 0) {
-> > +		if (sk->sk_protocol =3D=3D IPPROTO_TCP)
-> > +			ovpn_peer_put(peer);
-> > +		else if (sk->sk_protocol =3D=3D IPPROTO_UDP)
-> > +			netdev_put(peer->ovpn->dev, &ovpn_sock-
-> > >dev_tracker);
-> > +
-> > =C2=A0		sock_put(sk);
-> > =C2=A0		kfree(ovpn_sock);
-> > =C2=A0		ovpn_sock =3D ERR_PTR(ret);
-> > =C2=A0		goto sock_release;
-> > =C2=A0	}
-> > =C2=A0
-> > -	/* TCP sockets are per-peer, therefore they are linked to
-> > their unique
-> > -	 * peer
-> > -	 */
-> > -	if (sk->sk_protocol =3D=3D IPPROTO_TCP) {
-> > -		INIT_WORK(&ovpn_sock->tcp_tx_work,
-> > ovpn_tcp_tx_work);
-> > -		ovpn_sock->peer =3D peer;
-> > -		ovpn_peer_hold(peer);
-> > -	} else if (sk->sk_protocol =3D=3D IPPROTO_UDP) {
-> > -		/* in UDP we only link the ovpn instance since the
-> > socket is
-> > -		 * shared among multiple peers
-> > -		 */
-> > -		ovpn_sock->ovpn =3D peer->ovpn;
-> > -		netdev_hold(peer->ovpn->dev, &ovpn_sock-
-> > >dev_tracker,
-> > -			=C2=A0=C2=A0=C2=A0 GFP_KERNEL);
-> > -	}
-> > -
-> > -	rcu_assign_sk_user_data(sk, ovpn_sock);
-> > =C2=A0sock_release:
-> > =C2=A0	release_sock(sk);
-> > =C2=A0	return ovpn_sock;
-> > diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-> > index 0d7f30360d87..e078f9b39122 100644
-> > --- a/drivers/net/ovpn/tcp.c
-> > +++ b/drivers/net/ovpn/tcp.c
-> > @@ -487,6 +487,7 @@ int ovpn_tcp_socket_attach(struct ovpn_socket
-> > *ovpn_sock,
-> > =C2=A0	/* make sure no pre-existing encapsulation handler exists
-> > */
-> > =C2=A0	if (ovpn_sock->sk->sk_user_data)
-> > =C2=A0		return -EBUSY;
-> > +	rcu_assign_sk_user_data(ovpn_sock->sk, ovpn_sock);
->=20
-> And reset sk_user_data to NULL in the error cases that can happen
-> later in ovpn_tcp_socket_attach?
-
-Right, will fix.
->=20
-
---=20
-Ralf Lici
-Mandelbit Srl
+        
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d90c84b..93f61a1 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1762,11 +1762,6 @@
+     return (status != RTA_ERROR);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ void
+ route_ipv6_clear_host_bits(struct route_ipv6 *r6)
+ {
+@@ -1833,7 +1828,7 @@
+     if (r6->iface != NULL && gateway_needed
+         && IN6_IS_ADDR_LINKLOCAL(&r6->gateway)) /* fe80::...%intf */
+     {
+-        int len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
++        size_t len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
+         char *tmp = gc_malloc(len, true, &gc);
+         snprintf(tmp, len, "%s%%%s", gateway, r6->iface);
+         gateway = tmp;
+@@ -2253,7 +2248,7 @@
+     if (r6->iface != NULL && gateway_needed
+         && IN6_IS_ADDR_LINKLOCAL(&r6->gateway)) /* fe80::...%intf */
+     {
+-        int len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
++        size_t len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
+         char *tmp = gc_malloc(len, true, &gc);
+         snprintf(tmp, len, "%s%%%s", gateway, r6->iface);
+         gateway = tmp;
+@@ -2374,10 +2369,6 @@
+     net_ctx_reset(ctx);
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ /*
+  * The --redirect-gateway option requires OS-specific code below
+  * to get the current default gateway.
+@@ -3354,19 +3345,19 @@
+ #define NEXTADDR(w, u)        \
+     if (rtm_addrs & (w))      \
+     {                         \
+-        l = sizeof(u);        \
++        size_t l = sizeof(u); \
+         memmove(cp, &(u), l); \
+         cp += ROUNDUP(l);     \
+     }
+ 
+ #define ADVANCE(x, n) (x += ROUNDUP(sizeof(struct sockaddr_in)))
+ #else /* if defined(TARGET_SOLARIS) */
+-#define NEXTADDR(w, u)                         \
+-    if (rtm_addrs & (w))                       \
+-    {                                          \
+-        l = ((struct sockaddr *)&(u))->sa_len; \
+-        memmove(cp, &(u), l);                  \
+-        cp += ROUNDUP(l);                      \
++#define NEXTADDR(w, u)                                \
++    if (rtm_addrs & (w))                              \
++    {                                                 \
++        size_t l = ((struct sockaddr *)&(u))->sa_len; \
++        memmove(cp, &(u), l);                         \
++        cp += ROUNDUP(l);                             \
+     }
+ 
+ #define ADVANCE(x, n) (x += ROUNDUP((n)->sa_len))
+@@ -3374,19 +3365,13 @@
+ 
+ #define max(a, b) ((a) > (b) ? (a) : (b))
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ void
+ get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)
+ {
+     struct gc_arena gc = gc_new();
+     struct rtmsg m_rtmsg;
+     int sockfd = -1;
+-    int seq, l, pid, rtm_addrs;
+-    unsigned int i;
++    int rtm_addrs;
+     struct sockaddr so_dst, so_mask;
+     char *cp = m_rtmsg.m_space;
+     struct sockaddr *gate = NULL, *ifp = NULL, *sa;
+@@ -3397,8 +3382,8 @@
+     CLEAR(*rgi);
+ 
+     /* setup data to send to routing socket */
+-    pid = getpid();
+-    seq = 0;
++    const int pid = getpid();
++    int seq = 0;
+ #ifdef TARGET_OPENBSD
+     rtm_addrs = RTA_DST | RTA_NETMASK; /* Kernel refuses RTA_IFP */
+ #else
+@@ -3415,7 +3400,7 @@
+     rtm.rtm_version = RTM_VERSION;
+     rtm.rtm_seq = ++seq;
+ #ifdef TARGET_OPENBSD
+-    rtm.rtm_tableid = getrtable();
++    rtm.rtm_tableid = (u_short)getrtable();
+ #endif
+     rtm.rtm_addrs = rtm_addrs;
+ 
+@@ -3430,7 +3415,8 @@
+     NEXTADDR(RTA_DST, so_dst);
+     NEXTADDR(RTA_NETMASK, so_mask);
+ 
+-    rtm.rtm_msglen = l = cp - (char *)&m_rtmsg;
++    /* sizeof(struct rt_msghdr) + padding */
++    rtm.rtm_msglen = (u_short)(cp - (char *)&m_rtmsg);
+ 
+     /* transact with routing socket */
+     sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
+@@ -3439,24 +3425,25 @@
+         msg(M_WARN, "GDG: socket #1 failed");
+         goto done;
+     }
+-    if (write(sockfd, (char *)&m_rtmsg, l) < 0)
++    if (write(sockfd, (char *)&m_rtmsg, rtm.rtm_msglen) < 0)
+     {
+         msg(M_WARN | M_ERRNO, "GDG: problem writing to routing socket");
+         goto done;
+     }
++    ssize_t ret;
+     do
+     {
+-        l = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
+-    } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
++        ret = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
++    } while (ret > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
+     close(sockfd);
+     sockfd = -1;
+ 
+     /* extract return data from routing socket */
+     rtm_aux = &rtm;
+-    cp = ((char *)(rtm_aux + 1));
++    cp = (char *)(rtm_aux + 1);
+     if (rtm_aux->rtm_addrs)
+     {
+-        for (i = 1; i; i <<= 1)
++        for (unsigned int i = 1; i; i <<= 1)
+         {
+             if (i & rtm_aux->rtm_addrs)
+             {
+@@ -3604,8 +3591,7 @@
+ {
+     struct rtmsg m_rtmsg;
+     int sockfd = -1;
+-    int seq, l, pid, rtm_addrs;
+-    unsigned int i;
++    int rtm_addrs;
+     struct sockaddr_in6 so_dst, so_mask;
+     char *cp = m_rtmsg.m_space;
+     struct sockaddr *gate = NULL, *ifp = NULL, *sa;
+@@ -3614,8 +3600,8 @@
+     CLEAR(*rgi6);
+ 
+     /* setup data to send to routing socket */
+-    pid = getpid();
+-    seq = 0;
++    const int pid = getpid();
++    int seq = 0;
+ #ifdef TARGET_OPENBSD
+     rtm_addrs = RTA_DST | RTA_NETMASK; /* Kernel refuses RTA_IFP */
+ #else
+@@ -3632,7 +3618,7 @@
+     rtm.rtm_version = RTM_VERSION;
+     rtm.rtm_seq = ++seq;
+ #ifdef TARGET_OPENBSD
+-    rtm.rtm_tableid = getrtable();
++    rtm.rtm_tableid = (u_short)getrtable();
+ #endif
+ 
+     so_dst.sin6_family = AF_INET6;
+@@ -3656,7 +3642,8 @@
+     NEXTADDR(RTA_DST, so_dst);
+     NEXTADDR(RTA_NETMASK, so_mask);
+ 
+-    rtm.rtm_msglen = l = cp - (char *)&m_rtmsg;
++    /* sizeof(struct rt_msghdr) + padding */
++    rtm.rtm_msglen = (u_short)(cp - (char *)&m_rtmsg);
+ 
+     /* transact with routing socket */
+     sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
+@@ -3665,26 +3652,26 @@
+         msg(M_WARN, "GDG6: socket #1 failed");
+         goto done;
+     }
+-    if (write(sockfd, (char *)&m_rtmsg, l) < 0)
++    if (write(sockfd, (char *)&m_rtmsg, rtm.rtm_msglen) < 0)
+     {
+         msg(M_WARN | M_ERRNO, "GDG6: problem writing to routing socket");
+         goto done;
+     }
+-
++    ssize_t ret;
+     do
+     {
+-        l = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
+-    } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
++        ret = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
++    } while (ret > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
+ 
+     close(sockfd);
+     sockfd = -1;
+ 
+     /* extract return data from routing socket */
+     rtm_aux = &rtm;
+-    cp = ((char *)(rtm_aux + 1));
++    cp = (char *)(rtm_aux + 1);
+     if (rtm_aux->rtm_addrs)
+     {
+-        for (i = 1; i; i <<= 1)
++        for (unsigned int i = 1; i; i <<= 1)
+         {
+             if (i & rtm_aux->rtm_addrs)
+             {
+@@ -3752,10 +3739,6 @@
+     }
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #undef max
+ 
+ #elif defined(TARGET_HAIKU)
 
