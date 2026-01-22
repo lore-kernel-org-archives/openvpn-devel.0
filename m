@@ -1,10 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 22 Jan 2026 14:30:50 +0100
-Message-ID: <20260122133050.117000-1-frank@...2641...>
-In-Reply-To: <gerrit.1768911679000.Idbb5c0fff759a2e645a8b4f62266509e32e3a44e@...2715...>
-References: <gerrit.1768911679000.Idbb5c0fff759a2e645a8b4f62266509e32e3a44e@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 22 Jan 2026 14:01:14 +0000
+In-Reply-To: <gerrit.1769015758000.Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9@...2715...>
+References: <gerrit.1769015758000.Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <ae7d3807a70536e7604a3ac36a0f4f8ce3b2f569-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] route: Fix conversion warnings on BSDs
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="2uuNniQpeos="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: status: Avoid
+ conversion warnings in status_read/status_printf
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,267 +19,223 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Mostly just use better types. And in
-some places remove overloading of
-variables with nicer C11 code.
+--2uuNniQpeos=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Idbb5c0fff759a2e645a8b4f62266509e32e3a44e
+Attention is currently required from: flichtenheld, plaisthos.
+
+Hello plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail
+
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
+
+
+Change subject: status: Avoid conversion warnings in status_read/status_pri=
+ntf
+......................................................................
+
+status: Avoid conversion warnings in status_read/status_printf
+
+Just use explicit casts. len is limited by BCAP and
+c is limited by being from buf_read_u8. So they are
+safe.
+
+In case of status_printf this is only for Windows.
+len is limited by sizeof(buf), so also a safe cast.
+
+Change-Id: Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1481
 ---
+M src/openvpn/status.c
+1 file changed, 4 insertions(+), 15 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1481
-This mail reflects revision 3 of this Change.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/85/1485/2
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
-
-        
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d90c84b..93f61a1 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1762,11 +1762,6 @@
-     return (status != RTA_ERROR);
+diff --git a/src/openvpn/status.c b/src/openvpn/status.c
+index 3f57244..d09f367 100644
+--- a/src/openvpn/status.c
++++ b/src/openvpn/status.c
+@@ -206,11 +206,6 @@
+     return ret;
  }
- 
+
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
 -#pragma GCC diagnostic ignored "-Wconversion"
 -#endif
 -
+ #define STATUS_PRINTF_MAXLEN 512
+
  void
- route_ipv6_clear_host_bits(struct route_ipv6 *r6)
- {
-@@ -1833,7 +1828,7 @@
-     if (r6->iface != NULL && gateway_needed
-         && IN6_IS_ADDR_LINKLOCAL(&r6->gateway)) /* fe80::...%intf */
-     {
--        int len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
-+        size_t len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
-         char *tmp = gc_malloc(len, true, &gc);
-         snprintf(tmp, len, "%s%%%s", gateway, r6->iface);
-         gateway = tmp;
-@@ -2253,7 +2248,7 @@
-     if (r6->iface != NULL && gateway_needed
-         && IN6_IS_ADDR_LINKLOCAL(&r6->gateway)) /* fe80::...%intf */
-     {
--        int len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
-+        size_t len = strlen(gateway) + 1 + strlen(r6->iface) + 1;
-         char *tmp = gc_malloc(len, true, &gc);
-         snprintf(tmp, len, "%s%%%s", gateway, r6->iface);
-         gateway = tmp;
-@@ -2374,10 +2369,6 @@
-     net_ctx_reset(ctx);
+@@ -243,7 +238,7 @@
+             size_t len =3D strlen(buf);
+             if (len > 0)
+             {
+-                if (write(so->fd, buf, len) !=3D len)
++                if (write(so->fd, buf, (unsigned int)len) !=3D len)
+                 {
+                     so->errors =3D true;
+                 }
+@@ -274,16 +269,14 @@
+             /* read more of file into buffer */
+             if (c =3D=3D -1)
+             {
+-                int len;
+-
+                 ASSERT(buf_init(&so->read_buf, 0));
+-                len =3D read(so->fd, BPTR(&so->read_buf), BCAP(&so->read_b=
+uf));
++                ssize_t len =3D read(so->fd, BPTR(&so->read_buf), BCAP(&so=
+->read_buf));
+                 if (len <=3D 0)
+                 {
+                     break;
+                 }
+
+-                ASSERT(buf_inc_len(&so->read_buf, len));
++                ASSERT(buf_inc_len(&so->read_buf, (int)len));
+                 continue;
+             }
+
+@@ -299,7 +292,7 @@
+                 break;
+             }
+
+-            buf_write_u8(buf, c);
++            buf_write_u8(buf, (uint8_t)c);
+         }
+
+         buf_null_terminate(buf);
+@@ -307,7 +300,3 @@
+
+     return ret;
  }
- 
+-
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
--
- /*
-  * The --redirect-gateway option requires OS-specific code below
-  * to get the current default gateway.
-@@ -3354,19 +3345,19 @@
- #define NEXTADDR(w, u)        \
-     if (rtm_addrs & (w))      \
-     {                         \
--        l = sizeof(u);        \
-+        size_t l = sizeof(u); \
-         memmove(cp, &(u), l); \
-         cp += ROUNDUP(l);     \
-     }
- 
- #define ADVANCE(x, n) (x += ROUNDUP(sizeof(struct sockaddr_in)))
- #else /* if defined(TARGET_SOLARIS) */
--#define NEXTADDR(w, u)                         \
--    if (rtm_addrs & (w))                       \
--    {                                          \
--        l = ((struct sockaddr *)&(u))->sa_len; \
--        memmove(cp, &(u), l);                  \
--        cp += ROUNDUP(l);                      \
-+#define NEXTADDR(w, u)                                \
-+    if (rtm_addrs & (w))                              \
-+    {                                                 \
-+        size_t l = ((struct sockaddr *)&(u))->sa_len; \
-+        memmove(cp, &(u), l);                         \
-+        cp += ROUNDUP(l);                             \
-     }
- 
- #define ADVANCE(x, n) (x += ROUNDUP((n)->sa_len))
-@@ -3374,19 +3365,13 @@
- 
- #define max(a, b) ((a) > (b) ? (a) : (b))
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- void
- get_default_gateway(struct route_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)
- {
-     struct gc_arena gc = gc_new();
-     struct rtmsg m_rtmsg;
-     int sockfd = -1;
--    int seq, l, pid, rtm_addrs;
--    unsigned int i;
-+    int rtm_addrs;
-     struct sockaddr so_dst, so_mask;
-     char *cp = m_rtmsg.m_space;
-     struct sockaddr *gate = NULL, *ifp = NULL, *sa;
-@@ -3397,8 +3382,8 @@
-     CLEAR(*rgi);
- 
-     /* setup data to send to routing socket */
--    pid = getpid();
--    seq = 0;
-+    const int pid = getpid();
-+    int seq = 0;
- #ifdef TARGET_OPENBSD
-     rtm_addrs = RTA_DST | RTA_NETMASK; /* Kernel refuses RTA_IFP */
- #else
-@@ -3415,7 +3400,7 @@
-     rtm.rtm_version = RTM_VERSION;
-     rtm.rtm_seq = ++seq;
- #ifdef TARGET_OPENBSD
--    rtm.rtm_tableid = getrtable();
-+    rtm.rtm_tableid = (u_short)getrtable();
- #endif
-     rtm.rtm_addrs = rtm_addrs;
- 
-@@ -3430,7 +3415,8 @@
-     NEXTADDR(RTA_DST, so_dst);
-     NEXTADDR(RTA_NETMASK, so_mask);
- 
--    rtm.rtm_msglen = l = cp - (char *)&m_rtmsg;
-+    /* sizeof(struct rt_msghdr) + padding */
-+    rtm.rtm_msglen = (u_short)(cp - (char *)&m_rtmsg);
- 
-     /* transact with routing socket */
-     sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
-@@ -3439,24 +3425,25 @@
-         msg(M_WARN, "GDG: socket #1 failed");
-         goto done;
-     }
--    if (write(sockfd, (char *)&m_rtmsg, l) < 0)
-+    if (write(sockfd, (char *)&m_rtmsg, rtm.rtm_msglen) < 0)
-     {
-         msg(M_WARN | M_ERRNO, "GDG: problem writing to routing socket");
-         goto done;
-     }
-+    ssize_t ret;
-     do
-     {
--        l = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
--    } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
-+        ret = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
-+    } while (ret > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
-     close(sockfd);
-     sockfd = -1;
- 
-     /* extract return data from routing socket */
-     rtm_aux = &rtm;
--    cp = ((char *)(rtm_aux + 1));
-+    cp = (char *)(rtm_aux + 1);
-     if (rtm_aux->rtm_addrs)
-     {
--        for (i = 1; i; i <<= 1)
-+        for (unsigned int i = 1; i; i <<= 1)
-         {
-             if (i & rtm_aux->rtm_addrs)
-             {
-@@ -3604,8 +3591,7 @@
- {
-     struct rtmsg m_rtmsg;
-     int sockfd = -1;
--    int seq, l, pid, rtm_addrs;
--    unsigned int i;
-+    int rtm_addrs;
-     struct sockaddr_in6 so_dst, so_mask;
-     char *cp = m_rtmsg.m_space;
-     struct sockaddr *gate = NULL, *ifp = NULL, *sa;
-@@ -3614,8 +3600,8 @@
-     CLEAR(*rgi6);
- 
-     /* setup data to send to routing socket */
--    pid = getpid();
--    seq = 0;
-+    const int pid = getpid();
-+    int seq = 0;
- #ifdef TARGET_OPENBSD
-     rtm_addrs = RTA_DST | RTA_NETMASK; /* Kernel refuses RTA_IFP */
- #else
-@@ -3632,7 +3618,7 @@
-     rtm.rtm_version = RTM_VERSION;
-     rtm.rtm_seq = ++seq;
- #ifdef TARGET_OPENBSD
--    rtm.rtm_tableid = getrtable();
-+    rtm.rtm_tableid = (u_short)getrtable();
- #endif
- 
-     so_dst.sin6_family = AF_INET6;
-@@ -3656,7 +3642,8 @@
-     NEXTADDR(RTA_DST, so_dst);
-     NEXTADDR(RTA_NETMASK, so_mask);
- 
--    rtm.rtm_msglen = l = cp - (char *)&m_rtmsg;
-+    /* sizeof(struct rt_msghdr) + padding */
-+    rtm.rtm_msglen = (u_short)(cp - (char *)&m_rtmsg);
- 
-     /* transact with routing socket */
-     sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
-@@ -3665,26 +3652,26 @@
-         msg(M_WARN, "GDG6: socket #1 failed");
-         goto done;
-     }
--    if (write(sockfd, (char *)&m_rtmsg, l) < 0)
-+    if (write(sockfd, (char *)&m_rtmsg, rtm.rtm_msglen) < 0)
-     {
-         msg(M_WARN | M_ERRNO, "GDG6: problem writing to routing socket");
-         goto done;
-     }
--
-+    ssize_t ret;
-     do
-     {
--        l = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
--    } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
-+        ret = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
-+    } while (ret > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
- 
-     close(sockfd);
-     sockfd = -1;
- 
-     /* extract return data from routing socket */
-     rtm_aux = &rtm;
--    cp = ((char *)(rtm_aux + 1));
-+    cp = (char *)(rtm_aux + 1);
-     if (rtm_aux->rtm_addrs)
-     {
--        for (i = 1; i; i <<= 1)
-+        for (unsigned int i = 1; i; i <<= 1)
-         {
-             if (i & rtm_aux->rtm_addrs)
-             {
-@@ -3752,10 +3739,6 @@
-     }
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #undef max
- 
- #elif defined(TARGET_HAIKU)
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iff1343a2f8cc7e32b8f36b359a00248e4dc3e8c9
+Gerrit-Change-Number: 1485
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--2uuNniQpeos=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail">View C=
+hange</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">status: Avoid conversion warnin=
+gs in status_read/status_printf<br><br>Just use explicit casts. len is limi=
+ted by BCAP and<br>c is limited by being from buf_read_u8. So they are<br>s=
+afe.<br><br>In case of status_printf this is only for Windows.<br>len is li=
+mited by sizeof(buf), so also a safe cast.<br><br>Change-Id: Iff1343a2f8cc7=
+e32b8f36b359a00248e4dc3e8c9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...220...=
+..2641...&gt;<br>---<br>M src/openvpn/status.c<br>1 file changed, 4 inserti=
+ons(+), 15 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
+envpn.net:29418/openvpn refs/changes/85/1485/2</pre><pre style=3D"font-fami=
+ly: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/ope=
+nvpn/status.c b/src/openvpn/status.c</span><br><span>index 3f57244..d09f367=
+ 100644</span><br><span>--- a/src/openvpn/status.c</span><br><span>+++ b/sr=
+c/openvpn/status.c</span><br><span>@@ -206,11 +206,6 @@</span><br><span>   =
+  return ret;</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic p=
+ush</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagno=
+stic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span> #define STATUS_PRINTF_MAXLEN 512</span><br><span> </span=
+><br><span> void</span><br><span>@@ -243,7 +238,7 @@</span><br><span>      =
+       size_t len =3D strlen(buf);</span><br><span>             if (len &gt=
+; 0)</span><br><span>             {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                if (write(so-&gt;fd, buf, len) !=3D len)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                if (writ=
+e(so-&gt;fd, buf, (unsigned int)len) !=3D len)</span><br><span>            =
+     {</span><br><span>                     so-&gt;errors =3D true;</span><=
+br><span>                 }</span><br><span>@@ -274,16 +269,14 @@</span><br=
+><span>             /* read more of file into buffer */</span><br><span>   =
+          if (c =3D=3D -1)</span><br><span>             {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                int len;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>                 AS=
+SERT(buf_init(&amp;so-&gt;read_buf, 0));</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                len =3D read(so-&gt;fd, BPTR(&amp;so-&gt=
+;read_buf), BCAP(&amp;so-&gt;read_buf));</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                ssize_t len =3D read(so-&gt;fd, BPTR(&=
+amp;so-&gt;read_buf), BCAP(&amp;so-&gt;read_buf));</span><br><span>        =
+         if (len &lt;=3D 0)</span><br><span>                 {</span><br><s=
+pan>                     break;</span><br><span>                 }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    ASSERT(buf_inc_len(&amp;so-&gt;read_buf, len));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                ASSERT(buf_inc_len(&amp;s=
+o-&gt;read_buf, (int)len));</span><br><span>                 continue;</spa=
+n><br><span>             }</span><br><span> </span><br><span>@@ -299,7 +292=
+,7 @@</span><br><span>                 break;</span><br><span>             =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          buf_write_u8(buf, c);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            buf_write_u8(buf, (uint8_t)c);</span><br><span>    =
+     }</span><br><span> </span><br><span>         buf_null_terminate(buf);<=
+/span><br><span>@@ -307,7 +300,3 @@</span><br><span> </span><br><span>     =
+return ret;</span><br><span> }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
+__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#endif</span><br><span></span><br></pre><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail">change 148=
+5</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1485?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iff1343a2f8cc7e32b8f36b359a0=
+0248e4dc3e8c9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1485 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--2uuNniQpeos=--
 
