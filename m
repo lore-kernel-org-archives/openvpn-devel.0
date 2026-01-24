@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 24 Jan 2026 18:17:51 +0000
+Date: Sat, 24 Jan 2026 18:17:56 +0000
 In-Reply-To: <gerrit.1765571645000.Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae@...2715...>
 References: <gerrit.1765571645000.Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., steffan@...1856...,
  max@...2606...
-Message-ID: <3189caee629bddd5c91079554df1380867378ee6-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <3189caee629bddd5c91079554df1380867378ee6-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DhYhKX5zBO8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="kT/UXusozKw="; charset=UTF-8
 Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Add support for
  Mbed TLS 4
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,19 +20,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: syzzer <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: MaxF <max@...2606...>
+Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, syzzer <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DhYhKX5zBO8=
+--kT/UXusozKw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#8) to the change originally created by=
- MaxF. ( http://gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+41?usp=3Demail )
 
 Change subject: Add support for Mbed TLS 4
 ......................................................................
@@ -78,7 +74,7 @@ M tests/unit_tests/openvpn/test_common.h
 16 files changed, 2,442 insertions(+), 704 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1441/8
+
 
 diff --git a/README.mbedtls b/README.mbedtls
 index fb30db1..b768687 100644
@@ -1327,7 +1323,7 @@ s) which is larger than " PACKAGE_NAME
 +    }
 +    return md->name;
  }
-=20
+
  unsigned char
  md_kt_size(const char *mdname)
  {
@@ -3898,7 +3894,7 @@ _ctx_get());
 
      mbedtls_ssl_conf_cert_profile(ks_ssl->ssl_config, &ssl_ctx->cert_profi=
 le);
-
+=20
 @@ -1100,12 +1148,14 @@
  #endif /* MBEDTLS_SSL_CBC_RECORD_SPLITTING */
 
@@ -4316,7 +4312,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae
@@ -4328,2683 +4324,2608 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: syzzer <steffan@...1856...>
 
---DhYhKX5zBO8=
+--kT/UXusozKw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #8</strong> to the change originally created by MaxF.</p><p=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail">View Ch=
-ange</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">Add support for Mbed TLS 4<br><=
-br>This commit adds support for Mbed TLS 4. This version comes with some<br=
->drastic changes. The crypto library has been completely redesigned, so<br>=
-the contents of crypto_mbedtls.c are moved to crypto_mbedtls_legacy.c<br>an=
-d crypto_mbedtls.c handles the crypto for version 4.<br><br>Mbed TLS 4 also=
- removed the feature for looking up a crypto algorithm by<br>name, so we ne=
-ed to translate algorithm names to Mbed TLS numbers in<br>OpenVPN. The tabl=
-es are not yet complete. For symmetric algorithms, I<br>have added AES and =
-Chacha-Poly which should be enough for most use<br>cases.<br><br>Change-Id:=
- Ib251d546d993b96ed3bd8cb9111bcc627cdb0fae<br>Signed-off-by: Max Fillinger =
-&lt;maximilian.fillinger@...2918...&gt;<br>Acked-by: Arne Schwabe &lt;arne-=
-openvpn@...1227...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/=
-+/1441<br>Message-Id: &lt;20260123164746.7333-1-gert@...1296...&gt;<br>URL:=
- https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35401.=
-html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M REA=
-DME.mbedtls<br>M src/openvpn/Makefile.am<br>M src/openvpn/crypto_backend.h<=
-br>M src/openvpn/crypto_mbedtls.c<br>M src/openvpn/crypto_mbedtls.h<br>A sr=
-c/openvpn/crypto_mbedtls_legacy.c<br>A src/openvpn/crypto_mbedtls_legacy.h<=
-br>M src/openvpn/mbedtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/o=
-penvpn/ssl_mbedtls.h<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn=
-/syshead.h<br>M tests/Makefile.am<br>M tests/t_server_null_default.rc<br>M =
-tests/unit_tests/openvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_com=
-mon.h<br>16 files changed, 2,442 insertions(+), 704 deletions(-)<br><br></p=
-re><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chang=
-es/41/1441/8</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/README.mbedtls b/README.mbedtls</span><br=
-><span>index fb30db1..b768687 100644</span><br><span>--- a/README.mbedtls</=
-span><br><span>+++ b/README.mbedtls</span><br><span>@@ -7,8 +7,8 @@</span><=
-br><span> 	make</span><br><span> 	make install</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-This version requires mbed TLS v=
-ersion &gt;=3D 3.2.1. Versions &gt;=3D 4.0.0 are not</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-yet supported. Support for TLS 1.3 requires=
- an Mbed TLS version &gt;=3D 3.6.4.</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+This version requires mbed TLS version &gt;=3D 3.2.1. Suppo=
-rt for TLS 1.3 requires</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+an Mbed TLS version &gt;=3D 3.6.4.</span><br><span> </span><br><span> *=
-************************************************************************</s=
-pan><br><span> </span><br><span>diff --git a/src/openvpn/Makefile.am b/src/=
-openvpn/Makefile.am</span><br><span>index c879585..3c567aa 100644</span><br=
-><span>--- a/src/openvpn/Makefile.am</span><br><span>+++ b/src/openvpn/Make=
-file.am</span><br><span>@@ -54,6 +54,7 @@</span><br><span> 	comp-lz4.c comp=
--lz4.h \</span><br><span> 	crypto.c crypto.h crypto_backend.h \</span><br><=
-span> 	crypto_openssl.c crypto_openssl.h \</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+	crypto_mbedtls_legacy.c crypto_mbedtls_legacy.h \</=
-span><br><span> 	crypto_mbedtls.c crypto_mbedtls.h \</span><br><span> 	cryp=
-to_epoch.c crypto_epoch.h \</span><br><span> 	dco.c dco.h dco_internal.h \<=
-/span><br><span>diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/cry=
-pto_backend.h</span><br><span>index e9fc2f3..5248614 100644</span><br><span=
->--- a/src/openvpn/crypto_backend.h</span><br><span>+++ b/src/openvpn/crypt=
-o_backend.h</span><br><span>@@ -32,9 +32,16 @@</span><br><span> #ifdef ENAB=
-LE_CRYPTO_OPENSSL</span><br><span> #include &quot;crypto_openssl.h&quot;</s=
-pan><br><span> #endif</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span> #ifdef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#include &lt;mbedtls/version.h&gt;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt;=
- 0x04000000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include=
- &quot;crypto_mbedtls_legacy.h&quot;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#else</span><br><span> #include &quot;crypto_mbedtls.h&quo=
-t;</span><br><span> #endif</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span> #include &quot;basic.h&quot;</span><br><span> #include &quot;bu=
-ffer.h&quot;</span><br><span> </span><br><span>diff --git a/src/openvpn/cry=
-pto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><span>index e1a5cad.=
-.5418df9 100644</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><b=
-r><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>@@ -23,7 +23,8 @=
-@</span><br><span> </span><br><span> /**</span><br><span>  * @file</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * Data Channel Cryptography m=
-bed TLS-specific backend interface</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * Data Channel Cryptography backend interface using the TF-=
-PSA-Crypto library</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* part of Mbed TLS 4.</span><br><span>  */</span><br><span> </span><br><spa=
-n> #ifdef HAVE_CONFIG_H</span><br><span>@@ -33,6 +34,9 @@</span><br><span> =
-#include &quot;syshead.h&quot;</span><br><span> </span><br><span> #if defin=
-ed(ENABLE_CRYPTO_MBEDTLS)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#include &lt;mbedtls/version.h&gt;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000</span><br><span> </span><br=
-><span> #include &quot;errlevel.h&quot;</span><br><span> #include &quot;bas=
-ic.h&quot;</span><br><span>@@ -40,20 +44,16 @@</span><br><span> #include &q=
-uot;crypto.h&quot;</span><br><span> #include &quot;integer.h&quot;</span><b=
-r><span> #include &quot;crypto_backend.h&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#include &quot;crypto_mbedtls.h&quot;</span><br>=
-<span> #include &quot;otime.h&quot;</span><br><span> #include &quot;misc.h&=
-quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#include &lt;mbedtls/base64.h&gt;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#include &lt;mbedtls/des.h&gt;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#include &lt;psa/crypto.h&gt;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#include &lt;psa/crypto_config.h&gt;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/co=
-nstant_time.h&gt;</span><br><span> #include &lt;mbedtls/error.h&gt;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/md5.h&gt=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls=
-/cipher.h&gt;</span><br><span> #include &lt;mbedtls/pem.h&gt;</span><br><sp=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1441?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Add support for Mbed TLS 4<br><br>This commit ad=
+ds support for Mbed TLS 4. This version comes with some<br>drastic changes.=
+ The crypto library has been completely redesigned, so<br>the contents of c=
+rypto_mbedtls.c are moved to crypto_mbedtls_legacy.c<br>and crypto_mbedtls.=
+c handles the crypto for version 4.<br><br>Mbed TLS 4 also removed the feat=
+ure for looking up a crypto algorithm by<br>name, so we need to translate a=
+lgorithm names to Mbed TLS numbers in<br>OpenVPN. The tables are not yet co=
+mplete. For symmetric algorithms, I<br>have added AES and Chacha-Poly which=
+ should be enough for most use<br>cases.<br><br>Change-Id: Ib251d546d993b96=
+ed3bd8cb9111bcc627cdb0fae<br>Signed-off-by: Max Fillinger &lt;maximilian.fi=
+llinger@...2918...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...2477...=
+.&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1441<br>Message=
+-Id: &lt;20260123164746.7333-1-gert@...1296...&gt;<br>URL: https://www.mail=
+-archive.com/openvpn-devel@lists.sourceforge.net/msg35401.html<br>Signed-of=
+f-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M README.mbedtls<br>M =
+src/openvpn/Makefile.am<br>M src/openvpn/crypto_backend.h<br>M src/openvpn/=
+crypto_mbedtls.c<br>M src/openvpn/crypto_mbedtls.h<br>A src/openvpn/crypto_=
+mbedtls_legacy.c<br>A src/openvpn/crypto_mbedtls_legacy.h<br>M src/openvpn/=
+mbedtls_compat.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_mbedtl=
+s.h<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/syshead.h<br>M t=
+ests/Makefile.am<br>M tests/t_server_null_default.rc<br>M tests/unit_tests/=
+openvpn/Makefile.am<br>M tests/unit_tests/openvpn/test_common.h<br>16 files=
+ changed, 2,442 insertions(+), 704 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/README.mbedtls b/README.mbedtls</span><br><span>index fb30d=
+b1..b768687 100644</span><br><span>--- a/README.mbedtls</span><br><span>+++=
+ b/README.mbedtls</span><br><span>@@ -7,8 +7,8 @@</span><br><span> 	make</s=
+pan><br><span> 	make install</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-This version requires mbed TLS version &gt;=3D 3.2=
+.1. Versions &gt;=3D 4.0.0 are not</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-yet supported. Support for TLS 1.3 requires an Mbed TLS versio=
+n &gt;=3D 3.6.4.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Thi=
+s version requires mbed TLS version &gt;=3D 3.2.1. Support for TLS 1.3 requ=
+ires</span><br><span style=3D"color: hsl(120, 100%, 40%);">+an Mbed TLS ver=
+sion &gt;=3D 3.6.4.</span><br><span> </span><br><span> ********************=
+*****************************************************</span><br><span> </sp=
+an><br><span>diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am=
+</span><br><span>index c879585..3c567aa 100644</span><br><span>--- a/src/op=
+envpn/Makefile.am</span><br><span>+++ b/src/openvpn/Makefile.am</span><br><=
+span>@@ -54,6 +54,7 @@</span><br><span> 	comp-lz4.c comp-lz4.h \</span><br>=
+<span> 	crypto.c crypto.h crypto_backend.h \</span><br><span> 	crypto_opens=
+sl.c crypto_openssl.h \</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+	crypto_mbedtls_legacy.c crypto_mbedtls_legacy.h \</span><br><span> 	cr=
+ypto_mbedtls.c crypto_mbedtls.h \</span><br><span> 	crypto_epoch.c crypto_e=
+poch.h \</span><br><span> 	dco.c dco.h dco_internal.h \</span><br><span>dif=
+f --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h</span=
+><br><span>index e9fc2f3..5248614 100644</span><br><span>--- a/src/openvpn/=
+crypto_backend.h</span><br><span>+++ b/src/openvpn/crypto_backend.h</span><=
+br><span>@@ -32,9 +32,16 @@</span><br><span> #ifdef ENABLE_CRYPTO_OPENSSL</=
+span><br><span> #include &quot;crypto_openssl.h&quot;</span><br><span> #end=
+if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
+ #ifdef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#include &lt;mbedtls/version.h&gt;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto_mbedt=
+ls_legacy.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
+lse</span><br><span> #include &quot;crypto_mbedtls.h&quot;</span><br><span>=
+ #endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #includ=
+e &quot;basic.h&quot;</span><br><span> #include &quot;buffer.h&quot;</span>=
+<br><span> </span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c b/src=
+/openvpn/crypto_mbedtls.c</span><br><span>index e1a5cad..5418df9 100644</sp=
+an><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/o=
+penvpn/crypto_mbedtls.c</span><br><span>@@ -23,7 +23,8 @@</span><br><span> =
+</span><br><span> /**</span><br><span>  * @file</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- * Data Channel Cryptography mbed TLS-specific ba=
+ckend interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * D=
+ata Channel Cryptography backend interface using the TF-PSA-Crypto library<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * part of Mbed TLS =
+4.</span><br><span>  */</span><br><span> </span><br><span> #ifdef HAVE_CONF=
+IG_H</span><br><span>@@ -33,6 +34,9 @@</span><br><span> #include &quot;sysh=
+ead.h&quot;</span><br><span> </span><br><span> #if defined(ENABLE_CRYPTO_MB=
+EDTLS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;=
+mbedtls/version.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSI=
+ON_NUMBER &gt;=3D 0x04000000</span><br><span> </span><br><span> #include &q=
+uot;errlevel.h&quot;</span><br><span> #include &quot;basic.h&quot;</span><b=
+r><span>@@ -40,20 +44,16 @@</span><br><span> #include &quot;crypto.h&quot;<=
+/span><br><span> #include &quot;integer.h&quot;</span><br><span> #include &=
+quot;crypto_backend.h&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#include &quot;crypto_mbedtls.h&quot;</span><br><span> #include &qu=
+ot;otime.h&quot;</span><br><span> #include &quot;misc.h&quot;</span><br><sp=
 an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbed=
-tls/entropy.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#inc=
-lude &lt;mbedtls/ssl.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
-> /*</span><br><span>  *</span><br><span>  * Hardware engine support. Allow=
-s loading/unloading of engines.</span><br><span>@@ -82,331 +82,65 @@</span>=
-<br><span> {</span><br><span> }</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Functio=
-ns related to the core crypto library</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* The library does=
-n&#39;t support looking up algorithms by string anymore, so here</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * is a lookup table. */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+static const cipher_info_=
-t cipher_info_table[] =3D {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/* TODO: Complete the table. */</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-crypto_init_lib(void)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* AES */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT_KEY_TYPE_AES</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT_ALG_GCM</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-128-GC=
-M&quot;, PSA_KEY_TYPE_AES, PSA_ALG_GCM, 128 / 8, 96 / 8, 128 / 8 },</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-192-GCM&quo=
-t;, PSA_KEY_TYPE_AES, PSA_ALG_GCM, 192 / 8, 96 / 8, 128 / 8 },</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-256-GCM&quot;, P=
-SA_KEY_TYPE_AES, PSA_ALG_GCM, 256 / 8, 96 / 8, 128 / 8 },</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#endif /* PSA_WANT_ALG_GCM */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT_ALG_CBC_PKCS7<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-128-=
-CBC&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CBC_PKCS7, 128 / 8, 128 / 8, 128 / 8 }=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-19=
-2-CBC&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CBC_PKCS7, 192 / 8, 128 / 8, 128 / 8=
- },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-=
-256-CBC&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CBC_PKCS7, 256 / 8, 128 / 8, 128 /=
- 8 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* PSA_=
-WANT_ALG_CBC_PKCS7 */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#if PSA_WANT_ALG_CTR</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    { &quot;AES-128-CTR&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CTR, 128 / 8, 1=
-28 / 8, 128 / 8 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   { &quot;AES-192-CTR&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CTR, 192 / 8, 128 /=
- 8, 128 / 8 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
- &quot;AES-256-CTR&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CTR, 256 / 8, 128 / 8, =
-128 / 8 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /*=
- PSA_WANT_ALG_CTR */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#endif /* PSA_WANT_KEY_TYPE_AES */</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-crypto_uninit_lib(void)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-crypto_clear_error(void)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-mbed_log_err(unsigned int flags, int errval, const char *pre=
-fix)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (0 !=3D errval)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        char errstr[256];</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        mbedtls_strerror(errval, errstr, sizeof(=
-errstr));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        if (NULL =3D=3D prefix)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-            prefix =3D &quot;mbed T=
-LS error&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(flags,=
- &quot;%s: %s&quot;, prefix, errstr);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 0 =3D=3D e=
-rrval;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-mbed_log_func_line(unsigned int flags, int errval, const char *func, int =
-line)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    char prefix[256];</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot=
-;, func, line) &gt;=3D sizeof(prefix))</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        return mbed_log_err(flags, errval, func);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn mbed_log_err(flags, errval, prefix);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-crypto_init_dmalloc(void)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(=
-M_ERR, &quot;Error: dmalloc support is not available for mbed TLS.&quot;);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#endif /* DMALLOC */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-const cipher_name_pair cipher_name_translation_table[] =3D {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    { &quot;BF-CBC&quot;,=
- &quot;BLOWFISH-CBC&quot; },</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    { &quot;BF-CFB&quot;, &quot;BLOWFISH-CFB64&quot; },</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    { &quot;CAMELLIA-128-CFB&quot;=
-, &quot;CAMELLIA-128-CFB128&quot; },</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    { &quot;CAMELLIA-192-CFB&quot;, &quot;CAMELLIA-192-CFB12=
-8&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { &quot=
-;CAMELLIA-256-CFB&quot;, &quot;CAMELLIA-256-CFB128&quot; }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/* Chacha-Poly */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT_KEY_TYPE_CHACHA20 &amp;&a=
-mp; PSA_WANT_ALG_CHACHA20_POLY1305</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    { &quot;CHACHA20-POLY1305&quot;, PSA_KEY_TYPE_CHACHA20, =
-PSA_ALG_CHACHA20_POLY1305, 256 / 8, 96 / 8, 1 },</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif</span><br><span> };</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static const size_t cipher_info_table_e=
-ntries =3D sizeof(cipher_info_table) / sizeof(cipher_info_t);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+static const cipher_info_t *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+cipher_get(const char *ciphername)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; cipher_info_=
-table_entries; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (st=
-rcmp(ciphername, cipher_info_table[i].name) =3D=3D 0)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            return &amp;cipher_info_table[i];</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return NULL;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Because Mbe=
-d TLS 4 doesn&#39;t support looking up algorithms by string, there&#39;s</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * nothing to translat=
-e. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const cipher_n=
-ame_pair cipher_name_translation_table[] =3D {};</span><br><span> const siz=
-e_t cipher_name_translation_table_count =3D</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    sizeof(cipher_name_translation_table) / sizeof(*c=
-ipher_name_translation_table);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-show_available_ciphers(void)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    const int *ciphers =3D mbedtls_cipher_=
-list();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    printf(&quot;The following ciphe=
-rs and cipher modes are available for use\n&quot;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-           &quot;with &quot; PACKAGE_NAME &quot=
-;.  Each cipher shown below may be used as a\n&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-           &quot;parameter to the --data-ci=
-phers (or --cipher) option.  Using a\n&quot;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-           &quot;GCM or CBC mode is recommended.  In=
- static key mode only CBC\n&quot;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-           &quot;mode is allowed.\n\n&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    while (*ciphers !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        co=
-nst mbedtls_cipher_info_t *info =3D mbedtls_cipher_info_from_type(*ciphers)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const char *=
-name =3D mbedtls_cipher_info_get_name(info);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        if (info &amp;&amp; name &amp;&amp; !cipher_=
-kt_insecure(name)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        &amp;&amp; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            print_cipher(name);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        ciphers++;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    printf(&quot;\nThe following ciphers have a block size of less than 128=
- bits, \n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-     &quot;and are therefore deprecated.  Do not use unless you have to.\n\=
-n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ciphers =
-=3D mbedtls_cipher_list();</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    while (*ciphers !=3D 0)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   const mbedtls_cipher_info_t *info =3D mbedtls_cipher_info_from_type(*cip=
-hers);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const c=
-har *name =3D mbedtls_cipher_info_get_name(info);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        if (info &amp;&amp; name &amp;&amp; cip=
-her_kt_insecure(name)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            &amp;&amp; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(nam=
-e)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            print_cipher(name=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        ciphers++;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    printf(&quot;\n&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-show_available_digests(voi=
-d)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    const int *digests =3D mbedtls_md_l=
-ist();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    printf(&quot;The following messag=
-e digests are available for use with\n&quot; PACKAGE_NAME</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-           &quot;.  A message digest is=
- used in conjunction with\n&quot;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-           &quot;the HMAC function, to authenticate received pa=
-ckets.\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-    &quot;You can specify a message digest as parameter to\n&quot;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-           &quot;the --auth op=
-tion.\n\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#end=
-if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    while (*digests !=3D 0)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        const mbedtls_md_info_t *info =3D mbedtls_=
-md_info_from_type(*digests);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (in=
-fo)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            printf(&quot;%s %d=
- bit default key\n&quot;, mbedtls_md_get_name(info),</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                   mbedtls_md_get_size(info=
-) * 8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        digests++;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    printf(&quot;\n&quot;);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-voi=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-show_available_engin=
-es(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    printf(&quot;Sorry, mbed TLS =
-hardware crypto engine functionality is not &quot;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-           &quot;available\n&quot;);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconv=
-ersion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-crypto_pem_encode(const char *name, struct buffer *dst, cons=
-t struct buffer *src,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                  struct gc_arena *gc)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- /* 1000 chars is the PEM line length limit (+1 for tailing NUL) */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    char header[1000 + 1] =3D=
- { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char foote=
-r[1000 + 1] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(hea=
-der, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof=
-(header))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        return false;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(footer, sizeof(footer), &q=
-uot;-----END %s-----\n&quot;, name) &gt;=3D sizeof(footer))</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t out_=
-len =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (MBE=
-DTLS_ERR_BASE64_BUFFER_TOO_SMALL</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        !=3D mbedtls_pem_write_buffer(header, footer, BPTR(src),=
- BLEN(src), NULL, 0, &amp;out_len))</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    /* We set the size buf to out_len-1=
- to NOT include the 0 byte that</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-     * mbedtls_pem_write_buffer in its length calculation */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    *dst =3D alloc_buf_gc(=
-out_len, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (=
-!mbed_ok(mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src), BPT=
-R(dst),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-                            BCAP(dst), &amp;out_len))</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        || !buf_inc_len(dst, out_len - 1))<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        CLEAR(*dst);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   return true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-crypto_pem_decode(const char *name, struct buffer *dst, const st=
-ruct buffer *src)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* 1000 chars is the=
- PEM line length limit (+1 for tailing NUL) */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    char header[1000 + 1] =3D { 0 };</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    char footer[1000 + 1] =3D { 0 }=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(header, sizeof(header), =
-&quot;-----BEGIN %s-----&quot;, name) &gt;=3D sizeof(header))</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    if (snprintf(footer, sizeof(footer), &quot;-----END %s-----&quo=
-t;, name) &gt;=3D sizeof(footer))</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    /* mbed TLS requires the src to be nu=
-ll-terminated */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /=
-* allocate a new buffer to avoid modifying the src buffer */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct buffer inp=
-ut =3D alloc_buf_gc(BLEN(src) + 1, &amp;gc);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    buf_copy(&amp;input, src);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    buf_null_terminate(&amp;input);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    size_t use_len =3D 0;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    mbedtls_pem_context ctx =3D { 0 };</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        mbed_ok(mbedtls_pem_read_b=
-uffer(&amp;ctx, header, footer, BPTR(&amp;input), NULL, 0, &amp;use_len));<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t buf_size =
-=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const unsig=
-ned char *buf =3D mbedtls_pem_get_buffer(&amp;ctx, &amp;buf_size);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    if (ret &amp;&amp; !buf_wr=
-ite(dst, buf, buf_size))</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ret =
-=3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg=
-(M_WARN, &quot;PEM decode error: destination buffer too small&quot;);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    mbedtls_pem_free(&amp;ctx);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * Random number functions, used in cases where we want</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- * reasonably strong cryptog=
-raphic random number generation</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- * without depleting our entropy pool.  Used for random</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- * IV values and a number of ot=
-her miscellaneous tasks.</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- * Initialise the given ctr_drbg context, using a personalisation string a=
-nd an</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * entropy gathe=
-ring function.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedtls_ctr_drbg_context =
-*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-rand_ctx_get(void)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    static mbedtls_entropy_context ec =3D {=
- 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    static mbedt=
-ls_ctr_drbg_context cd_ctx =3D { 0 };</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    static bool rand_initialised =3D false;</span><br><span=
+tls/base64.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#incl=
+ude &lt;mbedtls/des.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#include &lt;psa/crypto.h&gt;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#include &lt;psa/crypto_config.h&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/constant_time.h&gt;<=
+/span><br><span> #include &lt;mbedtls/error.h&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/md5.h&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/cipher.h&gt;</spa=
+n><br><span> #include &lt;mbedtls/pem.h&gt;</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/entropy.h&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/s=
+sl.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><sp=
+an>  *</span><br><span>  * Hardware engine support. Allows loading/unloadin=
+g of engines.</span><br><span>@@ -82,331 +82,65 @@</span><br><span> {</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- * Functions related to the =
+core crypto library</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/* The library doesn&#39;t support lo=
+oking up algorithms by string anymore, so here</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * is a lookup table. */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static const cipher_info_t cipher_info_ta=
+ble[] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* TODO:=
+ Complete the table. */</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-crypto_init_lib(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/* AES */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#if PSA_WANT_KEY_TYPE_AES</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT_ALG_GCM</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-128-GCM&quot;, PSA_KEY=
+_TYPE_AES, PSA_ALG_GCM, 128 / 8, 96 / 8, 128 / 8 },</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-192-GCM&quot;, PSA_KEY_TY=
+PE_AES, PSA_ALG_GCM, 192 / 8, 96 / 8, 128 / 8 },</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    { &quot;AES-256-GCM&quot;, PSA_KEY_TYPE_AE=
+S, PSA_ALG_GCM, 256 / 8, 96 / 8, 128 / 8 },</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#endif /* PSA_WANT_ALG_GCM */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT_ALG_CBC_PKCS7</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-128-CBC&quot;, PSA=
+_KEY_TYPE_AES, PSA_ALG_CBC_PKCS7, 128 / 8, 128 / 8, 128 / 8 },</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-192-CBC&quot;, P=
+SA_KEY_TYPE_AES, PSA_ALG_CBC_PKCS7, 192 / 8, 128 / 8, 128 / 8 },</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-256-CBC&quot;,=
+ PSA_KEY_TYPE_AES, PSA_ALG_CBC_PKCS7, 256 / 8, 128 / 8, 128 / 8 },</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* PSA_WANT_ALG_CBC_P=
+KCS7 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if PSA_WANT=
+_ALG_CTR</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot=
+;AES-128-CTR&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CTR, 128 / 8, 128 / 8, 128 / =
+8 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES=
+-192-CTR&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CTR, 192 / 8, 128 / 8, 128 / 8 },=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;AES-256=
+-CTR&quot;, PSA_KEY_TYPE_AES, PSA_ALG_CTR, 256 / 8, 128 / 8, 128 / 8 },</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* PSA_WANT_ALG_=
+CTR */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* PSA=
+_WANT_KEY_TYPE_AES */</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-crypto_uninit_lib(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span=
  style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    if (!rand_initialised)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        struct gc_arena gc =3D gc_new();</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        struct buffer pers_string =3D alloc_buf_gc=
-(100, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-         * Personalisation string, sho=
-uld be as unique as possible (see NIST</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-         * 800-90 section 8.7.1). We have very little info=
-rmation at this stage.</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--         * Include Program Name, memory address of the context and PID.</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-         */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        buf_printf(&amp;pers_strin=
-g, &quot;OpenVPN %0u %p %s&quot;, platform_getpid(), &amp;cd_ctx,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                   time_string(=
-0, 0, 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Initialise m=
-bed TLS RNG, and built-in entropy sources */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        mbedtls_entropy_init(&amp;ec);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        mbedtls_ctr_drbg_init(&amp;cd_ctx);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        if (!mbed_ok(mbedtls_ctr_d=
-rbg_seed(&amp;cd_ctx, mbedtls_entropy_func, &amp;ec, BPTR(&amp;pers_string)=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-                       BLEN(&amp;pers_string))))</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            msg(M_FATAL, &quot;Failed to initialize random g=
-enerator&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        gc_free(&amp;gc);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        rand_initialised =3D true;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
+0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+crypto_clear_error(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span=
  style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    return &amp;cd_ctx;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_PREDICTI=
-ON_RESISTANCE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-rand_ctx_enable_predictio=
-n_resistance(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_ctr_drbg_co=
-ntext *cd_ctx =3D rand_ctx_get();</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedt=
-ls_ctr_drbg_set_prediction_resistance(cd_ctx, 1);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#endif /* ENABLE_PREDICTION_RESISTANCE */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    sizeof(cipher_name_translation_table) / s=
-izeof(cipher_name_pair);</span><br><span> </span><br><span> int</span><br><=
-span> rand_bytes(uint8_t *output, int len)</span><br><span> {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_ctr_drbg_context *rng_c=
-tx =3D rand_ctx_get();</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while (len &gt; =
-0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (len &lt; =
-0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        const size_t blen =3D min_int(len, MBEDTLS_CTR_DRBG_MAX_REQUEST=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (0 !=3D =
-mbedtls_ctr_drbg_random(rng_ctx, output, blen))</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            return 0;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        output +=3D=
- blen;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        len -=
-=3D blen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn 0;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 1=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * Generic cipher key ty=
-pe functions</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-static const mbedtls_cipher_info_t *</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-cipher_get(const char *cipherna=
-me)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(ciphername);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    const mbedtls_cipher_info_t *cipher =3D NULL;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    ciphername =3D translate_cipher_name_from_open=
-vpn(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c=
-ipher =3D mbedtls_cipher_info_from_string(ciphername);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    return cipher;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    psa_status_t result =3D psa_generate_=
-random(output, (size_t)len);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return result =3D=3D PSA_SUCCESS;</span><br><span> }</span><br=
-><span> </span><br><span> bool</span><br><span>@@ -414,23 +148,22 @@</span>=
-<br><span> {</span><br><span>     ASSERT(reason);</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_info=
-_t *cipher =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    const cipher_info_t *cipher_info =3D cipher_get(ciph=
-ername);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    if (NULL =3D=3D cipher)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (cipher_info =3D=3D NULL)</span><br><span>     {</span>=
-<br><span>         msg(D_LOW, &quot;Cipher algorithm &#39;%s&#39; not found=
-&quot;, ciphername);</span><br><span>         *reason =3D &quot;disabled be=
-cause unknown&quot;;</span><br><span>         return false;</span><br><span=
->     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    const size_t key_bytelen =3D mbedtls_cipher_info_get_key_bitlen(cip=
-her) / 8;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (key_=
-bytelen &gt; MAX_CIPHER_KEY_LENGTH)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (cipher_info-&gt;key_bytes &gt; MAX_CIPHER_KEY_LENGT=
-H)</span><br><span>     {</span><br><span>         msg(D_LOW,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-            &quot;Cipher algorithm =
-&#39;%s&#39; uses a default key size (%zu bytes) &quot;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            &quot;Cipher algorithm &#39=
-;%s&#39; uses a default key size (%d bytes) &quot;</span><br><span>        =
-     &quot;which is larger than &quot; PACKAGE_NAME &quot;&#39;s current ma=
-ximum key size &quot;</span><br><span>             &quot;(%d bytes)&quot;,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ciphername=
-, key_bytelen, MAX_CIPHER_KEY_LENGTH);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            ciphername, cipher_info-&gt;key_bytes, MAX_C=
-IPHER_KEY_LENGTH);</span><br><span>         *reason =3D &quot;disabled due =
-to key size too large&quot;;</span><br><span>         return false;</span><=
-br><span>     }</span><br><span>@@ -442,49 +175,46 @@</span><br><span> cons=
-t char *</span><br><span> cipher_kt_name(const char *ciphername)</span><br>=
-<span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbe=
-dtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    if (NULL =3D=3D cipher_kt)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    const cipher_info_t *cip=
-her_info =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</span><br><span>     {</s=
-pan><br><span>         return &quot;[null-cipher]&quot;;</span><br><span>  =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    return translate_cipher_name_to_op=
-envpn(mbedtls_cipher_info_get_name(cipher_kt));</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return cipher_info-&gt;name;</span><br><spa=
-n> }</span><br><span> </span><br><span> int</span><br><span> cipher_kt_key_=
-size(const char *ciphername)</span><br><span> {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *cipher_kt =3D ci=
-pher_get(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (NULL =3D=3D c=
-ipher_kt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
-cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</span><=
-br><span>     {</span><br><span>         return 0;</span><br><span>     }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    return (int)mbedtls_cipher_info_get_key=
-_bitlen(cipher_kt) / 8;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return cipher_info-&gt;key_bytes;</span><br><span> }</span><br><spa=
-n> </span><br><span> int</span><br><span> cipher_kt_iv_size(const char *cip=
-hername)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const cipher_i=
-nfo_t *cipher_info =3D cipher_get(ciphername);</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (NULL =3D=3D cipher_kt)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =
-=3D=3D NULL)</span><br><span>     {</span><br><span>         return 0;</spa=
-n><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- return (int)mbedtls_cipher_info_get_iv_size(cipher_kt);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    return cipher_info-&gt;iv_bytes;</=
-span><br><span> }</span><br><span> </span><br><span> int</span><br><span> c=
-ipher_kt_block_size(const char *ciphername)</span><br><span> {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *c=
-ipher_kt =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    if (NULL =3D=3D cipher_kt)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    const cipher_info_t *cipher_info =3D cipher_g=
-et(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (cipher_info =3D=3D NULL)</span><br><span>     {</span><br><span>       =
-  return 0;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    return (int)mbedtls_cipher_info_get_block_size(cipher_kt);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return cipher_i=
-nfo-&gt;block_size;</span><br><span> }</span><br><span> </span><br><span> i=
-nt</span><br><span>@@ -500,498 +230,596 @@</span><br><span> bool</span><br>=
-<span> cipher_kt_insecure(const char *ciphername)</span><br><span> {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_inf=
-o_t *cipher_kt =3D cipher_get(ciphername);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    if (!cipher_kt)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    const cipher_info_t *cipher_info =3D cipher_get(ci=
-phername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c=
-ipher_info =3D=3D NULL)</span><br><span>     {</span><br><span>         ret=
-urn true;</span><br><span>     }</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    return !(cipher_kt_block_size(ciphername) =
-&gt;=3D 128 / 8</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef=
- MBEDTLS_CHACHAPOLY_C</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-             || mbedtls_cipher_info_get_type(cipher_kt) =3D=3D MBEDTLS_CIPH=
-ER_CHACHA20_POLY1305</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    );</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-static mbedtls_cipher_mode_t</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-cipher_kt_mode(const mbedtls_cipher_info_t *cipher_kt)</span><br>=
+0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+mbed_log_err(unsigned int flags, int errval, const char *prefix)</span><br>=
 <span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D cipher_kt);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_cipher_info_get_mode(c=
-ipher_kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
-n !(cipher_info-&gt;block_size &gt;=3D 128 / 8</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+             || cipher_info-&gt;psa_alg =3D=3D P=
-SA_ALG_CHACHA20_POLY1305);</span><br><span> }</span><br><span> </span><br><=
-span> bool</span><br><span> cipher_kt_mode_cbc(const char *ciphername)</spa=
-n><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    con=
-st mbedtls_cipher_info_t *cipher =3D cipher_get(ciphername);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    return cipher &amp;&amp; cipher_=
-kt_mode(cipher) =3D=3D OPENVPN_MODE_CBC;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    const cipher_info_t *cipher_info =3D cipher_get(ci=
-phername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c=
-ipher_info =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return cipher_info=
--&gt;psa_alg =3D=3D PSA_ALG_CBC_PKCS7;</span><br><span> }</span><br><span> =
-</span><br><span> bool</span><br><span> cipher_kt_mode_ofb_cfb(const char *=
-ciphername)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    const mbedtls_cipher_info_t *cipher =3D cipher_get(ciphername)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return cipher</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-           &amp;&amp; (c=
-ipher_kt_mode(cipher) =3D=3D OPENVPN_MODE_OFB</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-               || cipher_kt_mode(cipher) =3D=3D OPE=
-NVPN_MODE_CFB);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-const cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return cipher_info-&gt;psa_alg =3D=3D PSA_A=
-LG_OFB || cipher_info-&gt;psa_alg =3D=3D PSA_ALG_CFB;</span><br><span> }</s=
-pan><br><span> </span><br><span> bool</span><br><span> cipher_kt_mode_aead(=
-const char *ciphername)</span><br><span> {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *cipher =3D cipher_get=
-(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn cipher</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           &=
-amp;&amp; (cipher_kt_mode(cipher) =3D=3D OPENVPN_MODE_GCM</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#ifdef MBEDTLS_CHACHAPOLY_C</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-               || cipher_kt_mode(=
-cipher) =3D=3D MBEDTLS_MODE_CHACHAPOLY</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-           );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-const cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return cipher_info-&gt;psa_alg =3D=3D PSA_A=
-LG_GCM || cipher_info-&gt;psa_alg =3D=3D PSA_ALG_CHACHA20_POLY1305;</span><=
-br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- * Generic cipher context functions</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedtls_cipher_conte=
-xt_t *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_t =
-*</span><br><span> cipher_ctx_new(void)</span><br><span> {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_cipher_context_t *ctx;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_OBJ(ctx, mbedtl=
-s_cipher_context_t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    cipher_ctx_t *ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* Initializing the object with zeros ensures that it is always saf=
-e to call</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * cip=
-her_ctx_free. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- ALLOC_OBJ_CLEAR(ctx, cipher_ctx_t);</span><br><span>     return ctx;</span=
-><br><span> }</span><br><span> </span><br><span> void</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_free(mbedtls_cipher_context_t *c=
-tx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_free(=
-cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    mbedtls_cipher_free(ctx);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    if (cipher_ctx_mode_aead(ctx))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        ASSERT(psa_aead_abort(&amp;ctx-&gt;opera=
-tion.aead) =3D=3D PSA_SUCCESS);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(psa_cipher_a=
-bort(&amp;ctx-&gt;operation.cipher) =3D=3D PSA_SUCCESS);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    ASSERT(psa_destroy_key(ctx-&gt;key) =3D=3D PSA_S=
-UCCESS);</span><br><span>     free(ctx);</span><br><span> }</span><br><span=
-> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-cipher_ctx_init(mbedtls_cipher_context_t *ctx, const uint8_t *key, const=
- char *ciphername,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+c=
-ipher_ctx_init(cipher_ctx_t *ctx, const uint8_t *key, const char *ciphernam=
-e,</span><br><span>                 crypto_operation_t enc)</span><br><span=
-> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=
-=3D ciphername &amp;&amp; NULL !=3D ctx);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    ASSERT(ciphername !=3D NULL &amp;&amp; ctx !=3D N=
-ULL);</span><br><span>     CLEAR(*ctx);</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *kt =3D=
- cipher_get(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    ASSERT(kt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- size_t key_bitlen =3D mbedtls_cipher_info_get_key_bitlen(kt);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    ctx-&gt;cipher_info =3D ciph=
-er_get(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    ASSERT(ctx-&gt;cipher_info !=3D NULL);</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_setu=
-p(ctx, kt)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quo=
-t;mbed TLS cipher context init #1&quot;);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    psa_set_key_type(&amp;ctx-&gt;key_attributes, ctx-&gt;cipher_info=
--&gt;psa_key_type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    psa_set_key_algorithm(&amp;ctx-&gt;key_attributes, ctx-&gt;cipher_info-=
-&gt;psa_alg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ps=
-a_set_key_bits(&amp;ctx-&gt;key_attributes, (size_t)ctx-&gt;cipher_info-&gt=
-;key_bytes * 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- psa_set_key_usage_flags(&amp;ctx-&gt;key_attributes,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                            enc =3D=3D OP=
-ENVPN_OP_ENCRYPT ? PSA_KEY_USAGE_ENCRYPT : PSA_KEY_USAGE_DECRYPT);</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbe=
-d_ok(mbedtls_cipher_setkey(ctx, key, (int)key_bitlen, enc)))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (psa_import_key(&amp;ctx-&g=
-t;key_attributes, key, (size_t)ctx-&gt;cipher_info-&gt;key_bytes, &amp;ctx-=
-&gt;key) !=3D PSA_SUCCESS)</span><br><span>     {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quot;mbed TLS cipher set =
-key&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    if (mbedtls_cipher_info_get_mode(kt) =3D=3D=
- MBEDTLS_MODE_CBC)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!mbed_o=
-k(mbedtls_cipher_set_padding_mode(ctx, MBEDTLS_PADDING_PKCS7)))</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            msg(M_FATAL, &quot;mbed TLS cip=
-her set padding mode&quot;);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     msg(M_FATAL, &quot;psa_import_key failed&quot;);</span><br><span>     =
-}</span><br><span> </span><br><span>     /* make sure we used a big enough =
-key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(mbed=
-tls_cipher_get_key_bitlen(ctx) &lt;=3D key_bitlen);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_get_key_bits(&amp;ctx-&gt;=
-key_attributes) =3D=3D (size_t)(8 * ctx-&gt;cipher_info-&gt;key_bytes));</s=
-pan><br><span> }</span><br><span> </span><br><span> int</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_iv_length(const mbedtls_cipher=
-_context_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cip=
-her_ctx_iv_length(const cipher_ctx_t *ctx)</span><br><span> {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_cipher_get_iv_si=
-ze(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
-ctx-&gt;cipher_info-&gt;iv_bytes;</span><br><span> }</span><br><span> </spa=
-n><br><span> int</span><br><span> cipher_ctx_get_tag(cipher_ctx_t *ctx, uin=
-t8_t *tag, int tag_len)</span><br><span> {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    if (tag_len &gt; SIZE_MAX)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!ctx-&gt;aead_finished || tag_len=
- &lt; OPENVPN_AEAD_TAG_LENGTH)</span><br><span>     {</span><br><span>     =
-    return 0;</span><br><span>     }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_write_tag(=
-ctx, (unsigned char *)tag, tag_len)))</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    memcpy(tag, ctx-&gt;tag, OPENVPN_AE=
-AD_TAG_LENGTH);</span><br><span>     return 1;</span><br><span> }</span><br=
-><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-cipher_ctx_block_size(const mbedtls_cipher_context_t *ctx)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_block_size(const =
-cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return (int)mbedtls_cipher_get_block_size(ctx);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    return ctx-&gt;cipher_i=
-nfo-&gt;block_size;</span><br><span> }</span><br><span> </span><br><span> i=
-nt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_mode(con=
-st mbedtls_cipher_context_t *ctx)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+cipher_ctx_mode(const cipher_ctx_t *ctx)</span><br><span> {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D ct=
-x);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_cipher_get_cipher_mo=
-de(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(=
-ctx !=3D NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return (int)psa_get_key_algorithm(&amp;ctx-&gt;key_attributes);</span><br><=
-span> }</span><br><span> </span><br><span> bool</span><br><span> cipher_ctx=
-_mode_cbc(const cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    return ctx &amp;&amp; cipher_ctx_mode(c=
-tx) =3D=3D OPENVPN_MODE_CBC;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return ctx !=3D NULL &amp;&amp; cipher_ctx_mode(ctx) =3D=3D OP=
-ENVPN_MODE_CBC;</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> cip=
-her_ctx_mode_ofb_cfb(const cipher_ctx_t *ctx)</span><br><span> {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    return ctx</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-           &amp;&amp; (cipher_ctx_mode(=
-ctx) =3D=3D OPENVPN_MODE_OFB</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-               || cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_CFB);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ctx =3D=3D NULL=
+: hsl(0, 100%, 40%);">-    if (0 !=3D errval)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        char errstr[256];</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        mbedtls_strerror(errval, errstr, sizeof(errstr));</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        if (NULL =3D=3D prefix)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            prefix =3D &quot;mbed TLS error&quot;;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        msg(flags, &quot;%s: %s&q=
+uot;, prefix, errstr);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    return 0 =3D=3D errval;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mbed_log_func=
+_line(unsigned int flags, int errval, const char *func, int line)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    char prefix[256];</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    if (snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, func, line) =
+&gt;=3D sizeof(prefix))</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return=
+ mbed_log_err(flags, errval, func);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return mbed_log_err=
+(flags, errval, prefix);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#ifdef DMALLOC</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-crypto_i=
+nit_dmalloc(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(M_ERR, &quot;Err=
+or: dmalloc support is not available for mbed TLS.&quot;);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#endif /* DMALLOC */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-const=
+ cipher_name_pair cipher_name_translation_table[] =3D {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    { &quot;BF-CBC&quot;, &quot;BLOWFISH-=
+CBC&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    { &qu=
+ot;BF-CFB&quot;, &quot;BLOWFISH-CFB64&quot; },</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    { &quot;CAMELLIA-128-CFB&quot;, &quot;CAMELLIA=
+-128-CFB128&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   { &quot;CAMELLIA-192-CFB&quot;, &quot;CAMELLIA-192-CFB128&quot; },</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    { &quot;CAMELLIA-256-CF=
+B&quot;, &quot;CAMELLIA-256-CFB128&quot; }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+/* Chacha-Poly */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#if PSA_WANT_KEY_TYPE_CHACHA20 &amp;&amp; PSA_WANT_ALG=
+_CHACHA20_POLY1305</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   { &quot;CHACHA20-POLY1305&quot;, PSA_KEY_TYPE_CHACHA20, PSA_ALG_CHACHA20=
+_POLY1305, 256 / 8, 96 / 8, 1 },</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif</span><br><span> };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+static const size_t cipher_info_table_entries =3D sizeo=
+f(cipher_info_table) / sizeof(cipher_info_t);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+static const cipher_info_t *</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+cipher_get(const char *ciphername)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    for (size_t i =3D 0; i &lt; cipher_info_table_entries; i++=
 )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    int mode =3D cipher_ctx_mode(ctx);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mode =3D=3D OP=
-ENVPN_MODE_OFB || mode =3D=3D OPENVPN_MODE_CFB;</span><br><span> }</span><b=
-r><span> </span><br><span> bool</span><br><span> cipher_ctx_mode_aead(const=
- cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    return ctx</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-           &amp;&amp; (cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_G=
-CM</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef MBEDTLS_CHAC=
-HAPOLY_C</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-  || cipher_ctx_mode(ctx) =3D=3D MBEDTLS_MODE_CHACHAPOLY</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-           );</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (ctx =3D=3D NULL)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int=
- mode =3D cipher_ctx_mode(ctx);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    return mode =3D=3D (int)PSA_ALG_GCM || mode =3D=3D (int)PSA=
-_ALG_CHACHA20_POLY1305;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_direction(const cipher_ctx_t *=
-ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    psa_key_usage_t key_usage =3D=
- psa_get_key_usage_flags(&amp;ctx-&gt;key_attributes);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if (key_usage &amp; PSA_KEY_USAGE_EN=
-CRYPT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        return OPENVPN_OP_E=
-NCRYPT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (key_usage &am=
-p; PSA_KEY_USAGE_DECRYPT)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-return OPENVPN_OP_DECRYPT;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    els=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        return -1;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><b=
-r><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-cipher_ctx_reset(mbedtls_cipher_context_t *ctx, const uint8_t *iv_=
-buf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_rese=
-t(cipher_ctx_t *ctx, const uint8_t *iv_buf)</span><br><span> {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_re=
-set(ctx)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    psa_status_t status =3D 0;</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(m=
-bedtls_cipher_set_iv(ctx, iv_buf, (size_t)mbedtls_cipher_get_iv_size(ctx)))=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_ctx=
-_mode_aead(ctx))</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        if (psa_aead_abort(&amp;ctx-&gt;operation.aead) !=
-=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            r=
-eturn 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (cipher_ctx_direction(ctx) =
-=3D=3D OPENVPN_OP_ENCRYPT)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         status =3D psa_aead_encrypt_setup(&amp;ctx-&gt;operation.aead, ctx=
--&gt;key, ctx-&gt;cipher_info-&gt;psa_alg);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        else if (cipher_ctx_direction(ctx) =3D=3D OPENVPN_OP_=
-DECRYPT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            status =
-=3D psa_aead_decrypt_setup(&amp;ctx-&gt;operation.aead, ctx-&gt;key, ctx-&g=
-t;cipher_info-&gt;psa_alg);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return =
-0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        if (status !=3D PSA_SUCCESS)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        status =3D psa_aead_set_nonce(&amp;ctx-&gt;operation.aead,=
- iv_buf, ctx-&gt;cipher_info-&gt;iv_bytes);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        if (status !=3D PSA_SUCCESS)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span style=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (strcmp(ciphername, c=
+ipher_info_table[i].name) =3D=3D 0)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            return &amp;cipher_info_table[i];</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
  hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (psa=
-_cipher_abort(&amp;ctx-&gt;operation.cipher) !=3D PSA_SUCCESS)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        if (cipher_ctx_direction(ctx) =3D=3D OPENVPN_OP_ENCRYPT)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            status =3D psa_cipher=
-_encrypt_setup(&amp;ctx-&gt;operation.cipher, ctx-&gt;key, ctx-&gt;cipher_i=
+, 40%);">+    return NULL;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+/* Because Mbed TLS 4 doesn&#3=
+9;t support looking up algorithms by string, there&#39;s</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * nothing to translate. */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+const cipher_name_pair cipher_=
+name_translation_table[] =3D {};</span><br><span> const size_t cipher_name_=
+translation_table_count =3D</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    sizeof(cipher_name_translation_table) / sizeof(*cipher_name_trans=
+lation_table);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-show_available_ciphers(void)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    const int *ciphers =3D mbedtls_cipher_list();</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    printf(&quot;The following ciphers and cipher =
+modes are available for use\n&quot;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-           &quot;with &quot; PACKAGE_NAME &quot;.  Each ciphe=
+r shown below may be used as a\n&quot;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-           &quot;parameter to the --data-ciphers (or --cip=
+her) option.  Using a\n&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-           &quot;GCM or CBC mode is recommended.  In static key mod=
+e only CBC\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+        &quot;mode is allowed.\n\n&quot;);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while (*cip=
+hers !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        const mbedtls_cip=
+her_info_t *info =3D mbedtls_cipher_info_from_type(*ciphers);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        const char *name =3D mbedtl=
+s_cipher_info_get_name(info);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        if (info &amp;&amp; name &amp;&amp; !cipher_kt_insecure(nam=
+e)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&a=
+mp; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            print_cipher(name);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        ciphers++;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    printf(&quo=
+t;\nThe following ciphers have a block size of less than 128 bits, \n&quot;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           &quot;and =
+are therefore deprecated.  Do not use unless you have to.\n\n&quot;);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    ciphers =3D mbedtls_cip=
+her_list();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while =
+(*ciphers !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const mbedtl=
+s_cipher_info_t *info =3D mbedtls_cipher_info_from_type(*ciphers);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        const char *name =3D m=
+bedtls_cipher_info_get_name(info);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        if (info &amp;&amp; name &amp;&amp; cipher_kt_insecure=
+(name)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &am=
+p;&amp; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            print_cipher(name);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        ciphers++;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    printf(&quot;\n&quot;);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-show_available_digests(void)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    const int *digests =3D mbedtls_md_list();</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    printf(&quot;The following message digests are=
+ available for use with\n&quot; PACKAGE_NAME</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-           &quot;.  A message digest is used in conj=
+unction with\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+          &quot;the HMAC function, to authenticate received packets.\n&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           &quot;You=
+ can specify a message digest as parameter to\n&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-           &quot;the --auth option.\n\n&quo=
+t;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    while (*digests !=3D 0)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        const mbedtls_md_info_t *info =3D mbedtls_md_info_from_=
+type(*digests);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (info)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            printf(&quot;%s %d bit default =
+key\n&quot;, mbedtls_md_get_name(info),</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                   mbedtls_md_get_size(info) * 8);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        digests++;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    printf(&quot;\n&quot;);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-show_available_engines(void)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    printf(&quot;Sorry, mbed TLS hardware crypto =
+engine functionality is not &quot;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-           &quot;available\n&quot;);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
+_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cryp=
+to_pem_encode(const char *name, struct buffer *dst, const struct buffer *sr=
+c,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  s=
+truct gc_arena *gc)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* 1000 chars is t=
+he PEM line length limit (+1 for tailing NUL) */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    char header[1000 + 1] =3D { 0 };</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    char footer[1000 + 1] =3D { 0=
+ };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(header, sizeof(header)=
+, &quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof(header))</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (snprintf(footer, sizeof(footer), &quot;-----END %s-----=
+\n&quot;, name) &gt;=3D sizeof(footer))</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    size_t out_len =3D 0;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    if (MBEDTLS_ERR_BASE64_BUFF=
+ER_TOO_SMALL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        !=
+=3D mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src), NULL, 0,=
+ &amp;out_len))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return false;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    /* We set the size buf to out_len-1 to NOT include the =
+0 byte that</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * mbe=
+dtls_pem_write_buffer in its length calculation */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    *dst =3D alloc_buf_gc(out_len, gc);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_pem=
+_write_buffer(header, footer, BPTR(src), BLEN(src), BPTR(dst),</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                                  =
+        BCAP(dst), &amp;out_len))</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        || !buf_inc_len(dst, out_len - 1))</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        CLEAR(*dst);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        return false;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return true;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-crypto_pe=
+m_decode(const char *name, struct buffer *dst, const struct buffer *src)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    /* 1000 chars is the PEM line length li=
+mit (+1 for tailing NUL) */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    char header[1000 + 1] =3D { 0 };</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    char footer[1000 + 1] =3D { 0 };</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    if (snprintf(header, sizeof(header), &quot;-----BEGIN %s=
+-----&quot;, name) &gt;=3D sizeof(header))</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        return false;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snp=
+rintf(footer, sizeof(footer), &quot;-----END %s-----&quot;, name) &gt;=3D s=
+izeof(footer))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return false;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    /* mbed TLS requires the src to be null-terminated */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* allocate a new bu=
+ffer to avoid modifying the src buffer */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    struct buffer input =3D alloc_buf_gc=
+(BLEN(src) + 1, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    buf_copy(&amp;input, src);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    buf_null_terminate(&amp;input);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    size_t use_len =3D 0;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    mbedtls_pem_context ctx =3D { 0 };</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    bool ret =3D</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        mbed_ok(mbedtls_pem_read_buffer(&amp;ctx, hea=
+der, footer, BPTR(&amp;input), NULL, 0, &amp;use_len));</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    size_t buf_size =3D 0;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    const unsigned char *buf =3D mbe=
+dtls_pem_get_buffer(&amp;ctx, &amp;buf_size);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (ret &amp;&amp; !buf_write(dst, buf, buf_siz=
+e))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        ret =3D false;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;PEM dec=
+ode error: destination buffer too small&quot;);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls=
+_pem_free(&amp;ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   return ret;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Random n=
+umber functions, used in cases where we want</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">- * reasonably strong cryptographic random number gen=
+eration</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * without dep=
+leting our entropy pool.  Used for random</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">- * IV values and a number of other miscellaneous tasks.=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Initialise the given=
+ ctr_drbg context, using a personalisation string and an</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- * entropy gathering function.</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-mbedtls_ctr_drbg_context *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-rand_ctx_get(void)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    static mbedtls_entropy_context ec =3D { 0 };</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    static mbedtls_ctr_drbg_context cd_=
+ctx =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sta=
+tic bool rand_initialised =3D false;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (!rand_initialised)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct gc=
+_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        struct buffer pers_string =3D alloc_buf_gc(100, &amp;gc);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        /*</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-         * Personalisation string, should be as unique as pos=
+sible (see NIST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+   * 800-90 section 8.7.1). We have very little information at this stage.<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * Include Pro=
+gram Name, memory address of the context and PID.</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        buf_printf(&amp;pers_string, &quot;OpenVPN %0u %p=
+ %s&quot;, platform_getpid(), &amp;cd_ctx,</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                   time_string(0, 0, 0, &amp;gc));</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        /* Initialise mbed TLS RNG, and built-=
+in entropy sources */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        mbedtls_entropy_init(&amp;ec);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    mbedtls_ctr_drbg_init(&amp;cd_ctx);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        if (!mbed_ok(mbedtls_ctr_drbg_seed(&amp;cd_ctx, m=
+bedtls_entropy_func, &amp;ec, BPTR(&amp;pers_string),</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                           =
+BLEN(&amp;pers_string))))</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    msg(M_FATAL, &quot;Failed to initialize random generator&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        gc_free(&amp;gc);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        rand_initialised =3D true;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
+eturn &amp;cd_ctx;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_PREDICTION_RESISTANCE</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-rand_ctx_enable_prediction_resistance(void)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    mbedtls_ctr_drbg_context *cd_ctx =3D ra=
+nd_ctx_get();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_ctr_drbg_set_pred=
+iction_resistance(cd_ctx, 1);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* EN=
+ABLE_PREDICTION_RESISTANCE */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    sizeof(cipher_name_translation_table) / sizeof(cipher_name_pa=
+ir);</span><br><span> </span><br><span> int</span><br><span> rand_bytes(uin=
+t8_t *output, int len)</span><br><span> {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    mbedtls_ctr_drbg_context *rng_ctx =3D rand_ctx_get(=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    while (len &gt; 0)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (len &lt; 0)</span><br><span> =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const si=
+ze_t blen =3D min_int(len, MBEDTLS_CTR_DRBG_MAX_REQUEST);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        if (0 !=3D mbedtls_ctr_drbg_ran=
+dom(rng_ctx, output, blen))</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        output +=3D blen;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        len -=3D blen;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><spa=
+n>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    return 1;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * Generic cipher key type functions</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-static const mbedtls_cipher_info_t *</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-cipher_get(const char *ciphername)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    ASSERT(ciphername);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+const mbedtls_cipher_info_t *cipher =3D NULL;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    ciphername =3D translate_cipher_name_from_openvpn(ciphername);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    cipher =3D mbedtls_ciph=
+er_info_from_string(ciphername);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    return cipher;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    psa_status_t result =3D psa_generate_random(output, (size_t)l=
+en);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return resu=
+lt =3D=3D PSA_SUCCESS;</span><br><span> }</span><br><span> </span><br><span=
+> bool</span><br><span>@@ -414,23 +148,22 @@</span><br><span> {</span><br><=
+span>     ASSERT(reason);</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *cipher =3D cipher_ge=
+t(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (NULL =3D=3D=
+ cipher)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cip=
+her_info =3D=3D NULL)</span><br><span>     {</span><br><span>         msg(D=
+_LOW, &quot;Cipher algorithm &#39;%s&#39; not found&quot;, ciphername);</sp=
+an><br><span>         *reason =3D &quot;disabled because unknown&quot;;</sp=
+an><br><span>         return false;</span><br><span>     }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const size_t key=
+_bytelen =3D mbedtls_cipher_info_get_key_bitlen(cipher) / 8;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    if (key_bytelen &gt; MAX_CIPHER_=
+KEY_LENGTH)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+cipher_info-&gt;key_bytes &gt; MAX_CIPHER_KEY_LENGTH)</span><br><span>     =
+{</span><br><span>         msg(D_LOW,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            &quot;Cipher algorithm &#39;%s&#39; uses a defa=
+ult key size (%zu bytes) &quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            &quot;Cipher algorithm &#39;%s&#39; uses a default =
+key size (%d bytes) &quot;</span><br><span>             &quot;which is larg=
+er than &quot; PACKAGE_NAME &quot;&#39;s current maximum key size &quot;</s=
+pan><br><span>             &quot;(%d bytes)&quot;,</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            ciphername, key_bytelen, MAX_CIPHE=
+R_KEY_LENGTH);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       ciphername, cipher_info-&gt;key_bytes, MAX_CIPHER_KEY_LENGTH);</span=
+><br><span>         *reason =3D &quot;disabled due to key size too large&qu=
+ot;;</span><br><span>         return false;</span><br><span>     }</span><b=
+r><span>@@ -442,49 +175,46 @@</span><br><span> const char *</span><br><span=
+> cipher_kt_name(const char *ciphername)</span><br><span> {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *ciph=
+er_kt =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (NULL =3D=3D cipher_kt)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    const cipher_info_t *cipher_info =3D cipher_get(=
+ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(cipher_info =3D=3D NULL)</span><br><span>     {</span><br><span>         r=
+eturn &quot;[null-cipher]&quot;;</span><br><span>     }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    return translate_cipher_name_to_openvpn(mbedtls_cipher_inf=
+o_get_name(cipher_kt));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return cipher_info-&gt;name;</span><br><span> }</span><br><span> </=
+span><br><span> int</span><br><span> cipher_kt_key_size(const char *ciphern=
+ame)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (NULL =3D=3D cipher_kt)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const cipher_info_t *cipher_=
+info =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (cipher_info =3D=3D NULL)</span><br><span>     {</span>=
+<br><span>         return 0;</span><br><span>     }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    return (int)mbedtls_cipher_info_get_key_bitlen(cipher_kt) / =
+8;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return cipher=
+_info-&gt;key_bytes;</span><br><span> }</span><br><span> </span><br><span> =
+int</span><br><span> cipher_kt_iv_size(const char *ciphername)</span><br><s=
+pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedt=
+ls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    const cipher_info_t *cipher_info =
+=3D cipher_get(ciphername);</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (NULL =3D=3D cipher_kt)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</span><=
+br><span>     {</span><br><span>         return 0;</span><br><span>     }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return (int)mbedtls=
+_cipher_info_get_iv_size(cipher_kt);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    return cipher_info-&gt;iv_bytes;</span><br><span> }</s=
+pan><br><span> </span><br><span> int</span><br><span> cipher_kt_block_size(=
+const char *ciphername)</span><br><span> {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *cipher_kt =3D cipher_=
+get(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
+f (NULL =3D=3D cipher_kt)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    const cipher_info_t *cipher_info =3D cipher_get(ciphername);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=
+=3D NULL)</span><br><span>     {</span><br><span>         return 0;</span><=
+br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    re=
+turn (int)mbedtls_cipher_info_get_block_size(cipher_kt);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    return cipher_info-&gt;block_size;=
+</span><br><span> }</span><br><span> </span><br><span> int</span><br><span>=
+@@ -500,498 +230,596 @@</span><br><span> bool</span><br><span> cipher_kt_in=
+secure(const char *ciphername)</span><br><span> {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_info_t *cipher_kt =3D =
+cipher_get(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if (!cipher_kt)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    const cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=3D N=
+ULL)</span><br><span>     {</span><br><span>         return true;</span><br=
+><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    return !(cipher_kt_block_size(ciphername) &gt;=3D 128 / 8</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef MBEDTLS_CHACHAPOLY=
+_C</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             || mbe=
+dtls_cipher_info_get_type(cipher_kt) =3D=3D MBEDTLS_CIPHER_CHACHA20_POLY130=
+5</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    );</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static mbedtls_c=
+ipher_mode_t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher_kt=
+_mode(const mbedtls_cipher_info_t *cipher_kt)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    ASSERT(NULL !=3D cipher_kt);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    return mbedtls_cipher_info_get_mode(cipher_kt);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return !(cipher_info-&gt=
+;block_size &gt;=3D 128 / 8</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+             || cipher_info-&gt;psa_alg =3D=3D PSA_ALG_CHACHA20_POL=
+Y1305);</span><br><span> }</span><br><span> </span><br><span> bool</span><b=
+r><span> cipher_kt_mode_cbc(const char *ciphername)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_cipher_i=
+nfo_t *cipher =3D cipher_get(ciphername);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    return cipher &amp;&amp; cipher_kt_mode(cipher) =3D=
+=3D OPENVPN_MODE_CBC;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    const cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_info =3D=3D N=
+ULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return cipher_info-&gt;psa_alg =3D=3D=
+ PSA_ALG_CBC_PKCS7;</span><br><span> }</span><br><span> </span><br><span> b=
+ool</span><br><span> cipher_kt_mode_ofb_cfb(const char *ciphername)</span><=
+br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const =
+mbedtls_cipher_info_t *cipher =3D cipher_get(ciphername);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    return cipher</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-           &amp;&amp; (cipher_kt_mode(ciphe=
+r) =3D=3D OPENVPN_MODE_OFB</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-               || cipher_kt_mode(cipher) =3D=3D OPENVPN_MODE_CFB);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const cipher_info_t=
+ *cipher_info =3D cipher_get(ciphername);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    return cipher_info-&gt;psa_alg =3D=3D PSA_ALG_OFB || cipher_in=
+fo-&gt;psa_alg =3D=3D PSA_ALG_CFB;</span><br><span> }</span><br><span> </sp=
+an><br><span> bool</span><br><span> cipher_kt_mode_aead(const char *ciphern=
+ame)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    const mbedtls_cipher_info_t *cipher =3D cipher_get(ciphername);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    return cipher</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-           &amp;&amp; (cipher_k=
+t_mode(cipher) =3D=3D OPENVPN_MODE_GCM</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#ifdef MBEDTLS_CHACHAPOLY_C</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-               || cipher_kt_mode(cipher) =3D=3D MBED=
+TLS_MODE_CHACHAPOLY</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
+ndif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           );</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const cipher_info_t=
+ *cipher_info =3D cipher_get(ciphername);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (cipher_info =3D=3D NULL)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    return cipher_info-&gt;psa_alg =3D=3D PSA_ALG_GCM || cipher_in=
+fo-&gt;psa_alg =3D=3D PSA_ALG_CHACHA20_POLY1305;</span><br><span> }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * Generic cipher context functions</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-mbedtls_cipher_context_t *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_t *</span><br><span> =
+cipher_ctx_new(void)</span><br><span> {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    mbedtls_cipher_context_t *ctx;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    ALLOC_OBJ(ctx, mbedtls_cipher_context_t=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cipher_ctx_t =
+*ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Initial=
+izing the object with zeros ensures that it is always safe to call</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+     * cipher_ctx_free. */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(c=
+tx, cipher_ctx_t);</span><br><span>     return ctx;</span><br><span> }</spa=
+n><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-cipher_ctx_free(mbedtls_cipher_context_t *ctx)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_free(cipher_ctx_t *ctx)=
+</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  mbedtls_cipher_free(ctx);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (cipher_ctx_mode_aead(ctx))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        ASSERT(psa_aead_abort(&amp;ctx-&gt;operation.aead) =3D=3D =
+PSA_SUCCESS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        ASSERT(psa_cipher_abort(&amp;ctx-&gt;=
+operation.cipher) =3D=3D PSA_SUCCESS);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    ASSERT(psa_destroy_key(ctx-&gt;key) =3D=3D PSA_SUCCESS);</span><br=
+><span>     free(ctx);</span><br><span> }</span><br><span> </span><br><span=
+> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_init=
+(mbedtls_cipher_context_t *ctx, const uint8_t *key, const char *ciphername,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_init(cip=
+her_ctx_t *ctx, const uint8_t *key, const char *ciphername,</span><br><span=
+>                 crypto_operation_t enc)</span><br><span> {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D ciphername &amp=
+;&amp; NULL !=3D ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    ASSERT(ciphername !=3D NULL &amp;&amp; ctx !=3D NULL);</span><br><sp=
+an>     CLEAR(*ctx);</span><br><span> </span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    const mbedtls_cipher_info_t *kt =3D cipher_get(ciphern=
+ame);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(kt);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t key_bitlen =
+=3D mbedtls_cipher_info_get_key_bitlen(kt);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    ctx-&gt;cipher_info =3D cipher_get(ciphername);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ctx-&gt;=
+cipher_info !=3D NULL);</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_setup(ctx, kt)))</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quot;mbed TLS cipher =
+context init #1&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_set_=
+key_type(&amp;ctx-&gt;key_attributes, ctx-&gt;cipher_info-&gt;psa_key_type)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_al=
+gorithm(&amp;ctx-&gt;key_attributes, ctx-&gt;cipher_info-&gt;psa_alg);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_bits(&am=
+p;ctx-&gt;key_attributes, (size_t)ctx-&gt;cipher_info-&gt;key_bytes * 8);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_usage=
+_flags(&amp;ctx-&gt;key_attributes,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                            enc =3D=3D OPENVPN_OP_ENCRYPT ?=
+ PSA_KEY_USAGE_ENCRYPT : PSA_KEY_USAGE_DECRYPT);</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_ciphe=
+r_setkey(ctx, key, (int)key_bitlen, enc)))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (psa_import_key(&amp;ctx-&gt;key_attributes, =
+key, (size_t)ctx-&gt;cipher_info-&gt;key_bytes, &amp;ctx-&gt;key) !=3D PSA_=
+SUCCESS)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        msg(M_FATAL, &quot;mbed TLS cipher set key&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (mbedtls_cipher_info_get_mode(kt) =3D=3D MBEDTLS_MODE_CBC=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        if (!mbed_ok(mbedtls_cipher_=
+set_padding_mode(ctx, MBEDTLS_PADDING_PKCS7)))</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            msg(M_FATAL, &quot;mbed TLS cipher set padding mod=
+e&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &=
+quot;psa_import_key failed&quot;);</span><br><span>     }</span><br><span> =
+</span><br><span>     /* make sure we used a big enough key */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(mbedtls_cipher_get_key_=
+bitlen(ctx) &lt;=3D key_bitlen);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    ASSERT(psa_get_key_bits(&amp;ctx-&gt;key_attributes) =3D=
+=3D (size_t)(8 * ctx-&gt;cipher_info-&gt;key_bytes));</span><br><span> }</s=
+pan><br><span> </span><br><span> int</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-cipher_ctx_iv_length(const mbedtls_cipher_context_t *ctx)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_iv_length(c=
+onst cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    return mbedtls_cipher_get_iv_size(ctx);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    return ctx-&gt;cipher_info=
+-&gt;iv_bytes;</span><br><span> }</span><br><span> </span><br><span> int</s=
+pan><br><span> cipher_ctx_get_tag(cipher_ctx_t *ctx, uint8_t *tag, int tag_=
+len)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if (tag_len &gt; SIZE_MAX)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (!ctx-&gt;aead_finished || tag_len &lt; OPENVPN_AEAD_TA=
+G_LENGTH)</span><br><span>     {</span><br><span>         return 0;</span><=
+br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (!mbed_ok(mbedtls_cipher_write_tag(ctx, (unsigned char *=
+)tag, tag_len)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    memcpy(tag, ctx-&gt;tag, OPENVPN_AEAD_TAG_LENGTH);</span=
+><br><span>     return 1;</span><br><span> }</span><br><span> </span><br><s=
+pan> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_bl=
+ock_size(const mbedtls_cipher_context_t *ctx)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+cipher_ctx_block_size(const cipher_ctx_t *ctx)</s=
+pan><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
+eturn (int)mbedtls_cipher_get_block_size(ctx);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return ctx-&gt;cipher_info-&gt;block_size;</=
+span><br><span> }</span><br><span> </span><br><span> int</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_mode(const mbedtls_cipher_con=
+text_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_=
+ctx_mode(const cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D ctx);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    return mbedtls_cipher_get_cipher_mode(ctx);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ctx !=3D NULL);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int)psa_get_=
+key_algorithm(&amp;ctx-&gt;key_attributes);</span><br><span> }</span><br><s=
+pan> </span><br><span> bool</span><br><span> cipher_ctx_mode_cbc(const ciph=
+er_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    return ctx &amp;&amp; cipher_ctx_mode(ctx) =3D=3D OPENVPN_M=
+ODE_CBC;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+ctx !=3D NULL &amp;&amp; cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_CBC;</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span> bool</span><br><span> cipher_ctx_mode_ofb_cfb(=
+const cipher_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    return ctx</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-           &amp;&amp; (cipher_ctx_mode(ctx) =3D=3D OPENVPN_M=
+ODE_OFB</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+ || cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_CFB);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (ctx =3D=3D NULL)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return false;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    int mode =3D cipher_ctx_mode(ctx);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return mode =3D=3D OPENVPN_MODE_OFB || mod=
+e =3D=3D OPENVPN_MODE_CFB;</span><br><span> }</span><br><span> </span><br><=
+span> bool</span><br><span> cipher_ctx_mode_aead(const cipher_ctx_t *ctx)</=
+span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+return ctx</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+&amp;&amp; (cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_GCM</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#ifdef MBEDTLS_CHACHAPOLY_C</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-               || cipher_ctx_mode(=
+ctx) =3D=3D MBEDTLS_MODE_CHACHAPOLY</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+          );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(ctx =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return f=
+alse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    int mode =3D cipher_ctx_=
+mode(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
+n mode =3D=3D (int)PSA_ALG_GCM || mode =3D=3D (int)PSA_ALG_CHACHA20_POLY130=
+5;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+cipher_ctx_direction(const cipher_ctx_t *ctx)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    psa_key_usage_t key_usage =3D psa_get_key_usage_fla=
+gs(&amp;ctx-&gt;key_attributes);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (key_usage &amp; PSA_KEY_USAGE_ENCRYPT)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return OPENVPN_OP_ENCRYPT;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    else if (key_usage &amp; PSA_KEY_USAGE_DECRY=
+PT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        return OPENVPN_OP_DECR=
+YPT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return -1;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span> }</span><br><span> </span><br><s=
+pan> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_re=
+set(mbedtls_cipher_context_t *ctx, const uint8_t *iv_buf)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_reset(cipher_ctx_t *ctx, c=
+onst uint8_t *iv_buf)</span><br><span> {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_reset(ctx)))</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    psa_status_t status =3D 0;</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_set_iv(c=
+tx, iv_buf, (size_t)mbedtls_cipher_get_iv_size(ctx))))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (cipher_ctx_mode_aead(ctx))</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  if (psa_aead_abort(&amp;ctx-&gt;operation.aead) !=3D PSA_SUCCESS)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        if (cipher_ctx_direction(ctx) =3D=3D OPENVPN_OP_ENCRYPT)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            status =3D psa_ae=
+ad_encrypt_setup(&amp;ctx-&gt;operation.aead, ctx-&gt;key, ctx-&gt;cipher_i=
 nfo-&gt;psa_alg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else=
  if (cipher_ctx_direction(ctx) =3D=3D OPENVPN_OP_DECRYPT)</span><br><span s=
 tyle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            status =3D psa_cipher_decrypt_setup=
-(&amp;ctx-&gt;operation.cipher, ctx-&gt;key, ctx-&gt;cipher_info-&gt;psa_al=
-g);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        if (status !=3D PSA_SUCCESS)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            return 0;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        statu=
-s =3D psa_cipher_set_iv(&amp;ctx-&gt;operation.cipher, iv_buf, ctx-&gt;ciph=
-er_info-&gt;iv_bytes);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        if (status !=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            return 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        }</span><br><span>     }</span><br><span> </span><br><s=
-pan>     return 1;</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/* We rely on the caller to ensure that=
- the destination buffer has enough room,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * but Mbed TLS always wants a size for the destinatio=
-n buffer. This function</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * calculates the minimum necessary size for a given cipher and input l=
-ength.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * This funcion assumes that s=
-rc_len has been checked to be &gt;=3D 0. */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+static size_t</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+needed_dst_size(const cipher_ctx_t *ctx, int src_len)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    int mode =3D cipher_ctx_mode(ctx);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (mode =3D=3D PS=
-A_ALG_CTR || mode =3D=3D PSA_ALG_GCM || mode =3D=3D PSA_ALG_CHACHA20_POLY13=
-05)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        /* These algorithms ar=
-e based on a keystream, so the input and output</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+         * length are always equal. */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        return (size_t)src_l=
-en;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        /* These algorithms are block-based. The number=
- of output blocks that are</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+         * produced is at most 1 + src_len / block_size. */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        size_t block_size =
-=3D (size_t)cipher_ctx_block_size(ctx);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        size_t max_blocks =3D 1 + (size_t)src_len / blo=
-ck_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret=
-urn max_blocks * block_size;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</=
-span><br><span> cipher_ctx_update_ad(cipher_ctx_t *ctx, const uint8_t *src,=
- int src_len)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (src_len &gt; SIZE_MAX)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (src_len &lt; 0 || !cipher_ctx_mode_aead(ctx))=
-</span><br><span>     {</span><br><span>         return 0;</span><br><span>=
-     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    if (!mbed_ok(mbedtls_cipher_update_ad(ctx, src, src_len)))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (psa_aead_update_ad(&a=
-mp;ctx-&gt;operation.aead, src, (size_t)src_len) !=3D PSA_SUCCESS)</span><b=
-r><span>     {</span><br><span>         return 0;</span><br><span>     }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 1;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher=
-_ctx_update(cipher_ctx_t *ctx, uint8_t *dst, int *dst_len, uint8_t *src, in=
-t src_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (src_len &lt; 0)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    size_t dst_size =3D needed_dst_size(ctx, src_len);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    size_t psa_output_len =3D 0;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_status_t status =
-=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_ctx_mode_aead(ctx=
-))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        status =3D psa_aead_upd=
-ate(&amp;ctx-&gt;operation.aead, src, (size_t)src_len, dst, dst_size, &amp;=
-psa_output_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        status =3D psa_cipher_update(&amp=
-;ctx-&gt;operation.cipher, src, (size_t)src_len, dst, dst_size, &amp;psa_ou=
-tput_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (status !=3D PSA_SUCCESS)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=
+lor: hsl(120, 100%, 40%);">+            status =3D psa_aead_decrypt_setup(&=
+amp;ctx-&gt;operation.aead, ctx-&gt;key, ctx-&gt;cipher_info-&gt;psa_alg);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            return 0;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if (status !=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            return 0;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        status =3D =
+psa_aead_set_nonce(&amp;ctx-&gt;operation.aead, iv_buf, ctx-&gt;cipher_info=
+-&gt;iv_bytes);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    if (status !=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        if (psa_cipher_abort(&amp;ctx-&gt;op=
+eration.cipher) !=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (cipher_ctx_=
+direction(ctx) =3D=3D OPENVPN_OP_ENCRYPT)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            status =3D psa_cipher_encrypt_setup(&amp;ctx-&gt;op=
+eration.cipher, ctx-&gt;key, ctx-&gt;cipher_info-&gt;psa_alg);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        else if (cipher_ctx_direction(ctx=
+) =3D=3D OPENVPN_OP_DECRYPT)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           status =3D psa_cipher_decrypt_setup(&amp;ctx-&gt;operation.ciphe=
+r, ctx-&gt;key, ctx-&gt;cipher_info-&gt;psa_alg);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (status !=3D =
+PSA_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retur=
+n 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        status =3D psa_cipher_set_iv(&amp;ct=
+x-&gt;operation.cipher, iv_buf, ctx-&gt;cipher_info-&gt;iv_bytes);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        if (status !=3D PSA_=
+SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return 0;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span>     }</span><br><span> </span><br><span>     return 1;</span><br><s=
+pan> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/* We rely on the caller to ensure that the destination buffer has eno=
+ugh room,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * but Mbe=
+d TLS always wants a size for the destination buffer. This function</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * calculates the minimum n=
+ecessary size for a given cipher and input length.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * This funcion assumes that src_len has been checked to be &=
+gt;=3D 0. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static =
+size_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+needed_dst_si=
+ze(const cipher_ctx_t *ctx, int src_len)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    int mode =3D cipher_ctx_mode(ctx);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (mode =3D=3D PSA_ALG_CTR || mode =3D=3D PSA_AL=
+G_GCM || mode =3D=3D PSA_ALG_CHACHA20_POLY1305)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        /* These algorithms are based on a keystream, so the =
+input and output</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+      * length are always equal. */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return (size_t)src_len;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* =
+These algorithms are block-based. The number of output blocks that are</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+         * produced is a=
+t most 1 + src_len / block_size. */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        size_t block_size =3D (size_t)cipher_ctx_block_size=
+(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_=
+t max_blocks =3D 1 + (size_t)src_len / block_size;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        return max_blocks * block_size;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span> int</span><br><span> cipher_ctx_update=
+_ad(cipher_ctx_t *ctx, const uint8_t *src, int src_len)</span><br><span> {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (src_len &gt; S=
+IZE_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (src=
+_len &lt; 0 || !cipher_ctx_mode_aead(ctx))</span><br><span>     {</span><br=
+><span>         return 0;</span><br><span>     }</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_ciphe=
+r_update_ad(ctx, src, src_len)))</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (psa_aead_update_ad(&amp;ctx-&gt;operation.aead, src, (=
+size_t)src_len) !=3D PSA_SUCCESS)</span><br><span>     {</span><br><span>  =
+       return 0;</span><br><span>     }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return 1;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_update(cipher_ctx_t *ctx, ui=
+nt8_t *dst, int *dst_len, uint8_t *src, int src_len)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (src_len &lt; 0)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    size_t dst_size =3D neede=
+d_dst_size(ctx, src_len);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    size_t psa_output_len =3D 0;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    psa_status_t status =3D 0;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (cipher_ctx_mode_aead(ctx))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        status =3D psa_aead_update(&amp;ctx-&gt;operation.aead,=
+ src, (size_t)src_len, dst, dst_size, &amp;psa_output_len);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        status =3D psa_cipher_update(&amp;ctx-&gt;operation.cipher, src, (=
+size_t)src_len, dst, dst_size, &amp;psa_output_len);</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (psa_output_len &gt; INT_MAX)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *dst_len=
- =3D (int)psa_output_len;</span><br><span> </span><br><span>     return 1;<=
-/span><br><span> }</span><br><span> </span><br><span> int</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_update(mbedtls_cipher_contex=
-t_t *ctx, uint8_t *dst, int *dst_len, uint8_t *src,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                  int src_len)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_final(cipher_ctx_t *c=
-tx, uint8_t *dst, int *dst_len)</span><br><span> {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    size_t s_dst_len =3D *dst_len;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    size_t dst_size =3D needed_=
-dst_size(ctx, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  size_t psa_output_len =3D 0;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    psa_status_t status =3D 0;</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_updat=
-e(ctx, src, (size_t)src_len, dst, &amp;s_dst_len)))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (cipher_ctx_mode_aead(ctx))</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- size_t actual_tag_size =3D 0;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        status =3D psa_aead_finish(&amp;ctx-&gt;operation.aead,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-             dst,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                               dst_size,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                                 &amp;psa_output_len,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-             ctx-&gt;tag,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                                 (size_t)OPENVPN_AEAD_TAG_LENGTH,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-          &amp;actual_tag_size);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        if (status !=3D PSA_SUCCESS || psa_output_len &gt; (si=
-ze_t)INT_MAX || actual_tag_size !=3D (size_t)OPENVPN_AEAD_TAG_LENGTH)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            return 0;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        ctx-&gt;aead_finished =3D true;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        status =3D psa_cipher_finish(&amp;ctx-&gt;operation.=
-cipher, dst, dst_size, &amp;psa_output_len);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        if (status !=3D PSA_SUCCESS || psa_output_=
-len &gt; (size_t)INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
++    if (status !=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
         return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      }</span><br><span>     }</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    *dst_len =3D s_dst_len;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    *dst_len =3D (int)psa_output_len;</s=
-pan><br><span> </span><br><span>     return 1;</span><br><span> }</span><br=
-><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-cipher_ctx_final(mbedtls_cipher_context_t *ctx, uint8_t *dst, int *=
-dst_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_=
-final_check_tag(cipher_ctx_t *ctx, uint8_t *dst, int *dst_len, uint8_t *tag=
-, size_t tag_len)</span><br><span> {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    size_t s_dst_len =3D *dst_len;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (!mbed_ok(mbedtls_cipher_finish(ctx, dst, &amp;s_dst_len)))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cipher_ctx_di=
-rection(ctx) !=3D OPENVPN_OP_DECRYPT || !cipher_ctx_mode_aead(ctx))</span><=
-br><span>     {</span><br><span>         return 0;</span><br><span>     }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    *=
-dst_len =3D s_dst_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    size_t psa_output_len =3D 0;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    psa_status_t status =3D 0;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    status =3D psa_aead_verify(&amp;ctx-&gt;operation.aead, dst, 0,=
- &amp;psa_output_len, tag, tag_len);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (status !=3D PSA_SUCCESS || psa_output_len &gt; (si=
-ze_t)INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    *dst_len =3D (int)psa_output_len=
-;</span><br><span> </span><br><span>     return 1;</span><br><span> }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_final_check_tag(=
-mbedtls_cipher_context_t *ctx, uint8_t *dst, int *dst_len, uint8_t *tag,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
-   size_t tag_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic const md_info_t md_info_table[] =3D {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    /* TODO: Fill out table. */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    { &quot;MD5&quot;, PSA_ALG_MD5 },</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;SHA1&quot=
-;, PSA_ALG_SHA_1 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    { &quot;SHA256&quot;, PSA_ALG_SHA_256 },</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+const size_t md_info_table_entries =3D sizeof(md_info_table) / size=
-of(md_info_t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+static const md_info_t *=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_get(const char *=
-digest_name)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    size_t olen =3D 0;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (MB=
-EDTLS_DECRYPT !=3D mbedtls_cipher_get_operation(ctx))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; md_info_t=
-able_entries; i++)</span><br><span>     {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        if (strcmp(digest_name, md_info_table[i].name) =
-=3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return &=
-amp;md_info_table[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        }</span><br><span>     }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (=
-tag_len &gt; SIZE_MAX)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return =
-0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_finish(ctx, dst, &amp;ol=
-en)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_CRYPT_ERRORS, &quo=
-t;%s: cipher_ctx_final() failed&quot;, __func__);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (olen =
-&gt; INT_MAX)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    *dst_len =3D olen;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if (!mbed_ok(mbedtls_cipher_check_tag(ctx, (const unsigned =
-char *)tag, tag_len)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return =
-0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    return 1;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defin=
-ed(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma =
-GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
-dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
- Generic message digest information functions</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-static const mbedtls_md_info_t *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-md_get(const char *digest)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    const mbedtls_md_info_t *md =3D NULL;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(digest);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    md =3D mbedtls_md_info_from_string(digest);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (!md)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        msg(M_FATAL, &quot;Message hash algorithm &#39;%s&#=
-39; not found&quot;, digest);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (=
-mbedtls_md_get_size(md) &gt; MAX_HMAC_KEY_LENGTH)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        msg(M_FATAL,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            &quot;Message hash algorithm &#39;%s&#39; uses a def=
-ault hash size (%d bytes) which is larger than &quot; PACKAGE_NAME</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;&#39;s curre=
-nt maximum hash size (%d bytes)&quot;,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            digest, mbedtls_md_get_size(md), MAX_HMAC_KEY_=
-LENGTH);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    return md;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</span><br><span> =
-}</span><br><span> </span><br><span> bool</span><br><span> md_valid(const c=
-har *digest)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    const mbedtls_md_info_t *md =3D mbedtls_md_info_from_string(d=
-igest);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const md=
-_info_t *md =3D md_get(digest);</span><br><span>     return md !=3D NULL;</=
-span><br><span> }</span><br><span> </span><br><span> const char *</span><br=
-><span> md_kt_name(const char *mdname)</span><br><span> {</span><br><span s=
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (psa_output_len &gt; INT_MAX=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    *dst_len =3D (int)psa_output_len;</span><br>=
+<span> </span><br><span>     return 1;</span><br><span> }</span><br><span> =
+</span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+cipher_ctx_update(mbedtls_cipher_context_t *ctx, uint8_t *dst, int *dst_len=
+, uint8_t *src,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+            int src_len)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+cipher_ctx_final(cipher_ctx_t *ctx, uint8_t *dst, int *dst_len)</span>=
+<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_=
+t s_dst_len =3D *dst_len;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    size_t dst_size =3D needed_dst_size(ctx, 0);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    size_t psa_output_len =3D 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_status_t status =3D=
+ 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    if (!mbed_ok(mbedtls_cipher_update(ctx, src, (size_t)src_len, dst, &amp=
+;s_dst_len)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (cipher_ctx_mode_aead(ctx))</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        size_t actual_tag_size =3D 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        status =3D psa_aead=
+_finish(&amp;ctx-&gt;operation.aead,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                 dst,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                                 dst_siz=
+e,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+                &amp;psa_output_len,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                 ctx-&gt;tag,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+ (size_t)OPENVPN_AEAD_TAG_LENGTH,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                 &amp;actual_tag_size);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (status !=3D P=
+SA_SUCCESS || psa_output_len &gt; (size_t)INT_MAX || actual_tag_size !=3D (=
+size_t)OPENVPN_AEAD_TAG_LENGTH)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  ctx-&gt;aead_finished =3D true;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        status =3D psa_ci=
+pher_finish(&amp;ctx-&gt;operation.cipher, dst, dst_size, &amp;psa_output_l=
+en);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (sta=
+tus !=3D PSA_SUCCESS || psa_output_len &gt; (size_t)INT_MAX)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    *dst_len=
+ =3D s_dst_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+*dst_len =3D (int)psa_output_len;</span><br><span> </span><br><span>     re=
+turn 1;</span><br><span> }</span><br><span> </span><br><span> int</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-cipher_ctx_final(mbedtls_cipher=
+_context_t *ctx, uint8_t *dst, int *dst_len)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+cipher_ctx_final_check_tag(cipher_ctx_t *ctx, uint=
+8_t *dst, int *dst_len, uint8_t *tag, size_t tag_len)</span><br><span> {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t s_dst_len =3D=
+ *dst_len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_cipher_=
+finish(ctx, dst, &amp;s_dst_len)))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (cipher_ctx_direction(ctx) !=3D OPENVPN_OP_DECRYPT ||=
+ !cipher_ctx_mode_aead(ctx))</span><br><span>     {</span><br><span>       =
+  return 0;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    *dst_len =3D s_dst_len;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    size_t psa_output_len =3D 0;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_status_t statu=
+s =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    status =3D psa_aead_verify=
+(&amp;ctx-&gt;operation.aead, dst, 0, &amp;psa_output_len, tag, tag_len);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (status !=3D P=
+SA_SUCCESS || psa_output_len &gt; (size_t)INT_MAX)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    *dst_len =3D (int)psa_output_len;</span><br><span> </span><br><span>  =
+   return 1;</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-cipher_ctx_final_check_tag(mbedtls_cipher_context_t *ctx, uint8_t=
+ *dst, int *dst_len, uint8_t *tag,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                           size_t tag_len)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+static const md_info_t md_info_table[] =
+=3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* TODO: F=
+ill out table. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  { &quot;MD5&quot;, PSA_ALG_MD5 },</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    { &quot;SHA1&quot;, PSA_ALG_SHA_1 },</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    { &quot;SHA256&quot;, PSA_ALG_SHA_=
+256 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+const size_t md_info_table_ent=
+ries =3D sizeof(md_info_table) / sizeof(md_info_t);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static const md_info_t *</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+md_get(const char *digest_name)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t olen =3D 0;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (MBEDTLS_DECRYPT !=3D mbedtls_cipher_ge=
+t_operation(ctx))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  for (size_t i =3D 0; i &lt; md_info_table_entries; i++)</span><br><span> =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (strcmp=
+(digest_name, md_info_table[i].name) =3D=3D 0)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            return &amp;md_info_table[i];</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (tag_len &gt; SIZE_MAX)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mb=
+edtls_cipher_finish(ctx, dst, &amp;olen)))</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        msg(D_CRYPT_ERRORS, &quot;%s: cipher_ctx_final() failed&quot;,=
+ __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        re=
+turn 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (olen &gt; INT_MAX)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        return 0;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    *ds=
+t_len =3D olen;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_ci=
+pher_check_tag(ctx, (const unsigned char *)tag, tag_len)))</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 1;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- * Generic message digest information fun=
+ctions</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static const mbedtl=
+s_md_info_t *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_get(c=
+onst char *digest)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_md_in=
+fo_t *md =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ ASSERT(digest);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    md =3D mbedtls_md_info=
+_from_string(digest);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    if (!md)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quo=
+t;Message hash algorithm &#39;%s&#39; not found&quot;, digest);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (mbedtls_md_get_size(md) &gt; MAX_HMAC_KEY=
+_LENGTH)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_FATAL,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;Message hash=
+ algorithm &#39;%s&#39; uses a default hash size (%d bytes) which is larger=
+ than &quot; PACKAGE_NAME</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            &quot;&#39;s current maximum hash size (%d bytes)&quot;,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            digest, mbed=
+tls_md_get_size(md), MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    return md;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    return NULL;</span><br><span> }</span><br><span> </span><br><span> bool=
+</span><br><span> md_valid(const char *digest)</span><br><span> {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_md_info_t *md=
+ =3D mbedtls_md_info_from_string(digest);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    const md_info_t *md =3D md_get(digest);</span><br=
+><span>     return md !=3D NULL;</span><br><span> }</span><br><span> </span=
+><br><span> const char *</span><br><span> md_kt_name(const char *mdname)</s=
+pan><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
+f (!strcmp(&quot;none&quot;, mdname))</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (strcmp(&quot;none&quot;, mdname) =3D=3D 0)</span>=
+<br><span>     {</span><br><span>         return &quot;[null-digest]&quot;;=
+</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    const mbedtls_md_info_t *kt =3D md_get(mdname);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_md_get_name(kt);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    const md_info_t *md =3D=
+ md_get(mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (md =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
+n NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    return md-&gt;name;</s=
+pan><br><span> }</span><br><span> </span><br><span> unsigned char</span><br=
+><span> md_kt_size(const char *mdname)</span><br><span> {</span><br><span s=
 tyle=3D"color: hsl(0, 100%, 40%);">-    if (!strcmp(&quot;none&quot;, mdnam=
 e))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (strcmp(&=
 quot;none&quot;, mdname) =3D=3D 0)</span><br><span>     {</span><br><span> =
-        return &quot;[null-digest]&quot;;</span><br><span>     }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_md_info_t *kt =
-=3D md_get(mdname);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  return mbedtls_md_get_name(kt);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    const md_info_t *md =3D md_get(mdname);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    if (md =3D=3D NULL)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return NULL;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    return md-&gt;name;</span><br><span> }</span><br><span> =
-</span><br><span> unsigned char</span><br><span> md_kt_size(const char *mdn=
-ame)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    if (!strcmp(&quot;none&quot;, mdname))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    if (strcmp(&quot;none&quot;, mdname) =3D=3D 0)=
-</span><br><span>     {</span><br><span>         return 0;</span><br><span>=
-     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedt=
-ls_md_info_t *kt =3D md_get(mdname);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    return mbedtls_md_get_size(kt);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    const md_info_t *md_info =3D md_get(mdna=
-me);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (md_info=
- =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    return (unsigned char)PSA_HASH_L=
-ENGTH(md_info-&gt;psa_alg);</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * Generic message digest functions</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_t *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_new(void)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    md_ctx_t *ctx;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(ctx, md_ctx_t);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return ctx;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br><span=
-> int</span><br><span> md_full(const char *mdname, const uint8_t *src, int =
-src_len, uint8_t *dst)</span><br><span> {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    const mbedtls_md_info_t *kt =3D md_get(mdname);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 0 =3D=3D mbedt=
-ls_md(kt, src, src_len, dst);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
-md_info_t *md =3D md_get(mdname);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (md =3D=3D NULL || src_len &lt; 0)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-mbedtls_md_context_t *</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-md_ctx_new(void)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  mbedtls_md_context_t *ctx;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    ALLOC_OBJ_CLEAR(ctx, mbedtls_md_context_t);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    return ctx;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* We depend on the caller to ensure that =
-dst has enough room for the hash,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+     * so we just tell PSA that it can hold the appropriate a=
-mount of bytes. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   size_t dst_size =3D PSA_HASH_LENGTH(md-&gt;psa_alg);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    size_t hash_length =3D 0;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    psa_status_t status =3D psa_hash_compute(md-=
-&gt;psa_alg, src, (size_t)src_len, dst, dst_size, &amp;hash_length);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (status !=3D PSA_SU=
-CCESS || hash_length !=3D dst_size)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 1;<=
-/span><br><span> }</span><br><span> </span><br><span> void</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-md_ctx_free(mbedtls_md_context_t *ctx)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_free(md_ctx_=
-t *ctx)</span><br><span> {</span><br><span>     free(ctx);</span><br><span>=
- }</span><br><span> </span><br><span> void</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-md_ctx_init(mbedtls_md_context_t *ctx, const char *mdn=
-ame)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_init(md_=
-ctx_t *ctx, const char *mdname)</span><br><span> {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    const mbedtls_md_info_t *kt =3D md_get(mdn=
-ame);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL =
-!=3D ctx &amp;&amp; NULL !=3D kt);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    const md_info_t *md_info =3D md_get(mdname);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ctx !=3D NULL &amp;&=
-amp; md_info !=3D NULL);</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    mbedtls_md_init(ctx);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_setup(ctx, kt, 0));=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D m=
-bedtls_md_starts(ctx));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    ctx-&gt;md_info =3D md_info;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    ASSERT(psa_hash_setup(&amp;ctx-&gt;operation, md_info-=
-&gt;psa_alg) =3D=3D PSA_SUCCESS);</span><br><span> }</span><br><span> </spa=
-n><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_c=
-tx_cleanup(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+md_ctx_cleanup(md_ctx_t *ctx)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_free(ctx);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_hash_abor=
-t(&amp;ctx-&gt;operation) =3D=3D PSA_SUCCESS);</span><br><span> }</span><br=
-><span> </span><br><span> int</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-md_ctx_size(const mbedtls_md_context_t *ctx)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+md_ctx_size(const md_ctx_t *ctx)</span><b=
-r><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (NUL=
-L =3D=3D ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- (ctx =3D=3D NULL)</span><br><span>     {</span><br><span>         return 0=
-;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    return (int)mbedtls_md_get_size(mbedtls_md_info_from_ctx(ctx));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int)PSA_HASH=
-_LENGTH(ctx-&gt;md_info-&gt;psa_alg);</span><br><span> }</span><br><span> <=
-/span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-md_ctx_update(mbedtls_md_context_t *ctx, const uint8_t *src, size_t src_len=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_update(md_c=
-tx_t *ctx, const uint8_t *src, size_t src_len)</span><br><span> {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_=
-update(ctx, src, src_len));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    ASSERT(psa_hash_update(&amp;ctx-&gt;operation, src, src_len) =
-=3D=3D PSA_SUCCESS);</span><br><span> }</span><br><span> </span><br><span> =
-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_ctx_final(mbed=
-tls_md_context_t *ctx, uint8_t *dst)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+md_ctx_final(md_ctx_t *ctx, uint8_t *dst)</span><br><span>=
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D=
- mbedtls_md_finish(ctx, dst));</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    mbedtls_md_free(ctx);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* We depend on the caller to ensure that dst has enough=
- room for the hash,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-     * so we just tell PSA that it can hold the appropriate amount of bytes=
-. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t dst_=
-size =3D PSA_HASH_LENGTH(ctx-&gt;md_info-&gt;psa_alg);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    size_t hash_length =3D 0;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    ASSERT(psa_hash_finish(&amp;ctx-&gt;operation=
-, dst, dst_size, &amp;hash_length) =3D=3D PSA_SUCCESS);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    ASSERT(hash_length =3D=3D dst_size)=
-;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * Generic HMAC functions</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * TODO: re-enable dmsg for crypto debug</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedtl=
-s_md_context_t *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hma=
-c_ctx_t *</span><br><span> hmac_ctx_new(void)</span><br><span> {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_context_t *ctx;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_OBJ(ctx, mbed=
-tls_md_context_t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   hmac_ctx_t *ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    ALLOC_OBJ_CLEAR(ctx, hmac_ctx_t);</span><br><span>     return ctx;</spa=
-n><br><span> }</span><br><span> </span><br><span> void</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-hmac_ctx_free(mbedtls_md_context_t *ctx)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_free(hmac_ct=
-x_t *ctx)</span><br><span> {</span><br><span>     free(ctx);</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-hmac_ctx_init(mb=
-edtls_md_context_t *ctx, const uint8_t *key, const char *mdname)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_init_with_arbitrary_key_lengt=
-h(hmac_ctx_t *ctx, const uint8_t *key, size_t key_len, const md_info_t *md_=
-info)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    const mbedtls_md_info_t *kt =3D md_get(mdname);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    ASSERT(NULL !=3D kt &amp;&amp; NULL !=
-=3D ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ctx-&g=
-t;md_info =3D md_info;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    psa_set_key_type(&amp;ctx-&gt;key_attributes, PSA_KEY_TYPE_HMAC);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_algori=
-thm(&amp;ctx-&gt;key_attributes, PSA_ALG_HMAC(md_info-&gt;psa_alg));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_usage_flag=
-s(&amp;ctx-&gt;key_attributes, PSA_KEY_USAGE_SIGN_MESSAGE);</span><br><span=
+        return 0;</span><br><span>     }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    const mbedtls_md_info_t *kt =3D md_get(mdname);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_md_get_=
+size(kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
+md_info_t *md_info =3D md_get(mdname);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (md_info =3D=3D NULL)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return (unsigned char)PSA_HASH_LENGTH(md_info-&gt;psa_alg);</span><br><sp=
+an> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">- * Generic message digest functions<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+md_ctx_t *</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+md_ctx_new(void)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    md_ctx_t=
+ *ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ=
+_CLEAR(ctx, md_ctx_t);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    return ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
+</span><br><span> </span><br><span> int</span><br><span> md_full(const char=
+ *mdname, const uint8_t *src, int src_len, uint8_t *dst)</span><br><span> {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_md_=
+info_t *kt =3D md_get(mdname);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    return 0 =3D=3D mbedtls_md(kt, src, src_len, dst);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    const md_info_t *md =3D md_get(mdname);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (md =3D=3D NULL || s=
+rc_len &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedtls_md_context_=
+t *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_ctx_new(void)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_context_t *ctx;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_OBJ_CLEAR(ctx, mbedtls_m=
+d_context_t);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
+rn ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* We de=
+pend on the caller to ensure that dst has enough room for the hash,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     * so we just tell PSA =
+that it can hold the appropriate amount of bytes. */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    size_t dst_size =3D PSA_HASH_LENGTH(m=
+d-&gt;psa_alg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+size_t hash_length =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_statu=
+s_t status =3D psa_hash_compute(md-&gt;psa_alg, src, (size_t)src_len, dst, =
+dst_size, &amp;hash_length);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    if (status !=3D PSA_SUCCESS || hash_length !=3D dst_size)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    return 1;</span><br><span> }</span><br><span> </sp=
+an><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_=
+ctx_free(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+md_ctx_free(md_ctx_t *ctx)</span><br><span> {</span><br><sp=
+an>     free(ctx);</span><br><span> }</span><br><span> </span><br><span> vo=
+id</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_ctx_init(mbedtls=
+_md_context_t *ctx, const char *mdname)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+md_ctx_init(md_ctx_t *ctx, const char *mdname)</span><b=
+r><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const m=
+bedtls_md_info_t *kt =3D md_get(mdname);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    ASSERT(NULL !=3D ctx &amp;&amp; NULL !=3D kt);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const md_info_t *md_i=
+nfo =3D md_get(mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    ASSERT(ctx !=3D NULL &amp;&amp; md_info !=3D NULL);</span><br><span=
 > </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_init=
-(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int key_len=
- =3D mbedtls_md_get_size(kt);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    ASSERT(0 =3D=3D mbedtls_md_setup(ctx, kt, 1));</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_hmac_st=
-arts(ctx, key, key_len));</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (psa_import_key(&amp;ctx-&gt;key_attributes, key, key_len, &am=
-p;ctx-&gt;key) !=3D PSA_SUCCESS)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       msg(M_FATAL, &quot;psa_import_key failed&quot;);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    /* make sure we used a big enough=
- key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(mbe=
-dtls_md_get_size(kt) &lt;=3D key_len);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    ASSERT(psa_mac_sign_setup(&amp;ctx-&gt;operation, ct=
-x-&gt;key, PSA_ALG_HMAC(md_info-&gt;psa_alg)) =3D=3D PSA_SUCCESS);</span><b=
-r><span> }</span><br><span> </span><br><span> void</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-hmac_ctx_cleanup(mbedtls_md_context_t *ctx)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_init(hmac_ctx=
-_t *ctx, const uint8_t *key, const char *mdname)</span><br><span> {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_free(ctx);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const md_info_t *md=
-_info =3D md_get(mdname);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    ASSERT(ctx !=3D NULL &amp;&amp; key !=3D NULL &amp;&amp; md_info =
-!=3D NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_init_with_arbi=
-trary_key_length(ctx, key, PSA_HASH_LENGTH(md_info-&gt;psa_alg), md_info);<=
+(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =
+=3D=3D mbedtls_md_setup(ctx, kt, 0));</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_starts(ctx));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ctx-&gt;md_info =3D md_info;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_hash_s=
+etup(&amp;ctx-&gt;operation, md_info-&gt;psa_alg) =3D=3D PSA_SUCCESS);</spa=
+n><br><span> }</span><br><span> </span><br><span> void</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-md_ctx_cleanup(mbedtls_md_context_t *ctx)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_cleanup(md_ct=
+x_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    mbedtls_md_free(ctx);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    ASSERT(psa_hash_abort(&amp;ctx-&gt;operation) =3D=3D PSA_S=
+UCCESS);</span><br><span> }</span><br><span> </span><br><span> int</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-md_ctx_size(const mbedtls_md_c=
+ontext_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ct=
+x_size(const md_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    if (NULL =3D=3D ctx)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (ctx =3D=3D NULL)</span><br><span>    =
+ {</span><br><span>         return 0;</span><br><span>     }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    return (int)mbedtls_md_get_size(=
+mbedtls_md_info_from_ctx(ctx));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return (int)PSA_HASH_LENGTH(ctx-&gt;md_info-&gt;psa_alg);</=
+span><br><span> }</span><br><span> </span><br><span> void</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-md_ctx_update(mbedtls_md_context_t *ctx=
+, const uint8_t *src, size_t src_len)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+md_ctx_update(md_ctx_t *ctx, const uint8_t *src, size_t s=
+rc_len)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    ASSERT(0 =3D=3D mbedtls_md_update(ctx, src, src_len));</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_hash_update(&amp=
+;ctx-&gt;operation, src, src_len) =3D=3D PSA_SUCCESS);</span><br><span> }</=
+span><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-md_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_final(md_ctx_t *c=
+tx, uint8_t *dst)</span><br><span> {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_finish(ctx, dst));</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_free(ctx);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* We depend on the ca=
+ller to ensure that dst has enough room for the hash,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     * so we just tell PSA that it can ho=
+ld the appropriate amount of bytes. */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    size_t dst_size =3D PSA_HASH_LENGTH(ctx-&gt;md_info-=
+&gt;psa_alg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    si=
+ze_t hash_length =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_=
+hash_finish(&amp;ctx-&gt;operation, dst, dst_size, &amp;hash_length) =3D=3D=
+ PSA_SUCCESS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    A=
+SSERT(hash_length =3D=3D dst_size);</span><br><span> }</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Gen=
+eric HMAC functions</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- * TODO: re-enable dmsg f=
+or crypto debug</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-mbedtls_md_context_t *</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_t *</span><br><span> hmac_ctx_n=
+ew(void)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    mbedtls_md_context_t *ctx;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    ALLOC_OBJ(ctx, mbedtls_md_context_t);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_t *ctx;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(ctx, hmac_ctx_t);=
+</span><br><span>     return ctx;</span><br><span> }</span><br><span> </spa=
+n><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-hmac=
+_ctx_free(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+hmac_ctx_free(hmac_ctx_t *ctx)</span><br><span> {</span><b=
+r><span>     free(ctx);</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_=
+t *key, const char *mdname)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+hmac_ctx_init_with_arbitrary_key_length(hmac_ctx_t *ctx, const uint8_t *key=
+, size_t key_len, const md_info_t *md_info)</span><br><span> {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    const mbedtls_md_info_t *kt =
+=3D md_get(mdname);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  ASSERT(NULL !=3D kt &amp;&amp; NULL !=3D ctx);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    ctx-&gt;md_info =3D md_info;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_type(&amp;ctx-&gt=
+;key_attributes, PSA_KEY_TYPE_HMAC);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    psa_set_key_algorithm(&amp;ctx-&gt;key_attributes, PSA=
+_ALG_HMAC(md_info-&gt;psa_alg));</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    psa_set_key_usage_flags(&amp;ctx-&gt;key_attributes, PSA_K=
+EY_USAGE_SIGN_MESSAGE);</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    mbedtls_md_init(ctx);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    int key_len =3D mbedtls_md_get_size(kt);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_=
+md_setup(ctx, kt, 1));</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    ASSERT(0 =3D=3D mbedtls_md_hmac_starts(ctx, key, key_len));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (psa_import_key(&amp;ct=
+x-&gt;key_attributes, key, key_len, &amp;ctx-&gt;key) !=3D PSA_SUCCESS)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;psa_import=
+_key failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    /* make sure we used a big enough key */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    ASSERT(mbedtls_md_get_size(kt) &lt;=3D key_len=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_ma=
+c_sign_setup(&amp;ctx-&gt;operation, ctx-&gt;key, PSA_ALG_HMAC(md_info-&gt;=
+psa_alg)) =3D=3D PSA_SUCCESS);</span><br><span> }</span><br><span> </span><=
+br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-hmac_ct=
+x_cleanup(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const c=
+har *mdname)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    mbedtls_md_free(ctx);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const md_info_t *md_info =3D md_get(mdname);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ctx !=3D NULL &amp;=
+&amp; key !=3D NULL &amp;&amp; md_info !=3D NULL);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    hmac_ctx_init_with_arbitrary_key_length(ctx, key, PSA_HASH_=
+LENGTH(md_info-&gt;psa_alg), md_info);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_cleanup(hmac_ctx_t *ctx)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_mac_abort(&amp;ctx-&gt=
+;operation) =3D=3D PSA_SUCCESS);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    ASSERT(psa_destroy_key(ctx-&gt;key) =3D=3D PSA_SUCCESS);</=
+span><br><span> }</span><br><span> </span><br><span> int</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-hmac_ctx_size(mbedtls_md_context_t *ctx)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_size(hmac_=
+ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    if (NULL =3D=3D ctx)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_md_ge=
+t_size(mbedtls_md_info_from_ctx(ctx));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    return (int)PSA_HASH_LENGTH(ctx-&gt;md_info-&gt;psa_=
+alg);</span><br><span> }</span><br><span> </span><br><span> void</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-hmac_ctx_reset(mbedtls_md_contex=
+t_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_r=
+eset(hmac_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_hmac_reset(ctx));</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_mac_abort(&a=
+mp;ctx-&gt;operation) =3D=3D PSA_SUCCESS);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    ASSERT(psa_mac_sign_setup(&amp;ctx-&gt;operation=
+, ctx-&gt;key, PSA_ALG_HMAC(ctx-&gt;md_info-&gt;psa_alg)) =3D=3D PSA_SUCCES=
+S);</span><br><span> }</span><br><span> </span><br><span> void</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-hmac_ctx_update(mbedtls_md_context=
+_t *ctx, const uint8_t *src, int src_len)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+hmac_ctx_update(hmac_ctx_t *ctx, const uint8_t *src, =
+int src_len)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_hmac_update(ctx, src, src_len));</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(src_len &g=
+t;=3D 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT=
+(psa_mac_update(&amp;ctx-&gt;operation, src, (size_t)src_len) =3D=3D PSA_SU=
+CCESS);</span><br><span> }</span><br><span> </span><br><span> void</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-hmac_ctx_final(mbedtls_md_cont=
+ext_t *ctx, uint8_t *dst)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+hmac_ctx_final(hmac_ctx_t *ctx, uint8_t *dst)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtl=
+s_md_hmac_finish(ctx, dst));</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* We depend on the caller to ensure that dst has enough room =
+for the hash,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
+ so we just tell PSA that it can hold the appropriate amount of bytes. */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t dst_size =
+=3D PSA_HASH_LENGTH(ctx-&gt;md_info-&gt;psa_alg);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    size_t hmac_length =3D 0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    ASSERT(psa_mac_sign_finish(&amp;ctx-&gt;operation,=
+ dst, dst_size, &amp;hmac_length) =3D=3D PSA_SUCCESS);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    ASSERT(hmac_length =3D=3D dst_size);=
+</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-me=
+mcmp_constant_time(const void *a, const void *b, size_t size)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    /* mbed TLS has a no const time memcmp function tha=
+t it exposes</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * vi=
+a its APIs like OpenSSL does with CRYPTO_memcmp</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-     * Adapt the function that mbedtls itself use=
+s in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * mbedtls_sa=
+fer_memcmp as it considers that to be safe */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    volatile const unsigned char *A =3D (volatile c=
+onst unsigned char *)a;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    volatile const unsigned char *B =3D (volatile const unsigned char *)b=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    volatile unsigne=
+d char diff =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (size_t i =3D 0;=
+ i &lt; size; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        unsigned ch=
+ar x =3D A[i], y =3D B[i];</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        diff |=3D x ^ y;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    return diff;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversi=
+on&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><=
+br><span>  * Generate the hash required by for the \c tls1_PRF function.</s=
+pan><br><span>  *</span><br><span>@@ -1004,8 +832,8 @@</span><br><span>  * =
+@param olen          Length of the output buffer</span><br><span>  */</span=
+><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t se=
+c_len, const uint8_t *seed,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            size_t seed_len, uint8_t *out, size_t olen)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+tls1_P_hash(const md_info_t *md_i=
+nfo, const uint8_t *sec, size_t sec_len, const uint8_t *seed,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            int seed_len, uint8_t=
+ *out, size_t olen)</span><br><span> {</span><br><span>     struct gc_arena=
+ gc =3D gc_new();</span><br><span>     uint8_t A1[MAX_HMAC_KEY_LENGTH];</sp=
+an><br><span>@@ -1023,18 +851,13 @@</span><br><span>     dmsg(D_SHOW_KEY_SO=
+URCE, &quot;tls1_P_hash sec: %s&quot;, format_hex(sec, sec_len, 0, &amp;gc)=
+);</span><br><span>     dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_P_hash seed: %s&=
+quot;, format_hex(seed, seed_len, 0, &amp;gc));</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int chunk =3D mbed=
+tls_md_get_size(md_kt);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    unsigned int A1_len =3D mbedtls_md_get_size(md_kt);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    unsigned int chunk =3D (unsigned =
+int)PSA_HASH_LENGTH(md_info-&gt;psa_alg);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    unsigned int A1_len =3D (unsigned int)PSA_HASH_LE=
+NGTH(md_info-&gt;psa_alg);</span><br><span> </span><br><span>     /* This i=
+s the only place where we init an HMAC with a key that is not</span><br><sp=
+an>      * equal to its size, therefore we init the hmac ctx manually here =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_init=
+(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =
+=3D=3D mbedtls_md_setup(ctx, md_kt, 1));</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_hmac_starts(ctx, sec, sec=
+_len));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_md_init(ctx_tmp);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls=
+_md_setup(ctx_tmp, md_kt, 1));</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    ASSERT(0 =3D=3D mbedtls_md_hmac_starts(ctx_tmp, sec, sec_len))=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_init_=
+with_arbitrary_key_length(ctx, sec, sec_len, md_info);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_init_with_arbitrary_key_len=
+gth(ctx_tmp, sec, sec_len, md_info);</span><br><span> </span><br><span>    =
+ hmac_ctx_update(ctx, seed, seed_len);</span><br><span>     hmac_ctx_final(=
+ctx, A1);</span><br><span>@@ -1045,7 +868,7 @@</span><br><span>         hma=
+c_ctx_reset(ctx_tmp);</span><br><span>         hmac_ctx_update(ctx, A1, A1_=
+len);</span><br><span>         hmac_ctx_update(ctx_tmp, A1, A1_len);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        hmac_ctx_update(ctx,=
+ seed, seed_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      hmac_ctx_update(ctx, seed, (int)seed_len);</span><br><span> </span><b=
+r><span>         if (olen &gt; chunk)</span><br><span>         {</span><br>=
+<span>@@ -1094,9 +917,15 @@</span><br><span> ssl_tls1_PRF(const uint8_t *la=
+bel, size_t label_len, const uint8_t *sec, size_t slen, uint8_t *out1,</spa=
+n><br><span>              size_t olen)</span><br><span> {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    const md_info_t *md5 =3D md_get(&=
+quot;MD5&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ const md_info_t *sha1 =3D md_get(&quot;SHA1&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (label_len &gt; (size_t)INT_MAX)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    const md_kt_t *md5 =3D md_get=
+(&quot;MD5&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ const md_kt_t *sha1 =3D md_get(&quot;SHA1&quot;);</span><br><span> </span>=
+<br><span>     uint8_t *out2 =3D (uint8_t *)gc_malloc(olen, false, &amp;gc)=
+;</span><br><span> </span><br><span>@@ -1105,8 +934,8 @@</span><br><span>  =
+   const uint8_t *S2 =3D &amp;(sec[len]);</span><br><span>     len +=3D (sl=
+en &amp; 1); /* add for odd, make longer */</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    tls1_P_hash(md5, S1, len, label=
+, label_len, out1, olen);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    tls1_P_hash(sha1, S2, len, label, label_len, out2, olen);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    tls1_P_hash(md5, S1, len,=
+ label, (int)label_len, out1, olen);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    tls1_P_hash(sha1, S2, len, label, (int)label_len, out2=
+, olen);</span><br><span> </span><br><span>     for (size_t i =3D 0; i &lt;=
+ olen; i++)</span><br><span>     {</span><br><span>@@ -1121,8 +950,204 @@</=
+span><br><span>     return true;</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
+ma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_init_l=
+ib(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto=
+_uninit_lib(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+hmac_ctx_cleanup(hmac_ctx_t *ctx)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   ASSERT(psa_mac_abort(&amp;ctx-&gt;operation) =3D=3D PSA_SUCCESS);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_destroy_key=
-(ctx-&gt;key) =3D=3D PSA_SUCCESS);</span><br><span> }</span><br><span> </sp=
-an><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-hmac=
-_ctx_size(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+hmac_ctx_size(hmac_ctx_t *ctx)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    if (NULL =3D=3D ctx)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    return mbedtls_md_get_size(mbedtls_md_info_from_ctx(ctx));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int)PSA_=
-HASH_LENGTH(ctx-&gt;md_info-&gt;psa_alg);</span><br><span> }</span><br><spa=
-n> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-hmac_ctx_reset(mbedtls_md_context_t *ctx)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+hmac_ctx_reset(hmac_ctx_t *ctx)</span><br><span> =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D =
-mbedtls_md_hmac_reset(ctx));</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    ASSERT(psa_mac_abort(&amp;ctx-&gt;operation) =3D=3D PSA_SUCCES=
-S);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_m=
-ac_sign_setup(&amp;ctx-&gt;operation, ctx-&gt;key, PSA_ALG_HMAC(ctx-&gt;md_=
-info-&gt;psa_alg)) =3D=3D PSA_SUCCESS);</span><br><span> }</span><br><span>=
- </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-hmac_ctx_update(mbedtls_md_context_t *ctx, const uint8_t *src, int src_le=
-n)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_update(h=
-mac_ctx_t *ctx, const uint8_t *src, int src_len)</span><br><span> {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_m=
-d_hmac_update(ctx, src, src_len));</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    ASSERT(src_len &gt;=3D 0);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    ASSERT(psa_mac_update(&amp;ctx-&gt;operation,=
- src, (size_t)src_len) =3D=3D PSA_SUCCESS);</span><br><span> }</span><br><s=
-pan> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-hmac_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_final(hmac_ctx_t *ctx, u=
-int8_t *dst)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_hmac_finish(ctx, dst));</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* We depend on the caller=
- to ensure that dst has enough room for the hash,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+     * so we just tell PSA that it can hold t=
-he appropriate amount of bytes. */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    size_t dst_size =3D PSA_HASH_LENGTH(ctx-&gt;md_info-&gt;=
-psa_alg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t=
- hmac_length =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(psa_mac_=
-sign_finish(&amp;ctx-&gt;operation, dst, dst_size, &amp;hmac_length) =3D=3D=
- PSA_SUCCESS);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    A=
-SSERT(hmac_length =3D=3D dst_size);</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-memcmp_constant_time(const void *a, const =
-void *b, size_t size)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* mbed TLS has =
-a no const time memcmp function that it exposes</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-     * via its APIs like OpenSSL does with CRYPTO=
-_memcmp</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * Adapt t=
-he function that mbedtls itself uses in</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-     * mbedtls_safer_memcmp as it considers that to be sa=
-fe */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    volatile con=
-st unsigned char *A =3D (volatile const unsigned char *)a;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    volatile const unsigned char *B =
-=3D (volatile const unsigned char *)b;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    volatile unsigned char diff =3D 0;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    for (size_t i =3D 0; i &lt; size; i++)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        unsigned char x =3D A[i], y =3D B[i];</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        diff |=3D x ^ y;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    return diff;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cla=
-ng__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diag=
-nostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GC=
-C diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span> /*</span><br><span>  * Generate the hash require=
-d by for the \c tls1_PRF function.</span><br><span>  *</span><br><span>@@ -=
-1004,8 +832,8 @@</span><br><span>  * @param olen          Length of the out=
-put buffer</span><br><span>  */</span><br><span> static void</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-tls1_P_hash(const mbedtls_md_info_t =
-*md_kt, const uint8_t *sec, size_t sec_len, const uint8_t *seed,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            size_t seed_len, uin=
-t8_t *out, size_t olen)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+tls1_P_hash(const md_info_t *md_info, const uint8_t *sec, size_t sec_le=
-n, const uint8_t *seed,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            int seed_len, uint8_t *out, size_t olen)</span><br><span> {=
-</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>    =
- uint8_t A1[MAX_HMAC_KEY_LENGTH];</span><br><span>@@ -1023,18 +851,13 @@</s=
-pan><br><span>     dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_P_hash sec: %s&quot;,=
- format_hex(sec, sec_len, 0, &amp;gc));</span><br><span>     dmsg(D_SHOW_KE=
-Y_SOURCE, &quot;tls1_P_hash seed: %s&quot;, format_hex(seed, seed_len, 0, &=
-amp;gc));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    unsigned int chunk =3D mbedtls_md_get_size(md_kt);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    unsigned int A1_len =3D mbedtls_=
-md_get_size(md_kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    unsigned int chunk =3D (unsigned int)PSA_HASH_LENGTH(md_info-&gt;psa_al=
-g);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int=
- A1_len =3D (unsigned int)PSA_HASH_LENGTH(md_info-&gt;psa_alg);</span><br><=
-span> </span><br><span>     /* This is the only place where we init an HMAC=
- with a key that is not</span><br><span>      * equal to its size, therefor=
-e we init the hmac ctx manually here */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    mbedtls_md_init(ctx);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_setup(ctx, md_kt, 1));=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D m=
-bedtls_md_hmac_starts(ctx, sec, sec_len));</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    mbedtls_md_init(ctx_tmp);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    ASSERT(0 =3D=3D mbedtls_md_setup(ctx_tmp, md_kt, 1));</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 =3D=3D mbedtls_md_=
-hmac_starts(ctx_tmp, sec, sec_len));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    hmac_ctx_init_with_arbitrary_key_length(ctx, sec, sec_=
-len, md_info);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    h=
-mac_ctx_init_with_arbitrary_key_length(ctx_tmp, sec, sec_len, md_info);</sp=
-an><br><span> </span><br><span>     hmac_ctx_update(ctx, seed, seed_len);</=
-span><br><span>     hmac_ctx_final(ctx, A1);</span><br><span>@@ -1045,7 +86=
-8,7 @@</span><br><span>         hmac_ctx_reset(ctx_tmp);</span><br><span>  =
-       hmac_ctx_update(ctx, A1, A1_len);</span><br><span>         hmac_ctx_=
-update(ctx_tmp, A1, A1_len);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        hmac_ctx_update(ctx, seed, seed_len);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        hmac_ctx_update(ctx, seed, (int)s=
-eed_len);</span><br><span> </span><br><span>         if (olen &gt; chunk)</=
-span><br><span>         {</span><br><span>@@ -1094,9 +917,15 @@</span><br><=
-span> ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *s=
-ec, size_t slen, uint8_t *out1,</span><br><span>              size_t olen)<=
-/span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   const md_info_t *md5 =3D md_get(&quot;MD5&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const md_info_t *sha1 =3D md_get(&quo=
-t;SHA1&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (label_len &gt; (=
-size_t)INT_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fal=
-se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     struct g=
-c_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    const md_kt_t *md5 =3D md_get(&quot;MD5&quot;);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    const md_kt_t *sha1 =3D md_get(&quot;S=
-HA1&quot;);</span><br><span> </span><br><span>     uint8_t *out2 =3D (uint8=
-_t *)gc_malloc(olen, false, &amp;gc);</span><br><span> </span><br><span>@@ =
--1105,8 +934,8 @@</span><br><span>     const uint8_t *S2 =3D &amp;(sec[len]=
-);</span><br><span>     len +=3D (slen &amp; 1); /* add for odd, make longe=
-r */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    tls1_P_hash(md5, S1, len, label, label_len, out1, olen);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    tls1_P_hash(sha1, S2, len, labe=
-l, label_len, out2, olen);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    tls1_P_hash(md5, S1, len, label, (int)label_len, out1, olen);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls1_P_hash(sha1, =
-S2, len, label, (int)label_len, out2, olen);</span><br><span> </span><br><s=
-pan>     for (size_t i =3D 0; i &lt; olen; i++)</span><br><span>     {</spa=
-n><br><span>@@ -1121,8 +950,204 @@</span><br><span>     return true;</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+crypto_init_lib(void)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+crypto_uninit_lib(void)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+crypto_clear_error(void)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+mbed_log_err(unsigned int=
- flags, int errval, const char *prefix)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (0 !=3D errval)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
-har errstr[256];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     mbedtls_strerror(errval, errstr, sizeof(errstr));</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        if (NULL =3D=3D prefix)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            prefix =3D &quot;mbed TLS error&quot;;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        msg(flags, &quot;%s: %s&quot=
-;, prefix, errstr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    return 0 =3D=3D errval;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-mbed_log_func_line(unsigned int flags, int errval, const char *func, int li=
-ne)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    char prefix[256];</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (snprintf(prefix, sizeof(prefix), &quot;%s:%=
-d&quot;, func, line) &gt;=3D sizeof(prefix))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        return mbed_log_err(flags, errval, func);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return mbed_log_err(flags, errval, prefix);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+i=
-nt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+memcmp_constant_t=
-ime(const void *a, const void *b, size_t size)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return mbedtls_ct_memcmp(a, b, size);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_available_cipher=
-s(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* Mbed TLS 4 does not cur=
-rently have a mechanism to discover available</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+     * ciphers. We instead print out the ciphers =
-from cipher_info_table. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENAB=
-LE_SMALL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(=
-&quot;The following ciphers and cipher modes are available for use\n&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;wit=
-h &quot; PACKAGE_NAME &quot;.  Each cipher shown below may be used as a\n&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quo=
-t;parameter to the --data-ciphers (or --cipher) option.  Using a\n&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;GCM o=
-r CBC mode is recommended.  In static key mode only CBC\n&quot;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+           &quot;mode is allowe=
-d.\n\n&quot;);</span><br><span> #endif</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif /* ENABLE_CRYPTO_MBEDTLS */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; =
-i &lt; cipher_info_table_entries; i++)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        const cipher_info_t *info =3D &amp;cipher_info_table[i];</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char *name =
-=3D info-&gt;name;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (!cipher_kt_insecure(name) &amp;&amp; (cipher_kt_mode_aead(name) =
-|| cipher_kt_mode_cbc(name)))</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            print_cipher(name);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;\nThe followin=
-g ciphers have a block size of less than 128 bits, \n&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+           &quot;and are therefore =
-deprecated.  Do not use unless you have to.\n\n&quot;);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; cipher_=
-info_table_entries; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
-onst cipher_info_t *info =3D &amp;cipher_info_table[i];</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        const char *name =3D info-&gt;n=
-ame;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (cip=
-her_kt_insecure(name) &amp;&amp; (cipher_kt_mode_aead(name) || cipher_kt_mo=
-de_cbc(name)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            pri=
-nt_cipher(name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;\n&quot;);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+show_available_digests(void)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
-* Mbed TLS 4 does not currently have a mechanism to discover available</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+     * message digests. =
-We instead print out the digests from md_info_table. */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#ifndef ENABLE_SMALL</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    printf(&quot;The following message digests are availa=
-ble for use with\n&quot; PACKAGE_NAME</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+           &quot;.  A message digest is used in conjuncti=
-on with\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-       &quot;the HMAC function, to authenticate received packets.\n&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;You =
-can specify a message digest as parameter to\n&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+           &quot;the --auth option.\n\n&q=
-uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; md_info_table=
-_entries; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const md_in=
-fo_t *info =3D &amp;md_info_table[i];</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        printf(&quot;%s %d bit default key\n&quot;, info-=
-&gt;name,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-     (unsigned char)PSA_HASH_LENGTH(info-&gt;psa_alg) * 8);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    printf(&quot;\n&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_available_eng=
-ines(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;Sorry, mbe=
-d TLS hardware crypto engine functionality is not &quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+           &quot;available\n&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+crypto_pem_encode(const char *name, struct buffer *dst, const struct buff=
-er *src,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-       struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* 100=
-0 chars is the PEM line length limit (+1 for tailing NUL) */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    char header[1000 + 1] =3D { 0 =
-};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char footer[1=
-000 + 1] =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(he=
-ader, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeo=
-f(header))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(footer, sizeof(foo=
-ter), &quot;-----END %s-----\n&quot;, name) &gt;=3D sizeof(footer))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    size_t out_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        !=3D mbedtls_pem_write_buffer(hea=
-der, footer, BPTR(src), BLEN(src), NULL, 0, &amp;out_len))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- We set the size buf to out_len-1 to NOT include the 0 byte that</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     * mbedtls_pem_write_buffe=
-r in its length calculation */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    *dst =3D alloc_buf_gc(out_len, gc);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_pem_write_buffer(he=
-ader, footer, BPTR(src), BLEN(src), BPTR(dst),</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                                          BCAP(d=
-st), &amp;out_len))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        || !(out_len &lt; INT_MAX &amp;&amp; out_len &gt; 1)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        || !buf_inc_len(dst, (int)=
-out_len - 1))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CLEAR(*dst);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fals=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+crypto_pem_decode(const char *=
-name, struct buffer *dst, const struct buffer *src)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    /* 1000 chars is the PEM line length limit (+1 for tail=
-ing NUL) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char=
- header[1000 + 1] =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    char footer[1000 + 1] =3D { 0 };</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    if (snprintf(header, sizeof(header), &quot;-----BEGIN %s-----&qu=
-ot;, name) &gt;=3D sizeof(header))</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snp=
-rintf(footer, sizeof(footer), &quot;-----END %s-----&quot;, name) &gt;=3D s=
-izeof(footer))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fals=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    /* mbed TLS requires the src to be null-termin=
-ated */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* alloc=
-ate a new buffer to avoid modifying the src buffer */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer input =
-=3D alloc_buf_gc(BLEN(src) + 1, &amp;gc);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    buf_copy(&amp;input, src);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    buf_null_terminate(&amp;input);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    size_t use_len =3D 0;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    mbedtls_pem_context ctx =3D { 0 };=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbed_ok(mbedtl=
-s_pem_read_buffer(&amp;ctx, header, footer, BPTR(&amp;input), NULL, 0, &amp=
-;use_len));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size=
-_t buf_size =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   const unsigned char *buf =3D mbedtls_pem_get_buffer(&amp;ctx, &amp;buf_s=
-ize);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret &a=
-mp;&amp; !buf_write(dst, buf, buf_size))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        ret =3D false;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        msg(M_WARN, &quot;PEM decode error: destination buffer to=
-o small&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    mbedtls_pem_free(&amp;ctx);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000 */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* defined(ENABLE_CRYP=
-TO_MBEDTLS) */</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.h b/=
-src/openvpn/crypto_mbedtls.h</span><br><span>index af71037..16d41e4 100644<=
-/span><br><span>--- a/src/openvpn/crypto_mbedtls.h</span><br><span>+++ b/sr=
-c/openvpn/crypto_mbedtls.h</span><br><span>@@ -1,3 +1,4 @@</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span=
->  *  OpenVPN -- An application to securely tunnel IP networks</span><br><s=
-pan>  *             over a single TCP/UDP port, with support for SSL/TLS-ba=
-sed</span><br><span>@@ -23,85 +24,98 @@</span><br><span> </span><br><span> =
-/**</span><br><span>  * @file</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * Data Channel Cryptography mbed TLS-specific backend interface</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Data Channel Crypto=
-graphy backend interface using the TF-PSA-Crypto library</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * part of Mbed TLS 4.</span><br><span=
->  */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#ifndef CRYPTO_MBEDTLS_H_</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#define CRYPTO_MBEDTLS_H_</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#ifndef CRYPTO_MBEDTLS4_H_</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#define CRYPTO_MBEDTLS4_H_</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;stdbool.h&gt;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/cipher.=
-h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbe=
-dtls/md.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include=
- &lt;mbedtls/ctr_drbg.h&gt;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#include &lt;psa/crypto.h&gt;</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-/** Generic message digest key type %cont=
-ext. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef mbedtl=
-s_md_info_t md_kt_t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-/** Generic cipher %co=
-ntext. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef mbed=
-tls_cipher_context_t cipher_ctx_t;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/** Gene=
-ric message digest %context. */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-typedef mbedtls_md_context_t md_ctx_t;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-/** Generic HMAC %context. */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-typedef mbedtls_md_context_t hmac_ctx_t;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-/* Use a dummy type for the provider */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-typedef void provider_t;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;integer.h&quot;</span><=
-br><span> </span><br><span> /** Maximum length of an IV */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_MAX_IV_LENGTH MBEDTLS_=
-MAX_IV_LENGTH</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defin=
-e OPENVPN_MAX_IV_LENGTH 16</span><br><span> </span><br><span> /** Cipher is=
- in CBC mode */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defin=
-e OPENVPN_MODE_CBC MBEDTLS_MODE_CBC</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#define OPENVPN_MODE_CBC PSA_ALG_CBC_PKCS7</span><br><span>=
- </span><br><span> /** Cipher is in OFB mode */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-#define OPENVPN_MODE_OFB MBEDTLS_MODE_OFB</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MODE_OFB PS=
-A_ALG_OFB</span><br><span> </span><br><span> /** Cipher is in CFB mode */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_MODE_CF=
-B MBEDTLS_MODE_CFB</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-define OPENVPN_MODE_CFB PSA_ALG_CFB</span><br><span> </span><br><span> /** =
-Cipher is in GCM mode */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#define OPENVPN_MODE_GCM MBEDTLS_MODE_GCM</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#define OPENVPN_MODE_GCM PSA_ALG_GCM</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef mbedtls_o=
-peration_t crypto_operation_t;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+typedef int crypto_operation_t;</span><br><span> </span><br><spa=
-n> /** Cipher should encrypt */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#define OPENVPN_OP_ENCRYPT MBEDTLS_ENCRYPT</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_OP_ENCRYPT 0</span><br><s=
-pan> </span><br><span> /** Cipher should decrypt */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_OP_DECRYPT MBEDTLS_DECRYPT<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_OP_D=
-ECRYPT 1</span><br><span> </span><br><span> #define MD4_DIGEST_LENGTH    16=
-</span><br><span> #define MD5_DIGEST_LENGTH    16</span><br><span> #define =
-SHA_DIGEST_LENGTH    20</span><br><span> #define SHA256_DIGEST_LENGTH 32</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * Returns a singleton i=
-nstance of the mbed TLS random number generator.</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * For PolarSSL/mbed TLS 1.1+, this is the CTR_DRBG random number g=
-enerator. If it</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * has=
-n&#39;t been initialised yet, the RNG will be initialised using the default=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * entropy sources. A=
-side from the default platform entropy sources, an</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- * additional entropy source, the HAVEGE rando=
-m number generator will also be</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- * added. During initialisation, a personalisation string will be=
- added based</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * on the=
- time, the PID, and a pointer to the random context.</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-mbedtls_ctr_drbg_context *rand_ctx_get(void);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+typedef void provider_t;</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_=
-PREDICTION_RESISTANCE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Enable predicti=
-on resistance on the random number generator.</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-void rand_ctx_enable_prediction_resistance(void);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+typedef struct cipher_info</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    const char *name;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    psa_key_type_t psa_key_type;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    psa_algorithm_t psa_alg;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    int key_bytes;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    int iv_bytes;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    int block_size;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+} cipher_info_t;</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+typedef union psa_cipher_or_a=
-ead_operation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_cipher_operation=
-_t cipher;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_a=
-ead_operation_t aead;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+} cipher_operation_t;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef struct =
-cipher_ctx</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_svc_key_id_t ke=
-y;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_key_attri=
-butes_t key_attributes;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    const cipher_info_t *cipher_info;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    bool aead_finished;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    cipher_operation_t operation;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    uint8_t tag[16];</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+} cipher_ctx_t;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+typedef struct md_info</span><br><span style=3D"color: hs=
+">+crypto_clear_error(void)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+mbed_log_err(unsigned int flags, int errval, const char *prefi=
+x)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (0 !=3D errval)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        char errstr[256];</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        mbedtls_strerror(errval, errstr,=
+ sizeof(errstr));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (NULL =3D=
+=3D prefix)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            prefix=
+ =3D &quot;mbed TLS error&quot;;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        msg(flags, &quot;%s: %s&quot;, prefix, errstr);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    return 0 =3D=3D errval;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+mbed_log_func_line(unsigned int flags,=
+ int errval, const char *func, int line)</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    const char *name;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    psa_algorithm_t psa_alg;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+} md_info_t;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef stru=
-ct md_ctx</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    const md_info_t *md_info=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_hash_opera=
-tion_t operation;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+} =
-md_ctx_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+typedef struct hmac_ctx</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    mbedtls_svc_key_id_t key;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    psa_key_attributes_t key_at=
-tributes;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
-md_info_t *md_info;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    psa_mac_operation_t operation;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+} hmac_ctx_t;</span><br><span> </span><br><span> /**</span><=
-br><span>  * Log the supplied mbed TLS error, prefixed by supplied prefix.<=
-/span><br><span>  *</span><br><span>  * @param flags         Flags to indic=
-ate error type and priority.</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * @param errval        mbed TLS error code to convert to error mess=
-age.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param errva=
-l        mbed TLS error code.</span><br><span>  * @param prefix        Pref=
-ix to mbed TLS error message.</span><br><span>  *</span><br><span>  * @retu=
-rns true if no errors are detected, false otherwise.</span><br><span>@@ -11=
-2,7 +126,7 @@</span><br><span>  * Log the supplied mbed TLS error, prefixed=
- by function name and line number.</span><br><span>  *</span><br><span>  * =
+">+    char prefix[256];</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprin=
+tf(prefix, sizeof(prefix), &quot;%s:%d&quot;, func, line) &gt;=3D sizeof(pr=
+efix))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        return mbed_log_err=
+(flags, errval, func);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    return mbed_log_err(flags,=
+ errval, prefix);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+memcmp_constant_time(const void *a, const void *b, size=
+_t size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_ct_memcmp(=
+a, b, size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+show_available_ciphers(void)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /* Mbed TLS 4 does not currently have a mechanism to discover av=
+ailable</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * ciphe=
+rs. We instead print out the ciphers from cipher_info_table. */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMALL</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    printf(&quot;The following ciphers and cipher=
+ modes are available for use\n&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+           &quot;with &quot; PACKAGE_NAME &quot;.  Each ci=
+pher shown below may be used as a\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+           &quot;parameter to the --data-ciphers (or =
+--cipher) option.  Using a\n&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+           &quot;GCM or CBC mode is recommended.  In static =
+key mode only CBC\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+           &quot;mode is allowed.\n\n&quot;);</span><br><span> #endif=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    for (size_t i =3D 0; i &lt; cipher_info_table_entries; i++)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        const cipher_info_t *info=
+ =3D &amp;cipher_info_table[i];</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        const char *name =3D info-&gt;name;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        if (!cipher_kt_insecure(name) &=
+amp;&amp; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            print_cipher(name);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    printf(&quot;\nThe following ciphers have a block size of less th=
+an 128 bits, \n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+           &quot;and are therefore deprecated.  Do not use unless you hav=
+e to.\n\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  for (size_t i =3D 0; i &lt; cipher_info_table_entries; i++)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        const cipher_info_t *info =3D &amp;ciph=
+er_info_table[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      const char *name =3D info-&gt;name;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        if (cipher_kt_insecure(name) &amp;&amp; (ciph=
+er_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            print_cipher(name);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    printf(&quot;\n&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+show_available_digests(void)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* Mbed TLS 4 does not currently have=
+ a mechanism to discover available</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+     * message digests. We instead print out the digests fro=
+m md_info_table. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMAL=
+L</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;T=
+he following message digests are available for use with\n&quot; PACKAGE_NAM=
+E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;.=
+  A message digest is used in conjunction with\n&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+           &quot;the HMAC function, to a=
+uthenticate received packets.\n&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+           &quot;You can specify a message digest as para=
+meter to\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+        &quot;the --auth option.\n\n&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for=
+ (size_t i =3D 0; i &lt; md_info_table_entries; i++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        const md_info_t *info =3D &amp;md_info_table[i]=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        printf(&qu=
+ot;%s %d bit default key\n&quot;, info-&gt;name,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+               (unsigned char)PSA_HASH_LENGTH(=
+info-&gt;psa_alg) * 8);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    printf=
+(&quot;\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+show_available_engines(void)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    printf(&quot;Sorry, mbed TLS hardware crypto engine functio=
+nality is not &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++           &quot;available\n&quot;);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+crypto_pem_encode(const char *name=
+, struct buffer *dst, const struct buffer *src,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                  struct gc_arena *gc)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* 1000 chars is the PEM line length limit=
+ (+1 for tailing NUL) */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    char header[1000 + 1] =3D { 0 };</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    char footer[1000 + 1] =3D { 0 };</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    if (snprintf(header, sizeof(header), &quot;-----BEG=
+IN %s-----\n&quot;, name) &gt;=3D sizeof(header))</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    if (snprintf(footer, sizeof(footer), &quot;-----END %s-----\n&quot;=
+, name) &gt;=3D sizeof(footer))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    size_t out_len =3D 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (MBEDTLS_ERR_BASE64_=
+BUFFER_TOO_SMALL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     !=3D mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src), NU=
+LL, 0, &amp;out_len))</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retu=
+rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* We set the size buf to out_len-1 t=
+o NOT include the 0 byte that</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+     * mbedtls_pem_write_buffer in its length calculation */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    *dst =3D alloc_buf_g=
+c(out_len, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (!mbed_ok(mbedtls_pem_write_buffer(header, footer, BPTR(src), BLEN(src),=
+ BPTR(dst),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                                  BCAP(dst), &amp;out_len))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        || !(out_len &lt; INT_MAX &=
+amp;&amp; out_len &gt; 1)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        || !buf_inc_len(dst, (int)out_len - 1))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        CLEAR(*dst);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
+ true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+crypto_pem_decode(const char *name, struct buffer *dst, const str=
+uct buffer *src)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* 1000 chars is =
+the PEM line length limit (+1 for tailing NUL) */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    char header[1000 + 1] =3D { 0 };</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    char footer[1000 + 1] =
+=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(header, siz=
+eof(header), &quot;-----BEGIN %s-----&quot;, name) &gt;=3D sizeof(header))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (snprintf(footer, sizeof(footer), &quot=
+;-----END %s-----&quot;, name) &gt;=3D sizeof(footer))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* mbe=
+d TLS requires the src to be null-terminated */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* allocate a new buffer to avoid modifying=
+ the src buffer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct buffer input =3D alloc_buf_gc(BLEN(src) + 1, &am=
+p;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_copy(=
+&amp;input, src);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  buf_null_terminate(&amp;input);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+ize_t use_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    mbedtls_pem_context ctx =3D { 0 };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    bool ret =3D</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        mbed_ok(mbedtls_pem_read_buffer(&amp;ctx, header, =
+footer, BPTR(&amp;input), NULL, 0, &amp;use_len));</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    size_t buf_size =3D 0;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    const unsigned char *buf =3D mbed=
+tls_pem_get_buffer(&amp;ctx, &amp;buf_size);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (ret &amp;&amp; !buf_write(dst, buf, buf_si=
+ze))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        ret =3D false;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;=
+PEM decode error: destination buffer too small&quot;);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    mbedtls_pem_free(&amp;ctx);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION=
+_NUMBER &gt;=3D 0x04000000 */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif /* defined(ENABLE_CRYPTO_MBEDTLS) */</span><br><span>diff =
+--git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h</span><=
+br><span>index af71037..16d41e4 100644</span><br><span>--- a/src/openvpn/cr=
+ypto_mbedtls.h</span><br><span>+++ b/src/openvpn/crypto_mbedtls.h</span><br=
+><span>@@ -1,3 +1,4 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> /*</span><br><span>  *  OpenVPN -- An application to s=
+ecurely tunnel IP networks</span><br><span>  *             over a single TC=
+P/UDP port, with support for SSL/TLS-based</span><br><span>@@ -23,85 +24,98=
+ @@</span><br><span> </span><br><span> /**</span><br><span>  * @file</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- * Data Channel Cryptography=
+ mbed TLS-specific backend interface</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * Data Channel Cryptography backend interface using the T=
+F-PSA-Crypto library</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * part of Mbed TLS 4.</span><br><span>  */</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#ifndef CRYPTO_MBEDTLS_H_</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define CRYPTO_MBEDTLS_H_</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef CRYPTO_MBEDTLS4_=
+H_</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CRYPTO_MB=
+EDTLS4_H_</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#include &lt;stdbool.h&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#include &lt;mbedtls/cipher.h&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#include &lt;mbedtls/md.h&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/ctr_drbg.h&gt;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;psa/crypto.h&g=
+t;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/=
+** Generic message digest key type %context. */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-typedef mbedtls_md_info_t md_kt_t;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-/** Generic cipher %context. */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-typedef mbedtls_cipher_context_t cipher_ctx_t;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-/** Generic message digest %context. */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef mbedtls_md_contex=
+t_t md_ctx_t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-/** Generic HMAC %context. */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef mbedtls_md_co=
+ntext_t hmac_ctx_t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Use a dummy type for=
+ the provider */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-typed=
+ef void provider_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#include &quot;integer.h&quot;</span><br><span> </span><br><span> /** Maxim=
+um length of an IV */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#define OPENVPN_MAX_IV_LENGTH MBEDTLS_MAX_IV_LENGTH</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MAX_IV_LENGTH 16</span><b=
+r><span> </span><br><span> /** Cipher is in CBC mode */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_MODE_CBC MBEDTLS_MODE_CBC=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MOD=
+E_CBC PSA_ALG_CBC_PKCS7</span><br><span> </span><br><span> /** Cipher is in=
+ OFB mode */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define O=
+PENVPN_MODE_OFB MBEDTLS_MODE_OFB</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#define OPENVPN_MODE_OFB PSA_ALG_OFB</span><br><span> </span><=
+br><span> /** Cipher is in CFB mode */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#define OPENVPN_MODE_CFB MBEDTLS_MODE_CFB</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MODE_CFB PSA_ALG_CFB=
+</span><br><span> </span><br><span> /** Cipher is in GCM mode */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_MODE_GCM MBEDTLS=
+_MODE_GCM</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OP=
+ENVPN_MODE_GCM PSA_ALG_GCM</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-typedef mbedtls_operation_t crypto_operation_t;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef int crypto_opera=
+tion_t;</span><br><span> </span><br><span> /** Cipher should encrypt */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_OP_ENCRYP=
+T MBEDTLS_ENCRYPT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine OPENVPN_OP_ENCRYPT 0</span><br><span> </span><br><span> /** Cipher sh=
+ould decrypt */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defin=
+e OPENVPN_OP_DECRYPT MBEDTLS_DECRYPT</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#define OPENVPN_OP_DECRYPT 1</span><br><span> </span><br><=
+span> #define MD4_DIGEST_LENGTH    16</span><br><span> #define MD5_DIGEST_L=
+ENGTH    16</span><br><span> #define SHA_DIGEST_LENGTH    20</span><br><spa=
+n> #define SHA256_DIGEST_LENGTH 32</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- * Returns a singleton instance of the mbed TLS random number=
+ generator.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">- * For PolarSSL/mbed TLS 1.1+=
+, this is the CTR_DRBG random number generator. If it</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * hasn&#39;t been initialised yet, the RNG=
+ will be initialised using the default</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">- * entropy sources. Aside from the default platform entrop=
+y sources, an</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * addit=
+ional entropy source, the HAVEGE random number generator will also be</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- * added. During initialisa=
+tion, a personalisation string will be added based</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * on the time, the PID, and a pointer to the =
+random context.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedtls_ctr_drbg_context=
+ *rand_ctx_get(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+typedef void provider_t;</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#ifdef ENABLE_PREDICTION_RESISTANCE</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- * Enable prediction resistance on the random number gen=
+erator.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-void rand_ctx_enable_prediction_=
+resistance(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ty=
+pedef struct cipher_info</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const cha=
+r *name;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    psa_key=
+_type_t psa_key_type;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    psa_algorithm_t psa_alg;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    int key_bytes;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    int iv_bytes;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    int block_size;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+} cipher_info_t;</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+typedef union psa_cipher_or_aead_operation</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    psa_cipher_operation_t cipher;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    psa_aead_operation_t aead;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+} cipher_operation_t;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+typedef struct cipher_ctx</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    mbedtls_svc_key_id_t key;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    psa_key_attributes_t key_attributes;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    const cipher_info_t *cipher_in=
+fo;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool aead_fi=
+nished;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cipher_o=
+peration_t operation;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    uint8_t tag[16];</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+} cipher_ctx_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef struct md_in=
+fo</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    const char *name;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    psa_algorithm_t psa_alg;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+} md_info_t;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+typedef struct md_ctx</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const md_info_t *md_info;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    psa_hash_operation_t operation;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+} md_ctx_t;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+typedef struct hmac_ctx</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mb=
+edtls_svc_key_id_t key;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    psa_key_attributes_t key_attributes;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const md_info_t *md_info;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    psa_mac_operation_t operation;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+} hmac_ctx_t;</span><br><=
+span> </span><br><span> /**</span><br><span>  * Log the supplied mbed TLS e=
+rror, prefixed by supplied prefix.</span><br><span>  *</span><br><span>  * =
 @param flags         Flags to indicate error type and priority.</span><br><=
 span style=3D"color: hsl(0, 100%, 40%);">- * @param errval        mbed TLS =
 error code to convert to error message.</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+ * @param errval        mbed TLS error code.</span><br>=
-<span>  * @param func          Function name where error was reported.</spa=
-n><br><span>  * @param line          Line number where error was reported.<=
-/span><br><span>  *</span><br><span>@@ -142,7 +156,8 @@</span><br><span>  *=
- @param errval        mbed TLS error code to convert to error message.</spa=
-n><br><span>  *</span><br><span>  * @returns true if no errors are detected=
-, false otherwise.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* TODO: The log function has been removed, do something about it?</span><br=
-><span>  */</span><br><span> #define mbed_ok(errval) mbed_log_func_line_lit=
-e(D_CRYPT_ERRORS, errval, __func__, __LINE__)</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#endif /* CRYPTO_MBEDTLS_H_ */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* CRYPTO_MBEDT=
-LS4_H_ */</span><br><span>diff --git a/src/openvpn/crypto_mbedtls_legacy.c =
-b/src/openvpn/crypto_mbedtls_legacy.c</span><br><span>new file mode 100644<=
-/span><br><span>index 0000000..a991349</span><br><span>--- /dev/null</span>=
-<br><span>+++ b/src/openvpn/crypto_mbedtls_legacy.c</span><br><span>@@ -0,0=
- +1,1133 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applica=
-tion to securely tunnel IP networks</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *             over a single TCP/UDP port, with support for=
- SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
-          session authentication and key exchange,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *             packet encryption, packet aut=
-hentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-            packet compression.</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  C=
-opyright (C) 2002-2026 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2010-2026 Sentyron=
- B.V. &lt;openvpn@...2918...&gt;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
-This program is free software; you can redistribute it and/or modify</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of =
-the GNU General Public License version 2</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *  as published by the Free Software Foundation.</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed in the ho=
-pe that it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY o=
-r FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *  GNU General Public License for more details.</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy of=
- the GNU General Public License along</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *  with this program; if not, see &lt;https://www.gnu.or=
-g/licenses/&gt;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @file</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * Data Channel Cryptography mbed TLS-specific backend interface,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * for mbed TLS 3.X=
- versions.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#include &quot;syshead.h&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#if defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &lt;mbedtls/version.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &quot;errlevel.h&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#include &quot;basic.h&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#include &quot;buffer.h&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto.h&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;=
-integer.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
-lude &quot;crypto_backend.h&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#include &quot;otime.h&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#include &quot;misc.h&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#include &lt;mbedtls/base64.h&gt;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#include &lt;mbedtls/des.h&gt;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/error.h&gt;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/md5.=
-h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;m=
-bedtls/cipher.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#include &lt;mbedtls/pem.h&gt;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include=
- &lt;mbedtls/entropy.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#include &lt;mbedtls/ssl.h&gt;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * Hardware engine support. Allows loading/unloading o=
-f engines.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-crypto_init_lib_engine(const char *engine_name)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    msg(M_WARN, &quot;Note: mbed TLS hardware crypto engine funct=
-ionality is not &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                &quot;available&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+provider_t *</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_load_provider(=
-const char *provider)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (provider=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;Note: =
-mbed TLS provider functionality is not available&quot;);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return NULL;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+crypto_unload_provider(const cha=
-r *provname, provider_t *provider)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(1=
+<span>  * @param prefix        Prefix to mbed TLS error message.</span><br>=
+<span>  *</span><br><span>  * @returns true if no errors are detected, fals=
+e otherwise.</span><br><span>@@ -112,7 +126,7 @@</span><br><span>  * Log th=
+e supplied mbed TLS error, prefixed by function name and line number.</span=
+><br><span>  *</span><br><span>  * @param flags         Flags to indicate e=
+rror type and priority.</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- * @param errval        mbed TLS error code to convert to error message.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param errval    =
+    mbed TLS error code.</span><br><span>  * @param func          Function =
+name where error was reported.</span><br><span>  * @param line          Lin=
+e number where error was reported.</span><br><span>  *</span><br><span>@@ -=
+142,7 +156,8 @@</span><br><span>  * @param errval        mbed TLS error cod=
+e to convert to error message.</span><br><span>  *</span><br><span>  * @ret=
+urns true if no errors are detected, false otherwise.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * TODO: The log function has been remove=
+d, do something about it?</span><br><span>  */</span><br><span> #define mbe=
+d_ok(errval) mbed_log_func_line_lite(D_CRYPT_ERRORS, errval, __func__, __LI=
+NE__)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#endif /* CRYPTO_MBEDTLS_H_ */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif /* CRYPTO_MBEDTLS4_H_ */</span><br><span>diff --git a/s=
+rc/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_legacy.c</s=
+pan><br><span>new file mode 100644</span><br><span>index 0000000..a991349</=
+span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/crypto_mbedt=
+ls_legacy.c</span><br><span>@@ -0,0 +1,1133 @@</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networks</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a si=
+ngle TCP/UDP port, with support for SSL/TLS-based</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *             session authentication and key=
+ exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
+      packet encryption, packet authentication, and</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &=
+lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  Copyright (C) 2010-2026 Sentyron B.V. &lt;openvpn@...2918...&gt;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you c=
+an redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *  it under the terms of the GNU General Public License versi=
+on 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as publishe=
+d by the Free Software Foundation.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  This program is distributed in the hope that it will be useful,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY;=
+ without even the implied warranty of</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. =
+ See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU Gen=
+eral Public License for more details.</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * Functions related to the core crypto library</span><br><span style=3D"c=
++ *  You should have received a copy of the GNU General Public License alon=
+g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this prog=
+ram; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @file</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * Data Channel Cryptograp=
+hy mbed TLS-specific backend interface,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * for mbed TLS 3.X versions.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifde=
+f HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
+lude &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_MBEDTLS)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtl=
+s/version.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUM=
+BER &lt; 0x04000000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;errl=
+evel.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#includ=
+e &quot;basic.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#include &quot;buffer.h&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#include &quot;crypto.h&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#include &quot;integer.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto_backend.h&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;otime.h&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot=
+;misc.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/base=
+64.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &l=
+t;mbedtls/des.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#include &lt;mbedtls/error.h&gt;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#include &lt;mbedtls/md5.h&gt;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#include &lt;mbedtls/cipher.h&gt;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/pem.h&gt;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/entropy.h&gt;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/ssl.h&gt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Hardware engi=
+ne support. Allows loading/unloading of engines.</span><br><span style=3D"c=
 olor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 10=
 0%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
 an><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+crypto_init_lib(void)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+crypto_uninit_lib(void)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_clear_error(voi=
-d)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbed_log_err=
-(unsigned int flags, int errval, const char *prefix)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (0 !=3D errval)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        char errstr[256];</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        mbedtls_strerror(errval, errstr, sizeof(errstr));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        if (NULL =3D=3D prefix)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            prefix =3D &quot;mbed TLS err=
-or&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(flags, &=
-quot;%s: %s&quot;, prefix, errstr);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0 =3D=
-=3D errval;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+mbed_log_func_line(unsigned int flags, int errval, const cha=
-r *func, int line)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char prefix[256=
-];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(prefix, sizeof(pref=
-ix), &quot;%s:%d&quot;, func, line) &gt;=3D sizeof(prefix))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        return mbed_log_err(flags, errval, func);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+yle=3D"color: hsl(120, 100%, 40%);">+crypto_init_lib_engine(const char *eng=
+ine_name)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_WARN, &quot;Note: =
+mbed TLS hardware crypto engine functionality is not &quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                &quot;available&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
 an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return mbed_log_err(flags, errval, prefix);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+hsl(120, 100%, 40%);">+provider_t *</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+crypto_load_provider(const char *provider)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (provider)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        msg(M_WARN, &quot;Note: mbed TLS provider functionality is not=
+ available&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NULL=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+crypto_unload_provider(const char *provname, provider_t *provider)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * Functions related to the core cryp=
+to library</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifd=
-ef DMALLOC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_init_dmalloc(void=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    msg(M_ERR, &quot;Error: dmalloc =
-support is not available for mbed TLS.&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#endif /* DMALLOC */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const cip=
-her_name_pair cipher_name_translation_table[] =3D {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    { &quot;BF-CBC&quot;, &quot;BLOWFISH-=
-CBC&quot; },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &=
-quot;BF-CFB&quot;, &quot;BLOWFISH-CFB64&quot; },</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    { &quot;CAMELLIA-128-CFB&quot;, &quot;CAME=
-LLIA-128-CFB128&quot; },</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    { &quot;CAMELLIA-192-CFB&quot;, &quot;CAMELLIA-192-CFB128&quot; },=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;CAMELLI=
-A-256-CFB&quot;, &quot;CAMELLIA-256-CFB128&quot; }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+const size_t cipher_name_translation_table_count =3D</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    sizeof(cipher_name_trans=
-lation_table) / sizeof(*cipher_name_translation_table);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+show_available_ciphers(void)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
-st int *ciphers =3D mbedtls_cipher_list();</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#ifndef ENABLE_SMALL</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    printf(&quot;The following ciphers and cipher modes are available =
-for use\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-       &quot;with &quot; PACKAGE_NAME &quot;.  Each cipher shown below may =
-be used as a\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+           &quot;parameter to the --data-ciphers (or --cipher) option.  Us=
-ing a\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-     &quot;GCM or CBC mode is recommended.  In static key mode only CBC\n&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quo=
-t;mode is allowed.\n\n&quot;);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (*ciphers !=
-=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        const mbedtls_ciphe=
-r_info_t *info =3D mbedtls_cipher_info_from_type(*ciphers);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        const char *name =3D mbedtl=
-s_cipher_info_get_name(info);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        if (info &amp;&amp; name &amp;&amp; !cipher_kt_insecure(n=
-ame)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &am=
-p;&amp; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            print_cipher(name);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        ciphers++;</span><br><span sty=
+ 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+crypto_init_lib(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+crypto_uninit_lib(void)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+crypto_clear_error(void)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+mbed_log_err(unsigned int flags, int errval, cons=
+t char *prefix)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (0 !=3D errval)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        char errstr[256];</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        mbedtls_strerror(er=
+rval, errstr, sizeof(errstr));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+if (NULL =3D=3D prefix)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      prefix =3D &quot;mbed TLS error&quot;;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        msg(flags, &quot;%s: %s&quot;, prefix, errstr);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    return 0 =3D=3D errval;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+mbed_log_func_line(unsigne=
+d int flags, int errval, const char *func, int line)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    char prefix[256];</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, func, line) &gt;=
+=3D sizeof(prefix))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
+ mbed_log_err(flags, errval, func);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbed_l=
+og_err(flags, errval, prefix);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#ifdef DMALLOC</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+crypto_init_dmalloc(void)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  msg(M_ERR, &quot;Error: dmalloc support is not available for mbed TLS.&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif /* DMALLOC */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+const cipher_name_pair cipher_name_translation_tab=
+le[] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &qu=
+ot;BF-CBC&quot;, &quot;BLOWFISH-CBC&quot; },</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    { &quot;BF-CFB&quot;, &quot;BLOWFISH-CFB64&quo=
+t; },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;CA=
+MELLIA-128-CFB&quot;, &quot;CAMELLIA-128-CFB128&quot; },</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    { &quot;CAMELLIA-192-CFB&quot;, &q=
+uot;CAMELLIA-192-CFB128&quot; },</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    { &quot;CAMELLIA-256-CFB&quot;, &quot;CAMELLIA-256-CFB128&=
+quot; }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+const size_t cipher_name_tran=
+slation_table_count =3D</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    sizeof(cipher_name_translation_table) / sizeof(*cipher_name_transla=
+tion_table);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+show_available_ciphers(void)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const int *ciphers =3D mbedtls_cipher_list();<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMALL</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;The following ciphers=
+ and cipher modes are available for use\n&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+           &quot;with &quot; PACKAGE_NAME &quot=
+;.  Each cipher shown below may be used as a\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+           &quot;parameter to the --data-=
+ciphers (or --cipher) option.  Using a\n&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+           &quot;GCM or CBC mode is recommended.=
+  In static key mode only CBC\n&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+           &quot;mode is allowed.\n\n&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    while (*ciphers !=3D 0)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        const mbedtls_cipher_info_t *info =3D mbedtls_cipher_info_fro=
+m_type(*ciphers);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      const char *name =3D mbedtls_cipher_info_get_name(info);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (info &amp;&amp; name=
+ &amp;&amp; !cipher_kt_insecure(name)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            &amp;&amp; (cipher_kt_mode_aead(name) || ciph=
+er_kt_mode_cbc(name)))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     print_cipher(name);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   ciphers++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;\nThe following cipher=
+s have a block size of less than 128 bits, \n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+           &quot;and are therefore deprec=
+ated.  Do not use unless you have to.\n\n&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    ciphers =3D mbedtls_cipher_list();</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    while (*ciphers !=3D 0=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        const mbedtls_cipher_inf=
+o_t *info =3D mbedtls_cipher_info_from_type(*ciphers);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        const char *name =3D mbedtls_cip=
+her_info_get_name(info);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        if (info &amp;&amp; name &amp;&amp; cipher_kt_insecure(name)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp=
+; (cipher_kt_mode_aead(name) || cipher_kt_mode_cbc(name)))</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            print_cipher(name);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        ciphers++;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    printf(&quot;\n&quot;);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+show_available_digests(void)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    const int *digests =3D mbedtls_md=
+_list();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMALL</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;The followin=
+g message digests are available for use with\n&quot; PACKAGE_NAME</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;.  A message=
+ digest is used in conjunction with\n&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+           &quot;the HMAC function, to authenticate=
+ received packets.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+           &quot;You can specify a message digest as parameter to\n&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           &qu=
+ot;the --auth option.\n\n&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (*digest=
+s !=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        const mbedtls_md=
+_info_t *info =3D mbedtls_md_info_from_type(*digests);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        if (info)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            printf(&quot;%s %d bit default key\n&quot;, mbedtls_md_get_=
+name(info),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+           mbedtls_md_get_size(info) * 8);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        digests++;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  printf(&quot;\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+show_available_engines(void)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    printf(&quot;Sorry, mbed TLS hardware crypto engine=
+ functionality is not &quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+           &quot;available\n&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined=
+(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+crypto_pem_encode(const char *name, struct buffer *dst, const str=
+uct buffer *src,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+               struct gc_arena *gc)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  /* 1000 chars is the PEM line length limit (+1 for tailing NUL) */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    char header[1000 + 1] =
+=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char =
+footer[1000 + 1] =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snp=
+rintf(header, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name) &gt;=
+=3D sizeof(header))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
+ false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(footer, s=
+izeof(footer), &quot;-----END %s-----\n&quot;, name) &gt;=3D sizeof(footer)=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    size_t out_len =3D 0;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        !=3D mbedtls_pem_write_bu=
+ffer(header, footer, BPTR(src), BLEN(src), NULL, 0, &amp;out_len))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    printf(&quot;\nThe following ciphers have a block size of less than =
-128 bits, \n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-          &quot;and are therefore deprecated.  Do not use unless you have t=
-o.\n\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
-iphers =3D mbedtls_cipher_list();</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    while (*ciphers !=3D 0)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        const mbedtls_cipher_info_t *info =3D mbedtls_cipher_info_f=
-rom_type(*ciphers);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        const char *name =3D mbedtls_cipher_info_get_name(info);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (info &amp;&amp; na=
-me &amp;&amp; cipher_kt_insecure(name)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            &amp;&amp; (cipher_kt_mode_aead(name) || cip=
-her_kt_mode_cbc(name)))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      print_cipher(name);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    ciphers++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;\n=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+show_available_digests(void)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    const int *digests =3D mbedtls_md_list();</span><br><span style=3D"c=
+">+    /* We set the size buf to out_len-1 to NOT include the 0 byte that</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * mbedtls_pem_wr=
+ite_buffer in its length calculation */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    *dst =3D alloc_buf_gc(out_len, gc);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_pem_write_=
+buffer(header, footer, BPTR(src), BLEN(src), BPTR(dst),</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                                       =
+   BCAP(dst), &amp;out_len))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        || !buf_inc_len(dst, out_len - 1))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        CLEAR(*dst);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
+ true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+crypto_pem_decode(const char *name, struct buffer *dst, const str=
+uct buffer *src)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* 1000 chars is =
+the PEM line length limit (+1 for tailing NUL) */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    char header[1000 + 1] =3D { 0 };</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    char footer[1000 + 1] =
+=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(header, siz=
+eof(header), &quot;-----BEGIN %s-----&quot;, name) &gt;=3D sizeof(header))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (snprintf(footer, sizeof(footer), &quot=
+;-----END %s-----&quot;, name) &gt;=3D sizeof(footer))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return false;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* mbe=
+d TLS requires the src to be null-terminated */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* allocate a new buffer to avoid modifying=
+ the src buffer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct buffer input =3D alloc_buf_gc(BLEN(src) + 1, &am=
+p;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_copy(=
+&amp;input, src);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  buf_null_terminate(&amp;input);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+ize_t use_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    mbedtls_pem_context ctx =3D { 0 };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    bool ret =3D</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        mbed_ok(mbedtls_pem_read_buffer(&amp;ctx, header, =
+footer, BPTR(&amp;input), NULL, 0, &amp;use_len));</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    size_t buf_size =3D 0;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    const unsigned char *buf =3D mbed=
+tls_pem_get_buffer(&amp;ctx, &amp;buf_size);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (ret &amp;&amp; !buf_write(dst, buf, buf_si=
+ze))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        ret =3D false;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;=
+PEM decode error: destination buffer too small&quot;);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    mbedtls_pem_free(&amp;ctx);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * Random number functions, used in cases where we want</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * reasonably strong c=
+ryptographic random number generation</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * without depleting our entropy pool.  Used for random</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * IV values and a nu=
+mber of other miscellaneous tasks.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * Initialise the given ctr_drbg context, using a pers=
+onalisation string and an</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * entropy gathering function.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++mbedtls_ctr_drbg_context *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+rand_ctx_get(void)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    static =
+mbedtls_entropy_context ec =3D { 0 };</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    static mbedtls_ctr_drbg_context cd_ctx =3D { 0 };</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    static bool rand_in=
+itialised =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!rand_init=
+ialised)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena g=
+c =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    struct buffer pers_string =3D alloc_buf_gc(100, &amp;gc);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        /*</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+         * Personalisation string, should be as unique as pos=
+sible (see NIST</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+     * 800-90 section 8.7.1). We have very little information at this stage=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * Include=
+ Program Name, memory address of the context and PID.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+         */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        buf_printf(&amp;pers_string, &quot;OpenVP=
+N %0u %p %s&quot;, platform_getpid(), &amp;cd_ctx,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                   time_string(0, 0, 0, &amp=
+;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        /* Initialise mbed TLS R=
+NG, and built-in entropy sources */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        mbedtls_entropy_init(&amp;ec);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        mbedtls_ctr_drbg_init(&amp;cd_ctx);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        if (!mbed_ok(mbedtls_ctr_dr=
+bg_seed(&amp;cd_ctx, mbedtls_entropy_func, &amp;ec, BPTR(&amp;pers_string),=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+                        BLEN(&amp;pers_string))))</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            msg(M_FATAL, &quot;Failed to initialize ran=
+dom generator&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        rand_initiali=
+sed =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    return &amp;cd_ctx;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#ifdef ENABLE_PREDICTION_RESISTANCE</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+rand_ctx_enable_prediction_resistance(void)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    mbedtls_ctr_drbg_context *cd_ctx =3D rand_ctx_get();</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    mbedtls_ctr_drbg_set_prediction_resistance(=
+cd_ctx, 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ENABLE_PREDICTIO=
+N_RESISTANCE */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+rand_bytes(uint8_t *output, int len)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ctr_drbg_context *rng_ctx =
+=3D rand_ctx_get();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (len &gt;=
+ 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        const size_t blen =3D =
+min_int(len, MBEDTLS_CTR_DRBG_MAX_REQUEST);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        if (0 !=3D mbedtls_ctr_drbg_random(rng_ctx,=
+ output, blen))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            re=
+turn 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        output +=3D blen;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        len -=3D blen;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
 olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#ifndef ENABLE_SMALL</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    printf(&quot;The following message digests are available for=
- use with\n&quot; PACKAGE_NAME</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+           &quot;.  A message digest is used in conjunction with=
-\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-&quot;the HMAC function, to authenticate received packets.\n&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;You can spe=
-cify a message digest as parameter to\n&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+           &quot;the --auth option.\n\n&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    while (*digests !=3D 0)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        const mbedtls_md_info_t *info =3D mbedtls_md_info_f=
-rom_type(*digests);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (info)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            printf(&quot;%s %d =
-bit default key\n&quot;, mbedtls_md_get_name(info),</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                   mbedtls_md_get_size(in=
-fo) * 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        digests++;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;\n&quot;);</span><=
+, 40%);">+    return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * Generic cipher key type functions</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static c=
+onst mbedtls_cipher_info_t *</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+cipher_get(const char *ciphername)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ASSERT(ciphername);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
+ mbedtls_cipher_info_t *cipher =3D NULL;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    ciphername =3D translate_cipher_name_from_openvpn(ciphername);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    cipher =3D mbedtls_cip=
+her_info_from_string(ciphername);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    return cipher;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+cipher_valid_reason(const char *ciphern=
+ame, const char **reason)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(r=
+eason);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_t=
+ *cipher =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (NULL =3D=3D cipher)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+msg(D_LOW, &quot;Cipher algorithm &#39;%s&#39; not found&quot;, ciphername)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *reason =
+=3D &quot;disabled because unknown&quot;;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return false;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
+ size_t key_bytelen =3D mbedtls_cipher_info_get_key_bitlen(cipher) / 8;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (key_bytelen &gt=
+; MAX_CIPHER_KEY_LENGTH)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
+sg(D_LOW,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  &quot;Cipher algorithm &#39;%s&#39; uses a default key size (%zu bytes) &=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &q=
+uot;which is larger than &quot; PACKAGE_NAME &quot;&#39;s current maximum k=
+ey size &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       &quot;(%d bytes)&quot;,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            ciphername, key_bytelen, MAX_CIPHER_KEY_LENGTH);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        *reason =3D &qu=
+ot;disabled due to key size too large&quot;;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *r=
+eason =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+const char *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+cipher_kt_name(const char *ciphername)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_t *cipher_kt =3D cip=
+her_get(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    if (NULL =3D=3D cipher_kt)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      return &quot;[null-cipher]&quot;;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return tr=
+anslate_cipher_name_to_openvpn(mbedtls_cipher_info_get_name(cipher_kt));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+cipher_kt_key_size(const char *ciphername)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (NULL =3D=3D cipher_kt)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    return (int)mbedtls_cipher_info_get_key_bitlen(cipher_kt) / 8;</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show=
-_available_engines(void)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&q=
-uot;Sorry, mbed TLS hardware crypto engine functionality is not &quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+           &quot;availab=
-le\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ciphe=
+r_kt_iv_size(const char *ciphername)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span=
 ><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnost=
-ic push</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC =
-diagnostic ignored &quot;-Wconversion&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_pem_encode(const=
- char *name, struct buffer *dst, const struct buffer *src,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                  struct gc_arena *g=
-c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* 1000 chars is the PEM line l=
-ength limit (+1 for tailing NUL) */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    char header[1000 + 1] =3D { 0 };</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    char footer[1000 + 1] =3D { 0 };</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (snprintf(header, sizeof(header), =
-&quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof(header))</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (snprintf(footer, sizeof(footer), &quot;-----END=
- %s-----\n&quot;, name) &gt;=3D sizeof(footer))</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t out_le=
-n =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (MBE=
-DTLS_ERR_BASE64_BUFFER_TOO_SMALL</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        !=3D mbedtls_pem_write_buffer(header, footer, BPTR(src=
-), BLEN(src), NULL, 0, &amp;out_len))</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    /* We set the size buf =
-to out_len-1 to NOT include the 0 byte that</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * mbedtls_pem_write_buffer in its length calcu=
-lation */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *dst =
-=3D alloc_buf_gc(out_len, gc);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (!mbed_ok(mbedtls_pem_write_buffer(header, footer, BPTR(s=
-rc), BLEN(src), BPTR(dst),</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                                          BCAP(dst), &amp;out_len))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        || !buf_inc_=
-len(dst, out_len - 1))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CLE=
-AR(*dst);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+crypto_pem_decode(con=
-st char *name, struct buffer *dst, const struct buffer *src)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    /* 1000 chars is the PEM line length limit (+1 f=
-or tailing NUL) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   char header[1000 + 1] =3D { 0 };</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    char footer[1000 + 1] =3D { 0 };</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (snprintf(header, sizeof(header), &quot;-----BEGIN %s=
------&quot;, name) &gt;=3D sizeof(header))</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (snprintf(footer, sizeof(footer), &quot;-----END %s-----&quot;, name) &=
-gt;=3D sizeof(footer))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret=
-urn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    /* mbed TLS requires the src to be nu=
-ll-terminated */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- /* allocate a new buffer to avoid modifying the src buffer */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_ne=
-w();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buff=
-er input =3D alloc_buf_gc(BLEN(src) + 1, &amp;gc);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    buf_copy(&amp;input, src);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    buf_null_terminate(&amp;input=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    size_t use_len =3D 0;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_pem_context ctx =
-=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool =
-ret =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbed=
-_ok(mbedtls_pem_read_buffer(&amp;ctx, header, footer, BPTR(&amp;input), NUL=
-L, 0, &amp;use_len));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    size_t buf_size =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    const unsigned char *buf =3D mbedtls_pem_get_buffer(&amp;ctx, =
-&amp;buf_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (ret &amp;&amp; !buf_write(dst, buf, buf_size))</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        ret =3D false;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(M_WARN, &quot;PEM decode error: destination=
- buffer too small&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_pem_free(&amp;c=
-tx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&am=
-p;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return re=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Random num=
-ber functions, used in cases where we want</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * reasonably strong cryptographic random number gen=
-eration</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * without d=
-epleting our entropy pool.  Used for random</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * IV values and a number of other miscellaneous ta=
-sks.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Initia=
-lise the given ctr_drbg context, using a personalisation string and an</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * entropy gathering fun=
-ction.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ctr_drbg_context *</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+rand_ctx_get(void)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    static mbedtls_entropy_context ec =3D=
- { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    static m=
-bedtls_ctr_drbg_context cd_ctx =3D { 0 };</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    static bool rand_initialised =3D false;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if (!rand_initialised)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        struct gc_arena gc =3D gc_new();</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        struct buffer pers_string =
-=3D alloc_buf_gc(100, &amp;gc);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * Perso=
-nalisation string, should be as unique as possible (see NIST</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+         * 800-90 section 8.7.1). =
-We have very little information at this stage.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+         * Include Program Name, memory address =
-of the context and PID.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    buf_printf(&amp;pers_string, &quot;OpenVPN %0u %p %s&quot;, platform_ge=
-tpid(), &amp;cd_ctx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                   time_string(0, 0, 0, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        /* Initialise mbed TLS RNG, and built-in entropy sou=
-rces */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbed=
-tls_entropy_init(&amp;ec);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbed=
-tls_ctr_drbg_init(&amp;cd_ctx);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        if (!mbed_ok(mbedtls_ctr_drbg_seed(&amp;cd_ctx, mbedtls=
-_entropy_func, &amp;ec, BPTR(&amp;pers_string),</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                                           BLEN=
-(&amp;pers_string))))</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    msg(M_FATAL, &quot;Failed to initialize random generator&quot;);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        rand_initialised =3D true;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return &amp;cd_ctx;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_PREDICTION_=
-RESISTANCE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+rand_ctx_enable_predicti=
-on_resistance(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ctr_dr=
-bg_context *cd_ctx =3D rand_ctx_get();</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    mbedtls_ctr_drbg_set_prediction_resistance(cd_ctx, 1);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif /* ENABLE_PREDICTION_RESISTANCE */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+rand_bytes(uint8_t *output, int len)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    mbedtls_ctr_drbg_context *rng_ctx =3D rand_ctx_get();</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    while (len &gt; 0)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        const size_t blen =3D min_int(len, MBEDTLS_CTR_DRBG_=
-MAX_REQUEST);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  if (0 !=3D mbedtls_ctr_drbg_random(rng_ctx, output, blen))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            return 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        output +=3D blen;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        len -=3D blen;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 1;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Generic cipher k=
-ey type functions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static const mbedtls_cipher_info_t =
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_get(const c=
-har *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ciphername=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_t *cip=
-her =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ciphername =3D transl=
-ate_cipher_name_from_openvpn(ciphername);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    cipher =3D mbedtls_cipher_info_from_string(cipher=
-name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ci=
-pher;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+cipher_valid_reason(const char *ciphername, const char **reason)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    ASSERT(reason);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    const mbedtls_cipher_info_t *cipher =3D cipher_get(cip=
-hername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (NULL =3D=3D cipher)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        msg(D_LOW, &quot;Cipher alg=
-orithm &#39;%s&#39; not found&quot;, ciphername);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        *reason =3D &quot;disabled because un=
-known&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    const size_t key_bytelen =3D mbedt=
-ls_cipher_info_get_key_bitlen(cipher) / 8;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (key_bytelen &gt; MAX_CIPHER_KEY_LENGTH)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        msg(D_LOW,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            &quot;Cipher algorithm &#39=
-;%s&#39; uses a default key size (%zu bytes) &quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            &quot;which is larger than &q=
-uot; PACKAGE_NAME &quot;&#39;s current maximum key size &quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            &quot;(%d bytes)&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ciph=
-ername, key_bytelen, MAX_CIPHER_KEY_LENGTH);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        *reason =3D &quot;disabled due to key size=
- too large&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    *reason =3D NULL;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+const char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cip=
-her_kt_name(const char *ciphername)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (NULL =3D=3D cipher=
-_kt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        return &quot;[null-ci=
-pher]&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    return translate_cipher_name_to_open=
-vpn(mbedtls_cipher_info_get_name(cipher_kt));</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_key_size(const ch=
-ar *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_ciph=
-er_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (NULL =3D=3D cipher_kt)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    return (int)mbedtls_ciph=
-er_info_get_key_bitlen(cipher_kt) / 8;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_iv_size(const char *ciph=
-ername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_=
-t *cipher_kt =3D cipher_get(ciphername);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (NULL =3D=3D cipher_kt)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int)m=
-bedtls_cipher_info_get_iv_size(cipher_kt);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_block_size(const cha=
-r *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_ciphe=
-r_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    if (NULL =3D=3D cipher_kt)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return (int)mbedtls_cipher_info_get_block_size(cipher_kt);</sp=
+"color: hsl(120, 100%, 40%);">+    if (NULL =3D=3D cipher_kt)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return (int)mbedtls_cipher_info_get_iv_size(cipher_kt);</sp=
 an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+c=
-ipher_kt_tag_size(const char *ciphername)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (cipher_kt_mode_aead(ciphername))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        return OPENVPN_AEAD_TAG_LENGTH;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+cipher_kt_insecure(const char *ciphername=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_t *cip=
-her_kt =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (!cipher_kt)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return !(cipher_kt_block_si=
-ze(ciphername) &gt;=3D 128 / 8</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#ifdef MBEDTLS_CHACHAPOLY_C</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+             || mbedtls_cipher_info_get_type(cipher_kt) =
-=3D=3D MBEDTLS_CIPHER_CHACHA20_POLY1305</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static mbedtls_cipher_mode_t</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_mode(const mbedtls_cip=
-her_info_t *cipher_kt)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(NULL=
- !=3D cipher_kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  return mbedtls_cipher_info_get_mode(cipher_kt);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_mode_cbc(con=
-st char *ciphername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls=
-_cipher_info_t *cipher =3D cipher_get(ciphername);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    return cipher &amp;&amp; cipher_kt_mode(=
-cipher) =3D=3D OPENVPN_MODE_CBC;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+cipher_kt_mode_ofb_cfb(const char *ciph=
-ername)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_=
-t *cipher =3D cipher_get(ciphername);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    return cipher</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+           &amp;&amp; (cipher_kt_mode(cipher) =3D=3D OPENVP=
-N_MODE_OFB</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-      || cipher_kt_mode(cipher) =3D=3D OPENVPN_MODE_CFB);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_mode=
-_aead(const char *ciphername)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
-t mbedtls_cipher_info_t *cipher =3D cipher_get(ciphername);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    return cipher</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+           &amp;&amp; (cipher_kt_mode=
-(cipher) =3D=3D OPENVPN_MODE_GCM</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#ifdef MBEDTLS_CHACHAPOLY_C</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+               || cipher_kt_mode(cipher) =3D=3D MBEDTL=
-S_MODE_CHACHAPOLY</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#e=
-ndif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           );</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * Generic cipher context functions<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+mbedtls_cipher_context_t *</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+cipher_ctx_new(void)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbe=
-dtls_cipher_context_t *ctx;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    ALLOC_OBJ(ctx, mbedtls_cipher_context_t);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return ctx;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_free(mbedtl=
-s_cipher_context_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_c=
-ipher_free(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- free(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+cipher_ctx_init(mbedtls_cipher_context_t *ctx, const uint8_t=
- *key, const char *ciphername,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                crypto_operation_t enc)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    ASSERT(NULL !=3D ciphername &amp;&amp; NULL !=3D ctx);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*ctx);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_t *kt =3D ciphe=
-r_get(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   ASSERT(kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-ize_t key_bitlen =3D mbedtls_cipher_info_get_key_bitlen(kt);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_setup(ctx, kt)))</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;mbed TLS ci=
-pher context init #1&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls=
-_cipher_setkey(ctx, key, (int)key_bitlen, enc)))</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        msg(M_FATAL, &quot;mbed TLS cipher set key&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (mbedtls_cipher_info_get_mode(kt) =3D=3D MBEDTL=
-S_MODE_CBC)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!mbed_ok(m=
-bedtls_cipher_set_padding_mode(ctx, MBEDTLS_PADDING_PKCS7)))</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;mbed TLS ciph=
-er set padding mode&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* make sure we used a big enou=
-gh key */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT=
-(mbedtls_cipher_get_key_bitlen(ctx) &lt;=3D key_bitlen);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_iv_le=
-ngth(const mbedtls_cipher_context_t *ctx)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return mbedtls_cipher_get_iv_size(ctx);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_get_tag(cipher=
-_ctx_t *ctx, uint8_t *tag, int tag_len)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (tag_len &gt; SIZE_MAX)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_writ=
-e_tag(ctx, (unsigned char *)tag, tag_len)))</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 1;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ct=
-x_block_size(const mbedtls_cipher_context_t *ctx)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    return (int)mbedtls_cipher_get_block_size(ctx);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ct=
-x_mode(const mbedtls_cipher_context_t *ctx)</span><br><span style=3D"color:=
+ipher_kt_block_size(const char *ciphername)</span><br><span style=3D"color:=
  hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    ASSERT(NULL !=3D ctx);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn mbedtls_cipher_get_cipher_mode(ctx);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_mode_cbc(const ciph=
-er_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ctx &amp;&am=
-p; cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_CBC;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_mode_ofb_cfb(const cipher_ctx_=
-t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    return ctx</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+           &amp;&amp; (cipher_ctx_m=
-ode(ctx) =3D=3D OPENVPN_MODE_OFB</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+               || cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_CFB=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+cipher_ctx_mode_aead(const cipher_ctx_t *ctx)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return ctx</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+           &amp;&amp; (cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_=
-GCM</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef MBEDTLS_C=
-HACHAPOLY_C</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-       || cipher_ctx_mode(ctx) =3D=3D MBEDTLS_MODE_CHACHAPOLY</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+           );</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_reset(mbedtls_ciphe=
-r_context_t *ctx, const uint8_t *iv_buf)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    if (!mbed_ok(mbedtls_cipher_reset(ctx)))</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbed=
-tls_cipher_set_iv(ctx, iv_buf, (size_t)mbedtls_cipher_get_iv_size(ctx))))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+%);">+    const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (NULL =3D=
+=3D cipher_kt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    return (int)mbedtls_cipher_info=
+_get_block_size(cipher_kt);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+cipher_kt_tag_size(const char *ciphername)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (cipher_kt_mode_aead(ciphername))=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        return OPENVPN_AEAD_TAG_L=
+ENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
  hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+cipher_ctx_update_ad(cipher_ctx_t *ctx, const uint8_t =
-*src, int src_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (src_len &gt=
-; SIZE_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_update_ad(ctx, src, src_l=
+);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_kt_=
+insecure(const char *ciphername)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (!cipher_kt)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return true;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    return !(cipher_kt_block_size(ciphername) &gt;=3D 128 / 8</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#ifdef MBEDTLS_CHACHAPOLY_C</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+             || mbedtls=
+_cipher_info_get_type(cipher_kt) =3D=3D MBEDTLS_CIPHER_CHACHA20_POLY1305</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    );</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static mbe=
+dtls_cipher_mode_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+c=
+ipher_kt_mode(const mbedtls_cipher_info_t *cipher_kt)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    ASSERT(NULL !=3D cipher_kt);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return mbedtls_cipher_info_get_mode(cipher=
+_kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+cipher_kt_mode_cbc(const char *ciphername)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const mbedtls_cipher_info_t *cipher =3D cipher_get(ciph=
+ername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+cipher &amp;&amp; cipher_kt_mode(cipher) =3D=3D OPENVPN_MODE_CBC;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher=
+_kt_mode_ofb_cfb(const char *ciphername)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const mbedtls_cipher_info_t *cipher =3D cipher_get(ciphername);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return cipher</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+           &amp;&amp; (cip=
+her_kt_mode(cipher) =3D=3D OPENVPN_MODE_OFB</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+               || cipher_kt_mode(cipher) =3D=3D OPE=
+NVPN_MODE_CFB);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+cipher_kt_mode_aead(const char *ciphername)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const mbedtls_cipher_info_t *cipher =3D cipher=
+_get(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return cipher</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+       &amp;&amp; (cipher_kt_mode(cipher) =3D=3D OPENVPN_MODE_GCM</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef MBEDTLS_CHACHAPOLY_C</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+               || cip=
+her_kt_mode(cipher) =3D=3D MBEDTLS_MODE_CHACHAPOLY</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+           );</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+Generic cipher context functions</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+mbedtls_cipher_context_t *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_new(void)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    mbedtls_cipher_context_t *ctx;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ(ctx, mbedtls_cipher_=
+context_t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+cipher_ctx_free(mbedtls_cipher_context_t *ctx)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    mbedtls_cipher_free(ctx);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    free(ctx);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_init(mbedtls_cip=
+her_context_t *ctx, const uint8_t *key, const char *ciphername,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                crypto_operatio=
+n_t enc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(NULL !=3D cipherna=
+me &amp;&amp; NULL !=3D ctx);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    CLEAR(*ctx);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mb=
+edtls_cipher_info_t *kt =3D cipher_get(ciphername);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ASSERT(kt);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    size_t key_bitlen =3D mbedtls_cipher_info=
+_get_key_bitlen(kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(m=
+bedtls_cipher_setup(ctx, kt)))</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     msg(M_FATAL, &quot;mbed TLS cipher context init #1&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (!mbed_ok(mbedtls_cipher_setkey(ctx, key, (int)key_bitlen=
+, enc)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quo=
+t;mbed TLS cipher set key&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (mbedtls_cip=
+her_info_get_mode(kt) =3D=3D MBEDTLS_MODE_CBC)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        if (!mbed_ok(mbedtls_cipher_set_padding_mode(ctx, MBED=
+TLS_PADDING_PKCS7)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   msg(M_FATAL, &quot;mbed TLS cipher set padding mode&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    /* make sure we used a big enough key */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    ASSERT(mbedtls_cipher_get_key_bitlen(ctx) &lt=
+;=3D key_bitlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+cipher_ctx_iv_length(const mbedtls_cipher_context_t *ct=
+x)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_cipher_get_iv_si=
+ze(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+cipher_ctx_get_tag(cipher_ctx_t *ctx, uint8_t *tag, int tag_len)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (tag_len &gt; SIZE_MAX)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    if (!mbed_ok(mbedtls_cipher_write_tag(ctx, (unsigned char *)tag, tag_l=
 en)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br>=
 <span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
@@ -7012,1402 +6933,1474 @@ r><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br>=
 0%, 40%);">+    return 1;</span><br><span style=3D"color: hsl(120, 100%, 40=
 %);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+cipher_ctx_update(mbedtls_cipher_context_t *ctx=
-, uint8_t *dst, int *dst_len, uint8_t *src,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                  int src_len)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    size_t s_dst_len =3D *dst_len;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_update(ctx, src, (size_t)src=
-_len, dst, &amp;s_dst_len)))</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    *dst_len =3D s_dst_len;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    return 1;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_final(mbedtls_cipher_con=
-text_t *ctx, uint8_t *dst, int *dst_len)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    size_t s_dst_len =3D *dst_len;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (!mbed_ok(mbedtls_cipher_finish(ctx, dst, &amp;s_dst_len)))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    *dst_len =3D s_dst_len;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
- 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+lor: hsl(120, 100%, 40%);">+cipher_ctx_block_size(const mbedtls_cipher_cont=
+ext_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    return (int)mbedtls_ci=
+pher_get_block_size(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+cipher_ctx_mode(const mbedtls_cipher_context_t =
+*ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(NULL !=3D ctx);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return mbedtls_cipher_get_cipher_mode(ct=
+x);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+cipher_ctx_mode_cbc(const cipher_ctx_t *ctx)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return ctx &amp;&amp; cipher_ctx_mode(ctx) =3D=3D OPENV=
+PN_MODE_CBC;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cip=
+her_ctx_mode_ofb_cfb(const cipher_ctx_t *ctx)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    return ctx</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+           &amp;&amp; (cipher_ctx_mode(ctx) =3D=3D OPENVPN_MODE_OFB</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+               || cipher=
+_ctx_mode(ctx) =3D=3D OPENVPN_MODE_CFB);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_mode_aead(const ciph=
+er_ctx_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ctx</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+           &amp;&amp; (ciphe=
+r_ctx_mode(ctx) =3D=3D OPENVPN_MODE_GCM</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#ifdef MBEDTLS_CHACHAPOLY_C</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+               || cipher_ctx_mode(ctx) =3D=3D M=
+BEDTLS_MODE_CHACHAPOLY</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+ );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
 n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
 sl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+cipher_ctx_final_check_tag(mbedtls_cipher_context_t *ctx, uint8_t *ds=
-t, int *dst_len, uint8_t *tag,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                           size_t tag_len)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    size_t olen =3D 0;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (MBEDTLS_DECRYPT !=3D mbedtls_cipher_get_operation(ctx))</span><br><=
+%);">+cipher_ctx_reset(mbedtls_cipher_context_t *ctx, const uint8_t *iv_buf=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_rese=
+t(ctx)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_set_iv(ctx, iv_buf, (size_t)=
+mbedtls_cipher_get_iv_size(ctx))))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return 1;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+in=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_update_=
+ad(cipher_ctx_t *ctx, const uint8_t *src, int src_len)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    if (src_len &gt; SIZE_MAX)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbed=
+tls_cipher_update_ad(ctx, src, src_len)))</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    return 1;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_=
+update(mbedtls_cipher_context_t *ctx, uint8_t *dst, int *dst_len, uint8_t *=
+src,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+   int src_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t s_dst_len =
+=3D *dst_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_=
+cipher_update(ctx, src, (size_t)src_len, dst, &amp;s_dst_len)))</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"co=
 lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (tag_len &gt; SIZE_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40=
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *=
+dst_len =3D s_dst_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 1;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+cipher_ctx_final(mbedtls_cipher_context_t *ctx, uint8_t *dst, int *dst_len)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    size_t s_dst_len =3D *dst_len;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_finish(ct=
+x, dst, &amp;s_dst_len)))</span><br><span style=3D"color: hsl(120, 100%, 40=
 %);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
 return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
 n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_cipher_finish(ct=
-x, dst, &amp;olen)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D=
-_CRYPT_ERRORS, &quot;%s: cipher_ctx_final() failed&quot;, __func__);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (olen &gt; INT_MAX)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *dst=
-_len =3D olen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls=
-_cipher_check_tag(ctx, (const unsigned char *)tag, tag_len)))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
-urn 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+=3D"color: hsl(120, 100%, 40%);">+    *dst_len =3D s_dst_len;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    return 1;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+cipher_ctx_final_check_tag(mbedtls_c=
+ipher_context_t *ctx, uint8_t *dst, int *dst_len, uint8_t *tag,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                           size=
+_t tag_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t olen =3D 0;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (MBEDTLS_DECRYPT !=3D mbedtls_ciph=
+er_get_operation(ctx))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret=
+urn 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (tag_len &gt; SIZE_MAX)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!=
+mbed_ok(mbedtls_cipher_finish(ctx, dst, &amp;olen)))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        msg(D_CRYPT_ERRORS, &quot;%s: cipher_ctx_final(=
+) failed&quot;, __func__);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (olen &gt; INT_MAX)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    *dst_len =3D olen;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (!mbed_ok(mbedtls_cipher_check_tag(ctx, (const unsigned char=
+ *)tag, tag_len)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return =
+0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Generic=
- message digest information functions</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+static const mbedtls_md_info_t *</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+md_get(const char *digest)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const mbedtls_md_info_t *md =3D NULL;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(digest);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    md =3D mbedtls_md_info_from_string(digest);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!md)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;Message hash a=
-lgorithm &#39;%s&#39; not found&quot;, digest);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (mbedtls_md_get_size(md) &gt; MAX_HMAC_KEY_LENGTH)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            &quot;Message hash algor=
-ithm &#39;%s&#39; uses a default hash size (%d bytes) which is larger than =
-&quot; PACKAGE_NAME</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            &quot;&#39;s current maximum hash size (%d bytes)&quot;,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            digest, mbedtl=
-s_md_get_size(md), MAX_HMAC_KEY_LENGTH);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    return md;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+md_valid(const char *digest)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    const mbedtls_md_info_t *md =3D mbedtls_md_info_from_st=
-ring(digest);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn md !=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+const char *</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+md_kt_name(const char *mdname)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (!strcmp(&quot;none&quot;, mdname))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return &quot;[null-digest]&quot;;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_md_info_t *kt =
-=3D md_get(mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    return mbedtls_md_get_name(kt);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned char</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+md_kt_size(const char *mdna=
-me)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!strcmp(&quot;none&quot;, =
-mdname))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_md_info_t *kt =3D md_ge=
-t(mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
-n mbedtls_md_get_size(kt);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * Generic message digest functions</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+md_full(const char *mdname, const uint8_t=
- *src, int src_len, uint8_t *dst)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-const mbedtls_md_info_t *kt =3D md_get(mdname);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    return 0 =3D=3D mbedtls_md(kt, src, src_len=
-, dst);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+mbedtls_md_context_t *</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+md_ctx_new(void)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    mbedtls_md_context_t *ctx;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(ctx, mbedtls_md_context_t);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    return ctx;</span><br><s=
+: hsl(120, 100%, 40%);">+    return 1;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC=
+__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * Generic message digest information functions</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const mbedtls=
+_md_info_t *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_get(=
+const char *digest)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_=
+md_info_t *md =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    ASSERT(digest);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    md =3D mbed=
+tls_md_info_from_string(digest);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (!md)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+msg(M_FATAL, &quot;Message hash algorithm &#39;%s&#39; not found&quot;, dig=
+est);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (mbedtls_md_get_size(=
+md) &gt; MAX_HMAC_KEY_LENGTH)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    msg(M_FATAL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         &quot;Message hash algorithm &#39;%s&#39; uses a default hash size=
+ (%d bytes) which is larger than &quot; PACKAGE_NAME</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            &quot;&#39;s current maximum =
+hash size (%d bytes)&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            digest, mbedtls_md_get_size(md), MAX_HMAC_KEY_LENGTH);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return md;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+b=
+ool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_valid(const c=
+har *digest)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_md_info=
+_t *md =3D mbedtls_md_info_from_string(digest);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    return md !=3D NULL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+con=
+st char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_kt_name=
+(const char *mdname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!strcmp(&=
+quot;none&quot;, mdname))</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+return &quot;[null-digest]&quot;;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const mbedtls_md_info_t *kt =3D md_get(mdname);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_md_get_name(kt);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+unsigned char</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+md_kt_size(const char *mdname)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!strcmp(&quot;none&quot;, mdname))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst mbedtls_md_info_t *kt =3D md_get(mdname);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return mbedtls_md_get_size(kt);</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_fr=
-ee(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free=
-(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+md_ctx_init(mbedtls_md_context_t *ctx, const char *mdname)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    const mbedtls_md_info_t *kt =3D md_get(m=
-dname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(N=
-ULL !=3D ctx &amp;&amp; NULL !=3D kt);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    mbedtls_md_init(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    ASSERT(0 =3D=3D mbedtls_md_setup(ctx, kt, 0));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_starts(=
-ctx));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+md_ctx_cleanup(mbedtls_md_context_t *ctx)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    mbedtls_md_free(ctx);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_size(const mbedtls_md_co=
-ntext_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (NULL =3D=3D ctx)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return (int)mbedtls_md_get_size(mbedtls_md_in=
-fo_from_ctx(ctx));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+md_ctx_update(mbedtls_md_context_t *ctx, const uint8_=
-t *src, size_t src_len)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =
-=3D=3D mbedtls_md_update(ctx, src, src_len));</span><br><span style=3D"colo=
+%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * Generic message digest fu=
+nctions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_fu=
+ll(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_md_info_t *kt =3D md_ge=
+t(mdname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
+n 0 =3D=3D mbedtls_md(kt, src, src_len, dst);</span><br><span style=3D"colo=
 r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_final(mbedtls_md_co=
-ntext_t *ctx, uint8_t *dst)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT=
-(0 =3D=3D mbedtls_md_finish(ctx, dst));</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    mbedtls_md_free(ctx);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * Generic HMAC functions</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * TODO: re-enable dmsg for crypto debug</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_md=
-_context_t *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ct=
-x_new(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_context_t *=
-ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ(c=
-tx, mbedtls_md_context_t);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    return ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+hmac_ctx_free(mbedtls_md_context_t *ctx)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    free(ctx);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_init(mbedtls_md_con=
-text_t *ctx, const uint8_t *key, const char *mdname)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    const mbedtls_md_info_t *kt =3D md_get(mdname);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(NULL !=3D kt &am=
-p;&amp; NULL !=3D ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_=
-init(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int k=
-ey_len =3D mbedtls_md_get_size(kt);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_setup(ctx, kt, 1));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_=
-md_hmac_starts(ctx, key, key_len));</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- /* make sure we used a big enough key */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    ASSERT(mbedtls_md_get_size(kt) &lt;=3D key_len);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+hmac_ctx_cleanup(mbedtls_md_context_t *ctx)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    mbedtls_md_free(ctx);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_size(mbedtls_md_context_t *ct=
-x)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (NULL =3D=3D ctx)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    return mbedtls_md_get_size(mbedtls_md_info_from_ctx(ctx)=
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_md_=
+context_t *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_n=
+ew(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_context_t *ctx=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEA=
+R(ctx, mbedtls_md_context_t);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return ctx;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+md_ctx_free(mbedtls_md_context_t *ctx)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    free(ctx);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_init(mbedtls_md_cont=
+ext_t *ctx, const char *mdname)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst mbedtls_md_info_t *kt =3D md_get(mdname);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    ASSERT(NULL !=3D ctx &amp;&amp; NULL !=3D kt)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_init(ctx);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_=
+setup(ctx, kt, 0));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    ASSERT(0 =3D=3D mbedtls_md_starts(ctx));</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_cleanup(mbedtls_md_c=
+ontext_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_free(ctx=
 );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
  style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+hmac_ctx_reset(mbedtls_md_context_t *ctx)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_hmac_reset(ctx));</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_upda=
-te(mbedtls_md_context_t *ctx, const uint8_t *src, int src_len)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_hmac_update(ctx, sr=
-c, src_len));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+hmac_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_hmac_fi=
-nish(ctx, dst));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+memcmp_constant_time(const void *a, const void *b, size_=
-t size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    /* mbed TLS has a no const=
- time memcmp function that it exposes</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+     * via its APIs like OpenSSL does with CRYPTO_memcmp<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Adapt the fun=
-ction that mbedtls itself uses in</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+     * mbedtls_safer_memcmp as it considers that to be safe *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    volatile const=
- unsigned char *A =3D (volatile const unsigned char *)a;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    volatile const unsigned char *B =
-=3D (volatile const unsigned char *)b;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    volatile unsigned char diff =3D 0;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; size; i++)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        unsigned char x =3D A[i], y =3D B[i];</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        diff |=3D x ^=
- y;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return diff;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__=
-GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * Generate the hash required by for the \c tls1_PRF function.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * @param md_kt         Message digest to us=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sec     =
-      Secret to base the hash on</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param sec_len       Length of the secret</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * @param seed          Seed to hash<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param seed_len  =
-    Length of the seed</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * @param out           Output buffer</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param olen          Length of the output buffer</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+tls1_P_hash(const mbedtls_md_info_t *md_kt, co=
-nst uint8_t *sec, size_t sec_len, const uint8_t *seed,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            size_t seed_len, uint8_t *ou=
-t, size_t olen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc=
- =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    u=
-int8_t A1[MAX_HMAC_KEY_LENGTH];</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef =
-ENABLE_DEBUG</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
-used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid unused</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * variables warni=
-ngs if compiled with --enable-small */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    const size_t olen_orig =3D olen;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *out_orig =3D out;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    hmac_ctx_t *ctx =3D hmac_ctx_new();</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_t *ctx_tmp =3D hmac_c=
-tx_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOURCE, &=
-quot;tls1_P_hash sec: %s&quot;, format_hex(sec, sec_len, 0, &amp;gc));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOUR=
-CE, &quot;tls1_P_hash seed: %s&quot;, format_hex(seed, seed_len, 0, &amp;gc=
-));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    unsigned int chunk =3D mbedtls_=
-md_get_size(md_kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    unsigned int A1_len =3D mbedtls_md_get_size(md_kt);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    /* This is the only place where we init an HMAC with a=
- key that is not</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-  * equal to its size, therefore we init the hmac ctx manually here */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_init(ctx)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=
-=3D mbedtls_md_setup(ctx, md_kt, 1));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_hmac_starts(ctx, sec, sec_=
-len));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_init(ctx_tmp);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mb=
-edtls_md_setup(ctx_tmp, md_kt, 1));</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_hmac_starts(ctx_tmp, sec, se=
-c_len));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_update(ctx, seed,=
- seed_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    hmac=
-_ctx_final(ctx, A1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (;;)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        hmac_ctx_reset(ctx);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        hmac_ctx_reset(ctx_tmp=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        hmac_ctx_=
-update(ctx, A1, A1_len);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        hmac_ctx_update(ctx_tmp, A1, A1_len);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        hmac_ctx_update(ctx, seed, seed_len)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if (olen &gt; chunk)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            hmac_ctx_final(ctx, out);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            out +=3D=
- chunk;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-olen -=3D chunk;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        else                          =
-   /* last one */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-hmac_ctx_final(ctx, A1);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            memcpy(out, A1, olen);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    h=
-mac_ctx_cleanup(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    hmac_ctx_free(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    hmac_ctx_cleanup(ctx_tmp);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    hmac_ctx_free(ctx_tmp);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    secure_memzero(A1, sizeof(A1));</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_P_hash out: %s=
-&quot;, format_hex(out_orig, olen_orig, 0, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Use the TLS PRF=
- function for generating data channel keys.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * This code is based on the OpenSSL library.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * TLS generates keys as such:</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * master_secret[48] =3D PRF(pre_master_secret[=
-48], &quot;master secret&quot;,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *                         ClientHello.random[32] + ServerHello=
-.random[32])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * key_block[] =3D PRF(S=
-ecurityParameters.master_secret[48],</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *                 &quot;key expansion&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ *                 SecurityParam=
-eters.server_random[32] +</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *                 SecurityParameters.client_random[32]);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * Notes:</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * (1) key_block contains a full set of 4 keys.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * (2) The pre-master secret is generated by th=
-e client.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(const uint8_t *label, size_t=
- label_len, const uint8_t *sec, size_t slen, uint8_t *out1,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+             size_t olen)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    const md_kt_t *md5 =3D md_=
-get(&quot;MD5&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const md_kt_t *sha1 =3D md_get(&quot;SHA1&quot;);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    uint8_t *out2 =3D (uint8_t *)gc_malloc(olen, false, &a=
-mp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    size_t len =3D slen / 2;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *S1 =
-=3D sec;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const u=
-int8_t *S2 =3D &amp;(sec[len]);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    len +=3D (slen &amp; 1); /* add for odd, make longer */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    tls1_P_hash(md5, S1, len, label, labe=
-l_len, out1, olen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    tls1_P_hash(sha1, S2, len, label, label_len, out2, olen);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; olen; i++)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        out1[i] ^=3D out2[i];</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    secure_memzero(out2, olen);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_PRF out[%zu]: %s&quot;, olen, fo=
-rmat_hex(out1, olen, 0, &amp;gc));</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang_=
-_)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagn=
-ostic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x0=
-40000 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* E=
-NABLE_CRYPTO_MBEDTLS */</span><br><span>diff --git a/src/openvpn/crypto_mbe=
-dtls_legacy.h b/src/openvpn/crypto_mbedtls_legacy.h</span><br><span>new fil=
-e mode 100644</span><br><span>index 0000000..af71037</span><br><span>--- /d=
-ev/null</span><br><span>+++ b/src/openvpn/crypto_mbedtls_legacy.h</span><br=
-><span>@@ -0,0 +1,148 @@</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN =
--- An application to securely tunnel IP networks</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ *             over a single TCP/UDP port, wit=
-h support for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *             session authentication and key exchange,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *             packet encryptio=
-n, packet authentication, and</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ *             packet compression.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@...515...&gt;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2010-=
-2026 Sentyron B.V. &lt;openvpn@...2918...&gt;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *  This program is free software; you can redistribute it and/or =
-modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under =
-the terms of the GNU General Public License version 2</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Software Fou=
-ndation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distribu=
-ted in the hope that it will be useful,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied =
-warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERC=
-HANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for mo=
-re details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have recei=
-ved a copy of the GNU General Public License along</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *  with this program; if not, see &lt;https=
-://www.gnu.org/licenses/&gt;.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @file</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * Data Channel Cryptography mbed TLS-specific backe=
-nd interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#ifndef CRYPTO_MBEDTLS_H_</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#define CRYPTO_MBEDTLS_H_</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#include &lt;stdbool.h&gt;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/cipher.h&gt;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/md.h&g=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbed=
-tls/ctr_drbg.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Generic message =
-digest key type %context. */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+typedef mbedtls_md_info_t md_kt_t;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/** Generic cipher %context. */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+typedef mbedtls_cipher_context_t cipher_ctx_t;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+/** Generic message digest %context. */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+typedef mbedtls_md_context_t m=
-d_ctx_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/** Generic HMAC %context. */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef mbedtls_md_c=
-ontext_t hmac_ctx_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Use a dummy typ=
-e for the provider */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+typedef void provider_t;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Maximum =
-length of an IV */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-define OPENVPN_MAX_IV_LENGTH MBEDTLS_MAX_IV_LENGTH</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/** Cipher is in CBC mode */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#define OPENVPN_MODE_CBC MBEDTLS_MODE_CBC</span><br><s=
+l(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+md_ctx_size(const mbedtls_md_context_t *ctx)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (NULL =3D=3D ctx)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (i=
+nt)mbedtls_md_get_size(mbedtls_md_info_from_ctx(ctx));</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+vo=
+id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_ctx_update(mbe=
+dtls_md_context_t *ctx, const uint8_t *src, size_t src_len)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_update(ctx, src, src_l=
+en));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/** Cipher is in OFB mode */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MODE_OFB MBEDTLS_MODE_OFB=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/** Cipher is in CFB mode */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MODE_CFB MBED=
-TLS_MODE_CFB</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+/** Cipher is in GCM mode =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_M=
-ODE_GCM MBEDTLS_MODE_GCM</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef mbedtl=
-s_operation_t crypto_operation_t;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** C=
-ipher should encrypt */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#define OPENVPN_OP_ENCRYPT MBEDTLS_ENCRYPT</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/** Cipher should decrypt */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#define OPENVPN_OP_DECRYPT MBEDTLS_DECRYPT</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#define MD4_DIGEST_LENGTH    16</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define MD5_DIGEST_LENGTH    16</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#define SHA_DIGEST_LENGTH    =
-20</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SHA256_DI=
-GEST_LENGTH 32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ * Returns a singleton instance of the m=
-bed TLS random number generator.</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * F=
-or PolarSSL/mbed TLS 1.1+, this is the CTR_DRBG random number generator. If=
- it</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * hasn&#39;t be=
-en initialised yet, the RNG will be initialised using the default</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * entropy sources. Aside fro=
-m the default platform entropy sources, an</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * additional entropy source, the HAVEGE random numb=
-er generator will also be</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * added. During initialisation, a personalisation string will be add=
-ed based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * on the t=
-ime, the PID, and a pointer to the random context.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+mbedtls_ctr_drbg_context *rand_ctx_get(void);</span><br><spa=
+ hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+md_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_finish(ctx, dst));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_free(=
+ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * Generic HMAC functions</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * TODO: re-enable dmsg for crypto d=
+ebug</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+mbedtls_md_context_t *</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+hmac_ctx_new(void)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    mbedtls_md_context_t *ctx;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    ALLOC_OBJ(ctx, mbedtls_md_context_t);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    return ctx;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_free(=
+mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(ct=
+x);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
 n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#ifdef ENABLE_PREDICTION_RESISTANCE</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * Enable prediction resistance on the random number =
-generator.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+void rand_ctx_enable_pred=
-iction_resistance(void);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><=
+sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key, const c=
+har *mdname)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const mbedtls_md_info=
+_t *kt =3D md_get(mdname);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ASSERT(NULL !=3D kt &amp;&amp; NULL !=3D ctx);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    mbedtls_md_init(ctx);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    int key_len =3D mbedtls_md_get_size(kt);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedt=
+ls_md_setup(ctx, kt, 1));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ASSERT(0 =3D=3D mbedtls_md_hmac_starts(ctx, key, key_len));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    /* make sure we used a big enough key */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(mbedtls_=
+md_get_size(kt) &lt;=3D key_len);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_cleanup(mbedtls_md_context_t =
+*ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_md_free(ctx);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac=
+_ctx_size(mbedtls_md_context_t *ctx)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (NULL =3D=3D ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
+turn 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_md_get_=
+size(mbedtls_md_info_from_ctx(ctx));</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_reset(mbedtls_md_context_t=
+ *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_=
+hmac_reset(ctx));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+hmac_ctx_update(mbedtls_md_context_t *ctx, const uint8=
+_t *src, int src_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=
+=3D mbedtls_md_hmac_update(ctx, src, src_len));</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+hmac_ctx_final(mbedtls_m=
+d_context_t *ctx, uint8_t *dst)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    AS=
+SERT(0 =3D=3D mbedtls_md_hmac_finish(ctx, dst));</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+memcmp_constant_time(con=
+st void *a, const void *b, size_t size)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /* mbed TLS has a no const time memcmp function that it exposes</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+     * via its APIs like =
+OpenSSL does with CRYPTO_memcmp</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+     * Adapt the function that mbedtls itself uses in</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+     * mbedtls_safer_memcmp a=
+s it considers that to be safe */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    volatile const unsigned char *A =3D (volatile const unsig=
+ned char *)a;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    vo=
+latile const unsigned char *B =3D (volatile const unsigned char *)b;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    volatile unsigned char=
+ diff =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i=
+ &lt; size; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unsigned =
+char x =3D A[i], y =3D B[i];</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        diff |=3D x ^ y;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return diff;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic igno=
+red &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * Generate the hash required by for the=
+ \c tls1_PRF function.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param md_k=
+t         Message digest to use</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * @param sec           Secret to base the hash on</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @param sec_len       Length o=
+f the secret</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
+am seed          Seed to hash</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * @param seed_len      Length of the seed</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param out           Output buffer</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param olen         =
+ Length of the output buffer</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static =
+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls1_P_hash(con=
+st mbedtls_md_info_t *md_kt, const uint8_t *sec, size_t sec_len, const uint=
+8_t *seed,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   size_t seed_len, uint8_t *out, size_t olen)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    uint8_t A1[MAX_HMAC_KEY_LENGTH];</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#ifdef ENABLE_DEBUG</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    /* used by the D_SHOW_KEY_SOURCE, guarded with =
+ENABLE_DEBUG to avoid unused</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+     * variables warnings if compiled with --enable-small */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const size_t olen_ori=
+g =3D olen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t uint8_t *out_orig =3D out;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_t *ctx =3D=
+ hmac_ctx_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ hmac_ctx_t *ctx_tmp =3D hmac_ctx_new();</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_P_hash sec: %s&quot;, format_hex(s=
+ec, sec_len, 0, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_P_hash seed: %s&quot;, format=
+_hex(seed, seed_len, 0, &amp;gc));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+unsigned int chunk =3D mbedtls_md_get_size(md_kt);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    unsigned int A1_len =3D mbedtls_md_get_s=
+ize(md_kt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /* This is the only pla=
+ce where we init an HMAC with a key that is not</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+     * equal to its size, therefore we init the=
+ hmac ctx manually here */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    mbedtls_md_init(ctx);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md_setup(ctx, md_kt, 1));</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_=
+md_hmac_starts(ctx, sec, sec_len));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ mbedtls_md_init(ctx_tmp);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ASSERT(0 =3D=3D mbedtls_md_setup(ctx_tmp, md_kt, 1));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 =3D=3D mbedtls_md=
+_hmac_starts(ctx_tmp, sec, sec_len));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   hmac_ctx_update(ctx, seed, seed_len);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    hmac_ctx_final(ctx, A1);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    for (;;)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        hm=
+ac_ctx_reset(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       hmac_ctx_reset(ctx_tmp);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        hmac_ctx_update(ctx, A1, A1_len);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        hmac_ctx_update(ctx_tmp, A1, A1_l=
+en);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        hmac_ct=
+x_update(ctx, seed, seed_len);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+if (olen &gt; chunk)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   hmac_ctx_final(ctx, out);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            out +=3D chunk;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            olen -=3D chunk;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            hmac_ctx_final(ctx_tmp, A1); /* calc =
+the next A1 value */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        e=
+lse                             /* last one */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            hmac_ctx_final(ctx, A1);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            memcpy(out, A1, olen);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    hmac_ctx_cleanup(ctx);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    hmac_ctx_free(ctx);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_cleanup(ctx_tmp);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    hmac_ctx_free(ctx_tmp);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    secure_memzero(A1=
+, sizeof(A1));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOUR=
+CE, &quot;tls1_P_hash out: %s&quot;, format_hex(out_orig, olen_orig, 0, &am=
+p;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(=
+&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * Use the TLS PRF function for generating data channel keys.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This code is based =
+on the OpenSSL library.</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * TLS genera=
+tes keys as such:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * master_secret[48=
+] =3D PRF(pre_master_secret[48], &quot;master secret&quot;,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *                         ClientHe=
+llo.random[32] + ServerHello.random[32])</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * key_block[] =3D PRF(SecurityParameters.master_secret[48],</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *                 &quot;key e=
+xpansion&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
+               SecurityParameters.server_random[32] +</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *                 SecurityParameters.cli=
+ent_random[32]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Notes:</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * (1) key_block contains a full set of 4 keys.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (2) The pre-mast=
+er secret is generated by the client.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_tls1_PRF(=
+const uint8_t *label, size_t label_len, const uint8_t *sec, size_t slen, ui=
+nt8_t *out1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+      size_t olen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena=
+ gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const md_kt_t *md5 =3D md_get(&quot;MD5&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    const md_kt_t *sha1 =3D md_get(&quot;SHA1=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t *out2 =3D (uint8_t=
+ *)gc_malloc(olen, false, &amp;gc);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ size_t len =3D slen / 2;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    const uint8_t *S1 =3D sec;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    const uint8_t *S2 =3D &amp;(sec[len]);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    len +=3D (slen &amp; 1); /* add=
+ for odd, make longer */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls1_P_has=
+h(md5, S1, len, label, label_len, out1, olen);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    tls1_P_hash(sha1, S2, len, label, label_len,=
+ out2, olen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; =
+i &lt; olen; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        out1[i] =
+^=3D out2[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    secure_memzero(out2, olen);</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * Log the supplied mbed TLS error, prefixed by supplied prefi=
-x.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * @param flags         Flags to i=
-ndicate error type and priority.</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * @param errval        mbed TLS error code to convert to erro=
-r message.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- prefix        Prefix to mbed TLS error message.</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * @returns true if no errors are detected, false otherwise.</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+bool mbed_log_err(unsigned int flags, =
-int errval, const char *prefix);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Log the supplied mb=
-ed TLS error, prefixed by function name and line number.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param flags         Flags to indicate error type an=
-d priority.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @para=
-m errval        mbed TLS error code to convert to error message.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param func          Functi=
-on name where error was reported.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * @param line          Line number where error was reported.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * @returns true if no errors are de=
-tected, false otherwise.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool mbed_l=
-og_func_line(unsigned int flags, int errval, const char *func, int line);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/** Wraps mbed_log_func_line() to preven=
-t function calls for non-errors */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+mbed_log_func_line_lite(unsigned int flags, int errval, const=
- char *func, int line)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (errval)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        return mbed_log_func_line=
-(flags, errval, func, line);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
-eturn true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+olor: hsl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOURCE, &quot;tls1_PRF out=
+[%zu]: %s&quot;, olen, format_hex(out1, olen, 0, &amp;gc));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(__GNU=
+C__) || defined(__clang__)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_=
+VERSION_NUMBER &lt; 0x040000 */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span>diff --git a=
+/src/openvpn/crypto_mbedtls_legacy.h b/src/openvpn/crypto_mbedtls_legacy.h<=
+/span><br><span>new file mode 100644</span><br><span>index 0000000..af71037=
+</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/crypto_mbe=
+dtls_legacy.h</span><br><span>@@ -0,0 +1,148 @@</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networks</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a s=
+ingle TCP/UDP port, with support for SSL/TLS-based</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *             session authentication and ke=
+y exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *      =
+       packet encryption, packet authentication, and</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &=
+lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  Copyright (C) 2010-2026 Sentyron B.V. &lt;openvpn@...2918...&gt;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you c=
+an redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *  it under the terms of the GNU General Public License versi=
+on 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as publishe=
+d by the Free Software Foundation.</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  This program is distributed in the hope that it will be useful,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY;=
+ without even the implied warranty of</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. =
+ See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU Gen=
+eral Public License for more details.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  You should have received a copy of the GNU General Public License alon=
+g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this prog=
+ram; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @file</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * Data Channel Cryptograp=
+hy mbed TLS-specific backend interface</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef CRYPTO_M=
+BEDTLS_H_</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CR=
+YPTO_MBEDTLS_H_</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdbool.h&=
+gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbe=
+dtls/cipher.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+nclude &lt;mbedtls/md.h&gt;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#include &lt;mbedtls/ctr_drbg.h&gt;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/** Generic message digest key type %context. */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+typedef mbedtls_md_info_t md_kt_t;</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * Check errval and log on error.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * Convenience wrapper to put around mbed TLS library calls, e.g=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   if (!mbed_ok =
-(mbedtls_ssl_func())) return 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-   ASSERT (mbed_ok (mbedtls_ssl_func()));</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * @param errval        mbed TLS error code to convert to error messag=
-e.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * @returns true if no errors are =
-detected, false otherwise.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define m=
-bed_ok(errval) mbed_log_func_line_lite(D_CRYPT_ERRORS, errval, __func__, __=
-LINE__)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#endif /* CRYPTO_MBEDTLS_H_ */<=
-/span><br><span>diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbe=
-dtls_compat.h</span><br><span>index d457b5e..667529e 100644</span><br><span=
->--- a/src/openvpn/mbedtls_compat.h</span><br><span>+++ b/src/openvpn/mbedt=
-ls_compat.h</span><br><span>@@ -34,6 +34,16 @@</span><br><span> </span><br>=
-<span> #include &quot;errlevel.h&quot;</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/asn1.h&gt;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/pk.h&=
-gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x0=
-4000000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt=
-;mbedtls/ctr_drbg.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#include &quot;crypto_mbedtls_legacy.h&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &lt;mbedtls/oid.h&gt;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- #ifdef HAVE_PSA_CRYPTO_H</span><br><span> #include &lt;psa/crypto.h&gt;</s=
-pan><br><span> #endif</span><br><span>@@ -51,4 +61,176 @@</span><br><span> =
-#endif</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef struct</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const char *name;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    uint16_t tls_id;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+} mbedtls_ecp_curve_info;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+static inline int</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+mbedtls_oid_get_attr_short_name(const mbedtls_asn1_buf *oid,=
- const char **desc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* The relevan=
-t OIDs all have equal length. */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (oid-&gt;tag !=3D MBEDTLS_ASN1_OID || oid-&gt;len !=3D =
-strlen(MBEDTLS_OID_AT_CN))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- *desc =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     return -1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    if (memcmp(oid-&gt;p, MBEDTLS_OID=
-_AT_CN, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     *desc =3D &quot;CN&quot;;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_SUR_NAME, oid-&gt;len) =3D=3D 0)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;SN&quot;;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MB=
-EDTLS_OID_AT_SERIAL_NUMBER, oid-&gt;len) =3D=3D 0)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        *desc =3D &quot;serialNumber&quot;;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_CO=
-UNTRY, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%=
+color: hsl(120, 100%, 40%);">+/** Generic cipher %context. */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+typedef mbedtls_cipher_context_t =
+cipher_ctx_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Generic message diges=
+t %context. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typed=
+ef mbedtls_md_context_t md_ctx_t;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** G=
+eneric HMAC %context. */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+typedef mbedtls_md_context_t hmac_ctx_t;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/* Use a dummy type for the provider */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+typedef void provider_t;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/** Maximum length of an IV */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#define OPENVPN_MAX_IV_LENGTH MBEDTLS_MAX_IV_LENG=
+TH</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/** Cipher is in CBC mode */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_MODE_CBC MB=
+EDTLS_MODE_CBC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Cipher is in OFB mod=
+e */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN=
+_MODE_OFB MBEDTLS_MODE_OFB</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Cipher i=
+s in CFB mode */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
+fine OPENVPN_MODE_CFB MBEDTLS_MODE_CFB</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+/** Cipher is in GCM mode */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#define OPENVPN_MODE_GCM MBEDTLS_MODE_GCM</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+typedef mbedtls_operation_t crypto_operation_t;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+/** Cipher should encrypt */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#define OPENVPN_OP_ENCRYPT MBEDTLS_ENCRYPT</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/** Cipher should decrypt */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#define OPENVPN_OP_DECRYPT MBEDT=
+LS_DECRYPT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#define MD4_DIGEST_LENGTH   =
+ 16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define MD5_DIGE=
+ST_LENGTH    16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#def=
+ine SHA_DIGEST_LENGTH    20</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#define SHA256_DIGEST_LENGTH 32</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Returns a si=
+ngleton instance of the mbed TLS random number generator.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * For PolarSSL/mbed TLS 1.1+, this is the CTR_DRBG ra=
+ndom number generator. If it</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * hasn&#39;t been initialised yet, the RNG will be initialised us=
+ing the default</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * e=
+ntropy sources. Aside from the default platform entropy sources, an</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * additional entropy sourc=
+e, the HAVEGE random number generator will also be</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * added. During initialisation, a personali=
+sation string will be added based</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * on the time, the PID, and a pointer to the random context.=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ctr_drbg_context *rand_ctx_=
+get(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_PREDICTION_RES=
+ISTANCE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * Enable prediction resista=
+nce on the random number generator.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+void rand_ctx_enable_prediction_resistance(void);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * Log the supplied mbed TLS error, p=
+refixed by supplied prefix.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
+ flags         Flags to indicate error type and priority.</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @param errval        mbed TLS erro=
+r code to convert to error message.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * @param prefix        Prefix to mbed TLS error message.</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * @returns true if no errors are dete=
+cted, false otherwise.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool mbed_log=
+_err(unsigned int flags, int errval, const char *prefix);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * Log the supplied mbed TLS error, prefixed by function name and line n=
+umber.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param flags         Flags =
+to indicate error type and priority.</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param errval        mbed TLS error code to convert to =
+error message.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
+aram func          Function name where error was reported.</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * @param line          Line number =
+where error was reported.</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @returns=
+ true if no errors are detected, false otherwise.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+bool mbed_log_func_line(unsigned int flags, int errval, const=
+ char *func, int line);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Wraps mbed_=
+log_func_line() to prevent function calls for non-errors */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+static inline bool</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+mbed_log_func_line_lite(unsigned int=
+ flags, int errval, const char *func, int line)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (errval)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+return mbed_log_func_line(flags, errval, func, line);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * Check errval and log on error.</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * Convenience wrapper to put around mb=
+ed TLS library calls, e.g.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *   if (!mbed_ok (mbedtls_ssl_func())) return 0;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * or</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *   ASSERT (mbed_ok (mbedtls_ssl_func()));</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param errval        mbed TLS error code t=
+o convert to error message.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @retur=
+ns true if no errors are detected, false otherwise.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#define mbed_ok(errval) mbed_log_func_line_lite(D_CRYPT_E=
+RRORS, errval, __func__, __LINE__)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
+if /* CRYPTO_MBEDTLS_H_ */</span><br><span>diff --git a/src/openvpn/mbedtls=
+_compat.h b/src/openvpn/mbedtls_compat.h</span><br><span>index d457b5e..667=
+529e 100644</span><br><span>--- a/src/openvpn/mbedtls_compat.h</span><br><s=
+pan>+++ b/src/openvpn/mbedtls_compat.h</span><br><span>@@ -34,6 +34,16 @@</=
+span><br><span> </span><br><span> #include &quot;errlevel.h&quot;</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &l=
+t;mbedtls/asn1.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#include &lt;mbedtls/pk.h&gt;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBED=
+TLS_VERSION_NUMBER &lt; 0x04000000</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#include &lt;mbedtls/ctr_drbg.h&gt;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &quot;crypto_mbedtls_legacy.h&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/oid.h&gt;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERS=
+ION_NUMBER &lt; 0x04000000 */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span> #ifdef HAVE_PSA_CRYPTO_H</span><br><span> #incl=
+ude &lt;psa/crypto.h&gt;</span><br><span> #endif</span><br><span>@@ -51,4 +=
+61,176 @@</span><br><span> #endif</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMB=
+ER &gt;=3D 0x04000000</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+typedef struct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *name;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t tls_id=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+} mbedtls_ecp_curv=
+e_info;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+mbedtls_oid_get_attr_short_name(c=
+onst mbedtls_asn1_buf *oid, const char **desc)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* The relevant OIDs all have equal length. */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (oid-&gt;tag !=3D MBEDTLS_AS=
+N1_OID || oid-&gt;len !=3D strlen(MBEDTLS_OID_AT_CN))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        *desc =3D NULL;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        return -1;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (me=
+mcmp(oid-&gt;p, MBEDTLS_OID_AT_CN, oid-&gt;len) =3D=3D 0)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        *desc =3D &quot;CN&quot;;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_SUR_N=
+AME, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  *desc =3D &quot;SN&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
+se if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_SERIAL_NUMBER, oid-&gt;len) =3D=3D =
+0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;serialN=
+umber&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(o=
+id-&gt;p, MBEDTLS_OID_AT_COUNTRY, oid-&gt;len) =3D=3D 0)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        *desc =3D &quot;C&quot;;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_LOCALIT=
+Y, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+*desc =3D &quot;L&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else =
+if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_STATE, oid-&gt;len) =3D=3D 0)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;ST&quot;;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OI=
+D_AT_ORGANIZATION, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        *desc =3D &quot;O&quot;;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_ORG_UNIT, oid-&gt;len)=
+ =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot=
+;OU&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid=
+-&gt;p, MBEDTLS_OID_AT_TITLE, oid-&gt;len) =3D=3D 0)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        *desc =3D &quot;title&quot;;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_POSTAL=
+_ADDRESS, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       *desc =3D &quot;postalAddress&quot;;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_POSTAL_CODE, oid-&g=
+t;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D=
+ &quot;postalCode&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else =
+if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_GIVEN_NAME, oid-&gt;len) =3D=3D 0)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;GN&quot;;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTL=
+S_OID_AT_INITIALS, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        *desc =3D &quot;initials&quot;;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_GENERATION_QUAL=
+IFIER, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%=
 , 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    *desc =3D &quot;C&quot;;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-lse if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_LOCALITY, oid-&gt;len) =3D=3D 0)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;L&quot;;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDT=
-LS_OID_AT_STATE, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        *desc =3D &quot;ST&quot;;</span><br><span style=3D"color: hsl=
+    *desc =3D &quot;generationQualifier&quot;;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_UNIQUE_IDENTIFIE=
+R, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+*desc =3D &quot;uniqueIdentifier&quot;;</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_ORGANIZATION, oid-&gt;l=
+%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_DN_QUALIFIER, oid-&gt;l=
 en) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &q=
-uot;O&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(o=
-id-&gt;p, MBEDTLS_OID_AT_ORG_UNIT, oid-&gt;len) =3D=3D 0)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        *desc =3D &quot;OU&quot;;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_TITLE=
-, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *=
-desc =3D &quot;title&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
-se if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_POSTAL_ADDRESS, oid-&gt;len) =3D=3D=
- 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;postal=
-Address&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp=
-(oid-&gt;p, MBEDTLS_OID_AT_POSTAL_CODE, oid-&gt;len) =3D=3D 0)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        *desc =3D &quot;postalCode&quot;;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS=
-_OID_AT_GIVEN_NAME, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        *desc =3D &quot;GN&quot;;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_AT_INITIALS, oid-&gt;le=
-n) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &qu=
-ot;initials&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (me=
-mcmp(oid-&gt;p, MBEDTLS_OID_AT_GENERATION_QUALIFIER, oid-&gt;len) =3D=3D 0)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;generatio=
-nQualifier&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (mem=
-cmp(oid-&gt;p, MBEDTLS_OID_AT_UNIQUE_IDENTIFIER, oid-&gt;len) =3D=3D 0)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;uniqueIdentif=
-ier&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid=
--&gt;p, MBEDTLS_OID_AT_DN_QUALIFIER, oid-&gt;len) =3D=3D 0)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        *desc =3D &quot;dnQualifier&quot;;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_O=
-ID_AT_PSEUDONYM, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        *desc =3D &quot;pseudonym&quot;;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *des=
-c =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-return -1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+static inline int</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+mbedtls_oid_get_extended_key_usage(const mbedtls_asn1_buf *oid, cons=
-t char **desc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* The relevant OID=
-s all have equal length. */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    if (oid-&gt;tag !=3D MBEDTLS_ASN1_OID || oid-&gt;len !=3D strle=
-n(MBEDTLS_OID_SERVER_AUTH))</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  *desc =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      return -1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (memcmp(oid-&gt;p, MBEDTLS_OI=
-D_SERVER_AUTH, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        *desc =3D &quot;TLS Web Server Authentication&quot;;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_C=
-LIENT_AUTH, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        *desc =3D &quot;TLS Web Client Authentication&quot;;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_CODE=
-_SIGNING, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       *desc =3D &quot;Code Signing&quot;;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_EMAIL_PROTECTION, oid-&=
-gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =
-=3D &quot;E-mail Protection&quot;;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_TIME_STAMPING, oid-&gt;len) =3D=
-=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;Tim=
-e Stamping&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (mem=
-cmp(oid-&gt;p, MBEDTLS_OID_OCSP_SIGNING, oid-&gt;len) =3D=3D 0)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        *desc =3D &quot;OCSP Signing&quot;;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        *desc =3D NULL;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        return -1;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &gt;=
-=3D 0x04000000 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Some functions tha=
-t operate on private keys use randomness to protect against</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * side channels. In Mbed TLS 4, th=
-ey automatically use the RNG in the PSA</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * library, but in Mbed TLS 3, they require them as exp=
-licit arguments. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static inline int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mb=
-edtls_compat_pk_parse_key(mbedtls_pk_context *ctx,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                            const unsigned c=
-har *key, size_t keylen,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                            const unsigned char *pwd, size_t pwdlen)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04=
-000000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mb=
-edtls_pk_parse_key(ctx, key, keylen, pwd, pwdlen);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    return mbedtls_pk_parse_key(ctx, key, keylen, pwd, pwd=
-len, mbedtls_ctr_drbg_random, rand_ctx_get());</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+static inline int</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+mbedtls_compat_pk_parse_keyfile(mbedtls_pk_context *ctx=
-, const char *path, const char *password)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    return mbedtls_pk_parse_keyfile(ctx, path=
-, password);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk=
-_parse_keyfile(ctx, path, password, mbedtls_ctr_drbg_random, rand_ctx_get()=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS=
-_VERSION_NUMBER &lt; 0x04000000 */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline int</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_compat_pk_check_=
-pair(const mbedtls_pk_context *pub, const mbedtls_pk_context *prv)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_p=
-k_check_pair(pub, prv);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
- mbedtls_pk_check_pair(pub, prv, mbedtls_ctr_drbg_random, rand_ctx_get());<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VE=
-RSION_NUMBER &lt; 0x04000000 */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span> #endif /* MBEDTLS_COMPAT_H_ */</span><br><span>diff --git a/src=
-/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>index f9=
-02e17..3e1698f 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span=
-><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -93,7 +93,9 @=
-@</span><br><span>     ASSERT(NULL !=3D ctx);</span><br><span>     CLEAR(*c=
-tx);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     ALLOC_OB=
-J_CLEAR(ctx-&gt;dhm_ctx, mbedtls_dhm_context);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span>     AL=
-LOC_OBJ_CLEAR(ctx-&gt;ca_chain, mbedtls_x509_crt);</span><br><span> </span>=
-<br><span>@@ -107,7 +109,9 @@</span><br><span>     ASSERT(NULL !=3D ctx);</=
-span><br><span>     CLEAR(*ctx);</span><br><span> </span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</=
-span><br><span>     ALLOC_OBJ_CLEAR(ctx-&gt;dhm_ctx, mbedtls_dhm_context);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><sp=
-an>     ALLOC_OBJ_CLEAR(ctx-&gt;ca_chain, mbedtls_x509_crt);</span><br><spa=
-n> </span><br><span>     ctx-&gt;endpoint =3D MBEDTLS_SSL_IS_CLIENT;</span>=
-<br><span>@@ -128,8 +132,10 @@</span><br><span>         mbedtls_x509_crt_fr=
-ee(ctx-&gt;crt_chain);</span><br><span>         free(ctx-&gt;crt_chain);</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if =
-MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>         mbedtls_dhm=
-_free(ctx-&gt;dhm_ctx);</span><br><span>         free(ctx-&gt;dhm_ctx);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>=
- </span><br><span>         mbedtls_x509_crl_free(ctx-&gt;crl);</span><br><s=
-pan>         free(ctx-&gt;crl);</span><br><span>@@ -348,6 +354,34 @@</span>=
-<br><span>     }</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x0400=
-0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const mb=
-edtls_ecp_curve_info ecp_curve_info_table[] =3D {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    /* TODO: Fill out the table. */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;secp256r1&quot;, =
-MBEDTLS_SSL_IANA_TLS_GROUP_SECP256R1 },</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    { &quot;secp384r1&quot;, MBEDTLS_SSL_IANA_TLS_GROUP=
-_SECP384R1 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { =
-&quot;X25519&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_X25519 },</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    { &quot;ffdhe2048&quot;, MBEDTLS_S=
-SL_IANA_TLS_GROUP_FFDHE2048 },</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    { &quot;ffdhe3072&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_FFDHE307=
-2 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;ffd=
-he4096&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_FFDHE4096 },</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    { &quot;ffdhe6144&quot;, MBEDTLS_SSL_=
-IANA_TLS_GROUP_FFDHE6144 },</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    { &quot;ffdhe8192&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_FFDHE8192 }=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static const size_t ecp_curve_info_=
-table_items =3D sizeof(ecp_curve_info_table) / sizeof(mbedtls_ecp_curve_inf=
-o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static const mbedtls_ecp_curve_info=
- *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ecp_curve=
-_info_from_name(const char *name)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-for (size_t i =3D 0; i &lt; ecp_curve_info_table_items; i++)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        if (strcmp(name, ecp_curve_info_table[i]=
-.name) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            r=
-eturn &amp;ecp_curve_info_table[i];</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUM=
-BER &gt;=3D 0x04000000 */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> void</span><br><span> tls_ctx_set_tls_groups(struct=
- tls_root_ctx *ctx, const char *groups)</span><br><span> {</span><br><span>=
-@@ -409,6 +443,7 @@</span><br><span> void</span><br><span> tls_ctx_load_dh_=
-params(struct tls_root_ctx *ctx, const char *dh_file, bool dh_inline)</span=
-><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MB=
-EDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     if (dh_inline)</s=
-pan><br><span>     {</span><br><span>         if (!mbed_ok(mbedtls_dhm_pars=
-e_dhm(ctx-&gt;dhm_ctx, (const unsigned char *)dh_file,</span><br><span>@@ -=
-427,6 +462,12 @@</span><br><span> </span><br><span>     msg(D_TLS_DEBUG_LOW=
-, &quot;Diffie-Hellman initialized with &quot; counter_format &quot; bit ke=
-y&quot;,</span><br><span>         (counter_type)mbedtls_dhm_get_bitlen(ctx-=
-&gt;dhm_ctx));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (strcmp(dh_f=
-ile, &quot;none&quot;) !=3D 0)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     msg(M_FATAL, &quot;Mbed TLS 4 only supports pre-defined Diffie-Hellman=
- groups.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS=
-_VERSION_NUMBER &lt; 0x04000000 */</span><br><span> }</span><br><span> </sp=
-an><br><span> void</span><br><span>@@ -500,29 +541,26 @@</span><br><span> <=
-/span><br><span>     if (priv_key_inline)</span><br><span>     {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        status =3D mbedtls_pk_pa=
-rse_key(ctx-&gt;priv_key, (const unsigned char *)priv_key_file,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                                 =
-     strlen(priv_key_file) + 1, NULL, 0,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                                      mbedtls_ctr_drbg_r=
-andom, rand_ctx_get());</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        status =3D mbedtls_compat_pk_parse_key(ctx-&gt;priv_key, (const=
- unsigned char *)priv_key_file,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                                             strlen(priv_key_fi=
-le) + 1, NULL, 0);</span><br><span> </span><br><span>         if (MBEDTLS_E=
-RR_PK_PASSWORD_REQUIRED =3D=3D status)</span><br><span>         {</span><br=
-><span>             char passbuf[512] =3D { 0 };</span><br><span>          =
-   pem_password_callback(passbuf, 512, 0, NULL);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            status =3D mbedtls_pk_parse_key(</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            status =3D =
-mbedtls_compat_pk_parse_key(</span><br><span>                 ctx-&gt;priv_=
-key, (const unsigned char *)priv_key_file, strlen(priv_key_file) + 1,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                (unsigned c=
-har *)passbuf, strlen(passbuf), mbedtls_ctr_drbg_random, rand_ctx_get());</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                (unsi=
-gned char *)passbuf, strlen(passbuf));</span><br><span>         }</span><br=
-><span>     }</span><br><span>     else</span><br><span>     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        status =3D mbedtls_pk_pars=
-e_keyfile(ctx-&gt;priv_key, priv_key_file, NULL,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                                          mbedtl=
-s_ctr_drbg_random, rand_ctx_get());</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        status =3D mbedtls_compat_pk_parse_keyfile(ctx-&gt;=
-priv_key, priv_key_file, NULL);</span><br><span>         if (MBEDTLS_ERR_PK=
-_PASSWORD_REQUIRED =3D=3D status)</span><br><span>         {</span><br><spa=
-n>             char passbuf[512] =3D { 0 };</span><br><span>             pe=
-m_password_callback(passbuf, 512, 0, NULL);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            status =3D mbedtls_pk_parse_keyfile(ctx-&=
-gt;priv_key, priv_key_file, passbuf,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                                              mbedtls_ctr_dr=
-bg_random, rand_ctx_get());</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            status =3D mbedtls_compat_pk_parse_keyfile(ctx-&gt;priv=
-_key, priv_key_file, passbuf);</span><br><span>         }</span><br><span> =
-    }</span><br><span>     if (!mbed_ok(status))</span><br><span>@@ -538,8 =
-+576,7 @@</span><br><span>         return 1;</span><br><span>     }</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mb=
-ed_ok(mbedtls_pk_check_pair(&amp;ctx-&gt;crt_chain-&gt;pk, ctx-&gt;priv_key=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-                   mbedtls_ctr_drbg_random, rand_ctx_get())))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_compat_p=
-k_check_pair(&amp;ctx-&gt;crt_chain-&gt;pk, ctx-&gt;priv_key)))</span><br><=
-span>     {</span><br><span>         msg(M_WARN, &quot;Private key does not=
- match the certificate&quot;);</span><br><span>         return 1;</span><br=
-><span>@@ -553,6 +590,7 @@</span><br><span> #pragma GCC diagnostic ignored =
-&quot;-Wconversion&quot;</span><br><span> #endif</span><br><span> </span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &=
-lt; 0x04000000</span><br><span> /**</span><br><span>  * external_pkcs1_sign=
- implements a mbed TLS rsa_sign_func callback, that uses</span><br><span>  =
-* the management interface to request an RSA signature for the supplied has=
-h.</span><br><span>@@ -669,11 +707,16 @@</span><br><span> </span><br><span>=
-     return ctx-&gt;signature_length;</span><br><span> }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; =
-0x04000000 */</span><br><span> </span><br><span> int</span><br><span> tls_c=
-tx_use_external_signing_func(struct tls_root_ctx *ctx, external_sign_func s=
-ign_func,</span><br><span>                                   void *sign_ctx=
-)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    msg(M_WARN, &quot;tls_ctx_use_external_signi=
-ng_func is not implemented for Mbed TLS 4.&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    return 1;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#else</span><br><span>     ASSERT(NULL !=3D ctx);<=
-/span><br><span> </span><br><span>     if (ctx-&gt;crt_chain =3D=3D NULL)</=
-span><br><span>@@ -701,6 +744,7 @@</span><br><span>     }</span><br><span> =
-</span><br><span>     return 0;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000 */</span><b=
-r><span> }</span><br><span> </span><br><span> #ifdef ENABLE_MANAGEMENT</spa=
-n><br><span>@@ -938,6 +982,7 @@</span><br><span> void</span><br><span> tls_=
-ctx_personalise_random(struct tls_root_ctx *ctx)</span><br><span> {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER =
-&lt; 0x04000000</span><br><span>     static char old_sha256_hash[32] =3D { =
-0 };</span><br><span>     unsigned char sha256_hash[32] =3D { 0 };</span><b=
-r><span>     mbedtls_ctr_drbg_context *cd_ctx =3D rand_ctx_get();</span><br=
-><span>@@ -960,6 +1005,7 @@</span><br><span>             memcpy(old_sha256_=
-hash, sha256_hash, sizeof(old_sha256_hash));</span><br><span>         }</sp=
-an><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x040000 */</span><br><span> }</span>=
-<br><span> </span><br><span> #if defined(__GNUC__) || defined(__clang__)</s=
-pan><br><span>@@ -1069,7 +1115,9 @@</span><br><span>     }</span><br><span>=
- #endif</span><br><span>     mbedtls_ssl_conf_dbg(ks_ssl-&gt;ssl_config, my=
-_debug, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if M=
-BEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     mbedtls_ssl_conf=
-_rng(ks_ssl-&gt;ssl_config, mbedtls_ctr_drbg_random, rand_ctx_get());</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION=
-_NUMBER &lt; 0x04000000 */</span><br><span> </span><br><span>     mbedtls_s=
-sl_conf_cert_profile(ks_ssl-&gt;ssl_config, &amp;ssl_ctx-&gt;cert_profile);=
-</span><br><span> </span><br><span>@@ -1100,12 +1148,14 @@</span><br><span>=
- #endif /* MBEDTLS_SSL_CBC_RECORD_SPLITTING */</span><br><span> </span><br>=
-<span>     /* Initialise authentication information */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x040000=
-00</span><br><span>     if (is_server)</span><br><span>     {</span><br><sp=
-an>         mbed_ok(mbedtls_ssl_conf_dh_param_ctx(ks_ssl-&gt;ssl_config, ss=
-l_ctx-&gt;dhm_ctx));</span><br><span>     }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    mbed_ok(mbedtls_ssl_conf_own_cert(ks_ssl-&gt=
-;ssl_config, ssl_ctx-&gt;crt_chain, ssl_ctx-&gt;priv_key));</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    (void)mbed_ok(mbedtls_ssl_conf_=
-own_cert(ks_ssl-&gt;ssl_config, ssl_ctx-&gt;crt_chain, ssl_ctx-&gt;priv_key=
-));</span><br><span> </span><br><span>     /* Initialise SSL verification *=
-/</span><br><span>     if (session-&gt;opt-&gt;ssl_flags &amp; SSLF_CLIENT_=
-CERT_OPTIONAL)</span><br><span>@@ -1160,7 +1210,7 @@</span><br><span>     /=
-* Initialise SSL context */</span><br><span>     ALLOC_OBJ_CLEAR(ks_ssl-&gt=
-;ctx, mbedtls_ssl_context);</span><br><span>     mbedtls_ssl_init(ks_ssl-&g=
-t;ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbed_ok(mb=
-edtls_ssl_setup(ks_ssl-&gt;ctx, ks_ssl-&gt;ssl_config));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    (void)mbed_ok(mbedtls_ssl_setup(ks=
-_ssl-&gt;ctx, ks_ssl-&gt;ssl_config));</span><br><span>     /* We do verifi=
-cation in our own callback depending on the</span><br><span>      * exact c=
-onfiguration. We do not rely on the default hostname</span><br><span>      =
-* verification. */</span><br><span>@@ -1376,7 +1426,8 @@</span><br><span>  =
-   /* Error during read, check for retry error */</span><br><span>     if (=
-retval &lt; 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        if (MBEDTLS_ERR_SSL_WANT_WRITE =3D=3D retval || MBE=
-DTLS_ERR_SSL_WANT_READ =3D=3D retval)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        if (MBEDTLS_ERR_SSL_WANT_WRITE =3D=3D retval || M=
-BEDTLS_ERR_SSL_WANT_READ =3D=3D retval</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            || MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICK=
-ET =3D=3D retval)</span><br><span>         {</span><br><span>             r=
-eturn 0;</span><br><span>         }</span><br><span>@@ -1456,6 +1507,7 @@</=
-span><br><span> void</span><br><span> show_available_curves(void)</span><br=
-><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTL=
-S_VERSION_NUMBER &lt; 0x04000000</span><br><span>     const mbedtls_ecp_cur=
-ve_info *pcurve =3D mbedtls_ecp_curve_list();</span><br><span> </span><br><=
-span>     if (NULL =3D=3D pcurve)</span><br><span>@@ -1470,6 +1522,9 @@</sp=
-an><br><span>         printf(&quot;%s\n&quot;, pcurve-&gt;name);</span><br>=
-<span>         pcurve++;</span><br><span>     }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    msg(M_FATAL, &quot;Mbed TLS 4 has no mechanism to list su=
-pported curves.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><br><span> }<=
-/span><br><span> </span><br><span> const char *</span><br><span>diff --git =
-a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h</span><br><span>ind=
-ex f744945..6b678b2 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.h<=
-/span><br><span>+++ b/src/openvpn/ssl_mbedtls.h</span><br><span>@@ -112,11 =
-+112,13 @@</span><br><span>  */</span><br><span> struct tls_root_ctx</span>=
-<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool =
-initialised;                      /**&lt; True if the context has been init=
-ialised */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool =
-initialised; /**&lt; True if the context has been initialised */</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int endpoi=
-nt;                          /**&lt; Whether or not this is a server or a c=
-lient */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int end=
-point;     /**&lt; Whether or not this is a server or a client */</span><br=
-><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS=
-_VERSION_NUMBER &lt; 0x04000000</span><br><span>     mbedtls_dhm_context *d=
-hm_ctx;          /**&lt; Diffie-Helmann-Merkle context */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>     mbedtls_x=
-509_crt *crt_chain;           /**&lt; Local Certificate chain */</span><br>=
-<span>     mbedtls_x509_crt *ca_chain;            /**&lt; CA chain for remo=
-te verification */</span><br><span>     mbedtls_pk_context *priv_key;      =
-    /**&lt; Local private key */</span><br><span>diff --git a/src/openvpn/s=
-sl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>inde=
-x 9d89a1d..32f3ecb 100644</span><br><span>--- a/src/openvpn/ssl_verify_mbed=
-tls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</span><br><spa=
-n>@@ -34,13 +34,22 @@</span><br><span> </span><br><span> #if defined(ENABLE=
-_CRYPTO_MBEDTLS)</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &lt;mbedtls/version.h&gt;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto_mbedtls_legacy.h&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbe=
-dtls/bignum.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-nclude &lt;mbedtls/sha1.h&gt;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#else</span><br><span> #include &quot;crypto_mbedtls.h&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &quot;mbedtls_compat.h&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #include &quot;ssl_v=
-erify.h&quot;</span><br><span> #include &lt;mbedtls/asn1.h&gt;</span><br><s=
-pan> #include &lt;mbedtls/error.h&gt;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#include &lt;mbedtls/bignum.h&gt;</span><br><span> #include=
- &lt;mbedtls/oid.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#include &lt;mbedtls/sha1.h&gt;</span><br><span> </span><br><span> #define=
- MAX_SUBJECT_LENGTH 256</span><br><span> </span><br><span>@@ -171,11 +180,1=
-39 @@</span><br><span>     return SUCCESS;</span><br><span> }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VER=
-SION_NUMBER &gt;=3D 0x04000000</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+/* Mbed TLS 4 has no function to print the certificate serial nu=
-mber and does</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * not=
- expose the bignum functions anymore. So in order to write the serial</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * number as a decimal st=
-ring, we implement bignum % 10 and bignum / 10. */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+static char</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+bignum_mod_10(const uint8_t *bignum, size_t bignum_l=
-ength)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    int result =3D 0;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &l=
-t; bignum_length; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        res=
-ult =3D (result * 256) % 10;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        result =3D (result + bignum[i]) % 10;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    return (char)result;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Divide b=
-ignum by 10 rounded down, in place. */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+bignum_div_10(uint8_t *bignum, size_t *bignum_length)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+     * Some intuition for the algorithm below:</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * We want to calculate</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+     *     (bignum[0] * 256^n + bignum[1] * 256^(n-1=
-) + ... + bignum[n]) / 10.</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
- Let remainder =3D bignum[0] % 10 and carry =3D remainder * 256.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     * Then we can write the a=
-bove as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+     *     (bignum[0] / 1=
-0) * 256^n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *   =
-    + ((carry + bignum[1]) * 256^(n-1) + ... + bignum[n]) / 10.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+     * So now we have the first byte of our =
-result. The second byte will be</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+     * (carry + bignum[1]) / 10. Note that this fits into one b=
-yte because</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * 0=
- &lt;=3D remainder &lt; 10. We calculate the next remainder and carry as</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * remainder =3D (=
-carry + bignum[1]) % 10 and carry =3D remainder * 256 and</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+     * move on to the next byte until=
- we are done.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t new_len=
-gth =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int c=
-arry =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for =
-(size_t i =3D 0; i &lt; *bignum_length; i++)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        uint8_t next_byte =3D (uint8_t)((bignum[i] + carry) / 10=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int remai=
-nder =3D (bignum[i] + carry) % 10;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        carry =3D remainder * 256;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        /* Write the byte unless it&#39;s a leading zero. */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (new_length =
-!=3D 0 || next_byte !=3D 0)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          bignum[new_length++] =3D next_byte;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    *bignum_length =3D new_length;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Write the decimal=
- representation of bignum to out, if enough space is available.</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * Returns the number of bytes =
-needed in out, or 0 on error. To calculate the</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * necessary buffer size, the function can be ca=
-lled with out =3D NULL. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static size_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+write_bignum(char *out, size_t out_size, const uint8_t *bignum, size_t big=
-num_length)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (bignum_length =3D=
-=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        /* We want out to b=
-e &quot;0&quot;. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        if (out !=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         if (out_size &gt;=3D 2)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                out[0] =3D &#39;0&#39;;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                out[1] =3D &#39;\0&#39;;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            else if (out_size &gt=
-; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                out[0=
-] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 2=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    uint8_t *bignum_copy =3D malloc(bignum_length);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (bignum_copy=
- =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    memcpy(bignum_copy, bignum, bign=
-um_length);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t bytes_needed =3D=
- 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t bytes=
-_written =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-while (bignum_length &gt; 0)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   /* We&#39;re writing the digits in reverse order. We put them in the rig=
-ht order later. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       char digit =3D bignum_mod_10(bignum_copy, bignum_length);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (out !=3D NULL &amp=
-;&amp; bytes_written &lt; out_size - 1)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            out[bytes_written++] =3D &#39;0&#39; + (char)digit;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        bytes_needed +=3D 1;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        bignum_div_10(=
-bignum_copy, &amp;bignum_length);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (out !=3D NU=
-LL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        if (bytes_written =3D=
-=3D bytes_needed)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-/* We had space for all digits. Now reverse them. */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            for (size_t i =3D 0; i &lt; b=
-ytes_written / 2; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             char tmp =3D out[i];</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                out[i] =3D out[bytes_written - 1 - i];</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                out[bytes_=
-written - 1 - i] =3D tmp;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            out[bytes_written] =3D &#39;\0&#39;;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        else if (out_size &gt; 0)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            out[0] =3D &#39;\0&#39;;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    bytes_needed +=3D 1;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    free(bignum_copy);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    return bytes_needed;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif =
-/* MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000 */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span> char *</span><br><span> backe=
-nd_x509_get_serial(mbedtls_x509_crt *cert, struct gc_arena *gc)</span><br><=
-span> {</span><br><span>     char *buf =3D NULL;</span><br><span>     size_=
-t buflen =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUM=
-BER &lt; 0x04000000</span><br><span>     mbedtls_mpi serial_mpi =3D { 0 };<=
-/span><br><span> </span><br><span>     /* Transform asn1 integer serial int=
-o mbed TLS MPI */</span><br><span>@@ -201,6 +338,21 @@</span><br><span> end=
-:</span><br><span>     mbedtls_mpi_free(&amp;serial_mpi);</span><br><span> =
-    return buf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#els=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buflen =3D wri=
-te_bignum(NULL, 0, cert-&gt;serial.p, cert-&gt;serial.len);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (buflen =3D=3D 0)</span><br>=
+uot;dnQualifier&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if=
+ (memcmp(oid-&gt;p, MBEDTLS_OID_AT_PSEUDONYM, oid-&gt;len) =3D=3D 0)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;pseudonym&quot;;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        *desc =3D NULL;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return -1;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+mbedtls_oid_get_extended_key_usage(cons=
+t mbedtls_asn1_buf *oid, const char **desc)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /* The relevant OIDs all have equal length. */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (oid-&gt;tag !=3D MBEDTLS_ASN1_=
+OID || oid-&gt;len !=3D strlen(MBEDTLS_OID_SERVER_AUTH))</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        *desc =3D NULL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        return -1;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(memcmp(oid-&gt;p, MBEDTLS_OID_SERVER_AUTH, oid-&gt;len) =3D=3D 0)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;TLS Web Server Au=
+thentication&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (m=
+emcmp(oid-&gt;p, MBEDTLS_OID_CLIENT_AUTH, oid-&gt;len) =3D=3D 0)</span><br>=
 <span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;Failed to write se=
-rial to string.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        return NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf =
-=3D gc_malloc(buflen, true, gc);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (write_bignum(buf, buflen, cert-&gt;serial.p, cert-&gt;=
-serial.len) !=3D buflen)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
-sg(M_WARN, &quot;Failed to write serial to string.&quot;);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        return NULL;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return buf;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</=
-span><br><span> }</span><br><span> </span><br><span> char *</span><br><span=
->diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h</span><br><span=
->index 2e22204..582e130 100644</span><br><span>--- a/src/openvpn/syshead.h<=
-/span><br><span>+++ b/src/openvpn/syshead.h</span><br><span>@@ -475,7 +475,=
-10 @@</span><br><span> #endif</span><br><span> </span><br><span> #ifdef ENA=
-BLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-include &lt;mbedtls/version.h&gt;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span> #=
-define ENABLE_PREDICTION_RESISTANCE</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><=
-br><span> #endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span> </span><br><s=
-pan> /*</span><br><span>diff --git a/tests/Makefile.am b/tests/Makefile.am<=
-/span><br><span>index bf8f960..cb30fe5 100644</span><br><span>--- a/tests/M=
-akefile.am</span><br><span>+++ b/tests/Makefile.am</span><br><span>@@ -55,6=
- +55,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</spa=
-n><br><span> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br><span>=
- 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_legacy=
-.c \</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</span><br><span>=
- 	$(top_srcdir)/src/openvpn/packet_id.c \</span><br><span> 	$(top_srcdir)/s=
-rc/openvpn/platform.c</span><br><span>diff --git a/tests/t_server_null_defa=
-ult.rc b/tests/t_server_null_default.rc</span><br><span>index 798cfd0..bba7=
-7aa 100755</span><br><span>--- a/tests/t_server_null_default.rc</span><br><=
-span>+++ b/tests/t_server_null_default.rc</span><br><span>@@ -57,7 +57,7 @@=
-</span><br><span> SERVER_SERVER_2=3D&quot;--server 10.29.42.0 255.255.255.0=
-&quot;</span><br><span> SERVER_MGMT_PORT_2=3D&quot;11195&quot;</span><br><s=
-pan> SERVER_EXEC_2=3D&quot;${SERVER_EXEC}&quot;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-SERVER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVE=
-R_SERVER_2} --lport 1195 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_P=
-ORT_2} --dh ${DH}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+SERVER_CONF_2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 11=
-95 --proto tcp --management 127.0.0.1 ${SERVER_MGMT_PORT_2} --dh none&quot;=
-</span><br><span> </span><br><span> SERVER_NAME_3=3D&quot;t_server_null_ser=
-ver-1196_udp&quot;</span><br><span> SERVER_SERVER_3=3D&quot;--server 10.29.=
-43.0 255.255.255.0&quot;</span><br><span>diff --git a/tests/unit_tests/open=
-vpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>inde=
-x 7aeea47..1128eb4 100644</span><br><span>--- a/tests/unit_tests/openvpn/Ma=
-kefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span>=
-<br><span>@@ -76,6 +76,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/buf=
-fer.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto.c \</span><br><s=
-pan> 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_le=
-gacy.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \</sp=
-an><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> =
-	$(top_srcdir)/src/openvpn/otime.c \</span><br><span>@@ -110,6 +111,7 @@</s=
-pan><br><span> 	$(top_srcdir)/src/openvpn/cryptoapi.c \</span><br><span> 	$=
-(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/s=
-rc/openvpn/crypto_mbedtls.c \</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_legacy.c \</span><br><s=
-pan> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br><span> 	$(top_=
-srcdir)/src/openvpn/env_set.c \</span><br><span> 	$(top_srcdir)/src/openvpn=
-/mss.c \</span><br><span>@@ -158,6 +160,7 @@</span><br><span> 	$(top_srcdir=
-)/src/openvpn/crypto.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto=
-_epoch.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/op=
-envpn/crypto_mbedtls_legacy.c \</span><br><span> 	$(top_srcdir)/src/openvpn=
-/crypto_openssl.c \</span><br><span> 	$(top_srcdir)/src/openvpn/env_set.c \=
-</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</span><br><span>@@ -=
-188,6 +191,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/crypto.c \</spa=
-n><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	=
-$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_legacy.c=
- \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br=
-><span> 	$(top_srcdir)/src/openvpn/env_set.c \</span><br><span> 	$(top_srcd=
-ir)/src/openvpn/otime.c \</span><br><span>@@ -208,6 +212,7 @@</span><br><sp=
-an> 	$(top_srcdir)/src/openvpn/crypto.c \</span><br><span> 	$(top_srcdir)/s=
-rc/openvpn/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/src/openvpn/cry=
-pto_mbedtls.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(t=
-op_srcdir)/src/openvpn/crypto_mbedtls_legacy.c \</span><br><span> 	$(top_sr=
-cdir)/src/openvpn/crypto_openssl.c \</span><br><span> 	$(top_srcdir)/src/op=
-envpn/fdmisc.c \</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</spa=
-n><br><span>@@ -294,6 +299,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn=
-/crypto.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</s=
-pan><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_=
-mbedtls_legacy.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_opens=
-sl.c \</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</span><br><spa=
-n> 	$(top_srcdir)/src/openvpn/packet_id.c \</span><br><span>@@ -332,6 +338,=
-7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/crypto.c \</span><br><span=
-> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top_srcdi=
-r)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_legacy.c \</span><b=
-r><span> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br><span> 	$(=
-top_srcdir)/src/openvpn/otime.c \</span><br><span> 	$(top_srcdir)/src/openv=
-pn/packet_id.c \</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
-_common.h b/tests/unit_tests/openvpn/test_common.h</span><br><span>index 15=
-6e5a9..fb070aa 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_c=
-ommon.h</span><br><span>+++ b/tests/unit_tests/openvpn/test_common.h</span>=
-<br><span>@@ -25,6 +25,10 @@</span><br><span> #include &lt;stdlib.h&gt;</sp=
-an><br><span> #include &lt;cmocka.h&gt;</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_MBEDTLS)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;mbedtls=
-_compat.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
-if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>=
- /* Do we use cmocka &lt; 2.0.0? */</span><br><span> #ifndef HAVE_CMOCKA_VE=
-RSION_H</span><br><span> #define HAVE_OLD_CMOCKA_API 1</span><br><span>@@ -=
-58,6 +62,9 @@</span><br><span> {</span><br><span>     assert_int_equal(setv=
-buf(stdout, NULL, _IONBF, BUFSIZ), 0);</span><br><span>     assert_int_equa=
-l(setvbuf(stderr, NULL, _IONBF, BUFSIZ), 0);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_compat_psa_crypto_init(=
+"color: hsl(120, 100%, 40%);">+        *desc =3D &quot;TLS Web Client Authe=
+ntication&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (memc=
+mp(oid-&gt;p, MBEDTLS_OID_CODE_SIGNING, oid-&gt;len) =3D=3D 0)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        *desc =3D &quot;Code Signing&quot;;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDT=
+LS_OID_EMAIL_PROTECTION, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        *desc =3D &quot;E-mail Protection&quot;;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_TIM=
+E_STAMPING, oid-&gt;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        *desc =3D &quot;Time Stamping&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    else if (memcmp(oid-&gt;p, MBEDTLS_OID_OCSP_SIGNING, oid-&g=
+t;len) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D=
+ &quot;OCSP Signing&quot;;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    els=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        *desc =3D NULL;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        return -1;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /*=
+ MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000 */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/* Some functions that operate on private keys use randomness to pro=
+tect against</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * side=
+ channels. In Mbed TLS 4, they automatically use the RNG in the PSA</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * library, but in Mbed TLS=
+ 3, they require them as explicit arguments. */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static inline int</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+mbedtls_compat_pk_parse_key(mbedtls_pk_context *c=
+tx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+            const unsigned char *key, size_t keylen,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                            const unsigne=
+d char *pwd, size_t pwdlen)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTL=
+S_VERSION_NUMBER &gt;=3D 0x04000000</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return mbedtls_pk_parse_key(ctx, key, keylen, pwd, pwdl=
+en);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk_parse_k=
+ey(ctx, key, keylen, pwd, pwdlen, mbedtls_ctr_drbg_random, rand_ctx_get());=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_V=
+ERSION_NUMBER &lt; 0x04000000 */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline int</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_compat_pk_parse_ke=
+yfile(mbedtls_pk_context *ctx, const char *path, const char *password)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x0400=
+0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbed=
+tls_pk_parse_keyfile(ctx, path, password);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    return mbedtls_pk_parse_keyfile(ctx, path, password, mbedtls_c=
+tr_drbg_random, rand_ctx_get());</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static inline int</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+mbedtls_compat_pk_check_pair(const mbedtls_pk_context *pub, const mbe=
+dtls_pk_context *prv)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERS=
+ION_NUMBER &gt;=3D 0x04000000</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return mbedtls_pk_check_pair(pub, prv);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return mbedtls_pk_check_pair(pub, prv, mbedtls_ctr_=
+drbg_random, rand_ctx_get());</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span> #endif /* MBEDTLS_COMPAT_H_ */</s=
+pan><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbed=
+tls.c</span><br><span>index f902e17..3e1698f 100644</span><br><span>--- a/s=
+rc/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</s=
+pan><br><span>@@ -93,7 +93,9 @@</span><br><span>     ASSERT(NULL !=3D ctx);=
+</span><br><span>     CLEAR(*ctx);</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x0400000=
+0</span><br><span>     ALLOC_OBJ_CLEAR(ctx-&gt;dhm_ctx, mbedtls_dhm_context=
 );</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
-<span> }</span><br><span> </span><br><span> /**</span><br><span></span><br>=
-</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/14=
-41?usp=3Demail">change 1441</a>. To unsubscribe, or for help writing mail f=
-ilters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">se=
-ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
-div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
-><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1441?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<span> </span><br><span>     ALLOC_OBJ_CLEAR(ctx-&gt;ca_chain, mbedtls_x509=
+_crt);</span><br><span> </span><br><span>@@ -107,7 +109,9 @@</span><br><spa=
+n>     ASSERT(NULL !=3D ctx);</span><br><span>     CLEAR(*ctx);</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_V=
+ERSION_NUMBER &lt; 0x04000000</span><br><span>     ALLOC_OBJ_CLEAR(ctx-&gt;=
+dhm_ctx, mbedtls_dhm_context);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#endif</span><br><span>     ALLOC_OBJ_CLEAR(ctx-&gt;ca_chain, mb=
+edtls_x509_crt);</span><br><span> </span><br><span>     ctx-&gt;endpoint =
+=3D MBEDTLS_SSL_IS_CLIENT;</span><br><span>@@ -128,8 +132,10 @@</span><br><=
+span>         mbedtls_x509_crt_free(ctx-&gt;crt_chain);</span><br><span>   =
+      free(ctx-&gt;crt_chain);</span><br><span> </span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</sp=
+an><br><span>         mbedtls_dhm_free(ctx-&gt;dhm_ctx);</span><br><span>  =
+       free(ctx-&gt;dhm_ctx);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif</span><br><span> </span><br><span>         mbedtls_x509_cr=
+l_free(ctx-&gt;crl);</span><br><span>         free(ctx-&gt;crl);</span><br>=
+<span>@@ -348,6 +354,34 @@</span><br><span>     }</span><br><span> }</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBED=
+TLS_VERSION_NUMBER &gt;=3D 0x04000000</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+static const mbedtls_ecp_curve_info ecp_curve_info_table[=
+] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* TODO:=
+ Fill out the table. */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    { &quot;secp256r1&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_SECP256R1 },</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;secp384r1&=
+quot;, MBEDTLS_SSL_IANA_TLS_GROUP_SECP384R1 },</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    { &quot;X25519&quot;, MBEDTLS_SSL_IANA_TLS_G=
+ROUP_X25519 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+ &quot;ffdhe2048&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_FFDHE2048 },</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    { &quot;ffdhe3072&quot;, MB=
+EDTLS_SSL_IANA_TLS_GROUP_FFDHE3072 },</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    { &quot;ffdhe4096&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_F=
+FDHE4096 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    { &q=
+uot;ffdhe6144&quot;, MBEDTLS_SSL_IANA_TLS_GROUP_FFDHE6144 },</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    { &quot;ffdhe8192&quot;, MBEDT=
+LS_SSL_IANA_TLS_GROUP_FFDHE8192 },</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic const size_t ecp_curve_info_table_items =3D sizeof(ecp_curve_info_tabl=
+e) / sizeof(mbedtls_ecp_curve_info);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic const mbedtls_ecp_curve_info *</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+mbedtls_ecp_curve_info_from_name(const char *name)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; ecp_curve_info=
+_table_items; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (str=
+cmp(name, ecp_curve_info_table[i].name) =3D=3D 0)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            return &amp;ecp_curve_info_table[i];</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    return NULL;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#endif /* MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000 */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><sp=
+an> tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)</s=
+pan><br><span> {</span><br><span>@@ -409,6 +443,7 @@</span><br><span> void<=
+/span><br><span> tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const cha=
+r *dh_file, bool dh_inline)</span><br><span> {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span=
+><br><span>     if (dh_inline)</span><br><span>     {</span><br><span>     =
+    if (!mbed_ok(mbedtls_dhm_parse_dhm(ctx-&gt;dhm_ctx, (const unsigned cha=
+r *)dh_file,</span><br><span>@@ -427,6 +462,12 @@</span><br><span> </span><=
+br><span>     msg(D_TLS_DEBUG_LOW, &quot;Diffie-Hellman initialized with &q=
+uot; counter_format &quot; bit key&quot;,</span><br><span>         (counter=
+_type)mbedtls_dhm_get_bitlen(ctx-&gt;dhm_ctx));</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (strcmp(dh_file, &quot;none&quot;) !=3D 0)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;Mbed TLS 4 only su=
+pports pre-defined Diffie-Hellman groups.&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><=
+br><span> }</span><br><span> </span><br><span> void</span><br><span>@@ -500=
+,29 +541,26 @@</span><br><span> </span><br><span>     if (priv_key_inline)<=
+/span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        status =3D mbedtls_pk_parse_key(ctx-&gt;priv_key, (const unsigned =
+char *)priv_key_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                                      strlen(priv_key_file) + 1, NULL, 0,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
+               mbedtls_ctr_drbg_random, rand_ctx_get());</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        status =3D mbedtls_compat_pk_p=
+arse_key(ctx-&gt;priv_key, (const unsigned char *)priv_key_file,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                              =
+               strlen(priv_key_file) + 1, NULL, 0);</span><br><span> </span=
+><br><span>         if (MBEDTLS_ERR_PK_PASSWORD_REQUIRED =3D=3D status)</sp=
+an><br><span>         {</span><br><span>             char passbuf[512] =3D =
+{ 0 };</span><br><span>             pem_password_callback(passbuf, 512, 0, =
+NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            sta=
+tus =3D mbedtls_pk_parse_key(</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            status =3D mbedtls_compat_pk_parse_key(</span><br><sp=
+an>                 ctx-&gt;priv_key, (const unsigned char *)priv_key_file,=
+ strlen(priv_key_file) + 1,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                (unsigned char *)passbuf, strlen(passbuf), mbedtls_ct=
+r_drbg_random, rand_ctx_get());</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                (unsigned char *)passbuf, strlen(passbuf));</sp=
+an><br><span>         }</span><br><span>     }</span><br><span>     else</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       status =3D mbedtls_pk_parse_keyfile(ctx-&gt;priv_key, priv_key_file,=
+ NULL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+                           mbedtls_ctr_drbg_random, rand_ctx_get());</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        status =3D mbedtls=
+_compat_pk_parse_keyfile(ctx-&gt;priv_key, priv_key_file, NULL);</span><br>=
+<span>         if (MBEDTLS_ERR_PK_PASSWORD_REQUIRED =3D=3D status)</span><b=
+r><span>         {</span><br><span>             char passbuf[512] =3D { 0 }=
+;</span><br><span>             pem_password_callback(passbuf, 512, 0, NULL)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            status =
+=3D mbedtls_pk_parse_keyfile(ctx-&gt;priv_key, priv_key_file, passbuf,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                          =
+                    mbedtls_ctr_drbg_random, rand_ctx_get());</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            status =3D mbedtls_co=
+mpat_pk_parse_keyfile(ctx-&gt;priv_key, priv_key_file, passbuf);</span><br>=
+<span>         }</span><br><span>     }</span><br><span>     if (!mbed_ok(s=
+tatus))</span><br><span>@@ -538,8 +576,7 @@</span><br><span>         return=
+ 1;</span><br><span>     }</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_pk_check_pair(&amp;ctx-&gt;=
+crt_chain-&gt;pk, ctx-&gt;priv_key,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                                       mbedtls_ctr_drbg_rando=
+m, rand_ctx_get())))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    if (!mbed_ok(mbedtls_compat_pk_check_pair(&amp;ctx-&gt;crt_chain-&gt;p=
+k, ctx-&gt;priv_key)))</span><br><span>     {</span><br><span>         msg(=
+M_WARN, &quot;Private key does not match the certificate&quot;);</span><br>=
+<span>         return 1;</span><br><span>@@ -553,6 +590,7 @@</span><br><spa=
+n> #pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span>=
+ #endif</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span> /**</span=
+><br><span>  * external_pkcs1_sign implements a mbed TLS rsa_sign_func call=
+back, that uses</span><br><span>  * the management interface to request an =
+RSA signature for the supplied hash.</span><br><span>@@ -669,11 +707,16 @@<=
+/span><br><span> </span><br><span>     return ctx-&gt;signature_length;</sp=
+an><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
+if /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><br><span> </span><br=
+><span> int</span><br><span> tls_ctx_use_external_signing_func(struct tls_r=
+oot_ctx *ctx, external_sign_func sign_func,</span><br><span>               =
+                    void *sign_ctx)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x040=
+00000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_WARN=
+, &quot;tls_ctx_use_external_signing_func is not implemented for Mbed TLS 4=
+.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
+ 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br>=
+<span>     ASSERT(NULL !=3D ctx);</span><br><span> </span><br><span>     if=
+ (ctx-&gt;crt_chain =3D=3D NULL)</span><br><span>@@ -701,6 +744,7 @@</span>=
+<br><span>     }</span><br><span> </span><br><span>     return 0;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUM=
+BER &gt;=3D 0x04000000 */</span><br><span> }</span><br><span> </span><br><s=
+pan> #ifdef ENABLE_MANAGEMENT</span><br><span>@@ -938,6 +982,7 @@</span><br=
+><span> void</span><br><span> tls_ctx_personalise_random(struct tls_root_ct=
+x *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     stat=
+ic char old_sha256_hash[32] =3D { 0 };</span><br><span>     unsigned char s=
+ha256_hash[32] =3D { 0 };</span><br><span>     mbedtls_ctr_drbg_context *cd=
+_ctx =3D rand_ctx_get();</span><br><span>@@ -960,6 +1005,7 @@</span><br><sp=
+an>             memcpy(old_sha256_hash, sha256_hash, sizeof(old_sha256_hash=
+));</span><br><span>         }</span><br><span>     }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x0=
+40000 */</span><br><span> }</span><br><span> </span><br><span> #if defined(=
+__GNUC__) || defined(__clang__)</span><br><span>@@ -1069,7 +1115,9 @@</span=
+><br><span>     }</span><br><span> #endif</span><br><span>     mbedtls_ssl_=
+conf_dbg(ks_ssl-&gt;ssl_config, my_debug, NULL);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</sp=
+an><br><span>     mbedtls_ssl_conf_rng(ks_ssl-&gt;ssl_config, mbedtls_ctr_d=
+rbg_random, rand_ctx_get());</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x04000000 */</span><br><spa=
+n> </span><br><span>     mbedtls_ssl_conf_cert_profile(ks_ssl-&gt;ssl_confi=
+g, &amp;ssl_ctx-&gt;cert_profile);</span><br><span> </span><br><span>@@ -11=
+00,12 +1148,14 @@</span><br><span> #endif /* MBEDTLS_SSL_CBC_RECORD_SPLITTI=
+NG */</span><br><span> </span><br><span>     /* Initialise authentication i=
+nformation */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MB=
+EDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span>     if (is_server)</s=
+pan><br><span>     {</span><br><span>         mbed_ok(mbedtls_ssl_conf_dh_p=
+aram_ctx(ks_ssl-&gt;ssl_config, ssl_ctx-&gt;dhm_ctx));</span><br><span>    =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbed_ok(mb=
+edtls_ssl_conf_own_cert(ks_ssl-&gt;ssl_config, ssl_ctx-&gt;crt_chain, ssl_c=
+tx-&gt;priv_key));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   (void)mbed_ok(mbedtls_ssl_conf_own_cert(ks_ssl-&gt;ssl_config, ssl_ctx-&=
+gt;crt_chain, ssl_ctx-&gt;priv_key));</span><br><span> </span><br><span>   =
+  /* Initialise SSL verification */</span><br><span>     if (session-&gt;op=
+t-&gt;ssl_flags &amp; SSLF_CLIENT_CERT_OPTIONAL)</span><br><span>@@ -1160,7=
+ +1210,7 @@</span><br><span>     /* Initialise SSL context */</span><br><sp=
+an>     ALLOC_OBJ_CLEAR(ks_ssl-&gt;ctx, mbedtls_ssl_context);</span><br><sp=
+an>     mbedtls_ssl_init(ks_ssl-&gt;ctx);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    mbed_ok(mbedtls_ssl_setup(ks_ssl-&gt;ctx, ks_ssl-&g=
+t;ssl_config));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+(void)mbed_ok(mbedtls_ssl_setup(ks_ssl-&gt;ctx, ks_ssl-&gt;ssl_config));</s=
+pan><br><span>     /* We do verification in our own callback depending on t=
+he</span><br><span>      * exact configuration. We do not rely on the defau=
+lt hostname</span><br><span>      * verification. */</span><br><span>@@ -13=
+76,7 +1426,8 @@</span><br><span>     /* Error during read, check for retry =
+error */</span><br><span>     if (retval &lt; 0)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (MBEDTLS_ERR_S=
+SL_WANT_WRITE =3D=3D retval || MBEDTLS_ERR_SSL_WANT_READ =3D=3D retval)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (MBEDTLS_ERR=
+_SSL_WANT_WRITE =3D=3D retval || MBEDTLS_ERR_SSL_WANT_READ =3D=3D retval</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            || MBEDTLS=
+_ERR_SSL_RECEIVED_NEW_SESSION_TICKET =3D=3D retval)</span><br><span>       =
+  {</span><br><span>             return 0;</span><br><span>         }</span=
+><br><span>@@ -1456,6 +1507,7 @@</span><br><span> void</span><br><span> sho=
+w_available_curves(void)</span><br><span> {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><b=
+r><span>     const mbedtls_ecp_curve_info *pcurve =3D mbedtls_ecp_curve_lis=
+t();</span><br><span> </span><br><span>     if (NULL =3D=3D pcurve)</span><=
+br><span>@@ -1470,6 +1522,9 @@</span><br><span>         printf(&quot;%s\n&q=
+uot;, pcurve-&gt;name);</span><br><span>         pcurve++;</span><br><span>=
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_FATAL, &quot;Mbed=
+ TLS 4 has no mechanism to list supported curves.&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt;=
+ 0x04000000 */</span><br><span> }</span><br><span> </span><br><span> const =
+char *</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn=
+/ssl_mbedtls.h</span><br><span>index f744945..6b678b2 100644</span><br><spa=
+n>--- a/src/openvpn/ssl_mbedtls.h</span><br><span>+++ b/src/openvpn/ssl_mbe=
+dtls.h</span><br><span>@@ -112,11 +112,13 @@</span><br><span>  */</span><br=
+><span> struct tls_root_ctx</span><br><span> {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    bool initialised;                      /**&lt;=
+ True if the context has been initialised */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    bool initialised; /**&lt; True if the context =
+has been initialised */</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    int endpoint;                          /**&lt; Whet=
+her or not this is a server or a client */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    int endpoint;     /**&lt; Whether or not this is=
+ a server or a client */</span><br><span> </span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br=
+><span>     mbedtls_dhm_context *dhm_ctx;          /**&lt; Diffie-Helmann-M=
+erkle context */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif</span><br><span>     mbedtls_x509_crt *crt_chain;           /**&lt; Loc=
+al Certificate chain */</span><br><span>     mbedtls_x509_crt *ca_chain;   =
+         /**&lt; CA chain for remote verification */</span><br><span>     m=
+bedtls_pk_context *priv_key;          /**&lt; Local private key */</span><b=
+r><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_ver=
+ify_mbedtls.c</span><br><span>index 9d89a1d..32f3ecb 100644</span><br><span=
+>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/s=
+sl_verify_mbedtls.c</span><br><span>@@ -34,13 +34,22 @@</span><br><span> </=
+span><br><span> #if defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/versi=
+on.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt=
+; 0x04000000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#includ=
+e &quot;crypto_mbedtls_legacy.h&quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#include &lt;mbedtls/bignum.h&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/sha1.h&gt;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span> #inclu=
+de &quot;crypto_mbedtls.h&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;mbedt=
+ls_compat.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span> #include &quot;ssl_verify.h&quot;</span><br><span> #include=
+ &lt;mbedtls/asn1.h&gt;</span><br><span> #include &lt;mbedtls/error.h&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/bi=
+gnum.h&gt;</span><br><span> #include &lt;mbedtls/oid.h&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#include &lt;mbedtls/sha1.h&gt;</span>=
+<br><span> </span><br><span> #define MAX_SUBJECT_LENGTH 256</span><br><span=
+> </span><br><span>@@ -171,11 +180,139 @@</span><br><span>     return SUCCE=
+SS;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x04000000</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+/* Mbed TLS 4 has no functio=
+n to print the certificate serial number and does</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * not expose the bignum functions anymore. S=
+o in order to write the serial</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * number as a decimal string, we implement bignum % 10 and bign=
+um / 10. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static c=
+har</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bignum_mod_10(co=
+nst uint8_t *bignum, size_t bignum_length)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    int result =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    for (size_t i =3D 0; i &lt; bignum_length; i++)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        result =3D (result * 256) % 10;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        result =3D (result + b=
+ignum[i]) % 10;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (char)r=
+esult;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+/* Divide bignum by 10 rounded down, in place. */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+bignum_div_10(uint8_t *bignu=
+m, size_t *bignum_length)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Some intuition for=
+ the algorithm below:</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * We w=
+ant to calculate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+  *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *     (bign=
+um[0] * 256^n + bignum[1] * 256^(n-1) + ... + bignum[n]) / 10.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * Let remainder =3D bignum[0] % 10 and c=
+arry =3D remainder * 256.</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+     * Then we can write the above as</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+     *     (bignum[0] / 10) * 256^n</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+     *       + ((carry + bignum[1]) * 256^(n-1) =
++ ... + bignum[n]) / 10.</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * S=
+o now we have the first byte of our result. The second byte will be</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     * (carry + bignum[1]) =
+/ 10. Note that this fits into one byte because</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+     * 0 &lt;=3D remainder &lt; 10. We calculat=
+e the next remainder and carry as</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+     * remainder =3D (carry + bignum[1]) % 10 and carry =3D r=
+emainder * 256 and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+    * move on to the next byte until we are done.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    size_t new_length =3D 0;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    int carry =3D 0;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; *bignum_length;=
+ i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        uint8_t next_byte =
+=3D (uint8_t)((bignum[i] + carry) / 10);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        int remainder =3D (bignum[i] + carry) % 10;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        carry =3D rema=
+inder * 256;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Write the byte =
+unless it&#39;s a leading zero. */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        if (new_length !=3D 0 || next_byte !=3D 0)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            bignum[new_length++] =3D ne=
+xt_byte;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    *bignum_length =3D new_length;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+/* Write the decimal representation of bignum to out, if =
+enough space is available.</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * Returns the number of bytes needed in out, or 0 on error. To calc=
+ulate the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * necessa=
+ry buffer size, the function can be called with out =3D NULL. */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+static size_t</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+write_bignum(char *out, size_t out_s=
+ize, const uint8_t *bignum, size_t bignum_length)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (bignum_length =3D=3D 0)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        /* We want out to be &quot;0&quot;. */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        if (out !=3D NULL)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            if (out_size &gt;=3D 2)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                out[0] =3D &#39=
+;0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     out[1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            else if (out_size &gt; 0)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                out[0] =3D &#39;\0&#39;;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return 2;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t *b=
+ignum_copy =3D malloc(bignum_length);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (bignum_copy =3D=3D NULL)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    memcpy(bignum_copy, bignum, bignum_length);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    size_t bytes_needed =3D 0;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    size_t bytes_written =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    while (bignum_length &gt; 0)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /* We&#39;re writing the digits i=
+n reverse order. We put them in the right order later. */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        char digit =3D bignum_mod_10(=
+bignum_copy, bignum_length);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (out !=3D NULL &amp;&amp; bytes_written &lt; out_size -=
+ 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            out[bytes_writ=
+ten++] =3D &#39;0&#39; + (char)digit;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        bytes_needed +=3D 1;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        bignum_div_10(bignum_copy, &amp;bignum_length);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    if (out !=3D NULL)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (bytes_written =3D=3D bytes_needed)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            /* We had space for all digits. Now r=
+everse them. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        for (size_t i =3D 0; i &lt; bytes_written / 2; i++)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                char tmp =3D out[i];</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                out[i] =
+=3D out[bytes_written - 1 - i];</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                out[bytes_written - 1 - i] =3D tmp;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            out[bytes_written] =3D &#=
+39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else if (o=
+ut_size &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ou=
+t[0] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bytes_needed +=3D=
+ 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    free(bignum_copy);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    return bytes_needed;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &gt;=3D 0x04=
+000000 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span> char *</span><br><span> backend_x509_get_serial(mbedtls_x509_crt *c=
+ert, struct gc_arena *gc)</span><br><span> {</span><br><span>     char *buf=
+ =3D NULL;</span><br><span>     size_t buflen =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span> =
+    mbedtls_mpi serial_mpi =3D { 0 };</span><br><span> </span><br><span>   =
+  /* Transform asn1 integer serial into mbed TLS MPI */</span><br><span>@@ =
+-201,6 +338,21 @@</span><br><span> end:</span><br><span>     mbedtls_mpi_fr=
+ee(&amp;serial_mpi);</span><br><span>     return buf;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    buflen =3D write_bignum(NULL, 0, cert-&gt;serial.p,=
+ cert-&gt;serial.len);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    if (buflen =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  msg(M_WARN, &quot;Failed to write serial to string.&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        return NULL;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    buf =3D gc_malloc(buflen, true, gc);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (write_bignum(buf,=
+ buflen, cert-&gt;serial.p, cert-&gt;serial.len) !=3D buflen)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;Failed to write seria=
+l to string.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        return NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return b=
+uf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTL=
+S_VERSION_NUMBER &lt; 0x04000000 */</span><br><span> }</span><br><span> </s=
+pan><br><span> char *</span><br><span>diff --git a/src/openvpn/syshead.h b/=
+src/openvpn/syshead.h</span><br><span>index 2e22204..582e130 100644</span><=
+br><span>--- a/src/openvpn/syshead.h</span><br><span>+++ b/src/openvpn/sysh=
+ead.h</span><br><span>@@ -475,7 +475,10 @@</span><br><span> #endif</span><b=
+r><span> </span><br><span> #ifdef ENABLE_CRYPTO_MBEDTLS</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/version.h&gt;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMB=
+ER &lt; 0x04000000</span><br><span> #define ENABLE_PREDICTION_RESISTANCE</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_VERS=
+ION_NUMBER &lt; 0x04000000 */</span><br><span> #endif /* ENABLE_CRYPTO_MBED=
+TLS */</span><br><span> </span><br><span> /*</span><br><span>diff --git a/t=
+ests/Makefile.am b/tests/Makefile.am</span><br><span>index bf8f960..cb30fe5=
+ 100644</span><br><span>--- a/tests/Makefile.am</span><br><span>+++ b/tests=
+/Makefile.am</span><br><span>@@ -55,6 +55,7 @@</span><br><span> 	$(top_srcd=
+ir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/src/openvp=
+n/crypto_openssl.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbe=
+dtls.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcd=
+ir)/src/openvpn/crypto_mbedtls_legacy.c \</span><br><span> 	$(top_srcdir)/s=
+rc/openvpn/otime.c \</span><br><span> 	$(top_srcdir)/src/openvpn/packet_id.=
+c \</span><br><span> 	$(top_srcdir)/src/openvpn/platform.c</span><br><span>=
+diff --git a/tests/t_server_null_default.rc b/tests/t_server_null_default.r=
+c</span><br><span>index 798cfd0..bba77aa 100755</span><br><span>--- a/tests=
+/t_server_null_default.rc</span><br><span>+++ b/tests/t_server_null_default=
+.rc</span><br><span>@@ -57,7 +57,7 @@</span><br><span> SERVER_SERVER_2=3D&q=
+uot;--server 10.29.42.0 255.255.255.0&quot;</span><br><span> SERVER_MGMT_PO=
+RT_2=3D&quot;11195&quot;</span><br><span> SERVER_EXEC_2=3D&quot;${SERVER_EX=
+EC}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SERVER_CONF_=
+2=3D&quot;${SERVER_CONF_BASE} ${SERVER_SERVER_2} --lport 1195 --proto tcp -=
+-management 127.0.0.1 ${SERVER_MGMT_PORT_2} --dh ${DH}&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+SERVER_CONF_2=3D&quot;${SERVER_CON=
+F_BASE} ${SERVER_SERVER_2} --lport 1195 --proto tcp --management 127.0.0.1 =
+${SERVER_MGMT_PORT_2} --dh none&quot;</span><br><span> </span><br><span> SE=
+RVER_NAME_3=3D&quot;t_server_null_server-1196_udp&quot;</span><br><span> SE=
+RVER_SERVER_3=3D&quot;--server 10.29.43.0 255.255.255.0&quot;</span><br><sp=
+an>diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/ope=
+nvpn/Makefile.am</span><br><span>index 7aeea47..1128eb4 100644</span><br><s=
+pan>--- a/tests/unit_tests/openvpn/Makefile.am</span><br><span>+++ b/tests/=
+unit_tests/openvpn/Makefile.am</span><br><span>@@ -76,6 +76,7 @@</span><br>=
+<span> 	$(top_srcdir)/src/openvpn/buffer.c \</span><br><span> 	$(top_srcdir=
+)/src/openvpn/crypto.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto=
+_mbedtls.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_=
+srcdir)/src/openvpn/crypto_mbedtls_legacy.c \</span><br><span> 	$(top_srcdi=
+r)/src/openvpn/crypto_openssl.c \</span><br><span> 	$(top_srcdir)/src/openv=
+pn/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</=
+span><br><span>@@ -110,6 +111,7 @@</span><br><span> 	$(top_srcdir)/src/open=
+vpn/cryptoapi.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.=
+c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/c=
+rypto_mbedtls_legacy.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto=
+_openssl.c \</span><br><span> 	$(top_srcdir)/src/openvpn/env_set.c \</span>=
+<br><span> 	$(top_srcdir)/src/openvpn/mss.c \</span><br><span>@@ -158,6 +16=
+0,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/crypto.c \</span><br><sp=
+an> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top_src=
+dir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_legacy.c \</span>=
+<br><span> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br><span> 	=
+$(top_srcdir)/src/openvpn/env_set.c \</span><br><span> 	$(top_srcdir)/src/o=
+penvpn/otime.c \</span><br><span>@@ -188,6 +191,7 @@</span><br><span> 	$(to=
+p_srcdir)/src/openvpn/crypto.c \</span><br><span> 	$(top_srcdir)/src/openvp=
+n/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbedt=
+ls.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir=
+)/src/openvpn/crypto_mbedtls_legacy.c \</span><br><span> 	$(top_srcdir)/src=
+/openvpn/crypto_openssl.c \</span><br><span> 	$(top_srcdir)/src/openvpn/env=
+_set.c \</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</span><br><s=
+pan>@@ -208,6 +212,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/crypto.=
+c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch.c \</span><br>=
+<span> 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_mbedtls=
+_legacy.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_openssl.c \<=
+/span><br><span> 	$(top_srcdir)/src/openvpn/fdmisc.c \</span><br><span> 	$(=
+top_srcdir)/src/openvpn/otime.c \</span><br><span>@@ -294,6 +299,7 @@</span=
+><br><span> 	$(top_srcdir)/src/openvpn/crypto.c \</span><br><span> 	$(top_s=
+rcdir)/src/openvpn/crypto_epoch.c \</span><br><span> 	$(top_srcdir)/src/ope=
+nvpn/crypto_mbedtls.c \</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+	$(top_srcdir)/src/openvpn/crypto_mbedtls_legacy.c \</span><br><span> 	=
+$(top_srcdir)/src/openvpn/crypto_openssl.c \</span><br><span> 	$(top_srcdir=
+)/src/openvpn/otime.c \</span><br><span> 	$(top_srcdir)/src/openvpn/packet_=
+id.c \</span><br><span>@@ -332,6 +338,7 @@</span><br><span> 	$(top_srcdir)/=
+src/openvpn/crypto.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_e=
+poch.c \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/open=
+vpn/crypto_mbedtls_legacy.c \</span><br><span> 	$(top_srcdir)/src/openvpn/c=
+rypto_openssl.c \</span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</sp=
+an><br><span> 	$(top_srcdir)/src/openvpn/packet_id.c \</span><br><span>diff=
+ --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/openvpn/=
+test_common.h</span><br><span>index 156e5a9..fb070aa 100644</span><br><span=
+>--- a/tests/unit_tests/openvpn/test_common.h</span><br><span>+++ b/tests/u=
+nit_tests/openvpn/test_common.h</span><br><span>@@ -25,6 +25,10 @@</span><b=
+r><span> #include &lt;stdlib.h&gt;</span><br><span> #include &lt;cmocka.h&g=
+t;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#if defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#include &quot;mbedtls_compat.h&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span> /* Do we use cmocka &lt; 2.0.0? */</=
+span><br><span> #ifndef HAVE_CMOCKA_VERSION_H</span><br><span> #define HAVE=
+_OLD_CMOCKA_API 1</span><br><span>@@ -58,6 +62,9 @@</span><br><span> {</spa=
+n><br><span>     assert_int_equal(setvbuf(stdout, NULL, _IONBF, BUFSIZ), 0)=
+;</span><br><span>     assert_int_equal(setvbuf(stderr, NULL, _IONBF, BUFSI=
+Z), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(=
+ENABLE_CRYPTO_MBEDTLS)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    mbedtls_compat_psa_crypto_init();</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#endif</span><br><span> }</span><br><span> </span><br>=
+<span> /**</span><br><span></span><br></pre><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail">change 1441</a>. To u=
+nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
+t.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtyp=
+e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
+mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/1441?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ib251d546d993b96ed3bd8cb9111=
@@ -8427,5 +8420,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---DhYhKX5zBO8=--
+--kT/UXusozKw=--
 
