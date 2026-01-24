@@ -1,10 +1,10 @@
-Date: Sat, 24 Jan 2026 17:02:03 +0100 (CET)
-Message-Id: <202601241602.60OG23pR045598@...2054...>
+Date: Sat, 24 Jan 2026 18:21:10 +0100 (CET)
+Message-Id: <202601241721.60OHLAWJ046724@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260120155547.116088-1-frank@...2641...>
-References: <20260120155547.116088-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: Fix conversion
- warnings in interactive.c
+In-Reply-To: <20260119214927.27766-1-gert@...1296...>
+References: <20260119214927.27766-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: Factor out the
+ string conversion from GetItfDnsDomains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,27 +18,28 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is windows related, so I can't really test this (beyond "does it
-compile?").  Took a few attempts discussing "length" and "size", but now
-everbody seems to be happy - thanks to Heiko for the review.
+This is paving the way to adding a unit test for this slightly convoluted
+modify-string-in-place function - and as such, highly welcome.  ACK from
+Heiko, green light from the BBs (which do not really test beyond "does
+it compile with no warnings", but at least that)
 
-(I do think "length" inside RegWStringSize() should also be named "size",
-though, but that can be done in a followup patch - proceeding here, because
-I want the unit tests in, and this is prerequisite)
+"git show --color-moved=zebra -w" is helpful in seeing what exactly
+got moved (and reindented) and what is new ("the prototype and the 
+explanatory comment").
 
 Your patch has been applied to the master branch.
 
-commit fdfe0abeefaf74a0be011688af068929cbd9d246
+commit cd533c483aa516a60d12a132761ab349f9b8b399
 Author: Frank Lichtenheld
-Date:   Tue Jan 20 16:55:47 2026 +0100
+Date:   Mon Jan 19 22:49:22 2026 +0100
 
-     openvpnserv: Fix conversion warnings in interactive.c
+     openvpnserv: Factor out the string conversion from GetItfDnsDomains
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Heiko Hund <heiko@...515...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1457
-     Message-Id: <20260120155547.116088-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35356.html
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1458
+     Message-Id: <20260119214927.27766-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35343.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
