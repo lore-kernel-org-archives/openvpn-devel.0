@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 26 Jan 2026 15:54:26 +0100
-Message-ID: <20260126145432.31249-1-gert@...1296...>
-In-Reply-To: <gerrit.1769435786000.I87679949bdef6319d7490d561f0136633244c2b9@...2715...>
-References: <gerrit.1769435786000.I87679949bdef6319d7490d561f0136633244c2b9@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 26 Jan 2026 14:55:43 +0000
+In-Reply-To: <gerrit.1769435786000.I3b246bcc36ba35c2ed9630dc18e97aff436eaa0b@...2715...>
+References: <gerrit.1769435786000.I3b246bcc36ba35c2ed9630dc18e97aff436eaa0b@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <06f40f0aca37810b1ff8c9d91962916904ca7d7c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] socket: Remove ifdef for SO_{RCV, SND}BUF
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="2a6cfGQK8Oc="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: test_openvpnserv:
+ Make sure to include config.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,95 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--2a6cfGQK8Oc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Seems all our platforms define it.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Reported-by: Marc Heuse <marc@...2953...>
-Github: Fixes OpenVPN/openvpn#965
-Change-Id: I87679949bdef6319d7490d561f0136633244c2b9
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1486
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1488?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: test_openvpnserv: Make sure to include config.h
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1486
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 331249d..58ccda9 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -419,57 +419,45 @@
- static int
- socket_get_sndbuf(socket_descriptor_t sd)
- {
--#if defined(SOL_SOCKET) && defined(SO_SNDBUF)
-     int val;
--    socklen_t len;
-+    socklen_t len = sizeof(val);
- 
--    len = sizeof(val);
-     if (getsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&val, &len) == 0 && len == sizeof(val))
-     {
-         return val;
-     }
--#endif
-     return 0;
- }
- 
- static void
- socket_set_sndbuf(socket_descriptor_t sd, int size)
- {
--#if defined(SOL_SOCKET) && defined(SO_SNDBUF)
-     if (setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&size, sizeof(size)) != 0)
-     {
-         msg(M_WARN, "NOTE: setsockopt SO_SNDBUF=%d failed", size);
-     }
--#endif
- }
- 
- static int
- socket_get_rcvbuf(socket_descriptor_t sd)
- {
--#if defined(SOL_SOCKET) && defined(SO_RCVBUF)
-     int val;
--    socklen_t len;
-+    socklen_t len = sizeof(val);
- 
--    len = sizeof(val);
-     if (getsockopt(sd, SOL_SOCKET, SO_RCVBUF, (void *)&val, &len) == 0 && len == sizeof(val))
-     {
-         return val;
-     }
--#endif
-     return 0;
- }
- 
--static bool
-+static void
- socket_set_rcvbuf(socket_descriptor_t sd, int size)
- {
--#if defined(SOL_SOCKET) && defined(SO_RCVBUF)
-     if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (void *)&size, sizeof(size)) != 0)
-     {
-         msg(M_WARN, "NOTE: setsockopt SO_RCVBUF=%d failed", size);
--        return false;
-     }
--    return true;
--#endif
- }
- 
- void
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3b246bcc36ba35c2ed9630dc18e97aff436eaa0b
+Gerrit-Change-Number: 1488
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 26 Jan 2026 14:55:43 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--2a6cfGQK8Oc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail=
+">change 1488</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3b246bcc36ba35c2ed9630dc18e=
+97aff436eaa0b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1488 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 26 Jan 2026 14:55:43=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--2a6cfGQK8Oc=--
 
