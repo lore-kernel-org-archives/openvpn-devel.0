@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 26 Jan 2026 13:56:31 +0000
-References: <gerrit.1769435786000.I87679949bdef6319d7490d561f0136633244c2b9@...2715...>
+Date: Mon, 26 Jan 2026 13:56:33 +0000
+References: <gerrit.1769435786000.I3b246bcc36ba35c2ed9630dc18e97aff436eaa0b@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <0f33c096a81866a3a2a0b1a10519ab93d5e1a900-HTML@...2715...>
+Message-ID: <a03e8ec9849db8bea59908330765b02eb443c315-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fK3aeysjojA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Remove ifdef
- for SO_{RCV, SND}BUF
+Content-Type: multipart/alternative; boundary="A9U+KxWMN8Y="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: test_openvpnserv:
+ Make sure to include config.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fK3aeysjojA=
+--A9U+KxWMN8Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,191 +32,172 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail
 
 to review the following change.
 
 
-Change subject: socket: Remove ifdef for SO_{RCV,SND}BUF
+Change subject: test_openvpnserv: Make sure to include config.h
 ......................................................................
 
-socket: Remove ifdef for SO_{RCV,SND}BUF
+test_openvpnserv: Make sure to include config.h
 
-Seems all our platforms define it.
+Otherwise the check for cmocka version doesn't
+work. Includes the update to vcpkg in GHA since
+that exposed the problem.
 
-Github: Fixes #965
-Change-Id: I87679949bdef6319d7490d561f0136633244c2b9
+chore(deps): update vcpkg digest to 6d332a0
+
+Change-Id: I3b246bcc36ba35c2ed9630dc18e97aff436eaa0b
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/socket.c
-1 file changed, 3 insertions(+), 15 deletions(-)
+M .github/workflows/build.yaml
+M tests/unit_tests/openvpnserv/test_openvpnserv.c
+2 files changed, 7 insertions(+), 3 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/1486/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1488/1
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 331249d..58ccda9 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -419,57 +419,45 @@
- static int
- socket_get_sndbuf(socket_descriptor_t sd)
- {
--#if defined(SOL_SOCKET) && defined(SO_SNDBUF)
-     int val;
--    socklen_t len;
-+    socklen_t len =3D sizeof(val);
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 5f5d624..7d1574c 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -49,7 +49,7 @@
+       - name: Install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: eeb00f1ecba68f68fad6a1ee93eec77921b3146e
++          vcpkgGitCommitId: 6d332a018c433fad20822ff4b536e4ccdc3413bd
+       - name: Install dependencies
+         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
+       - name: configure OpenVPN with cmake
+@@ -84,7 +84,7 @@
+       - name: Restore from cache and install vcpkg
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: eeb00f1ecba68f68fad6a1ee93eec77921b3146e
++          vcpkgGitCommitId: 6d332a018c433fad20822ff4b536e4ccdc3413bd
+           vcpkgJsonGlob: '**/mingw/vcpkg.json'
 
--    len =3D sizeof(val);
-     if (getsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&val, &len) =3D=3D 0=
- && len =3D=3D sizeof(val))
-     {
-         return val;
-     }
--#endif
-     return 0;
- }
+       - name: Run CMake with vcpkg.json manifest
+@@ -274,7 +274,7 @@
+       - name: Restore artifacts, or setup vcpkg (do not install any packag=
+e)
+         uses: lukka/run-vcpkg@...2815... # v11.5
+         with:
+-          vcpkgGitCommitId: eeb00f1ecba68f68fad6a1ee93eec77921b3146e
++          vcpkgGitCommitId: 6d332a018c433fad20822ff4b536e4ccdc3413bd
+           vcpkgJsonGlob: '**/windows/vcpkg.json'
 
- static void
- socket_set_sndbuf(socket_descriptor_t sd, int size)
- {
--#if defined(SOL_SOCKET) && defined(SO_SNDBUF)
-     if (setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&size, sizeof(size))=
- !=3D 0)
-     {
-         msg(M_WARN, "NOTE: setsockopt SO_SNDBUF=3D%d failed", size);
-     }
--#endif
- }
+       - name: Run CMake with vcpkg.json manifest (NO TESTS)
+diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv.c b/tests/unit_t=
+ests/openvpnserv/test_openvpnserv.c
+index 348de4f..45096a1 100644
+--- a/tests/unit_tests/openvpnserv/test_openvpnserv.c
++++ b/tests/unit_tests/openvpnserv/test_openvpnserv.c
+@@ -21,6 +21,10 @@
+  *  with this program; if not, see <https://www.gnu.org/licenses/>.
+  */
 
- static int
- socket_get_rcvbuf(socket_descriptor_t sd)
- {
--#if defined(SOL_SOCKET) && defined(SO_RCVBUF)
-     int val;
--    socklen_t len;
-+    socklen_t len =3D sizeof(val);
-
--    len =3D sizeof(val);
-     if (getsockopt(sd, SOL_SOCKET, SO_RCVBUF, (void *)&val, &len) =3D=3D 0=
- && len =3D=3D sizeof(val))
-     {
-         return val;
-     }
--#endif
-     return 0;
- }
-
--static bool
-+static void
- socket_set_rcvbuf(socket_descriptor_t sd, int size)
- {
--#if defined(SOL_SOCKET) && defined(SO_RCVBUF)
-     if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (void *)&size, sizeof(size))=
- !=3D 0)
-     {
-         msg(M_WARN, "NOTE: setsockopt SO_RCVBUF=3D%d failed", size);
--        return false;
-     }
--    return true;
--#endif
- }
-
- void
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ #include <setjmp.h>
+ #include <cmocka.h>
+ #include "test_common.h"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I87679949bdef6319d7490d561f0136633244c2b9
-Gerrit-Change-Number: 1486
+Gerrit-Change-Id: I3b246bcc36ba35c2ed9630dc18e97aff436eaa0b
+Gerrit-Change-Number: 1488
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---fK3aeysjojA=
+--A9U+KxWMN8Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">socket: Remove ifdef for SO_{RCV,SND}BUF<br=
-><br>Seems all our platforms define it.<br><br>Github: Fixes #965<br>Change=
--Id: I87679949bdef6319d7490d561f0136633244c2b9<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/socket.c<br>1 file=
- changed, 3 insertions(+), 15 deletions(-)<br><br></pre><pre class=3D"block=
-s" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
-ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/1486/1</pre><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>d=
-iff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>ind=
-ex 331249d..58ccda9 100644</span><br><span>--- a/src/openvpn/socket.c</span=
-><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -419,57 +419,45 @@=
-</span><br><span> static int</span><br><span> socket_get_sndbuf(socket_desc=
-riptor_t sd)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#if defined(SOL_SOCKET) &amp;&amp; defined(SO_SNDBUF)</span><br><=
-span>     int val;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- socklen_t len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-socklen_t len =3D sizeof(val);</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    len =3D sizeof(val);</span><br><span>     if=
- (getsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&amp;val, &amp;len) =3D=3D =
-0 &amp;&amp; len =3D=3D sizeof(val))</span><br><span>     {</span><br><span=
->         return val;</span><br><span>     }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#endif</span><br><span>     return 0;</span><br><spa=
-n> }</span><br><span> </span><br><span> static void</span><br><span> socket=
-_set_sndbuf(socket_descriptor_t sd, int size)</span><br><span> {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#if defined(SOL_SOCKET) &amp;&am=
-p; defined(SO_SNDBUF)</span><br><span>     if (setsockopt(sd, SOL_SOCKET, S=
-O_SNDBUF, (void *)&amp;size, sizeof(size)) !=3D 0)</span><br><span>     {</=
-span><br><span>         msg(M_WARN, &quot;NOTE: setsockopt SO_SNDBUF=3D%d f=
-ailed&quot;, size);</span><br><span>     }</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#endif</span><br><span> }</span><br><span> </span><br>=
-<span> static int</span><br><span> socket_get_rcvbuf(socket_descriptor_t sd=
-)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-if defined(SOL_SOCKET) &amp;&amp; defined(SO_RCVBUF)</span><br><span>     i=
-nt val;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    socklen_t =
-len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    socklen_t l=
-en =3D sizeof(val);</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    len =3D sizeof(val);</span><br><span>     if (getsockop=
-t(sd, SOL_SOCKET, SO_RCVBUF, (void *)&amp;val, &amp;len) =3D=3D 0 &amp;&amp=
-; len =3D=3D sizeof(val))</span><br><span>     {</span><br><span>         r=
-eturn val;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#endif</span><br><span>     return 0;</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static boo=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span>=
-<br><span> socket_set_rcvbuf(socket_descriptor_t sd, int size)</span><br><s=
-pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(SOL=
-_SOCKET) &amp;&amp; defined(SO_RCVBUF)</span><br><span>     if (setsockopt(=
-sd, SOL_SOCKET, SO_RCVBUF, (void *)&amp;size, sizeof(size)) !=3D 0)</span><=
-br><span>     {</span><br><span>         msg(M_WARN, &quot;NOTE: setsockopt=
- SO_RCVBUF=3D%d failed&quot;, size);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        return false;</span><br><span>     }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    return true;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span> }</span><br><span>=
- </span><br><span> void</span><br><span></span><br></pre><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail">change 1=
-486</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
-scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail"/><meta it=
-emprop=3D"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">test_openvpnserv: Make sure to include conf=
+ig.h<br><br>Otherwise the check for cmocka version doesn&#39;t<br>work. Inc=
+ludes the update to vcpkg in GHA since<br>that exposed the problem.<br><br>=
+chore(deps): update vcpkg digest to 6d332a0<br><br>Change-Id: I3b246bcc36ba=
+35c2ed9630dc18e97aff436eaa0b<br>Signed-off-by: Frank Lichtenheld &lt;frank@=
+...2641...&gt;<br>---<br>M .github/workflows/build.yaml<br>M tests/unit_tes=
+ts/openvpnserv/test_openvpnserv.c<br>2 files changed, 7 insertions(+), 3 de=
+letions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/88/1488/1</pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;"><span>diff --git a/.github/workflows/bu=
+ild.yaml b/.github/workflows/build.yaml</span><br><span>index 5f5d624..7d15=
+74c 100644</span><br><span>--- a/.github/workflows/build.yaml</span><br><sp=
+an>+++ b/.github/workflows/build.yaml</span><br><span>@@ -49,7 +49,7 @@</sp=
+an><br><span>       - name: Install vcpkg</span><br><span>         uses: lu=
+kka/run-vcpkg@...2815... # v11.5</span><br><span>         with:</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: eeb00=
+f1ecba68f68fad6a1ee93eec77921b3146e</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+          vcpkgGitCommitId: 6d332a018c433fad20822ff4b536e4c=
+cdc3413bd</span><br><span>       - name: Install dependencies</span><br><sp=
+an>         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka</span><br><=
+span>       - name: configure OpenVPN with cmake</span><br><span>@@ -84,7 +=
+84,7 @@</span><br><span>       - name: Restore from cache and install vcpkg=
+</span><br><span>         uses: lukka/run-vcpkg@...2815... # v11.5</span><b=
+r><span>         with:</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-          vcpkgGitCommitId: eeb00f1ecba68f68fad6a1ee93eec77921b3146e</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+          vcpkgGitCommitI=
+d: 6d332a018c433fad20822ff4b536e4ccdc3413bd</span><br><span>           vcpk=
+gJsonGlob: &#39;**/mingw/vcpkg.json&#39;</span><br><span> </span><br><span>=
+       - name: Run CMake with vcpkg.json manifest</span><br><span>@@ -274,7=
+ +274,7 @@</span><br><span>       - name: Restore artifacts, or setup vcpkg=
+ (do not install any package)</span><br><span>         uses: lukka/run-vcpk=
+g@...2815... # v11.5</span><br><span>         with:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: eeb00f1ecba68f6=
+8fad6a1ee93eec77921b3146e</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+          vcpkgGitCommitId: 6d332a018c433fad20822ff4b536e4ccdc3413bd<=
+/span><br><span>           vcpkgJsonGlob: &#39;**/windows/vcpkg.json&#39;</=
+span><br><span> </span><br><span>       - name: Run CMake with vcpkg.json m=
+anifest (NO TESTS)</span><br><span>diff --git a/tests/unit_tests/openvpnser=
+v/test_openvpnserv.c b/tests/unit_tests/openvpnserv/test_openvpnserv.c</spa=
+n><br><span>index 348de4f..45096a1 100644</span><br><span>--- a/tests/unit_=
+tests/openvpnserv/test_openvpnserv.c</span><br><span>+++ b/tests/unit_tests=
+/openvpnserv/test_openvpnserv.c</span><br><span>@@ -21,6 +21,10 @@</span><b=
+r><span>  *  with this program; if not, see &lt;https://www.gnu.org/license=
+s/&gt;.</span><br><span>  */</span><br><span> </span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span> #include &lt;setjmp.h&gt;</span>=
+<br><span> #include &lt;cmocka.h&gt;</span><br><span> #include &quot;test_c=
+ommon.h&quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail">change 1488</a>. T=
+o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
+rrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope item=
+type=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" =
+itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1488?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I87679949bdef6319d7490d561f0=
-136633244c2b9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1486 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3b246bcc36ba35c2ed9630dc18e=
+97aff436eaa0b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1488 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -229,5 +210,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---fK3aeysjojA=--
+--A9U+KxWMN8Y=--
 
