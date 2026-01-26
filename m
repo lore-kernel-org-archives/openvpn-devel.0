@@ -1,15 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 26 Jan 2026 13:56:32 +0000
-References: <gerrit.1769435786000.If61a91b4580864fd22162c94467ba3dda2045b7b@...2715...>
+Date: Mon, 26 Jan 2026 14:05:44 +0000
+In-Reply-To: <gerrit.1769435786000.I87679949bdef6319d7490d561f0136633244c2b9@...2715...>
+References: <gerrit.1769435786000.I87679949bdef6319d7490d561f0136633244c2b9@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <25f5a29febde10e94f6d900f68635bbdd0d2f6c4-HTML@...2715...>
+Message-ID: <fa1dbb218d3bf581ab4c8e5b856d4be0b431e144-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1Gsn8p3ZGBo="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Run openvpnserv
- UT for MinGW builds
+Content-Type: multipart/alternative; boundary="zBbs1EoKsqk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Remove ifdef
+ for SO_{RCV, SND}BUF
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---1Gsn8p3ZGBo=
+--zBbs1EoKsqk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,179 +30,195 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1487?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
-Change subject: GHA: Run openvpnserv UT for MinGW builds
+Change subject: socket: Remove ifdef for SO_{RCV,SND}BUF
 ......................................................................
 
-GHA: Run openvpnserv UT for MinGW builds
+socket: Remove ifdef for SO_{RCV,SND}BUF
 
-Should have been added in commit
-b10ee38ccde5f155d02fcd3e8f1b1ab454826ab0.
+Seems all our platforms define it.
 
-Note that test_openvpnserv.exe lives in a
-separate directory, so we need to make the
-code a bit more flexible.
-
-Change-Id: If61a91b4580864fd22162c94467ba3dda2045b7b
+Reported-by: Marc Heuse <marc@...2953...>
+Github: Fixes #965
+Change-Id: I87679949bdef6319d7490d561f0136633244c2b9
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M .github/workflows/build.yaml
-1 file changed, 6 insertions(+), 4 deletions(-)
+M src/openvpn/socket.c
+1 file changed, 3 insertions(+), 15 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/86/1486/2
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/1487/1
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 331249d..58ccda9 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -419,57 +419,45 @@
+ static int
+ socket_get_sndbuf(socket_descriptor_t sd)
+ {
+-#if defined(SOL_SOCKET) && defined(SO_SNDBUF)
+     int val;
+-    socklen_t len;
++    socklen_t len =3D sizeof(val);
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index ef9b3f5..5f5d624 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -100,13 +100,13 @@
-           path: |
-             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/=
-${{ matrix.build }}/*.exe
-             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/=
-${{ matrix.build }}/*.dll
--            !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/${=
-{ matrix.build }}/test_*.exe
-+            !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**=
-/${{ matrix.build }}/test_*.exe
+-    len =3D sizeof(val);
+     if (getsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&val, &len) =3D=3D 0=
+ && len =3D=3D sizeof(val))
+     {
+         return val;
+     }
+-#endif
+     return 0;
+ }
 
-       - uses: actions/upload-artifact@...2978... # v6.0.0
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.build }}-tests
-           path: |
--            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/${{=
- matrix.build }}/test_*.exe
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/=
-${{ matrix.build }}/test_*.exe
-             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/${{=
- matrix.build }}/*.dll
+ static void
+ socket_set_sndbuf(socket_descriptor_t sd, int size)
+ {
+-#if defined(SOL_SOCKET) && defined(SO_SNDBUF)
+     if (setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&size, sizeof(size))=
+ !=3D 0)
+     {
+         msg(M_WARN, "NOTE: setsockopt SO_SNDBUF=3D%d failed", size);
+     }
+-#endif
+ }
 
-   mingw-unittest:
-@@ -115,7 +115,7 @@
-       fail-fast: false
-       matrix:
-         arch: [x86, x64]
--        test: [argv, auth_token, buffer, cryptoapi, crypto, misc, options_=
-parse, ncp, packet_id, pkt, provider, ssl, tls_crypt, user_pass]
-+        test: [argv, auth_token, buffer, cryptoapi, crypto, misc, options_=
-parse, ncp, openvpnserv, packet_id, pkt, provider, ssl, tls_crypt, user_pas=
-s]
-         build: [Release, Debug]
+ static int
+ socket_get_rcvbuf(socket_descriptor_t sd)
+ {
+-#if defined(SOL_SOCKET) && defined(SO_RCVBUF)
+     int val;
+-    socklen_t len;
++    socklen_t len =3D sizeof(val);
 
-     runs-on: windows-2025
-@@ -129,7 +129,9 @@
-           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.build }}-tests
-           path: unittests
-       - name: Run ${{ matrix.test }} unit test
--        run: ./unittests/test_${{ matrix.test }}.exe
-+        run: |
-+          $test_file=3D(Get-ChildItem -Path unittests -Filter test_${{ mat=
-rix.test }}.exe -Recurse).fullname
-+          & $test_file
-         env:
-           srcdir: "${{ github.workspace }}/tests/unit_tests/openvpn"
+-    len =3D sizeof(val);
+     if (getsockopt(sd, SOL_SOCKET, SO_RCVBUF, (void *)&val, &len) =3D=3D 0=
+ && len =3D=3D sizeof(val))
+     {
+         return val;
+     }
+-#endif
+     return 0;
+ }
 
+-static bool
++static void
+ socket_set_rcvbuf(socket_descriptor_t sd, int size)
+ {
+-#if defined(SOL_SOCKET) && defined(SO_RCVBUF)
+     if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (void *)&size, sizeof(size))=
+ !=3D 0)
+     {
+         msg(M_WARN, "NOTE: setsockopt SO_RCVBUF=3D%d failed", size);
+-        return false;
+     }
+-    return true;
+-#endif
+ }
+
+ void
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1487?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If61a91b4580864fd22162c94467ba3dda2045b7b
-Gerrit-Change-Number: 1487
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I87679949bdef6319d7490d561f0136633244c2b9
+Gerrit-Change-Number: 1486
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---1Gsn8p3ZGBo=
+--zBbs1EoKsqk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1487?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">GHA: Run openvpnserv UT for MinGW builds<br=
-><br>Should have been added in commit<br>b10ee38ccde5f155d02fcd3e8f1b1ab454=
-826ab0.<br><br>Note that test_openvpnserv.exe lives in a<br>separate direct=
-ory, so we need to make the<br>code a bit more flexible.<br><br>Change-Id: =
-If61a91b4580864fd22162c94467ba3dda2045b7b<br>Signed-off-by: Frank Lichtenhe=
-ld &lt;frank@...2641...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 f=
-ile changed, 6 insertions(+), 4 deletions(-)<br><br></pre><pre class=3D"blo=
-cks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
- pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/1487/1</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml</=
-span><br><span>index ef9b3f5..5f5d624 100644</span><br><span>--- a/.github/=
-workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</sp=
-an><br><span>@@ -100,13 +100,13 @@</span><br><span>           path: |</span=
-><br><span>             ${{ github.workspace }}/out/build/mingw/${{ matrix.=
-arch }}/**/${{ matrix.build }}/*.exe</span><br><span>             ${{ githu=
-b.workspace }}/out/build/mingw/${{ matrix.arch }}/**/${{ matrix.build }}/*.=
-dll</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            !${{ g=
-ithub.workspace }}/out/build/mingw/${{ matrix.arch }}/${{ matrix.build }}/t=
-est_*.exe</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/${{ matrix=
-.build }}/test_*.exe</span><br><span> </span><br><span>       - uses: actio=
-ns/upload-artifact@...2978... # v6.0.0</span><br><span>         with:</span=
-><br><span>           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.bui=
-ld }}-tests</span><br><span>           path: |</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            ${{ github.workspace }}/out/build/ming=
-w/${{ matrix.arch }}/${{ matrix.build }}/test_*.exe</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            ${{ github.workspace }}/out/b=
-uild/mingw/${{ matrix.arch }}/**/${{ matrix.build }}/test_*.exe</span><br><=
-span>             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }=
-}/${{ matrix.build }}/*.dll</span><br><span> </span><br><span>   mingw-unit=
-test:</span><br><span>@@ -115,7 +115,7 @@</span><br><span>       fail-fast:=
- false</span><br><span>       matrix:</span><br><span>         arch: [x86, =
-x64]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        test: [ar=
-gv, auth_token, buffer, cryptoapi, crypto, misc, options_parse, ncp, packet=
-_id, pkt, provider, ssl, tls_crypt, user_pass]</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        test: [argv, auth_token, buffer, cryptoa=
-pi, crypto, misc, options_parse, ncp, openvpnserv, packet_id, pkt, provider=
-, ssl, tls_crypt, user_pass]</span><br><span>         build: [Release, Debu=
-g]</span><br><span> </span><br><span>     runs-on: windows-2025</span><br><=
-span>@@ -129,7 +129,9 @@</span><br><span>           name: openvpn-mingw-${{=
- matrix.arch }}-${{ matrix.build }}-tests</span><br><span>           path: =
-unittests</span><br><span>       - name: Run ${{ matrix.test }} unit test</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: ./unittest=
-s/test_${{ matrix.test }}.exe</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        run: |</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+          $test_file=3D(Get-ChildItem -Path unittests -Filter test_${{=
- matrix.test }}.exe -Recurse).fullname</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+          &amp; $test_file</span><br><span>         env:=
-</span><br><span>           srcdir: &quot;${{ github.workspace }}/tests/uni=
-t_tests/openvpn&quot;</span><br><span> </span><br><span></span><br></pre><p=
->To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1487?usp=
-=3Demail">change 1487</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
-</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
- itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1487?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1486?usp=3Demail">View C=
+hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">socket: Remove ifdef for SO_{RCV,SND}BUF<br><br>=
+Seems all our platforms define it.<br><br>Reported-by: Marc Heuse &lt;marc@=
+...2953...&gt;<br>Github: Fixes #965<br>Change-Id: I87679949bdef6319d7490d5=
+61f0136633244c2b9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&=
+gt;<br>---<br>M src/openvpn/socket.c<br>1 file changed, 3 insertions(+), 15=
+ deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
+29418/openvpn refs/changes/86/1486/2</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/socke=
+t.c b/src/openvpn/socket.c</span><br><span>index 331249d..58ccda9 100644</s=
+pan><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/=
+socket.c</span><br><span>@@ -419,57 +419,45 @@</span><br><span> static int<=
+/span><br><span> socket_get_sndbuf(socket_descriptor_t sd)</span><br><span>=
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(SOL_SOC=
+KET) &amp;&amp; defined(SO_SNDBUF)</span><br><span>     int val;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    socklen_t len;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    socklen_t len =3D sizeof(val)=
+;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  len =3D sizeof(val);</span><br><span>     if (getsockopt(sd, SOL_SOCKET, =
+SO_SNDBUF, (void *)&amp;val, &amp;len) =3D=3D 0 &amp;&amp; len =3D=3D sizeo=
+f(val))</span><br><span>     {</span><br><span>         return val;</span><=
+br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif=
+</span><br><span>     return 0;</span><br><span> }</span><br><span> </span>=
+<br><span> static void</span><br><span> socket_set_sndbuf(socket_descriptor=
+_t sd, int size)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#if defined(SOL_SOCKET) &amp;&amp; defined(SO_SNDBUF)</span><=
+br><span>     if (setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (void *)&amp;size, =
+sizeof(size)) !=3D 0)</span><br><span>     {</span><br><span>         msg(M=
+_WARN, &quot;NOTE: setsockopt SO_SNDBUF=3D%d failed&quot;, size);</span><br=
+><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</=
+span><br><span> }</span><br><span> </span><br><span> static int</span><br><=
+span> socket_get_rcvbuf(socket_descriptor_t sd)</span><br><span> {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(SOL_SOCKET) &amp;&=
+amp; defined(SO_RCVBUF)</span><br><span>     int val;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    socklen_t len;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    socklen_t len =3D sizeof(val);</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    len =3D s=
+izeof(val);</span><br><span>     if (getsockopt(sd, SOL_SOCKET, SO_RCVBUF, =
+(void *)&amp;val, &amp;len) =3D=3D 0 &amp;&amp; len =3D=3D sizeof(val))</sp=
+an><br><span>     {</span><br><span>         return val;</span><br><span>  =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
+<span>     return 0;</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static void</span><br><span> socket_set_rcvbuf(=
+socket_descriptor_t sd, int size)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#if defined(SOL_SOCKET) &amp;&amp; defined(=
+SO_RCVBUF)</span><br><span>     if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (=
+void *)&amp;size, sizeof(size)) !=3D 0)</span><br><span>     {</span><br><s=
+pan>         msg(M_WARN, &quot;NOTE: setsockopt SO_RCVBUF=3D%d failed&quot;=
+, size);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        retur=
+n false;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    return true;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#endif</span><br><span> }</span><br><span> </span><br><span> void</spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1486?usp=3Demail">change 1486</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1486?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If61a91b4580864fd22162c94467=
-ba3dda2045b7b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1487 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I87679949bdef6319d7490d561f0=
+136633244c2b9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1486 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -213,5 +230,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---1Gsn8p3ZGBo=--
+--zBbs1EoKsqk=--
 
