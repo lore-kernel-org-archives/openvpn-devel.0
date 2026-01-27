@@ -1,14 +1,15 @@
-Date: Tue, 27 Jan 2026 23:07:06 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <aXk3ClJBS9_vsHpo@...1296...>
-References: <0054b4ff-731a-4a23-b8e6-2cd312ae5557@...2722...>
- <CAEsd45TAbZGL2nifwf=Ex_1K1w=spTcjgca0Aqb760=s94EPLA@...278...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 27 Jan 2026 22:11:18 +0000
+In-Reply-To: <gerrit.1763654024000.I880cf01b0db80fc9b40ca4afa30aa51e3fb8ce3b@...2715...>
+References: <gerrit.1763654024000.I880cf01b0db80fc9b40ca4afa30aa51e3fb8ce3b@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <2a36da2ca1ef332165d964990502b0bb34d009f9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature"; boundary="Mek6QWkcQOaYEzUw"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <CAEsd45TAbZGL2nifwf=Ex_1K1w=spTcjgca0Aqb760=s94EPLA@...278...>
-Subject: Re: [Openvpn-devel] IRC community meeting summary
+Content-Type: multipart/alternative; boundary="m5693LvXgBo="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Enable -Wsign-compare
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,67 +18,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Mek6QWkcQOaYEzUw
-Content-Type: text/plain; charset="us-ascii"
+--m5693LvXgBo=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: flichtenheld, plaisthos.
 
-On Tue, Jan 27, 2026 at 02:23:38PM -0500, Jonathan K. Bullard wrote:
-> Thanks, Johan, for these meeting summaries. They're very helpful.
->=20
-> Can anyone make a ( non-binding : ) guess about the timing of the 2.6.18
-> release and/or the 2.7 release?
->=20
-> OpenSSL just released an update and I'd like to do a Tunnelblick release
-> soon (within the next few days) but if 2.2.18 and/or 2.7 are also coming
-> "soon" I might wait and include it/them, too.
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1386?usp=3Demail )
 
-The original plan was to avoid adding more patches to 2.7_rc5, and
-release it "as 2.7.0" tomorrow(-ish).  Unfortunately people kept finding
-bugs...
+Change subject: Enable -Wsign-compare
+......................................................................
 
-My current plan is 2.7_rc6 tomorrow or thursday(-ish), and 2.7.0 in
-two weeks, with hopefully only very little changes between rc6 and .0.
 
-As for 2.6.18, we could do that "in between", like, Wednesday next week
-- there's quite a bit of goodness in that branch, so it makes sense to
-use the opportunity.  I haven't looked at the OpenSSL release - is this
-something urgent?  Or just using the opportunity?
+Patch Set 10: Code-Review+2
 
-gert
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1386?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I880cf01b0db80fc9b40ca4afa30aa51e3fb8ce3b
+Gerrit-Change-Number: 1386
+Gerrit-PatchSet: 10
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 27 Jan 2026 22:11:18 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---Mek6QWkcQOaYEzUw
-Content-Type: application/pgp-signature; name=signature.asc
+--m5693LvXgBo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1386?usp=3Demail">=
+View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1386?usp=3Demai=
+l">change 1386</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1386?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAml5NwgACgkQHYKe/spW
-KBI9LQwAlZ7/KZWlu4zqbmXRIZO5hfKUNo352T15JH8c0Vst2X+7zfd0h7y7v4Ho
-hU40swyX56PEwWoFKHGKKKeKz6tssABdx61BXPYy9w8aFSBCq1D0cARgx9GZKs+S
-7tripTW9emLuVX8b5uNJ8CxGRMnVaYV/CpRV3BwxHXarUajy21PRdifNY8PqZbdX
-lMzvpK7/3MwKVcsM9rsie/b7bIr64Br5DPMEgjR2vytwEmGAXN/Zr0TKBi2Ydd1c
-QVWucKKpt5sJmBROBfYZtcVQFy9MdbCv1YUT69AKaR93dtzEKMrZbBzmIFyBeBR8
-ZHc4uxuOCAVi6X7Na+4wERDHfH7ve0AellkGuGiyy6ijIBm8Rea0dds/YJew2tRe
-05dDKdXhBpidZ0+iErho+MbqbQa9sjVnH/T4GBCHNhDj6Fuq+Dys24xjIUApcN40
-o+uuWUY2J60lBslrsXiFcjqTWC2EaJmJiH+J8h/WShyRImorHCV+e8QfEMq/yDb/
-fg6HXCdy
-=zyWt
------END PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I880cf01b0db80fc9b40ca4afa30=
+aa51e3fb8ce3b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1386 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 27 Jan 2026 22:11:18=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
---Mek6QWkcQOaYEzUw--
+</body></html>=
+
+--m5693LvXgBo=--
 
