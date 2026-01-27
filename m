@@ -1,11 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 27 Jan 2026 23:12:16 +0100
-Message-ID: <20260127221222.29488-1-gert@...1296...>
-In-Reply-To: <gerrit.1769512571000.I525a5b1b9b6f173cdf12341aefc44d58f0d43aed@...2715...>
-References: <gerrit.1769512571000.I525a5b1b9b6f173cdf12341aefc44d58f0d43aed@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] cryptoapi: Change signature of
- parse_hexstring to match code
+References: <0054b4ff-731a-4a23-b8e6-2cd312ae5557@...2722...>
+ <CAEsd45TAbZGL2nifwf=Ex_1K1w=spTcjgca0Aqb760=s94EPLA@...278...>
+ <aXk3ClJBS9_vsHpo@...1296...>
+In-Reply-To: <aXk3ClJBS9_vsHpo@...1296...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Tue, 27 Jan 2026 17:29:57 -0500
+Message-ID: <CAEsd45RsEXfh64Qr-Kxm9mER3GRT5bD-F3=rJtZymwJGaHZZ4g@...278...>
+Subject: Re: [Openvpn-devel] IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,104 +15,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Gert Doering <gert@...1296...>
 
-From: Frank Lichtenheld <frank@...2641...>
+Hi!
 
-parse_hexdigest is a function that is used in
-exactly one place (not counting tests). So
-change the types in a way that they match what
-the caller actually wants (DWORD) and so we
-do not have any unnecessary conversions.
+On Tue, Jan 27, 2026 at 5:07=E2=80=AFPM Gert Doering <gert@...1296...> wrot=
+e:
+>
+> The original plan was to avoid adding more patches to 2.7_rc5, and
+> release it "as 2.7.0" tomorrow(-ish).  Unfortunately people kept finding
+> bugs...
+>
+> My current plan is 2.7_rc6 tomorrow or thursday(-ish), and 2.7.0 in
+> two weeks, with hopefully only very little changes between rc6 and .0.
+>
+> As for 2.6.18, we could do that "in between", like, Wednesday next week
+> - there's quite a bit of goodness in that branch, so it makes sense to
+> use the opportunity.
 
-Change-Id: I525a5b1b9b6f173cdf12341aefc44d58f0d43aed
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1492
----
+Thanks! I'll go ahead and do a Tunnelblick beta release in the next day or =
+two.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+> I haven't looked at the OpenSSL release - is this
+> something urgent?  Or just using the opportunity?
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1492
-This mail reflects revision 1 of this Change.
+Just using the opportunity. I'm not always clear on what OpenSSL
+vulnerabilities would impact OpenVPN, but nothing looked urgent in my
+quick look at the vulnerabilities list [1]. I haven't even seen an
+email about the release or the vulnerabilities, but the 3.5.5 release
+is available on GitHub [2] and it seems to work in my testing so far.
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
-
-        
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index b74320d..e17936a 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -61,7 +61,7 @@
-     return 0;
- }
- 
--#else /* HAVE_XKEY_PROVIDER */
-+#else  /* HAVE_XKEY_PROVIDER */
- 
- static XKEY_EXTERNAL_SIGN_fn xkey_cng_sign;
- 
-@@ -145,11 +145,6 @@
-     free(cd);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /**
-  * Parse a hex string with optional embedded spaces into
-  * a byte array.
-@@ -158,10 +153,10 @@
-  * @param capacity  capacity of the byte array arr
-  * @returns the number of bytes parsed or 0 on error
-  */
--int
--parse_hexstring(const char *p, unsigned char *arr, size_t capacity)
-+static DWORD
-+parse_hexstring(const char *p, unsigned char *arr, DWORD capacity)
- {
--    int i = 0;
-+    DWORD i = 0;
-     for (; *p && i < capacity; p += 2)
-     {
-         /* skip spaces */
-@@ -182,10 +177,6 @@
-     return i;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static void *
- decode_object(struct gc_arena *gc, LPCSTR struct_type, const CRYPT_OBJID_BLOB *val, DWORD flags,
-               DWORD *cb)
-diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
-index ce527d7..59a356d 100644
---- a/tests/unit_tests/openvpn/test_cryptoapi.c
-+++ b/tests/unit_tests/openvpn/test_cryptoapi.c
-@@ -469,7 +469,7 @@
- 
-     for (size_t i = 0; i < _countof(valid_str); i++)
-     {
--        int len = parse_hexstring(valid_str[i], hash, _countof(hash));
-+        DWORD len = parse_hexstring(valid_str[i], hash, _countof(hash));
-         assert_int_equal(len, sizeof(test_hash));
-         assert_memory_equal(hash, test_hash, sizeof(test_hash));
-         memset(hash, 0, _countof(hash));
-@@ -477,7 +477,7 @@
- 
-     for (size_t i = 0; i < _countof(invalid_str); i++)
-     {
--        int len = parse_hexstring(invalid_str[i], hash, _countof(hash));
-+        DWORD len = parse_hexstring(invalid_str[i], hash, _countof(hash));
-         assert_int_equal(len, 0);
-     }
- }
+[1] https://openssl-library.org/news/vulnerabilities/
+[2] https://github.com/openssl/openssl/releases/tag/openssl-3.5.5
 
