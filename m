@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 27 Jan 2026 11:16:19 +0000
-References: <gerrit.1769512571000.Ie8135a31b1f8f70ce0ddf63d7653f3d84a9e983f@...2715...>
+Date: Tue, 27 Jan 2026 11:31:11 +0000
+References: <gerrit.1769513463000.I03f4c640a2adbea9bbb6f6334f12375041ec429c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <dc3990f5cd4a5bb87c07e83a3629ac172c437ec4-HTML@...2715...>
+Message-ID: <a14c7750da71f3738f18ac44f0cb8b8becacf3ac-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="K5e3vnWQa/Q="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_openssl: Use
- correct return type for RSA_size
+Content-Type: multipart/alternative; boundary="wEf3x+61X+Y="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: openvpnserv: Improve
+ sanity check for addr_len in HandleWINSConfigMes...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---K5e3vnWQa/Q=
+--wEf3x+61X+Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,35 +32,37 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1493?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1496?usp=3Demail
 
 to review the following change.
 
 
-Change subject: ssl_openssl: Use correct return type for RSA_size
+Change subject: openvpnserv: Improve sanity check for addr_len in HandleWIN=
+SConfigMessage
 ......................................................................
 
-ssl_openssl: Use correct return type for RSA_size
+openvpnserv: Improve sanity check for addr_len in HandleWINSConfigMessage
 
-It returns int, so use that. Avoids a sign-compare
-warning.
+Handle the case where the int is negative
+explicitly. Zero is probably a safer value
+to assume in this case.
 
-Change-Id: Ie8135a31b1f8f70ce0ddf63d7653f3d84a9e983f
+Change-Id: I03f4c640a2adbea9bbb6f6334f12375041ec429c
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/ssl_openssl.c
-1 file changed, 2 insertions(+), 12 deletions(-)
+M src/openvpnserv/interactive.c
+1 file changed, 5 insertions(+), 10 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1493/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/1496/1
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index c61e4b2..d8c4587 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1491,17 +1491,11 @@
-     return len;
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 227431a..09c709e 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -1247,11 +1247,6 @@
+     return err;
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -68,115 +70,112 @@ index c61e4b2..d8c4587 100644
 -#pragma GCC diagnostic ignored "-Wsign-compare"
 -#endif
 -
- /* sign arbitrary data */
- static int
- rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *=
-rsa, int padding)
- {
--    unsigned int len =3D RSA_size(rsa);
--    int ret =3D -1;
-+    int len =3D RSA_size(rsa);
+ /**
+  * Check for a valid search list in a certain key of the registry
+  *
+@@ -2944,7 +2939,11 @@
+     int addr_len =3D msg->addr_len;
 
-     if (padding !=3D RSA_PKCS1_PADDING && padding !=3D RSA_NO_PADDING)
+     /* sanity check */
+-    if (addr_len > _countof(msg->addr))
++    if (addr_len < 0)
++    {
++        addr_len =3D 0;
++    }
++    if ((unsigned int)addr_len > _countof(msg->addr))
      {
-@@ -1509,15 +1503,11 @@
-         return -1;
+         addr_len =3D _countof(msg->addr);
      }
-
--    ret =3D get_sig_from_man(from, flen, to, len, get_rsa_padding_name(pad=
-ding));
-+    int ret =3D get_sig_from_man(from, flen, to, len, get_rsa_padding_name=
-(padding));
-
-     return (ret =3D=3D len) ? ret : -1;
+@@ -3005,10 +3004,6 @@
+     return err;
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- static int
- tls_ctx_use_external_rsa_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)
+ static DWORD
+ HandleEnableDHCPMessage(const enable_dhcp_message_t *dhcp)
  {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1493?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1496?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie8135a31b1f8f70ce0ddf63d7653f3d84a9e983f
-Gerrit-Change-Number: 1493
+Gerrit-Change-Id: I03f4c640a2adbea9bbb6f6334f12375041ec429c
+Gerrit-Change-Number: 1496
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---K5e3vnWQa/Q=
+--wEf3x+61X+Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1493?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1496?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">ssl_openssl: Use correct return type for RS=
-A_size<br><br>It returns int, so use that. Avoids a sign-compare<br>warning=
-.<br><br>Change-Id: Ie8135a31b1f8f70ce0ddf63d7653f3d84a9e983f<br>Signed-off=
--by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/ssl=
-_openssl.c<br>1 file changed, 2 insertions(+), 12 deletions(-)<br><br></pre=
-><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/93/1493/1</pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl=
-_openssl.c</span><br><span>index c61e4b2..d8c4587 100644</span><br><span>--=
-- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl=
-.c</span><br><span>@@ -1491,17 +1491,11 @@</span><br><span>     return len;=
-</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored =
-&quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span> /* sign arbitrary data */</span><br><span> static int</span><br><sp=
-an> rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RS=
-A *rsa, int padding)</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    unsigned int len =3D RSA_size(rsa);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    int ret =3D -1;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    int len =3D RSA_size(rsa);</span><b=
-r><span> </span><br><span>     if (padding !=3D RSA_PKCS1_PADDING &amp;&amp=
-; padding !=3D RSA_NO_PADDING)</span><br><span>     {</span><br><span>@@ -1=
-509,15 +1503,11 @@</span><br><span>         return -1;</span><br><span>    =
- }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   ret =3D get_sig_from_man(from, flen, to, len, get_rsa_padding_name(paddi=
-ng));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =
-=3D get_sig_from_man(from, flen, to, len, get_rsa_padding_name(padding));</=
-span><br><span> </span><br><span>     return (ret =3D=3D len) ? ret : -1;</=
-span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span> static int</span><br><span> tls=
-_ctx_use_external_rsa_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)</span><=
-br><span> {</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1493?usp=3Demail">change 1493</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1493?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">openvpnserv: Improve sanity check for addr_=
+len in HandleWINSConfigMessage<br><br>Handle the case where the int is nega=
+tive<br>explicitly. Zero is probably a safer value<br>to assume in this cas=
+e.<br><br>Change-Id: I03f4c640a2adbea9bbb6f6334f12375041ec429c<br>Signed-of=
+f-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpnser=
+v/interactive.c<br>1 file changed, 5 insertions(+), 10 deletions(-)<br><br>=
+</pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/ch=
+anges/96/1496/1</pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/src/openvpnserv/interactive.c b/src/op=
+envpnserv/interactive.c</span><br><span>index 227431a..09c709e 100644</span=
+><br><span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/op=
+envpnserv/interactive.c</span><br><span>@@ -1247,11 +1247,6 @@</span><br><s=
+pan>     return err;</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clan=
+g__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagn=
+ostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC=
+ diagnostic ignored &quot;-Wsign-compare&quot;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span> /**</span><br><span>  * Check for a valid searc=
+h list in a certain key of the registry</span><br><span>  *</span><br><span=
+>@@ -2944,7 +2939,11 @@</span><br><span>     int addr_len =3D msg-&gt;addr_=
+len;</span><br><span> </span><br><span>     /* sanity check */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    if (addr_len &gt; _countof(msg=
+-&gt;addr))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+addr_len &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        addr_len =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if ((unsigned int)addr_=
+len &gt; _countof(msg-&gt;addr))</span><br><span>     {</span><br><span>   =
+      addr_len =3D _countof(msg-&gt;addr);</span><br><span>     }</span><br=
+><span>@@ -3005,10 +3004,6 @@</span><br><span>     return err;</span><br><s=
+pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span> static DWORD</span><br><span> HandleEnab=
+leDHCPMessage(const enable_dhcp_message_t *dhcp)</span><br><span> {</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1496?usp=3Demail">change 1496</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1496?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie8135a31b1f8f70ce0ddf63d765=
-3f3d84a9e983f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1493 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I03f4c640a2adbea9bbb6f6334f1=
+2375041ec429c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1496 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -189,5 +188,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---K5e3vnWQa/Q=--
+--wEf3x+61X+Y=--
 
