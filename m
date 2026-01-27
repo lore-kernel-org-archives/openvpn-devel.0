@@ -1,16 +1,10 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Tue, 27 Jan 2026 11:41:26 +0000
-In-Reply-To: <gerrit.1769512571000.I525a5b1b9b6f173cdf12341aefc44d58f0d43aed@...2715...>
-References: <gerrit.1769512571000.I525a5b1b9b6f173cdf12341aefc44d58f0d43aed@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <01be8a00b067bc56a97fd14dba4f23f63179b355-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DVcQi2SJ5r0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: cryptoapi: Change
- signature of parse_hexstring to match code
+Date: Tue, 27 Jan 2026 15:41:40 +0100 (CET)
+Message-Id: <202601271441.60REfeap014947@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20260122125707.108048-1-frank@...2641...>
+References: <20260122125707.108048-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: manage: Do not trigger actions
+ on management disconnect if not authenticated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,115 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---DVcQi2SJ5r0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Confirmed - run a server instance with "--management-disconnect" *and* a
+management password set up, and without this patch, "connect and disconnect"
+(without entering a password) will disconnect all clients.
 
-Attention is currently required from: flichtenheld, plaisthos.
+We do not consider this to be a security relevant bug ("CVE assigned") as it
+needs quite a lot of prerequisites - "management interface active, while
+no management client using this" plus setting "--management-disconnect" on
+a server instance, which is somewhat questionable to begin with...
 
-ordex has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1492?usp=3Demail )
+Still, it needs fixing :-)
 
-Change subject: cryptoapi: Change signature of parse_hexstring to match code
-......................................................................
+Your patch has been applied to the master and release/2.6 + 2.5 branch
+(bugfix, and trivial cherrypicking)
 
+commit 4bf05d487cc10164615ad7c18931d063ca3eecc2 (master)
+commit bb27e40799dcfe51a8cd82b236ce404bd7ab93aa (release/2.6)
+commit 193b76ef6e95d86078a2636a38c04beb98c241b8 (release/2.5)
+Author: Frank Lichtenheld
+Date:   Thu Jan 22 13:57:07 2026 +0100
 
-Patch Set 1: Code-Review+2
+     manage: Do not trigger actions on management disconnect if not authenticated
 
-(1 comment)
-
-Patchset:
-
-PS1:
-I don't like that we are adding a totally unrelated whitespace in a place w=
-e are not touching at all (moreover I am not sure why it is being added - i=
-t seems clang-format has "opinions").
-
-But other than that the actual change looks good to me and more importantly=
- is adding the "static" attribute which should have been there since the be=
-ginning.
-
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1484
+     Message-Id: <20260122125707.108048-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35390.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1492?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I525a5b1b9b6f173cdf12341aefc44d58f0d43aed
-Gerrit-Change-Number: 1492
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 27 Jan 2026 11:41:26 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gert Doering
 
---DVcQi2SJ5r0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1492?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1492?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I don&#39;t=
- like that we are adding a totally unrelated whitespace in a place we are n=
-ot touching at all (moreover I am not sure why it is being added - it seems=
- clang-format has &quot;opinions&quot;).</p><p class=3D"blocks" style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">But other than that the actual=
- change looks good to me and more importantly is adding the &quot;static&qu=
-ot; attribute which should have been there since the beginning.</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1492?usp=3Demail">change 1492</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dema=
-il">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1492?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I525a5b1b9b6f173cdf12341aefc=
-44d58f0d43aed </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1492 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 27 Jan 2026 11:41:26=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---DVcQi2SJ5r0=--
 
