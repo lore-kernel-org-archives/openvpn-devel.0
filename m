@@ -1,11 +1,15 @@
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 27 Jan 2026 21:56:06 +0000
+References: <gerrit.1769550961000.Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <7bba68a6742af281782608b763e040deae2479e3-HTML@...2715...>
 MIME-Version: 1.0
-References: <0054b4ff-731a-4a23-b8e6-2cd312ae5557@...2722...>
-In-Reply-To: <0054b4ff-731a-4a23-b8e6-2cd312ae5557@...2722...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Tue, 27 Jan 2026 14:23:38 -0500
-Message-ID: <CAEsd45TAbZGL2nifwf=Ex_1K1w=spTcjgca0Aqb760=s94EPLA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000a80ed206496391a9"
-Subject: Re: [Openvpn-devel] IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="OudBk3QZi/o="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: tunnel_server():
+ close correct inotify fd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,204 +18,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000a80ed206496391a9
+--OudBk3QZi/o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Thanks, Johan, for these meeting summaries. They're very helpful.
+Attention is currently required from: plaisthos.
 
-Can anyone make a ( non-binding : ) guess about the timing of the 2.6.18
-release and/or the 2.7 release?
+Hello plaisthos,
 
-OpenSSL just released an update and I'd like to do a Tunnelblick release
-soon (within the next few days) but if 2.2.18 and/or 2.7 are also coming
-"soon" I might wait and include it/them, too.
+I'd like you to do a code review.
+Please visit
 
-Best regards,
+    http://gerrit.openvpn.net/c/openvpn/+/1497?usp=3Demail
 
-Jon
+to review the following change.
 
 
-On Wed, Jan 14, 2026 at 9:20=E2=80=AFAM Johan Draaisma <johan@...2722...> w=
-rote:
+Change subject: tunnel_server(): close correct inotify fd
+......................................................................
 
-> Meeting summary for 14 January 2026:
->
->    -
->
->    *Updated: Release 2.7*
->    Stable release is near but there were some last minute bug fixes
->    including a security fix.
->    We decided instead of releasing a stable version today, to go for one
->    more release candidate, rc5.
->    OpenVPN 2.7rc5 is intended to be released tomorrow.
->    The stable release will follow after that within a few weeks or so,
->    most likely around 28 January.
->    -
->
->    *New: Release 2.6.18*
->    A small bugfix release will be coming soon.
->    -
->
->    *Updated: forums situation*
->    Eduardo from website team is currently working on the forums.
->    Due to holidays this was on hold for a bit but we're back on it now.
->    Most things work now, there are some inconveniences that will require
->    manual intervention like removing spam posts and handling duplicate ac=
-count
->    issues.
->    We will continue to work on it and test it and make it ready for a big
->    switch.
->    -
->
->    *Updated: mbedtls support*
->    The old mbedtls2 is EOL so that was removed as per 2.7rc4.
->    mbedtls3 support is currently in 2.7rc4 and will be in 2.7.0.
->    That version of mbedtls (3.6 LTS release) is still supported until
->    March 2027 at least.
->    The plan is to get to mbedtls4 implementation in OpenVPN 2.7 in some
->    version after 2.7.0.
->    -
->
->    *Updated: community meetup 2026*
->    When: exact date to be determined, a poll will be sent out to regular
->    members. Roughly in september/october timeframe.
->    Where: Tentatively in Paderborn, Germany.
->    Meeting room: Potentially
->    https://www.welcome-hotels.com/en/hotels/paderborn/events/
->    Beer: recommendation against local paderborner beer, although it is
->    cheap.
->
-> As always you're welcome to join at #openvpn-meeting on Libera IRC network
-> every Wednesday at 14:00 Central European Time.
->
-> Kind regards,
-> Johan Draaisma
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+tunnel_server(): close correct inotify fd
 
---000000000000a80ed206496391a9
+On a full SIGUSR1 restart of a p2mp server compiled with
+--enable-async-push, tunnel_server() will try to close and reopen
+the "inotify" control file descriptor.  For whatever reason, the
+original code referenced the wrong context, always closing fd 0.
+
+As a consequence of this, on the second SIGUSR1 restart, the server
+will close() the first active socket file descriptor, and if there
+are active DCO clients, the resulting event confusion will lead to
+an ASSERT(!mi->halt).
+
+Fix by closing the correct FD. Add logging.
+
+Github: fixes OpenVPN/openvpn#966
+
+Change-Id: Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/multi.c
+1 file changed, 3 insertions(+), 1 deletion(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/1497/1
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2af49d2..8f903a4 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4244,7 +4244,9 @@
+     tunnel_server_loop(&multi);
+
+ #ifdef ENABLE_ASYNC_PUSH
+-    close(top->c2.inotify_fd);
++    msg(D_LOW, "%s: close multi.top.c2.inotify_fd (%d)",
++                __func__, multi.top.c2.inotify_fd );
++    close(multi.top.c2.inotify_fd);
+ #endif
+
+     /* shut down management interface */
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1497?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb
+Gerrit-Change-Number: 1497
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--OudBk3QZi/o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Thanks, Johan, for these meeting summaries. They&#39;re ve=
-ry helpful.<div><br></div><div>Can anyone make a ( non-binding : ) guess ab=
-out the timing of the 2.6.18 release and/or the 2.7 release?<div><br></div>=
-<div>OpenSSL just released an update and I&#39;d like to do a Tunnelblick r=
-elease soon (within the next few days) but if 2.2.18 and/or 2.7 are also co=
-ming &quot;soon&quot; I might wait and include it/them, too.</div><div><br>=
-</div><div>Best regards,</div><div><br></div><div>Jon</div><div><br></div><=
-/div></div><br><div class=3D"gmail_quote gmail_quote_container"><div dir=3D=
-"ltr" class=3D"gmail_attr">On Wed, Jan 14, 2026 at 9:20=E2=80=AFAM Johan Dr=
-aaisma &lt;<a href=3D"mailto:johan@...2722...">johan@...2722...</a>&gt; wro=
-te:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
-0.8ex;border-left-width:1px;border-left-style:solid;border-left-color:rgb(2=
-04,204,204);padding-left:1ex"><u></u>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>cron2 would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1497?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">tunnel_server(): close correct inotify fd<b=
+r><br>On a full SIGUSR1 restart of a p2mp server compiled with<br>--enable-=
+async-push, tunnel_server() will try to close and reopen<br>the &quot;inoti=
+fy&quot; control file descriptor.  For whatever reason, the<br>original cod=
+e referenced the wrong context, always closing fd 0.<br><br>As a consequenc=
+e of this, on the second SIGUSR1 restart, the server<br>will close() the fi=
+rst active socket file descriptor, and if there<br>are active DCO clients, =
+the resulting event confusion will lead to<br>an ASSERT(!mi-&gt;halt).<br><=
+br>Fix by closing the correct FD. Add logging.<br><br>Github: fixes OpenVPN=
+/openvpn#966<br><br>Change-Id: Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb<br=
+>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvp=
+n/multi.c<br>1 file changed, 3 insertions(+), 1 deletion(-)<br><br></pre><p=
+re class=3D"blocks" style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97=
+/1497/1</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;"><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</spa=
+n><br><span>index 2af49d2..8f903a4 100644</span><br><span>--- a/src/openvpn=
+/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -4244=
+,7 +4244,9 @@</span><br><span>     tunnel_server_loop(&amp;multi);</span><b=
+r><span> </span><br><span> #ifdef ENABLE_ASYNC_PUSH</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    close(top-&gt;c2.inotify_fd);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_LOW, &quot;%s: clos=
+e multi.top.c2.inotify_fd (%d)&quot;,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                __func__, multi.top.c2.inotify_fd );</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    close(multi.top.c2.i=
+notify_fd);</span><br><span> #endif</span><br><span> </span><br><span>     =
+/* shut down management interface */</span><br><span></span><br></pre><p>To=
+ view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1497?usp=3Dem=
+ail">change 1497</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1497?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-=20=20
-=20=20=20=20
-=20=20
-  <div>
-    <p> Meeting summary for 14 January 2026:</p>
-    <ul style=3D"box-sizing:inherit;list-style:circle;padding-left:1rem;mar=
-gin-top:0px;color:rgba(0,0,0,0.85);font-family:-apple-system,BlinkMacSystem=
-Font,&quot;Segoe UI&quot;,Roboto,Helvetica,Arial,sans-serif,&quot;Apple Col=
-or Emoji&quot;,&quot;Segoe UI Emoji&quot;,&quot;Segoe UI Symbol&quot;;font-=
-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-we=
-ight:400;letter-spacing:normal;text-align:start;text-indent:0px;text-transf=
-orm:none;word-spacing:0px;white-space:normal;background-color:rgb(255,255,2=
-55);text-decoration-style:initial;text-decoration-color:initial">
-      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
-em;list-style-type:disc">
-        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
-;font-weight:bolder">Updated:
-            Release 2.7</strong><br style=3D"box-sizing:inherit">
-          Stable release is near but there were some last minute bug
-          fixes including a security fix.<br style=3D"box-sizing:inherit">
-          We decided instead of releasing a stable version today, to go
-          for one more release candidate, rc5.<br style=3D"box-sizing:inher=
-it">
-          OpenVPN 2.7rc5 is intended to be released tomorrow.<br style=3D"b=
-ox-sizing:inherit">
-          The stable release will follow after that within a few weeks
-          or so, most likely around 28 January.</p>
-      </li>
-      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
-em;list-style-type:disc">
-        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
-;font-weight:bolder">New:
-            Release 2.6.18</strong><br style=3D"box-sizing:inherit">
-          A small bugfix release will be coming soon.</p>
-      </li>
-      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
-em;list-style-type:disc">
-        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
-;font-weight:bolder">Updated:
-            forums situation</strong><br style=3D"box-sizing:inherit">
-          Eduardo from website team is currently working on the forums.<br =
-style=3D"box-sizing:inherit">
-          Due to holidays this was on hold for a bit but we&#39;re back on
-          it now.<br style=3D"box-sizing:inherit">
-          Most things work now, there are some inconveniences that will
-          require manual intervention like removing spam posts and
-          handling duplicate account issues.<br style=3D"box-sizing:inherit=
-">
-          We will continue to work on it and test it and make it ready
-          for a big switch.</p>
-      </li>
-      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
-em;list-style-type:disc">
-        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
-;font-weight:bolder">Updated:
-            mbedtls support</strong><br style=3D"box-sizing:inherit">
-          The old mbedtls2 is EOL so that was removed as per 2.7rc4.<br sty=
-le=3D"box-sizing:inherit">
-          mbedtls3 support is currently in 2.7rc4 and will be in 2.7.0.<br =
-style=3D"box-sizing:inherit">
-          That version of mbedtls (3.6 LTS release) is still supported
-          until March 2027 at least.<br style=3D"box-sizing:inherit">
-          The plan is to get to mbedtls4 implementation in OpenVPN 2.7
-          in some version after 2.7.0.</p>
-      </li>
-      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
-em;list-style-type:disc">
-        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
-;font-weight:bolder">Updated:
-            community meetup 2026</strong><br style=3D"box-sizing:inherit">
-          When: exact date to be determined, a poll will be sent out to
-          regular members. Roughly in september/october timeframe.<br style=
-=3D"box-sizing:inherit">
-          Where: Tentatively in Paderborn, Germany.<br style=3D"box-sizing:=
-inherit">
-          Meeting room: Potentially<span>=C2=A0</span><a href=3D"https://ww=
-w.welcome-hotels.com/en/hotels/paderborn/events/" style=3D"box-sizing:inher=
-it;background-color:transparent;color:rgb(24,144,255);text-decoration:none"=
- target=3D"_blank">https://www.welcome-hotels.com/en/hotels/paderborn/event=
-s/</a><br style=3D"box-sizing:inherit">
-          Beer: recommendation against local paderborner beer, although
-          it is cheap.</p>
-      </li>
-    </ul>
-    <p>As always you&#39;re welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iabc117848ad7b67d240c392f1a6=
+aa2d7531fd5bb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1497 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
+</body></html>=
 
---000000000000a80ed206496391a9--
+--OudBk3QZi/o=--
 
