@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 27 Jan 2026 14:42:04 +0000
-In-Reply-To: <gerrit.1769005798000.I575d65912ce9065a0b0868e73998b4a9aece62af@...2715...>
-References: <gerrit.1769005798000.I575d65912ce9065a0b0868e73998b4a9aece62af@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <9ba74cea2adf8d06e598f0a187ce226cd3dcc4c1-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YhKBcLxMYhw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: manage: Do not
- trigger actions on management disconnect if not authen...
+References: <0054b4ff-731a-4a23-b8e6-2cd312ae5557@...2722...>
+In-Reply-To: <0054b4ff-731a-4a23-b8e6-2cd312ae5557@...2722...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Tue, 27 Jan 2026 14:23:38 -0500
+Message-ID: <CAEsd45TAbZGL2nifwf=Ex_1K1w=spTcjgca0Aqb760=s94EPLA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a80ed206496391a9"
+Subject: Re: [Openvpn-devel] IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,148 +14,204 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---YhKBcLxMYhw=
+--000000000000a80ed206496391a9
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
-84?usp=3Demail )
+Thanks, Johan, for these meeting summaries. They're very helpful.
 
-Change subject: manage: Do not trigger actions on management disconnect if =
-not authenticated
-......................................................................
+Can anyone make a ( non-binding : ) guess about the timing of the 2.6.18
+release and/or the 2.7 release?
 
-manage: Do not trigger actions on management disconnect if not authenticated
+OpenSSL just released an update and I'd like to do a Tunnelblick release
+soon (within the next few days) but if 2.2.18 and/or 2.7 are also coming
+"soon" I might wait and include it/them, too.
 
-If the management interface requires authentication via password
-and the remote did not specify it, do not do trigger actions
-requested by --management-forget-disconnect and --management-signal
-on disconnect.
+Best regards,
 
-Reported-By: Joshua Rogers <contact@...2949...>
-Found-By: ZeroPath (https://zeropath.com)
-Github: openvpn-private-issues#5
-Change-Id: I575d65912ce9065a0b0868e73998b4a9aece62af
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1484
-Message-Id: <20260122125707.108048-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35=
-390.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/manage.c
-1 file changed, 3 insertions(+), 2 deletions(-)
+Jon
 
 
+On Wed, Jan 14, 2026 at 9:20=E2=80=AFAM Johan Draaisma <johan@...2722...> w=
+rote:
 
+> Meeting summary for 14 January 2026:
+>
+>    -
+>
+>    *Updated: Release 2.7*
+>    Stable release is near but there were some last minute bug fixes
+>    including a security fix.
+>    We decided instead of releasing a stable version today, to go for one
+>    more release candidate, rc5.
+>    OpenVPN 2.7rc5 is intended to be released tomorrow.
+>    The stable release will follow after that within a few weeks or so,
+>    most likely around 28 January.
+>    -
+>
+>    *New: Release 2.6.18*
+>    A small bugfix release will be coming soon.
+>    -
+>
+>    *Updated: forums situation*
+>    Eduardo from website team is currently working on the forums.
+>    Due to holidays this was on hold for a bit but we're back on it now.
+>    Most things work now, there are some inconveniences that will require
+>    manual intervention like removing spam posts and handling duplicate ac=
+count
+>    issues.
+>    We will continue to work on it and test it and make it ready for a big
+>    switch.
+>    -
+>
+>    *Updated: mbedtls support*
+>    The old mbedtls2 is EOL so that was removed as per 2.7rc4.
+>    mbedtls3 support is currently in 2.7rc4 and will be in 2.7.0.
+>    That version of mbedtls (3.6 LTS release) is still supported until
+>    March 2027 at least.
+>    The plan is to get to mbedtls4 implementation in OpenVPN 2.7 in some
+>    version after 2.7.0.
+>    -
+>
+>    *Updated: community meetup 2026*
+>    When: exact date to be determined, a poll will be sent out to regular
+>    members. Roughly in september/october timeframe.
+>    Where: Tentatively in Paderborn, Germany.
+>    Meeting room: Potentially
+>    https://www.welcome-hotels.com/en/hotels/paderborn/events/
+>    Beer: recommendation against local paderborner beer, although it is
+>    cheap.
+>
+> As always you're welcome to join at #openvpn-meeting on Libera IRC network
+> every Wednesday at 14:00 Central European Time.
+>
+> Kind regards,
+> Johan Draaisma
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 8fa8784..37ae6b3 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2073,13 +2073,14 @@
-     }
-     if (!exiting)
-     {
--        if (man->settings.flags & MF_FORGET_DISCONNECT)
-+        if (man->settings.flags & MF_FORGET_DISCONNECT && !man_password_ne=
-eded(man))
-         {
-+            msg(D_MANAGEMENT, "MANAGEMENT: Reset authentication on disconn=
-ect");
-             ssl_purge_auth(false);
-             (void)ssl_clean_auth_token();
-         }
-
--        if (man->settings.flags & MF_SIGNAL)
-+        if (man->settings.flags & MF_SIGNAL && !man_password_needed(man))
-         {
-             int mysig =3D man_mod_signal(man, SIGUSR1);
-             if (mysig >=3D 0)
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1484?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I575d65912ce9065a0b0868e73998b4a9aece62af
-Gerrit-Change-Number: 1484
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---YhKBcLxMYhw=
+--000000000000a80ed206496391a9
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1484?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">manage: Do not trigger actions on management dis=
-connect if not authenticated<br><br>If the management interface requires au=
-thentication via password<br>and the remote did not specify it, do not do t=
-rigger actions<br>requested by --management-forget-disconnect and --managem=
-ent-signal<br>on disconnect.<br><br>Reported-By: Joshua Rogers &lt;contact@=
-...2949...&gt;<br>Found-By: ZeroPath (https://zeropath.com)<br>Github: open=
-vpn-private-issues#5<br>Change-Id: I575d65912ce9065a0b0868e73998b4a9aece62a=
-f<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by:=
- Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Gerrit URL: https://gerrit=
-.openvpn.net/c/openvpn/+/1484<br>Message-Id: &lt;20260122125707.108048-1-fr=
-ank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1697...=
-.sourceforge.net/msg35390.html<br>Signed-off-by: Gert Doering &lt;gert@...1386...=
-296...&gt;<br>---<br>M src/openvpn/manage.c<br>1 file changed, 3 insertions=
-(+), 2 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span=
->index 8fa8784..37ae6b3 100644</span><br><span>--- a/src/openvpn/manage.c</=
-span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -2073,13 +2073=
-,14 @@</span><br><span>     }</span><br><span>     if (!exiting)</span><br>=
-<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (man-&gt;settings.flags &amp; MF_FORGET_DISCONNECT)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (man-&gt;settings.flags &amp; =
-MF_FORGET_DISCONNECT &amp;&amp; !man_password_needed(man))</span><br><span>=
-         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   msg(D_MANAGEMENT, &quot;MANAGEMENT: Reset authentication on disconnect&q=
-uot;);</span><br><span>             ssl_purge_auth(false);</span><br><span>=
-             (void)ssl_clean_auth_token();</span><br><span>         }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (man-&gt;settings.flags &amp; MF_SIGNAL)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        if (man-&gt;settings.flags &amp; MF_SIGNAL &=
-amp;&amp; !man_password_needed(man))</span><br><span>         {</span><br><=
-span>             int mysig =3D man_mod_signal(man, SIGUSR1);</span><br><sp=
-an>             if (mysig &gt;=3D 0)</span><br><span></span><br></pre><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1484?usp=3Dem=
-ail">change 1484</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1484?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<div dir=3D"ltr">Thanks, Johan, for these meeting summaries. They&#39;re ve=
+ry helpful.<div><br></div><div>Can anyone make a ( non-binding : ) guess ab=
+out the timing of the 2.6.18 release and/or the 2.7 release?<div><br></div>=
+<div>OpenSSL just released an update and I&#39;d like to do a Tunnelblick r=
+elease soon (within the next few days) but if 2.2.18 and/or 2.7 are also co=
+ming &quot;soon&quot; I might wait and include it/them, too.</div><div><br>=
+</div><div>Best regards,</div><div><br></div><div>Jon</div><div><br></div><=
+/div></div><br><div class=3D"gmail_quote gmail_quote_container"><div dir=3D=
+"ltr" class=3D"gmail_attr">On Wed, Jan 14, 2026 at 9:20=E2=80=AFAM Johan Dr=
+aaisma &lt;<a href=3D"mailto:johan@...2722...">johan@...2722...</a>&gt; wro=
+te:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left-width:1px;border-left-style:solid;border-left-color:rgb(2=
+04,204,204);padding-left:1ex"><u></u>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I575d65912ce9065a0b0868e7399=
-8b4a9aece62af </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1484 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
+=20=20
+=20=20=20=20
+=20=20
+  <div>
+    <p> Meeting summary for 14 January 2026:</p>
+    <ul style=3D"box-sizing:inherit;list-style:circle;padding-left:1rem;mar=
+gin-top:0px;color:rgba(0,0,0,0.85);font-family:-apple-system,BlinkMacSystem=
+Font,&quot;Segoe UI&quot;,Roboto,Helvetica,Arial,sans-serif,&quot;Apple Col=
+or Emoji&quot;,&quot;Segoe UI Emoji&quot;,&quot;Segoe UI Symbol&quot;;font-=
+style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-we=
+ight:400;letter-spacing:normal;text-align:start;text-indent:0px;text-transf=
+orm:none;word-spacing:0px;white-space:normal;background-color:rgb(255,255,2=
+55);text-decoration-style:initial;text-decoration-color:initial">
+      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
+em;list-style-type:disc">
+        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
+;font-weight:bolder">Updated:
+            Release 2.7</strong><br style=3D"box-sizing:inherit">
+          Stable release is near but there were some last minute bug
+          fixes including a security fix.<br style=3D"box-sizing:inherit">
+          We decided instead of releasing a stable version today, to go
+          for one more release candidate, rc5.<br style=3D"box-sizing:inher=
+it">
+          OpenVPN 2.7rc5 is intended to be released tomorrow.<br style=3D"b=
+ox-sizing:inherit">
+          The stable release will follow after that within a few weeks
+          or so, most likely around 28 January.</p>
+      </li>
+      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
+em;list-style-type:disc">
+        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
+;font-weight:bolder">New:
+            Release 2.6.18</strong><br style=3D"box-sizing:inherit">
+          A small bugfix release will be coming soon.</p>
+      </li>
+      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
+em;list-style-type:disc">
+        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
+;font-weight:bolder">Updated:
+            forums situation</strong><br style=3D"box-sizing:inherit">
+          Eduardo from website team is currently working on the forums.<br =
+style=3D"box-sizing:inherit">
+          Due to holidays this was on hold for a bit but we&#39;re back on
+          it now.<br style=3D"box-sizing:inherit">
+          Most things work now, there are some inconveniences that will
+          require manual intervention like removing spam posts and
+          handling duplicate account issues.<br style=3D"box-sizing:inherit=
+">
+          We will continue to work on it and test it and make it ready
+          for a big switch.</p>
+      </li>
+      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
+em;list-style-type:disc">
+        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
+;font-weight:bolder">Updated:
+            mbedtls support</strong><br style=3D"box-sizing:inherit">
+          The old mbedtls2 is EOL so that was removed as per 2.7rc4.<br sty=
+le=3D"box-sizing:inherit">
+          mbedtls3 support is currently in 2.7rc4 and will be in 2.7.0.<br =
+style=3D"box-sizing:inherit">
+          That version of mbedtls (3.6 LTS release) is still supported
+          until March 2027 at least.<br style=3D"box-sizing:inherit">
+          The plan is to get to mbedtls4 implementation in OpenVPN 2.7
+          in some version after 2.7.0.</p>
+      </li>
+      <li style=3D"box-sizing:inherit;margin-bottom:0.2rem;margin-left:1.5r=
+em;list-style-type:disc">
+        <p style=3D"box-sizing:inherit"><strong style=3D"box-sizing:inherit=
+;font-weight:bolder">Updated:
+            community meetup 2026</strong><br style=3D"box-sizing:inherit">
+          When: exact date to be determined, a poll will be sent out to
+          regular members. Roughly in september/october timeframe.<br style=
+=3D"box-sizing:inherit">
+          Where: Tentatively in Paderborn, Germany.<br style=3D"box-sizing:=
+inherit">
+          Meeting room: Potentially<span>=C2=A0</span><a href=3D"https://ww=
+w.welcome-hotels.com/en/hotels/paderborn/events/" style=3D"box-sizing:inher=
+it;background-color:transparent;color:rgb(24,144,255);text-decoration:none"=
+ target=3D"_blank">https://www.welcome-hotels.com/en/hotels/paderborn/event=
+s/</a><br style=3D"box-sizing:inherit">
+          Beer: recommendation against local paderborner beer, although
+          it is cheap.</p>
+      </li>
+    </ul>
+    <p>As always you&#39;re welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </div>
 
-</body></html>=
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div>
 
---YhKBcLxMYhw=--
+--000000000000a80ed206496391a9--
 
