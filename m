@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 28 Jan 2026 10:59:35 +0000
-In-Reply-To: <gerrit.1769556650000.Id530d890ba01cffb74d3dc04ad10b153f7bea1d4@...2715...>
-References: <gerrit.1769556650000.Id530d890ba01cffb74d3dc04ad10b153f7bea1d4@...2715...>
-Reply-To: arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <bb5c37af2350f04410fcdeacdd2970bed1912d19-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Wed, 28 Jan 2026 12:04:19 +0100
+Message-ID: <20260128110425.24350-1-gert@...1296...>
+In-Reply-To: <gerrit.1769550961000.Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb@...2715...>
+References: <gerrit.1769550961000.Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="npi6qD/4SEY="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Prevent NULL
- pointer dereference with --dns-updown
+Subject: [Openvpn-devel] [PATCH v1] tunnel_server(): close correct inotify fd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,83 +13,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---npi6qD/4SEY=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On a full SIGUSR1 restart of a p2mp server compiled with
+--enable-async-push, tunnel_server() will try to close and reopen
+the "inotify" control file descriptor.  For whatever reason, the
+original code referenced the wrong context, always closing fd 0.
 
-Attention is currently required from: d12fk.
+As a consequence of this, on the second SIGUSR1 restart, the server
+will close() the first active socket file descriptor, and if there
+are active DCO clients, the resulting event confusion will lead to
+an ASSERT(!mi->halt).
 
-plaisthos has posted comments on this change by d12fk. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1498?usp=3Demail )
+Fix by closing the correct FD. Add logging.
 
-Change subject: Prevent NULL pointer dereference with --dns-updown
-......................................................................
+Github: fixes OpenVPN/openvpn#966
 
+Change-Id: Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1497
+---
 
-Patch Set 1: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1497
+This mail reflects revision 1 of this Change.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1498?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id530d890ba01cffb74d3dc04ad10b153f7bea1d4
-Gerrit-Change-Number: 1498
-Gerrit-PatchSet: 1
-Gerrit-Owner: d12fk <heiko@...515...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Wed, 28 Jan 2026 10:59:35 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---npi6qD/4SEY=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1498?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1498?usp=3Demail=
-">change 1498</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1498?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id530d890ba01cffb74d3dc04ad1=
-0b153f7bea1d4 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1498 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Jan 2026 10:59:35=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---npi6qD/4SEY=--
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 2af49d2..8f903a4 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4244,7 +4244,9 @@
+     tunnel_server_loop(&multi);
+ 
+ #ifdef ENABLE_ASYNC_PUSH
+-    close(top->c2.inotify_fd);
++    msg(D_LOW, "%s: close multi.top.c2.inotify_fd (%d)",
++                __func__, multi.top.c2.inotify_fd );
++    close(multi.top.c2.inotify_fd);
+ #endif
+ 
+     /* shut down management interface */
 
