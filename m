@@ -1,15 +1,16 @@
-Date: Wed, 28 Jan 2026 15:48:49 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <aXoh0Qv_eazEVkXS@...1296...>
-References: <20260128110425.24350-1-gert@...1296...>
- <202601281328.60SDSBrl035663@...2054...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 28 Jan 2026 14:59:58 +0000
+In-Reply-To: <gerrit.1769611655000.Idcb1421b9f7fcbee9620fd1d45cceab050751373@...2715...>
+References: <gerrit.1769611655000.Idcb1421b9f7fcbee9620fd1d45cceab050751373@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ gert@...1296...
+Message-ID: <f34062ec5b9af79e0539f54302409977d500108b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature"; boundary="ne5Nguch8yaylNkh"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <202601281328.60SDSBrl035663@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: tunnel_server(): close
- correct inotify fd
+Content-Type: multipart/alternative; boundary="vbe7JfzaOl4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]:
+ tunnel_server_*(): close correct inotify fd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +19,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ne5Nguch8yaylNkh
-Content-Type: text/plain; charset="us-ascii"
+--vbe7JfzaOl4=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: cron2.
 
-On Wed, Jan 28, 2026 at 02:28:11PM +0100, Gert Doering wrote:
-> For now, this patch has been applied to the master branch (to progress
-> towards 2.7_rc6).  I will come back here to see which branches need the
-> fix, or whether different "top context" handling actually made it do the
-> right thing 10 years ago...
+plaisthos has posted comments on this change by cron2. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1499?usp=3Demail )
 
-As it turns out, the code in 2.6 and earlier does not have a "multi.c", but
-instead it has "mudp.c" and "mtcp.c" for UDP and TCP servers, respectively.
+Change subject: tunnel_server_*(): close correct inotify fd
+......................................................................
 
-The code is the same, the "close(0)" is the same, but the patch cannot be
-"just cherrypicked", so I've put a 2.6 patch to gerrit
 
-   http://gerrit.openvpn.net/c/openvpn/+/1499
+Patch Set 1: Code-Review+2
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
---ne5Nguch8yaylNkh
-Content-Type: application/pgp-signature; name=signature.asc
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: Idcb1421b9f7fcbee9620fd1d45cceab050751373
+Gerrit-Change-Number: 1499
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Comment-Date: Wed, 28 Jan 2026 14:59:58 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
------BEGIN PGP SIGNATURE-----
+--vbe7JfzaOl4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAml6Ic4ACgkQHYKe/spW
-KBIc5Qv6AznTBAdqd1z3w0Qisomavm6IPnNjcdSiIp+G8EmveEUr1XirmqugLtxm
-Y1wAK8us7/3xcazh4EpUueD1PXE2B9aDjpvSlYzmTXBEarK3UYa6QrW5w50MZk82
-0RbAgPuqjMGIgI/PniWmfR1di7F/4488Ev9qY97mGkSuStj4fA3YEKkC5HFwOQKW
-53fZ/rnMcE54lde55f9mb+g7PXwetZJ+WGxoIECwvRfD5cF51cxZG+/U45S1mJgj
-yhMfIuIm+DYZA4j14qIX21ceuZM1OquL4XdqOC1yK8BX/+JNzN76imDd0pRSu7fk
-9xq45QQhQyduVX8FYIDKRFx5xSDcGIttDgQOthG/chAXLYZJI7iu6dMf2WLQuTIe
-wY5yMTWTbFH0OwX3BtGG5a5aoANXciMqApH6r2HIpA6k8RBlwKDYO2oWpnrn1fsu
-90muJgHXMUiwK/z68KOUUjRdtJBnr+XysZZnNjRbX63rX4dvXqPm90UFzVYbzXM7
-HsB/ZMv+
-=3Z9b
------END PGP SIGNATURE-----
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: cron2. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail=
+">change 1499</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
---ne5Nguch8yaylNkh--
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idcb1421b9f7fcbee9620fd1d45c=
+ceab050751373 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1499 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Jan 2026 14:59:58=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--vbe7JfzaOl4=--
 
