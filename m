@@ -1,11 +1,11 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 28 Jan 2026 12:04:37 +0100
-Message-ID: <20260128110443.24410-1-gert@...1296...>
-In-Reply-To: <gerrit.1769556650000.Id530d890ba01cffb74d3dc04ad10b153f7bea1d4@...2715...>
-References: <gerrit.1769556650000.Id530d890ba01cffb74d3dc04ad10b153f7bea1d4@...2715...>
+From: Ralf Lici <ralf@...2726...>
+Date: Wed, 28 Jan 2026 13:44:10 +0100
+Message-ID: <20260128124410.429529-3-ralf@...2726...>
+In-Reply-To: <20260128124410.429529-1-ralf@...2726...>
+References: <20260128124410.429529-1-ralf@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Prevent NULL pointer dereference with
- --dns-updown
+Subject: [Openvpn-devel] [PATCH ovpn net v2 3/3] ovpn: fix VPN TX bytes
+ counting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +17,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>
 
-From: Heiko Hund <heiko@...2662...>
+In ovpn_net_xmit, after GSO segmentation and segment processing, the skb
+variable points only to the first segment of the resulting list. The
+current code uses skb->len to increment VPN TX statistics, which fails
+to account for any subsequent segments in the chain.
 
-If the dns-updown option appears in the config twice, there is a chance
-of a NULL pointer dereference when comparing the script path to the
-default script path. This happens when a custom script is set, after the
-dns-updown script was disabled first. In that case the script path is
-NULL, which leads to the deref during a strcmp(3).
+Fix this by accumulating the length of every segment that successfully
+passes skb_share_check into a tx_bytes variable. This ensures the peer
+statistics accurately reflect the total data volume sent, regardless of
+whether the original packet was segmented.
 
-Reported-by: <aarnav@...2953...>
-Change-Id: Id530d890ba01cffb74d3dc04ad10b153f7bea1d4
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1498
+Fixes: 04ca14955f9a ("ovpn: store tunnel and transport statistics")
+Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
+Changes since v1:
+- added Fixes tag
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+ drivers/net/ovpn/io.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1498
-This mail reflects revision 1 of this Change.
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 95c3518e067c..4f3c9c5d00aa 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -355,6 +355,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct ovpn_priv *ovpn = netdev_priv(dev);
+ 	struct sk_buff *segments, *curr, *next;
+ 	struct sk_buff_head skb_list;
++	unsigned int tx_bytes = 0;
+ 	struct ovpn_peer *peer;
+ 	__be16 proto;
+ 	int ret;
+@@ -394,6 +395,8 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			continue;
+ 		}
+ 
++		/* only count what we actually send */
++		tx_bytes += curr->len;
+ 		__skb_queue_tail(&skb_list, curr);
+ 	}
+ 
+@@ -429,7 +432,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/* dst was needed for peer selection - it can now be dropped */
+ 	skb_dst_drop(skb);
+ 
+-	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb->len);
++	ovpn_peer_stats_increment_tx(&peer->vpn_stats, tx_bytes);
+ 	ovpn_send(ovpn, skb_list.next, peer);
+ 
+ 	return NETDEV_TX_OK;
+-- 
+2.52.0
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
-
-        
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 85669e0..2bca647 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7890,7 +7890,7 @@
-         }
-         else
-         {
--            if (streq(dns->updown, DEFAULT_DNS_UPDOWN))
-+            if (dns->updown && streq(dns->updown, DEFAULT_DNS_UPDOWN))
-             {
-                 /* Unset the default command to prevent warnings */
-                 dns->updown = NULL;
 
