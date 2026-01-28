@@ -1,10 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Wed, 28 Jan 2026 12:04:19 +0100
-Message-ID: <20260128110425.24350-1-gert@...1296...>
-In-Reply-To: <gerrit.1769550961000.Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb@...2715...>
-References: <gerrit.1769550961000.Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb@...2715...>
+Date: Wed, 28 Jan 2026 12:04:37 +0100
+Message-ID: <20260128110443.24410-1-gert@...1296...>
+In-Reply-To: <gerrit.1769556650000.Id530d890ba01cffb74d3dc04ad10b153f7bea1d4@...2715...>
+References: <gerrit.1769556650000.Id530d890ba01cffb74d3dc04ad10b153f7bea1d4@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] tunnel_server(): close correct inotify fd
+Subject: [Openvpn-devel] [PATCH v1] Prevent NULL pointer dereference with
+ --dns-updown
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +18,42 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On a full SIGUSR1 restart of a p2mp server compiled with
---enable-async-push, tunnel_server() will try to close and reopen
-the "inotify" control file descriptor.  For whatever reason, the
-original code referenced the wrong context, always closing fd 0.
+From: Heiko Hund <heiko@...2662...>
 
-As a consequence of this, on the second SIGUSR1 restart, the server
-will close() the first active socket file descriptor, and if there
-are active DCO clients, the resulting event confusion will lead to
-an ASSERT(!mi->halt).
+If the dns-updown option appears in the config twice, there is a chance
+of a NULL pointer dereference when comparing the script path to the
+default script path. This happens when a custom script is set, after the
+dns-updown script was disabled first. In that case the script path is
+NULL, which leads to the deref during a strcmp(3).
 
-Fix by closing the correct FD. Add logging.
-
-Github: fixes OpenVPN/openvpn#966
-
-Change-Id: Iabc117848ad7b67d240c392f1a6aa2d7531fd5bb
-Signed-off-by: Gert Doering <gert@...1296...>
+Reported-by: <aarnav@...2953...>
+Change-Id: Id530d890ba01cffb74d3dc04ad10b153f7bea1d4
+Signed-off-by: Heiko Hund <heiko@...2662...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1497
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1498
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1497
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1498
 This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 2af49d2..8f903a4 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -4244,7 +4244,9 @@
-     tunnel_server_loop(&multi);
- 
- #ifdef ENABLE_ASYNC_PUSH
--    close(top->c2.inotify_fd);
-+    msg(D_LOW, "%s: close multi.top.c2.inotify_fd (%d)",
-+                __func__, multi.top.c2.inotify_fd );
-+    close(multi.top.c2.inotify_fd);
- #endif
- 
-     /* shut down management interface */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 85669e0..2bca647 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7890,7 +7890,7 @@
+         }
+         else
+         {
+-            if (streq(dns->updown, DEFAULT_DNS_UPDOWN))
++            if (dns->updown && streq(dns->updown, DEFAULT_DNS_UPDOWN))
+             {
+                 /* Unset the default command to prevent warnings */
+                 dns->updown = NULL;
 
