@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 28 Jan 2026 14:59:58 +0000
+From: Gert Doering <gert@...1296...>
+Date: Wed, 28 Jan 2026 16:06:35 +0100
+Message-ID: <20260128150640.13867-1-gert@...1296...>
 In-Reply-To: <gerrit.1769611655000.Idcb1421b9f7fcbee9620fd1d45cceab050751373@...2715...>
 References: <gerrit.1769611655000.Idcb1421b9f7fcbee9620fd1d45cceab050751373@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- gert@...1296...
-Message-ID: <f34062ec5b9af79e0539f54302409977d500108b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vbe7JfzaOl4="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]:
- tunnel_server_*(): close correct inotify fd
+Subject: [Openvpn-devel] [PATCH v1] tunnel_server_*(): close correct inotify
+ fd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,82 +14,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---vbe7JfzaOl4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On a full SIGUSR1 restart of a p2mp server compiled with
+--enable-async-push, tunnel_server_{udp,tcp}() will try to close and
+reopen the "inotify" control file descriptor.  For whatever reason,
+the original code referenced the wrong context, always closing fd 0.
 
-Attention is currently required from: cron2.
+As a consequence of this, on the second SIGUSR1 restart, the server
+will close() the first active socket file descriptor, and if there
+are active DCO clients, the resulting event confusion will lead to
+an ASSERT(!mi->halt).
 
-plaisthos has posted comments on this change by cron2. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1499?usp=3Demail )
+Fix by closing the correct FD. Add logging.
 
-Change subject: tunnel_server_*(): close correct inotify fd
-......................................................................
+This is a backport of commit 5521872f80313060 to the "old p2mp code"
+with a separate mudp.c and mtcp.c for UDP and TCP servers, respectively.
 
+Github: fixes OpenVPN/openvpn#966
 
-Patch Set 1: Code-Review+2
+Change-Id: Idcb1421b9f7fcbee9620fd1d45cceab050751373
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1499
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.6.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1499
+This mail reflects revision 1 of this Change.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Idcb1421b9f7fcbee9620fd1d45cceab050751373
-Gerrit-Change-Number: 1499
-Gerrit-PatchSet: 1
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Wed, 28 Jan 2026 14:59:58 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
---vbe7JfzaOl4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail=
-">change 1499</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1499?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Idcb1421b9f7fcbee9620fd1d45c=
-ceab050751373 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1499 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Jan 2026 14:59:58=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---vbe7JfzaOl4=--
+        
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 96408d1..3e33b15 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -850,7 +850,9 @@
+     }
+ 
+ #ifdef ENABLE_ASYNC_PUSH
+-    close(top->c2.inotify_fd);
++    msg(D_LOW, "%s: close multi.top.c2.inotify_fd (%d)",
++        __func__, multi.top.c2.inotify_fd);
++    close(multi.top.c2.inotify_fd);
+ #endif
+ 
+     /* shut down management interface */
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 0492311..f7c9ffd 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -524,7 +524,9 @@
+     }
+ 
+ #ifdef ENABLE_ASYNC_PUSH
+-    close(top->c2.inotify_fd);
++    msg(D_LOW, "%s: close multi.top.c2.inotify_fd (%d)",
++        __func__, multi.top.c2.inotify_fd);
++    close(multi.top.c2.inotify_fd);
+ #endif
+ 
+     /* shut down management interface */
 
