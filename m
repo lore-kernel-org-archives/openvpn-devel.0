@@ -1,11 +1,11 @@
 From: Ralf Lici <ralf@...2726...>
-Date: Wed, 28 Jan 2026 13:44:10 +0100
-Message-ID: <20260128124410.429529-3-ralf@...2726...>
+Date: Wed, 28 Jan 2026 13:44:09 +0100
+Message-ID: <20260128124410.429529-2-ralf@...2726...>
 In-Reply-To: <20260128124410.429529-1-ralf@...2726...>
 References: <20260128124410.429529-1-ralf@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn net v2 3/3] ovpn: fix VPN TX bytes
- counting
+Subject: [Openvpn-devel] [PATCH ovpn net v2 2/3] ovpn: fix possible
+ use-after-free in ovpn_net_xmit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,55 +19,47 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>
 
-In ovpn_net_xmit, after GSO segmentation and segment processing, the skb
-variable points only to the first segment of the resulting list. The
-current code uses skb->len to increment VPN TX statistics, which fails
-to account for any subsequent segments in the chain.
+During GSO fragmentation, skb_share_check may clone the first segment
+and free the original skb. The current implementation continues to use
+the stale skb pointer for peer lookup.
 
-Fix this by accumulating the length of every segment that successfully
-passes skb_share_check into a tx_bytes variable. This ensures the peer
-statistics accurately reflect the total data volume sent, regardless of
-whether the original packet was segmented.
+Fix this by updating the skb variable to point to the new head of the
+segment list after the processing loop. Additionally, return early if
+all segments were dropped during the loop to avoid double-counting
+statistics and double-freeing memory in the drop path.
 
-Fixes: 04ca14955f9a ("ovpn: store tunnel and transport statistics")
+Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
 Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
-Changes since v1:
-- added Fixes tag
+Changes since v1
+- this is a new patch that replaces the previous "ovpn: use sk_buff_head
+  properly in ovpn_net_xmit"
 
- drivers/net/ovpn/io.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ovpn/io.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index 95c3518e067c..4f3c9c5d00aa 100644
+index 3e9e7f8444b3..95c3518e067c 100644
 --- a/drivers/net/ovpn/io.c
 +++ b/drivers/net/ovpn/io.c
-@@ -355,6 +355,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct ovpn_priv *ovpn = netdev_priv(dev);
- 	struct sk_buff *segments, *curr, *next;
- 	struct sk_buff_head skb_list;
-+	unsigned int tx_bytes = 0;
- 	struct ovpn_peer *peer;
- 	__be16 proto;
- 	int ret;
-@@ -394,6 +395,8 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 			continue;
- 		}
+@@ -396,6 +396,17 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
  
-+		/* only count what we actually send */
-+		tx_bytes += curr->len;
  		__skb_queue_tail(&skb_list, curr);
  	}
++
++	/* no segments survived: don't jump to 'drop' because we already
++	 * incremented the counter for each failure in the loop
++	 */
++	if (unlikely(skb_queue_empty(&skb_list)))
++		return NETDEV_TX_OK;
++
++	/* the original 'skb' might have been freed/cloned in the loop: use the
++	 * first element of our list for the other operations
++	 */
++	skb = skb_list.next;
+ 	skb_list.prev->next = NULL;
  
-@@ -429,7 +432,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 	/* dst was needed for peer selection - it can now be dropped */
- 	skb_dst_drop(skb);
- 
--	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb->len);
-+	ovpn_peer_stats_increment_tx(&peer->vpn_stats, tx_bytes);
- 	ovpn_send(ovpn, skb_list.next, peer);
- 
- 	return NETDEV_TX_OK;
+ 	/* retrieve peer serving the destination IP of this packet */
 -- 
 2.52.0
 
