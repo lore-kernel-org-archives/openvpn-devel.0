@@ -1,16 +1,12 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 28 Jan 2026 18:11:33 +0000
-In-Reply-To: <gerrit.1769619521000.I740991f22b728fe2f5a48bc18d5ca4b62f56f399@...2715...>
-References: <gerrit.1769619521000.I740991f22b728fe2f5a48bc18d5ca4b62f56f399@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- max@...2606...
-Message-ID: <b3336f3593580c1877e9b194d1e292d55c3b6bd0-EmailReviewComments-HTML@...2715...>
+Date: Thu, 29 Jan 2026 12:16:52 +0100
+From: Sabrina Dubroca <sd@...2891...>
+Message-ID: <aXtBpNaxSVkl9t2G@...2915...>
+References: <20260128124410.429529-1-ralf@...2726...>
+ <20260128124410.429529-2-ralf@...2726...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fuNUxnWRYOg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Mbed TLS 4: Add more
- algorithms
+In-Reply-To: <20260128124410.429529-2-ralf@...2726...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn net v2 2/3] ovpn: fix possible
+ use-after-free in ovpn_net_xmit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,98 +15,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---fuNUxnWRYOg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+2026-01-28, 13:44:09 +0100, Ralf Lici wrote:
+> During GSO fragmentation, skb_share_check may clone the first segment
+> and free the original skb. The current implementation continues to use
+> the stale skb pointer for peer lookup.
+> 
+> Fix this by updating the skb variable to point to the new head of the
+> segment list after the processing loop. Additionally, return early if
+> all segments were dropped during the loop to avoid double-counting
+> statistics and double-freeing memory in the drop path.
+> 
+> Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
+> Signed-off-by: Ralf Lici <ralf@...2726...>
+> ---
+> Changes since v1
+> - this is a new patch that replaces the previous "ovpn: use sk_buff_head
+>   properly in ovpn_net_xmit"
+> 
+>  drivers/net/ovpn/io.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+> index 3e9e7f8444b3..95c3518e067c 100644
+> --- a/drivers/net/ovpn/io.c
+> +++ b/drivers/net/ovpn/io.c
+> @@ -396,6 +396,17 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+>  
+>  		__skb_queue_tail(&skb_list, curr);
+>  	}
+> +
+> +	/* no segments survived: don't jump to 'drop' because we already
+> +	 * incremented the counter for each failure in the loop
+> +	 */
+> +	if (unlikely(skb_queue_empty(&skb_list)))
+> +		return NETDEV_TX_OK;
+> +
+> +	/* the original 'skb' might have been freed/cloned in the loop: use the
+> +	 * first element of our list for the other operations
+> +	 */
+> +	skb = skb_list.next;
+>  	skb_list.prev->next = NULL;
+>  
+>  	/* retrieve peer serving the destination IP of this packet */
 
-Attention is currently required from: MaxF.
+This patch looks ok, but maybe it would be better to fix this using a
+chunk of your sk_buff_head rework instead. I think all segments
+produced by skb_gso_segment will have a dst attached
+(__copy_skb_header(nskb, head_skb) in skb_segment), so the
+skb_dst_drop after peer selection will only affect the first segment,
+and not the others. Doing peer selection + skb_dst_drop before calling
+skb_gso_segment would solve this as well as the UAF.
 
-plaisthos has posted comments on this change by MaxF. ( http://gerrit.openv=
-pn.net/c/openvpn/+/1500?usp=3Demail )
+(your current patch would also avoid a UAF on ovpn_peer_stats_increment_tx,
+but you're solving that in the next patch)
 
-Change subject: Mbed TLS 4: Add more algorithms
-......................................................................
-
-
-Patch Set 2:
-
-(1 comment)
-
-File src/openvpn/ssl_mbedtls.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1500/comment/59742ec5_76de359b?usp=3D=
-email :
-PS2, Line 370: /* Curve25519. */
-Any reason to not include Curve448?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1500?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I740991f22b728fe2f5a48bc18d5ca4b62f56f399
-Gerrit-Change-Number: 1500
-Gerrit-PatchSet: 2
-Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Wed, 28 Jan 2026 18:11:33 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-
---fuNUxnWRYOg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: MaxF. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1500?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_mbedtls.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1500/comment/59742ec5_76de359b?usp=3Demail">Patch Set=
- #2, Line 370:</a> <code style=3D"font-family:monospace,monospace">/* Curve=
-25519. */</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">Any reason to not include Curve448?</p></li></ul></li>=
-</ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/150=
-0?usp=3Demail">change 1500</a>. To unsubscribe, or for help writing mail fi=
-lters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1500?u=
-sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I740991f22b728fe2f5a48bc18d5=
-ca4b62f56f399 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1500 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Jan 2026 18:11:33=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-
-</body></html>=
-
---fuNUxnWRYOg=--
+-- 
+Sabrina
 
