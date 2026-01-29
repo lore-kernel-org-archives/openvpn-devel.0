@@ -1,11 +1,12 @@
-Date: Thu, 29 Jan 2026 12:17:38 +0100
-From: Sabrina Dubroca <sd@...2891...>
-Message-ID: <aXtB0gCc1MRNG6Dw@...2915...>
+Message-ID: <e43962f9370b768d778dcfa9fce213ece6a69878.camel@...2726...>
+From: Ralf Lici <ralf@...2726...>
+Date: Thu, 29 Jan 2026 15:29:13 +0100
+In-Reply-To: <aXtBpNaxSVkl9t2G@...2915...>
 References: <20260128124410.429529-1-ralf@...2726...>
+ <20260128124410.429529-2-ralf@...2726...> <aXtBpNaxSVkl9t2G@...2915...>
 MIME-Version: 1.0
-In-Reply-To: <20260128124410.429529-1-ralf@...2726...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn net v2 1/3] ovpn: set sk_user_data
- before overriding callbacks
+Subject: Re: [Openvpn-devel] [PATCH ovpn net v2 2/3] ovpn: fix possible
+ use-after-free in ovpn_net_xmit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +15,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Ralf Lici <ralf@...2726...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Sabrina Dubroca <sd@...2891...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-2026-01-28, 13:44:08 +0100, Ralf Lici wrote:
-> During initialization, we override socket callbacks and set sk_user_data
-> to an ovpn_socket instance. Currently, these two operations are
-> decoupled: callbacks are overridden before sk_user_data is set. While
-> existing callbacks perform safety checks for NULL or non-ovpn
-> sk_user_data, this condition causes a "half-formed" state where valid
-> packets arriving during attachment trigger error logs (e.g., "invoked on
-> non ovpn socket").
-> 
-> Set sk_user_data before overriding the callbacks so that it can be
-> accessed safely from them. Since we already check that the socket has no
-> sk_user_data before setting it, this remains safe even if an interrupt
-> accesses the socket after sk_user_data is set but before the callbacks
-> are overridden.
-> 
-> This also requires initializing all protocol-specific fields (such as
-> tcp_tx_work and peer links) before calling ovpn_socket_attach, ensuring
-> the ovpn_socket is fully formed before it becomes visible to any
-> callback.
-> 
-> Fixes: f6226ae7a0cd ("ovpn: introduce the ovpn_socket object")
-> Signed-off-by: Ralf Lici <ralf@...2726...>
-> ---
-> Changes since v1:
-> - reset sk_user_data to NULL in case of error
-> - removed a redundant goto sock_release in ovpn_socket_new
-> - expanded commit message with additional information on the purpose of
->   this change
-> - added explanation in the commit message of why the per-protocol
->   ovpn_sock initialization code in ovpn_socket_new was moved
-> - added Fixes tag
+On Thu, 2026-01-29 at 12:16 +0100, Sabrina Dubroca wrote:
+> 2026-01-28, 13:44:09 +0100, Ralf Lici wrote:
+> > During GSO fragmentation, skb_share_check may clone the first
+> > segment
+> > and free the original skb. The current implementation continues to
+> > use
+> > the stale skb pointer for peer lookup.
+> >=20
+> > Fix this by updating the skb variable to point to the new head of
+> > the
+> > segment list after the processing loop. Additionally, return early
+> > if
+> > all segments were dropped during the loop to avoid double-counting
+> > statistics and double-freeing memory in the drop path.
+> >=20
+> > Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
+> > Signed-off-by: Ralf Lici <ralf@...2726...>
+> > ---
+> > Changes since v1
+> > - this is a new patch that replaces the previous "ovpn: use
+> > sk_buff_head
+> > =C2=A0 properly in ovpn_net_xmit"
+> >=20
+> > =C2=A0drivers/net/ovpn/io.c | 11 +++++++++++
+> > =C2=A01 file changed, 11 insertions(+)
+> >=20
+> > diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+> > index 3e9e7f8444b3..95c3518e067c 100644
+> > --- a/drivers/net/ovpn/io.c
+> > +++ b/drivers/net/ovpn/io.c
+> > @@ -396,6 +396,17 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb,
+> > struct net_device *dev)
+> > =C2=A0
+> > =C2=A0		__skb_queue_tail(&skb_list, curr);
+> > =C2=A0	}
+> > +
+> > +	/* no segments survived: don't jump to 'drop' because we
+> > already
+> > +	 * incremented the counter for each failure in the loop
+> > +	 */
+> > +	if (unlikely(skb_queue_empty(&skb_list)))
+> > +		return NETDEV_TX_OK;
+> > +
+> > +	/* the original 'skb' might have been freed/cloned in the
+> > loop: use the
+> > +	 * first element of our list for the other operations
+> > +	 */
+> > +	skb =3D skb_list.next;
+> > =C2=A0	skb_list.prev->next =3D NULL;
+> > =C2=A0
+> > =C2=A0	/* retrieve peer serving the destination IP of this packet
+> > */
+>=20
+> This patch looks ok, but maybe it would be better to fix this using a
+> chunk of your sk_buff_head rework instead. I think all segments
+> produced by skb_gso_segment will have a dst attached
+> (__copy_skb_header(nskb, head_skb) in skb_segment), so the
+> skb_dst_drop after peer selection will only affect the first segment,
+> and not the others. Doing peer selection + skb_dst_drop before calling
+> skb_gso_segment would solve this as well as the UAF.
 
-Reviewed-by: Sabrina Dubroca <sd@...2891...>
+Ah right, the dst is indeed copied to the segments. I will make sure to
+move the peer selection earlier, while we are still using the original
+skb, so that we can call skb_dst_drop only on that one.
 
-Thanks!
+> (your current patch would also avoid a UAF on
+> ovpn_peer_stats_increment_tx,
+> but you're solving that in the next patch)
 
--- 
-Sabrina
+Yes, now the stats patch is only responsible for fixing the stats count.
+I have also updated the commit message from v1.
+
+
+Thanks for the feedback.
+
+--=20
+Ralf Lici
+Mandelbit Srl
 
