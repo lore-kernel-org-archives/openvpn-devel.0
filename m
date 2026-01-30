@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 30 Jan 2026 16:11:15 +0000
-References: <gerrit.1769789455000.I2f6502da1832edcb273a0dfa9b3ef940bec2d711@...2715...>
+Date: Fri, 30 Jan 2026 16:11:10 +0000
+References: <gerrit.1769789455000.Ib0d2b9520e4a77a9f4bf70ce092f76ca73608537@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <51339f3c253d5ec336468c8db101eec1228b6d13-HTML@...2715...>
+Message-ID: <717cb70604af930a1a5e2ba47c4d2fb1b74f0ed6-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WsMugBdgRSg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: wfp_block: Avoid
- sign-compare warning with Fwpm* return types
+Content-Type: multipart/alternative; boundary="uNOjcdVYNnA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_ncp: Fix length
+ check in mutate_ncp_cipher_list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WsMugBdgRSg=
+--uNOjcdVYNnA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,37 +32,38 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail
 
 to review the following change.
 
 
-Change subject: wfp_block: Avoid sign-compare warning with Fwpm* return typ=
-es
+Change subject: ssl_ncp: Fix length check in mutate_ncp_cipher_list
 ......................................................................
 
-wfp_block: Avoid sign-compare warning with Fwpm* return types
+ssl_ncp: Fix length check in mutate_ncp_cipher_list
 
-FWP_E_ALREADY_EXISTS is explictly casted to HRESULT which
-is LONG. But Fwpm* return DWORD. So if you compare an expected
-result with the actual result you get an sign-compare warning...
+* Make it more readable by removing a level of negation
+* Fix an off-by-one error. It accepted one char fewer than
+  allowed.
+* Slightly improve the UT.
 
-Change-Id: I2f6502da1832edcb273a0dfa9b3ef940bec2d711
+Change-Id: Ib0d2b9520e4a77a9f4bf70ce092f76ca73608537
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/wfp_block.c
-1 file changed, 1 insertion(+), 10 deletions(-)
+M src/openvpn/ssl_ncp.c
+M tests/unit_tests/openvpn/test_ncp.c
+2 files changed, 18 insertions(+), 14 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/1506/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1503/1
 
-diff --git a/src/openvpn/wfp_block.c b/src/openvpn/wfp_block.c
-index 74d19ce..4d38fdb 100644
---- a/src/openvpn/wfp_block.c
-+++ b/src/openvpn/wfp_block.c
-@@ -131,11 +131,6 @@
-     return err;
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 500e09d..fdac6925 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -92,11 +92,6 @@
+     }
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -70,109 +71,187 @@ index 74d19ce..4d38fdb 100644
 -#pragma GCC diagnostic ignored "-Wsign-compare"
 -#endif
 -
- /*
-  * Block outgoing local traffic, possibly DNS only, except for
-  * (i) adapter with the specified index (and loopback, if all is blocked)
-@@ -198,7 +193,7 @@
-        * do not treat "already exists" as an error */
-         err =3D add_sublayer(OPENVPN_WFP_BLOCK_SUBLAYER);
+ char *
+ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+ {
+@@ -168,7 +163,7 @@
+             }
 
--        if (err =3D=3D FWP_E_ALREADY_EXISTS || err =3D=3D ERROR_SUCCESS)
-+        if (err =3D=3D (DWORD)FWP_E_ALREADY_EXISTS || err =3D=3D ERROR_SUC=
-CESS)
-         {
-             msg_handler(0, "WFP Block: Added a persistent sublayer with pr=
-e-defined UUID");
-         }
-@@ -345,10 +340,6 @@
-     return err;
+             /* Ensure buffer has capacity for cipher name + : + \0 */
+-            if (!(buf_forward_capacity(&new_list) > strlen(ovpn_cipher_nam=
+e) + 2))
++            if (buf_forward_capacity(&new_list) < (int)strlen(ovpn_cipher_=
+name) + 2)
+             {
+                 msg(M_WARN, "Length of --data-ciphers is over the "
+                             "limit of 127 chars");
+@@ -207,10 +202,6 @@
+     o->ncp_ciphers =3D ncp_ciphers;
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- DWORD
- delete_wfp_block_filters(HANDLE engine_handle)
+ bool
+ tls_item_in_cipher_list(const char *item, const char *list)
  {
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
+/test_ncp.c
+index 9f569a7..52a41ee 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -123,10 +123,23 @@
+     assert_ptr_equal(mutate_ncp_cipher_list("AES-256-GCM:vollbit", &gc), N=
+ULL);
+     assert_ptr_equal(mutate_ncp_cipher_list("", &gc), NULL);
+
+-    assert_ptr_equal(mutate_ncp_cipher_list("ChaCha20-Poly1305:ChaCha20-Po=
+ly1305:ChaCha20-Poly1305:"
+-                                            "ChaCha20-Poly1305:ChaCha20-Po=
+ly1305:ChaCha20-Poly1305:"
+-                                            "ChaCha20-Poly1305",
+-                                            &gc),
++    const char long_string[MAX_NCP_CIPHERS_LENGTH] =3D
++        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
++        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
++        "CHACHA20-POLY1305";
++    const char longer_string[MAX_NCP_CIPHERS_LENGTH + 1] =3D
++        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
++        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
++        "CHACHA20-POLY1305:";
++    const char longest_string[] =3D
++        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
++        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
++        "CHACHA20-POLY1305:CHACHA20-POLY1305";
++    assert_string_equal(mutate_ncp_cipher_list(long_string, &gc),
++                        long_string);
++    assert_string_equal(mutate_ncp_cipher_list(longer_string, &gc),
++                        long_string);
++    assert_ptr_equal(mutate_ncp_cipher_list(longest_string, &gc),
+                      NULL);
+
+ #ifdef ENABLE_CRYPTO_OPENSSL
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2f6502da1832edcb273a0dfa9b3ef940bec2d711
-Gerrit-Change-Number: 1506
+Gerrit-Change-Id: Ib0d2b9520e4a77a9f4bf70ce092f76ca73608537
+Gerrit-Change-Number: 1503
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---WsMugBdgRSg=
+--uNOjcdVYNnA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">wfp_block: Avoid sign-compare warning with =
-Fwpm* return types<br><br>FWP_E_ALREADY_EXISTS is explictly casted to HRESU=
-LT which<br>is LONG. But Fwpm* return DWORD. So if you compare an expected<=
-br>result with the actual result you get an sign-compare warning...<br><br>=
-Change-Id: I2f6502da1832edcb273a0dfa9b3ef940bec2d711<br>Signed-off-by: Fran=
-k Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/wfp_block.c<=
-br>1 file changed, 1 insertion(+), 10 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/1506/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/wfp_block.c b/src/openvpn/wfp_block.c</spa=
-n><br><span>index 74d19ce..4d38fdb 100644</span><br><span>--- a/src/openvpn=
-/wfp_block.c</span><br><span>+++ b/src/openvpn/wfp_block.c</span><br><span>=
-@@ -131,11 +131,6 @@</span><br><span>     return err;</span><br><span> }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if de=
-fined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&q=
-uot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><=
-span>  * Block outgoing local traffic, possibly DNS only, except for</span>=
-<br><span>  * (i) adapter with the specified index (and loopback, if all is=
- blocked)</span><br><span>@@ -198,7 +193,7 @@</span><br><span>        * do =
-not treat &quot;already exists&quot; as an error */</span><br><span>       =
-  err =3D add_sublayer(OPENVPN_WFP_BLOCK_SUBLAYER);</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (err =3D=3D FWP_=
-E_ALREADY_EXISTS || err =3D=3D ERROR_SUCCESS)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (err =3D=3D (DWORD)FWP_E_ALREADY_EXIST=
-S || err =3D=3D ERROR_SUCCESS)</span><br><span>         {</span><br><span> =
-            msg_handler(0, &quot;WFP Block: Added a persistent sublayer wit=
-h pre-defined UUID&quot;);</span><br><span>         }</span><br><span>@@ -3=
-45,10 +340,6 @@</span><br><span>     return err;</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined=
-(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span> DWORD</span><br><span> delete_wfp_block_filters(HANDLE e=
-ngine_handle)</span><br><span> {</span><br><span></span><br></pre><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail"=
->change 1506</a>. To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">ssl_ncp: Fix length check in mutate_ncp_cip=
+her_list<br><br>* Make it more readable by removing a level of negation<br>=
+* Fix an off-by-one error. It accepted one char fewer than<br>  allowed.<br=
+>* Slightly improve the UT.<br><br>Change-Id: Ib0d2b9520e4a77a9f4bf70ce092f=
+76ca73608537<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<b=
+r>---<br>M src/openvpn/ssl_ncp.c<br>M tests/unit_tests/openvpn/test_ncp.c<b=
+r>2 files changed, 18 insertions(+), 14 deletions(-)<br><br></pre><pre clas=
+s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1503/1=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;"><span>diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c</span><=
+br><span>index 500e09d..fdac6925 100644</span><br><span>--- a/src/openvpn/s=
+sl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.c</span><br><span>@@ -92=
+,11 +92,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) ||=
+ defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#p=
+ragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span> char *</span><br><span> mutate_n=
+cp_cipher_list(const char *list, struct gc_arena *gc)</span><br><span> {</s=
+pan><br><span>@@ -168,7 +163,7 @@</span><br><span>             }</span><br>=
+<span> </span><br><span>             /* Ensure buffer has capacity for ciph=
+er name + : + \0 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          if (!(buf_forward_capacity(&amp;new_list) &gt; strlen(ovpn_cipher=
+_name) + 2))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     if (buf_forward_capacity(&amp;new_list) &lt; (int)strlen(ovpn_cipher_n=
+ame) + 2)</span><br><span>             {</span><br><span>                 m=
+sg(M_WARN, &quot;Length of --data-ciphers is over the &quot;</span><br><spa=
+n>                             &quot;limit of 127 chars&quot;);</span><br><=
+span>@@ -207,10 +202,6 @@</span><br><span>     o-&gt;ncp_ciphers =3D ncp_ci=
+phers;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> t=
+ls_item_in_cipher_list(const char *item, const char *list)</span><br><span>=
+ {</span><br><span>diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests=
+/unit_tests/openvpn/test_ncp.c</span><br><span>index 9f569a7..52a41ee 10064=
+4</span><br><span>--- a/tests/unit_tests/openvpn/test_ncp.c</span><br><span=
+>+++ b/tests/unit_tests/openvpn/test_ncp.c</span><br><span>@@ -123,10 +123,=
+23 @@</span><br><span>     assert_ptr_equal(mutate_ncp_cipher_list(&quot;AE=
+S-256-GCM:vollbit&quot;, &amp;gc), NULL);</span><br><span>     assert_ptr_e=
+qual(mutate_ncp_cipher_list(&quot;&quot;, &amp;gc), NULL);</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert_ptr_equal=
+(mutate_ncp_cipher_list(&quot;ChaCha20-Poly1305:ChaCha20-Poly1305:ChaCha20-=
+Poly1305:&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                                      &quot;ChaCha20-Poly1305:ChaCha20-Poly=
+1305:ChaCha20-Poly1305:&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                                            &quot;ChaCha20-Poly1305=
+&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+                              &amp;gc),</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const char long_string[MAX_NCP_CIPHERS_LENGTH] =3D<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA=
+20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-POLY1305:CHACHA20=
+-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        &quot;CHACHA20-POLY1305&quot;;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const char longer_string[MAX_NCP_CIPH=
+ERS_LENGTH + 1] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        &quot;CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA=
+20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-POLY1305:&quot;;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char longe=
+st_string[] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    &quot;CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-P=
+OLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-POLY1305:CHACHA20-POL=
+Y1305&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_string_equal(mutate_ncp_cipher_list(long_string, &amp;gc),</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                        long_str=
+ing);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_str=
+ing_equal(mutate_ncp_cipher_list(longer_string, &amp;gc),</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                        long_string);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equa=
+l(mutate_ncp_cipher_list(longest_string, &amp;gc),</span><br><span>        =
+              NULL);</span><br><span> </span><br><span> #ifdef ENABLE_CRYPT=
+O_OPENSSL</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail">change 1503</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2f6502da1832edcb273a0dfa9b3=
-ef940bec2d711 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1506 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib0d2b9520e4a77a9f4bf70ce092=
+f76ca73608537 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1503 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -185,5 +264,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---WsMugBdgRSg=--
+--uNOjcdVYNnA=--
 
