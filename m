@@ -1,11 +1,11 @@
 From: Ralf Lici <ralf@...2726...>
-Date: Fri, 30 Jan 2026 18:32:50 +0100
-Message-ID: <20260130173250.664943-3-ralf@...2726...>
+Date: Fri, 30 Jan 2026 18:32:49 +0100
+Message-ID: <20260130173250.664943-2-ralf@...2726...>
 In-Reply-To: <20260130173250.664943-1-ralf@...2726...>
 References: <20260130173250.664943-1-ralf@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn net v3 3/3] ovpn: fix VPN TX bytes
- counting
+Subject: [Openvpn-devel] [PATCH ovpn net v3 2/3] ovpn: fix possible
+ use-after-free in ovpn_net_xmit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,56 +19,114 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>
 
-In ovpn_net_xmit, after GSO segmentation and segment processing, the
-first segment on the list is used to increment VPN TX statistics, which
-fails to account for any subsequent segments in the chain.
+When building the skb_list in ovpn_net_xmit, skb_share_check will free
+the original skb if it is shared. The current implementation continues
+to use the stale skb pointer for subsequent operations:
+- peer lookup,
+- skb_dst_drop (even though all segments produced by skb_gso_segment
+  will have a dst attached),
+- ovpn_peer_stats_increment_tx.
 
-Fix this by accumulating the length of every segment that successfully
-passes skb_share_check into a tx_bytes variable. This ensures the peer
-statistics accurately reflect the total data volume sent, regardless of
-whether the original packet was segmented.
+Fix this by moving the peer lookup and skb_dst_drop before segmentation
+so that the original skb is still valid when used. Return early if all
+segments fail skb_share_check and the list ends up empty.
+Also switch ovpn_peer_stats_increment_tx to use skb_list.next; the next
+patch fixes the stats logic.
 
-Fixes: 04ca14955f9a ("ovpn: store tunnel and transport statistics")
+Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
 Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
-Changes since v2: none (except for trivial rebase)
+Changes since v2:
+- moved peer selection and skb_dst_drop before skb_gso_segment
+- added goto to drop the peer reference on error
+- stopped using 'skb' after building 'skb_list' and switched to
+  skb_list.next for the stats update
 
 Changes since v1:
-- added Fixes tag
+- this is a new patch that replaces the previous "ovpn: use sk_buff_head
+  properly in ovpn_net_xmit"
 
- drivers/net/ovpn/io.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ovpn/io.c | 52 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 31 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index f70c58b10599..955c9a37e1f8 100644
+index 3e9e7f8444b3..f70c58b10599 100644
 --- a/drivers/net/ovpn/io.c
 +++ b/drivers/net/ovpn/io.c
-@@ -355,6 +355,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct ovpn_priv *ovpn = netdev_priv(dev);
- 	struct sk_buff *segments, *curr, *next;
- 	struct sk_buff_head skb_list;
-+	unsigned int tx_bytes = 0;
- 	struct ovpn_peer *peer;
- 	__be16 proto;
- 	int ret;
-@@ -414,6 +415,8 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 			continue;
- 		}
+@@ -365,7 +365,27 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/* verify IP header size in network packet */
+ 	proto = ovpn_ip_check_protocol(skb);
+ 	if (unlikely(!proto || skb->protocol != proto))
+-		goto drop;
++		goto drop_no_peer;
++
++	/* retrieve peer serving the destination IP of this packet */
++	peer = ovpn_peer_get_by_dst(ovpn, skb);
++	if (unlikely(!peer)) {
++		switch (skb->protocol) {
++		case htons(ETH_P_IP):
++			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
++					    netdev_name(ovpn->dev),
++					    &ip_hdr(skb)->daddr);
++			break;
++		case htons(ETH_P_IPV6):
++			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
++					    netdev_name(ovpn->dev),
++					    &ipv6_hdr(skb)->daddr);
++			break;
++		}
++		goto drop_no_peer;
++	}
++	/* dst was needed for peer selection - it can now be dropped */
++	skb_dst_drop(skb);
  
-+		/* only count what we actually send */
-+		tx_bytes += curr->len;
+ 	if (skb_is_gso(skb)) {
+ 		segments = skb_gso_segment(skb, 0);
+@@ -396,34 +416,24 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
  		__skb_queue_tail(&skb_list, curr);
  	}
+-	skb_list.prev->next = NULL;
  
-@@ -426,7 +429,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+-	/* retrieve peer serving the destination IP of this packet */
+-	peer = ovpn_peer_get_by_dst(ovpn, skb);
+-	if (unlikely(!peer)) {
+-		switch (skb->protocol) {
+-		case htons(ETH_P_IP):
+-			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
+-					    netdev_name(ovpn->dev),
+-					    &ip_hdr(skb)->daddr);
+-			break;
+-		case htons(ETH_P_IPV6):
+-			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
+-					    netdev_name(ovpn->dev),
+-					    &ipv6_hdr(skb)->daddr);
+-			break;
+-		}
+-		goto drop;
++	/* no segments survived: don't jump to 'drop' because we already
++	 * incremented the counter for each failure in the loop
++	 */
++	if (unlikely(skb_queue_empty(&skb_list))) {
++		ovpn_peer_put(peer);
++		return NETDEV_TX_OK;
  	}
- 	skb_list.prev->next = NULL;
+-	/* dst was needed for peer selection - it can now be dropped */
+-	skb_dst_drop(skb);
++	skb_list.prev->next = NULL;
  
--	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb_list.next->len);
-+	ovpn_peer_stats_increment_tx(&peer->vpn_stats, tx_bytes);
+-	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb->len);
++	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb_list.next->len);
  	ovpn_send(ovpn, skb_list.next, peer);
  
  	return NETDEV_TX_OK;
+ 
+ drop:
++	ovpn_peer_put(peer);
++drop_no_peer:
+ 	dev_dstats_tx_dropped(ovpn->dev);
+ 	skb_tx_error(skb);
+ 	kfree_skb_list(skb);
 -- 
 2.52.0
 
