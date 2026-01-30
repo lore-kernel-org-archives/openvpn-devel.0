@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 30 Jan 2026 16:11:10 +0000
-References: <gerrit.1769789455000.Ib0d2b9520e4a77a9f4bf70ce092f76ca73608537@...2715...>
+Date: Fri, 30 Jan 2026 16:11:14 +0000
+References: <gerrit.1769789455000.I2b2a931e13670d753aa9570efe498647ba1a4a7f@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <717cb70604af930a1a5e2ba47c4d2fb1b74f0ed6-HTML@...2715...>
+Message-ID: <d64b8b3c2b46a99c2150dcb38f0141441c729657-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uNOjcdVYNnA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_ncp: Fix length
- check in mutate_ncp_cipher_list
+Content-Type: multipart/alternative; boundary="+KJtD3VpzGs="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: Fix type of
+ rgi_needed variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---uNOjcdVYNnA=
+--+KJtD3VpzGs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,37 +32,33 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1505?usp=3Demail
 
 to review the following change.
 
 
-Change subject: ssl_ncp: Fix length check in mutate_ncp_cipher_list
+Change subject: route: Fix type of rgi_needed variables
 ......................................................................
 
-ssl_ncp: Fix length check in mutate_ncp_cipher_list
+route: Fix type of rgi_needed variables
 
-* Make it more readable by removing a level of negation
-* Fix an off-by-one error. It accepted one char fewer than
-  allowed.
-* Slightly improve the UT.
+To avoid unneccesary sign-compare warnings.
 
-Change-Id: Ib0d2b9520e4a77a9f4bf70ce092f76ca73608537
+Change-Id: I2b2a931e13670d753aa9570efe498647ba1a4a7f
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/ssl_ncp.c
-M tests/unit_tests/openvpn/test_ncp.c
-2 files changed, 18 insertions(+), 14 deletions(-)
+M src/openvpn/route.c
+1 file changed, 2 insertions(+), 20 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1503/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/1505/1
 
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 500e09d..fdac6925 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -92,11 +92,6 @@
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 329f3b0..b196713 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -570,11 +570,6 @@
      }
  }
 
@@ -71,22 +67,20 @@ index 500e09d..fdac6925 100644
 -#pragma GCC diagnostic ignored "-Wsign-compare"
 -#endif
 -
- char *
- mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+ static void
+ add_block_local_routes(struct route_list *rl)
  {
-@@ -168,7 +163,7 @@
-             }
-
-             /* Ensure buffer has capacity for cipher name + : + \0 */
--            if (!(buf_forward_capacity(&new_list) > strlen(ovpn_cipher_nam=
-e) + 2))
-+            if (buf_forward_capacity(&new_list) < (int)strlen(ovpn_cipher_=
-name) + 2)
-             {
-                 msg(M_WARN, "Length of --data-ciphers is over the "
-                             "limit of 127 chars");
-@@ -207,10 +202,6 @@
-     o->ncp_ciphers =3D ncp_ciphers;
+@@ -602,15 +597,11 @@
+ bool
+ block_local_needed(const struct route_list *rl)
+ {
+-    const int rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFINED);
++    const unsigned int rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFI=
+NED);
+     return (rl->flags & RG_BLOCK_LOCAL) && (rl->rgi.flags & rgi_needed) =
+=3D=3D rgi_needed
+            && (rl->spec.flags & RTSA_REMOTE_ENDPOINT) && rl->spec.remote_h=
+ost_local !=3D TLA_LOCAL;
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
@@ -94,164 +88,146 @@ name) + 2)
 -#endif
 -
  bool
- tls_item_in_cipher_list(const char *item, const char *list)
+ init_route_list(struct route_list *rl, const struct route_option_list *opt,
+                 const char *remote_endpoint, int default_metric, in_addr_t=
+ remote_host,
+@@ -1445,17 +1436,12 @@
+ #define LR_MATCH   1 /* route is local */
+ #define LR_ERROR   2 /* caller should abort adding route */
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
+ static int
+ local_route(in_addr_t network, in_addr_t netmask, in_addr_t gateway,
+             const struct route_gateway_info *rgi)
  {
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
-/test_ncp.c
-index 9f569a7..52a41ee 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -123,10 +123,23 @@
-     assert_ptr_equal(mutate_ncp_cipher_list("AES-256-GCM:vollbit", &gc), N=
-ULL);
-     assert_ptr_equal(mutate_ncp_cipher_list("", &gc), NULL);
+     /* set LR_MATCH on local host routes */
+-    const int rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFINED | RGI=
+_IFACE_DEFINED);
++    const unsigned int rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFI=
+NED | RGI_IFACE_DEFINED);
+     if (rgi && (rgi->flags & rgi_needed) =3D=3D rgi_needed && gateway =3D=
+=3D rgi->gateway.addr
+         && netmask =3D=3D 0xFFFFFFFF)
+     {
+@@ -1479,10 +1465,6 @@
+     return LR_NOMATCH;
+ }
 
--    assert_ptr_equal(mutate_ncp_cipher_list("ChaCha20-Poly1305:ChaCha20-Po=
-ly1305:ChaCha20-Poly1305:"
--                                            "ChaCha20-Poly1305:ChaCha20-Po=
-ly1305:ChaCha20-Poly1305:"
--                                            "ChaCha20-Poly1305",
--                                            &gc),
-+    const char long_string[MAX_NCP_CIPHERS_LENGTH] =3D
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
-+        "CHACHA20-POLY1305";
-+    const char longer_string[MAX_NCP_CIPHERS_LENGTH + 1] =3D
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
-+        "CHACHA20-POLY1305:";
-+    const char longest_string[] =3D
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:"
-+        "CHACHA20-POLY1305:CHACHA20-POLY1305";
-+    assert_string_equal(mutate_ncp_cipher_list(long_string, &gc),
-+                        long_string);
-+    assert_string_equal(mutate_ncp_cipher_list(longer_string, &gc),
-+                        long_string);
-+    assert_ptr_equal(mutate_ncp_cipher_list(longest_string, &gc),
-                      NULL);
-
- #ifdef ENABLE_CRYPTO_OPENSSL
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ /* Return true if the "on-link" form of the route should be used.  This is=
+ when the gateway for
+  * a route is specified as an interface rather than an address. */
+ #if defined(TARGET_LINUX) || defined(_WIN32) || defined(TARGET_DARWIN)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1505?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib0d2b9520e4a77a9f4bf70ce092f76ca73608537
-Gerrit-Change-Number: 1503
+Gerrit-Change-Id: I2b2a931e13670d753aa9570efe498647ba1a4a7f
+Gerrit-Change-Number: 1505
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---uNOjcdVYNnA=
+--+KJtD3VpzGs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1505?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">ssl_ncp: Fix length check in mutate_ncp_cip=
-her_list<br><br>* Make it more readable by removing a level of negation<br>=
-* Fix an off-by-one error. It accepted one char fewer than<br>  allowed.<br=
->* Slightly improve the UT.<br><br>Change-Id: Ib0d2b9520e4a77a9f4bf70ce092f=
-76ca73608537<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<b=
-r>---<br>M src/openvpn/ssl_ncp.c<br>M tests/unit_tests/openvpn/test_ncp.c<b=
-r>2 files changed, 18 insertions(+), 14 deletions(-)<br><br></pre><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/03/1503/1=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c</span><=
-br><span>index 500e09d..fdac6925 100644</span><br><span>--- a/src/openvpn/s=
-sl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_ncp.c</span><br><span>@@ -92=
-,11 +92,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) ||=
- defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#p=
-ragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span> char *</span><br><span> mutate_n=
-cp_cipher_list(const char *list, struct gc_arena *gc)</span><br><span> {</s=
-pan><br><span>@@ -168,7 +163,7 @@</span><br><span>             }</span><br>=
-<span> </span><br><span>             /* Ensure buffer has capacity for ciph=
-er name + : + \0 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          if (!(buf_forward_capacity(&amp;new_list) &gt; strlen(ovpn_cipher=
-_name) + 2))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     if (buf_forward_capacity(&amp;new_list) &lt; (int)strlen(ovpn_cipher_n=
-ame) + 2)</span><br><span>             {</span><br><span>                 m=
-sg(M_WARN, &quot;Length of --data-ciphers is over the &quot;</span><br><spa=
-n>                             &quot;limit of 127 chars&quot;);</span><br><=
-span>@@ -207,10 +202,6 @@</span><br><span>     o-&gt;ncp_ciphers =3D ncp_ci=
-phers;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> t=
-ls_item_in_cipher_list(const char *item, const char *list)</span><br><span>=
- {</span><br><span>diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests=
-/unit_tests/openvpn/test_ncp.c</span><br><span>index 9f569a7..52a41ee 10064=
-4</span><br><span>--- a/tests/unit_tests/openvpn/test_ncp.c</span><br><span=
->+++ b/tests/unit_tests/openvpn/test_ncp.c</span><br><span>@@ -123,10 +123,=
-23 @@</span><br><span>     assert_ptr_equal(mutate_ncp_cipher_list(&quot;AE=
-S-256-GCM:vollbit&quot;, &amp;gc), NULL);</span><br><span>     assert_ptr_e=
-qual(mutate_ncp_cipher_list(&quot;&quot;, &amp;gc), NULL);</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert_ptr_equal=
-(mutate_ncp_cipher_list(&quot;ChaCha20-Poly1305:ChaCha20-Poly1305:ChaCha20-=
-Poly1305:&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-                                      &quot;ChaCha20-Poly1305:ChaCha20-Poly=
-1305:ChaCha20-Poly1305:&quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                                            &quot;ChaCha20-Poly1305=
-&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-                              &amp;gc),</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    const char long_string[MAX_NCP_CIPHERS_LENGTH] =3D<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA=
-20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-POLY1305:CHACHA20=
--POLY1305:CHACHA20-POLY1305:&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        &quot;CHACHA20-POLY1305&quot;;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const char longer_string[MAX_NCP_CIPH=
-ERS_LENGTH + 1] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        &quot;CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA=
-20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-POLY1305:&quot;;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char longe=
-st_string[] =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    &quot;CHACHA20-POLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-P=
-OLY1305:CHACHA20-POLY1305:CHACHA20-POLY1305:&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        &quot;CHACHA20-POLY1305:CHACHA20-POL=
-Y1305&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
-ert_string_equal(mutate_ncp_cipher_list(long_string, &amp;gc),</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                        long_str=
-ing);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_str=
-ing_equal(mutate_ncp_cipher_list(longer_string, &amp;gc),</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                        long_string);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equa=
-l(mutate_ncp_cipher_list(longest_string, &amp;gc),</span><br><span>        =
-              NULL);</span><br><span> </span><br><span> #ifdef ENABLE_CRYPT=
-O_OPENSSL</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail">change 1503</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1503?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">route: Fix type of rgi_needed variables<br>=
+<br>To avoid unneccesary sign-compare warnings.<br><br>Change-Id: I2b2a931e=
+13670d753aa9570efe498647ba1a4a7f<br>Signed-off-by: Frank Lichtenheld &lt;fr=
+ank@...2641...&gt;<br>---<br>M src/openvpn/route.c<br>1 file changed, 2 ins=
+ertions(+), 20 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t.openvpn.net:29418/openvpn refs/changes/05/1505/1</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
+/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 329f3b0..b1967=
+13 100644</span><br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/s=
+rc/openvpn/route.c</span><br><span>@@ -570,11 +570,6 @@</span><br><span>   =
+  }</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignor=
+ed &quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span> static void</span><br><span> add_block_local_routes(struct route=
+_list *rl)</span><br><span> {</span><br><span>@@ -602,15 +597,11 @@</span><=
+br><span> bool</span><br><span> block_local_needed(const struct route_list =
+*rl)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    const int rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFINED);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const unsigned int=
+ rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFINED);</span><br><span> =
+    return (rl-&gt;flags &amp; RG_BLOCK_LOCAL) &amp;&amp; (rl-&gt;rgi.flags=
+ &amp; rgi_needed) =3D=3D rgi_needed</span><br><span>            &amp;&amp;=
+ (rl-&gt;spec.flags &amp; RTSA_REMOTE_ENDPOINT) &amp;&amp; rl-&gt;spec.remo=
+te_host_local !=3D TLA_LOCAL;</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defin=
+ed(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma =
+GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+bool</span><br><span> init_route_list(struct route_list *rl, const struct r=
+oute_option_list *opt,</span><br><span>                 const char *remote_=
+endpoint, int default_metric, in_addr_t remote_host,</span><br><span>@@ -14=
+45,17 +1436,12 @@</span><br><span> #define LR_MATCH   1 /* route is local *=
+/</span><br><span> #define LR_ERROR   2 /* caller should abort adding route=
+ */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-com=
+pare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static i=
+nt</span><br><span> local_route(in_addr_t network, in_addr_t netmask, in_ad=
+dr_t gateway,</span><br><span>             const struct route_gateway_info =
+*rgi)</span><br><span> {</span><br><span>     /* set LR_MATCH on local host=
+ routes */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const i=
+nt rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFINED | RGI_IFACE_DEFIN=
+ED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const unsig=
+ned int rgi_needed =3D (RGI_ADDR_DEFINED | RGI_NETMASK_DEFINED | RGI_IFACE_=
+DEFINED);</span><br><span>     if (rgi &amp;&amp; (rgi-&gt;flags &amp; rgi_=
+needed) =3D=3D rgi_needed &amp;&amp; gateway =3D=3D rgi-&gt;gateway.addr</s=
+pan><br><span>         &amp;&amp; netmask =3D=3D 0xFFFFFFFF)</span><br><spa=
+n>     {</span><br><span>@@ -1479,10 +1465,6 @@</span><br><span>     return=
+ LR_NOMATCH;</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic po=
+p</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Return true if=
+ the &quot;on-link&quot; form of the route should be used.  This is when th=
+e gateway for</span><br><span>  * a route is specified as an interface rath=
+er than an address. */</span><br><span> #if defined(TARGET_LINUX) || define=
+d(_WIN32) || defined(TARGET_DARWIN)</span><br><span></span><br></pre><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1505?usp=3Dema=
+il">change 1505</a>. To unsubscribe, or for help writing mail filters, visi=
+t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
+/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
+rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1505?usp=3Demail"=
+/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib0d2b9520e4a77a9f4bf70ce092=
-f76ca73608537 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1503 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2b2a931e13670d753aa9570efe4=
+98647ba1a4a7f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1505 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -264,5 +240,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---uNOjcdVYNnA=--
+--+KJtD3VpzGs=--
 
