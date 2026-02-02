@@ -1,11 +1,9 @@
 From: Ralf Lici <ralf@...2726...>
-Date: Fri, 30 Jan 2026 18:32:49 +0100
-Message-ID: <20260130173250.664943-2-ralf@...2726...>
-In-Reply-To: <20260130173250.664943-1-ralf@...2726...>
-References: <20260130173250.664943-1-ralf@...2726...>
+Date: Mon,  2 Feb 2026 14:23:09 +0100
+Message-ID: <20260202132309.567382-1-ralf@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn net v3 2/3] ovpn: fix possible
- use-after-free in ovpn_net_xmit
+Subject: [Openvpn-devel] [PATCH ovpn net] ovpn: detach TCP socket before
+ invoking close
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,114 +17,37 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Ralf Lici <ralf@...2726...>, Sabrina Dubroca <sd@...2891...>
 
-When building the skb_list in ovpn_net_xmit, skb_share_check will free
-the original skb if it is shared. The current implementation continues
-to use the stale skb pointer for subsequent operations:
-- peer lookup,
-- skb_dst_drop (even though all segments produced by skb_gso_segment
-  will have a dst attached),
-- ovpn_peer_stats_increment_tx.
+Currently, when a connected peer expires (no packets received within the
+keepalive interval), we remove the peer and notify userspace of the
+deletion. We then insert the peer in the release list and proceed to
+detach and release the socket and the peer. This can be problematic with
+TCP because, as soon as we send the notification, openvpn will close the
+peer's socket and if ovpn_tcp_close is invoked before
+ovpn_tcp_socket_detach we incurr in a NULL pointer dereference when
+trying to access sk->sk_socket.
 
-Fix this by moving the peer lookup and skb_dst_drop before segmentation
-so that the original skb is still valid when used. Return early if all
-segments fail skb_share_check and the list ends up empty.
-Also switch ovpn_peer_stats_increment_tx to use skb_list.next; the next
-patch fixes the stats logic.
+Enforce correct ordering by calling ovpn_sock_release before invoking
+the original socket close callback. This avoids potential race
+conditions and guarantees that we completely detach from the socket once
+userspace issues the close command.
 
-Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
 Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
-Changes since v2:
-- moved peer selection and skb_dst_drop before skb_gso_segment
-- added goto to drop the peer reference on error
-- stopped using 'skb' after building 'skb_list' and switched to
-  skb_list.next for the stats update
+ drivers/net/ovpn/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v1:
-- this is a new patch that replaces the previous "ovpn: use sk_buff_head
-  properly in ovpn_net_xmit"
-
- drivers/net/ovpn/io.c | 52 ++++++++++++++++++++++++++-----------------
- 1 file changed, 31 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index 3e9e7f8444b3..f70c58b10599 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -365,7 +365,27 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 	/* verify IP header size in network packet */
- 	proto = ovpn_ip_check_protocol(skb);
- 	if (unlikely(!proto || skb->protocol != proto))
--		goto drop;
-+		goto drop_no_peer;
-+
-+	/* retrieve peer serving the destination IP of this packet */
-+	peer = ovpn_peer_get_by_dst(ovpn, skb);
-+	if (unlikely(!peer)) {
-+		switch (skb->protocol) {
-+		case htons(ETH_P_IP):
-+			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
-+					    netdev_name(ovpn->dev),
-+					    &ip_hdr(skb)->daddr);
-+			break;
-+		case htons(ETH_P_IPV6):
-+			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
-+					    netdev_name(ovpn->dev),
-+					    &ipv6_hdr(skb)->daddr);
-+			break;
-+		}
-+		goto drop_no_peer;
-+	}
-+	/* dst was needed for peer selection - it can now be dropped */
-+	skb_dst_drop(skb);
+diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
+index 0d7f30360d87..13d2a8069695 100644
+--- a/drivers/net/ovpn/tcp.c
++++ b/drivers/net/ovpn/tcp.c
+@@ -553,6 +553,7 @@ static void ovpn_tcp_close(struct sock *sk, long timeout)
+ 	rcu_read_unlock();
  
- 	if (skb_is_gso(skb)) {
- 		segments = skb_gso_segment(skb, 0);
-@@ -396,34 +416,24 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 		__skb_queue_tail(&skb_list, curr);
- 	}
--	skb_list.prev->next = NULL;
- 
--	/* retrieve peer serving the destination IP of this packet */
--	peer = ovpn_peer_get_by_dst(ovpn, skb);
--	if (unlikely(!peer)) {
--		switch (skb->protocol) {
--		case htons(ETH_P_IP):
--			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
--					    netdev_name(ovpn->dev),
--					    &ip_hdr(skb)->daddr);
--			break;
--		case htons(ETH_P_IPV6):
--			net_dbg_ratelimited("%s: no peer to send data to dst=%pI6c\n",
--					    netdev_name(ovpn->dev),
--					    &ipv6_hdr(skb)->daddr);
--			break;
--		}
--		goto drop;
-+	/* no segments survived: don't jump to 'drop' because we already
-+	 * incremented the counter for each failure in the loop
-+	 */
-+	if (unlikely(skb_queue_empty(&skb_list))) {
-+		ovpn_peer_put(peer);
-+		return NETDEV_TX_OK;
- 	}
--	/* dst was needed for peer selection - it can now be dropped */
--	skb_dst_drop(skb);
-+	skb_list.prev->next = NULL;
- 
--	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb->len);
-+	ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb_list.next->len);
- 	ovpn_send(ovpn, skb_list.next, peer);
- 
- 	return NETDEV_TX_OK;
- 
- drop:
-+	ovpn_peer_put(peer);
-+drop_no_peer:
- 	dev_dstats_tx_dropped(ovpn->dev);
- 	skb_tx_error(skb);
- 	kfree_skb_list(skb);
+ 	ovpn_peer_del(sock->peer, OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT);
++	ovpn_socket_release(peer);
+ 	peer->tcp.sk_cb.prot->close(sk, timeout);
+ 	ovpn_peer_put(peer);
+ }
 -- 
 2.52.0
 
