@@ -1,17 +1,15 @@
-Message-ID: <d213eecb-9c09-4daa-941d-562b95a58367@...2181...>
-Date: Tue, 10 Feb 2026 14:50:47 +0100
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 10 Feb 2026 14:09:09 +0000
+References: <gerrit.1770732547000.Ie35099b114c510e55292090c34b9d950b1f03947@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <99f18df4122f970a7dda126db3372b80af0ef32b-HTML@...2715...>
 MIME-Version: 1.0
-From: Antonio Quartulli <a@...2181...>
-References: <20260202132309.567382-1-ralf@...2726...>
- <6d85c24b-3bd1-4e1e-83cd-26f378663ade@...2181...> <aYY2WMtG6K9GEWoi@...2915...>
- <823dd41a-639c-4b81-a1dc-892bf9d2b567@...2181...>
- <9b5a8486-dfcc-426f-85e8-7e9a278baf13@...2181...>
- <d8c4f1a9-add1-45a9-84b8-b0463c4a88f7@...2181...> <aYoMraOqbVSIS6uC@...2915...>
- <70dda2d6-bd91-4fef-a4b3-c9755d11ef7e@...2181...>
-Content-Language: en-US
-In-Reply-To: <70dda2d6-bd91-4fef-a4b3-c9755d11ef7e@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH ovpn net] ovpn: detach TCP socket before
- invoking close
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="MnzMLIZ2p58="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: crypto: Do not
+ claim we will remove support for BF-CBC in 2.7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,71 +18,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Sabrina Dubroca <sd@...2891...>
-Cc: openvpn-devel@lists.sourceforge.net, Ralf Lici <ralf@...2726...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 10/02/2026 01:07, Antonio Quartulli wrote:
-> On 09/02/2026 17:34, Sabrina Dubroca wrote:
->> 2026-02-09, 16:36:55 +0100, Antonio Quartulli wrote:
->>> On 09/02/2026 16:32, Antonio Quartulli wrote:
->>>> What if we go the other way around: we have ovpn_tcp_close() check if
->>>> the peer was already gone from the ovpn hash or not.
->>>>
->>>> If it did, we know the peer is going through its own lifecycle and we
->>>> skip the ovpn_peer_del() call.
->>
->> To make sure I understand: the bug we're trying to fix here is that we
->> end up calling ovpn_tcp_close() too early, so by the time
->> ovpn_tcp_socket_detach() is called, sk->sk_socket is already NULL so
->> "sk->sk_socket->ops = ..." crashes the kernel. Ralf's patch makes sure
->> ovpn_socket_release() -> ... -> ovpn_tcp_socket_detach() has been
->> called by the time we're done with close(). Is that correct?
->>
->> Then I'm confused by how this would solve the issue. We could still be
->> done with ovpn_tcp_close() before ovpn_peer_keepalive_work() ->
->> unlock_ovpn -> ovpn_socket_release has completed?
-> 
+--MnzMLIZ2p58=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: plaisthos.
+
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1511?usp=3Demail
+
+to review the following change.
 
 
-As we have already stated, the crux of the issue is the moment 
-tcp_close() sets sk->sk_socket to NULL.
+Change subject: crypto: Do not claim we will remove support for BF-CBC in 2=
+.7
+......................................................................
 
-This happens in:
-1. tcp_close(sk, timeout);
-   2. __tcp_close(sk, timeout);
-     3. sock_orphan(sk);
-       4. sk_set_socket(sk, NULL);
+crypto: Do not claim we will remove support for BF-CBC in 2.7
 
-When we later/concurrently invoke ovpn_tcp_socket_release() we 
-dereference sk->sk_socket, which is now NULL.
+Change-Id: Ie35099b114c510e55292090c34b9d950b1f03947
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/crypto.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
-sock_orphan()is actually pretty small:
 
-2123 static inline void sock_orphan(struct sock *sk)
-2124 {
-2125         write_lock_bh(&sk->sk_callback_lock);
-2126         sock_set_flag(sk, SOCK_DEAD);
-2127         sk_set_socket(sk, NULL);
-2128         sk->sk_wq  = NULL;
-2129         write_unlock_bh(&sk->sk_callback_lock);
-2130 }
 
-and as we can see it holds and then releases sk_callback_lock.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/11/1511/1
 
-I remember that we were originally using this lock when setting the 
-callbacks, but we eventually dropped it (around v3 or v4 of the original 
-patchset, but I couldn't find the reason).
-Maybe we thought there was no need to hold that lock?
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index e3d1fa5..9a4269c 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -863,7 +863,7 @@
+             " bit (%d bit).  This allows attacks like SWEET32.  Mitigate b=
+y "
+             "using a --cipher with a larger block size (e.g. AES-256-CBC).=
+ "
+             "Support for these insecure ciphers will be removed in "
+-            "OpenVPN 2.7.",
++            "OpenVPN 2.8.",
+             ciphername, cipher_kt_block_size(ciphername) * 8);
+     }
+ }
 
-Now, if we actually acquire this lock in ovpn_tcp_socket_detach(), check 
-that sk_socket is non-NULL, restores the CB and release it, wouldn't we 
-solve our problem?
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1511?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Cheers,
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie35099b114c510e55292090c34b9d950b1f03947
+Gerrit-Change-Number: 1511
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
--- 
-Antonio Quartulli
+--MnzMLIZ2p58=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1511?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">crypto: Do not claim we will remove support=
+ for BF-CBC in 2.7<br><br>Change-Id: Ie35099b114c510e55292090c34b9d950b1f03=
+947<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>=
+M src/openvpn/crypto.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br>=
+<br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
+s/changes/11/1511/1</pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto.c b/src/openvpn=
+/crypto.c</span><br><span>index e3d1fa5..9a4269c 100644</span><br><span>---=
+ a/src/openvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><b=
+r><span>@@ -863,7 +863,7 @@</span><br><span>             &quot; bit (%d bit=
+).  This allows attacks like SWEET32.  Mitigate by &quot;</span><br><span> =
+            &quot;using a --cipher with a larger block size (e.g. AES-256-C=
+BC). &quot;</span><br><span>             &quot;Support for these insecure c=
+iphers will be removed in &quot;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            &quot;OpenVPN 2.7.&quot;,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            &quot;OpenVPN 2.8.&quot;,</span><b=
+r><span>             ciphername, cipher_kt_block_size(ciphername) * 8);</sp=
+an><br><span>     }</span><br><span> }</span><br><span></span><br></pre><p>=
+To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1511?usp=3D=
+email">change 1511</a>. To unsubscribe, or for help writing mail filters, v=
+isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1511?usp=3Dema=
+il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie35099b114c510e55292090c34b=
+9d950b1f03947 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1511 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--MnzMLIZ2p58=--
 
