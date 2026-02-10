@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 10 Feb 2026 14:55:41 +0000
-References: <gerrit.1770735307000.I201abb9ef013c061fb568823098edcca32cb2df3@...2715...>
+Date: Tue, 10 Feb 2026 14:55:42 +0000
+References: <gerrit.1770735307000.I3eb4581980f532cb2960b37a6fa43a7baee4b603@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <ce62ab5c0b43bf3547d602cccf7d5cfdc0840531-HTML@...2715...>
+Message-ID: <f31598c3c9e9aab0d35a4ecfa18b55964b14e302-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/J7YURqdQ1g="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: crypto_backend:
- Improve signature of md_full to avoid conversions
+Content-Type: multipart/alternative; boundary="Ihsl11yxvW0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix various
+ sign-compare warnings due to write return value
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/J7YURqdQ1g=
+--Ihsl11yxvW0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,252 +32,274 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1512?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1513?usp=3Demail
 
 to review the following change.
 
 
-Change subject: crypto_backend: Improve signature of md_full to avoid conve=
-rsions
+Change subject: Fix various sign-compare warnings due to write return value
 ......................................................................
 
-crypto_backend: Improve signature of md_full to avoid conversions
+Fix various sign-compare warnings due to write return value
 
-Change-Id: I201abb9ef013c061fb568823098edcca32cb2df3
+write takes size_t as count (unsigned int on
+Windows) and returns ssize_t (int on Windows).
+But we often want to compare the return value
+to the count.
+
+Generally we can just rely on the fact that
+sizeof(ssize_t) =3D=3D sizeof(size_t) and use that
+for all values. (Until we want to introduce
+-Wsign-conversion that is...)
+
+Change-Id: I3eb4581980f532cb2960b37a6fa43a7baee4b603
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/crypto_backend.h
-M src/openvpn/crypto_mbedtls.c
-M src/openvpn/crypto_mbedtls_legacy.c
-M src/openvpn/crypto_openssl.c
-4 files changed, 13 insertions(+), 13 deletions(-)
+M src/openvpn/ps.c
+M src/openvpn/status.c
+M src/plugins/auth-pam/auth-pam.c
+3 files changed, 4 insertions(+), 30 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/12/1512/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/1513/1
 
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 5248614..7f5507a 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -557,9 +557,9 @@
-  * @param src_len       The length of the incoming buffer.
-  * @param dst           Buffer to write the message digest to. May not be =
-NULL.
-  *
-- * @return              \c 1 on success, \c 0 on failure
-+ * @return              true on success, false on failure
-  */
--int md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *=
-dst);
-+bool md_full(const char *mdname, const uint8_t *src, size_t src_len, uint8=
-_t *dst);
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index e98502d..15816a5 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -327,11 +327,6 @@
+     }
+ }
 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
  /*
-  * Allocate a new message digest context
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 02735cd..cba6bb5 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -696,13 +696,13 @@
-     return ctx;
+  * Record IP/port of client in filesystem, so that server receiving
+  * the proxy can determine true client origin.
+@@ -357,7 +352,8 @@
+         int fd =3D platform_open(jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUS=
+R | S_IWUSR | S_IRGRP);
+         if (fd !=3D -1)
+         {
+-            if (write(fd, f, strlen(f)) !=3D strlen(f))
++            ssize_t write_len =3D strlen(f);
++            if (write(fd, f, write_len) !=3D write_len)
+             {
+                 msg(M_WARN, "PORT SHARE: writing to journal file (%s) fail=
+ed", jfn);
+             }
+@@ -373,10 +369,6 @@
+     }
  }
 
--int
--md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst)
-+bool
-+md_full(const char *mdname, const uint8_t *src, size_t src_len, uint8_t *d=
-st)
- {
-     const md_info_t *md =3D md_get(mdname);
-     if (md =3D=3D NULL || src_len < 0)
-     {
--        return 0;
-+        return false;
-     }
-
-     /* We depend on the caller to ensure that dst has enough room for the =
-hash,
-@@ -710,12 +710,12 @@
-     size_t dst_size =3D PSA_HASH_LENGTH(md->psa_alg);
-     size_t hash_length =3D 0;
-
--    psa_status_t status =3D psa_hash_compute(md->psa_alg, src, (size_t)src=
-_len, dst, dst_size, &hash_length);
-+    psa_status_t status =3D psa_hash_compute(md->psa_alg, src, src_len, ds=
-t, dst_size, &hash_length);
-     if (status !=3D PSA_SUCCESS || hash_length !=3D dst_size)
-     {
--        return 0;
-+        return false;
-     }
--    return 1;
-+    return true;
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ /*
+  * Cleanup function, on proxy process exit.
+  */
+diff --git a/src/openvpn/status.c b/src/openvpn/status.c
+index 4d42863..c7d375b 100644
+--- a/src/openvpn/status.c
++++ b/src/openvpn/status.c
+@@ -206,11 +206,6 @@
+     return ret;
  }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
+ #define STATUS_PRINTF_MAXLEN 512
 
  void
-diff --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedt=
-ls_legacy.c
-index a991349..0dad284 100644
---- a/src/openvpn/crypto_mbedtls_legacy.c
-+++ b/src/openvpn/crypto_mbedtls_legacy.c
-@@ -835,8 +835,8 @@
-  *
-  */
-
--int
--md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst)
-+bool
-+md_full(const char *mdname, const uint8_t *src, size_t src_len, uint8_t *d=
-st)
- {
-     const mbedtls_md_info_t *kt =3D md_get(mdname);
-     return 0 =3D=3D mbedtls_md(kt, src, src_len, dst);
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index ed39efa..0c6de18 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1104,15 +1104,15 @@
-  *
-  */
-
--int
--md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst)
-+bool
-+md_full(const char *mdname, const uint8_t *src, size_t src_len, uint8_t *d=
-st)
- {
-     unsigned int in_md_len =3D 0;
-     evp_md_type *kt =3D md_get(mdname);
-
-     int ret =3D EVP_Digest(src, src_len, dst, &in_md_len, kt, NULL);
-     EVP_MD_free(kt);
--    return ret;
-+    return ret =3D=3D 1;
+@@ -240,7 +235,7 @@
+         if (so->fd >=3D 0 && !so->errors)
+         {
+             strcat(buf, "\n");
+-            size_t len =3D strlen(buf);
++            ssize_t len =3D strlen(buf);
+             if (len > 0)
+             {
+                 if (write(so->fd, buf, (unsigned int)len) !=3D len)
+@@ -258,10 +253,6 @@
+     }
  }
 
- EVP_MD_CTX *
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ bool
+ status_read(struct status_output *so, struct buffer *buf)
+ {
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pa=
+m.c
+index 0f3346f..3b7bcc2 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -184,15 +184,10 @@
+     return -1;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
+ static ssize_t
+ send_string(int fd, const char *string)
+ {
+-    const size_t len =3D strlen(string) + 1;
++    const ssize_t len =3D strlen(string) + 1;
+     const ssize_t size =3D write(fd, string, len);
+     if (size =3D=3D len)
+     {
+@@ -204,10 +199,6 @@
+     }
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ #ifdef DO_DAEMONIZE
+
+ /*
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1512?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1513?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I201abb9ef013c061fb568823098edcca32cb2df3
-Gerrit-Change-Number: 1512
+Gerrit-Change-Id: I3eb4581980f532cb2960b37a6fa43a7baee4b603
+Gerrit-Change-Number: 1513
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---/J7YURqdQ1g=
+--Ihsl11yxvW0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1512?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1513?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">crypto_backend: Improve signature of md_ful=
-l to avoid conversions<br><br>Change-Id: I201abb9ef013c061fb568823098edcca3=
-2cb2df3<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---=
-<br>M src/openvpn/crypto_backend.h<br>M src/openvpn/crypto_mbedtls.c<br>M s=
-rc/openvpn/crypto_mbedtls_legacy.c<br>M src/openvpn/crypto_openssl.c<br>4 f=
-iles changed, 13 insertions(+), 13 deletions(-)<br><br></pre><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/12/1512/1</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.=
-h</span><br><span>index 5248614..7f5507a 100644</span><br><span>--- a/src/o=
-penvpn/crypto_backend.h</span><br><span>+++ b/src/openvpn/crypto_backend.h<=
-/span><br><span>@@ -557,9 +557,9 @@</span><br><span>  * @param src_len     =
-  The length of the incoming buffer.</span><br><span>  * @param dst        =
-   Buffer to write the message digest to. May not be NULL.</span><br><span>=
-  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @return        =
-      \c 1 on success, \c 0 on failure</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * @return              true on success, false on failur=
-e</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--int md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *=
-dst);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool md_full(c=
-onst char *mdname, const uint8_t *src, size_t src_len, uint8_t *dst);</span=
-><br><span> </span><br><span> /*</span><br><span>  * Allocate a new message=
- digest context</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c b=
-/src/openvpn/crypto_mbedtls.c</span><br><span>index 02735cd..cba6bb5 100644=
-</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/s=
-rc/openvpn/crypto_mbedtls.c</span><br><span>@@ -696,13 +696,13 @@</span><br=
-><span>     return ctx;</span><br><span> }</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-md_full(const char *mdname, const uint8_t *src, int sr=
-c_len, uint8_t *dst)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_full(const =
-char *mdname, const uint8_t *src, size_t src_len, uint8_t *dst)</span><br><=
-span> {</span><br><span>     const md_info_t *md =3D md_get(mdname);</span>=
-<br><span>     if (md =3D=3D NULL || src_len &lt; 0)</span><br><span>     {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</=
-span><br><span>     }</span><br><span> </span><br><span>     /* We depend o=
-n the caller to ensure that dst has enough room for the hash,</span><br><sp=
-an>@@ -710,12 +710,12 @@</span><br><span>     size_t dst_size =3D PSA_HASH_=
-LENGTH(md-&gt;psa_alg);</span><br><span>     size_t hash_length =3D 0;</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    psa_=
-status_t status =3D psa_hash_compute(md-&gt;psa_alg, src, (size_t)src_len, =
-dst, dst_size, &amp;hash_length);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    psa_status_t status =3D psa_hash_compute(md-&gt;psa_alg, =
-src, src_len, dst, dst_size, &amp;hash_length);</span><br><span>     if (st=
-atus !=3D PSA_SUCCESS || hash_length !=3D dst_size)</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</s=
-pan><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   return 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
-urn true;</span><br><span> }</span><br><span> </span><br><span> void</span>=
-<br><span>diff --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/cr=
-ypto_mbedtls_legacy.c</span><br><span>index a991349..0dad284 100644</span><=
-br><span>--- a/src/openvpn/crypto_mbedtls_legacy.c</span><br><span>+++ b/sr=
-c/openvpn/crypto_mbedtls_legacy.c</span><br><span>@@ -835,8 +835,8 @@</span=
-><br><span>  *</span><br><span>  */</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-md_full(const char *mdname, const uint8_t *src, int src_len, =
-uint8_t *dst)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+md_full(const char *m=
-dname, const uint8_t *src, size_t src_len, uint8_t *dst)</span><br><span> {=
-</span><br><span>     const mbedtls_md_info_t *kt =3D md_get(mdname);</span=
-><br><span>     return 0 =3D=3D mbedtls_md(kt, src, src_len, dst);</span><b=
-r><span>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_open=
-ssl.c</span><br><span>index ed39efa..0c6de18 100644</span><br><span>--- a/s=
-rc/openvpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openss=
-l.c</span><br><span>@@ -1104,15 +1104,15 @@</span><br><span>  *</span><br><=
-span>  */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-md_full(cons=
-t char *mdname, const uint8_t *src, int src_len, uint8_t *dst)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+md_full(const char *mdname, const uint8_t *src,=
- size_t src_len, uint8_t *dst)</span><br><span> {</span><br><span>     unsi=
-gned int in_md_len =3D 0;</span><br><span>     evp_md_type *kt =3D md_get(m=
-dname);</span><br><span> </span><br><span>     int ret =3D EVP_Digest(src, =
-src_len, dst, &amp;in_md_len, kt, NULL);</span><br><span>     EVP_MD_free(k=
-t);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret =3D=3D =
-1;</span><br><span> }</span><br><span> </span><br><span> EVP_MD_CTX *</span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1512?usp=3Demail">change 1512</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1512?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+ospace; white-space: pre-wrap;">Fix various sign-compare warnings due to wr=
+ite return value<br><br>write takes size_t as count (unsigned int on<br>Win=
+dows) and returns ssize_t (int on Windows).<br>But we often want to compare=
+ the return value<br>to the count.<br><br>Generally we can just rely on the=
+ fact that<br>sizeof(ssize_t) =3D=3D sizeof(size_t) and use that<br>for all=
+ values. (Until we want to introduce<br>-Wsign-conversion that is...)<br><b=
+r>Change-Id: I3eb4581980f532cb2960b37a6fa43a7baee4b603<br>Signed-off-by: Fr=
+ank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/ps.c<br>M =
+src/openvpn/status.c<br>M src/plugins/auth-pam/auth-pam.c<br>3 files change=
+d, 4 insertions(+), 30 deletions(-)<br><br></pre><pre class=3D"blocks" styl=
+e=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh=
+://gerrit.openvpn.net:29418/openvpn refs/changes/13/1513/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/ps.c b/src/openvpn/ps.c</span><br><span>index e98502d..15=
+816a5 100644</span><br><span>--- a/src/openvpn/ps.c</span><br><span>+++ b/s=
+rc/openvpn/ps.c</span><br><span>@@ -327,11 +327,6 @@</span><br><span>     }=
+</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored =
+&quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span> /*</span><br><span>  * Record IP/port of client in filesystem, so t=
+hat server receiving</span><br><span>  * the proxy can determine true clien=
+t origin.</span><br><span>@@ -357,7 +352,8 @@</span><br><span>         int =
+fd =3D platform_open(jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR |=
+ S_IRGRP);</span><br><span>         if (fd !=3D -1)</span><br><span>       =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (wr=
+ite(fd, f, strlen(f)) !=3D strlen(f))</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            ssize_t write_len =3D strlen(f);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            if (write(fd, f, wri=
+te_len) !=3D write_len)</span><br><span>             {</span><br><span>    =
+             msg(M_WARN, &quot;PORT SHARE: writing to journal file (%s) fai=
+led&quot;, jfn);</span><br><span>             }</span><br><span>@@ -373,10 =
++369,6 @@</span><br><span>     }</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
+ma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n> /*</span><br><span>  * Cleanup function, on proxy process exit.</span><b=
+r><span>  */</span><br><span>diff --git a/src/openvpn/status.c b/src/openvp=
+n/status.c</span><br><span>index 4d42863..c7d375b 100644</span><br><span>--=
+- a/src/openvpn/status.c</span><br><span>+++ b/src/openvpn/status.c</span><=
+br><span>@@ -206,11 +206,6 @@</span><br><span>     return ret;</span><br><s=
+pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign=
+-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #def=
+ine STATUS_PRINTF_MAXLEN 512</span><br><span> </span><br><span> void</span>=
+<br><span>@@ -240,7 +235,7 @@</span><br><span>         if (so-&gt;fd &gt;=
+=3D 0 &amp;&amp; !so-&gt;errors)</span><br><span>         {</span><br><span=
+>             strcat(buf, &quot;\n&quot;);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            size_t len =3D strlen(buf);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            ssize_t len =3D strlen=
+(buf);</span><br><span>             if (len &gt; 0)</span><br><span>       =
+      {</span><br><span>                 if (write(so-&gt;fd, buf, (unsigne=
+d int)len) !=3D len)</span><br><span>@@ -258,10 +253,6 @@</span><br><span> =
+    }</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> st=
+atus_read(struct status_output *so, struct buffer *buf)</span><br><span> {<=
+/span><br><span>diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/=
+auth-pam/auth-pam.c</span><br><span>index 0f3346f..3b7bcc2 100644</span><br=
+><span>--- a/src/plugins/auth-pam/auth-pam.c</span><br><span>+++ b/src/plug=
+ins/auth-pam/auth-pam.c</span><br><span>@@ -184,15 +184,10 @@</span><br><sp=
+an>     return -1;</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang_=
+_)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnos=
+tic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC d=
+iagnostic ignored &quot;-Wsign-compare&quot;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span> static ssize_t</span><br><span> send_string(int f=
+d, const char *string)</span><br><span> {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    const size_t len =3D strlen(string) + 1;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    const ssize_t len =3D strl=
+en(string) + 1;</span><br><span>     const ssize_t size =3D write(fd, strin=
+g, len);</span><br><span>     if (size =3D=3D len)</span><br><span>     {</=
+span><br><span>@@ -204,10 +199,6 @@</span><br><span>     }</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span> #ifdef DO_DAEMONIZE</span><br><span> </span><b=
+r><span> /*</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1513?usp=3Demail">change 1513</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1513?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I201abb9ef013c061fb568823098=
-edcca32cb2df3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1512 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3eb4581980f532cb2960b37a6fa=
+43a7baee4b603 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1513 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -290,5 +312,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---/J7YURqdQ1g=--
+--Ihsl11yxvW0=--
 
