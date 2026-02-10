@@ -1,11 +1,10 @@
+Date: Tue, 10 Feb 2026 16:28:24 +0100 (CET)
+Message-Id: <202602101528.61AFSOED031350@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 10 Feb 2026 16:20:30 +0100
-Message-ID: <20260210152035.1273-1-gert@...1296...>
-In-Reply-To: <gerrit.1770732547000.Ie35099b114c510e55292090c34b9d950b1f03947@...2715...>
-References: <gerrit.1770732547000.Ie35099b114c510e55292090c34b9d950b1f03947@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] crypto: Do not claim we will remove
- support for BF-CBC in 2.7
+In-Reply-To: <20260210152035.1273-1-gert@...1296...>
+References: <20260210152035.1273-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: crypto: Do not claim we will
+ remove support for BF-CBC in 2.7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Arguably we didn't... so this makes sense, and it makes sense to have it
+in 2.7.0.  The change is 1 digit in a string, so the risk of introducing
+breakage is very low.
 
-Change-Id: Ie35099b114c510e55292090c34b9d950b1f03947
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1511
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit f6004dc45e686fd2f0d9b5f9ffd342dfa85543f9
+Author: Frank Lichtenheld
+Date:   Tue Feb 10 16:20:30 2026 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1511
-This mail reflects revision 1 of this Change.
+     crypto: Do not claim we will remove support for BF-CBC in 2.7
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1511
+     Message-Id: <20260210152035.1273-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35565.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index e3d1fa5..9a4269c 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -863,7 +863,7 @@
-             " bit (%d bit).  This allows attacks like SWEET32.  Mitigate by "
-             "using a --cipher with a larger block size (e.g. AES-256-CBC). "
-             "Support for these insecure ciphers will be removed in "
--            "OpenVPN 2.7.",
-+            "OpenVPN 2.8.",
-             ciphername, cipher_kt_block_size(ciphername) * 8);
-     }
- }
+
+--
+kind regards,
+
+Gert Doering
+
 
