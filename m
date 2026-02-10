@@ -1,16 +1,17 @@
-From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Tue, 10 Feb 2026 13:45:00 +0000
-In-Reply-To: <gerrit.1765448957000.I7f3b95cacdf359536e827f176f2b81da4b00f22f@...2715...>
-References: <gerrit.1765448957000.I7f3b95cacdf359536e827f176f2b81da4b00f22f@...2715...>
-Reply-To: ralf@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <9445c7e5b96879332988a60195fc42544618e82c-EmailReviewComments-HTML@...2715...>
+Message-ID: <d213eecb-9c09-4daa-941d-562b95a58367@...2181...>
+Date: Tue, 10 Feb 2026 14:50:47 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="BX3USS1tIBg="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco_linux: parse
- stats in PEER_DEL notification if available
+From: Antonio Quartulli <a@...2181...>
+References: <20260202132309.567382-1-ralf@...2726...>
+ <6d85c24b-3bd1-4e1e-83cd-26f378663ade@...2181...> <aYY2WMtG6K9GEWoi@...2915...>
+ <823dd41a-639c-4b81-a1dc-892bf9d2b567@...2181...>
+ <9b5a8486-dfcc-426f-85e8-7e9a278baf13@...2181...>
+ <d8c4f1a9-add1-45a9-84b8-b0463c4a88f7@...2181...> <aYoMraOqbVSIS6uC@...2915...>
+ <70dda2d6-bd91-4fef-a4b3-c9755d11ef7e@...2181...>
+Content-Language: en-US
+In-Reply-To: <70dda2d6-bd91-4fef-a4b3-c9755d11ef7e@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn net] ovpn: detach TCP socket before
+ invoking close
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,96 +20,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Sabrina Dubroca <sd@...2891...>
+Cc: openvpn-devel@lists.sourceforge.net, Ralf Lici <ralf@...2726...>
 
---BX3USS1tIBg=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Attention is currently required from: plaisthos.
-
-ralf_lici has posted comments on this change by ralf_lici. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1434?usp=3Demail )
-
-Change subject: dco_linux: parse stats in PEER_DEL notification if available
-......................................................................
-
-
-Patch Set 1:
-
-(1 comment)
-
-Patchset:
-
-PS1:
-As discussed on IRC, we will wait for the kernel patch to land before mergi=
-ng this, to avoid any potential breakage.
-
+On 10/02/2026 01:07, Antonio Quartulli wrote:
+> On 09/02/2026 17:34, Sabrina Dubroca wrote:
+>> 2026-02-09, 16:36:55 +0100, Antonio Quartulli wrote:
+>>> On 09/02/2026 16:32, Antonio Quartulli wrote:
+>>>> What if we go the other way around: we have ovpn_tcp_close() check if
+>>>> the peer was already gone from the ovpn hash or not.
+>>>>
+>>>> If it did, we know the peer is going through its own lifecycle and we
+>>>> skip the ovpn_peer_del() call.
+>>
+>> To make sure I understand: the bug we're trying to fix here is that we
+>> end up calling ovpn_tcp_close() too early, so by the time
+>> ovpn_tcp_socket_detach() is called, sk->sk_socket is already NULL so
+>> "sk->sk_socket->ops = ..." crashes the kernel. Ralf's patch makes sure
+>> ovpn_socket_release() -> ... -> ovpn_tcp_socket_detach() has been
+>> called by the time we're done with close(). Is that correct?
+>>
+>> Then I'm confused by how this would solve the issue. We could still be
+>> done with ovpn_tcp_close() before ovpn_peer_keepalive_work() ->
+>> unlock_ovpn -> ovpn_socket_release has completed?
+> 
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1434?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+As we have already stated, the crux of the issue is the moment 
+tcp_close() sets sk->sk_socket to NULL.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7f3b95cacdf359536e827f176f2b81da4b00f22f
-Gerrit-Change-Number: 1434
-Gerrit-PatchSet: 1
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Tue, 10 Feb 2026 13:45:00 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+This happens in:
+1. tcp_close(sk, timeout);
+   2. __tcp_close(sk, timeout);
+     3. sock_orphan(sk);
+       4. sk_set_socket(sk, NULL);
 
---BX3USS1tIBg=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+When we later/concurrently invoke ovpn_tcp_socket_release() we 
+dereference sk->sk_socket, which is now NULL.
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1434?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1434?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">As discussed on=
- IRC, we will wait for the kernel patch to land before merging this, to avo=
-id any potential breakage.</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1434?usp=3Demail">change 1434</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1434?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+sock_orphan()is actually pretty small:
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7f3b95cacdf359536e827f176f2=
-b81da4b00f22f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1434 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 10 Feb 2026 13:45:00=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+2123 static inline void sock_orphan(struct sock *sk)
+2124 {
+2125         write_lock_bh(&sk->sk_callback_lock);
+2126         sock_set_flag(sk, SOCK_DEAD);
+2127         sk_set_socket(sk, NULL);
+2128         sk->sk_wq  = NULL;
+2129         write_unlock_bh(&sk->sk_callback_lock);
+2130 }
 
-</body></html>=
+and as we can see it holds and then releases sk_callback_lock.
 
---BX3USS1tIBg=--
+I remember that we were originally using this lock when setting the 
+callbacks, but we eventually dropped it (around v3 or v4 of the original 
+patchset, but I couldn't find the reason).
+Maybe we thought there was no need to hold that lock?
+
+Now, if we actually acquire this lock in ovpn_tcp_socket_detach(), check 
+that sk_socket is non-NULL, restores the CB and release it, wouldn't we 
+solve our problem?
+
+Cheers,
+
+-- 
+Antonio Quartulli
+
 
