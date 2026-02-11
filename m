@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 11 Feb 2026 16:06:48 +0100
-Message-ID: <20260211150648.113547-1-frank@...2641...>
-In-Reply-To: <gerrit.1770799998000.I14395665f197349e374a81b56f28536ff88937a8@...2715...>
-References: <gerrit.1770799998000.I14395665f197349e374a81b56f28536ff88937a8@...2715...>
+Date: Wed, 11 Feb 2026 16:07:47 +0100
+Message-ID: <20260211150747.113906-1-frank@...2641...>
+In-Reply-To: <gerrit.1768930567000.I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3@...2715...>
+References: <gerrit.1768930567000.I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] rework all occurrences of 'M_ERR |
- M_ERRNO'
+Subject: [Openvpn-devel] [PATCH v4] Change stream_buf_read_setup_dowork
+ parameter to struct steam_buf
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,128 +17,96 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne-openvpn@...1227...>
+Cc: Arne Schwabe <arne@...1227...>, Arne Schwabe <arne-openvpn@...1227...>
 
-From: Gert Doering <gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
 
-M_ERR is defined as (M_FATAL | M_ERRNO), so 'msg(M_ERR | M_ERRNO, ...)'
-is just the same as 'msg(M_ERR, ...)'.
+This methods only ever access sock->stream_buf so make the method
+simpler by just having a parameter sb.
 
-The occurances in tun.c and dco_freebsd.c are really "if this happens,
-we can not go on" errors, so 'M_ERR' (= FATAL, plus log errno string)
-is the correct thing to do.
-
-The occurances in dns.c do come with error handling and cleanup after
-the msg() call, so the right thing is 'M_WARN | M_ERRNO' instead
-(warning, plus log errno string).
-
-Github: fixes OpenVPN/openvpn#939
-
-Change-Id: I14395665f197349e374a81b56f28536ff88937a8
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1517
+Change-Id: I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1483
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1517
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1483
+This mail reflects revision 4 of this Change.
+
+Signed-off-by line for the author was added as per our policy.
 
 Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index d1ad092..ee3a5d0 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -177,7 +177,7 @@
-     ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-     if (ret)
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 58ccda9..c463041 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2111,22 +2111,22 @@
+ }
+ 
+ bool
+-stream_buf_read_setup_dowork(struct link_socket *sock)
++stream_buf_read_setup_dowork(struct stream_buf *sb)
+ {
+-    if (sock->stream_buf.residual.len && !sock->stream_buf.residual_fully_formed)
++    if (sb->residual.len && !sb->residual_fully_formed)
      {
--        msg(M_ERR | M_ERRNO, "Failed to create new peer");
-+        msg(M_ERR, "Failed to create new peer");
+-        ASSERT(buf_copy(&sock->stream_buf.buf, &sock->stream_buf.residual));
+-        ASSERT(buf_init(&sock->stream_buf.residual, 0));
+-        sock->stream_buf.residual_fully_formed = stream_buf_added(&sock->stream_buf, 0);
++        ASSERT(buf_copy(&sb->buf, &sb->residual));
++        ASSERT(buf_init(&sb->residual, 0));
++        sb->residual_fully_formed = stream_buf_added(sb, 0);
+         dmsg(D_STREAM_DEBUG, "STREAM: RESIDUAL FULLY FORMED [%s], len=%d",
+-             sock->stream_buf.residual_fully_formed ? "YES" : "NO", sock->stream_buf.residual.len);
++             sb->residual_fully_formed ? "YES" : "NO", sb->residual.len);
      }
  
-     free(drv.ifd_data);
-@@ -317,7 +317,7 @@
-     ret = ioctl(tt->dco.fd, SIOCIFDESTROY, &ifr);
-     if (ret)
+-    if (!sock->stream_buf.residual_fully_formed)
++    if (!sb->residual_fully_formed)
      {
--        msg(M_ERR | M_ERRNO, "Failed to remove interface %s", ifr.ifr_name);
-+        msg(M_ERR, "Failed to remove interface %s", ifr.ifr_name);
+-        stream_buf_set_next(&sock->stream_buf);
++        stream_buf_set_next(sb);
      }
+-    return !sock->stream_buf.residual_fully_formed;
++    return !sb->residual_fully_formed;
+ }
  
-     tt->dco.ifname[0] = 0;
-@@ -473,7 +473,7 @@
-     ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-     if (ret)
-     {
--        msg(M_ERR | M_ERRNO, "Failed to start vpn");
-+        msg(M_ERR, "Failed to start vpn");
+ static bool
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 850064d..3f46dc6 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -528,14 +528,24 @@
      }
+ }
  
-     return ret;
-@@ -511,7 +511,7 @@
-     ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-     if (ret)
+-bool stream_buf_read_setup_dowork(struct link_socket *sock);
++/**
++ * Will try to check if the buffers in stream form a
++ * full packet. Will return true if further reads are
++ * required and false otherwise. (full packet is ready)
++ *
++ * With UDP we always return true as there is no reassembly.
++ *
++ * @param sb    the stream buffer that should be worked on
++ * @return      true if more reads are required.
++ */
++bool stream_buf_read_setup_dowork(struct stream_buf *sb);
+ 
+ static inline bool
+ stream_buf_read_setup(struct link_socket *sock)
+ {
+     if (link_socket_connection_oriented(sock))
      {
--        msg(M_ERR | M_ERRNO, "Failed to set key");
-+        msg(M_ERR, "Failed to set key");
+-        return stream_buf_read_setup_dowork(sock);
++        return stream_buf_read_setup_dowork(&sock->stream_buf);
      }
      else
      {
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index c00d4b9..3d24050 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -611,13 +611,13 @@
-     int ack_pipe_fd[2];
-     if (pipe(dns_pipe_fd) != 0 || pipe(ack_pipe_fd) != 0)
-     {
--        msg(M_ERR | M_ERRNO, "run_dns_up_down: unable to create pipes");
-+        msg(M_WARN | M_ERRNO, "run_dns_up_down: unable to create pipes");
-         return false;
-     }
-     updown_runner->pid = fork();
-     if (updown_runner->pid == -1)
-     {
--        msg(M_ERR | M_ERRNO, "run_dns_up_down: unable to fork");
-+        msg(M_WARN | M_ERRNO, "run_dns_up_down: unable to fork");
-         close(dns_pipe_fd[0]);
-         close(dns_pipe_fd[1]);
-         close(ack_pipe_fd[0]);
-@@ -747,7 +747,7 @@
-                 {
-                     continue;
-                 }
--                msg(M_ERR | M_ERRNO, "could not send dns vars filename");
-+                msg(M_WARN | M_ERRNO, "could not send dns vars filename");
-             }
-             break;
-         }
-@@ -762,7 +762,7 @@
-                 {
-                     continue;
-                 }
--                msg(M_ERR | M_ERRNO, "could not receive dns updown status");
-+                msg(M_WARN | M_ERRNO, "could not receive dns updown status");
-             }
-             break;
-         }
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index e38df3e..3f9ee5d 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3011,7 +3011,7 @@
-     /* Retrieve the assigned interface name. */
-     if (getsockopt(fd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, utunname, &utunname_len))
-     {
--        msg(M_ERR | M_ERRNO, "Error retrieving utun interface name");
-+        msg(M_ERR, "Error retrieving utun interface name");
-     }
- 
-     tt->actual_name = string_alloc(utunname, NULL);
 
