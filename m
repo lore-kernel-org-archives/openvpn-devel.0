@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 11 Feb 2026 16:07:47 +0100
-Message-ID: <20260211150747.113906-1-frank@...2641...>
-In-Reply-To: <gerrit.1768930567000.I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3@...2715...>
-References: <gerrit.1768930567000.I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 11 Feb 2026 15:25:35 +0000
+In-Reply-To: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+References: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <e4c8dc2a5fa2539fb782e06083911ffbfb0f8124-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Change stream_buf_read_setup_dowork
- parameter to struct steam_buf
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Rqkn53NkTrw="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Merge
+ stream_buf_get_next and stream_buf_set_next
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,99 +19,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...1227...>, Arne Schwabe <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--Rqkn53NkTrw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This methods only ever access sock->stream_buf so make the method
-simpler by just having a parameter sb.
+Attention is currently required from: plaisthos.
 
-Change-Id: I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1483
----
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1477?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Merge stream_buf_get_next and stream_buf_set_next
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1483
-This mail reflects revision 4 of this Change.
 
-Signed-off-by line for the author was added as per our policy.
+Patch Set 7: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+(1 comment)
 
-        
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 58ccda9..c463041 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2111,22 +2111,22 @@
- }
- 
- bool
--stream_buf_read_setup_dowork(struct link_socket *sock)
-+stream_buf_read_setup_dowork(struct stream_buf *sb)
- {
--    if (sock->stream_buf.residual.len && !sock->stream_buf.residual_fully_formed)
-+    if (sb->residual.len && !sb->residual_fully_formed)
-     {
--        ASSERT(buf_copy(&sock->stream_buf.buf, &sock->stream_buf.residual));
--        ASSERT(buf_init(&sock->stream_buf.residual, 0));
--        sock->stream_buf.residual_fully_formed = stream_buf_added(&sock->stream_buf, 0);
-+        ASSERT(buf_copy(&sb->buf, &sb->residual));
-+        ASSERT(buf_init(&sb->residual, 0));
-+        sb->residual_fully_formed = stream_buf_added(sb, 0);
-         dmsg(D_STREAM_DEBUG, "STREAM: RESIDUAL FULLY FORMED [%s], len=%d",
--             sock->stream_buf.residual_fully_formed ? "YES" : "NO", sock->stream_buf.residual.len);
-+             sb->residual_fully_formed ? "YES" : "NO", sb->residual.len);
-     }
- 
--    if (!sock->stream_buf.residual_fully_formed)
-+    if (!sb->residual_fully_formed)
-     {
--        stream_buf_set_next(&sock->stream_buf);
-+        stream_buf_set_next(sb);
-     }
--    return !sock->stream_buf.residual_fully_formed;
-+    return !sb->residual_fully_formed;
- }
- 
- static bool
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 850064d..3f46dc6 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -528,14 +528,24 @@
-     }
- }
- 
--bool stream_buf_read_setup_dowork(struct link_socket *sock);
-+/**
-+ * Will try to check if the buffers in stream form a
-+ * full packet. Will return true if further reads are
-+ * required and false otherwise. (full packet is ready)
-+ *
-+ * With UDP we always return true as there is no reassembly.
-+ *
-+ * @param sb    the stream buffer that should be worked on
-+ * @return      true if more reads are required.
-+ */
-+bool stream_buf_read_setup_dowork(struct stream_buf *sb);
- 
- static inline bool
- stream_buf_read_setup(struct link_socket *sock)
- {
-     if (link_socket_connection_oriented(sock))
-     {
--        return stream_buf_read_setup_dowork(sock);
-+        return stream_buf_read_setup_dowork(&sock->stream_buf);
-     }
-     else
-     {
+Commit Message:
+
+http://gerrit.openvpn.net/c/openvpn/+/1477/comment/c6179746_210069f4?usp=3D=
+email :
+PS7, Line 9: The stream_buf_set_next prepares a buffer in the stream_buf
+Either remove "The" or add "function"
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
+Gerrit-Change-Number: 1477
+Gerrit-PatchSet: 7
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 11 Feb 2026 15:25:35 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--Rqkn53NkTrw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D=
+"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
+;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1477/comment/c6179746_210069f4?usp=3Demail">Patch Set #7, Line 9:=
+</a> <code style=3D"font-family:monospace,monospace">The stream_buf_set_nex=
+t prepares a buffer in the stream_buf</code></p><p class=3D"blocks" style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Either remove &quot;The&=
+quot; or add &quot;function&quot;</p></li></ul></li></ul><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail">change 1=
+477</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
+scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1477?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd3e953104a67c8bf2a225e1798=
+65e3dbd0dbfbc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1477 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Feb 2026 15:25:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--Rqkn53NkTrw=--
 
