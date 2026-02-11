@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Feb 2026 13:37:20 +0000
-In-Reply-To: <gerrit.1768930567000.I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3@...2715...>
-References: <gerrit.1768930567000.I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <b2a5de58d462d85dea3b81478966d9a199659233-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------TfpJqKjwAH0n8EZ0qXHtkaSt"
+Message-ID: <4f6128db-c066-4881-8fd0-7eb863928149@...2722...>
+Date: Wed, 11 Feb 2026 20:28:32 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fte5cayjMos="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change
- stream_buf_read_setup_dowork parameter to struct steam_buf
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,84 +14,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---fte5cayjMos=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------TfpJqKjwAH0n8EZ0qXHtkaSt
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: plaisthos.
+Meeting summary for 11 February 2026:
 
-flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1483?usp=3Demail )
+  *
 
-Change subject: Change stream_buf_read_setup_dowork parameter to struct ste=
-am_buf
-......................................................................
+    *Updated: Release 2.7*
+    The stable release of OpenVPN 2.7.0 is now out.
+    There are a lot of changes and some new features, check out the
+    details here;https://community.openvpn.net/Downloads
 
+  *
 
-Patch Set 4: Code-Review+2
+    *Updated: mbedtls support*
+    mbedTLS 4 support is now in 2.7.0.
 
+  *
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1483?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+    *Updated: Release 2.6.18 and 2.6.19*
+    A small bugfix release version 2.6.18 was released last week,
+    immediately followed by a 2.6.19 because of a small build issue.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3deb7cd75db3cb280fa8d9c637cd3bde3881d6e3
-Gerrit-Change-Number: 1483
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 11 Feb 2026 13:37:20 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+  *
 
---fte5cayjMos=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+    *Updated: forums situation*
+    We're pretty much ready to replace the old forums with the new one,
+    so we will work on that.
+    Once that happens all accounts will need to do a password reset. You
+    can then request a password reset to your email address on the new
+    forum to regain access to your account.
+    There will still be a lot of left over crap from the old forums that
+    was imported, but we will sift through that to keep the good and
+    ditch the bad.
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1483?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1483?usp=3Demail=
-">change 1483</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1483?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3deb7cd75db3cb280fa8d9c637c=
-d3bde3881d6e3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1483 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Feb 2026 13:37:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+Kind regards,
+Johan Draaisma
 
-</body></html>=
+--------------TfpJqKjwAH0n8EZ0qXHtkaSt
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---fte5cayjMos=--
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 11 February 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.7</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The stable release of OpenVPN 2.7.0 is now out.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There are a lot of changes and some new features, check out
+          the details here;<span> </span><a
+            href="https://community.openvpn.net/Downloads"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://community.openvpn.net/Downloads</a></p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            mbedtls support</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          mbedTLS 4 support is now in 2.7.0.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Release 2.6.18 and 2.6.19</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          A small bugfix release version 2.6.18 was released last week,
+          immediately followed by a 2.6.19 because of a small build
+          issue.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            forums situation</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We're pretty much ready to replace the old forums with the new
+          one, so we will work on that.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Once that happens all accounts will need to do a password
+          reset. You can then request a password reset to your email
+          address on the new forum to regain access to your account.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There will still be a lot of left over crap from the old
+          forums that was imported, but we will sift through that to
+          keep the good and ditch the bad.</p>
+      </li>
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 14:00 Central European Time. </p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------TfpJqKjwAH0n8EZ0qXHtkaSt--
 
