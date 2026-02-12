@@ -1,16 +1,12 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 12 Feb 2026 14:02:59 +0000
-In-Reply-To: <gerrit.1766158651000.I1f5724476862935284f620c54afa510eea03e3f9@...2715...>
-References: <gerrit.1766158651000.I1f5724476862935284f620c54afa510eea03e3f9@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...,
- gert@...1296...
-Message-ID: <fdfc3c917ce505437dc0d508146c17592196a5d0-EmailReviewComments-HTML@...2715...>
+Message-ID: <f4d5e99d-cbcd-4c8f-b6f3-8bf7617f1518@...2181...>
+Date: Thu, 12 Feb 2026 15:07:58 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="soFwNEeZab4="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove NTLM support
+References: <20260205151036.743792-1-ralf@...2726...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20260205151036.743792-1-ralf@...2726...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn net v2] ovpn: tcp - fix packet
+ extraction from stream
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,130 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Sabrina Dubroca <sd@...2891...>, openvpn-devel@lists.sourceforge.net
 
---soFwNEeZab4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 05/02/2026 16:10, Ralf Lici wrote:
+> When processing TCP stream data in ovpn_tcp_recv, we receive large
+> cloned skbs from __strp_rcv that may contain multiple coalesced packets.
+> The current implementation has two bugs:
+> 
+> 1. Header offset overflow: Using pskb_pull with large offsets on
+>     coalesced skbs causes skb->data - skb->head to exceed the u16 storage
+>     of skb->network_header. This causes skb_reset_network_header to fail
+>     on the inner decapsulated packet, resulting in packet drops.
+> 
+> 2. Unaligned protocol headers: Extracting packets from arbitrary
+>     positions within the coalesced TCP stream provides no alignment
+>     guarantees for the packet data causing performance penalties on
+>     architectures without efficient unaligned access. Additionally,
+>     openvpn's 2-byte length prefix on TCP packets causes the subsequent
+>     4-byte opcode and packet ID fields to be inherently misaligned.
+> 
+> Fix both issues by allocating a new skb for each openvpn packet and
+> using skb_copy_bits to extract only the packet content into the new
+> buffer, skipping the 2-byte length prefix. Also, check the length before
+> invoking the function that performs the allocation to avoid creating an
+> invalid skb.
+> 
+> If the packet has to be forwarded to userspace the 2-byte prefix can be
+> pushed to the head safely, without misalignment.
+> 
+> As a side effect, this approach also avoids the expensive linearization
+> that pskb_pull triggers on cloned skbs with page fragments. In testing,
+> this resulted in TCP throughput improvements of up to 74%.
+> 
+> Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
+> Signed-off-by: Ralf Lici <ralf@...2726...>
 
-Attention is currently required from: cron2, ordex, plaisthos.
-
-flichtenheld has posted comments on this change by flichtenheld. ( http://g=
-errit.openvpn.net/c/openvpn/+/1453?usp=3Demail )
-
-Change subject: Remove NTLM support
-......................................................................
+Sabrina, isn't this something that may be interesting to espintcp too?
+Given the speed boost, it should be easy to convince people to accept 
+the change :)
 
 
-Patch Set 2:
-
-(1 comment)
-
-Patchset:
-
-PS2:
-> I love getting rid of this thing. However, shouldn't we warn user about t=
-he option going away? I.e. [=E2=80=A6]
-Currently we only have that in the release notes but the code does not issu=
-e a warning.
-
-Obviously that would need to go into a separate patch, but yes, if you want=
- that I can add it.
-
-Curious to see whether we get any feedback on the NTLMv1 removal in 2.7. Mi=
-crosoft is trying to get rid of it as well and with OpenSSL 3 you probably =
-need to add --provider legacy to be able to use it. So it is not like this =
-comes out of nowhere...
+Regards,
 
 
+-- 
+Antonio Quartulli
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1f5724476862935284f620c54afa510eea03e3f9
-Gerrit-Change-Number: 1453
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Thu, 12 Feb 2026 14:02:59 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: ordex <antonio@...2726...>
-
---soFwNEeZab4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1453?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">I lo=
-ve getting rid of this thing. However, shouldn&#39;t we warn user about the=
- option going away? I.e. [=E2=80=A6]</blockquote></p><p class=3D"blocks" st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">Currently we only hav=
-e that in the release notes but the code does not issue a warning.</p><p cl=
-ass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Obvi=
-ously that would need to go into a separate patch, but yes, if you want tha=
-t I can add it.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word=
--wrap: break-word;">Curious to see whether we get any feedback on the NTLMv=
-1 removal in 2.7. Microsoft is trying to get rid of it as well and with Ope=
-nSSL 3 you probably need to add --provider legacy to be able to use it. So =
-it is not like this comes out of nowhere...</p></li></ul></li></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail=
-">change 1453</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1453?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1f5724476862935284f620c54af=
-a510eea03e3f9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1453 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 12 Feb 2026 14:02:59=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
-
-</body></html>=
-
---soFwNEeZab4=--
 
