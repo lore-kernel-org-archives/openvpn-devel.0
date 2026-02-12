@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 12 Feb 2026 14:14:54 +0000
+Date: Thu, 12 Feb 2026 14:30:54 +0000
 In-Reply-To: <gerrit.1770904306000.I38bb2d1fa66c543e8bcf47b7d77b6154d1895f81@...2715...>
 References: <gerrit.1770904306000.I38bb2d1fa66c543e8bcf47b7d77b6154d1895f81@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <1b441dc16773717b9bba03b0bf738ba58eeb8b53-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <faaa877bbee8ab285c268bf5543d1ee925ffe805-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JV8JPxA9Af0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="W09Tog5TNeU="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Win32: Make
  interface index DWORD consistently
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JV8JPxA9Af0=
+--W09Tog5TNeU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1519?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
 
 
 Change subject: Win32: Make interface index DWORD consistently
@@ -61,10 +61,10 @@ M src/openvpn/tun.c
 M src/openvpn/tun.h
 M src/openvpn/win32.c
 M src/openvpnserv/interactive.c
-7 files changed, 50 insertions(+), 60 deletions(-)
+7 files changed, 78 insertions(+), 87 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1519/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1519/3
 
 diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
 index a0cec53..34f50c8 100644
@@ -101,9 +101,22 @@ e.name, nrpt.iface.index);
      send_msg_iservice(o->msg_channel, &nrpt, sizeof(nrpt), &ack, "DNS");
  }
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index b196713..e141879 100644
+index b196713..1cfbf80 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
+@@ -2389,8 +2389,8 @@
+         status =3D GetIpForwardTable(rt, &size, TRUE);
+         if (status !=3D NO_ERROR)
+         {
+-            msg(D_ROUTE, "NOTE: GetIpForwardTable returned error: %s (code=
+=3D%u)",
+-                strerror_win32(status, gc), (unsigned int)status);
++            msg(D_ROUTE, "NOTE: GetIpForwardTable returned error: %s (code=
+=3D%lu)",
++                strerror_win32(status, gc), status);
+             rt =3D NULL;
+         }
+     }
 @@ -2470,8 +2470,8 @@
          }
      }
@@ -214,6 +227,47 @@ rtal);
 
      rgi6->gateway.addr_ipv6 =3D BestRoute.NextHop.Ipv6.sin6_addr;
      rgi6->adapter_index =3D BestRoute.InterfaceIndex;
+@@ -2753,8 +2752,8 @@
+         else
+         {
+             /* failed, try increasing the metric to work around Vista issu=
+e */
+-            const unsigned int forward_metric_limit =3D
+-                2048; /* iteratively retry higher metrics up to this limit=
+ */
++            /* iteratively retry higher metrics up to this limit */
++            const DWORD forward_metric_limit =3D 2048;
+
+             for (; fr.dwForwardMetric1 <=3D forward_metric_limit; ++fr.dwF=
+orwardMetric1)
+             {
+@@ -2767,8 +2766,8 @@
+                     if (status =3D=3D NO_ERROR)
+                     {
+                         msg(D_ROUTE,
+-                            "ROUTE: CreateIpForwardEntry succeeded with dw=
+ForwardMetric1=3D%u and dwForwardType=3D%u",
+-                            (unsigned int)fr.dwForwardMetric1, (unsigned i=
+nt)fr.dwForwardType);
++                            "ROUTE: CreateIpForwardEntry succeeded with dw=
+ForwardMetric1=3D%lu and dwForwardType=3D%lu",
++                            fr.dwForwardMetric1, fr.dwForwardType);
+                         ret =3D RTA_SUCCESS;
+                         goto doublebreak;
+                     }
+@@ -2790,8 +2789,8 @@
+                 {
+                     msg(M_WARN,
+                         "ERROR: route addition failed using CreateIpForwar=
+dEntry: "
+-                        "%s [status=3D%u if_index=3D%u]",
+-                        strerror_win32(status, &gc), (unsigned int)status,=
+ (unsigned int)if_index);
++                        "%s [status=3D%lu if_index=3D%lu]",
++                        strerror_win32(status, &gc), status, if_index);
+                 }
+             }
+         }
 @@ -2855,7 +2854,7 @@
          ret =3D (ack.error_number =3D=3D ERROR_OBJECT_ALREADY_EXISTS) ? RT=
 A_EEXIST : RTA_ERROR;
@@ -290,7 +344,7 @@ c4,
  }
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index ad77117..5c1ba25 100644
+index ad77117..87b6569 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
 @@ -158,7 +158,7 @@
@@ -335,6 +389,20 @@ index ad77117..5c1ba25 100644
          (add ? "Setting" : "Deleting"), wins.iface.name, wins.iface.index);
 
      if (!send_msg_iservice(pipe, &wins, sizeof(wins), &ack, "TUN"))
+@@ -357,8 +357,8 @@
+     if (ack.error_number !=3D NO_ERROR)
+     {
+         msg(M_WARN, "TUN: %s WINS failed using service: %s [status=3D%u if=
+_name=3D%s]",
+-            (add ? "adding" : "deleting"), strerror_win32(ack.error_number=
+, &gc), ack.error_number,
+-            wins.iface.name);
++            (add ? "adding" : "deleting"), strerror_win32(ack.error_number=
+, &gc),
++            ack.error_number, wins.iface.name);
+         goto out;
+     }
+
 @@ -398,13 +398,13 @@
 
      if (ack.error_number !=3D NO_ERROR)
@@ -356,6 +424,93 @@ ily_name, mtu,
              mtu_msg.iface.index);
          ret =3D true;
      }
+@@ -3428,7 +3428,7 @@
+     if (dev_info_set =3D=3D INVALID_HANDLE_VALUE)
+     {
+         err =3D GetLastError();
+-        msg(M_FATAL, "Error [%u] opening device information set key: %s", =
+(unsigned int)err,
++        msg(M_FATAL, "Error [%lu] opening device information set key: %s",=
+ err,
+             strerror_win32(err, gc));
+     }
+
+@@ -4111,7 +4111,7 @@
+
+     if ((status =3D GetAdaptersInfo(NULL, &size)) !=3D ERROR_BUFFER_OVERFL=
+OW)
+     {
+-        msg(M_INFO, "GetAdaptersInfo #1 failed (status=3D%u) : %s", (unsig=
+ned int)status,
++        msg(M_INFO, "GetAdaptersInfo #1 failed (status=3D%lu) : %s", statu=
+s,
+             strerror_win32(status, gc));
+     }
+     else
+@@ -4119,7 +4119,7 @@
+         pi =3D (PIP_ADAPTER_INFO)gc_malloc(size, false, gc);
+         if ((status =3D GetAdaptersInfo(pi, &size)) !=3D NO_ERROR)
+         {
+-            msg(M_INFO, "GetAdaptersInfo #2 failed (status=3D%u) : %s", (u=
+nsigned int)status,
++            msg(M_INFO, "GetAdaptersInfo #2 failed (status=3D%lu) : %s", s=
+tatus,
+                 strerror_win32(status, gc));
+             pi =3D NULL;
+         }
+@@ -4138,19 +4138,19 @@
+     {
+         if ((status =3D GetPerAdapterInfo(index, NULL, &size)) !=3D ERROR_=
+BUFFER_OVERFLOW)
+         {
+-            msg(M_INFO, "GetPerAdapterInfo #1 failed (status=3D%u) : %s", =
+(unsigned int)status,
++            msg(M_INFO, "GetPerAdapterInfo #1 failed (status=3D%lu) : %s",=
+ status,
+                 strerror_win32(status, gc));
+         }
+         else
+         {
+             pi =3D (PIP_PER_ADAPTER_INFO)gc_malloc(size, false, gc);
+-            if ((status =3D GetPerAdapterInfo((ULONG)index, pi, &size)) =
+=3D=3D ERROR_SUCCESS)
++            if ((status =3D GetPerAdapterInfo(index, pi, &size)) =3D=3D ER=
+ROR_SUCCESS)
+             {
+                 return pi;
+             }
+             else
+             {
+-                msg(M_INFO, "GetPerAdapterInfo #2 failed (status=3D%u) : %=
+s", (unsigned int)status,
++                msg(M_INFO, "GetPerAdapterInfo #2 failed (status=3D%lu) : =
+%s", status,
+                     strerror_win32(status, gc));
+             }
+         }
+@@ -4167,7 +4167,7 @@
+
+     if ((status =3D GetInterfaceInfo(NULL, &size)) !=3D ERROR_INSUFFICIENT=
+_BUFFER)
+     {
+-        msg(M_INFO, "GetInterfaceInfo #1 failed (status=3D%u) : %s", (unsi=
+gned int)status,
++        msg(M_INFO, "GetInterfaceInfo #1 failed (status=3D%lu) : %s", stat=
+us,
+             strerror_win32(status, gc));
+     }
+     else
+@@ -4179,7 +4179,7 @@
+         }
+         else
+         {
+-            msg(M_INFO, "GetInterfaceInfo #2 failed (status=3D%u) : %s", (=
+unsigned int)status,
++            msg(M_INFO, "GetInterfaceInfo #2 failed (status=3D%lu) : %s", =
+status,
+                 strerror_win32(status, gc));
+         }
+     }
 @@ -4456,8 +4456,8 @@
          list =3D list->Next;
      }
@@ -371,6 +526,32 @@ nt=3D%d metric=3D%d",
           count ? *count : -1, lowest_metric);
 
      if (ret =3D=3D TUN_ADAPTER_INDEX_INVALID && count)
+@@ -4526,7 +4526,7 @@
+             DWORD status;
+             const DWORD context =3D ip->Context;
+
+-            if ((status =3D DeleteIPAddress((ULONG)context)) =3D=3D NO_ERR=
+OR)
++            if ((status =3D DeleteIPAddress(context)) =3D=3D NO_ERROR)
+             {
+                 msg(M_INFO, "Successfully deleted previously set dynamic I=
+P/netmask: %s/%s",
+                     ip->IpAddress.String, ip->IpMask.String);
+@@ -4537,8 +4537,8 @@
+                 if (strcmp(ip->IpAddress.String, empty) || strcmp(ip->IpMa=
+sk.String, empty))
+                 {
+                     msg(M_INFO,
+-                        "NOTE: could not delete previously set dynamic IP/=
+netmask: %s/%s (status=3D%u)",
+-                        ip->IpAddress.String, ip->IpMask.String, (unsigned=
+ int)status);
++                        "NOTE: could not delete previously set dynamic IP/=
+netmask: %s/%s (status=3D%lu)",
++                        ip->IpAddress.String, ip->IpMask.String, status);
+                 }
+             }
+             ip =3D ip->Next;
 @@ -4634,7 +4634,7 @@
  show_adapter(msglvl_t msglevel, const IP_ADAPTER_INFO *a, struct gc_arena =
 *gc)
@@ -383,6 +564,32 @@ nt=3D%d metric=3D%d",
 gc));
      msg(msglevel, "  MAC =3D %s", format_hex_ex(a->Address, a->AddressLeng=
 th, 0, 1, ":", gc));
+@@ -4810,8 +4810,8 @@
+         else
+         {
+             msg(M_WARN,
+-                "NOTE: Release of DHCP-assigned IP address lease on TAP-Wi=
+ndows adapter failed: %s (code=3D%u)",
+-                strerror_win32(status, &gc), (unsigned int)status);
++                "NOTE: Release of DHCP-assigned IP address lease on TAP-Wi=
+ndows adapter failed: %s (code=3D%lu)",
++                strerror_win32(status, &gc), status);
+         }
+     }
+
+@@ -4851,8 +4851,8 @@
+         else
+         {
+             msg(M_WARN,
+-                "WARNING: Failed to renew DHCP IP address lease on TAP-Win=
+dows adapter: %s (code=3D%u)",
+-                strerror_win32(status, &gc), (unsigned int)status);
++                "WARNING: Failed to renew DHCP IP address lease on TAP-Win=
+dows adapter: %s (code=3D%lu)",
++                strerror_win32(status, &gc), status);
+         }
+     }
+     gc_free(&gc);
 @@ -5215,12 +5215,12 @@
 
      if (ack.error_number !=3D NO_ERROR)
@@ -424,6 +631,24 @@ x, device_guid);
              msg(D_TUNTAP_INFO,
                  "NOTE: FlushIpNetTable failed on interface [%lu] %s (statu=
 s=3D%lu) : %s", index,
+@@ -6232,11 +6232,12 @@
+     if (tt->ipapi_context_defined)
+     {
+         DWORD status;
++
+         if ((status =3D DeleteIPAddress(tt->ipapi_context)) !=3D NO_ERROR)
+         {
+             msg(M_WARN,
+-                "Warning: DeleteIPAddress[%u] failed on TAP-Windows adapte=
+r, status=3D%u : %s",
+-                (unsigned int)tt->ipapi_context, (unsigned int)status, str=
+error_win32(status, &gc));
++                "Warning: DeleteIPAddress[%lu] failed on TAP-Windows adapt=
+er, status=3D%lu : %s",
++                tt->ipapi_context, status, strerror_win32(status, &gc));
+         }
+     }
+
 diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
 index a226e37..388f5b7 100644
 --- a/src/openvpn/tun.h
@@ -553,19 +778,19 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I38bb2d1fa66c543e8bcf47b7d77b6154d1895f81
 Gerrit-Change-Number: 1519
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---JV8JPxA9Af0=
+--W09Tog5TNeU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
 p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1519?usp=3Demail">View C=
 hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
 e; white-space: pre-wrap;">Win32: Make interface index DWORD consistently<b=
@@ -578,10 +803,10 @@ s to int for printf().<br><br>Change-Id: I38bb2d1fa66c543e8bcf47b7d77b6154d=
 1895f81<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---=
 <br>M include/openvpn-msg.h<br>M src/openvpn/dns.c<br>M src/openvpn/route.c=
 <br>M src/openvpn/tun.c<br>M src/openvpn/tun.h<br>M src/openvpn/win32.c<br>=
-M src/openvpnserv/interactive.c<br>7 files changed, 50 insertions(+), 60 de=
+M src/openvpnserv/interactive.c<br>7 files changed, 78 insertions(+), 87 de=
 letions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospa=
 ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/19/1519/2</pre><pre style=3D"font-family: monospace=
+18/openvpn refs/changes/19/1519/3</pre><pre style=3D"font-family: monospace=
 ,monospace; white-space: pre-wrap;"><span>diff --git a/include/openvpn-msg.=
 h b/include/openvpn-msg.h</span><br><span>index a0cec53..34f50c8 100644</sp=
 an><br><span>--- a/include/openvpn-msg.h</span><br><span>+++ b/include/open=
@@ -611,237 +836,399 @@ style=3D"color: hsl(120, 100%, 40%);">+        nrpt.iface.name, nrpt.iface.=
 index);</span><br><span> </span><br><span>     send_msg_iservice(o-&gt;msg_=
 channel, &amp;nrpt, sizeof(nrpt), &amp;ack, &quot;DNS&quot;);</span><br><sp=
 an> }</span><br><span>diff --git a/src/openvpn/route.c b/src/openvpn/route.=
-c</span><br><span>index b196713..e141879 100644</span><br><span>--- a/src/o=
+c</span><br><span>index b196713..1cfbf80 100644</span><br><span>--- a/src/o=
 penvpn/route.c</span><br><span>+++ b/src/openvpn/route.c</span><br><span>@@=
- -2470,8 +2470,8 @@</span><br><span>         }</span><br><span>     }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D=
-_ROUTE, &quot;TEST ROUTES: %d/%d succeeded len=3D%d ret=3D%d a=3D%d u/d=3D%=
-s&quot;, good, count, len,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        (int)ret, ambig, adapter_up ? &quot;up&quot; : &quot;down&quot=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE,=
- &quot;TEST ROUTES: %d/%d succeeded len=3D%d ret=3D%u a=3D%d u/d=3D%s&quot;=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        good, coun=
-t, len, ret, ambig, adapter_up ? &quot;up&quot; : &quot;down&quot;);</span>=
-<br><span> </span><br><span>     gc_free(&amp;gc);</span><br><span>     ret=
-urn ret;</span><br><span>@@ -2495,9 +2495,9 @@</span><br><span>            =
- const DWORD index =3D row-&gt;dwForwardIfIndex;</span><br><span>          =
-   const DWORD metric =3D row-&gt;dwForwardMetric1;</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_ROUTE_DE=
-BUG, &quot;GDGR: route[%lu] %s/%s i=3D%d m=3D%d&quot;, i,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            dmsg(D_ROUTE_DEBUG, &quot=
-;GDGR: route[%lu] %s/%s i=3D%lu m=3D%lu&quot;, i,</span><br><span>         =
-         print_in_addr_t((in_addr_t)net, 0, &amp;gc), print_in_addr_t((in_a=
-ddr_t)mask, 0, &amp;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-                 (int)index, (int)metric);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                 index, metric);</span><br><span>=
- </span><br><span>             if (!net &amp;&amp; !mask &amp;&amp; metric =
-&lt; lowest_metric)</span><br><span>             {</span><br><span>@@ -2508=
-,7 +2508,7 @@</span><br><span>         }</span><br><span>     }</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_ROUT=
-E_DEBUG, &quot;GDGR: best=3D%d lm=3D%u&quot;, best, (unsigned int)lowest_me=
-tric);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_RO=
-UTE_DEBUG, &quot;GDGR: best=3D%d lm=3D%lu&quot;, best, lowest_metric);</spa=
-n><br><span> </span><br><span>     gc_free(&amp;gc);</span><br><span>     r=
-eturn ret;</span><br><span>@@ -2537,12 +2537,12 @@</span><br><span>     sta=
-tus =3D GetBestInterfaceEx((struct sockaddr *)dest, &amp;best_if_index);</s=
-pan><br><span>     if (status !=3D NO_ERROR)</span><br><span>     {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NO=
-TE: GetBestInterfaceEx returned error: %s (code=3D%u)&quot;,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            strerror_win32(status, g=
-c), (unsigned int)status);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        msg(D_ROUTE, &quot;NOTE: GetBestInterfaceEx returned error: =
-%s (code=3D%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            strerror_win32(status, gc), status);</span><br><span>       =
-  goto done;</span><br><span>     }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    msg(D_ROUTE_DEBUG, &quot;GetBestInterfa=
-ceEx() returned if=3D%d&quot;, (int)best_if_index);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE_DEBUG, &quot;GetBestInter=
-faceEx() returned if=3D%lu&quot;, best_if_index);</span><br><span> </span><=
-br><span>     /* get the routing information (such as NextHop) for the dest=
-ination and interface */</span><br><span>     NET_LUID luid;</span><br><spa=
-n>@@ -2552,8 +2552,8 @@</span><br><span>     status =3D GetBestRoute2(&amp;=
-luid, best_if_index, NULL, dest, 0, best_route, &amp;best_src);</span><br><=
-span>     if (status !=3D NO_ERROR)</span><br><span>     {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NOTE: GetIp=
-ForwardEntry2 returned error: %s (code=3D%u)&quot;,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            strerror_win32(status, gc), (un=
-signed int)status);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        msg(D_ROUTE, &quot;NOTE: GetIpForwardEntry2 returned error: %s (cod=
-e=3D%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        strerror_win32(status, gc), status);</span><br><span>         goto =
-done;</span><br><span>     }</span><br><span> </span><br><span>@@ -2647,15 =
-+2647,14 @@</span><br><span>             print_in_addr_t(r-&gt;gateway, 0, =
-&amp;gc), count);</span><br><span>     }</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_ROUTE_DEBUG, &quot;DEBUG: r=
-oute find if: on_tun=3D%d count=3D%d index=3D%d&quot;, on_tun, count,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-         (int)ret);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_ROUTE_DEBUG, &qu=
-ot;DEBUG: route find if: on_tun=3D%d count=3D%d index=3D%lu&quot;,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+         on_tun, count, ret)=
-;</span><br><span> </span><br><span>     gc_free(&amp;gc);</span><br><span>=
-     return ret;</span><br><span> }</span><br><span> </span><br><span> /* I=
-Pv6 implementation using GetBestRoute2()</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- *   (TBD: dynamic linking so the binary can still run o=
-n XP?)</span><br><span>  * https://msdn.microsoft.com/en-us/library/windows=
-/desktop/aa365922(v=3Dvs.85).aspx</span><br><span>  * https://msdn.microsof=
-t.com/en-us/library/windows/desktop/aa814411(v=3Dvs.85).aspx</span><br><spa=
-n>  */</span><br><span>@@ -2687,8 +2686,8 @@</span><br><span>         print=
-_in6_addr(BestRoute.DestinationPrefix.Prefix.Ipv6.sin6_addr, 0, &amp;gc),</=
-span><br><span>         BestRoute.DestinationPrefix.PrefixLength,</span><br=
-><span>         print_in6_addr(BestRoute.NextHop.Ipv6.sin6_addr, 0, &amp;gc=
-));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_ROUTE, &=
-quot;GDG6: Metric=3D%d, Loopback=3D%d, AA=3D%d, I=3D%d&quot;, (int)BestRout=
-e.Metric,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        (int=
-)BestRoute.Loopback, (int)BestRoute.AutoconfigureAddress, (int)BestRoute.Im=
-mortal);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_R=
-OUTE, &quot;GDG6: Metric=3D%lu, Loopback=3D%u, AA=3D%u, I=3D%u&quot;, BestR=
-oute.Metric,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- BestRoute.Loopback, BestRoute.AutoconfigureAddress, BestRoute.Immortal);</=
-span><br><span> </span><br><span>     rgi6-&gt;gateway.addr_ipv6 =3D BestRo=
-ute.NextHop.Ipv6.sin6_addr;</span><br><span>     rgi6-&gt;adapter_index =3D=
- BestRoute.InterfaceIndex;</span><br><span>@@ -2855,7 +2854,7 @@</span><br>=
-<span>         ret =3D (ack.error_number =3D=3D ERROR_OBJECT_ALREADY_EXISTS=
-) ? RTA_EEXIST : RTA_ERROR;</span><br><span>         if (ret =3D=3D RTA_ERR=
-OR)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            msg(M_WARN, &quot;ERROR: route %s failed using service=
-: %s [status=3D%u if_index=3D%d]&quot;,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            msg(M_WARN, &quot;ERROR: route %s failed us=
-ing service: %s [status=3D%u if_index=3D%lu]&quot;,</span><br><span>       =
-          (add ? &quot;addition&quot; : &quot;deletion&quot;), strerror_win=
-32(ack.error_number, &amp;gc),</span><br><span>                 ack.error_n=
-umber, rt-&gt;iface.index);</span><br><span>         }</span><br><span>@@ -=
-2869,17 +2868,12 @@</span><br><span>     return ret;</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if def=
-ined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&qu=
-ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Returns RTA_=
-SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */</span=
-><br><span> static int</span><br><span> do_route_ipv4_service(const bool ad=
-d, const struct route_ipv4 *r, const struct tuntap *tt)</span><br><span> {<=
-/span><br><span>     DWORD if_index =3D windows_route_find_if_index(r, tt);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (if_index =3D=
-=3D ~0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (if_i=
-ndex =3D=3D TUN_ADAPTER_INDEX_INVALID)</span><br><span>     {</span><br><sp=
-an>         return RTA_ERROR;</span><br><span>     }</span><br><span>@@ -30=
-23,10 +3017,6 @@</span><br><span>     return status;</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if def=
-ined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span> /* Returns RTA_SUCCESS on success, RTA_EEXIST if rou=
-te exists, RTA_ERROR on error */</span><br><span> static int</span><br><spa=
-n> add_route_service(const struct route_ipv4 *r, const struct tuntap *tt)</=
-span><br><span>@@ -3057,14 +3047,14 @@</span><br><span> format_route_entry(=
-const MIB_IPFORWARDROW *r, struct gc_arena *gc)</span><br><span> {</span><b=
-r><span>     struct buffer out =3D alloc_buf_gc(256, gc);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    buf_printf(&amp;out, &quot;%s %s %s=
- p=3D%d i=3D%d t=3D%d pr=3D%d a=3D%d h=3D%d m=3D%d/%d/%d/%d/%d&quot;,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, =
-&quot;%s %s %s p=3D%lu i=3D%lu t=3D%lu pr=3D%lu a=3D%lu h=3D%lu m=3D%lu/%lu=
-/%lu/%lu/%lu&quot;,</span><br><span>                print_in_addr_t(r-&gt;d=
-wForwardDest, IA_NET_ORDER, gc),</span><br><span>                print_in_a=
-ddr_t(r-&gt;dwForwardMask, IA_NET_ORDER, gc),</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-               print_in_addr_t(r-&gt;dwForwardNextH=
-op, IA_NET_ORDER, gc), (int)r-&gt;dwForwardPolicy,</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-               (int)r-&gt;dwForwardIfIndex, (i=
-nt)r-&gt;dwForwardType, (int)r-&gt;dwForwardProto,</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-               (int)r-&gt;dwForwardAge, (int)r=
--&gt;dwForwardNextHopAS, (int)r-&gt;dwForwardMetric1,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-               (int)r-&gt;dwForwardMetric2,=
- (int)r-&gt;dwForwardMetric3, (int)r-&gt;dwForwardMetric4,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-               (int)r-&gt;dwForwardMet=
-ric5);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-  print_in_addr_t(r-&gt;dwForwardNextHop, IA_NET_ORDER, gc), r-&gt;dwForwar=
-dPolicy,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-    r-&gt;dwForwardIfIndex, r-&gt;dwForwardType, r-&gt;dwForwardProto,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+               r-&gt;dwF=
-orwardAge, r-&gt;dwForwardNextHopAS, r-&gt;dwForwardMetric1,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+               r-&gt;dwForwardMetr=
-ic2, r-&gt;dwForwardMetric3, r-&gt;dwForwardMetric4,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+               r-&gt;dwForwardMetric5);</=
-span><br><span>     return BSTR(&amp;out);</span><br><span> }</span><br><sp=
-an> </span><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</sp=
-an><br><span>index ad77117..5c1ba25 100644</span><br><span>--- a/src/openvp=
-n/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -158,7 +=
-158,7 @@</span><br><span> </span><br><span>     if (ack.error_number !=3D N=
-O_ERROR)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        msg(M_WARN, &quot;TUN: %s address failed using service: %=
-s [status=3D%u if_index=3D%d]&quot;,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        msg(M_WARN, &quot;TUN: %s address failed using ser=
-vice: %s [status=3D%u if_index=3D%lu]&quot;,</span><br><span>             (=
-add ? &quot;adding&quot; : &quot;deleting&quot;), strerror_win32(ack.error_=
-number, &amp;gc), ack.error_number,</span><br><span>             addr.iface=
-.index);</span><br><span>         goto out;</span><br><span>@@ -220,7 +220,=
-7 @@</span><br><span>         strncpy(dns.domains + dstlen, o-&gt;domain_se=
-arch_list[i], srclen + 1);</span><br><span>     }</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_LOW, &quot;%s DNS d=
-omains on &#39;%s&#39; (if_index =3D %d) using service&quot;,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    msg(D_LOW, &quot;%s DNS domai=
-ns on &#39;%s&#39; (if_index =3D %lu) using service&quot;,</span><br><span>=
-         (add ? &quot;Setting&quot; : &quot;Deleting&quot;), dns.iface.name=
-, dns.iface.index);</span><br><span>     if (!send_msg_iservice(o-&gt;msg_c=
-hannel, &amp;dns, sizeof(dns), &amp;ack, &quot;TUN&quot;))</span><br><span>=
-     {</span><br><span>@@ -289,7 +289,7 @@</span><br><span>         }</span=
-><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    msg(D_LOW, &quot;%s %s dns servers on &#39;%s&#39; (if_in=
-dex =3D %d) using service&quot;,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    msg(D_LOW, &quot;%s %s dns servers on &#39;%s&#39; (if_ind=
-ex =3D %lu) using service&quot;,</span><br><span>         (add ? &quot;Sett=
-ing&quot; : &quot;Deleting&quot;), ip_proto_name, dns.iface.name, dns.iface=
-.index);</span><br><span> </span><br><span>     if (!send_msg_iservice(pipe=
-, &amp;dns, sizeof(dns), &amp;ack, &quot;TUN&quot;))</span><br><span>@@ -34=
-6,7 +346,7 @@</span><br><span>         wins.addr[i].ipv4.s_addr =3D htonl(t=
-t-&gt;options.wins[i]);</span><br><span>     }</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_LOW, &quot;%s WINS ser=
-vers on &#39;%s&#39; (if_index =3D %d) using service&quot;,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    msg(D_LOW, &quot;%s WINS server=
-s on &#39;%s&#39; (if_index =3D %lu) using service&quot;,</span><br><span> =
-        (add ? &quot;Setting&quot; : &quot;Deleting&quot;), wins.iface.name=
-, wins.iface.index);</span><br><span> </span><br><span>     if (!send_msg_i=
-service(pipe, &amp;wins, sizeof(wins), &amp;ack, &quot;TUN&quot;))</span><b=
-r><span>@@ -398,13 +398,13 @@</span><br><span> </span><br><span>     if (ac=
-k.error_number !=3D NO_ERROR)</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(M_NONFATAL, &quot;TUN: setting =
-%s mtu using service failed: %s [status=3D%u if_index=3D%d]&quot;,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_NONFATAL, &quo=
-t;TUN: setting %s mtu using service failed: %s [status=3D%u if_index=3D%lu]=
-&quot;,</span><br><span>             family_name, strerror_win32(ack.error_=
-number, &amp;gc), ack.error_number,</span><br><span>             mtu_msg.if=
-ace.index);</span><br><span>     }</span><br><span>     else</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M=
-_INFO, &quot;%s MTU set to %d on interface %d using service&quot;, family_n=
-ame, mtu,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ms=
-g(M_INFO, &quot;%s MTU set to %d on interface %lu using service&quot;, fami=
-ly_name, mtu,</span><br><span>             mtu_msg.iface.index);</span><br>=
-<span>         ret =3D true;</span><br><span>     }</span><br><span>@@ -445=
-6,8 +4456,8 @@</span><br><span>         list =3D list-&gt;Next;</span><br><=
-span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    dmsg(D_ROUTE_DEBUG, &quot;DEBUG: IP Locate: ip=3D%s nm=3D%s ind=
-ex=3D%d count=3D%d metric=3D%d&quot;,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-         print_in_addr_t(ip, 0, &amp;gc), print_in_addr_t(h=
-ighest_netmask, 0, &amp;gc), (int)ret,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    dmsg(D_ROUTE_DEBUG, &quot;DEBUG: IP Locate: ip=3D%s =
-nm=3D%s index=3D%lu count=3D%d metric=3D%d&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+         print_in_addr_t(ip, 0, &amp;gc), pri=
-nt_in_addr_t(highest_netmask, 0, &amp;gc), ret,</span><br><span>          c=
-ount ? *count : -1, lowest_metric);</span><br><span> </span><br><span>     =
-if (ret =3D=3D TUN_ADAPTER_INDEX_INVALID &amp;&amp; count)</span><br><span>=
-@@ -4634,7 +4634,7 @@</span><br><span> show_adapter(msglvl_t msglevel, cons=
-t IP_ADAPTER_INFO *a, struct gc_arena *gc)</span><br><span> {</span><br><sp=
-an>     msg(msglevel, &quot;%s&quot;, a-&gt;Description);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    msg(msglevel, &quot;  Index =3D %d&=
-quot;, (int)a-&gt;Index);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    msg(msglevel, &quot;  Index =3D %lu&quot;, a-&gt;Index);</span><b=
-r><span>     msg(msglevel, &quot;  GUID =3D %s&quot;, a-&gt;AdapterName);</=
-span><br><span>     msg(msglevel, &quot;  IP =3D %s&quot;, format_ip_addr_s=
-tring(&amp;a-&gt;IpAddressList, gc));</span><br><span>     msg(msglevel, &q=
-uot;  MAC =3D %s&quot;, format_hex_ex(a-&gt;Address, a-&gt;AddressLength, 0=
-, 1, &quot;:&quot;, gc));</span><br><span>@@ -5215,12 +5215,12 @@</span><br=
-><span> </span><br><span>     if (ack.error_number !=3D NO_ERROR)</span><br=
-><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-msg(M_NONFATAL, &quot;TUN: enabling dhcp using service failed: %s [status=
+ -2389,8 +2389,8 @@</span><br><span>         status =3D GetIpForwardTable(r=
+t, &amp;size, TRUE);</span><br><span>         if (status !=3D NO_ERROR)</sp=
+an><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            msg(D_ROUTE, &quot;NOTE: GetIpForwardTable returned error: %s=
+ (code=3D%u)&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              strerror_win32(status, gc), (unsigned int)status);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_ROUTE, &quot=
+;NOTE: GetIpForwardTable returned error: %s (code=3D%lu)&quot;,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                strerror_win32(=
+status, gc), status);</span><br><span>             rt =3D NULL;</span><br><=
+span>         }</span><br><span>     }</span><br><span>@@ -2470,8 +2470,8 @=
+@</span><br><span>         }</span><br><span>     }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_ROUTE, &quot;TEST=
+ ROUTES: %d/%d succeeded len=3D%d ret=3D%d a=3D%d u/d=3D%s&quot;, good, cou=
+nt, len,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        (int)=
+ret, ambig, adapter_up ? &quot;up&quot; : &quot;down&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE, &quot;TEST ROUTES=
+: %d/%d succeeded len=3D%d ret=3D%u a=3D%d u/d=3D%s&quot;,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        good, count, len, ret, ambig=
+, adapter_up ? &quot;up&quot; : &quot;down&quot;);</span><br><span> </span>=
+<br><span>     gc_free(&amp;gc);</span><br><span>     return ret;</span><br=
+><span>@@ -2495,9 +2495,9 @@</span><br><span>             const DWORD index=
+ =3D row-&gt;dwForwardIfIndex;</span><br><span>             const DWORD met=
+ric =3D row-&gt;dwForwardMetric1;</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_ROUTE_DEBUG, &quot;GDGR:=
+ route[%lu] %s/%s i=3D%d m=3D%d&quot;, i,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            dmsg(D_ROUTE_DEBUG, &quot;GDGR: route[%lu=
+] %s/%s i=3D%lu m=3D%lu&quot;, i,</span><br><span>                  print_i=
+n_addr_t((in_addr_t)net, 0, &amp;gc), print_in_addr_t((in_addr_t)mask, 0, &=
+amp;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+    (int)index, (int)metric);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                 index, metric);</span><br><span> </span><br><spa=
+n>             if (!net &amp;&amp; !mask &amp;&amp; metric &lt; lowest_metr=
+ic)</span><br><span>             {</span><br><span>@@ -2508,7 +2508,7 @@</s=
+pan><br><span>         }</span><br><span>     }</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_ROUTE_DEBUG, &quot;G=
+DGR: best=3D%d lm=3D%u&quot;, best, (unsigned int)lowest_metric);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_ROUTE_DEBUG, &quot=
+;GDGR: best=3D%d lm=3D%lu&quot;, best, lowest_metric);</span><br><span> </s=
+pan><br><span>     gc_free(&amp;gc);</span><br><span>     return ret;</span=
+><br><span>@@ -2537,12 +2537,12 @@</span><br><span>     status =3D GetBestI=
+nterfaceEx((struct sockaddr *)dest, &amp;best_if_index);</span><br><span>  =
+   if (status !=3D NO_ERROR)</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NOTE: GetBestInt=
+erfaceEx returned error: %s (code=3D%u)&quot;,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            strerror_win32(status, gc), (unsigned =
+int)status);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ msg(D_ROUTE, &quot;NOTE: GetBestInterfaceEx returned error: %s (code=3D%lu=
+)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ strerror_win32(status, gc), status);</span><br><span>         goto done;</=
+span><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    msg(D_ROUTE_DEBUG, &quot;GetBestInterfaceEx() returne=
+d if=3D%d&quot;, (int)best_if_index);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    msg(D_ROUTE_DEBUG, &quot;GetBestInterfaceEx() returne=
+d if=3D%lu&quot;, best_if_index);</span><br><span> </span><br><span>     /*=
+ get the routing information (such as NextHop) for the destination and inte=
+rface */</span><br><span>     NET_LUID luid;</span><br><span>@@ -2552,8 +25=
+52,8 @@</span><br><span>     status =3D GetBestRoute2(&amp;luid, best_if_in=
+dex, NULL, dest, 0, best_route, &amp;best_src);</span><br><span>     if (st=
+atus !=3D NO_ERROR)</span><br><span>     {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        msg(D_ROUTE, &quot;NOTE: GetIpForwardEntry2 re=
+turned error: %s (code=3D%u)&quot;,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            strerror_win32(status, gc), (unsigned int)status)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_ROUT=
+E, &quot;NOTE: GetIpForwardEntry2 returned error: %s (code=3D%lu)&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            strerror_w=
+in32(status, gc), status);</span><br><span>         goto done;</span><br><s=
+pan>     }</span><br><span> </span><br><span>@@ -2647,15 +2647,14 @@</span>=
+<br><span>             print_in_addr_t(r-&gt;gateway, 0, &amp;gc), count);<=
+/span><br><span>     }</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    dmsg(D_ROUTE_DEBUG, &quot;DEBUG: route find if: on_t=
+un=3D%d count=3D%d index=3D%d&quot;, on_tun, count,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-         (int)ret);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_ROUTE_DEBUG, &quot;DEBUG: rout=
+e find if: on_tun=3D%d count=3D%d index=3D%lu&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+         on_tun, count, ret);</span><br><=
+span> </span><br><span>     gc_free(&amp;gc);</span><br><span>     return r=
+et;</span><br><span> }</span><br><span> </span><br><span> /* IPv6 implement=
+ation using GetBestRoute2()</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">- *   (TBD: dynamic linking so the binary can still run on XP?)</span>=
+<br><span>  * https://msdn.microsoft.com/en-us/library/windows/desktop/aa36=
+5922(v=3Dvs.85).aspx</span><br><span>  * https://msdn.microsoft.com/en-us/l=
+ibrary/windows/desktop/aa814411(v=3Dvs.85).aspx</span><br><span>  */</span>=
+<br><span>@@ -2687,8 +2686,8 @@</span><br><span>         print_in6_addr(Bes=
+tRoute.DestinationPrefix.Prefix.Ipv6.sin6_addr, 0, &amp;gc),</span><br><spa=
+n>         BestRoute.DestinationPrefix.PrefixLength,</span><br><span>      =
+   print_in6_addr(BestRoute.NextHop.Ipv6.sin6_addr, 0, &amp;gc));</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_ROUTE, &quot;GDG6: Me=
+tric=3D%d, Loopback=3D%d, AA=3D%d, I=3D%d&quot;, (int)BestRoute.Metric,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        (int)BestRoute.Lo=
+opback, (int)BestRoute.AutoconfigureAddress, (int)BestRoute.Immortal);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE, &quot;G=
+DG6: Metric=3D%lu, Loopback=3D%u, AA=3D%u, I=3D%u&quot;, BestRoute.Metric,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        BestRoute.Lo=
+opback, BestRoute.AutoconfigureAddress, BestRoute.Immortal);</span><br><spa=
+n> </span><br><span>     rgi6-&gt;gateway.addr_ipv6 =3D BestRoute.NextHop.I=
+pv6.sin6_addr;</span><br><span>     rgi6-&gt;adapter_index =3D BestRoute.In=
+terfaceIndex;</span><br><span>@@ -2753,8 +2752,8 @@</span><br><span>       =
+  else</span><br><span>         {</span><br><span>             /* failed, t=
+ry increasing the metric to work around Vista issue */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            const unsigned int forward_met=
+ric_limit =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        2048; /* iteratively retry higher metrics up to this limit */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* iterativel=
+y retry higher metrics up to this limit */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            const DWORD forward_metric_limit =3D 204=
+8;</span><br><span> </span><br><span>             for (; fr.dwForwardMetric=
+1 &lt;=3D forward_metric_limit; ++fr.dwForwardMetric1)</span><br><span>    =
+         {</span><br><span>@@ -2767,8 +2766,8 @@</span><br><span>          =
+           if (status =3D=3D NO_ERROR)</span><br><span>                    =
+ {</span><br><span>                         msg(D_ROUTE,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                            &quot;ROUTE:=
+ CreateIpForwardEntry succeeded with dwForwardMetric1=3D%u and dwForwardTyp=
+e=3D%u&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                    (unsigned int)fr.dwForwardMetric1, (unsigned int)fr.dwF=
+orwardType);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                     &quot;ROUTE: CreateIpForwardEntry succeeded with dwFor=
+wardMetric1=3D%lu and dwForwardType=3D%lu&quot;,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                            fr.dwForwardMetric=
+1, fr.dwForwardType);</span><br><span>                         ret =3D RTA_=
+SUCCESS;</span><br><span>                         goto doublebreak;</span><=
+br><span>                     }</span><br><span>@@ -2790,8 +2789,8 @@</span=
+><br><span>                 {</span><br><span>                     msg(M_WA=
+RN,</span><br><span>                         &quot;ERROR: route addition fa=
+iled using CreateIpForwardEntry: &quot;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                        &quot;%s [status=3D%u if_index=3D=
+%u]&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+             strerror_win32(status, &amp;gc), (unsigned int)status, (unsign=
+ed int)if_index);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                      &quot;%s [status=3D%lu if_index=3D%lu]&quot;,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                        str=
+error_win32(status, &amp;gc), status, if_index);</span><br><span>          =
+       }</span><br><span>             }</span><br><span>         }</span><b=
+r><span>@@ -2855,7 +2854,7 @@</span><br><span>         ret =3D (ack.error_n=
+umber =3D=3D ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;</span><=
+br><span>         if (ret =3D=3D RTA_ERROR)</span><br><span>         {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_WARN, &q=
+uot;ERROR: route %s failed using service: %s [status=3D%u if_index=3D%d]&qu=
+ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg=
+(M_WARN, &quot;ERROR: route %s failed using service: %s [status=3D%u if_ind=
+ex=3D%lu]&quot;,</span><br><span>                 (add ? &quot;addition&quo=
+t; : &quot;deletion&quot;), strerror_win32(ack.error_number, &amp;gc),</spa=
+n><br><span>                 ack.error_number, rt-&gt;iface.index);</span><=
+br><span>         }</span><br><span>@@ -2869,17 +2868,12 @@</span><br><span=
+>     return ret;</span><br><span> }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnost=
+ic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC di=
+agnostic ignored &quot;-Wsign-compare&quot;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span> /* Returns RTA_SUCCESS on success, RTA_EEXIST if r=
+oute exists, RTA_ERROR on error */</span><br><span> static int</span><br><s=
+pan> do_route_ipv4_service(const bool add, const struct route_ipv4 *r, cons=
+t struct tuntap *tt)</span><br><span> {</span><br><span>     DWORD if_index=
+ =3D windows_route_find_if_index(r, tt);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    if (if_index =3D=3D ~0)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (if_index =3D=3D TUN_ADAPTER_INDEX_INVALI=
+D)</span><br><span>     {</span><br><span>         return RTA_ERROR;</span>=
+<br><span>     }</span><br><span>@@ -3023,10 +3017,6 @@</span><br><span>   =
+  return status;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnosti=
+c pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* Returns RT=
+A_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */</sp=
+an><br><span> static int</span><br><span> add_route_service(const struct ro=
+ute_ipv4 *r, const struct tuntap *tt)</span><br><span>@@ -3057,14 +3047,14 =
+@@</span><br><span> format_route_entry(const MIB_IPFORWARDROW *r, struct gc=
+_arena *gc)</span><br><span> {</span><br><span>     struct buffer out =3D a=
+lloc_buf_gc(256, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    buf_printf(&amp;out, &quot;%s %s %s p=3D%d i=3D%d t=3D%d pr=3D%d a=3D%d=
+ h=3D%d m=3D%d/%d/%d/%d/%d&quot;,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    buf_printf(&amp;out, &quot;%s %s %s p=3D%lu i=3D%lu t=3D%=
+lu pr=3D%lu a=3D%lu h=3D%lu m=3D%lu/%lu/%lu/%lu/%lu&quot;,</span><br><span>=
+                print_in_addr_t(r-&gt;dwForwardDest, IA_NET_ORDER, gc),</sp=
+an><br><span>                print_in_addr_t(r-&gt;dwForwardMask, IA_NET_OR=
+DER, gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+   print_in_addr_t(r-&gt;dwForwardNextHop, IA_NET_ORDER, gc), (int)r-&gt;dw=
+ForwardPolicy,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+        (int)r-&gt;dwForwardIfIndex, (int)r-&gt;dwForwardType, (int)r-&gt;d=
+wForwardProto,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+        (int)r-&gt;dwForwardAge, (int)r-&gt;dwForwardNextHopAS, (int)r-&gt;=
+dwForwardMetric1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+           (int)r-&gt;dwForwardMetric2, (int)r-&gt;dwForwardMetric3, (int)r=
+-&gt;dwForwardMetric4,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-               (int)r-&gt;dwForwardMetric5);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+               print_in_addr_t(r-&gt;dwForwardNex=
+tHop, IA_NET_ORDER, gc), r-&gt;dwForwardPolicy,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+               r-&gt;dwForwardIfIndex, r-&gt;dw=
+ForwardType, r-&gt;dwForwardProto,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+               r-&gt;dwForwardAge, r-&gt;dwForwardNextHopAS,=
+ r-&gt;dwForwardMetric1,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+               r-&gt;dwForwardMetric2, r-&gt;dwForwardMetric3, r-&gt;d=
+wForwardMetric4,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+            r-&gt;dwForwardMetric5);</span><br><span>     return BSTR(&amp;=
+out);</span><br><span> }</span><br><span> </span><br><span>diff --git a/src=
+/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index ad77117..87b6569 1=
+00644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/ope=
+nvpn/tun.c</span><br><span>@@ -158,7 +158,7 @@</span><br><span> </span><br>=
+<span>     if (ack.error_number !=3D NO_ERROR)</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;T=
+UN: %s address failed using service: %s [status=3D%u if_index=3D%d]&quot;,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, =
+&quot;TUN: %s address failed using service: %s [status=3D%u if_index=3D%lu]=
+&quot;,</span><br><span>             (add ? &quot;adding&quot; : &quot;dele=
+ting&quot;), strerror_win32(ack.error_number, &amp;gc), ack.error_number,</=
+span><br><span>             addr.iface.index);</span><br><span>         got=
+o out;</span><br><span>@@ -220,7 +220,7 @@</span><br><span>         strncpy=
+(dns.domains + dstlen, o-&gt;domain_search_list[i], srclen + 1);</span><br>=
+<span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    msg(D_LOW, &quot;%s DNS domains on &#39;%s&#39; (if_index =3D =
+%d) using service&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    msg(D_LOW, &quot;%s DNS domains on &#39;%s&#39; (if_index =3D %lu)=
+ using service&quot;,</span><br><span>         (add ? &quot;Setting&quot; :=
+ &quot;Deleting&quot;), dns.iface.name, dns.iface.index);</span><br><span> =
+    if (!send_msg_iservice(o-&gt;msg_channel, &amp;dns, sizeof(dns), &amp;a=
+ck, &quot;TUN&quot;))</span><br><span>     {</span><br><span>@@ -289,7 +289=
+,7 @@</span><br><span>         }</span><br><span>     }</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_LOW, &quot;%s=
+ %s dns servers on &#39;%s&#39; (if_index =3D %d) using service&quot;,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_LOW, &quot;%s =
+%s dns servers on &#39;%s&#39; (if_index =3D %lu) using service&quot;,</spa=
+n><br><span>         (add ? &quot;Setting&quot; : &quot;Deleting&quot;), ip=
+_proto_name, dns.iface.name, dns.iface.index);</span><br><span> </span><br>=
+<span>     if (!send_msg_iservice(pipe, &amp;dns, sizeof(dns), &amp;ack, &q=
+uot;TUN&quot;))</span><br><span>@@ -346,7 +346,7 @@</span><br><span>       =
+  wins.addr[i].ipv4.s_addr =3D htonl(tt-&gt;options.wins[i]);</span><br><sp=
+an>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    msg(D_LOW, &quot;%s WINS servers on &#39;%s&#39; (if_index =3D %d=
+) using service&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    msg(D_LOW, &quot;%s WINS servers on &#39;%s&#39; (if_index =3D %lu) =
+using service&quot;,</span><br><span>         (add ? &quot;Setting&quot; : =
+&quot;Deleting&quot;), wins.iface.name, wins.iface.index);</span><br><span>=
+ </span><br><span>     if (!send_msg_iservice(pipe, &amp;wins, sizeof(wins)=
+, &amp;ack, &quot;TUN&quot;))</span><br><span>@@ -357,8 +357,8 @@</span><br=
+><span>     if (ack.error_number !=3D NO_ERROR)</span><br><span>     {</spa=
+n><br><span>         msg(M_WARN, &quot;TUN: %s WINS failed using service: %=
+s [status=3D%u if_name=3D%s]&quot;,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            (add ? &quot;adding&quot; : &quot;deleting&quot;)=
+, strerror_win32(ack.error_number, &amp;gc), ack.error_number,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            wins.iface.name);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            (add ? &quot=
+;adding&quot; : &quot;deleting&quot;), strerror_win32(ack.error_number, &am=
+p;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            a=
+ck.error_number, wins.iface.name);</span><br><span>         goto out;</span=
+><br><span>     }</span><br><span> </span><br><span>@@ -398,13 +398,13 @@</=
+span><br><span> </span><br><span>     if (ack.error_number !=3D NO_ERROR)</=
+span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        msg(M_NONFATAL, &quot;TUN: setting %s mtu using service failed: %s =
+[status=3D%u if_index=3D%d]&quot;,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        msg(M_NONFATAL, &quot;TUN: setting %s mtu using serv=
+ice failed: %s [status=3D%u if_index=3D%lu]&quot;,</span><br><span>        =
+     family_name, strerror_win32(ack.error_number, &amp;gc), ack.error_numb=
+er,</span><br><span>             mtu_msg.iface.index);</span><br><span>    =
+ }</span><br><span>     else</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        msg(M_INFO, &quot;%s MTU set to %d =
+on interface %d using service&quot;, family_name, mtu,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        msg(M_INFO, &quot;%s MTU set to =
+%d on interface %lu using service&quot;, family_name, mtu,</span><br><span>=
+             mtu_msg.iface.index);</span><br><span>         ret =3D true;</=
+span><br><span>     }</span><br><span>@@ -3428,7 +3428,7 @@</span><br><span=
+>     if (dev_info_set =3D=3D INVALID_HANDLE_VALUE)</span><br><span>     {<=
+/span><br><span>         err =3D GetLastError();</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        msg(M_FATAL, &quot;Error [%u] opening de=
+vice information set key: %s&quot;, (unsigned int)err,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;Error [%lu] o=
+pening device information set key: %s&quot;, err,</span><br><span>         =
+    strerror_win32(err, gc));</span><br><span>     }</span><br><span> </spa=
+n><br><span>@@ -4111,7 +4111,7 @@</span><br><span> </span><br><span>     if=
+ ((status =3D GetAdaptersInfo(NULL, &amp;size)) !=3D ERROR_BUFFER_OVERFLOW)=
+</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        msg(M_INFO, &quot;GetAdaptersInfo #1 failed (status=3D%u) : %s&qu=
+ot;, (unsigned int)status,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        msg(M_INFO, &quot;GetAdaptersInfo #1 failed (status=3D%lu) :=
+ %s&quot;, status,</span><br><span>             strerror_win32(status, gc))=
+;</span><br><span>     }</span><br><span>     else</span><br><span>@@ -4119=
+,7 +4119,7 @@</span><br><span>         pi =3D (PIP_ADAPTER_INFO)gc_malloc(s=
+ize, false, gc);</span><br><span>         if ((status =3D GetAdaptersInfo(p=
+i, &amp;size)) !=3D NO_ERROR)</span><br><span>         {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            msg(M_INFO, &quot;GetAdapter=
+sInfo #2 failed (status=3D%u) : %s&quot;, (unsigned int)status,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_INFO, &quot;G=
+etAdaptersInfo #2 failed (status=3D%lu) : %s&quot;, status,</span><br><span=
+>                 strerror_win32(status, gc));</span><br><span>            =
+ pi =3D NULL;</span><br><span>         }</span><br><span>@@ -4138,19 +4138,=
+19 @@</span><br><span>     {</span><br><span>         if ((status =3D GetPe=
+rAdapterInfo(index, NULL, &amp;size)) !=3D ERROR_BUFFER_OVERFLOW)</span><br=
+><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        msg(M_INFO, &quot;GetPerAdapterInfo #1 failed (status=3D%u) : %s&qu=
+ot;, (unsigned int)status,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            msg(M_INFO, &quot;GetPerAdapterInfo #1 failed (status=3D=
+%lu) : %s&quot;, status,</span><br><span>                 strerror_win32(st=
+atus, gc));</span><br><span>         }</span><br><span>         else</span>=
+<br><span>         {</span><br><span>             pi =3D (PIP_PER_ADAPTER_I=
+NFO)gc_malloc(size, false, gc);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            if ((status =3D GetPerAdapterInfo((ULONG)index, pi, &=
+amp;size)) =3D=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            if ((status =3D GetPerAdapterInfo(index, pi, &amp;=
+size)) =3D=3D ERROR_SUCCESS)</span><br><span>             {</span><br><span=
+>                 return pi;</span><br><span>             }</span><br><span=
+>             else</span><br><span>             {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                msg(M_INFO, &quot;GetPerAdapter=
+Info #2 failed (status=3D%u) : %s&quot;, (unsigned int)status,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                msg(M_INFO, &quo=
+t;GetPerAdapterInfo #2 failed (status=3D%lu) : %s&quot;, status,</span><br>=
+<span>                     strerror_win32(status, gc));</span><br><span>   =
+          }</span><br><span>         }</span><br><span>@@ -4167,7 +4167,7 @=
+@</span><br><span> </span><br><span>     if ((status =3D GetInterfaceInfo(N=
+ULL, &amp;size)) !=3D ERROR_INSUFFICIENT_BUFFER)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_INFO, &quot=
+;GetInterfaceInfo #1 failed (status=3D%u) : %s&quot;, (unsigned int)status,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_INFO,=
+ &quot;GetInterfaceInfo #1 failed (status=3D%lu) : %s&quot;, status,</span>=
+<br><span>             strerror_win32(status, gc));</span><br><span>     }<=
+/span><br><span>     else</span><br><span>@@ -4179,7 +4179,7 @@</span><br><=
+span>         }</span><br><span>         else</span><br><span>         {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_INFO, =
+&quot;GetInterfaceInfo #2 failed (status=3D%u) : %s&quot;, (unsigned int)st=
+atus,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ms=
+g(M_INFO, &quot;GetInterfaceInfo #2 failed (status=3D%lu) : %s&quot;, statu=
+s,</span><br><span>                 strerror_win32(status, gc));</span><br>=
+<span>         }</span><br><span>     }</span><br><span>@@ -4456,8 +4456,8 =
+@@</span><br><span>         list =3D list-&gt;Next;</span><br><span>     }<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+dmsg(D_ROUTE_DEBUG, &quot;DEBUG: IP Locate: ip=3D%s nm=3D%s index=3D%d coun=
+t=3D%d metric=3D%d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-         print_in_addr_t(ip, 0, &amp;gc), print_in_addr_t(highest_netma=
+sk, 0, &amp;gc), (int)ret,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    dmsg(D_ROUTE_DEBUG, &quot;DEBUG: IP Locate: ip=3D%s nm=3D%s inde=
+x=3D%lu count=3D%d metric=3D%d&quot;,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+         print_in_addr_t(ip, 0, &amp;gc), print_in_addr_t=
+(highest_netmask, 0, &amp;gc), ret,</span><br><span>          count ? *coun=
+t : -1, lowest_metric);</span><br><span> </span><br><span>     if (ret =3D=
+=3D TUN_ADAPTER_INDEX_INVALID &amp;&amp; count)</span><br><span>@@ -4526,7 =
++4526,7 @@</span><br><span>             DWORD status;</span><br><span>     =
+        const DWORD context =3D ip-&gt;Context;</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            if ((status =3D Del=
+eteIPAddress((ULONG)context)) =3D=3D NO_ERROR)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            if ((status =3D DeleteIPAddress(cont=
+ext)) =3D=3D NO_ERROR)</span><br><span>             {</span><br><span>     =
+            msg(M_INFO, &quot;Successfully deleted previously set dynamic I=
+P/netmask: %s/%s&quot;,</span><br><span>                     ip-&gt;IpAddre=
+ss.String, ip-&gt;IpMask.String);</span><br><span>@@ -4537,8 +4537,8 @@</sp=
+an><br><span>                 if (strcmp(ip-&gt;IpAddress.String, empty) ||=
+ strcmp(ip-&gt;IpMask.String, empty))</span><br><span>                 {</s=
+pan><br><span>                     msg(M_INFO,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                        &quot;NOTE: could not dele=
+te previously set dynamic IP/netmask: %s/%s (status=3D%u)&quot;,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                        ip-&gt;I=
+pAddress.String, ip-&gt;IpMask.String, (unsigned int)status);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                        &quot;NOT=
+E: could not delete previously set dynamic IP/netmask: %s/%s (status=3D%lu)=
+&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+            ip-&gt;IpAddress.String, ip-&gt;IpMask.String, status);</span><=
+br><span>                 }</span><br><span>             }</span><br><span>=
+             ip =3D ip-&gt;Next;</span><br><span>@@ -4634,7 +4634,7 @@</spa=
+n><br><span> show_adapter(msglvl_t msglevel, const IP_ADAPTER_INFO *a, stru=
+ct gc_arena *gc)</span><br><span> {</span><br><span>     msg(msglevel, &quo=
+t;%s&quot;, a-&gt;Description);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    msg(msglevel, &quot;  Index =3D %d&quot;, (int)a-&gt;Index);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(msglevel, &q=
+uot;  Index =3D %lu&quot;, a-&gt;Index);</span><br><span>     msg(msglevel,=
+ &quot;  GUID =3D %s&quot;, a-&gt;AdapterName);</span><br><span>     msg(ms=
+glevel, &quot;  IP =3D %s&quot;, format_ip_addr_string(&amp;a-&gt;IpAddress=
+List, gc));</span><br><span>     msg(msglevel, &quot;  MAC =3D %s&quot;, fo=
+rmat_hex_ex(a-&gt;Address, a-&gt;AddressLength, 0, 1, &quot;:&quot;, gc));<=
+/span><br><span>@@ -4810,8 +4810,8 @@</span><br><span>         else</span><=
+br><span>         {</span><br><span>             msg(M_WARN,</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                &quot;NOTE: Release =
+of DHCP-assigned IP address lease on TAP-Windows adapter failed: %s (code=
+=3D%u)&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        strerror_win32(status, &amp;gc), (unsigned int)status);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                &quot;NOTE: Rel=
+ease of DHCP-assigned IP address lease on TAP-Windows adapter failed: %s (c=
+ode=3D%lu)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              strerror_win32(status, &amp;gc), status);</span><br><span>   =
+      }</span><br><span>     }</span><br><span> </span><br><span>@@ -4851,8=
+ +4851,8 @@</span><br><span>         else</span><br><span>         {</span>=
+<br><span>             msg(M_WARN,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                &quot;WARNING: Failed to renew DHCP IP address=
+ lease on TAP-Windows adapter: %s (code=3D%u)&quot;,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                strerror_win32(status, &amp=
+;gc), (unsigned int)status);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                &quot;WARNING: Failed to renew DHCP IP address lea=
+se on TAP-Windows adapter: %s (code=3D%lu)&quot;,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                strerror_win32(status, &amp;g=
+c), status);</span><br><span>         }</span><br><span>     }</span><br><s=
+pan>     gc_free(&amp;gc);</span><br><span>@@ -5215,12 +5215,12 @@</span><b=
+r><span> </span><br><span>     if (ack.error_number !=3D NO_ERROR)</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ msg(M_NONFATAL, &quot;TUN: enabling dhcp using service failed: %s [status=
 =3D%u if_index=3D%d]&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
 40%);">+        msg(M_NONFATAL, &quot;TUN: enabling dhcp using service fail=
 ed: %s [status=3D%u if_index=3D%lu]&quot;,</span><br><span>             str=
@@ -866,104 +1253,118 @@ lor: hsl(0, 100%, 40%);">-        else if (status !=3D -1)</span><br><span =
 style=3D"color: hsl(120, 100%, 40%);">+        else if (status !=3D (DWORD)=
 -1)</span><br><span>         {</span><br><span>             msg(D_TUNTAP_IN=
 FO,</span><br><span>                 &quot;NOTE: FlushIpNetTable failed on =
-interface [%lu] %s (status=3D%lu) : %s&quot;, index,</span><br><span>diff -=
--git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br><span>index a226e37.=
-.388f5b7 100644</span><br><span>--- a/src/openvpn/tun.h</span><br><span>+++=
- b/src/openvpn/tun.h</span><br><span>@@ -61,8 +61,6 @@</span><br><span> </s=
-pan><br><span> #if defined(_WIN32) || defined(TARGET_ANDROID) || defined(DH=
-CP_UNIT_TEST)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#define TUN_ADAPTER_INDEX_INVALID ((DWORD)-1)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* time constants for -=
--ip-win32 adaptive */</span><br><span> #define IPW32_SET_ADAPTIVE_DELAY_WIN=
-DOW 300</span><br><span> #define IPW32_SET_ADAPTIVE_TRY_NETSH    20</span><=
-br><span>@@ -230,7 +228,7 @@</span><br><span>     in_addr_t adapter_netmask=
-;</span><br><span> </span><br><span>     /* Windows adapter index for TAP-W=
-indows adapter,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     *=
- ~0 if undefined */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-     * TUN_ADAPTER_INDEX_INVALID if undefined */</span><br><span>     DWORD=
- adapter_index;</span><br><span> </span><br><span>     int standby_iter;</s=
-pan><br><span>diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c</span>=
-<br><span>index ac449fd..b2a7331 100644</span><br><span>--- a/src/openvpn/w=
-in32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br><span>@@ -1185,7=
- +1185,7 @@</span><br><span>     if (ack.error_number !=3D NO_ERROR)</span>=
-<br><span>     {</span><br><span>         msg(M_WARN,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            &quot;WFP block: %s block filte=
-rs using service failed: %s [status=3D0x%x if_index=3D%d]&quot;,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            &quot;WFP block: %=
-s block filters using service failed: %s [status=3D0x%x if_index=3D%lu]&quo=
-t;,</span><br><span>             (add ? &quot;adding&quot; : &quot;deleting=
-&quot;), strerror_win32(ack.error_number, &amp;gc), ack.error_number,</span=
-><br><span>             data.iface.index);</span><br><span>         goto ou=
-t;</span><br><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpn=
-serv/interactive.c</span><br><span>index 09c709e..b50aeb3 100644</span><br>=
-<span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpn=
-serv/interactive.c</span><br><span>@@ -96,7 +96,7 @@</span><br><span> typed=
-ef struct</span><br><span> {</span><br><span>     HANDLE engine;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    int index;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    DWORD index;</span><br><span>    =
- int metric_v4;</span><br><span>     int metric_v6;</span><br><span> } wfp_=
-block_data_t;</span><br><span>@@ -584,7 +584,7 @@</span><br><span>     addr=
-_row-&gt;Address =3D sockaddr_inet(msg-&gt;family, &amp;msg-&gt;address);</=
-span><br><span>     addr_row-&gt;OnLinkPrefixLength =3D (UINT8)msg-&gt;pref=
-ix_len;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (msg-&gt;iface.index !=3D -1)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (msg-&gt;iface.index !=3D TUN_ADAPTER_INDEX_INV=
-ALID)</span><br><span>     {</span><br><span>         addr_row-&gt;Interfac=
-eIndex =3D msg-&gt;iface.index;</span><br><span>     }</span><br><span>@@ -=
-667,7 +667,7 @@</span><br><span>     fwd_row-&gt;DestinationPrefix.PrefixLe=
-ngth =3D (UINT8)msg-&gt;prefix_len;</span><br><span>     fwd_row-&gt;NextHo=
-p =3D sockaddr_inet(msg-&gt;family, &amp;msg-&gt;gateway);</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (msg-&gt;ifac=
-e.index !=3D -1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (msg-&gt;iface.index !=3D TUN_ADAPTER_INDEX_INVALID)</span><br><span>  =
-   {</span><br><span>         fwd_row-&gt;InterfaceIndex =3D msg-&gt;iface.=
-index;</span><br><span>     }</span><br><span>@@ -1010,7 +1010,7 @@</span><=
-br><span>  * if action =3D &quot;set&quot; then &quot;static&quot; is added=
- before $addr</span><br><span>  */</span><br><span> static DWORD</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-netsh_wins_cmd(const wchar_t *ac=
-tion, int if_index, const wchar_t *addr)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+netsh_wins_cmd(const wchar_t *action, DWORD if_index, =
-const wchar_t *addr)</span><br><span> {</span><br><span>     DWORD err =3D =
-0;</span><br><span>     int timeout =3D 30000; /* in msec */</span><br><spa=
-n>@@ -1036,7 +1036,7 @@</span><br><span>     /* cmd template:</span><br><sp=
-an>      * netsh interface ip $action wins $if_name $static $addr</span><br=
-><span>      */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    co=
-nst wchar_t *fmt =3D L&quot;netsh interface ip %ls wins %d %ls %ls&quot;;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const wchar_t *fm=
-t =3D L&quot;netsh interface ip %ls wins %lu %ls %ls&quot;;</span><br><span=
-> </span><br><span>     /* max cmdline length in wchars -- include room for=
- worst case and some */</span><br><span>     size_t ncmdline =3D wcslen(fmt=
-) + 11 /*if_index*/ + wcslen(action) + wcslen(addr)</span><br><span>@@ -298=
-4,7 +2984,7 @@</span><br><span>          */</span><br><span>     }</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int *if_=
-index =3D malloc(sizeof(msg-&gt;iface.index));</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    PDWORD if_index =3D malloc(sizeof(msg-&gt;if=
-ace.index));</span><br><span>     if (if_index)</span><br><span>     {</spa=
-n><br><span>         *if_index =3D msg-&gt;iface.index;</span><br><span>@@ =
--3017,7 +3017,7 @@</span><br><span>     /* cmd template:</span><br><span>  =
-    * netsh interface ipv4 set address name=3D$if_index source=3Ddhcp</span=
-><br><span>      */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  const wchar_t *fmt =3D L&quot;netsh interface ipv4 set address name=3D\&q=
-uot;%d\&quot; source=3Ddhcp&quot;;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    const wchar_t *fmt =3D L&quot;netsh interface ipv4 set a=
-ddress name=3D\&quot;%lu\&quot; source=3Ddhcp&quot;;</span><br><span> </spa=
-n><br><span>     /* max cmdline length in wchars -- include room for if ind=
-ex:</span><br><span>      * 10 chars for 32 bit int in decimal and +1 for N=
-UL</span><br><span>@@ -3250,7 +3250,7 @@</span><br><span>                  =
-   break;</span><br><span> </span><br><span>                 case undo_wins=
-:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-netsh_wins_cmd(L&quot;delete&quot;, *(int *)item-&gt;data, NULL);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                    netsh_win=
-s_cmd(L&quot;delete&quot;, *(PDWORD)item-&gt;data, NULL);</span><br><span> =
-                    break;</span><br><span> </span><br><span>              =
-   case wfp_block:</span><br><span></span><br></pre><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1519?usp=3Demail">change 1519</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1519?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+interface [%lu] %s (status=3D%lu) : %s&quot;, index,</span><br><span>@@ -62=
+32,11 +6232,12 @@</span><br><span>     if (tt-&gt;ipapi_context_defined)</s=
+pan><br><span>     {</span><br><span>         DWORD status;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         if ((stat=
+us =3D DeleteIPAddress(tt-&gt;ipapi_context)) !=3D NO_ERROR)</span><br><spa=
+n>         {</span><br><span>             msg(M_WARN,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                &quot;Warning: DeleteIPAddr=
+ess[%u] failed on TAP-Windows adapter, status=3D%u : %s&quot;,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                (unsigned int)tt-&=
+gt;ipapi_context, (unsigned int)status, strerror_win32(status, &amp;gc));</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot=
+;Warning: DeleteIPAddress[%lu] failed on TAP-Windows adapter, status=3D%lu =
+: %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+        tt-&gt;ipapi_context, status, strerror_win32(status, &amp;gc));</sp=
+an><br><span>         }</span><br><span>     }</span><br><span> </span><br>=
+<span>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br><span>in=
+dex a226e37..388f5b7 100644</span><br><span>--- a/src/openvpn/tun.h</span><=
+br><span>+++ b/src/openvpn/tun.h</span><br><span>@@ -61,8 +61,6 @@</span><b=
+r><span> </span><br><span> #if defined(_WIN32) || defined(TARGET_ANDROID) |=
+| defined(DHCP_UNIT_TEST)</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define TUN_ADAPTER_INDEX_INVALID ((DWORD)-1)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* time con=
+stants for --ip-win32 adaptive */</span><br><span> #define IPW32_SET_ADAPTI=
+VE_DELAY_WINDOW 300</span><br><span> #define IPW32_SET_ADAPTIVE_TRY_NETSH  =
+  20</span><br><span>@@ -230,7 +228,7 @@</span><br><span>     in_addr_t ada=
+pter_netmask;</span><br><span> </span><br><span>     /* Windows adapter ind=
+ex for TAP-Windows adapter,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-     * ~0 if undefined */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+     * TUN_ADAPTER_INDEX_INVALID if undefined */</span><br><spa=
+n>     DWORD adapter_index;</span><br><span> </span><br><span>     int stan=
+dby_iter;</span><br><span>diff --git a/src/openvpn/win32.c b/src/openvpn/wi=
+n32.c</span><br><span>index ac449fd..b2a7331 100644</span><br><span>--- a/s=
+rc/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br><spa=
+n>@@ -1185,7 +1185,7 @@</span><br><span>     if (ack.error_number !=3D NO_E=
+RROR)</span><br><span>     {</span><br><span>         msg(M_WARN,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;WFP block: %s=
+ block filters using service failed: %s [status=3D0x%x if_index=3D%d]&quot;=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;=
+WFP block: %s block filters using service failed: %s [status=3D0x%x if_inde=
+x=3D%lu]&quot;,</span><br><span>             (add ? &quot;adding&quot; : &q=
+uot;deleting&quot;), strerror_win32(ack.error_number, &amp;gc), ack.error_n=
+umber,</span><br><span>             data.iface.index);</span><br><span>    =
+     goto out;</span><br><span>diff --git a/src/openvpnserv/interactive.c b=
+/src/openvpnserv/interactive.c</span><br><span>index 09c709e..b50aeb3 10064=
+4</span><br><span>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b=
+/src/openvpnserv/interactive.c</span><br><span>@@ -96,7 +96,7 @@</span><br>=
+<span> typedef struct</span><br><span> {</span><br><span>     HANDLE engine=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int index;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD index;</span><b=
+r><span>     int metric_v4;</span><br><span>     int metric_v6;</span><br><=
+span> } wfp_block_data_t;</span><br><span>@@ -584,7 +584,7 @@</span><br><sp=
+an>     addr_row-&gt;Address =3D sockaddr_inet(msg-&gt;family, &amp;msg-&gt=
+;address);</span><br><span>     addr_row-&gt;OnLinkPrefixLength =3D (UINT8)=
+msg-&gt;prefix_len;</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (msg-&gt;iface.index !=3D -1)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (msg-&gt;iface.index !=3D TUN_ADAP=
+TER_INDEX_INVALID)</span><br><span>     {</span><br><span>         addr_row=
+-&gt;InterfaceIndex =3D msg-&gt;iface.index;</span><br><span>     }</span><=
+br><span>@@ -667,7 +667,7 @@</span><br><span>     fwd_row-&gt;DestinationPr=
+efix.PrefixLength =3D (UINT8)msg-&gt;prefix_len;</span><br><span>     fwd_r=
+ow-&gt;NextHop =3D sockaddr_inet(msg-&gt;family, &amp;msg-&gt;gateway);</sp=
+an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(msg-&gt;iface.index !=3D -1)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (msg-&gt;iface.index !=3D TUN_ADAPTER_INDEX_INVALID)</span=
+><br><span>     {</span><br><span>         fwd_row-&gt;InterfaceIndex =3D m=
+sg-&gt;iface.index;</span><br><span>     }</span><br><span>@@ -1010,7 +1010=
+,7 @@</span><br><span>  * if action =3D &quot;set&quot; then &quot;static&q=
+uot; is added before $addr</span><br><span>  */</span><br><span> static DWO=
+RD</span><br><span style=3D"color: hsl(0, 100%, 40%);">-netsh_wins_cmd(cons=
+t wchar_t *action, int if_index, const wchar_t *addr)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+netsh_wins_cmd(const wchar_t *action, DWO=
+RD if_index, const wchar_t *addr)</span><br><span> {</span><br><span>     D=
+WORD err =3D 0;</span><br><span>     int timeout =3D 30000; /* in msec */</=
+span><br><span>@@ -1036,7 +1036,7 @@</span><br><span>     /* cmd template:<=
+/span><br><span>      * netsh interface ip $action wins $if_name $static $a=
+ddr</span><br><span>      */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    const wchar_t *fmt =3D L&quot;netsh interface ip %ls wins %d %ls=
+ %ls&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t wchar_t *fmt =3D L&quot;netsh interface ip %ls wins %lu %ls %ls&quot;;</s=
+pan><br><span> </span><br><span>     /* max cmdline length in wchars -- inc=
+lude room for worst case and some */</span><br><span>     size_t ncmdline =
+=3D wcslen(fmt) + 11 /*if_index*/ + wcslen(action) + wcslen(addr)</span><br=
+><span>@@ -2984,7 +2984,7 @@</span><br><span>          */</span><br><span> =
+    }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    int *if_index =3D malloc(sizeof(msg-&gt;iface.index));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    PDWORD if_index =3D malloc(siz=
+eof(msg-&gt;iface.index));</span><br><span>     if (if_index)</span><br><sp=
+an>     {</span><br><span>         *if_index =3D msg-&gt;iface.index;</span=
+><br><span>@@ -3017,7 +3017,7 @@</span><br><span>     /* cmd template:</spa=
+n><br><span>      * netsh interface ipv4 set address name=3D$if_index sourc=
+e=3Ddhcp</span><br><span>      */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    const wchar_t *fmt =3D L&quot;netsh interface ipv4 set addr=
+ess name=3D\&quot;%d\&quot; source=3Ddhcp&quot;;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    const wchar_t *fmt =3D L&quot;netsh interf=
+ace ipv4 set address name=3D\&quot;%lu\&quot; source=3Ddhcp&quot;;</span><b=
+r><span> </span><br><span>     /* max cmdline length in wchars -- include r=
+oom for if index:</span><br><span>      * 10 chars for 32 bit int in decima=
+l and +1 for NUL</span><br><span>@@ -3250,7 +3250,7 @@</span><br><span>    =
+                 break;</span><br><span> </span><br><span>                 =
+case undo_wins:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+              netsh_wins_cmd(L&quot;delete&quot;, *(int *)item-&gt;data, NU=
+LL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+     netsh_wins_cmd(L&quot;delete&quot;, *(PDWORD)item-&gt;data, NULL);</sp=
+an><br><span>                     break;</span><br><span> </span><br><span>=
+                 case wfp_block:</span><br><span></span><br></pre><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1519?usp=3Demail"=
+>change 1519</a>. To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p>=
+<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
+temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1519?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -971,7 +1372,7 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 <div style=3D"display:none"> Gerrit-Change-Id: I38bb2d1fa66c543e8bcf47b7d77=
 b6154d1895f81 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1519 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -983,5 +1384,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---JV8JPxA9Af0=--
+--W09Tog5TNeU=--
 
