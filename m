@@ -1,10 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 12 Feb 2026 12:09:35 +0100
-Message-ID: <20260212110935.19541-1-frank@...2641...>
-In-Reply-To: <gerrit.1770830490000.I7462869a473a7afe2e9ed9474c69de0af96c011c@...2715...>
-References: <gerrit.1770830490000.I7462869a473a7afe2e9ed9474c69de0af96c011c@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 12 Feb 2026 12:24:09 +0000
+In-Reply-To: <gerrit.1755879913000.Ic9ac18f730e6035126ccf1cf19799548e5fd9316@...2715...>
+References: <gerrit.1755879913000.Ic9ac18f730e6035126ccf1cf19799548e5fd9316@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <cd7958f4793a60f5a90d53cfcd1a11c1818622f7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] vcpkg-ports: Review pkcs11-helper port
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="TpDtcSgTFlE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: Move <= 0
+ check for keepalive settings earlier
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,114 +19,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Yuriy Darnobyt <yura.uddr@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-- Replace deprecated functions with newer alternatives
-- Improve vcpkg.json by documenting openssl dependency
-- Remove unnecessary duplicated version number
-- Fix whitespaces
+--TpDtcSgTFlE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I7462869a473a7afe2e9ed9474c69de0af96c011c
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1518
----
+Attention is currently required from: plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+flichtenheld has posted comments on this change by flichtenheld. ( http://g=
+errit.openvpn.net/c/openvpn/+/1155?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1518
-This mail reflects revision 1 of this Change.
+Change subject: options: Move <=3D 0 check for keepalive settings earlier
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Yuriy Darnobyt <yura.uddr@...277...>
 
-        
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-index af19831..f5742a4 100644
---- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-+++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-@@ -1,15 +1,12 @@
--set(VERSION 1.31.0)
--
- vcpkg_download_distfile(ARCHIVE
-     URLS "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${VERSION}/pkcs11-helper-${VERSION}.tar.bz2"
-     FILENAME "pkcs11-helper-${VERSION}.tar.bz2"
-     SHA512 0833efc59e9093dd398a54640d858b01a830ef7adfb40321c1e0ed0afa004500fc1259cc66bc49c5263935adeda0a3bfe658de538eefd66888685a71f731c484
- )
- 
--vcpkg_extract_source_archive_ex(
--    OUT_SOURCE_PATH SOURCE_PATH
-+vcpkg_extract_source_archive(
-+    SOURCE_PATH
-     ARCHIVE ${ARCHIVE}
--    REF ${VERSION}
-     PATCHES
-         nmake-compatibility-with-vcpkg-nmake.patch
-         config-w32-vc.h.in-indicate-OpenSSL.patch
-@@ -33,20 +30,20 @@
-   file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/libpkcs11-helper-1.dll DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)
- 
-   set(PACKAGE_VERSION "${VERSION}")
--    set(libdir [[${prefix}/lib]])
--    set(exec_prefix [[${prefix}]])
--    set(PKCS11H_FEATURES key_prompt openssl engine_crypto_cryptoapi engine_crypto_openssl debug threading token data certificate slotevent engine_crypto)
--    set(LIBS -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32)
--    if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
--        set(includedir [[${prefix}/include]])
--        set(outfile "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libpkcs11-helper-1.pc")
--        configure_file("${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in" "${outfile}" @ONLY)
--    endif()
--    if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
--        set(includedir [[${prefix}/../include]])
--        set(outfile "${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig/libpkcs11-helper-1.pc")
--        configure_file("${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in" "${outfile}" @ONLY)
--    endif()
-+  set(libdir [[${prefix}/lib]])
-+  set(exec_prefix [[${prefix}]])
-+  set(PKCS11H_FEATURES key_prompt openssl engine_crypto_cryptoapi engine_crypto_openssl debug threading token data certificate slotevent engine_crypto)
-+  set(LIBS -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32)
-+  if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
-+      set(includedir [[${prefix}/include]])
-+      set(outfile "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libpkcs11-helper-1.pc")
-+      configure_file("${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in" "${outfile}" @ONLY)
-+  endif()
-+  if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
-+      set(includedir [[${prefix}/../include]])
-+      set(outfile "${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig/libpkcs11-helper-1.pc")
-+      configure_file("${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in" "${outfile}" @ONLY)
-+  endif()
- 
-   file(INSTALL ${SOURCE_PATH}/include/pkcs11-helper-1.0 DESTINATION ${CURRENT_PACKAGES_DIR}/include/)
- 
-@@ -66,4 +63,4 @@
- vcpkg_fixup_pkgconfig()
- vcpkg_copy_pdbs()
- 
--file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
-+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json b/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json
-index 382a3d3..da54646 100644
---- a/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json
-+++ b/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json
-@@ -1,7 +1,11 @@
- {
--    "name": "pkcs11-helper",
--    "version": "1.31.0",
--    "description": "pkcs11-helper is a library that simplifies the interaction with PKCS#11 providers for end-user applications.",
--    "homepage": "https://github.com/OpenSC/pkcs11-helper",
--    "license": "BSD-3-Clause OR GPL-2.0-only"
-+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-+  "name": "pkcs11-helper",
-+  "version": "1.31.0",
-+  "description": "pkcs11-helper is a library that simplifies the interaction with PKCS#11 providers for end-user applications.",
-+  "homepage": "https://github.com/OpenSC/pkcs11-helper",
-+  "license": "BSD-3-Clause OR GPL-2.0-only",
-+  "dependencies": [
-+    "openssl"
-+  ]
- }
+Patch Set 7:
+
+(1 comment)
+
+This change is ready for review.
+
+Patchset:
+
+PS7:
+Moving this out of draft status. I was originally hesitant to put this into=
+ the RCs, but it is definitely fine for post-2.7 master
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic9ac18f730e6035126ccf1cf19799548e5fd9316
+Gerrit-Change-Number: 1155
+Gerrit-PatchSet: 7
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Thu, 12 Feb 2026 12:24:09 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+
+--TpDtcSgTFlE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1155?tab=3Dcomments&amp;usp=3Demail">Patch Set #7:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Moving this out=
+ of draft status. I was originally hesitant to put this into the RCs, but i=
+t is definitely fine for post-2.7 master</p></li></ul></li></ul><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail">c=
+hange 1155</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1155?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic9ac18f730e6035126ccf1cf197=
+99548e5fd9316 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1155 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 12 Feb 2026 12:24:09=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+
+</body></html>=
+
+--TpDtcSgTFlE=--
 
