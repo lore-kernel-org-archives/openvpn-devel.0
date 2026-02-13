@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 13 Feb 2026 18:44:51 +0000
-References: <gerrit.1771008284000.Idf5ce8f82e7727505cce67560e0b7423b8e41a40@...2715...>
+Date: Fri, 13 Feb 2026 18:54:59 +0000
+References: <gerrit.1771008896000.I2ca40d0d86599896b38ea1467313b6a6cdc8339c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <1ac7b7f5eeb53d8c3aea42de6dc96b4fd51e66fc-HTML@...2715...>
+Message-ID: <70b4941ebec3313b8ef2a69f055569509180dbb9-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kE/42zwUu6k="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: Avoid
- sign-compare issue by comparing before assignment
+Content-Type: multipart/alternative; boundary="u+Ykn141kHY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: tun: Avoid
+ sign-compare warning in header_modify_read_write_return
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---kE/42zwUu6k=
+--u+Ykn141kHY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,154 +32,138 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1523?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1527?usp=3Demail
 
 to review the following change.
 
 
-Change subject: socket: Avoid sign-compare issue by comparing before assign=
-ment
+Change subject: tun: Avoid sign-compare warning in header_modify_read_write=
+_return
 ......................................................................
 
-socket: Avoid sign-compare issue by comparing before assignment
+tun: Avoid sign-compare warning in header_modify_read_write_return
 
-The assignment implicitly converts the values, but
-we can just do the comparison before the assignment.
+Since we already check that the value is positive
+just make the implicit cast explicit.
 
-Change-Id: Idf5ce8f82e7727505cce67560e0b7423b8e41a40
+Change-Id: I2ca40d0d86599896b38ea1467313b6a6cdc8339c
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/socket.c
-1 file changed, 2 insertions(+), 12 deletions(-)
+M src/openvpn/tun.c
+1 file changed, 1 insertion(+), 10 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/1523/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/1527/1
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 698e724..13322f5 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2523,11 +2523,6 @@
-     return WSAGetLastError();
- }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index a909e96..638611b 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1706,17 +1706,12 @@
+ #include <netinet/ip.h>
+ #include <sys/uio.h>
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
 -#pragma GCC diagnostic ignored "-Wsign-compare"
 -#endif
 -
- int
- socket_recv_queue(struct link_socket *sock, int maxsize)
+ static inline ssize_t
+ header_modify_read_write_return(ssize_t len)
  {
-@@ -2552,11 +2547,10 @@
-
-         /* Win32 docs say it's okay to allocate the wsabuf on the stack */
-         wsabuf[0].buf =3D BSTR(&sock->reads.buf);
-+        /* make sure maxsize is sane */
-+        ASSERT(maxsize <=3D BLEN(&sock->reads.buf));
-         wsabuf[0].len =3D maxsize ? maxsize : BLEN(&sock->reads.buf);
-
--        /* check for buffer overflow */
--        ASSERT(wsabuf[0].len <=3D BLEN(&sock->reads.buf));
--
-         /* the overlapped read will signal this event on I/O completion */
-         ASSERT(ResetEvent(sock->reads.overlapped.hEvent));
-         sock->reads.flags =3D 0;
-@@ -2629,10 +2623,6 @@
-     return sock->reads.iostate;
+     if (len > 0)
+     {
+-        return len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) : 0;
++        return (size_t)len > sizeof(u_int32_t) ? len - sizeof(u_int32_t) :=
+ 0;
+     }
+     else
+     {
+@@ -1724,10 +1719,6 @@
+     }
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- int
- socket_send_queue(struct link_socket *sock, struct buffer *buf, const stru=
-ct link_socket_actual *to)
+ static ssize_t
+ write_tun_header(struct tuntap *tt, uint8_t *buf, int len)
  {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1523?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1527?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Idf5ce8f82e7727505cce67560e0b7423b8e41a40
-Gerrit-Change-Number: 1523
+Gerrit-Change-Id: I2ca40d0d86599896b38ea1467313b6a6cdc8339c
+Gerrit-Change-Number: 1527
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---kE/42zwUu6k=
+--u+Ykn141kHY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1523?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1527?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">socket: Avoid sign-compare issue by compari=
-ng before assignment<br><br>The assignment implicitly converts the values, =
-but<br>we can just do the comparison before the assignment.<br><br>Change-I=
-d: Idf5ce8f82e7727505cce67560e0b7423b8e41a40<br>Signed-off-by: Frank Lichte=
-nheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/socket.c<br>1 file c=
-hanged, 2 insertions(+), 12 deletions(-)<br><br></pre><pre class=3D"blocks"=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
-l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/1523/1</pre><pre s=
-tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
-f --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span>index=
- 698e724..13322f5 100644</span><br><span>--- a/src/openvpn/socket.c</span><=
-br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -2523,11 +2523,6 @@<=
-/span><br><span>     return WSAGetLastError();</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
-_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> =
-socket_recv_queue(struct link_socket *sock, int maxsize)</span><br><span> {=
-</span><br><span>@@ -2552,11 +2547,10 @@</span><br><span> </span><br><span>=
-         /* Win32 docs say it&#39;s okay to allocate the wsabuf on the stac=
-k */</span><br><span>         wsabuf[0].buf =3D BSTR(&amp;sock-&gt;reads.bu=
-f);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* make =
-sure maxsize is sane */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        ASSERT(maxsize &lt;=3D BLEN(&amp;sock-&gt;reads.buf));</span><b=
-r><span>         wsabuf[0].len =3D maxsize ? maxsize : BLEN(&amp;sock-&gt;r=
-eads.buf);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        /* check for buffer overflow */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        ASSERT(wsabuf[0].len &lt;=3D BLEN(&amp;soc=
-k-&gt;reads.buf));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span>         /* the overlapped read will signal this event on I/O=
- completion */</span><br><span>         ASSERT(ResetEvent(sock-&gt;reads.ov=
-erlapped.hEvent));</span><br><span>         sock-&gt;reads.flags =3D 0;</sp=
-an><br><span>@@ -2629,10 +2623,6 @@</span><br><span>     return sock-&gt;re=
-ads.iostate;</span><br><span> }</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic po=
-p</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><sp=
-an> socket_send_queue(struct link_socket *sock, struct buffer *buf, const s=
-truct link_socket_actual *to)</span><br><span> {</span><br><span></span><br=
-></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-523?usp=3Demail">change 1523</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">s=
-ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
-"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1523=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">tun: Avoid sign-compare warning in header_m=
+odify_read_write_return<br><br>Since we already check that the value is pos=
+itive<br>just make the implicit cast explicit.<br><br>Change-Id: I2ca40d0d8=
+6599896b38ea1467313b6a6cdc8339c<br>Signed-off-by: Frank Lichtenheld &lt;fra=
+nk@...2641...&gt;<br>---<br>M src/openvpn/tun.c<br>1 file changed, 1 insert=
+ion(+), 10 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
+envpn.net:29418/openvpn refs/changes/27/1527/1</pre><pre style=3D"font-fami=
+ly: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/ope=
+nvpn/tun.c b/src/openvpn/tun.c</span><br><span>index a909e96..638611b 10064=
+4</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn=
+/tun.c</span><br><span>@@ -1706,17 +1706,12 @@</span><br><span> #include &l=
+t;netinet/ip.h&gt;</span><br><span> #include &lt;sys/uio.h&gt;</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GN=
+UC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static inline ssize_t</s=
+pan><br><span> header_modify_read_write_return(ssize_t len)</span><br><span=
+> {</span><br><span>     if (len &gt; 0)</span><br><span>     {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        return len &gt; sizeof(u_=
+int32_t) ? len - sizeof(u_int32_t) : 0;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return (size_t)len &gt; sizeof(u_int32_t) ? len=
+ - sizeof(u_int32_t) : 0;</span><br><span>     }</span><br><span>     else<=
+/span><br><span>     {</span><br><span>@@ -1724,10 +1719,6 @@</span><br><sp=
+an>     }</span><br><span> }</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static ssize_t</span=
+><br><span> write_tun_header(struct tuntap *tt, uint8_t *buf, int len)</spa=
+n><br><span> {</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1527?usp=3Demail">change 1527</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1527?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Idf5ce8f82e7727505cce67560e0=
-b7423b8e41a40 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1523 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2ca40d0d86599896b38ea146731=
+3b6a6cdc8339c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1527 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -192,5 +176,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---kE/42zwUu6k=--
+--u+Ykn141kHY=--
 
