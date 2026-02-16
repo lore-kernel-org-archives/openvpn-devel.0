@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Feb 2026 15:26:56 +0000
+Date: Mon, 16 Feb 2026 15:26:53 +0000
 In-Reply-To: <gerrit.1771247899000.I6298795f140c2c62252638f9e0cd6df19cb3d7ed@...2715...>
 References: <gerrit.1771247899000.I6298795f140c2c62252638f9e0cd6df19cb3d7ed@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  max@...2606...
-Message-ID: <793253adc802915b75e69966be605cae24117233-HTML@...2715...>
+Message-ID: <793253adc802915b75e69966be605cae24117233-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+xFVfR3MlNw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="V+NpOmEFk28="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Mbed TLS 3: Remove
  prediction resistance option
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+xFVfR3MlNw=
+--V+NpOmEFk28=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-30?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ MaxF. ( http://gerrit.openvpn.net/c/openvpn/+/1530?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Mbed TLS 3: Remove prediction resistance option
 ......................................................................
@@ -62,7 +66,7 @@ M src/openvpn/syshead.h
 8 files changed, 5 insertions(+), 69 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/1530/3
 
 diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
 c-options.rst
@@ -263,7 +267,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1530?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I6298795f140c2c62252638f9e0cd6df19cb3d7ed
@@ -274,29 +278,32 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+xFVfR3MlNw=
+--V+NpOmEFk28=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1530?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Mbed TLS 3: Remove prediction resistance option<=
-br><br>The option --use-prediction-resistance causes the random number<br>g=
-enerator to be reseeded for every call. This is excessive.<br><br>This comm=
-it removes that option.<br><br>Github: closes OpenVPN/openvpn#964<br><br>Ch=
-ange-Id: I6298795f140c2c62252638f9e0cd6df19cb3d7ed<br>Signed-off-by: Max Fi=
-llinger &lt;maximilian.fillinger@...2918...&gt;<br>Acked-by: Frank Lichtenh=
-eld &lt;frank@...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/op=
-envpn/+/1530<br>Message-Id: &lt;20260216151033.16585-1-gert@...1296...&gt;<=
-br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/ms=
-g35658.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<b=
-r>M doc/man-sections/generic-options.rst<br>M doc/man-sections/unsupported-=
-options.rst<br>M src/openvpn/crypto_mbedtls_legacy.c<br>M src/openvpn/crypt=
-o_mbedtls_legacy.h<br>M src/openvpn/init.c<br>M src/openvpn/options.c<br>M =
-src/openvpn/options.h<br>M src/openvpn/syshead.h<br>8 files changed, 5 inse=
-rtions(+), 69 deletions(-)<br><br></pre>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #3</strong> to the change originally created by MaxF.</p><p=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1530?usp=3Demail">View Ch=
+ange</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Mbed TLS 3: Remove predictio=
+n resistance option<br><br>The option --use-prediction-resistance causes th=
+e random number<br>generator to be reseeded for every call. This is excessi=
+ve.<br><br>This commit removes that option.<br><br>Github: closes OpenVPN/o=
+penvpn#964<br><br>Change-Id: I6298795f140c2c62252638f9e0cd6df19cb3d7ed<br>S=
+igned-off-by: Max Fillinger &lt;maximilian.fillinger@...2918...&gt;<br>Acke=
+d-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Gerrit URL: https://ger=
+rit.openvpn.net/c/openvpn/+/1530<br>Message-Id: &lt;20260216151033.16585-1-=
+gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1514...=
+s.sourceforge.net/msg35658.html<br>Signed-off-by: Gert Doering &lt;gert@...493...=
+1296...&gt;<br>---<br>M doc/man-sections/generic-options.rst<br>M doc/man-s=
+ections/unsupported-options.rst<br>M src/openvpn/crypto_mbedtls_legacy.c<br=
+>M src/openvpn/crypto_mbedtls_legacy.h<br>M src/openvpn/init.c<br>M src/ope=
+nvpn/options.c<br>M src/openvpn/options.h<br>M src/openvpn/syshead.h<br>8 f=
+iles changed, 5 insertions(+), 69 deletions(-)<br><br></pre><pre class=3D"b=
+locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
+it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/30/1530/3</pre>=
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/gen=
 eric-options.rst</span><br><span>index ed581b1..f46dfec 100644</span><br><s=
@@ -461,7 +468,7 @@ iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
 <link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1530?u=
 sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I6298795f140c2c62252638f9e0c=
@@ -479,5 +486,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---+xFVfR3MlNw=--
+--V+NpOmEFk28=--
 
