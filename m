@@ -1,8 +1,8 @@
-Date: Mon, 16 Feb 2026 12:07:49 +0000
+Date: Mon, 16 Feb 2026 12:06:54 +0000
 From: Rudi Heitbaum <rudi@...2993...>
-Message-ID: <aZMIlXEbofy5oZhD@...2995...>
+Message-ID: <aZMIXom9GFt17IpB@...2995...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/2] ntlm: fix discards 'const' qualifier
+Subject: [Openvpn-devel] [PATCH v2 1/2] dns: fix discards 'const' qualifier
  from pointer target type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -26,29 +26,52 @@ pointer to a const-qualified type when the input argument is a pointer
 to a const-qualified type.
 
 fixes:
-    src/openvpn/ntlm.c: In function 'ntlm_phase_3':
-    src/openvpn/ntlm.c:241:15: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-      241 |     separator = strchr(p->up.username, '\\');
-          |               ^
+    src/openvpn/dns.c: In function 'dns_server_addr_parse':
+    src/openvpn/dns.c:67:25: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+       67 |     char *first_colon = strchr(addr, ':');
+          |                         ^~~~~~
+    src/openvpn/dns.c:68:24: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+       68 |     char *last_colon = strrchr(addr, ':');
+          |                        ^~~~~~~
 
 Signed-off-by: Rudi Heitbaum <rudi@...2993...>
 ---
- src/openvpn/ntlm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/dns.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 8e913dce..244ee945 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -218,7 +218,7 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2, struct gc_are
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index c00d4b9c..38739923 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -45,7 +45,7 @@
+  * @return              True if parsing was successful
+  */
+ static bool
+-dns_server_port_parse(in_port_t *port, char *port_str)
++dns_server_port_parse(in_port_t *port, const char *port_str)
+ {
+     char *endptr;
+     errno = 0;
+@@ -71,8 +71,8 @@ dns_server_addr_parse(struct dns_server *server, const char *addr)
+     in_port_t port = 0;
+     sa_family_t af;
  
-     char domain[128];
-     char username[128];
--    char *separator;
-+    const char *separator;
+-    char *first_colon = strchr(addr, ':');
+-    char *last_colon = strrchr(addr, ':');
++    const char *first_colon = strchr(addr, ':');
++    const char *last_colon = strrchr(addr, ':');
  
-     ASSERT(strlen(p->up.username) > 0);
-     ASSERT(strlen(p->up.password) > 0);
+     if (!first_colon || first_colon == last_colon)
+     {
+@@ -93,7 +93,7 @@ dns_server_addr_parse(struct dns_server *server, const char *addr)
+         if (addr[0] == '[')
+         {
+             addr += 1;
+-            char *bracket = last_colon - 1;
++            const char *bracket = last_colon - 1;
+             if (*bracket != ']' || bracket == addr || !dns_server_port_parse(&port, last_colon + 1))
+             {
+                 return false;
 -- 
 2.51.0
 
