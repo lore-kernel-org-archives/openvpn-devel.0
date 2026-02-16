@@ -1,16 +1,13 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Feb 2026 21:27:47 +0000
-In-Reply-To: <gerrit.1769450543000.Ib6c3e154fbe14113ff990f13347f85a7c93dd3e0@...2715...>
-References: <gerrit.1769450543000.Ib6c3e154fbe14113ff990f13347f85a7c93dd3e0@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <85386274ed5e981d12780d53c0025b522e887414-EmailReviewComments-HTML@...2715...>
+Message-ID: <666df1a7-d071-454c-90a6-6bbfe0f7f014@...2181...>
+Date: Mon, 16 Feb 2026 23:12:46 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="QGeXVW4KxSM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Fix various loop
- index types to avoid sign-compare issues
+References: <20260205151036.743792-1-ralf@...2726...>
+ <aZNCExYQTSKM0HhW@...2915...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <aZNCExYQTSKM0HhW@...2915...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn net v2] ovpn: tcp - fix packet
+ extraction from stream
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +16,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Sabrina Dubroca <sd@...2891...>, Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---QGeXVW4KxSM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 16/02/2026 17:13, Sabrina Dubroca wrote:
+> 2026-02-05, 16:10:36 +0100, Ralf Lici wrote:
+>> When processing TCP stream data in ovpn_tcp_recv, we receive large
+>> cloned skbs from __strp_rcv that may contain multiple coalesced packets.
+>> The current implementation has two bugs:
+>>
+>> 1. Header offset overflow: Using pskb_pull with large offsets on
+>>     coalesced skbs causes skb->data - skb->head to exceed the u16 storage
+>>     of skb->network_header. This causes skb_reset_network_header to fail
+>>     on the inner decapsulated packet, resulting in packet drops.
+>>
+>> 2. Unaligned protocol headers: Extracting packets from arbitrary
+>>     positions within the coalesced TCP stream provides no alignment
+>>     guarantees for the packet data causing performance penalties on
+>>     architectures without efficient unaligned access. Additionally,
+>>     openvpn's 2-byte length prefix on TCP packets causes the subsequent
+>>     4-byte opcode and packet ID fields to be inherently misaligned.
+>>
+>> Fix both issues by allocating a new skb for each openvpn packet and
+>> using skb_copy_bits to extract only the packet content into the new
+>> buffer, skipping the 2-byte length prefix. Also, check the length before
+>> invoking the function that performs the allocation to avoid creating an
+>> invalid skb.
+>>
+>> If the packet has to be forwarded to userspace the 2-byte prefix can be
+>> pushed to the head safely, without misalignment.
+>>
+>> As a side effect, this approach also avoids the expensive linearization
+>> that pskb_pull triggers on cloned skbs with page fragments. In testing,
+>> this resulted in TCP throughput improvements of up to 74%.
+>>
+>> Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
+>> Signed-off-by: Ralf Lici <ralf@...2726...>
+>> ---
+>> Changes since v1:
+>> - updated the __skb_push usage for consistency with similar operations,
+>>    such as in ovpn_tcp_send_skb
+> 
+> Reviewed-by: Sabrina Dubroca <sd@...2891...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Thanks a lot, Sabrina!
+I was particularly excited for this patch due to the speed boost given 
+to TCP.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1491?usp=3Demail )
+> 
+> Sorry for the delay.
 
-Change subject: Fix various loop index types to avoid sign-compare issues
-......................................................................
+No worries - it seems Jakub et al are still busy with the merge window - 
+the other patches are still waiting in the line too.
 
+Will submit this as well ASAP!
 
-Patch Set 4: Code-Review+2
+Regards,
 
+> 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1491?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+-- 
+Antonio Quartulli
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib6c3e154fbe14113ff990f13347f85a7c93dd3e0
-Gerrit-Change-Number: 1491
-Gerrit-PatchSet: 4
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 16 Feb 2026 21:27:47 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---QGeXVW4KxSM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1491?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1491?usp=3Demail=
-">change 1491</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1491?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib6c3e154fbe14113ff990f13347=
-f85a7c93dd3e0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1491 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 16 Feb 2026 21:27:47=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---QGeXVW4KxSM=--
 
