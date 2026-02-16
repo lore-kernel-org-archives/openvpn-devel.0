@@ -1,6 +1,6 @@
-Date: Mon, 16 Feb 2026 11:20:29 +0000
+Date: Mon, 16 Feb 2026 10:54:13 +0000
 From: Rudi Heitbaum <rudi@...2993...>
-Message-ID: <aZL9fSVSAxFqxN_R@...2994...>
+Message-ID: <aZL3VTPFLX8nHGSR@...2994...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH 2/2] ntlm: fix discards 'const' qualifier
  from pointer target type
