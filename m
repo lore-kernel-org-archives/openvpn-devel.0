@@ -1,14 +1,13 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Feb 2026 23:28:48 +0000
-In-Reply-To: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
+Date: Mon, 16 Feb 2026 23:13:21 +0000
 References: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
 Reply-To: antonio@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <49e121dbffd579c0f397a16c2ce1c5b4909a59bc-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <379b10303b5641f3f002d2a550e67bb558cba9cd-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JAF7ISFd3/I="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="apqdCczSIWo="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: drop
  useless init_gc param for init_options()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JAF7ISFd3/I=
+--apqdCczSIWo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,11 +29,12 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail
 
-to look at the new patch set (#2).
+to review the following change.
 
 
 Change subject: options: drop useless init_gc param for init_options()
@@ -56,11 +56,11 @@ Signed-off-by: Antonio Quartulli <antonio@...2726...>
 M src/openvpn/openvpn.c
 M src/openvpn/options.c
 M src/openvpn/options.h
-M tests/unit_tests/openvpn/test_options_parse.c
-4 files changed, 12 insertions(+), 19 deletions(-)
+3 files changed, 12 insertions(+), 18 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/1536/2
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/1536/1
 
 diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
 index b7eca19..f38660f 100644
@@ -165,157 +165,134 @@ index cf9936b..3d8b505 100644
 
  void uninit_options(struct options *o);
 
-diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tes=
-ts/openvpn/test_options_parse.c
-index bb34f01..0b3d7fe 100644
---- a/tests/unit_tests/openvpn/test_options_parse.c
-+++ b/tests/unit_tests/openvpn/test_options_parse.c
-@@ -248,7 +248,6 @@
-     CLEAR(o); /* NB: avoiding init_options to limit dependencies */
-     gc_init(&o.gc);
-     gc_init(&o.dns_options.gc);
--    o.gc_owned =3D true;
-=20
-     char *p_expect_someopt[MAX_PARMS];
-     char *p_expect_otheropt[MAX_PARMS];
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5
 Gerrit-Change-Number: 1536
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 1
 Gerrit-Owner: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---JAF7ISFd3/I=
+--apqdCczSIWo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>ordex <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail">View Change</=
-a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">options: drop useless init_gc param for init_options()<=
-br><br>The init_option() function is always invoked with the second<br>para=
-m &quot;init_gc&quot; set to &quot;true&quot;.<br>This makes the parameter =
-useless and it can therefore be removed<br>while always taking the &quot;tr=
-ue&quot; branch in the related logic.<br><br>This way we can also drop the =
-options-&gt;gc_owned member as it<br>would also be always set to true.<br><=
-br>Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5<br>Signed-off-by: A=
-ntonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/openvpn/openvpn=
-.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M tests/unit_te=
-sts/openvpn/test_options_parse.c<br>4 files changed, 12 insertions(+), 19 d=
-eletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29=
-418/openvpn refs/changes/36/1536/2</pre><pre style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/openvpn=
-.c b/src/openvpn/openvpn.c</span><br><span>index b7eca19..f38660f 100644</s=
-pan><br><span>--- a/src/openvpn/openvpn.c</span><br><span>+++ b/src/openvpn=
-/openvpn.c</span><br><span>@@ -202,7 +202,7 @@</span><br><span> #endif</spa=
-n><br><span> </span><br><span>             /* initialize options to default=
- state */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-init_options(&amp;c.options, true);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            init_options(&amp;c.options);</span><br><span> =
-</span><br><span>             /* parse command line options, and read confi=
-guration file */</span><br><span>             parse_argv(&amp;c.options, ar=
-gc, argv, M_USAGE, OPT_P_DEFAULT, NULL, c.es);</span><br><span>diff --git a=
-/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index cdb02e=
-9..4e1e32a 100644</span><br><span>--- a/src/openvpn/options.c</span><br><sp=
-an>+++ b/src/openvpn/options.c</span><br><span>@@ -792,15 +792,12 @@</span>=
-<br><span>  * will be set to 0.</span><br><span>  */</span><br><span> void<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-init_options(struct op=
-tions *o, const bool init_gc)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+init_options(struct options *o)</span><br><span> {</span><br><spa=
-n>     CLEAR(*o);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (init_gc)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        gc_init(&amp;o-&g=
-t;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        gc_init=
-(&amp;o-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        o-&gt;gc_owned =3D true;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    gc_init(&amp;o-&gt;gc);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    gc_init(&amp;o-&gt;dns_options.gc);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     o-&gt;mode =3D MODE=
-_POINT_TO_POINT;</span><br><span>     o-&gt;topology =3D TOP_UNDEF;</span><=
-br><span>     o-&gt;ce.proto =3D PROTO_UDP;</span><br><span>@@ -925,11 +922=
-,9 @@</span><br><span>     {</span><br><span>         CLEAR(*o-&gt;remote_l=
-ist);</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (o-&gt;gc_owned)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- gc_free(&amp;o-&gt;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        gc_free(&amp;o-&gt;dns_options.gc);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_f=
-ree(&amp;o-&gt;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    gc_free(&amp;o-&gt;dns_options.gc);</span><br><span> }</span><br><span>=
- </span><br><span> #ifndef ENABLE_SMALL</span><br><span>@@ -2256,7 +2251,7 =
-@@</span><br><span>     int dev =3D DEV_TYPE_UNDEF;</span><br><span>     bo=
-ol pull =3D false;</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    init_options(&amp;defaults, true);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    init_options(&amp;defaults);</span><b=
-r><span> </span><br><span>     if (!options-&gt;test_crypto)</span><br><spa=
-n>     {</span><br><span>@@ -4824,7 +4819,7 @@</span><br><span> #else</span=
-><br><span> </span><br><span>     struct options o;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    init_options(&amp;o, true);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    init_options(&amp;o);</span=
-><br><span> </span><br><span>     fprintf(fp, usage_message, title_string, =
-o.ce.connect_retry_seconds,</span><br><span>             o.ce.connect_retry=
-_seconds_max, o.ce.local_port, o.ce.remote_port, TUN_MTU_DEFAULT,</span><br=
-><span>@@ -5979,7 +5974,7 @@</span><br><span>             struct options su=
-b;</span><br><span>             struct connection_entry *e;</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-            init_op=
-tions(&amp;sub, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            init_options(&amp;sub);</span><br><span>             sub.ce =
-=3D options-&gt;ce;</span><br><span>             read_config_string(&quot;[=
-CONNECTION-OPTIONS]&quot;, &amp;sub, p[1], msglevel, OPT_P_CONNECTION,</spa=
-n><br><span>                                option_types_found, es);</span>=
-<br><span>diff --git a/src/openvpn/options.h b/src/openvpn/options.h</span>=
-<br><span>index cf9936b..3d8b505 100644</span><br><span>--- a/src/openvpn/o=
-ptions.h</span><br><span>+++ b/src/openvpn/options.h</span><br><span>@@ -25=
-4,7 +254,6 @@</span><br><span> struct options</span><br><span> {</span><br>=
-<span>     struct gc_arena gc;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    bool gc_owned;</span><br><span> </span><br><span>     /* first=
- config file */</span><br><span>     const char *config;</span><br><span>@@=
- -890,7 +889,7 @@</span><br><span> </span><br><span> void show_dco_version(=
-const unsigned int flags);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-void init_options(struct options *o, const bool init=
-_gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void init_opti=
-ons(struct options *o);</span><br><span> </span><br><span> void uninit_opti=
-ons(struct options *o);</span><br><span> </span><br><span>diff --git a/test=
-s/unit_tests/openvpn/test_options_parse.c b/tests/unit_tests/openvpn/test_o=
-ptions_parse.c</span><br><span>index bb34f01..0b3d7fe 100644</span><br><spa=
-n>--- a/tests/unit_tests/openvpn/test_options_parse.c</span><br><span>+++ b=
-/tests/unit_tests/openvpn/test_options_parse.c</span><br><span>@@ -248,7 +2=
-48,6 @@</span><br><span>     CLEAR(o); /* NB: avoiding init_options to limi=
-t dependencies */</span><br><span>     gc_init(&amp;o.gc);</span><br><span>=
-     gc_init(&amp;o.dns_options.gc);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    o.gc_owned =3D true;</span><br><span> </span><br><span> =
-    char *p_expect_someopt[MAX_PARMS];</span><br><span>     char *p_expect_=
-otheropt[MAX_PARMS];</span><br><span></span><br></pre><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail">change 1536=
-</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsco=
-pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
-ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail"/><meta itempro=
-p=3D"name" content=3D"View Change"/></div></div>
+<p>ordex would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">options: drop useless init_gc param for ini=
+t_options()<br><br>The init_option() function is always invoked with the se=
+cond<br>param &quot;init_gc&quot; set to &quot;true&quot;.<br>This makes th=
+e parameter useless and it can therefore be removed<br>while always taking =
+the &quot;true&quot; branch in the related logic.<br><br>This way we can al=
+so drop the options-&gt;gc_owned member as it<br>would also be always set t=
+o true.<br><br>Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5<br>Sign=
+ed-off-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>---<br>M src/ope=
+nvpn/openvpn.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>3 f=
+iles changed, 12 insertions(+), 18 deletions(-)<br><br></pre><pre class=3D"=
+blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/36/1536/1</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c</span><br><s=
+pan>index b7eca19..f38660f 100644</span><br><span>--- a/src/openvpn/openvpn=
+.c</span><br><span>+++ b/src/openvpn/openvpn.c</span><br><span>@@ -202,7 +2=
+02,7 @@</span><br><span> #endif</span><br><span> </span><br><span>         =
+    /* initialize options to default state */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            init_options(&amp;c.options, true);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            init_option=
+s(&amp;c.options);</span><br><span> </span><br><span>             /* parse =
+command line options, and read configuration file */</span><br><span>      =
+       parse_argv(&amp;c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NULL,=
+ c.es);</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/op=
+tions.c</span><br><span>index cdb02e9..4e1e32a 100644</span><br><span>--- a=
+/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><b=
+r><span>@@ -792,15 +792,12 @@</span><br><span>  * will be set to 0.</span><=
+br><span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-init_options(struct options *o, const bool init_gc)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+init_options(struct options *=
+o)</span><br><span> {</span><br><span>     CLEAR(*o);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (init_gc)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        gc_init(&amp;o-&gt;gc);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        gc_init(&amp;o-&gt;dns_options.gc);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        o-&gt;gc_owned =3D true;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    gc_init(&amp;o-&gt;gc);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_init(&amp;o-&gt;dns_=
+options.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span>     o-&gt;mode =3D MODE_POINT_TO_POINT;</span><br><span>     o-&=
+gt;topology =3D TOP_UNDEF;</span><br><span>     o-&gt;ce.proto =3D PROTO_UD=
+P;</span><br><span>@@ -925,11 +922,9 @@</span><br><span>     {</span><br><s=
+pan>         CLEAR(*o-&gt;remote_list);</span><br><span>     }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;gc_owned)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        gc_free(&amp;o-&gt;gc);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        gc_free(&amp;o-&gt;dns_options=
+.gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    gc_free(&amp;o-&gt;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;o-&gt;dns_options.gc);</=
+span><br><span> }</span><br><span> </span><br><span> #ifndef ENABLE_SMALL</=
+span><br><span>@@ -2256,7 +2251,7 @@</span><br><span>     int dev =3D DEV_T=
+YPE_UNDEF;</span><br><span>     bool pull =3D false;</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_options(&amp;defa=
+ults, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ini=
+t_options(&amp;defaults);</span><br><span> </span><br><span>     if (!optio=
+ns-&gt;test_crypto)</span><br><span>     {</span><br><span>@@ -4824,7 +4819=
+,7 @@</span><br><span> #else</span><br><span> </span><br><span>     struct =
+options o;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_op=
+tions(&amp;o, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    init_options(&amp;o);</span><br><span> </span><br><span>     fprintf(f=
+p, usage_message, title_string, o.ce.connect_retry_seconds,</span><br><span=
+>             o.ce.connect_retry_seconds_max, o.ce.local_port, o.ce.remote_=
+port, TUN_MTU_DEFAULT,</span><br><span>@@ -5979,7 +5974,7 @@</span><br><spa=
+n>             struct options sub;</span><br><span>             struct conn=
+ection_entry *e;</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            init_options(&amp;sub, true);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            init_options(&amp;sub);</spa=
+n><br><span>             sub.ce =3D options-&gt;ce;</span><br><span>       =
+      read_config_string(&quot;[CONNECTION-OPTIONS]&quot;, &amp;sub, p[1], =
+msglevel, OPT_P_CONNECTION,</span><br><span>                               =
+ option_types_found, es);</span><br><span>diff --git a/src/openvpn/options.=
+h b/src/openvpn/options.h</span><br><span>index cf9936b..3d8b505 100644</sp=
+an><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/=
+options.h</span><br><span>@@ -254,7 +254,6 @@</span><br><span> struct optio=
+ns</span><br><span> {</span><br><span>     struct gc_arena gc;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    bool gc_owned;</span><br><span=
+> </span><br><span>     /* first config file */</span><br><span>     const =
+char *config;</span><br><span>@@ -890,7 +889,7 @@</span><br><span> </span><=
+br><span> void show_dco_version(const unsigned int flags);</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void init_options(st=
+ruct options *o, const bool init_gc);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+void init_options(struct options *o);</span><br><span> </=
+span><br><span> void uninit_options(struct options *o);</span><br><span> </=
+span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1536?usp=3Demail">change 1536</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
+schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
+p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1536?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I633d8cbf75ab4da85e16df44684=
 aef60523811c5 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1536 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
  </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -327,5 +304,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---JAF7ISFd3/I=--
+--apqdCczSIWo=--
 
