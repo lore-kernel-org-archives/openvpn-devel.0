@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Feb 2026 15:50:01 +0000
-In-Reply-To: <gerrit.1769512571000.I525a5b1b9b6f173cdf12341aefc44d58f0d43aed@...2715...>
-References: <gerrit.1769512571000.I525a5b1b9b6f173cdf12341aefc44d58f0d43aed@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <d9174d9be8b2153ec946617e1e0a1bf1751fa099-EmailReplacePatchSet-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Mon, 16 Feb 2026 17:22:31 +0100
+Message-ID: <20260216162236.22304-1-gert@...1296...>
+In-Reply-To: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
+References: <gerrit.1768830991000.Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7V9EgSbao6k="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: cryptoapi: Change
- signature of parse_hexstring to match code
+Subject: [Openvpn-devel] [PATCH v7] Merge stream_buf_get_next and
+ stream_buf_set_next
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,247 +14,295 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---7V9EgSbao6k=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+The stream_buf_set_next prepares a buffer in the stream_buf
+structure that will be retrieved by stream_buf_get the next
+time it is used.
 
-Hello ordex, plaisthos,
+This temporary copy of the buffer is unnecessary as the buffer
+next can also be constructed on the fly.
 
-I'd like you to reexamine a change. Please visit
+This also fixes a rare crash when read buffer are not initialised and
+read is still signalled as the initialisation of next will now happen whenever
+it is required.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1492?usp=3Demail
+This assertion happens when we do not expect a read event from the socket and
+then in link_socket_read_tcp the function stream_buf_get_next can trigger
+an assert on ASSERT(buf_defined(&sb->next));
 
-to look at the new patch set (#5).
+To avoid this weird corner case, just always initialise the read buffer
+whether or not we expect a read to occur.
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+This also adds documentation about the methods and field associated with
+the stream_buf structure.
 
+Reproducing this bug requires very special circumstances. The reproduction is
+   openvpn --cert server-secp384r1.crt  --key server-secp384r1.key \
+   --dev ml-tan --dev-type tap --tun-mtu 1400 --config ~/fp --topology subnet \
+   --port 2201 --verb 3  --mode server  --tls-server --proto tcp6-server
+   --ifconfig 10.0.0.1 255.255.255.0
 
-Change subject: cryptoapi: Change signature of parse_hexstring to match code
-......................................................................
+as the server side and
 
-cryptoapi: Change signature of parse_hexstring to match code
+  openvpn --client --proto tcp --remote poseidon --port 2201 --dev tap
 
-parse_hexdigest is a function that is used in
-exactly one place (not counting tests). So
-change the types in a way that they match what
-the caller actually wants (DWORD) and so we
-do not have any unnecessary conversions.
+The client side must be on Linux. Other platforms do not reproduce this
+bug.
 
-Change-Id: I525a5b1b9b6f173cdf12341aefc44d58f0d43aed
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Note that the client will not configure any IP or IPv6 on the interface
+and will also not bring up the interface. The server must also send at least
+one real data packet to the client (no keepalive ping). Just having the
+interface up normally produces enough traffic.
+
+Now forcefully reset the TCP connection. E.g. by executing on the server
+
+    sudo ss --kill sport 2201
+
+This will now trigger the assertion. This happens since OpenVPN waits
+forever to get a write back from the poll from the tun/tap device but
+this never happens since the device is not up.
+
+As long as we do not get back the tun device for writing, we also do
+not put the socket back into the EVENT_READ state. And this also means
+that code to initialise the read buffer (stream_buf_set_next) is never
+run.
+
+But the reset on the TCP socket triggers the TCP socket to be available
+for read, even if it is just for a read of 0 bytes to indicate the reset.
+So the function link_socket_read_tcp will run into the assert.
+
+Change-Id: Ifd3e953104a67c8bf2a225e179865e3dbd0dbfbc
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1477
 ---
-M src/openvpn/cryptoapi.c
-M tests/unit_tests/openvpn/test_cryptoapi.c
-2 files changed, 6 insertions(+), 15 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/92/1492/5
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1477
+This mail reflects revision 7 of this Change.
 
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index b74320d..e17936a 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -61,7 +61,7 @@
-     return 0;
- }
+Signed-off-by line for the author was added as per our policy.
 
--#else /* HAVE_XKEY_PROVIDER */
-+#else  /* HAVE_XKEY_PROVIDER */
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
- static XKEY_EXTERNAL_SIGN_fn xkey_cng_sign;
-
-@@ -145,11 +145,6 @@
-     free(cd);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /**
-  * Parse a hex string with optional embedded spaces into
-  * a byte array.
-@@ -158,10 +153,10 @@
-  * @param capacity  capacity of the byte array arr
-  * @returns the number of bytes parsed or 0 on error
-  */
--int
--parse_hexstring(const char *p, unsigned char *arr, size_t capacity)
-+static DWORD
-+parse_hexstring(const char *p, unsigned char *arr, DWORD capacity)
+        
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index c463041..bdb98b9 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -44,9 +44,7 @@
+ bool
+ sockets_read_residual(const struct context *c)
  {
--    int i =3D 0;
-+    DWORD i =3D 0;
-     for (; *p && i < capacity; p +=3D 2)
-     {
-         /* skip spaces */
-@@ -182,10 +177,6 @@
-     return i;
- }
-=20
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
+-    int i;
 -
- static void *
- decode_object(struct gc_arena *gc, LPCSTR struct_type, const CRYPT_OBJID_B=
-LOB *val, DWORD flags,
-               DWORD *cb)
-diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/o=
-penvpn/test_cryptoapi.c
-index ce527d7..59a356d 100644
---- a/tests/unit_tests/openvpn/test_cryptoapi.c
-+++ b/tests/unit_tests/openvpn/test_cryptoapi.c
-@@ -469,7 +469,7 @@
-
-     for (size_t i =3D 0; i < _countof(valid_str); i++)
+-    for (i = 0; i < c->c1.link_sockets_num; i++)
++    for (int i = 0; i < c->c1.link_sockets_num; i++)
      {
--        int len =3D parse_hexstring(valid_str[i], hash, _countof(hash));
-+        DWORD len =3D parse_hexstring(valid_str[i], hash, _countof(hash));
-         assert_int_equal(len, sizeof(test_hash));
-         assert_memory_equal(hash, test_hash, sizeof(test_hash));
-         memset(hash, 0, _countof(hash));
-@@ -477,7 +477,7 @@
-
-     for (size_t i =3D 0; i < _countof(invalid_str); i++)
+         if (c->c2.link_sockets[i]->stream_buf.residual_fully_formed)
+         {
+@@ -2053,13 +2051,19 @@
+  * stream connection.
+  */
+ 
++/**
++ * resets the stream buffer to be set up for the next round of
++ * reassembling a packet
++ *
++ * But still leaves the current packet in \c sb->buf to be potentially
++ * read.
++ */
+ static inline void
+ stream_buf_reset(struct stream_buf *sb)
+ {
+     dmsg(D_STREAM_DEBUG, "STREAM: RESET");
+     sb->residual_fully_formed = false;
+     sb->buf = sb->buf_init;
+-    buf_reset(&sb->next);
+     sb->len = -1;
+ }
+ 
+@@ -2081,19 +2085,35 @@
+     dmsg(D_STREAM_DEBUG, "STREAM: INIT maxlen=%d", sb->maxlen);
+ }
+ 
+-static inline void
+-stream_buf_set_next(struct stream_buf *sb)
++/**
++ * Return a buffer that is backed by the same backend as sb->buf that
++ * determines where the next read should be done by also having the
++ * right offset into \c sb->buf.
++ * @param sb the stream buffer from which to construct the next buffer
++ */
++static inline struct buffer
++stream_buf_get_next(struct stream_buf *sb)
+ {
+     /* set up 'next' for next i/o read */
+-    sb->next = sb->buf;
+-    sb->next.offset = sb->buf.offset + sb->buf.len;
+-    sb->next.len = (sb->len >= 0 ? sb->len : sb->maxlen) - sb->buf.len;
+-    dmsg(D_STREAM_DEBUG, "STREAM: SET NEXT, buf=[%d,%d] next=[%d,%d] len=%d maxlen=%d",
+-         sb->buf.offset, sb->buf.len, sb->next.offset, sb->next.len, sb->len, sb->maxlen);
+-    ASSERT(sb->next.len > 0);
+-    ASSERT(buf_safe(&sb->buf, sb->next.len));
++    struct buffer next;
++    next = sb->buf;
++    next.offset = sb->buf.offset + sb->buf.len;
++    next.len = (sb->len >= 0 ? sb->len : sb->maxlen) - sb->buf.len;
++    dmsg(D_STREAM_DEBUG, "STREAM: GET NEXT, buf=[%d,%d] next=[%d,%d] len=%d maxlen=%d",
++         sb->buf.offset, sb->buf.len, next.offset, next.len, sb->len, sb->maxlen);
++    ASSERT(next.len > 0);
++    ASSERT(buf_safe(&sb->buf, next.len));
++    return next;
+ }
+ 
++/**
++ * Sets the parameter buf to the current buffer of \c sb->buf.
++ * This function assumes that caller already checked if the packet in \c sb->buf
++ * is fully assembled.
++ *
++ * @param sb    stream buffer to operate on
++ * @param buf   buffer to point to the contents of buf
++ */
+ static inline void
+ stream_buf_get_final(struct stream_buf *sb, struct buffer *buf)
+ {
+@@ -2102,14 +2122,6 @@
+     *buf = sb->buf;
+ }
+ 
+-static inline void
+-stream_buf_get_next(struct stream_buf *sb, struct buffer *buf)
+-{
+-    dmsg(D_STREAM_DEBUG, "STREAM: GET NEXT len=%d", buf_defined(&sb->next) ? sb->next.len : -1);
+-    ASSERT(buf_defined(&sb->next));
+-    *buf = sb->next;
+-}
+-
+ bool
+ stream_buf_read_setup_dowork(struct stream_buf *sb)
+ {
+@@ -2122,13 +2134,30 @@
+              sb->residual_fully_formed ? "YES" : "NO", sb->residual.len);
+     }
+ 
+-    if (!sb->residual_fully_formed)
+-    {
+-        stream_buf_set_next(sb);
+-    }
+     return !sb->residual_fully_formed;
+ }
+ 
++/**
++ * This will determine if \c sb->buf contains a full packet. It will also
++ * move anything in \c sb->buf beyond a full packet to \c sb->residual.
++ *
++ * The first time the function is called with a valid buffer and port sharing
++ * is enabled, the function will also determine if the buffer contains
++ * OpenVPN protocol data and store the result in \c sb->port_share_state.
++ *
++ * If a packet outside the allowed range is detected, the error state
++ * on \c sb is set.
++ *
++ * Since the buffer in \c sb->buf is modified from the outside (via
++ * \c stream_buf_get_next) the parameter \p length_added needs to be set
++ * to the amount of bytes that have been written to this buffer. If the
++ * buffer was not modified but should still be analysed and potentially
++ * split to \c sb->residual, the parameter \p length_added should be 0.
++ *
++ * @param sb the stream buffer
++ * @param length_added The length that has been added to \c sb->buf
++ * @return true if \c sb->buf contains fully reassembled packet
++ */
+ static bool
+ stream_buf_added(struct stream_buf *sb, int length_added)
+ {
+@@ -2191,7 +2220,6 @@
+     else
      {
--        int len =3D parse_hexstring(invalid_str[i], hash, _countof(hash));
-+        DWORD len =3D parse_hexstring(invalid_str[i], hash, _countof(hash)=
-);
-         assert_int_equal(len, 0);
+         dmsg(D_STREAM_DEBUG, "STREAM: ADD returned FALSE (have=%d need=%d)", sb->buf.len, sb->len);
+-        stream_buf_set_next(sb);
+         return false;
      }
  }
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1492?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I525a5b1b9b6f173cdf12341aefc44d58f0d43aed
-Gerrit-Change-Number: 1492
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-
---7V9EgSbao6k=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #5</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1492?usp=3Demail">View C=
-hange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRul=
-e is unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">cryptoapi: Change signature of parse=
-_hexstring to match code<br><br>parse_hexdigest is a function that is used =
-in<br>exactly one place (not counting tests). So<br>change the types in a w=
-ay that they match what<br>the caller actually wants (DWORD) and so we<br>d=
-o not have any unnecessary conversions.<br><br>Change-Id: I525a5b1b9b6f173c=
-df12341aefc44d58f0d43aed<br>Signed-off-by: Frank Lichtenheld &lt;frank@...1665...=
-641...&gt;<br>---<br>M src/openvpn/cryptoapi.c<br>M tests/unit_tests/openvp=
-n/test_cryptoapi.c<br>2 files changed, 6 insertions(+), 15 deletions(-)<br>=
-<br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
-white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn ref=
-s/changes/92/1492/5</pre><pre style=3D"font-family: monospace,monospace; wh=
-ite-space: pre-wrap;"><span>diff --git a/src/openvpn/cryptoapi.c b/src/open=
-vpn/cryptoapi.c</span><br><span>index b74320d..e17936a 100644</span><br><sp=
-an>--- a/src/openvpn/cryptoapi.c</span><br><span>+++ b/src/openvpn/cryptoap=
-i.c</span><br><span>@@ -61,7 +61,7 @@</span><br><span>     return 0;</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#else /* HAVE_XKEY_PROVIDER */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#else  /* HAVE_XKEY_PROVIDER */</span><br><span> </span=
-><br><span> static XKEY_EXTERNAL_SIGN_fn xkey_cng_sign;</span><br><span> </=
-span><br><span>@@ -145,11 +145,6 @@</span><br><span>     free(cd);</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Ws=
-ign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#end=
-if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /=
-**</span><br><span>  * Parse a hex string with optional embedded spaces int=
-o</span><br><span>  * a byte array.</span><br><span>@@ -158,10 +153,10 @@</=
-span><br><span>  * @param capacity  capacity of the byte array arr</span><b=
-r><span>  * @returns the number of bytes parsed or 0 on error</span><br><sp=
-an>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-parse_hexstring(const char *p, u=
-nsigned char *arr, size_t capacity)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+static DWORD</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+parse_hexstring(const char *p, unsigned char *arr, DWORD capacity)=
-</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  int i =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    D=
-WORD i =3D 0;</span><br><span>     for (; *p &amp;&amp; i &lt; capacity; p =
-+=3D 2)</span><br><span>     {</span><br><span>         /* skip spaces */</=
-span><br><span>@@ -182,10 +177,6 @@</span><br><span>     return i;</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span> static void *</span><br><span> decode_=
-object(struct gc_arena *gc, LPCSTR struct_type, const CRYPT_OBJID_BLOB *val=
-, DWORD flags,</span><br><span>               DWORD *cb)</span><br><span>di=
-ff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/ope=
-nvpn/test_cryptoapi.c</span><br><span>index ce527d7..59a356d 100644</span><=
-br><span>--- a/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>++=
-+ b/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>@@ -469,7 +46=
-9,7 @@</span><br><span> </span><br><span>     for (size_t i =3D 0; i &lt; _=
-countof(valid_str); i++)</span><br><span>     {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        int len =3D parse_hexstring(valid_str[i],=
- hash, _countof(hash));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        DWORD len =3D parse_hexstring(valid_str[i], hash, _countof(hash=
-));</span><br><span>         assert_int_equal(len, sizeof(test_hash));</spa=
-n><br><span>         assert_memory_equal(hash, test_hash, sizeof(test_hash)=
-);</span><br><span>         memset(hash, 0, _countof(hash));</span><br><spa=
-n>@@ -477,7 +477,7 @@</span><br><span> </span><br><span>     for (size_t i =
-=3D 0; i &lt; _countof(invalid_str); i++)</span><br><span>     {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        int len =3D parse_hexstr=
-ing(invalid_str[i], hash, _countof(hash));</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        DWORD len =3D parse_hexstring(invalid_str[i]=
-, hash, _countof(hash));</span><br><span>         assert_int_equal(len, 0);=
-</span><br><span>     }</span><br><span> }</span><br><span></span><br></pre=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1492?us=
-p=3Demail">change 1492</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1492?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I525a5b1b9b6f173cdf12341aefc=
-44d58f0d43aed </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1492 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-
-</body></html>=
-
---7V9EgSbao6k=--
+@@ -2261,8 +2289,7 @@
+         sockethandle_t sh = { .s = sock->sd };
+         len = sockethandle_finalize(sh, &sock->reads, buf, NULL);
+ #else
+-        struct buffer frag;
+-        stream_buf_get_next(&sock->stream_buf, &frag);
++        struct buffer frag = stream_buf_get_next(&sock->stream_buf);
+         len = recv(sock->sd, BPTR(&frag), BLEN(&frag), MSG_NOSIGNAL);
+ #endif
+ 
+@@ -2538,7 +2565,7 @@
+         }
+         else if (proto_is_tcp(sock->info.proto))
+         {
+-            stream_buf_get_next(&sock->stream_buf, &sock->reads.buf);
++            sock->reads.buf = stream_buf_get_next(&sock->stream_buf);
+         }
+         else
+         {
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 3f46dc6..ebaf776 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -95,23 +95,41 @@
+     int mtu_changed; /* Set to true when mtu value is changed */
+ };
+ 
+-/*
+- * Used to extract packets encapsulated in streams into a buffer,
+- * in this case IP packets embedded in a TCP stream.
++/**
++ * struct used to extract packets encapsulated in streams into a buffer,
++ * in this case OpenVPN packets (data or control) embedded in a TCP stream.
++ *
++ * This struct is used to packetise the TCP stream into the
++ * OpenVPN packet. Each OpenVPN packet has a two-byte header determining
++ * the length of the packet.
+  */
+ struct stream_buf
+ {
++    /* Buffer to hold the initial buffer that will be used to reset buf */
+     struct buffer buf_init;
++
++    /** buffer holding the excess bytes that are not part of the
++     *  packet. */
+     struct buffer residual;
++
++    /** Maximum length of a packet that we accept */
+     int maxlen;
++
++    /** The buffer in buf contains a full packet without a header. Any
++     * extra data is in residual */
+     bool residual_fully_formed;
+ 
++    /** Holds the data of the current packet. This might be a partial packet */
+     struct buffer buf;
+-    struct buffer next;
+-    int len;    /* -1 if not yet known */
+ 
+-    bool error; /* if true, fatal TCP error has occurred,
+-                 *  requiring that connection be restarted */
++    /** -1 if not yet known. Otherwise holds the length of the
++     *   packet. If >= 0, buf is already moved past the initial
++     *  size header */
++    int len;
++
++    /** if true, a fatal TCP error has occurred,
++     *  requiring that connection be restarted */
++    bool error;
+ #if PORT_SHARE
+ #define PS_DISABLED 0
+ #define PS_ENABLED  1
 
