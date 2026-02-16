@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 16 Feb 2026 18:57:59 +0000
-In-Reply-To: <gerrit.1771268251000.Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8@...2715...>
-References: <gerrit.1771268251000.Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <f7f9e830d8ff11c39395b31bb6724cd6c05638dc-EmailReplacePatchSet-HTML@...2715...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Mon, 16 Feb 2026 19:32:32 +0000
+In-Reply-To: <gerrit.1771205254000.I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a@...2715...>
+References: <gerrit.1771205254000.I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <081478d14ce87fa7bc5e64922881c3bce69e0226-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XSKqNmddIlo="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: configure.ac:
- adjust to native inotify support for FreeBSD 15+
+Content-Type: multipart/alternative; boundary="Eb0PG/wsPkE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fixup version
+ command on management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,137 +19,156 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XSKqNmddIlo=
+--Eb0PG/wsPkE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos, selvanair.
 
-Hello plaisthos,
+Hello flichtenheld, plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1535?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
 
 
-Change subject: configure.ac: adjust to native inotify support for FreeBSD =
-15+
+Change subject: Fixup version command on management interface
 ......................................................................
 
-configure.ac: adjust to native inotify support for FreeBSD 15+
+Fixup version command on management interface
 
-FreeBSD 15 has native inotify support, and no "libinotify.pc" pkg config
-file anymore, plus no extra includes are needed.  This works fine if we
-conditionalize the FreeBSD check to "freebsd-1[0-4]".
+All commands to the management interface are supposed to be
+responded with either a one-line "SUCCESS:/ERROR:" message
+or a multi-line reply terminated by "END". But, curently we
+silently accept the "version n" command wih no response. This
+causes clients like OpenVPN-GUI lock-up if version command is
+used, waiting for ever for a reply.
 
-Due to m4 involvement double braces are needed for quoting.
+Fix this by adding a SUCCESS/ERROR response.
 
-See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D293176
-
-Reported-by: Ivo Karabojkov <karabojkov@...2996...>
-Reported-by: Marek Zarychta <zarychtam@...2997...>
-
-Change-Id: Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-M configure.ac
-1 file changed, 1 insertion(+), 1 deletion(-)
+M src/openvpn/manage.c
+1 file changed, 5 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1535/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/1528/3
 
-diff --git a/configure.ac b/configure.ac
-index 9fa6a41..e151816 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1294,7 +1294,7 @@
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 37ae6b3..f0408d8 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1333,6 +1333,11 @@
+     if (version)
+     {
+         man->connection.client_version =3D atoi(version);
++        msg(M_CLIENT, "SUCCESS: Management client version set to %d", man-=
+>connection.client_version);
++    }
++    else
++    {
++        msg(M_CLIENT, "ERROR: Invalid value specified for management clien=
+t version");
+     }
+ }
 
- if test "${enable_async_push}" =3D "yes"; then
- 	case "$host" in
--		*-*-freebsd*)
-+		*-*-freebsd1[[0-4]]*)
- 			PKG_CHECK_MODULES(
- 				[OPTIONAL_INOTIFY],
- 				[libinotify],
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1535?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8
-Gerrit-Change-Number: 1535
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
+Gerrit-Change-Id: I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a
+Gerrit-Change-Number: 1528
+Gerrit-PatchSet: 3
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
 
---XSKqNmddIlo=
+--Eb0PG/wsPkE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>cron2 <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1535?usp=3Demail">View Change</=
-a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">configure.ac: adjust to native inotify support for Free=
-BSD 15+<br><br>FreeBSD 15 has native inotify support, and no &quot;libinoti=
-fy.pc&quot; pkg config<br>file anymore, plus no extra includes are needed. =
- This works fine if we<br>conditionalize the FreeBSD check to &quot;freebsd=
--1[0-4]&quot;.<br><br>Due to m4 involvement double braces are needed for qu=
-oting.<br><br>See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D29317=
-6<br><br>Reported-by: Ivo Karabojkov &lt;karabojkov@...2996...&gt;<br>Repor=
-ted-by: Marek Zarychta &lt;zarychtam@...2997...&gt;<br><br>Change-Id: Ie3f2=
-09a641c2f56494dfc7720b13f2a2ba3001a8<br>Signed-off-by: Gert Doering &lt;ger=
-t@...1296...&gt;<br>---<br>M configure.ac<br>1 file changed, 1 insertion(+)=
-, 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
-t:29418/openvpn refs/changes/35/1535/2</pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;"><span>diff --git a/configure.ac b/=
-configure.ac</span><br><span>index 9fa6a41..e151816 100644</span><br><span>=
---- a/configure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -1=
-294,7 +1294,7 @@</span><br><span> </span><br><span> if test &quot;${enable_=
-async_push}&quot; =3D &quot;yes&quot;; then</span><br><span> 	case &quot;$h=
-ost&quot; in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		*-*-fre=
-ebsd*)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+		*-*-freebsd=
-1[[0-4]]*)</span><br><span> 			PKG_CHECK_MODULES(</span><br><span> 				[OPT=
-IONAL_INOTIFY],</span><br><span> 				[libinotify],</span><br><span></span><=
+rently required from: flichtenheld, plaisthos, selvanair. </p>
+<p>selvanair <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail">View Chan=
+ge</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Fixup version command on man=
+agement interface<br><br>All commands to the management interface are suppo=
+sed to be<br>responded with either a one-line &quot;SUCCESS:/ERROR:&quot; m=
+essage<br>or a multi-line reply terminated by &quot;END&quot;. But, curentl=
+y we<br>silently accept the &quot;version n&quot; command wih no response. =
+This<br>causes clients like OpenVPN-GUI lock-up if version command is<br>us=
+ed, waiting for ever for a reply.<br><br>Fix this by adding a SUCCESS/ERROR=
+ response.<br><br>Change-Id: I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a<br>S=
+igned-off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>---<br>M src/openv=
+pn/manage.c<br>1 file changed, 5 insertions(+), 0 deletions(-)<br><br></pre=
+><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
+/28/1528/3</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c=
+</span><br><span>index 37ae6b3..f0408d8 100644</span><br><span>--- a/src/op=
+envpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@=
+@ -1333,6 +1333,11 @@</span><br><span>     if (version)</span><br><span>   =
+  {</span><br><span>         man-&gt;connection.client_version =3D atoi(ver=
+sion);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M=
+_CLIENT, &quot;SUCCESS: Management client version set to %d&quot;, man-&gt;=
+connection.client_version);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    el=
+se</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_CLIENT, &quot;ERR=
+OR: Invalid value specified for management client version&quot;);</span><br=
+><span>     }</span><br><span> }</span><br><span> </span><br><span></span><=
 br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1535?usp=3Demail">change 1535</a>. To unsubscribe, or for help writing mai=
+/1528?usp=3Demail">change 1528</a>. To unsubscribe, or for help writing mai=
 l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
 >settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
 "><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
 on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/15=
-35?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+28?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
 iv>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie3f209a641c2f56494dfc7720b1=
-3f2a2ba3001a8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1535 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76dc80a9d9b29e401b7bbd59e0c=
+46baf751d2e4a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1528 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
 
 </body></html>=
 
---XSKqNmddIlo=--
+--Eb0PG/wsPkE=--
 
