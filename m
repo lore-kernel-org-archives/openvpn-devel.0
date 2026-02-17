@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 17 Feb 2026 17:23:05 +0100
-Message-ID: <20260217162311.26702-1-gert@...1296...>
-In-Reply-To: <gerrit.1771343792000.Ic877f9a9c6459c6eb97cde1099f47f0b196b8084@...2715...>
-References: <gerrit.1771343792000.Ic877f9a9c6459c6eb97cde1099f47f0b196b8084@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 17 Feb 2026 17:10:27 +0000
+In-Reply-To: <gerrit.1771329387000.Ia5d330fe5c922aaa6948c1fb05c9a4947c833311@...2715...>
+References: <gerrit.1771329387000.Ia5d330fe5c922aaa6948c1fb05c9a4947c833311@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, max@...2606...
+Message-ID: <a1bd056225572c3e512113ff303b930fd98ceb47-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] systemd: Change LimitNPROC to TasksMax
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="CbRTG/2/0+A="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Unbreak Mbed TLS 4
+ build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,64 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: MaxF <max@...2606...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--CbRTG/2/0+A=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-There were some complaints about valid setups
-that ran into problems with LimitNPROC. This
-is especially true since LimitNPROC limits
-the total amounts of threads running for the
-same uid, so if multiple openvpn services run
-under the same user, they will compete for
-resources. As suggested in the systemd
-documentation change this to TasksMax which
-really counts the threads running in one
-specific service.
+Attention is currently required from: MaxF, plaisthos.
 
-Github: Fixes #929
-Change-Id: Ic877f9a9c6459c6eb97cde1099f47f0b196b8084
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1539
----
+flichtenheld has posted comments on this change by MaxF. ( http://gerrit.op=
+envpn.net/c/openvpn/+/1538?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Unbreak Mbed TLS 4 build
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1539
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
-index 326bb73..e311978 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -12,7 +12,7 @@
- WorkingDirectory=/etc/openvpn/client
- ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_SYS_NICE
--LimitNPROC=10
-+TasksMax=10
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
- ProtectSystem=true
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index d43bce1..e3e9895 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -12,7 +12,7 @@
- WorkingDirectory=/etc/openvpn/server
- ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_SYS_NICE CAP_AUDIT_WRITE
--LimitNPROC=10
-+TasksMax=10
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
- ProtectSystem=true
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia5d330fe5c922aaa6948c1fb05c9a4947c833311
+Gerrit-Change-Number: 1538
+Gerrit-PatchSet: 2
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Tue, 17 Feb 2026 17:10:27 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--CbRTG/2/0+A=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: MaxF, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail=
+">change 1538</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia5d330fe5c922aaa6948c1fb05c=
+9a4947c833311 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1538 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Feb 2026 17:10:27=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--CbRTG/2/0+A=--
 
