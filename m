@@ -1,11 +1,15 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 17 Feb 2026 14:56:05 +0100
-Message-ID: <20260217135605.154129-1-frank@...2641...>
-In-Reply-To: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
-References: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 17 Feb 2026 15:56:35 +0000
+References: <gerrit.1771343792000.Ic877f9a9c6459c6eb97cde1099f47f0b196b8084@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <adee93d24718b6a91f676c94dfbcf45a7d8bb53a-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] options: drop useless init_gc param for
- init_options()
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="XVjNAVoVTf4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: systemd: Change
+ LimitNPROC to TasksMax
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,147 +18,177 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...2726...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...2726...>
+--XVjNAVoVTf4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The init_option() function is always invoked with the second
-param "init_gc" set to "true".
-This makes the parameter useless and it can therefore be removed
-while always taking the "true" branch in the related logic.
+Attention is currently required from: plaisthos.
 
-This way we can also drop the options->gc_owned member as it
-would also be always set to true.
+Hello plaisthos,
 
-Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1536
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1539?usp=3Demail
+
+to review the following change.
+
+
+Change subject: systemd: Change LimitNPROC to TasksMax
+......................................................................
+
+systemd: Change LimitNPROC to TasksMax
+
+There were some complaints about valid setups
+that ran into problems with LimitNPROC. This
+is especially true since LimitNPROC limits
+the total amounts of threads running for the
+same uid, so if multiple openvpn services run
+under the same user, they will compete for
+resources. As suggested in the systemd
+documentation change this to TasksMax which
+really counts the threads running in one
+specific service.
+
+Github: Fixes #929
+Change-Id: Ic877f9a9c6459c6eb97cde1099f47f0b196b8084
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M distro/systemd/openvpn-client@...2221...
+M distro/systemd/openvpn-server@...2221...
+2 files changed, 2 insertions(+), 2 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1536
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/1539/1
 
-        
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index b7eca19..f38660f 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -202,7 +202,7 @@
- #endif
- 
-             /* initialize options to default state */
--            init_options(&c.options, true);
-+            init_options(&c.options);
- 
-             /* parse command line options, and read configuration file */
-             parse_argv(&c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NULL, c.es);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index cdb02e9..4e1e32a 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -792,15 +792,12 @@
-  * will be set to 0.
-  */
- void
--init_options(struct options *o, const bool init_gc)
-+init_options(struct options *o)
- {
-     CLEAR(*o);
--    if (init_gc)
--    {
--        gc_init(&o->gc);
--        gc_init(&o->dns_options.gc);
--        o->gc_owned = true;
--    }
-+    gc_init(&o->gc);
-+    gc_init(&o->dns_options.gc);
-+
-     o->mode = MODE_POINT_TO_POINT;
-     o->topology = TOP_UNDEF;
-     o->ce.proto = PROTO_UDP;
-@@ -925,11 +922,9 @@
-     {
-         CLEAR(*o->remote_list);
-     }
--    if (o->gc_owned)
--    {
--        gc_free(&o->gc);
--        gc_free(&o->dns_options.gc);
--    }
-+
-+    gc_free(&o->gc);
-+    gc_free(&o->dns_options.gc);
- }
- 
- #ifndef ENABLE_SMALL
-@@ -2256,7 +2251,7 @@
-     int dev = DEV_TYPE_UNDEF;
-     bool pull = false;
- 
--    init_options(&defaults, true);
-+    init_options(&defaults);
- 
-     if (!options->test_crypto)
-     {
-@@ -4824,7 +4819,7 @@
- #else
- 
-     struct options o;
--    init_options(&o, true);
-+    init_options(&o);
- 
-     fprintf(fp, usage_message, title_string, o.ce.connect_retry_seconds,
-             o.ce.connect_retry_seconds_max, o.ce.local_port, o.ce.remote_port, TUN_MTU_DEFAULT,
-@@ -5979,7 +5974,7 @@
-             struct options sub;
-             struct connection_entry *e;
- 
--            init_options(&sub, true);
-+            init_options(&sub);
-             sub.ce = options->ce;
-             read_config_string("[CONNECTION-OPTIONS]", &sub, p[1], msglevel, OPT_P_CONNECTION,
-                                option_types_found, es);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index cf9936b..3d8b505 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -254,7 +254,6 @@
- struct options
- {
-     struct gc_arena gc;
--    bool gc_owned;
- 
-     /* first config file */
-     const char *config;
-@@ -890,7 +889,7 @@
- 
- void show_dco_version(const unsigned int flags);
- 
--void init_options(struct options *o, const bool init_gc);
-+void init_options(struct options *o);
- 
- void uninit_options(struct options *o);
- 
-diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tests/openvpn/test_options_parse.c
-index bb34f01..0b3d7fe 100644
---- a/tests/unit_tests/openvpn/test_options_parse.c
-+++ b/tests/unit_tests/openvpn/test_options_parse.c
-@@ -248,7 +248,6 @@
-     CLEAR(o); /* NB: avoiding init_options to limit dependencies */
-     gc_init(&o.gc);
-     gc_init(&o.dns_options.gc);
--    o.gc_owned = true;
- 
-     char *p_expect_someopt[MAX_PARMS];
-     char *p_expect_otheropt[MAX_PARMS];
+diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/open=
+vpn-client@...2221...
+index 326bb73..e311978 100644
+--- a/distro/systemd/openvpn-client@...2221...
++++ b/distro/systemd/openvpn-client@...2221...
+@@ -12,7 +12,7 @@
+ WorkingDirectory=3D/etc/openvpn/client
+ ExecStart=3D@...2235...@/openvpn --suppress-timestamps --nobind --config %i.c=
+onf
+ CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID =
+CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_SYS_NICE
+-LimitNPROC=3D10
++TasksMax=3D10
+ DeviceAllow=3D/dev/null rw
+ DeviceAllow=3D/dev/net/tun rw
+ ProtectSystem=3Dtrue
+diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/open=
+vpn-server@...2221...
+index d43bce1..e3e9895 100644
+--- a/distro/systemd/openvpn-server@...2221...
++++ b/distro/systemd/openvpn-server@...2221...
+@@ -12,7 +12,7 @@
+ WorkingDirectory=3D/etc/openvpn/server
+ ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status-%i.log --s=
+tatus-version 2 --suppress-timestamps --config %i.conf
+ CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CA=
+P_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE=
+ CAP_SYS_NICE CAP_AUDIT_WRITE
+-LimitNPROC=3D10
++TasksMax=3D10
+ DeviceAllow=3D/dev/null rw
+ DeviceAllow=3D/dev/net/tun rw
+ ProtectSystem=3Dtrue
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1539?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic877f9a9c6459c6eb97cde1099f47f0b196b8084
+Gerrit-Change-Number: 1539
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--XVjNAVoVTf4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1539?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">systemd: Change LimitNPROC to TasksMax<br><=
+br>There were some complaints about valid setups<br>that ran into problems =
+with LimitNPROC. This<br>is especially true since LimitNPROC limits<br>the =
+total amounts of threads running for the<br>same uid, so if multiple openvp=
+n services run<br>under the same user, they will compete for<br>resources. =
+As suggested in the systemd<br>documentation change this to TasksMax which<=
+br>really counts the threads running in one<br>specific service.<br><br>Git=
+hub: Fixes #929<br>Change-Id: Ic877f9a9c6459c6eb97cde1099f47f0b196b8084<br>=
+Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M distr=
+o/systemd/openvpn-client@...2221...<br>M distro/systemd/openvpn-server@...1665...=
+221...<br>2 files changed, 2 insertions(+), 2 deletions(-)<br><br></pre><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/=
+1539/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;"><span>diff --git a/distro/systemd/openvpn-client@...2221... b/dist=
+ro/systemd/openvpn-client@...2221...</span><br><span>index 326bb73..e311978=
+ 100644</span><br><span>--- a/distro/systemd/openvpn-client@...2221...</spa=
+n><br><span>+++ b/distro/systemd/openvpn-client@...2221...</span><br><span>=
+@@ -12,7 +12,7 @@</span><br><span> WorkingDirectory=3D/etc/openvpn/client</=
+span><br><span> ExecStart=3D@...2235...@/openvpn --suppress-timestamps --nobin=
+d --config %i.conf</span><br><span> CapabilityBoundingSet=3DCAP_IPC_LOCK CA=
+P_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CA=
+P_DAC_OVERRIDE CAP_SYS_NICE</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-LimitNPROC=3D10</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+TasksMax=3D10</span><br><span> DeviceAllow=3D/dev/null rw</span><br><span=
+> DeviceAllow=3D/dev/net/tun rw</span><br><span> ProtectSystem=3Dtrue</span=
+><br><span>diff --git a/distro/systemd/openvpn-server@...2221... b/distro/s=
+ystemd/openvpn-server@...2221...</span><br><span>index d43bce1..e3e9895 100=
+644</span><br><span>--- a/distro/systemd/openvpn-server@...2221...</span><b=
+r><span>+++ b/distro/systemd/openvpn-server@...2221...</span><br><span>@@ -=
+12,7 +12,7 @@</span><br><span> WorkingDirectory=3D/etc/openvpn/server</span=
+><br><span> ExecStart=3D@...2235...@/openvpn --status %t/openvpn-server/status=
+-%i.log --status-version 2 --suppress-timestamps --config %i.conf</span><br=
+><span> CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SER=
+VICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_O=
+VERRIDE CAP_SYS_NICE CAP_AUDIT_WRITE</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-LimitNPROC=3D10</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+TasksMax=3D10</span><br><span> DeviceAllow=3D/dev/null rw</span>=
+<br><span> DeviceAllow=3D/dev/net/tun rw</span><br><span> ProtectSystem=3Dt=
+rue</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1539?usp=3Demail">change 1539</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1539?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic877f9a9c6459c6eb97cde1099f=
+47f0b196b8084 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1539 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--XVjNAVoVTf4=--
 
