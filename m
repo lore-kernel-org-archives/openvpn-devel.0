@@ -1,14 +1,14 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Tue, 17 Feb 2026 08:10:25 +0000
+Date: Tue, 17 Feb 2026 08:10:55 +0000
 In-Reply-To: <gerrit.1768848003000.I704c560fa23c03237d0f8adc30908a617265a5a1@...2715...>
 References: <gerrit.1768848003000.I704c560fa23c03237d0f8adc30908a617265a5a1@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <d215c0c848653c6ad37aa66be6630a2508369892-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c8820a5b3cb6984be08bd80f58f0ec24e9e210ed-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UmX6C4jZDeM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="omGKHEEcfGE="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: tls: reject incoming
  reneg request if primary key is not fully valid
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,93 +19,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---UmX6C4jZDeM=
+--omGKHEEcfGE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, ralf_lici.
+Attention is currently required from: plaisthos.
 
-Hello plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1478?usp=3Demail
-
-to look at the new patch set (#3).
-
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
-
-The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
-e are unsatisfied now.
-
+ralf_lici has posted comments on this change by ralf_lici. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1478?usp=3Demail )
 
 Change subject: tls: reject incoming reneg request if primary key is not fu=
 lly valid
 ......................................................................
 
-tls: reject incoming reneg request if primary key is not fully valid
 
-Incoming P_CONTROL_SOFT_RESET_V1 can arrive while the active key is not
-yet fully valid for renegotiation. This includes the window where we are
-still waiting for auth_deferred_expire (derived from handshake/reneg
-timing), as well as cases where deferred or mid-session auth later
-leaves the key non-authenticated even though state is S_GENERATED_KEYS.
+Patch Set 3:
 
-This patch keeps read_control_auth as the first gate, then rejects the
-incoming renegotiation requests unless the primary key is KS_AUTH_TRUE
-and auth_deferred_expire has passed.
+(2 comments)
 
-Change-Id: I704c560fa23c03237d0f8adc30908a617265a5a1
-Signed-off-by: Ralf Lici <ralf@...2726...>
----
-M src/openvpn/ssl.c
-1 file changed, 14 insertions(+), 0 deletions(-)
+Commit Message:
+
+http://gerrit.openvpn.net/c/openvpn/+/1478/comment/02b189c3_6784af74?usp=3D=
+email :
+PS2, Line 12: checks deauthenticate the key without demoting its TLS state.
+> Should we add the scenario where we just waiting for the hand-window to h=
+ave the key be fully authen [=E2=80=A6]
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/78/1478/3
+File src/openvpn/ssl.c:
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 69d0e4e..98641a1 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3747,6 +3747,20 @@
-                 goto error;
-             }
+http://gerrit.openvpn.net/c/openvpn/+/1478/comment/5ea276c4_a76158a4?usp=3D=
+email :
+PS2, Line 3757:                     "TLS Error: rejecting incoming renegoti=
+ation request: key not fully authenticated/valid");
+> Maybe make this message a bit more verbose to help later debugging and pr=
+int the key-id in ks too?
+Done
 
-+            /*
-+             * Do not allow incoming renegotiation unless our primary key =
-is
-+             * fully authenticated and past the deferred-auth/transition g=
-ate.
-+             */
-+            time_t auth_deferred_left =3D ks->auth_deferred_expire - now;
-+            if (ks->authenticated !=3D KS_AUTH_TRUE || auth_deferred_left =
-> 0)
-+            {
-+                msg(D_TLS_ERRORS,
-+                    "TLS Error: rejecting incoming renegotiation request f=
-or key-id %d: "
-+                    "auth=3D%s, auth_deferred_expire in %d seconds",
-+                    ks->key_id, ks_auth_name(ks->authenticated), auth_defe=
-rred_left > 0 ? (int)auth_deferred_left : 0);
-+                goto error;
-+            }
-+
-             key_state_soft_reset(session);
 
-             dmsg(D_TLS_DEBUG, "TLS: received P_CONTROL_SOFT_RESET_V1 s=3D%=
-d sid=3D%s", i,
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1478?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I704c560fa23c03237d0f8adc30908a617265a5a1
@@ -115,71 +76,49 @@ Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ralf_lici <ralf@...2726...>
+Gerrit-Comment-Date: Tue, 17 Feb 2026 08:10:55 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
 
---UmX6C4jZDeM=
+--omGKHEEcfGE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos, ralf_lici. </p>
-<p>ralf_lici <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1478?usp=3Demail">View Chan=
-ge</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos</p><p>The change is no longer submittable: Code-=
-Review and checks~ChecksSubmitRule are unsatisfied now.</p><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">tl=
-s: reject incoming reneg request if primary key is not fully valid<br><br>I=
-ncoming P_CONTROL_SOFT_RESET_V1 can arrive while the active key is not<br>y=
-et fully valid for renegotiation. This includes the window where we are<br>=
-still waiting for auth_deferred_expire (derived from handshake/reneg<br>tim=
-ing), as well as cases where deferred or mid-session auth later<br>leaves t=
-he key non-authenticated even though state is S_GENERATED_KEYS.<br><br>This=
- patch keeps read_control_auth as the first gate, then rejects the<br>incom=
-ing renegotiation requests unless the primary key is KS_AUTH_TRUE<br>and au=
-th_deferred_expire has passed.<br><br>Change-Id: I704c560fa23c03237d0f8adc3=
-0908a617265a5a1<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>---<=
-br>M src/openvpn/ssl.c<br>1 file changed, 14 insertions(+), 0 deletions(-)<=
-br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn =
-refs/changes/78/1478/3</pre><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl.c b/src/openvpn=
-/ssl.c</span><br><span>index 69d0e4e..98641a1 100644</span><br><span>--- a/=
-src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@=
-@ -3747,6 +3747,20 @@</span><br><span>                 goto error;</span><b=
-r><span>             }</span><br><span> </span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            /*</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+             * Do not allow incoming renegotiation unless o=
-ur primary key is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-           * fully authenticated and past the deferred-auth/transition gate=
-.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            time_t aut=
-h_deferred_left =3D ks-&gt;auth_deferred_expire - now;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            if (ks-&gt;authenticated !=
-=3D KS_AUTH_TRUE || auth_deferred_left &gt; 0)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                msg(D_TLS_ERRORS,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                    &quot;TLS Error: rej=
-ecting incoming renegotiation request for key-id %d: &quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                    &quot;auth=3D%s=
-, auth_deferred_expire in %d seconds&quot;,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                    ks-&gt;key_id, ks_auth_name(ks-=
-&gt;authenticated), auth_deferred_left &gt; 0 ? (int)auth_deferred_left : 0=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                g=
-oto error;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n>             key_state_soft_reset(session);</span><br><span> </span><br><=
-span>             dmsg(D_TLS_DEBUG, &quot;TLS: received P_CONTROL_SOFT_RESE=
-T_V1 s=3D%d sid=3D%s&quot;, i,</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1478?usp=3Demail">c=
-hange 1478</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><d=
-iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1478?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1478?usp=3Demail">View =
+Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"li=
+st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
+<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1478/comment/02b189c3_6784af74?usp=3Demail">Patch Set #2, Line 12:</=
+a> <code style=3D"font-family:monospace,monospace">checks deauthenticate th=
+e key without demoting its TLS state.</code></p><p><blockquote style=3D"bor=
+der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Should we add t=
+he scenario where we just waiting for the hand-window to have the key be fu=
+lly authen [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D=
+"margin: 0; padding: 0;"><p>File src/openvpn/ssl.c:</p><ul style=3D"list-st=
+yle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
+yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/1478/comment/5ea276c4_a76158a4?usp=3Demail">Patch Set #2, Line 3757:</a> =
+<code style=3D"font-family:monospace,monospace">                    &quot;T=
+LS Error: rejecting incoming renegotiation request: key not fully authentic=
+ated/valid&quot;);</code></p><p><blockquote style=3D"border-left: 1px solid=
+ #aaa; margin: 10px 0; padding: 0 10px;">Maybe make this message a bit more=
+ verbose to help later debugging and print the key-id in ks too?</blockquot=
+e></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
+word;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1478?usp=3Demail">change 1478</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
+://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1478?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I704c560fa23c03237d0f8adc309=
@@ -194,10 +133,14 @@ meta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_lici &lt;ralf@...2804...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Feb 2026 08:10:55=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
 
 </body></html>=
 
---UmX6C4jZDeM=--
+--omGKHEEcfGE=--
 
