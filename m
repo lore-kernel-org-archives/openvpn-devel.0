@@ -1,13 +1,14 @@
 From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Tue, 17 Feb 2026 11:56:29 +0000
+Date: Tue, 17 Feb 2026 11:57:36 +0000
+In-Reply-To: <gerrit.1771329387000.Ia5d330fe5c922aaa6948c1fb05c9a4947c833311@...2715...>
 References: <gerrit.1771329387000.Ia5d330fe5c922aaa6948c1fb05c9a4947c833311@...2715...>
 Reply-To: max@...2606..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <e8868578fd0bb7df93ab5d97ca596831f7ff3fb4-HTML@...2715...>
+Message-ID: <8ed6266b3be3daa411b6a2453163147058fa3fa4-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dw7U1h9Ap34="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="GyCeo0VjWeE="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Unbreak Mbed TLS 4
  build
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dw7U1h9Ap34=
+--GyCeo0VjWeE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,12 +30,11 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
 Change subject: Unbreak Mbed TLS 4 build
@@ -48,14 +48,14 @@ from syshead.h. But this include in mbedtls_compat.h where it's needed.
 Also fix a warning by removing a size_t < 0 comparison.
 
 Change-Id: Ia5d330fe5c922aaa6948c1fb05c9a4947c833311
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2918...>
 ---
 M src/openvpn/crypto_mbedtls.c
 M src/openvpn/mbedtls_compat.h
 2 files changed, 2 insertions(+), 1 deletion(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/1538/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/1538/2
 
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
 index cba6bb5..e8931d7 100644
@@ -89,69 +89,70 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ia5d330fe5c922aaa6948c1fb05c9a4947c833311
 Gerrit-Change-Number: 1538
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: MaxF <max@...2606...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---dw7U1h9Ap34=
+--GyCeo0VjWeE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>MaxF would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Unbreak Mbed TLS 4 build<br><br>The previou=
-s Mbed TLS 4 change removed the mbedtls/version.h include<br>from syshead.h=
-. But this include in mbedtls_compat.h where it&#39;s needed.<br><br>Also f=
-ix a warning by removing a size_t &lt; 0 comparison.<br><br>Change-Id: Ia5d=
-330fe5c922aaa6948c1fb05c9a4947c833311<br>---<br>M src/openvpn/crypto_mbedtl=
-s.c<br>M src/openvpn/mbedtls_compat.h<br>2 files changed, 2 insertions(+), =
-1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/38/1538/1</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypt=
-o_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><span>index cba6bb5..e=
-8931d7 100644</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br>=
-<span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>@@ -700,7 +700,7 @=
-@</span><br><span> md_full(const char *mdname, const uint8_t *src, size_t s=
-rc_len, uint8_t *dst)</span><br><span> {</span><br><span>     const md_info=
-_t *md =3D md_get(mdname);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    if (md =3D=3D NULL || src_len &lt; 0)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if (md =3D=3D NULL)</span><br><span>     {</=
-span><br><span>         return false;</span><br><span>     }</span><br><spa=
-n>diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h<=
-/span><br><span>index 667529e..50739b6 100644</span><br><span>--- a/src/ope=
-nvpn/mbedtls_compat.h</span><br><span>+++ b/src/openvpn/mbedtls_compat.h</s=
-pan><br><span>@@ -36,6 +36,7 @@</span><br><span> </span><br><span> #include=
- &lt;mbedtls/asn1.h&gt;</span><br><span> #include &lt;mbedtls/pk.h&gt;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/ver=
-sion.h&gt;</span><br><span> </span><br><span> #if MBEDTLS_VERSION_NUMBER &l=
-t; 0x04000000</span><br><span> #include &lt;mbedtls/ctr_drbg.h&gt;</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1538?usp=3Demail">change 1538</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1538?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+<p>MaxF <strong>uploaded patch set #2</strong> to this change.</p><p><a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1538?usp=3Demail">View Change</a=
+></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">Unbreak Mbed TLS 4 build<br><br>The previous Mbed TLS 4 =
+change removed the mbedtls/version.h include<br>from syshead.h. But this in=
+clude in mbedtls_compat.h where it&#39;s needed.<br><br>Also fix a warning =
+by removing a size_t &lt; 0 comparison.<br><br>Change-Id: Ia5d330fe5c922aaa=
+6948c1fb05c9a4947c833311<br>Signed-off-by: Max Fillinger &lt;maximilian.fil=
+linger@...2918...&gt;<br>---<br>M src/openvpn/crypto_mbedtls.c<br>M src/ope=
+nvpn/mbedtls_compat.h<br>2 files changed, 2 insertions(+), 1 deletion(-)<br=
+><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
+fs/changes/38/1538/2</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto_mbedtls.c b/sr=
+c/openvpn/crypto_mbedtls.c</span><br><span>index cba6bb5..e8931d7 100644</s=
+pan><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/src/=
+openvpn/crypto_mbedtls.c</span><br><span>@@ -700,7 +700,7 @@</span><br><spa=
+n> md_full(const char *mdname, const uint8_t *src, size_t src_len, uint8_t =
+*dst)</span><br><span> {</span><br><span>     const md_info_t *md =3D md_ge=
+t(mdname);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (md =
+=3D=3D NULL || src_len &lt; 0)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (md =3D=3D NULL)</span><br><span>     {</span><br><span> =
+        return false;</span><br><span>     }</span><br><span>diff --git a/s=
+rc/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h</span><br><span>=
+index 667529e..50739b6 100644</span><br><span>--- a/src/openvpn/mbedtls_com=
+pat.h</span><br><span>+++ b/src/openvpn/mbedtls_compat.h</span><br><span>@@=
+ -36,6 +36,7 @@</span><br><span> </span><br><span> #include &lt;mbedtls/asn=
+1.h&gt;</span><br><span> #include &lt;mbedtls/pk.h&gt;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/version.h&gt;</span=
+><br><span> </span><br><span> #if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</s=
+pan><br><span> #include &lt;mbedtls/ctr_drbg.h&gt;</span><br><span></span><=
+br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1538?usp=3Demail">change 1538</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/15=
+38?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ia5d330fe5c922aaa6948c1fb05c=
 9a4947c833311 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1538 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
 v>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -163,5 +164,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---dw7U1h9Ap34=--
+--GyCeo0VjWeE=--
 
