@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 17 Feb 2026 13:54:00 +0000
-In-Reply-To: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
-References: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <f36d97f6869710c274c10ff3aa00c792b8e30299-EmailReviewComments-HTML@...2715...>
+Date: Tue, 17 Feb 2026 13:55:19 +0000
+In-Reply-To: <gerrit.1771205254000.I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a@...2715...>
+References: <gerrit.1771205254000.I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <8780219e13749b0593b361c4af8ad5306ec0716c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LBA4eM9JRqE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: drop
- useless init_gc param for init_options()
+Content-Type: multipart/alternative; boundary="bwBiBuWlD3U="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fixup version
+ command on management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +19,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: selvanair <selva.nair@...277...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LBA4eM9JRqE=
+--bwBiBuWlD3U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: ordex, plaisthos.
+Attention is currently required from: plaisthos, selvanair.
 
-flichtenheld has posted comments on this change by ordex. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1536?usp=3Demail )
+flichtenheld has posted comments on this change by selvanair. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1528?usp=3Demail )
 
-Change subject: options: drop useless init_gc param for init_options()
+Change subject: Fixup version command on management interface
 ......................................................................
 
 
-Patch Set 2: Code-Review+2
+Patch Set 3: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5
-Gerrit-Change-Number: 1536
-Gerrit-PatchSet: 2
-Gerrit-Owner: ordex <antonio@...2726...>
+Gerrit-Change-Id: I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a
+Gerrit-Change-Number: 1528
+Gerrit-PatchSet: 3
+Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Tue, 17 Feb 2026 13:54:00 +0000
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Tue, 17 Feb 2026 13:55:19 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---LBA4eM9JRqE=
+--bwBiBuWlD3U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: ordex, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rently required from: plaisthos, selvanair. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail=
-">change 1536</a>. To unsubscribe, or for help writing mail filters, visit =
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail=
+">change 1528</a>. To unsubscribe, or for help writing mail filters, visit =
 <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
 ><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
 itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail"/>=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1528?usp=3Demail"/>=
 <meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I633d8cbf75ab4da85e16df44684=
-aef60523811c5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1536 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76dc80a9d9b29e401b7bbd59e0c=
+46baf751d2e4a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1528 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -93,14 +94,14 @@ aef60523811c5 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Feb 2026 13:54:00=
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Feb 2026 13:55:19=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---LBA4eM9JRqE=--
+--bwBiBuWlD3U=--
 
