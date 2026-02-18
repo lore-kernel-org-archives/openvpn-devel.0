@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Feb 2026 11:51:43 +0000
-In-Reply-To: <gerrit.1771415352000.I2703f15144661f9cadfc8750884db270f3a5bfc6@...2715...>
-References: <gerrit.1771415352000.I2703f15144661f9cadfc8750884db270f3a5bfc6@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <9f4d79591c059cfbed2bca9510ac574f254f719c-EmailReplacePatchSet-HTML@...2715...>
+Date: Wed, 18 Feb 2026 13:00:23 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <aZWp1_opO2EduScn@...2685...>
+References: <aZMIXom9GFt17IpB@...2995...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EX4tHF2uGpE="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: ntlm: fix
- discards 'const' qualifier from pointer target type
+In-Reply-To: <aZMIXom9GFt17IpB@...2995...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] dns: fix discards 'const'
+ qualifier from pointer target type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,145 +14,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Rudi Heitbaum <rudi@...2993...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---EX4tHF2uGpE=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Attention is currently required from: plaisthos.
-
-Hello plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail
-
-to look at the new patch set (#2).
-
-
-Change subject: ntlm: fix discards 'const' qualifier from pointer target ty=
-pe
-......................................................................
-
-ntlm: fix discards 'const' qualifier from pointer target type
-
-Since glibc-2.43:
-
-For ISO C23, the functions bsearch, memchr, strchr, strpbrk, strrchr,
-strstr, wcschr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers
-into their input arrays now have definitions as macros that return a
-pointer to a const-qualified type when the input argument is a pointer
-to a const-qualified type.
-
-fixes:
-    src/openvpn/ntlm.c: In function 'ntlm_phase_3':
-    src/openvpn/ntlm.c:241:15: warning: assignment discards 'const' qualifi=
-er from pointer target type [-Wdiscarded-qualifiers]
-      241 |     separator =3D strchr(p->up.username, '\\');
-          |               ^
-
-Change-Id: I2703f15144661f9cadfc8750884db270f3a5bfc6
-Signed-off-by: Rudi Heitbaum <rudi@...2993...>
-(cherry picked from commit 720c2e97f609bf7bb7e628ddfa7d3e3783afa676)
----
-M src/openvpn/ntlm.c
-1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Feb 16, 2026 at 12:06:54PM +0000, Rudi Heitbaum via Openvpn-devel wrote:
+> Since glibc-2.43:
+> 
+> For ISO C23, the functions bsearch, memchr, strchr, strpbrk, strrchr,
+> strstr, wcschr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers
+> into their input arrays now have definitions as macros that return a
+> pointer to a const-qualified type when the input argument is a pointer
+> to a const-qualified type.
+> 
+> fixes:
+>     src/openvpn/dns.c: In function 'dns_server_addr_parse':
+>     src/openvpn/dns.c:67:25: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+>        67 |     char *first_colon = strchr(addr, ':');
+>           |                         ^~~~~~
+>     src/openvpn/dns.c:68:24: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+>        68 |     char *last_colon = strrchr(addr, ':');
+>           |                        ^~~~~~~
+> 
+> Signed-off-by: Rudi Heitbaum <rudi@...2993...>
+> ---
+>  src/openvpn/dns.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1546/2
+Since upgrading the arch container yesterday we also see these in our
+CI builds now.
 
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 9191a8b..6da4359 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -230,7 +230,7 @@
+Acked-by: Frank Lichtenheld <frank@...2641...>
 
-     char domain[128];
-     char username[128];
--    char *separator;
-+    const char *separator;
+Also put this into Gerrit as https://gerrit.openvpn.net/c/openvpn/+/1542
+to get test builds.
 
-     bool ntlmv2_enabled =3D (p->auth_method =3D=3D HTTP_AUTH_NTLM2);
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I2703f15144661f9cadfc8750884db270f3a5bfc6
-Gerrit-Change-Number: 1546
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-
---EX4tHF2uGpE=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">ntlm: fix discards &#39;const&#39; qualifier fro=
-m pointer target type<br><br>Since glibc-2.43:<br><br>For ISO C23, the func=
-tions bsearch, memchr, strchr, strpbrk, strrchr,<br>strstr, wcschr, wcspbrk=
-, wcsrchr, wcsstr and wmemchr that return pointers<br>into their input arra=
-ys now have definitions as macros that return a<br>pointer to a const-quali=
-fied type when the input argument is a pointer<br>to a const-qualified type=
-.<br><br>fixes:<br>    src/openvpn/ntlm.c: In function &#39;ntlm_phase_3&#3=
-9;:<br>    src/openvpn/ntlm.c:241:15: warning: assignment discards &#39;con=
-st&#39; qualifier from pointer target type [-Wdiscarded-qualifiers]<br>    =
-  241 |     separator =3D strchr(p-&gt;up.username, &#39;\\&#39;);<br>     =
-     |               ^<br><br>Change-Id: I2703f15144661f9cadfc8750884db270f=
-3a5bfc6<br>Signed-off-by: Rudi Heitbaum &lt;rudi@...2993...&gt;<br>(cherry =
-picked from commit 720c2e97f609bf7bb7e628ddfa7d3e3783afa676)<br>---<br>M sr=
-c/openvpn/ntlm.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></=
-pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
-ges/46/1546/2</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c<=
-/span><br><span>index 9191a8b..6da4359 100644</span><br><span>--- a/src/ope=
-nvpn/ntlm.c</span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ -23=
-0,7 +230,7 @@</span><br><span> </span><br><span>     char domain[128];</spa=
-n><br><span>     char username[128];</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    char *separator;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    const char *separator;</span><br><span> </span><br><spa=
-n>     bool ntlmv2_enabled =3D (p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2);<=
-/span><br><span> </span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail">change 1546</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope =
-itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2703f15144661f9cadfc8750884=
-db270f3a5bfc6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1546 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-
-</body></html>=
-
---EX4tHF2uGpE=--
+Regards,
+-- 
+  Frank Lichtenheld
 
