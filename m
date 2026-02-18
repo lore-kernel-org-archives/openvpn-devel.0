@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Wed, 18 Feb 2026 11:51:43 +0000
-In-Reply-To: <gerrit.1771415352000.I632368451923116e0a169ddb5b6e86a8f8486afc@...2715...>
-References: <gerrit.1771415352000.I632368451923116e0a169ddb5b6e86a8f8486afc@...2715...>
+In-Reply-To: <gerrit.1771415352000.I2703f15144661f9cadfc8750884db270f3a5bfc6@...2715...>
+References: <gerrit.1771415352000.I2703f15144661f9cadfc8750884db270f3a5bfc6@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <536d9db961e524ac5b9230443798f890d1c0354f-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <9f4d79591c059cfbed2bca9510ac574f254f719c-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GmJOOlGERPs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: auth-pam: fix
+Content-Type: multipart/alternative; boundary="EX4tHF2uGpE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: ntlm: fix
  discards 'const' qualifier from pointer target type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GmJOOlGERPs=
+--EX4tHF2uGpE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,109 +32,121 @@ Hello plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1545?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail
 
 to look at the new patch set (#2).
 
 
-Change subject: auth-pam: fix discards 'const' qualifier from pointer targe=
-t type
+Change subject: ntlm: fix discards 'const' qualifier from pointer target ty=
+pe
 ......................................................................
 
-auth-pam: fix discards 'const' qualifier from pointer target type
+ntlm: fix discards 'const' qualifier from pointer target type
 
-strstr now returns const char*.
+Since glibc-2.43:
 
-Change-Id: I632368451923116e0a169ddb5b6e86a8f8486afc
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-(cherry picked from commit 7212f49d2f773a4f0d28d1450b9ee0b369385ea5)
+For ISO C23, the functions bsearch, memchr, strchr, strpbrk, strrchr,
+strstr, wcschr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers
+into their input arrays now have definitions as macros that return a
+pointer to a const-qualified type when the input argument is a pointer
+to a const-qualified type.
+
+fixes:
+    src/openvpn/ntlm.c: In function 'ntlm_phase_3':
+    src/openvpn/ntlm.c:241:15: warning: assignment discards 'const' qualifi=
+er from pointer target type [-Wdiscarded-qualifiers]
+      241 |     separator =3D strchr(p->up.username, '\\');
+          |               ^
+
+Change-Id: I2703f15144661f9cadfc8750884db270f3a5bfc6
+Signed-off-by: Rudi Heitbaum <rudi@...2993...>
+(cherry picked from commit 720c2e97f609bf7bb7e628ddfa7d3e3783afa676)
 ---
-M src/plugins/auth-pam/utils.c
-1 file changed, 1 insertion(+), 2 deletions(-)
+M src/openvpn/ntlm.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/1545/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/46/1546/2
 
-diff --git a/src/plugins/auth-pam/utils.c b/src/plugins/auth-pam/utils.c
-index 97befd6..bd5c382 100644
---- a/src/plugins/auth-pam/utils.c
-+++ b/src/plugins/auth-pam/utils.c
-@@ -66,12 +66,11 @@
-     /* state: all parameters are valid */
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 9191a8b..6da4359 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -230,7 +230,7 @@
 
-     const char *searching =3D tosearch;
--    char *scratch;
+     char domain[128];
+     char username[128];
+-    char *separator;
++    const char *separator;
 
-     char temp[templen+1];
-     temp[0] =3D 0;
+     bool ntlmv2_enabled =3D (p->auth_method =3D=3D HTTP_AUTH_NTLM2);
 
--    scratch =3D strstr(searching, searchfor);
-+    const char *scratch =3D strstr(searching, searchfor);
-     if (!scratch)
-     {
-         return strdup(tosearch);
 
---=20
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1545?usp=3Demail
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I632368451923116e0a169ddb5b6e86a8f8486afc
-Gerrit-Change-Number: 1545
+Gerrit-Change-Id: I2703f15144661f9cadfc8750884db270f3a5bfc6
+Gerrit-Change-Number: 1546
 Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---GmJOOlGERPs=
+--EX4tHF2uGpE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1545?usp=3Demail">View C=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail">View C=
 hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">auth-pam: fix discards &#39;const&#39; qualifier=
- from pointer target type<br><br>strstr now returns const char*.<br><br>Cha=
-nge-Id: I632368451923116e0a169ddb5b6e86a8f8486afc<br>Signed-off-by: Frank L=
-ichtenheld &lt;frank@...2641...&gt;<br>(cherry picked from commit 7212f49d2=
-f773a4f0d28d1450b9ee0b369385ea5)<br>---<br>M src/plugins/auth-pam/utils.c<b=
-r>1 file changed, 1 insertion(+), 2 deletions(-)<br><br></pre><pre class=3D=
-"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/45/1545/2</pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><=
-span>diff --git a/src/plugins/auth-pam/utils.c b/src/plugins/auth-pam/utils=
-.c</span><br><span>index 97befd6..bd5c382 100644</span><br><span>--- a/src/=
-plugins/auth-pam/utils.c</span><br><span>+++ b/src/plugins/auth-pam/utils.c=
-</span><br><span>@@ -66,12 +66,11 @@</span><br><span>     /* state: all par=
-ameters are valid */</span><br><span> </span><br><span>     const char *sea=
-rching =3D tosearch;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   char *scratch;</span><br><span> </span><br><span>     char temp[templen+=
-1];</span><br><span>     temp[0] =3D 0;</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    scratch =3D strstr(searching, searc=
-hfor);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const cha=
-r *scratch =3D strstr(searching, searchfor);</span><br><span>     if (!scra=
-tch)</span><br><span>     {</span><br><span>         return strdup(tosearch=
-);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1545?usp=3Demail">change 1545</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1545?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+e; white-space: pre-wrap;">ntlm: fix discards &#39;const&#39; qualifier fro=
+m pointer target type<br><br>Since glibc-2.43:<br><br>For ISO C23, the func=
+tions bsearch, memchr, strchr, strpbrk, strrchr,<br>strstr, wcschr, wcspbrk=
+, wcsrchr, wcsstr and wmemchr that return pointers<br>into their input arra=
+ys now have definitions as macros that return a<br>pointer to a const-quali=
+fied type when the input argument is a pointer<br>to a const-qualified type=
+.<br><br>fixes:<br>    src/openvpn/ntlm.c: In function &#39;ntlm_phase_3&#3=
+9;:<br>    src/openvpn/ntlm.c:241:15: warning: assignment discards &#39;con=
+st&#39; qualifier from pointer target type [-Wdiscarded-qualifiers]<br>    =
+  241 |     separator =3D strchr(p-&gt;up.username, &#39;\\&#39;);<br>     =
+     |               ^<br><br>Change-Id: I2703f15144661f9cadfc8750884db270f=
+3a5bfc6<br>Signed-off-by: Rudi Heitbaum &lt;rudi@...2993...&gt;<br>(cherry =
+picked from commit 720c2e97f609bf7bb7e628ddfa7d3e3783afa676)<br>---<br>M sr=
+c/openvpn/ntlm.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></=
+pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
+ges/46/1546/2</pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;"><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c<=
+/span><br><span>index 9191a8b..6da4359 100644</span><br><span>--- a/src/ope=
+nvpn/ntlm.c</span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ -23=
+0,7 +230,7 @@</span><br><span> </span><br><span>     char domain[128];</spa=
+n><br><span>     char username[128];</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    char *separator;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const char *separator;</span><br><span> </span><br><spa=
+n>     bool ntlmv2_enabled =3D (p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2);<=
+/span><br><span> </span><br><span></span><br></pre><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail">change 1546</a=
+>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
+//gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1546?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I632368451923116e0a169ddb5b6=
-e86a8f8486afc </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1545 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2703f15144661f9cadfc8750884=
+db270f3a5bfc6 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1546 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -147,5 +159,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---GmJOOlGERPs=--
+--EX4tHF2uGpE=--
 
