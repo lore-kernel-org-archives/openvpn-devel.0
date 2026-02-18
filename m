@@ -1,11 +1,14 @@
-Content-Type: multipart/alternative;
- boundary="------------065ZuDlUlmC0BEM0skbv67g7"
-Message-ID: <1966591c-73dc-4baa-b945-e8762965544b@...2722...>
-Date: Wed, 18 Feb 2026 20:37:34 +0700
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 18 Feb 2026 18:02:55 +0000
+References: <gerrit.1771437772000.I560f45fb0011180be8ca2b0e7fbc63030fa10f35@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
+Message-ID: <d9231da943c076fb0f3159e94f0c179eecf3a077-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="o2kErrNAnBc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix setting DCO
+ ifmode failing on big endian archs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,151 +17,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------065ZuDlUlmC0BEM0skbv67g7
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--o2kErrNAnBc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 18 February 2026:
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1547?usp=3Demail )
 
-  *
 
-    *Updated: forums situation*
-    For a long time now the current forums have been dysfunctional. But
-    we kept the content around because many people benefit from the
-    responses given there for common issues.
-    Nowadays though we have a new forum ready to replace the old one. We
-    intend to do this replacement this week.
-    Expect that there will be some downtime with some 'under
-    maintenance' message for a short while.
-    After that the new forums should be online. All the data will be
-    migrated (including the spam).
-    Our intention is to then cleanup afterwards and improve things
-    further with a fully functional new forum system.
-    Since we will be leaving the current LDAP authentication system
-    behind, everyone will need to reset their passwords.
-    We will leave instructions and information on the new forums.
+Change subject: Fix setting DCO ifmode failing on big endian archs
+......................................................................
 
-  *
+Fix setting DCO ifmode failing on big endian archs
 
-    *Updated: community meetup 2026*
-    When: the weekend of 17 and 18 october, 2026 (decided by
-    pollhttps://nuudel.digitalcourage.de/VnbRxE6iKdWECLbW)
-    Where: Paderborn, Germany.
-    Meeting room:
-    Potentiallyhttps://www.welcome-hotels.com/en/hotels/paderborn/events/-
-    plaisthos will enquire for details.
-    Pre-meeting-social-outing-activity:https://www.hnf.de/en/home.htmlold
-    computer museum, on the friday before.
+The problem is basically that SITNL_ADDATTR is not type safe and on
+big endian architcutre passing a smaller size than the underlying
+integer type of data causes only the more significant byte(s) to be passed
+instead.
 
-  *
+Change-Id: I560f45fb0011180be8ca2b0e7fbc63030fa10f35
+---
+M src/openvpn/networking_sitnl.c
+1 file changed, 7 insertions(+), 1 deletion(-)
 
-    *Updated: OpenVPN 2.7 release*
-    So far after release things have been fairly quiet.
-    ralf_lici pointed out that now the new backported DCO ovpn linux
-    kernel code is being used instead of the previous DCO iteration, we
-    want to spend some time on automating tests.
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
 
-Kind regards,
-Johan Draaisma
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/1547/1
 
---------------065ZuDlUlmC0BEM0skbv67g7
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index a5b2905..1214db2 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -1337,7 +1337,13 @@
+     {
+         dco_context_t *dco =3D arg;
+         struct rtattr *data =3D SITNL_NEST(&req.n, sizeof(req), IFLA_INFO_=
+DATA);
+-        SITNL_ADDATTR(&req.n, sizeof(req), IFLA_OVPN_MODE, &dco->ifmode, s=
+izeof(uint8_t));
++
++        /* the netlink format is uint8_t for this and using something
++         * other than uint8_t here causes the values to be 0 when passed
++         * on big endian arch as we only take the byte directly at the add=
+ress
++         */
++        uint8_t ifmode =3D (uint8_t)dco->ifmode;
++        SITNL_ADDATTR(&req.n, sizeof(req), IFLA_OVPN_MODE, &ifmode, sizeof=
+(uint8_t));
+         SITNL_NEST_END(&req.n, data);
+     }
+ #endif
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 18 February 2026:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            forums situation</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          For a long time now the current forums have been
-          dysfunctional. But we kept the content around because many
-          people benefit from the responses given there for common
-          issues.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Nowadays though we have a new forum ready to replace the old
-          one. We intend to do this replacement this week.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Expect that there will be some downtime with some 'under
-          maintenance' message for a short while.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          After that the new forums should be online. All the data will
-          be migrated (including the spam).<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Our intention is to then cleanup afterwards and improve things
-          further with a fully functional new forum system.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Since we will be leaving the current LDAP authentication
-          system behind, everyone will need to reset their passwords.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We will leave instructions and information on the new forums.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            community meetup 2026</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          When: the weekend of 17 and 18 october, 2026 (decided by poll<span> </span><a
-            href="https://nuudel.digitalcourage.de/VnbRxE6iKdWECLbW"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://nuudel.digitalcourage.de/VnbRxE6iKdWECLbW</a>)<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Where: Paderborn, Germany.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Meeting room: Potentially<span> </span><a
-href="https://www.welcome-hotels.com/en/hotels/paderborn/events/"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://www.welcome-hotels.com/en/hotels/paderborn/events/</a><span> </span>-
-          plaisthos will enquire for details.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Pre-meeting-social-outing-activity:<span> </span><a
-            href="https://www.hnf.de/en/home.html"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-            class="moz-txt-link-freetext">https://www.hnf.de/en/home.html</a><span> </span>old
-          computer museum, on the friday before.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            OpenVPN 2.7 release</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          So far after release things have been fairly quiet.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          ralf_lici pointed out that now the new backported DCO ovpn
-          linux kernel code is being used instead of the previous DCO
-          iteration, we want to spend some time on automating tests.</p>
-      </li>
-    </ul>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1547?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
---------------065ZuDlUlmC0BEM0skbv67g7--
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I560f45fb0011180be8ca2b0e7fbc63030fa10f35
+Gerrit-Change-Number: 1547
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--o2kErrNAnBc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1547?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Fix setting DCO ifmode failing on big endian archs<br><br>The problem i=
+s basically that SITNL_ADDATTR is not type safe and on<br>big endian archit=
+cutre passing a smaller size than the underlying<br>integer type of data ca=
+uses only the more significant byte(s) to be passed<br>instead.<br><br>Chan=
+ge-Id: I560f45fb0011180be8ca2b0e7fbc63030fa10f35<br>---<br>M src/openvpn/ne=
+tworking_sitnl.c<br>1 file changed, 7 insertions(+), 1 deletion(-)<br><br><=
+/pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
+nges/47/1547/1</pre><pre style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;"><span>diff --git a/src/openvpn/networking_sitnl.c b/src/op=
+envpn/networking_sitnl.c</span><br><span>index a5b2905..1214db2 100644</spa=
+n><br><span>--- a/src/openvpn/networking_sitnl.c</span><br><span>+++ b/src/=
+openvpn/networking_sitnl.c</span><br><span>@@ -1337,7 +1337,13 @@</span><br=
+><span>     {</span><br><span>         dco_context_t *dco =3D arg;</span><b=
+r><span>         struct rtattr *data =3D SITNL_NEST(&amp;req.n, sizeof(req)=
+, IFLA_INFO_DATA);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     SITNL_ADDATTR(&amp;req.n, sizeof(req), IFLA_OVPN_MODE, &amp;dco-&gt;if=
+mode, sizeof(uint8_t));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* the =
+netlink format is uint8_t for this and using something</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+         * other than uint8_t here cause=
+s the values to be 0 when passed</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+         * on big endian arch as we only take the byte directl=
+y at the address</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+      */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uin=
+t8_t ifmode =3D (uint8_t)dco-&gt;ifmode;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        SITNL_ADDATTR(&amp;req.n, sizeof(req), IFLA_OV=
+PN_MODE, &amp;ifmode, sizeof(uint8_t));</span><br><span>         SITNL_NEST=
+_END(&amp;req.n, data);</span><br><span>     }</span><br><span> #endif</spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1547?usp=3Demail">change 1547</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1547?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I560f45fb0011180be8ca2b0e7fb=
+c63030fa10f35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1547 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--o2kErrNAnBc=--
 
