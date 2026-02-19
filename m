@@ -1,10 +1,16 @@
-Date: Thu, 19 Feb 2026 10:59:58 +0100 (CET)
-Message-Id: <202602190959.61J9xw0w030578@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260218214712.27119-1-gert@...1296...>
-References: <20260218214712.27119-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: auth-pam: fix discards 'const'
- qualifier from pointer target type
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 19 Feb 2026 10:00:38 +0000
+In-Reply-To: <gerrit.1771415352000.I262705189edfbd9aa9a32bcd712840fffa592435@...2715...>
+References: <gerrit.1771415352000.I262705189edfbd9aa9a32bcd712840fffa592435@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f256fa650d5efce8b8a79cc8ad154fe7e6d7f99b-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="r3SeL6YmLeA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: dns: fix
+ discards 'const' qualifier from pointer target type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +19,199 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Same thing as Rudi's dns.c/ntlm.c const fixes, just another file that did
-not come up yet - but our own arch buildbots got updated, and flagged it...
+--r3SeL6YmLeA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-*This* one goes to all 3 branches as well.
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1544?usp=3Demail )
 
-Your patch has been applied to the master, release/2.7 and release/2.6 branch.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-commit eeaedd13628e27225c8893c2d8bdf5381fc33ba9 (master)
-commit 2fd42e6d1da93655d97aeb32f549d684728d3fbd (release/2.7)
-commit 7ec8cbe636fa938587e573de7e74e934b39f090e (release/2.6)
-Author: Frank Lichtenheld
-Date:   Wed Feb 18 22:47:06 2026 +0100
 
-     auth-pam: fix discards 'const' qualifier from pointer target type
+Change subject: dns: fix discards 'const' qualifier from pointer target type
+......................................................................
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1543
-     Message-Id: <20260218214712.27119-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35728.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+dns: fix discards 'const' qualifier from pointer target type
 
+Since glibc-2.43:
+
+For ISO C23, the functions bsearch, memchr, strchr, strpbrk, strrchr,
+strstr, wcschr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers
+into their input arrays now have definitions as macros that return a
+pointer to a const-qualified type when the input argument is a pointer
+to a const-qualified type.
+
+fixes:
+    src/openvpn/dns.c: In function 'dns_server_addr_parse':
+    src/openvpn/dns.c:67:25: warning: initialization discards 'const' quali=
+fier from pointer target type [-Wdiscarded-qualifiers]
+       67 |     char *first_colon =3D strchr(addr, ':');
+          |                         ^~~~~~
+    src/openvpn/dns.c:68:24: warning: initialization discards 'const' quali=
+fier from pointer target type [-Wdiscarded-qualifiers]
+       68 |     char *last_colon =3D strrchr(addr, ':');
+          |                        ^~~~~~~
+
+Change-Id: I262705189edfbd9aa9a32bcd712840fffa592435
+Signed-off-by: Rudi Heitbaum <rudi@...2993...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1542
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Message-Id: <20260218214738.27158-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35=
+730.html
+Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit 0157e7fb8ae29b637537a6b98ce85217c6daf5a3)
+---
+M src/openvpn/dns.c
+1 file changed, 4 insertions(+), 4 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/1544/3
+
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 7de3991..66ac32f 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -38,7 +38,7 @@
+  * @return              True if parsing was successful
+  */
+ static bool
+-dns_server_port_parse(in_port_t *port, char *port_str)
++dns_server_port_parse(in_port_t *port, const char *port_str)
+ {
+     char *endptr;
+     errno =3D 0;
+@@ -64,8 +64,8 @@
+     in_port_t port =3D 0;
+     sa_family_t af;
+
+-    char *first_colon =3D strchr(addr, ':');
+-    char *last_colon =3D strrchr(addr, ':');
++    const char *first_colon =3D strchr(addr, ':');
++    const char *last_colon =3D strrchr(addr, ':');
+
+     if (!first_colon || first_colon =3D=3D last_colon)
+     {
+@@ -86,7 +86,7 @@
+         if (addr[0] =3D=3D '[')
+         {
+             addr +=3D 1;
+-            char *bracket =3D last_colon - 1;
++            const char *bracket =3D last_colon - 1;
+             if (*bracket !=3D ']' || bracket =3D=3D addr || !dns_server_po=
+rt_parse(&port, last_colon + 1))
+             {
+                 return false;
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1544?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I262705189edfbd9aa9a32bcd712840fffa592435
+Gerrit-Change-Number: 1544
+Gerrit-PatchSet: 3
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--r3SeL6YmLeA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #3</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1544?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">dns: fix discards &#39;const&#39; q=
+ualifier from pointer target type<br><br>Since glibc-2.43:<br><br>For ISO C=
+23, the functions bsearch, memchr, strchr, strpbrk, strrchr,<br>strstr, wcs=
+chr, wcspbrk, wcsrchr, wcsstr and wmemchr that return pointers<br>into thei=
+r input arrays now have definitions as macros that return a<br>pointer to a=
+ const-qualified type when the input argument is a pointer<br>to a const-qu=
+alified type.<br><br>fixes:<br>    src/openvpn/dns.c: In function &#39;dns_=
+server_addr_parse&#39;:<br>    src/openvpn/dns.c:67:25: warning: initializa=
+tion discards &#39;const&#39; qualifier from pointer target type [-Wdiscard=
+ed-qualifiers]<br>       67 |     char *first_colon =3D strchr(addr, &#39;:=
+&#39;);<br>          |                         ^~~~~~<br>    src/openvpn/dn=
+s.c:68:24: warning: initialization discards &#39;const&#39; qualifier from =
+pointer target type [-Wdiscarded-qualifiers]<br>       68 |     char *last_=
+colon =3D strrchr(addr, &#39;:&#39;);<br>          |                       =
+ ^~~~~~~<br><br>Change-Id: I262705189edfbd9aa9a32bcd712840fffa592435<br>Sig=
+ned-off-by: Rudi Heitbaum &lt;rudi@...2993...&gt;<br>Acked-by: Gert Doering=
+ &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvp=
+n/+/1542<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message=
+-Id: &lt;20260218214738.27158-1-gert@...1296...&gt;<br>URL: https://www.mai=
+l-archive.com/openvpn-devel@lists.sourceforge.net/msg35730.html<br>Signed-o=
+ff-by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry picked from commit 0=
+157e7fb8ae29b637537a6b98ce85217c6daf5a3)<br>---<br>M src/openvpn/dns.c<br>1=
+ file changed, 4 insertions(+), 4 deletions(-)<br><br></pre><pre class=3D"b=
+locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
+it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/1544/3</pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>index=
+ 7de3991..66ac32f 100644</span><br><span>--- a/src/openvpn/dns.c</span><br>=
+<span>+++ b/src/openvpn/dns.c</span><br><span>@@ -38,7 +38,7 @@</span><br><=
+span>  * @return              True if parsing was successful</span><br><spa=
+n>  */</span><br><span> static bool</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-dns_server_port_parse(in_port_t *port, char *port_str)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+dns_server_port_parse(in_p=
+ort_t *port, const char *port_str)</span><br><span> {</span><br><span>     =
+char *endptr;</span><br><span>     errno =3D 0;</span><br><span>@@ -64,8 +6=
+4,8 @@</span><br><span>     in_port_t port =3D 0;</span><br><span>     sa_f=
+amily_t af;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    char *first_colon =3D strchr(addr, &#39;:&#39;);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    char *last_colon =3D strrchr(add=
+r, &#39;:&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ const char *first_colon =3D strchr(addr, &#39;:&#39;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    const char *last_colon =3D strrchr(=
+addr, &#39;:&#39;);</span><br><span> </span><br><span>     if (!first_colon=
+ || first_colon =3D=3D last_colon)</span><br><span>     {</span><br><span>@=
+@ -86,7 +86,7 @@</span><br><span>         if (addr[0] =3D=3D &#39;[&#39;)</=
+span><br><span>         {</span><br><span>             addr +=3D 1;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            char *bracket =3D=
+ last_colon - 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         const char *bracket =3D last_colon - 1;</span><br><span>          =
+   if (*bracket !=3D &#39;]&#39; || bracket =3D=3D addr || !dns_server_port=
+_parse(&amp;port, last_colon + 1))</span><br><span>             {</span><br=
+><span>                 return false;</span><br><span></span><br></pre><p>T=
+o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1544?usp=3De=
+mail">change 1544</a>. To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1544?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I262705189edfbd9aa9a32bcd712=
+840fffa592435 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1544 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--r3SeL6YmLeA=--
 
