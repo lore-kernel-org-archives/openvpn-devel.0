@@ -1,16 +1,11 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Fri, 20 Feb 2026 10:15:26 +0000
+From: Gert Doering <gert@...1296...>
+Date: Fri, 20 Feb 2026 11:20:58 +0100
+Message-ID: <20260220102106.32024-1-gert@...1296...>
 In-Reply-To: <gerrit.1771268251000.Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8@...2715...>
 References: <gerrit.1771268251000.Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <013f22d04a3aff2f6e76af6c5fb7c04e8bdefd37-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="HhE7LAOARFA="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: configure.ac:
- adjust to native inotify support for FreeBSD 15+
+Subject: [Openvpn-devel] [PATCH v2] configure.ac: adjust to native inotify
+ support for FreeBSD 15+
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +14,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---HhE7LAOARFA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+FreeBSD 15 has native inotify support, and no "libinotify.pc" pkg config
+file anymore, plus no extra includes are needed.  This works fine if we
+conditionalize the FreeBSD check to "freebsd-1[0-4]".
 
-Attention is currently required from: cron2, plaisthos.
+Due to m4 involvement double braces are needed for quoting.
 
-ordex has posted comments on this change by cron2. ( http://gerrit.openvpn.=
-net/c/openvpn/+/1535?usp=3Demail )
+See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=293176
 
-Change subject: configure.ac: adjust to native inotify support for FreeBSD =
-15+
-......................................................................
+Reported-by: Ivo Karabojkov <karabojkov@...2996...>
+Reported-by: Marek Zarychta <zarychtam@...2997...>
 
+Change-Id: Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8
+Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <antonio@...2726...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1535
+---
 
-Patch Set 2: Code-Review+2
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1535
+This mail reflects revision 2 of this Change.
 
-Patchset:
+Acked-by according to Gerrit (reflected above):
+Antonio Quartulli <antonio@...2726...>
 
-PS2:
-LGTM
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1535?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8
-Gerrit-Change-Number: 1535
-Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@...1296...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Fri, 20 Feb 2026 10:15:26 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---HhE7LAOARFA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1535?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1535?tab=3Dcomments&amp;usp=3Demail">Patch Set #2:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">LGTM</p></l=
-i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1535?usp=3Demail">change 1535</a>. To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
-=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/1535?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie3f209a641c2f56494dfc7720b1=
-3f2a2ba3001a8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1535 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@...1296...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 20 Feb 2026 10:15:26=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---HhE7LAOARFA=--
+        
+diff --git a/configure.ac b/configure.ac
+index 9fa6a41..e151816 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1294,7 +1294,7 @@
+ 
+ if test "${enable_async_push}" = "yes"; then
+ 	case "$host" in
+-		*-*-freebsd*)
++		*-*-freebsd1[[0-4]]*)
+ 			PKG_CHECK_MODULES(
+ 				[OPTIONAL_INOTIFY],
+ 				[libinotify],
 
