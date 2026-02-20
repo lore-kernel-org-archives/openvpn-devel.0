@@ -1,11 +1,10 @@
+Date: Fri, 20 Feb 2026 15:24:36 +0100 (CET)
+Message-Id: <202602201424.61KEOaLt055762@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 20 Feb 2026 11:20:58 +0100
-Message-ID: <20260220102106.32024-1-gert@...1296...>
-In-Reply-To: <gerrit.1771268251000.Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8@...2715...>
-References: <gerrit.1771268251000.Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] configure.ac: adjust to native inotify
- support for FreeBSD 15+
+In-Reply-To: <20260220102106.32024-1-gert@...1296...>
+References: <20260220102106.32024-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: adjust to native
+ inotify support for FreeBSD 15+
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-FreeBSD 15 has native inotify support, and no "libinotify.pc" pkg config
-file anymore, plus no extra includes are needed.  This works fine if we
-conditionalize the FreeBSD check to "freebsd-1[0-4]".
+Tested on FreeBSD 14 ("needs libinotify pkg") and 15 ("built-in, no 
+pkg, no CFLAGS etc. needed").
 
-Due to m4 involvement double braces are needed for quoting.
+Patch has been applied to the master, release/2.7 and release/2.6 branch
+(long-term compat).
 
-See https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=293176
+commit 38243844f225517fa1d288517db9a34a33c5ad13 (master)
+commit d9279c77f796a45cd94e929376d5d4d9cbae34eb (release/2.7)
+commit a4bf28df70385b71934ab0016560eadf4c4ea542 (release/2.6)
+Author: Gert Doering
+Date:   Fri Feb 20 11:20:58 2026 +0100
 
-Reported-by: Ivo Karabojkov <karabojkov@...2996...>
-Reported-by: Marek Zarychta <zarychtam@...2997...>
+     configure.ac: adjust to native inotify support for FreeBSD 15+
 
-Change-Id: Ie3f209a641c2f56494dfc7720b13f2a2ba3001a8
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1535
----
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...2726...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1535
+     Message-Id: <20260220102106.32024-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35761.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1535
-This mail reflects revision 2 of this Change.
+--
+kind regards,
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
+Gert Doering
 
-        
-diff --git a/configure.ac b/configure.ac
-index 9fa6a41..e151816 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1294,7 +1294,7 @@
- 
- if test "${enable_async_push}" = "yes"; then
- 	case "$host" in
--		*-*-freebsd*)
-+		*-*-freebsd1[[0-4]]*)
- 			PKG_CHECK_MODULES(
- 				[OPTIONAL_INOTIFY],
- 				[libinotify],
 
