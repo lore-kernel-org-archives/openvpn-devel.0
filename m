@@ -1,11 +1,10 @@
+Date: Wed, 25 Feb 2026 09:42:24 +0100 (CET)
+Message-Id: <202602250842.61P8gOQC000102@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 24 Feb 2026 22:30:30 +0100
-Message-ID: <20260224213036.31845-1-gert@...1296...>
-In-Reply-To: <gerrit.1771205254000.I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a@...2715...>
-References: <gerrit.1771205254000.I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] Fixup version command on management
- interface
+In-Reply-To: <20260224213036.31845-1-gert@...1296...>
+References: <20260224213036.31845-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fixup version command on
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,72 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Thanks for that.  As discussed, we keep full compatibility ("lack of
+SUCCESS response") for up to v3, and document this.
 
-All commands to the management interface are supposed to be
-responded with either a one-line "SUCCESS:/ERROR:" message
-or a multi-line reply terminated by "END". But, curently we
-silently accept the "version n" command wih no response. This
-causes clients like OpenVPN-GUI lock-up if version command is
-used, waiting for ever for a reply.
+I'm looking forward to a followup patch that documents v1, v2, v3 and v4...
 
-Fix this by adding a SUCCESS response if client version
-is set to a value >= 4. As the highest client version in use
-until now is 3, this should not affect any work-arounds in
-existing clients. ERROR response is generated if the version
-parameter is null which never happens in practice.
+Your patch has been applied to the master and release/2.7 branch.
 
-Change-Id: I76dc80a9d9b29e401b7bbd59e0c46baf751d2e4a
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1528
----
+I do not foresee new mgmt features being added to 2.6.x, so I don't
+think we need this in release/2.6 (but if it is needed, we can always
+cherrypick it "on demand")
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit adc0febaeac0d83246dbd2cc77b2a5d80e41741e (master)
+commit d88e9023930a74cebb8ceab2b91587221675846c (release/2.7)
+Author: Selva Nair
+Date:   Tue Feb 24 22:30:30 2026 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1528
-This mail reflects revision 5 of this Change.
+     Fixup version command on management interface
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1528
+     Message-Id: <20260224213036.31845-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35782.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 1a5c311..86b74f3 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -492,6 +492,10 @@
-   version 2  -- Change management version of client to 2 (default = 1)
-   version    -- Show the version of OpenVPN and its Management Interface
- 
-+Note: Until version 3, no response was generated when client sets its
-+version. This was fixed starting version 4: clients should expect
-+"SUCCESS: .. " message only when setting the version to >= 4.
-+
- COMMAND -- auth-retry
- ---------------------
- 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 37ae6b3..03ff5b3 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -1333,6 +1333,15 @@
-     if (version)
-     {
-         man->connection.client_version = atoi(version);
-+        /* Prior to version 3, we missed to respond to this command. Acknowledge only if version >= 4 */
-+        if (man->connection.client_version >= 4)
-+        {
-+            msg(M_CLIENT, "SUCCESS: Management client version set to %d", man->connection.client_version);
-+        }
-+    }
-+    else
-+    {
-+        msg(M_CLIENT, "ERROR: Invalid value specified for management client version");
-     }
- }
- 
+
+--
+kind regards,
+
+Gert Doering
+
 
