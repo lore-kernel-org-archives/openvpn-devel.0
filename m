@@ -1,11 +1,15 @@
-Content-Type: multipart/alternative;
- boundary="------------IsqUdcNcoB0jxmRFqsMcky86"
-Message-ID: <29f93fac-7439-4dd3-a14c-fd5ad80f4e68@...2722...>
-Date: Wed, 25 Feb 2026 20:23:07 +0700
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Wed, 25 Feb 2026 23:14:36 +0000
+References: <gerrit.1772061272000.I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <4a4b547ac71a9fd1be2ed7308042d051d1aa6037-HTML@...2715...>
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2722...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nVolxD2akLo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Document management
+ client versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,100 +18,247 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------IsqUdcNcoB0jxmRFqsMcky86
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--nVolxD2akLo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Meeting summary for 25 February 2026:
+Attention is currently required from: plaisthos.
 
-  *
+Hello plaisthos,
 
-    *Updated: forums situation*
-    We're ready to go live with the new forums today. So expect it to go
-    offline briefly and the new system to come online.
-    Since we will be leaving the current LDAP authentication system
-    behind, everyone will need to reset their passwords.
-    We will leave instructions and information on the new forums.
+I'd like you to do a code review.
+Please visit
 
-  *
+    http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail
 
-    *Updated: OpenVPN 2.7 release*
-    After 2.7.0 went out a new Windows DCO driver went into an updated
-    Windows installer to solve a particular BSoD situation.
-    Some minor bug fixes went into the updated Windows installer.
-    We have some minor bugfixes lined up for the next bugfix release
-    2.7.1. Intention is to do a 2.7.1 release around 11 March or so.
-    There is one issue under investigation when using multisocket, where
-    with many clients, responses are slow.
+to review the following change.
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
 
-Kind regards,
-Johan Draaisma
+Change subject: Document management client versions
+......................................................................
 
---------------IsqUdcNcoB0jxmRFqsMcky86
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Document management client versions
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 25 February 2026:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            forums situation</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We're ready to go live with the new forums today. So expect it
-          to go offline briefly and the new system to come online.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Since we will be leaving the current LDAP authentication
-          system behind, everyone will need to reset their passwords.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We will leave instructions and information on the new forums.</p>
-      </li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
-        <p
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-            OpenVPN 2.7 release</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          After 2.7.0 went out a new Windows DCO driver went into an
-          updated Windows installer to solve a particular BSoD
-          situation.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          Some minor bug fixes went into the updated Windows installer.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          We have some minor bugfixes lined up for the next bugfix
-          release 2.7.1. Intention is to do a 2.7.1 release around 11
-          March or so.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-          There is one issue under investigation when using multisocket,
-          where with many clients, responses are slow.</p>
-      </li>
-    </ul>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 14:00 Central European Time. </p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+Also add an enum to keep track of client version updates.
 
---------------IsqUdcNcoB0jxmRFqsMcky86--
+Change-Id: I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+M doc/management-notes.txt
+M src/openvpn/manage.c
+2 files changed, 19 insertions(+), 5 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/52/1552/1
+
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 86b74f3..41e2a91 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -496,6 +496,10 @@
+ version. This was fixed starting version 4: clients should expect
+ "SUCCESS: .. " message only when setting the version to >=3D 4.
+
++Minimum client version required for certain features is listed below:
++    >PK_SIGN:[base64]           -- version 2 or greater
++    >PK_SIGN:[base64],[alg]     -- version 3 or greater
++
+ COMMAND -- auth-retry
+ ---------------------
+
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 03ff5b3..b1fb577 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -61,6 +61,16 @@
+ /* tag for blank username/password */
+ static const char blank_up[] =3D "[[BLANK]]";
+
++/*
++ * Management client versions indicating feature support in client.
++ * Append new values as needed but do not change exisiting ones.
++ */
++static enum mcv {
++    MCV_DEFAULT =3D 1,
++    MCV_PKSIGN =3D 2,
++    MCV_PKSIGN_ALG =3D 3,
++};
++
+ struct management *management; /* GLOBAL */
+
+ /* static forward declarations */
+@@ -1333,8 +1343,8 @@
+     if (version)
+     {
+         man->connection.client_version =3D atoi(version);
+-        /* Prior to version 3, we missed to respond to this command. Ackno=
+wledge only if version >=3D 4 */
+-        if (man->connection.client_version >=3D 4)
++        /* Until MCV_PKSIGN_ALG, we missed to respond to this command. Ack=
+nowledge only if version is newer */
++        if (man->connection.client_version > MCV_PKSIGN_ALG)
+         {
+             msg(M_CLIENT, "SUCCESS: Management client version set to %d", =
+man->connection.client_version);
+         }
+@@ -2656,7 +2666,7 @@
+             man->connection.es =3D event_set_init(&maxevents, EVENT_METHOD=
+_FAST);
+         }
+
+-        man->connection.client_version =3D 1; /* default version */
++        man->connection.client_version =3D MCV_DEFAULT; /* default version=
+ */
+
+         /*
+          * Listen/connect socket
+@@ -3776,14 +3786,14 @@
+     const char *desc =3D "pk-sign";
+     struct buffer buf_data =3D alloc_buf(strlen(b64_data) + strlen(algorit=
+hm) + 20);
+
+-    if (man->connection.client_version <=3D 1)
++    if (man->connection.client_version <=3D MCV_DEFAULT)
+     {
+         prompt =3D "RSA_SIGN";
+         desc =3D "rsa-sign";
+     }
+
+     buf_write(&buf_data, b64_data, (int)strlen(b64_data));
+-    if (man->connection.client_version > 2)
++    if (man->connection.client_version >=3D MCV_PKSIGN_ALG)
+     {
+         buf_write(&buf_data, ",", (int)strlen(","));
+         buf_write(&buf_data, algorithm, (int)strlen(algorithm));
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35
+Gerrit-Change-Number: 1552
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--nVolxD2akLo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>selvanair would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Document management client versions<br><br>=
+Also add an enum to keep track of client version updates.<br><br>Change-Id:=
+ I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35<br>Signed-off-by: Selva Nair &lt=
+;selva.nair@...277...&gt;<br>---<br>M doc/management-notes.txt<br>M src/ope=
+nvpn/manage.c<br>2 files changed, 19 insertions(+), 5 deletions(-)<br><br><=
+/pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
+nges/52/1552/1</pre><pre style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;"><span>diff --git a/doc/management-notes.txt b/doc/manageme=
+nt-notes.txt</span><br><span>index 86b74f3..41e2a91 100644</span><br><span>=
+--- a/doc/management-notes.txt</span><br><span>+++ b/doc/management-notes.t=
+xt</span><br><span>@@ -496,6 +496,10 @@</span><br><span> version. This was =
+fixed starting version 4: clients should expect</span><br><span> &quot;SUCC=
+ESS: .. &quot; message only when setting the version to &gt;=3D 4.</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+Minimum cl=
+ient version required for certain features is listed below:</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    &gt;PK_SIGN:[base64]           =
+-- version 2 or greater</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    &gt;PK_SIGN:[base64],[alg]     -- version 3 or greater</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> COMMAND -- aut=
+h-retry</span><br><span> ---------------------</span><br><span> </span><br>=
+<span>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><s=
+pan>index 03ff5b3..b1fb577 100644</span><br><span>--- a/src/openvpn/manage.=
+c</span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -61,6 +61,1=
+6 @@</span><br><span> /* tag for blank username/password */</span><br><span=
+> static const char blank_up[] =3D &quot;[[BLANK]]&quot;;</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * Management client versions indica=
+ting feature support in client.</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * Append new values as needed but do not change exisiting ones=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+static enum mcv {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    MCV_DEFAULT =3D 1,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    MCV_PKSIGN =3D 2,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    MCV_PKSIGN_ALG =3D 3,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct management *mana=
+gement; /* GLOBAL */</span><br><span> </span><br><span> /* static forward d=
+eclarations */</span><br><span>@@ -1333,8 +1343,8 @@</span><br><span>     i=
+f (version)</span><br><span>     {</span><br><span>         man-&gt;connect=
+ion.client_version =3D atoi(version);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        /* Prior to version 3, we missed to respond to this=
+ command. Acknowledge only if version &gt;=3D 4 */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        if (man-&gt;connection.client_version =
+&gt;=3D 4)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /=
+* Until MCV_PKSIGN_ALG, we missed to respond to this command. Acknowledge o=
+nly if version is newer */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        if (man-&gt;connection.client_version &gt; MCV_PKSIGN_ALG)</=
+span><br><span>         {</span><br><span>             msg(M_CLIENT, &quot;=
+SUCCESS: Management client version set to %d&quot;, man-&gt;connection.clie=
+nt_version);</span><br><span>         }</span><br><span>@@ -2656,7 +2666,7 =
+@@</span><br><span>             man-&gt;connection.es =3D event_set_init(&a=
+mp;maxevents, EVENT_METHOD_FAST);</span><br><span>         }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        man-&gt;co=
+nnection.client_version =3D 1; /* default version */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        man-&gt;connection.client_version=
+ =3D MCV_DEFAULT; /* default version */</span><br><span> </span><br><span> =
+        /*</span><br><span>          * Listen/connect socket</span><br><spa=
+n>@@ -3776,14 +3786,14 @@</span><br><span>     const char *desc =3D &quot;p=
+k-sign&quot;;</span><br><span>     struct buffer buf_data =3D alloc_buf(str=
+len(b64_data) + strlen(algorithm) + 20);</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    if (man-&gt;connection.client_vers=
+ion &lt;=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (man-&gt;connection.client_version &lt;=3D MCV_DEFAULT)</span><br><span> =
+    {</span><br><span>         prompt =3D &quot;RSA_SIGN&quot;;</span><br><=
+span>         desc =3D &quot;rsa-sign&quot;;</span><br><span>     }</span><=
+br><span> </span><br><span>     buf_write(&amp;buf_data, b64_data, (int)str=
+len(b64_data));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (man-&gt;connection.client_version &gt; 2)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    if (man-&gt;connection.client_version &gt;=3D M=
+CV_PKSIGN_ALG)</span><br><span>     {</span><br><span>         buf_write(&a=
+mp;buf_data, &quot;,&quot;, (int)strlen(&quot;,&quot;));</span><br><span>  =
+       buf_write(&amp;buf_data, algorithm, (int)strlen(algorithm));</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1552?usp=3Demail">change 1552</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1552?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1c01fa1bc7d65ac060b334724fe=
+b56ef4d0b5d35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1552 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--nVolxD2akLo=--
 
