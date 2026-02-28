@@ -1,11 +1,10 @@
+Date: Sat, 28 Feb 2026 10:38:08 +0100 (CET)
+Message-Id: <202602280938.61S9c8AT065258@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 27 Feb 2026 23:47:39 +0100
-Message-ID: <20260227224745.3175-1-gert@...1296...>
-In-Reply-To: <gerrit.1771685160000.I84fe7a11391eafde3660d25a3c99094a0c525f3d@...2715...>
-References: <gerrit.1771685160000.I84fe7a11391eafde3660d25a3c99094a0c525f3d@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] dco_freebsd: use AF_LOCAL sockets for
- ioctl() communication with DCO driver
+In-Reply-To: <20260227224745.3175-1-gert@...1296...>
+References: <20260227224745.3175-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco_freebsd: use AF_LOCAL
+ sockets for ioctl() communication with DCO driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-DCO FreeBSD uses ioctl() calls for userland -> driver communication, on
-a socket() file descriptor.  The original code uses AF_INET sockets,
-which fails if using a kernel compiled without IPv4 support.
+Thanks for the review, thanks to Marek for reporting and testing.
 
-The kernel side ioctl() handling does not differentiate between AF_INET,
-AF_INET6 and AF_LOCAL sockets, and only the latter are guaranteed to be
-present.
+Patch has been applied to the master, release/2.7 and release/2.6 branch
+(it's something like "long-term compat" and we could argue that FreeBSD
+will move to 2.7.x really soon now, so this is not needed - but it brings
+an extra msg() that helps problem diagnosis, and there is a benefit - also
+the change is very very isolated).
 
-While add it, add a clear message if the socket() call in dco_available()
-fails (it will lead to disabling of DCO).
+commit 5f19355d15da17cbc70624f833171f162adc4ea4 (master)
+commit b215499c30581d8b2c5344ea5c4d6b1c25580955 (release/2.7)
+commit a89186242f49b5cb7ed790f57430b9fc00b8973a (release/2.6)
+Author: Gert Doering
+Date:   Fri Feb 27 23:47:39 2026 +0100
 
-FreeBSD PR: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=286263
-Reported-by: Marek Zarychta <zarychtam@...2997...>
+     dco_freebsd: use AF_LOCAL sockets for ioctl() communication with DCO driver
 
-Change-Id: I84fe7a11391eafde3660d25a3c99094a0c525f3d
-Signed-off-by: Gert Doering <gert@...1296...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1551
----
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...2726...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1551
+     Message-Id: <20260227224745.3175-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35795.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1551
-This mail reflects revision 1 of this Change.
+--
+kind regards,
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
+Gert Doering
 
-        
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index ee3a5d0..718cd8b 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -205,7 +205,7 @@
-         return -1;
-     }
- 
--    dco->fd = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-+    dco->fd = socket(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-     if (dco->fd != -1)
-     {
-         dco->open = true;
-@@ -715,9 +715,10 @@
-      * loaded, or built into the kernel. */
-     (void)kldload("if_ovpn");
- 
--    fd = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-+    fd = socket(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-     if (fd < 0)
-     {
-+        msg(M_WARN | M_ERRNO, "%s: socket() failed, disabling data channel offload", __func__);
-         return false;
-     }
- 
 
