@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 28 Feb 2026 10:00:37 +0000
-In-Reply-To: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
-References: <gerrit.1771283598000.I633d8cbf75ab4da85e16df44684aef60523811c5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- antonio@...2726...
-Message-ID: <16f2e6c57e6001b9b29ad54be552a342de90b5fd-HTML@...2715...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Sat, 28 Feb 2026 20:07:35 +0000
+References: <gerrit.1772309250000.I5e17e184f666317df21460108da4f70670358ece@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <3550ca66937d261c952b6c1a48b57be1141a20ed-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1R0Kl55m2yY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: options: drop
- useless init_gc param for init_options()
+Content-Type: multipart/alternative; boundary="P2NgfGPhEkc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use USER_PASS_LEN
+ for private key password buffer size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,312 +18,123 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---1R0Kl55m2yY=
+--P2NgfGPhEkc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-36?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: options: drop useless init_gc param for init_options()
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Use USER_PASS_LEN for private key password buffer size
 ......................................................................
 
-options: drop useless init_gc param for init_options()
+Use USER_PASS_LEN for private key password buffer size
 
-The init_option() function is always invoked with the second
-param "init_gc" set to "true".
-This makes the parameter useless and it can therefore be removed
-while always taking the "true" branch in the related logic.
+GitHub: fixes OpenVPN/openvpn#993
 
-This way we can also drop the options->gc_owned member as it
-would also be always set to true.
-
-Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1536
-Message-Id: <20260217135605.154129-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35=
-695.html
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I5e17e184f666317df21460108da4f70670358ece
 ---
-M src/openvpn/openvpn.c
-M src/openvpn/options.c
-M src/openvpn/options.h
-M tests/unit_tests/openvpn/test_options_parse.c
-4 files changed, 12 insertions(+), 19 deletions(-)
+M src/openvpn/ssl_openssl.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1553/1
 
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index b7eca19..f38660f 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -202,7 +202,7 @@
- #endif
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 09f23964..80aef69 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -796,7 +796,7 @@
+         }
+         else /* use our generic 'Private Key' passphrase callback */
+         {
+-            char password[64];
++            char password[USER_PASS_LEN];
+             pem_password_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);
+             void *d =3D SSL_CTX_get_default_passwd_cb_userdata(ctx);
 
-             /* initialize options to default state */
--            init_options(&c.options, true);
-+            init_options(&c.options);
-
-             /* parse command line options, and read configuration file */
-             parse_argv(&c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NUL=
-L, c.es);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ea05ef0..fdbc678 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -792,15 +792,12 @@
-  * will be set to 0.
-  */
- void
--init_options(struct options *o, const bool init_gc)
-+init_options(struct options *o)
- {
-     CLEAR(*o);
--    if (init_gc)
--    {
--        gc_init(&o->gc);
--        gc_init(&o->dns_options.gc);
--        o->gc_owned =3D true;
--    }
-+    gc_init(&o->gc);
-+    gc_init(&o->dns_options.gc);
-+
-     o->mode =3D MODE_POINT_TO_POINT;
-     o->topology =3D TOP_UNDEF;
-     o->ce.proto =3D PROTO_UDP;
-@@ -925,11 +922,9 @@
-     {
-         CLEAR(*o->remote_list);
-     }
--    if (o->gc_owned)
--    {
--        gc_free(&o->gc);
--        gc_free(&o->dns_options.gc);
--    }
-+
-+    gc_free(&o->gc);
-+    gc_free(&o->dns_options.gc);
- }
-
- #ifndef ENABLE_SMALL
-@@ -2256,7 +2251,7 @@
-     int dev =3D DEV_TYPE_UNDEF;
-     bool pull =3D false;
-
--    init_options(&defaults, true);
-+    init_options(&defaults);
-
-     if (!options->test_crypto)
-     {
-@@ -4824,7 +4819,7 @@
- #else
-
-     struct options o;
--    init_options(&o, true);
-+    init_options(&o);
-
-     fprintf(fp, usage_message, title_string, o.ce.connect_retry_seconds,
-             o.ce.connect_retry_seconds_max, o.ce.local_port, o.ce.remote_p=
-ort, TUN_MTU_DEFAULT,
-@@ -5979,7 +5974,7 @@
-             struct options sub;
-             struct connection_entry *e;
-
--            init_options(&sub, true);
-+            init_options(&sub);
-             sub.ce =3D options->ce;
-             read_config_string("[CONNECTION-OPTIONS]", &sub, p[1], msgleve=
-l, OPT_P_CONNECTION,
-                                option_types_found, es);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index cf9936b..3d8b505 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -254,7 +254,6 @@
- struct options
- {
-     struct gc_arena gc;
--    bool gc_owned;
-
-     /* first config file */
-     const char *config;
-@@ -890,7 +889,7 @@
-
- void show_dco_version(const unsigned int flags);
-
--void init_options(struct options *o, const bool init_gc);
-+void init_options(struct options *o);
-
- void uninit_options(struct options *o);
-
-diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit_tes=
-ts/openvpn/test_options_parse.c
-index bb34f01..0b3d7fe 100644
---- a/tests/unit_tests/openvpn/test_options_parse.c
-+++ b/tests/unit_tests/openvpn/test_options_parse.c
-@@ -248,7 +248,6 @@
-     CLEAR(o); /* NB: avoiding init_options to limit dependencies */
-     gc_init(&o.gc);
-     gc_init(&o.dns_options.gc);
--    o.gc_owned =3D true;
-
-     char *p_expect_someopt[MAX_PARMS];
-     char *p_expect_otheropt[MAX_PARMS];
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1536?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5
-Gerrit-Change-Number: 1536
-Gerrit-PatchSet: 3
-Gerrit-Owner: ordex <antonio@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I5e17e184f666317df21460108da4f70670358ece
+Gerrit-Change-Number: 1553
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---1R0Kl55m2yY=
+--P2NgfGPhEkc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1536?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">options: drop useless init_gc param for init_opt=
-ions()<br><br>The init_option() function is always invoked with the second<=
-br>param &quot;init_gc&quot; set to &quot;true&quot;.<br>This makes the par=
-ameter useless and it can therefore be removed<br>while always taking the &=
-quot;true&quot; branch in the related logic.<br><br>This way we can also dr=
-op the options-&gt;gc_owned member as it<br>would also be always set to tru=
-e.<br><br>Change-Id: I633d8cbf75ab4da85e16df44684aef60523811c5<br>Signed-of=
-f-by: Antonio Quartulli &lt;antonio@...2726...&gt;<br>Acked-by: Frank Licht=
-enheld &lt;frank@...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c=
-/openvpn/+/1536<br>Message-Id: &lt;20260217135605.154129-1-frank@...2641...=
-&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1223...=
-et/msg35695.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>=
----<br>M src/openvpn/openvpn.c<br>M src/openvpn/options.c<br>M src/openvpn/=
-options.h<br>M tests/unit_tests/openvpn/test_options_parse.c<br>4 files cha=
-nged, 12 insertions(+), 19 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c</span><br><sp=
-an>index b7eca19..f38660f 100644</span><br><span>--- a/src/openvpn/openvpn.=
-c</span><br><span>+++ b/src/openvpn/openvpn.c</span><br><span>@@ -202,7 +20=
-2,7 @@</span><br><span> #endif</span><br><span> </span><br><span>          =
-   /* initialize options to default state */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            init_options(&amp;c.options, true);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            init_options=
-(&amp;c.options);</span><br><span> </span><br><span>             /* parse c=
-ommand line options, and read configuration file */</span><br><span>       =
-      parse_argv(&amp;c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NULL, =
-c.es);</span><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/opt=
-ions.c</span><br><span>index ea05ef0..fdbc678 100644</span><br><span>--- a/=
-src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c</span><br=
-><span>@@ -792,15 +792,12 @@</span><br><span>  * will be set to 0.</span><b=
-r><span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-init_options(struct options *o, const bool init_gc)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+init_options(struct options *o=
-)</span><br><span> {</span><br><span>     CLEAR(*o);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (init_gc)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        gc_init(&amp;o-&gt;gc);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        gc_init(&amp;o-&gt;dns_options.gc);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        o-&gt;gc_owned =3D true;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    gc_init(&amp;o-&gt;gc);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_init(&amp;o-&gt;dns_=
-options.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span>     o-&gt;mode =3D MODE_POINT_TO_POINT;</span><br><span>     o-&=
-gt;topology =3D TOP_UNDEF;</span><br><span>     o-&gt;ce.proto =3D PROTO_UD=
-P;</span><br><span>@@ -925,11 +922,9 @@</span><br><span>     {</span><br><s=
-pan>         CLEAR(*o-&gt;remote_list);</span><br><span>     }</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;gc_owned)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        gc_free(&amp;o-&gt;gc);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        gc_free(&amp;o-&gt;dns_options=
-.gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    gc_free(&amp;o-&gt;gc);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;o-&gt;dns_options.gc);</=
-span><br><span> }</span><br><span> </span><br><span> #ifndef ENABLE_SMALL</=
-span><br><span>@@ -2256,7 +2251,7 @@</span><br><span>     int dev =3D DEV_T=
-YPE_UNDEF;</span><br><span>     bool pull =3D false;</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_options(&amp;defa=
-ults, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ini=
-t_options(&amp;defaults);</span><br><span> </span><br><span>     if (!optio=
-ns-&gt;test_crypto)</span><br><span>     {</span><br><span>@@ -4824,7 +4819=
-,7 @@</span><br><span> #else</span><br><span> </span><br><span>     struct =
-options o;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    init_op=
-tions(&amp;o, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    init_options(&amp;o);</span><br><span> </span><br><span>     fprintf(f=
-p, usage_message, title_string, o.ce.connect_retry_seconds,</span><br><span=
->             o.ce.connect_retry_seconds_max, o.ce.local_port, o.ce.remote_=
-port, TUN_MTU_DEFAULT,</span><br><span>@@ -5979,7 +5974,7 @@</span><br><spa=
-n>             struct options sub;</span><br><span>             struct conn=
-ection_entry *e;</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            init_options(&amp;sub, true);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            init_options(&amp;sub);</spa=
-n><br><span>             sub.ce =3D options-&gt;ce;</span><br><span>       =
-      read_config_string(&quot;[CONNECTION-OPTIONS]&quot;, &amp;sub, p[1], =
-msglevel, OPT_P_CONNECTION,</span><br><span>                               =
- option_types_found, es);</span><br><span>diff --git a/src/openvpn/options.=
-h b/src/openvpn/options.h</span><br><span>index cf9936b..3d8b505 100644</sp=
-an><br><span>--- a/src/openvpn/options.h</span><br><span>+++ b/src/openvpn/=
-options.h</span><br><span>@@ -254,7 +254,6 @@</span><br><span> struct optio=
-ns</span><br><span> {</span><br><span>     struct gc_arena gc;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    bool gc_owned;</span><br><span=
-> </span><br><span>     /* first config file */</span><br><span>     const =
-char *config;</span><br><span>@@ -890,7 +889,7 @@</span><br><span> </span><=
-br><span> void show_dco_version(const unsigned int flags);</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void init_options(st=
-ruct options *o, const bool init_gc);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+void init_options(struct options *o);</span><br><span> </=
-span><br><span> void uninit_options(struct options *o);</span><br><span> </=
-span><br><span>diff --git a/tests/unit_tests/openvpn/test_options_parse.c b=
-/tests/unit_tests/openvpn/test_options_parse.c</span><br><span>index bb34f0=
-1..0b3d7fe 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_optio=
-ns_parse.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_options_pars=
-e.c</span><br><span>@@ -248,7 +248,6 @@</span><br><span>     CLEAR(o); /* N=
-B: avoiding init_options to limit dependencies */</span><br><span>     gc_i=
-nit(&amp;o.gc);</span><br><span>     gc_init(&amp;o.dns_options.gc);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    o.gc_owned =3D true;</sp=
-an><br><span> </span><br><span>     char *p_expect_someopt[MAX_PARMS];</spa=
-n><br><span>     char *p_expect_otheropt[MAX_PARMS];</span><br><span></span=
-><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1536?usp=3Demail">change 1536</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demai=
-l">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
-ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
-tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1536?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>selvanair would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Use USER_PASS_LEN for private key password =
+buffer size<br><br>GitHub: fixes OpenVPN/openvpn#993<br><br>Change-Id: I5e1=
+7e184f666317df21460108da4f70670358ece<br>---<br>M src/openvpn/ssl_openssl.c=
+<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/1553/1<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c<=
+/span><br><span>index 09f23964..80aef69 100644</span><br><span>--- a/src/op=
+envpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><=
+br><span>@@ -796,7 +796,7 @@</span><br><span>         }</span><br><span>   =
+      else /* use our generic &#39;Private Key&#39; passphrase callback */<=
+/span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-            char password[64];</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            char password[USER_PASS_LEN];</span><br><span> =
+            pem_password_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);</sp=
+an><br><span>             void *d =3D SSL_CTX_get_default_passwd_cb_userdat=
+a(ctx);</span><br><span> </span><br><span></span><br></pre><p>To view, visi=
+t <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail">change=
+ 1553</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I633d8cbf75ab4da85e16df44684=
-aef60523811c5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1536 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@...2726...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5e17e184f666317df21460108da=
+4f70670358ece </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1553 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---1R0Kl55m2yY=--
+--P2NgfGPhEkc=--
 
