@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  2 Mar 2026 15:18:02 +0100
-Message-ID: <20260302141811.5697-1-gert@...1296...>
-In-Reply-To: <gerrit.1772061272000.I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35@...2715...>
-References: <gerrit.1772061272000.I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 2 Mar 2026 14:19:58 +0000
+In-Reply-To: <gerrit.1771607942000.I53d47e4a0d33c380ee95e0e33aecad3db3197940@...2715...>
+References: <gerrit.1771607942000.I53d47e4a0d33c380ee95e0e33aecad3db3197940@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ steffan@...1856..., max@...2606..., gert@...1296...
+Message-ID: <851a23cd02073eb54062e69539b871f2447afc9a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Document management client versions
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Xdk0ly7PGSQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Avoid unbounded
+ allocations in pkcs11_mbedtls.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,102 +19,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: MaxF <max@...2606...>
+Cc: syzzer <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--Xdk0ly7PGSQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Also add an enum to keep track of client version updates.
+Attention is currently required from: MaxF, syzzer.
 
-Change-Id: I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1552
----
+plaisthos has posted comments on this change by MaxF. ( http://gerrit.openv=
+pn.net/c/openvpn/+/1549?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Avoid unbounded allocations in pkcs11_mbedtls.c
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1552
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 86b74f3..41e2a91 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -496,6 +496,10 @@
- version. This was fixed starting version 4: clients should expect
- "SUCCESS: .. " message only when setting the version to >= 4.
- 
-+Minimum client version required for certain features is listed below:
-+    >PK_SIGN:[base64]           -- version 2 or greater
-+    >PK_SIGN:[base64],[alg]     -- version 3 or greater
-+
- COMMAND -- auth-retry
- ---------------------
- 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 03ff5b3..d26c9b2 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -61,6 +61,17 @@
- /* tag for blank username/password */
- static const char blank_up[] = "[[BLANK]]";
- 
-+/*
-+ * Management client versions indicating feature support in client.
-+ * Append new values as needed but do not change exisiting ones.
-+ */
-+enum mcv
-+{
-+    MCV_DEFAULT = 1,
-+    MCV_PKSIGN = 2,
-+    MCV_PKSIGN_ALG = 3,
-+};
-+
- struct management *management; /* GLOBAL */
- 
- /* static forward declarations */
-@@ -1333,8 +1344,8 @@
-     if (version)
-     {
-         man->connection.client_version = atoi(version);
--        /* Prior to version 3, we missed to respond to this command. Acknowledge only if version >= 4 */
--        if (man->connection.client_version >= 4)
-+        /* Until MCV_PKSIGN_ALG, we missed to respond to this command. Acknowledge only if version is newer */
-+        if (man->connection.client_version > MCV_PKSIGN_ALG)
-         {
-             msg(M_CLIENT, "SUCCESS: Management client version set to %d", man->connection.client_version);
-         }
-@@ -2656,7 +2667,7 @@
-             man->connection.es = event_set_init(&maxevents, EVENT_METHOD_FAST);
-         }
- 
--        man->connection.client_version = 1; /* default version */
-+        man->connection.client_version = MCV_DEFAULT; /* default version */
- 
-         /*
-          * Listen/connect socket
-@@ -3776,14 +3787,14 @@
-     const char *desc = "pk-sign";
-     struct buffer buf_data = alloc_buf(strlen(b64_data) + strlen(algorithm) + 20);
- 
--    if (man->connection.client_version <= 1)
-+    if (man->connection.client_version <= MCV_DEFAULT)
-     {
-         prompt = "RSA_SIGN";
-         desc = "rsa-sign";
-     }
- 
-     buf_write(&buf_data, b64_data, (int)strlen(b64_data));
--    if (man->connection.client_version > 2)
-+    if (man->connection.client_version >= MCV_PKSIGN_ALG)
-     {
-         buf_write(&buf_data, ",", (int)strlen(","));
-         buf_write(&buf_data, algorithm, (int)strlen(algorithm));
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I53d47e4a0d33c380ee95e0e33aecad3db3197940
+Gerrit-Change-Number: 1549
+Gerrit-PatchSet: 1
+Gerrit-Owner: MaxF <max@...2606...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-CC: syzzer <steffan@...1856...>
+Gerrit-Attention: syzzer <steffan@...1856...>
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Mon, 02 Mar 2026 14:19:58 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--Xdk0ly7PGSQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: MaxF, syzzer. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail=
+">change 1549</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I53d47e4a0d33c380ee95e0e33ae=
+cad3db3197940 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1549 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: syzzer &lt;steffan@...1856...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@...2115...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 02 Mar 2026 14:19:58=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--Xdk0ly7PGSQ=--
 
