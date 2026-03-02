@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 2 Mar 2026 13:31:12 +0000
-In-Reply-To: <gerrit.1772309250000.I5e17e184f666317df21460108da4f70670358ece@...2715...>
-References: <gerrit.1772309250000.I5e17e184f666317df21460108da4f70670358ece@...2715...>
+Date: Mon, 2 Mar 2026 13:32:20 +0000
+In-Reply-To: <gerrit.1772061272000.I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35@...2715...>
+References: <gerrit.1772061272000.I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35@...2715...>
 Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <2a4011a03892ed9c7b30a33b18f143d377c4be97-EmailReviewComments-HTML@...2715...>
+Message-ID: <4d43134ace1fffcfcfbe05c6173af66a61bc83fd-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mgDM5i61ixs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use USER_PASS_LEN
- for private key password buffer size
+Content-Type: multipart/alternative; boundary="0utJAtVMLYk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Document management
+ client versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,66 +22,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: selvanair <selva.nair@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mgDM5i61ixs=
+--0utJAtVMLYk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: selvanair.
 
 plaisthos has posted comments on this change by selvanair. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1553?usp=3Demail )
+openvpn.net/c/openvpn/+/1552?usp=3Demail )
 
-Change subject: Use USER_PASS_LEN for private key password buffer size
+Change subject: Document management client versions
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 2: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I5e17e184f666317df21460108da4f70670358ece
-Gerrit-Change-Number: 1553
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I1c01fa1bc7d65ac060b334724feb56ef4d0b5d35
+Gerrit-Change-Number: 1552
+Gerrit-PatchSet: 2
 Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Mon, 02 Mar 2026 13:31:12 +0000
+Gerrit-Comment-Date: Mon, 02 Mar 2026 13:32:20 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---mgDM5i61ixs=
+--0utJAtVMLYk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: selvanair. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail=
-">change 1553</a>. To unsubscribe, or for help writing mail filters, visit =
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail=
+">change 1552</a>. To unsubscribe, or for help writing mail filters, visit =
 <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
 ><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
 itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail"/>=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1552?usp=3Demail"/>=
 <meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5e17e184f666317df21460108da=
-4f70670358ece </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1553 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1c01fa1bc7d65ac060b334724fe=
+b56ef4d0b5d35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1552 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
 ..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -90,12 +90,12 @@ p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail"/>=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
 277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 02 Mar 2026 13:31:12=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 02 Mar 2026 13:32:20=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---mgDM5i61ixs=--
+--0utJAtVMLYk=--
 
