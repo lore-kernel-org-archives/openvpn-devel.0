@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 2 Mar 2026 15:36:21 +0000
-In-Reply-To: <gerrit.1769789455000.I7be033bc88e9a6ba474916c8be039c126e8bc574@...2715...>
-References: <gerrit.1769789455000.I7be033bc88e9a6ba474916c8be039c126e8bc574@...2715...>
+Date: Mon, 2 Mar 2026 15:37:31 +0000
+In-Reply-To: <gerrit.1769443458000.I68c8ebb593262116b42b4c749d4aed3078f8499b@...2715...>
+References: <gerrit.1769443458000.I68c8ebb593262116b42b4c749d4aed3078f8499b@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <81628b36a3030a0f4ecf31209c932405d80cf864-EmailReviewComments-HTML@...2715...>
+Message-ID: <4ce5f77d36eeba72146a70d32a197d911495893a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="J3h8IReQSRk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: Improve check
- of vsnprintf return value
+Content-Type: multipart/alternative; boundary="QGqg7lOyjj4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change signedness of
+ constants to avoid sign-compare issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,16 +22,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---J3h8IReQSRk=
+--QGqg7lOyjj4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change by flichtenheld. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1502?usp=3Demail )
+it.openvpn.net/c/openvpn/+/1490?usp=3Demail )
 
-Change subject: push: Improve check of vsnprintf return value
+Change subject: Change signedness of constants to avoid sign-compare issues
 ......................................................................
 
 
@@ -39,25 +39,25 @@ Patch Set 5: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1502?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1490?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7be033bc88e9a6ba474916c8be039c126e8bc574
-Gerrit-Change-Number: 1502
+Gerrit-Change-Id: I68c8ebb593262116b42b4c749d4aed3078f8499b
+Gerrit-Change-Number: 1490
 Gerrit-PatchSet: 5
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 02 Mar 2026 15:36:21 +0000
+Gerrit-Comment-Date: Mon, 02 Mar 2026 15:37:31 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---J3h8IReQSRk=
+--QGqg7lOyjj4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -65,22 +65,22 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: flichtenheld. </p>
 <p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1502?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1490?usp=3Demail">V=
 iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1502?usp=3Demail=
-">change 1502</a>. To unsubscribe, or for help writing mail filters, visit =
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1490?usp=3Demail=
+">change 1490</a>. To unsubscribe, or for help writing mail filters, visit =
 <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
 ><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
 itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1502?usp=3Demail"/>=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1490?usp=3Demail"/>=
 <meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7be033bc88e9a6ba474916c8be0=
-39c126e8bc574 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1502 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I68c8ebb593262116b42b4c749d4=
+aed3078f8499b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1490 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -90,12 +90,12 @@ p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1502?usp=3Demail"/>=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 02 Mar 2026 15:36:21=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 02 Mar 2026 15:37:31=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---J3h8IReQSRk=--
+--QGqg7lOyjj4=--
 
