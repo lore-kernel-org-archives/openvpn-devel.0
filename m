@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 2 Mar 2026 21:51:05 +0000
+Date: Mon, 2 Mar 2026 21:51:03 +0000
 In-Reply-To: <gerrit.1771607942000.I53d47e4a0d33c380ee95e0e33aecad3db3197940@...2715...>
 References: <gerrit.1771607942000.I53d47e4a0d33c380ee95e0e33aecad3db3197940@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, steffan@...1856..., max@...2606...
-Message-ID: <be6ac528b6d5f74e782b2b68bbab1cdf7409407a-HTML@...2715...>
+Message-ID: <be6ac528b6d5f74e782b2b68bbab1cdf7409407a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gzyNTMJ48ec="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="fpwlI1/OAwE="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Avoid unbounded
  allocations in pkcs11_mbedtls.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: MaxF <max@...2606...>
-Cc: plaisthos <arne-openvpn@...1227...>, syzzer <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: MaxF <max@...2606...>, plaisthos <arne-openvpn@...1227...>
+Cc: syzzer <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---gzyNTMJ48ec=
+--fpwlI1/OAwE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-49?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ MaxF. ( http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
+
 
 Change subject: Avoid unbounded allocations in pkcs11_mbedtls.c
 ......................................................................
@@ -59,7 +63,7 @@ M src/openvpn/pkcs11_mbedtls.c
 1 file changed, 16 insertions(+), 0 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/1549/2
 
 diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
 index 66aefac..bf9d953 100644
@@ -111,7 +115,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I53d47e4a0d33c380ee95e0e33aecad3db3197940
@@ -123,77 +127,80 @@ Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: syzzer <steffan@...1856...>
 
---gzyNTMJ48ec=
+--fpwlI1/OAwE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1549?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Avoid unbounded allocations in pkcs11_mbedtls.c<=
-br><br>The PKCS#11 provider can crash OpenVPN by making it try to allocate<=
-br>2^64 bytes for a certificate. To avoid this, set a maximum size for<br>c=
-ertificates. If the size is exceeded, don&#39;t try to allocate memory and<=
-br>instead exit pkcs11_get_x509_cert with an error.<br><br>The chosen maxim=
-um size is 100.000 bytes which is twice the size of<br>a SLH-DSA (aka SPHIN=
-CS+) signature.<br><br>Found-by: ZeroPath (https://zeropath.com/)<br>Report=
-ed-by: Joshua Rogers &lt;contact@...2949...&gt;<br>Github: closes OpenVPN/o=
-penvpn-private-issues#42<br><br>Change-Id: I53d47e4a0d33c380ee95e0e33aecad3=
-db3197940<br>Signed-off-by: Max Fillinger &lt;maximilian.fillinger@...2920...=
-..&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Gerrit =
-URL: https://gerrit.openvpn.net/c/openvpn/+/1549<br>Message-Id: &lt;2026030=
-2142045.5954-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/ope=
-nvpn-devel@lists.sourceforge.net/msg35807.html<br>Signed-off-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/pkcs11_mbedtls.c<br>1 fi=
-le changed, 16 insertions(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c=
-</span><br><span>index 66aefac..bf9d953 100644</span><br><span>--- a/src/op=
-envpn/pkcs11_mbedtls.c</span><br><span>+++ b/src/openvpn/pkcs11_mbedtls.c</=
-span><br><span>@@ -42,6 +42,16 @@</span><br><span> static bool</span><br><s=
-pan> pkcs11_get_x509_cert(pkcs11h_certificate_t pkcs11_cert, mbedtls_x509_c=
-rt *cert)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* We set a maximum size for certificates so that the PKCS pro=
-vider cannot crash OpenVPN by</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+     * making it try to allocate 2^64 bytes. The maximum of 100.0=
-00 bytes is picked as a round</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+     * number that easily accomodates the currently standardized =
-quantum-safe signature algorithms.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+     * It is twice the size of a SLH-DSA (aka SPHINCS+) sign=
-ature plus public key.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * How=
-ever, there are additional digital signature schemes currently on the NIST =
-on-ramp</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * (e.g.=
-, some parameter settings for LESS) that have even larger public keys or si=
-gnatures, so</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
-if those ever see use on smartcards, we will need to increase this number. =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const size_t =
-max_cert_size =3D 100000;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span>     unsigned char *cert_blob =3D NULL;</span><br><s=
-pan>     size_t cert_blob_size =3D 0;</span><br><span>     bool ret =3D fal=
-se;</span><br><span>@@ -52,6 +62,12 @@</span><br><span>         goto cleanu=
-p;</span><br><span>     }</span><br><span> </span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (cert_blob_size &gt; max_cert_size)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;PKCS#11: Certif=
-icate too large: %lu bytes, maximum is %lu&quot;, cert_blob_size, max_cert_=
-size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto =
-cleanup;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     che=
-ck_malloc_return((cert_blob =3D calloc(1, cert_blob_size)));</span><br><spa=
-n>     if (pkcs11h_certificate_getCertificateBlob(pkcs11_cert, cert_blob, &=
-amp;cert_blob_size) !=3D CKR_OK)</span><br><span>     {</span><br><span></s=
-pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/1549?usp=3Demail">change 1549</a>. To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3De=
-mail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/1549?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by MaxF.</p><p=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1549?usp=3Demail">View Ch=
+ange</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">Avoid unbounded allocations in =
+pkcs11_mbedtls.c<br><br>The PKCS#11 provider can crash OpenVPN by making it=
+ try to allocate<br>2^64 bytes for a certificate. To avoid this, set a maxi=
+mum size for<br>certificates. If the size is exceeded, don&#39;t try to all=
+ocate memory and<br>instead exit pkcs11_get_x509_cert with an error.<br><br=
+>The chosen maximum size is 100.000 bytes which is twice the size of<br>a S=
+LH-DSA (aka SPHINCS+) signature.<br><br>Found-by: ZeroPath (https://zeropat=
+h.com/)<br>Reported-by: Joshua Rogers &lt;contact@...2949...&gt;<br>Github:=
+ closes OpenVPN/openvpn-private-issues#42<br><br>Change-Id: I53d47e4a0d33c3=
+80ee95e0e33aecad3db3197940<br>Signed-off-by: Max Fillinger &lt;maximilian.f=
+illinger@...2918...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...2639...=
+..&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1549<br>Messag=
+e-Id: &lt;20260302142045.5954-1-gert@...1296...&gt;<br>URL: https://www.mai=
+l-archive.com/openvpn-devel@lists.sourceforge.net/msg35807.html<br>Signed-o=
+ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/pkcs11_=
+mbedtls.c<br>1 file changed, 16 insertions(+), 0 deletions(-)<br><br></pre>=
+<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
+49/1549/2</pre><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;"><span>diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/p=
+kcs11_mbedtls.c</span><br><span>index 66aefac..bf9d953 100644</span><br><sp=
+an>--- a/src/openvpn/pkcs11_mbedtls.c</span><br><span>+++ b/src/openvpn/pkc=
+s11_mbedtls.c</span><br><span>@@ -42,6 +42,16 @@</span><br><span> static bo=
+ol</span><br><span> pkcs11_get_x509_cert(pkcs11h_certificate_t pkcs11_cert,=
+ mbedtls_x509_crt *cert)</span><br><span> {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    /* We set a maximum size for certificates so th=
+at the PKCS provider cannot crash OpenVPN by</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     * making it try to allocate 2^64 bytes. The m=
+aximum of 100.000 bytes is picked as a round</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     * number that easily accomodates the currentl=
+y standardized quantum-safe signature algorithms.</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * It is twice the size of a SLH-DSA (aka=
+ SPHINCS+) signature plus public key.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     * However, there are additional digital signature schemes current=
+ly on the NIST on-ramp</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+     * (e.g., some parameter settings for LESS) that have even larger pu=
+blic keys or signatures, so</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+     * if those ever see use on smartcards, we will need to increas=
+e this number. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const size_t max_cert_size =3D 100000;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span>     unsigned char *cert_blob =3D NUL=
+L;</span><br><span>     size_t cert_blob_size =3D 0;</span><br><span>     b=
+ool ret =3D false;</span><br><span>@@ -52,6 +62,12 @@</span><br><span>     =
+    goto cleanup;</span><br><span>     }</span><br><span> </span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (cert_blob_size &gt; max_cert=
+_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;P=
+KCS#11: Certificate too large: %lu bytes, maximum is %lu&quot;, cert_blob_s=
+ize, max_cert_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        goto cleanup;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span>     check_malloc_return((cert_blob =3D calloc(1, cert_blob_size)));<=
+/span><br><span>     if (pkcs11h_certificate_getCertificateBlob(pkcs11_cert=
+, cert_blob, &amp;cert_blob_size) !=3D CKR_OK)</span><br><span>     {</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1549?usp=3Demail">change 1549</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1549?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I53d47e4a0d33c380ee95e0e33ae=
@@ -212,5 +219,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---gzyNTMJ48ec=--
+--fpwlI1/OAwE=--
 
