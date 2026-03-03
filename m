@@ -1,15 +1,15 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Tue, 3 Mar 2026 13:49:43 +0000
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 3 Mar 2026 13:50:32 +0000
 In-Reply-To: <gerrit.1771470576000.I788f76e6a70a9c20bca3367140d2741bd0551582@...2715...>
 References: <gerrit.1771470576000.I788f76e6a70a9c20bca3367140d2741bd0551582@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...,
  gert@...1296...
-Message-ID: <8564b60f50e12533435a07dcc786f9c63ca7b0bb-EmailReviewComments-HTML@...2715...>
+Message-ID: <7b37f6b5c2c1c2c680ac7bd06126e9add37f84f6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dkMFGyHbOno="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="/na4XaVZkPw="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add an optional
  username-only flag for auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,33 +20,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dkMFGyHbOno=
+--/na4XaVZkPw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, selvanair.
 
-selvanair has posted comments on this change by selvanair. ( http://gerrit.=
+plaisthos has posted comments on this change by selvanair. ( http://gerrit.=
 openvpn.net/c/openvpn/+/1548?usp=3Demail )
 
 Change subject: Add an optional username-only flag for auth-user-pass
 ......................................................................
 
 
-Patch Set 7:
-
-(1 comment)
-
-Patchset:
-
-PS6:
-- fixed  conflicts with management-version doc patch
-   - added version =3D MCV_USERNAME_ONLY instead of version =3D 4
-- moved setting password =3D "[[BLANK]]" to the end of get_user_pass_cr() t=
-o enforce it always
-
+Patch Set 7: Code-Review+2
 
 
 --
@@ -65,36 +55,29 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 03 Mar 2026 13:49:43 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Tue, 03 Mar 2026 13:50:32 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---dkMFGyHbOno=
+--/na4XaVZkPw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1548?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1548?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">- =
-fixed  conflicts with management-version doc patch<br>   - added version =
-=3D MCV_USERNAME_ONLY instead of version =3D 4<br>- moved setting password =
-=3D &quot;[[BLANK]]&quot; to the end of get_user_pass_cr() to enforce it al=
-ways</pre></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1548?usp=3Demail">change 1548</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/1548?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+rently required from: flichtenheld, selvanair. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1548?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1548?usp=3Demail=
+">change 1548</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1548?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -112,16 +95,16 @@ ew Change"/></div></div>
 t; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 03 Mar 2026 13:49:43=
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 03 Mar 2026 13:50:32=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---dkMFGyHbOno=--
+--/na4XaVZkPw=--
 
