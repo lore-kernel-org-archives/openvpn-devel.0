@@ -1,16 +1,12 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 3 Mar 2026 16:47:40 +0000
-In-Reply-To: <gerrit.1768578994000.I7be7427480d3540d43dd818eddb6eb5860956459@...2715...>
-References: <gerrit.1768578994000.I7be7427480d3540d43dd818eddb6eb5860956459@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <bb3e52296204c21aab1b586ac2aa60015706b680-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <cab864a5-038a-449c-a231-e5f816bd23ab@...2108...>
+Date: Wed, 4 Mar 2026 00:39:37 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hWpanwhRc58="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: Fix various
- conversion warnings
+From: David Sommerseth <dazo+openvpn@...2108...>
+Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------8IJ0rk0Z7TudvV3wCiTglUL0"
+Subject: [Openvpn-devel] OpenVPN 3 Linux v27 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,526 +15,487 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-devel <Openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
---hWpanwhRc58=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------8IJ0rk0Z7TudvV3wCiTglUL0
+Content-Type: multipart/mixed; boundary="------------y5gvZV95yvFzCJoRC3lJCeT0";
+ protected-headers="v1"
+From: David Sommerseth <dazo+openvpn@...2108...>
+To: "openvpn-users@lists.sourceforge.net"
+ <openvpn-users@lists.sourceforge.net>,
+ openvpn-devel <Openvpn-devel@lists.sourceforge.net>,
+ openvpn-announce@lists.sourceforge.net
+Message-ID: <cab864a5-038a-449c-a231-e5f816bd23ab@...2108...>
+Subject: OpenVPN 3 Linux v27 released
+
+--------------y5gvZV95yvFzCJoRC3lJCeT0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+OpenVPN 3 Linux v27 (Stable release)
 
-Hello plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail
-
-to look at the new patch set (#7).
+The v27 release is a bug fix release with a few enhancements.
 
 
-Change subject: socket: Fix various conversion warnings
-......................................................................
+* FEATURE DEPRECATION: openvpn3-autoload
 
-socket: Fix various conversion warnings
+  ** THIS IS THE LAST RELEASE SHIPPING THIS UTILITY - MIGRATE NOW **
 
-- We assume that addrinfo->ai_family always fits
-  into a sa_family_t, so we do not check those.
-- Reduce places where we explicitly pass ai_family
-  and prefer sock->info.af.
-- Make sure that --bind-dev has a suitable length.
-- Treat PROTO_* as uint8_t where possible (however,
-  much code uses proto =3D -1 for various error handling).
+  The openvpn3-autoload feature was deprecated already in the
+  v20 release.  This feature will be removed in a coming stable
+  release.
 
-Change-Id: I7be7427480d3540d43dd818eddb6eb5860956459
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/options.c
-M src/openvpn/socket.c
-M src/openvpn/socket_util.c
-3 files changed, 30 insertions(+), 40 deletions(-)
+  The replacement is the openvpn3-session@...1685... systemd unit.
+  Please see the openvpn3-systemd man page [1] for more details.
+
+  If you depend on openvpn3-autoload today, please migrate ASAP
+  to the systemd approach.
+
+  [1] <https://codeberg.org/OpenVPN/openvpn3-linux/src/branch/master/docs/m=
+an/openvpn3-systemd.8.rst>
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1476/7
+* Bugfix: Use dynamic naming schema for ovpn-dco interfaces
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fdbc678..e1c62bd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6492,7 +6492,15 @@
-     else if (streq(p[0], "bind-dev") && p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_SOCKFLAGS);
--        options->bind_dev =3D p[1];
-+        if (strlen(p[1]) <=3D IFNAMSIZ)
-+        {
-+            options->bind_dev =3D p[1];
-+        }
-+        else
-+        {
-+            msg(msglevel, "argument to --bind-dev is longer than allowed %=
-u", IFNAMSIZ);
-+            goto err;
-+        }
-     }
- #endif
-     else if (streq(p[0], "txqueuelen") && p[1] && !p[2])
-@@ -6578,11 +6586,9 @@
-     }
-     else if (streq(p[0], "proto") && p[1] && !p[2])
-     {
--        int proto;
--        sa_family_t af;
-         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
--        proto =3D ascii2proto(p[1]);
--        af =3D ascii2af(p[1]);
-+        int proto =3D ascii2proto(p[1]);
-+        sa_family_t af =3D ascii2af(p[1]);
-         if (proto < 0)
-         {
-             msg(msglevel, "Bad protocol: '%s'. Allowed protocols with --pr=
-oto option: %s", p[1],
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 0b72684..33c12db 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -649,28 +649,23 @@
- }
+  Prior releases would not be able to start an OpenVPN configuration
+  profile if the --dev argument used the device name while there
+  already existed a device with the same name.  This has been resolved
+  and OpenVPN 3 Linux will now use a dynamic naming schema similar to
+  what non-DCO configurations use, appending a digit at the end of
+  the device name.
 
- static void
--bind_local(struct link_socket *sock, const sa_family_t ai_family)
-+bind_local(struct link_socket *sock)
- {
-     /* bind to local address/port */
-     if (sock->bind_local)
-     {
-         if (sock->socks_proxy && sock->info.proto =3D=3D PROTO_UDP)
-         {
--            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, ai_fami=
-ly, "SOCKS", false);
-+            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, sock->i=
-nfo.af, "SOCKS", false);
-         }
-         else
-         {
--            socket_bind(sock->sd, sock->info.lsa->bind_local, ai_family, "=
-TCP/UDP",
-+            socket_bind(sock->sd, sock->info.lsa->bind_local, sock->info.a=
-f, "TCP/UDP",
-                         sock->info.bind_ipv6_only);
-         }
-     }
- }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static void
- create_socket(struct link_socket *sock, struct addrinfo *addr)
- {
-@@ -702,7 +697,7 @@
-     }
-     /* Set af field of sock->info, so it always reflects the address family
-      * of the created socket */
--    sock->info.af =3D addr->ai_family;
-+    sock->info.af =3D (sa_family_t)addr->ai_family;
+* Bugfix: Deny starting the same configuration more times in parallel
 
-     /* set socket buffers based on --sndbuf and --rcvbuf options */
-     socket_set_buffers(sock->sd, &sock->socket_buffer_sizes, true);
-@@ -714,8 +709,9 @@
-     if (sock->bind_dev)
-     {
-         msg(M_INFO, "Using bind-dev %s", sock->bind_dev);
-+        /* Note: We verify strlen of bind_dev in options parsing */
-         if (setsockopt(sock->sd, SOL_SOCKET, SO_BINDTODEVICE, sock->bind_d=
-ev,
--                       strlen(sock->bind_dev) + 1)
-+                       (socklen_t)(strlen(sock->bind_dev) + 1))
-             !=3D 0)
-         {
-             msg(M_WARN | M_ERRNO, "WARN: setsockopt SO_BINDTODEVICE=3D%s f=
-ailed", sock->bind_dev);
-@@ -723,13 +719,9 @@
-     }
- #endif
+  Prior releases would allow users to start more VPN sessions using
+  the same configuration profile.  This could easily cause issues
+  where none of the VPN tunnels would work.
 
--    bind_local(sock, addr->ai_family);
-+    bind_local(sock);
- }
+  The OpenVPN 3 Session Manager will now block a user from starting
+  duplicated VPN sessions if it detects the configuration D-Bus path
+  is already used in a session the user owns.
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- #ifdef TARGET_ANDROID
- static void
- protect_fd_nonlocal(int fd, const struct sockaddr *addr)
-@@ -1161,13 +1153,8 @@
-     }
- }
+  The openvpn3-systemd unit helper has also been extended to check
+  the configuration profile name given via the systemd unit name.
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- static void
--resolve_bind_local(struct link_socket *sock, const sa_family_t af)
-+resolve_bind_local(struct link_socket *sock)
- {
-     struct gc_arena gc =3D gc_new();
 
-@@ -1183,12 +1170,12 @@
-         }
+* Bugfix: systemd-resolved integration has been refactored
 
-         /* will return AF_{INET|INET6}from local_host */
--        status =3D get_cached_dns_entry(sock->dns_cache, sock->local_host,=
- sock->local_port, af,
-+        status =3D get_cached_dns_entry(sock->dns_cache, sock->local_host,=
- sock->local_port, sock->info.af,
-                                       flags, &sock->info.lsa->bind_local);
+  When the OpenVPN 3 Network Configuration Service wanted to
+  configure the DNS resolver settings, it used a unique D-Bus
+  path to the virtual network device in the org.freedesktop.resolve1
+  service.  Unfortunately, the systemd-resolved could be a bit slow
+  at creating and making these D-Bus objects available, which could
+  cause the OpenVPN session to not see the DNS settings in a timely
+  manner.  In some cases, it could even completely fail and the
+  VPN session was running without the proper DNS resolver configured.
 
-         if (status)
-         {
--            status =3D openvpn_getaddrinfo(flags, sock->local_host, sock->=
-local_port, 0, NULL, af,
-+            status =3D openvpn_getaddrinfo(flags, sock->local_host, sock->=
-local_port, 0, NULL, sock->info.af,
-                                          &sock->info.lsa->bind_local);
-         }
+  This release makes use of a different systemd-resolved D-Bus API
+  which is more responsive and available before the needed D-Bus
+  object has been created and made available.  This results in DNS
+  resolver settings being configured with a much higher success rate
+  than earlier.
 
-@@ -1209,7 +1196,7 @@
-             /* the resolved 'local entry' might have a different family th=
-an
-              * what was globally configured
-              */
--            sock->info.af =3D sock->info.lsa->bind_local->ai_family;
-+            sock->info.af =3D (sa_family_t)sock->info.lsa->bind_local->ai_=
-family;
-         }
-     }
 
-@@ -1405,7 +1392,8 @@
+* Bugfix: Fix CreateVirtualInterface timeout errors
 
-     sock->mark =3D o->mark;
-     sock->bind_dev =3D o->bind_dev;
--    sock->info.proto =3D proto;
-+    ASSERT(proto >=3D 0 && proto < PROTO_N);
-+    sock->info.proto =3D (uint8_t)proto;
-     sock->info.af =3D o->ce.af;
-     sock->info.remote_float =3D o->ce.remote_float;
-     sock->info.lsa =3D &c->c1.link_socket_addrs[sock_index];
-@@ -1471,7 +1459,7 @@
-     {
-         if (sock->bind_local)
-         {
--            resolve_bind_local(sock, sock->info.af);
-+            resolve_bind_local(sock);
-         }
-         resolve_remote(sock, 1, NULL);
-     }
-@@ -1732,9 +1720,9 @@
-              * and we should not connect a remote */
-             if (sock->info.af =3D=3D AF_UNSPEC)
-             {
-+                sock->info.af =3D (sa_family_t)sock->info.lsa->bind_local-=
->ai_family;
-                 msg(M_WARN, "Could not determine IPv4/IPv6 protocol. Using=
- %s",
--                    addr_family_name(sock->info.lsa->bind_local->ai_family=
-));
--                sock->info.af =3D sock->info.lsa->bind_local->ai_family;
-+                    addr_family_name(sock->info.af));
-             }
-             create_socket(sock, sock->info.lsa->bind_local);
-         }
-@@ -1794,10 +1782,6 @@
-     }
- }
+  When starting a new VPN session, on some systems, especially when
+  under load, the OpenVPN 3 Backend VPN Client process could end up
+  not getting the new virtual interface created and the client
+  connection would fail.
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- link_socket_close(struct link_socket *sock)
- {
-@@ -2374,8 +2358,8 @@
-     else if (cmsg !=3D NULL)
-     {
-         msg(M_WARN,
--            "CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_ty=
-pe=3D%d, cmsg=3Dlen=3D%d)",
--            (int)cmsg->cmsg_level, (int)cmsg->cmsg_type, (int)cmsg->cmsg_l=
-en);
-+            "CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_ty=
-pe=3D%d, cmsg=3Dlen=3D%zu)",
-+            cmsg->cmsg_level, cmsg->cmsg_type, (size_t)cmsg->cmsg_len);
-     }
+  In other scenarios, if the user would try to restart VPN sessions
+  too quickly - especially with ovpn-dco interfaces, it could also
+  trigger a similar behaviour and in some cases also result in a
+  deadlock in the OpenVPN 3 Network Configuration Service, making
+  it impossible to start new VPN sessions.
 
-     return buf->len;
-diff --git a/src/openvpn/socket_util.c b/src/openvpn/socket_util.c
-index 0194f38..913ac69 100644
---- a/src/openvpn/socket_util.c
-+++ b/src/openvpn/socket_util.c
-@@ -356,7 +356,7 @@
-     const char *short_form;
-     const char *display_form;
-     sa_family_t proto_af;
--    int proto;
-+    uint8_t proto;
- };
+  The whole logic related to the CreateVirtualInterface call chains
+  has been remodelled to be more much more robust and ensure the
+  order of creation and destruction of virtual interfaces are tighter
+  and clearer.
+=20=20
+=20=20
+* Bugfix: Properly stop sessions which has been disconnected via --inactive
 
- /* Indexed by PROTO_x */
+  The OpenVPN 3 Backend Client process and the Session Manager was
+  lacking the logic to properly handle VPN sessions being automatically
+  disconnected when session was considered inactive, configured via
+  the --inactive option.
+
+  In prior releases, the related openvpn3-service-client process would
+  not stop and the OpenVPN 3 Session Manager would need to be
+  explicitly told to disconnect the session, even though it was
+  already stopped.
+
+  This has been improved and the openvpn3-service-client process will
+  now properly shutdown itself and the OpenVPN 3 Session Manager will
+  register that the session has been stopped and mark the session as
+  disconnected and closed.
+
+
+* Bugfix: OpenVPN 3 Configuration Manager does not log persisted profiles
+
+  When the OpenVPN 3 Configuration Manager starts, it will load all
+  the persistent configuration profiles into memory.  But due to an
+  incorrect log level handling internally, it would never respect the
+  log level value when starting up.  This resulted in not logging all
+  the imported persistent configuration profiles.
+
+
+* Bugfix: OpenVPN 3 Configuration Manager did not transfer ownership
+
+  When the net.openvpn.v3.configuration.TransferOwnership method was
+  called on a configuration profile path, it would not do the transfer
+  unless it was root who owned the profile.  This meant that only
+  root could transfer profiles the root user imported and could not
+  do any other transfers after that point.
+
+  This release improves this by allowing root to always be able
+  to transfer the ownership of any configuration profile paths
+  to all users, regardless of who owns the profile.
+
+
+* Bugfix: Avoid a file descriptor leak on tun interfaces
+
+  When the VPN session was restarted or reconnecting with a full
+  interface teardown, the openvpn3-service-client process would
+  leak a file descriptor, which could end up in a crash if this
+  happened too often.  It could also block the other openvpn3
+  background service processes from operating as well in some
+  cases.
+=20=20
+
+* Bugfix: System logs shows g_variant_new_object_path assertion errors
+
+  When starting a new VPN session, this error would be found in the
+  system logs (syslog, journald):
+=20=20
+    g_variant_new_object_path: assertion 'g_variant_is_object_path (object_=
+path)' failed
+
+  This has been fixed by avoiding replying with an invalid D-Bus path
+  before the information with this path would be available.
+
+
+* Enhancement: Log the process ID (pid) of the log event sender
+
+  When the systemd-journald is configured to do the system logging,
+  all log events have the _PID value of the openvpn3-service-log
+  process.  This release adds an O3_SENDER_PID meta data field
+  in the systemd-journal, representing the process ID of the process
+  sending the log event.
+
+  This is handy when there are system logs indicating issues
+  with a process but only indicating the PID value.  The
+  'openvpn3-admin journal' command has been extended with a --pid
+  argument to filter only log events from this process ID.  Or
+  the same can be done via 'journalctl O3_SENDER_PID=3D1234'.
+
+
+* Enhancement: Add openvpn3-desktop-session-watcher
+
+  This is a simple stand-alone utility for graphical desktop
+  environments.  It will issue a desktop notification when new VPN
+  sessions are started or the running status of the session changes.
+
+  If the VPN session requires web-based authentication, the
+  notification will also include the URL for the authentication which
+  the user can click on to start the user authentication process.
+
+  There is also a systemd unit file provided with this tool, to be
+  used by the end-user.  See the openvpn3-desktop-session-watcher(1)
+  man page for details how to enable this feature at login.
+
+
+* Deprecated command removed: openvpn3 config-show
+
+  This has bee an alias for openvpn3 config-dump since the v17_beta
+  release.
+=20=20
+
+* OpenVPN 3 Core Library update
+
+  The OpenVPN 3 Core Library has been updated to version 3.11.6
+  providing a fix for the ovpn-dco interface name resolution when
+  there is a name conflict.
+
+
+Known issues:
+
+  - The openvpn3-service-netcfg service does not differentiate between
+    --dns server X resolve-domains and --dns search-domains when using
+    the --resolv-conf mode, which is not as this feature is
+    intended to work.  This was discovered in the v24 release and is
+    on the schedule to be fixed in the next releases.  When this gets
+    fixed, only --dns search-domains will be considered as search
+    domains and --dns server X resolve-domains will enable split-DNS
+    when using --systemd-resolved and otherwise ignored when using
+    --resolv-conf with openvpn3-service-netcfg.
+
+  - There is a file descriptor leak with ovpn-dco interfaces when VPN
+    session are restarted or a reconnect with a full interface
+    teardown is needed.  This is noticeable in environments with
+    unstable connections to the VPN server.  The current workaround
+    is to not use DCO interfaces if this is an issue.
+
+
+Supported Linux distributions
+-----------------------------
+
+  - Debian: 12, 13
+  - Fedora: 42, 43
+  - Red Hat Enterprise Linux 8, 9, 10[*]
+  - Ubuntu: 22.04, 24.04, 25.05
+
+Installation and getting started instructions can be found here:
+
+  <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
+
+The OpenVPN Inc. provided repositories will be updated in the coming
+days.  The community provided repositories on Fedora Copr and
+openSUSE Build Service are already published.
+
+There are in addition other Linux distributions now providing
+OpenVPN 3 Linux packages.  These distributions are primarily
+supported by their respective distribution communities.  We will
+naturally review and apply fixes deemed needed for any
+distributions as they occur.
+
+NOTE: Red Hat Enterprise Linux 10
+  It is needed to use the 'rhel+epel-10-x86_64' chroot when running
+  the 'dnf copr enable' command on RHEL-10.
+
+      # dnf copr enable dsommers/openvpn3 rhel+epel-10-x86_64
+
+  The stable repositories provided by OpenVPN Inc should not
+  have this issue.
+
+
+A few words on the git repositories
+-----------------------------------
+
+OpenVPN 3 Linux and GDBus++ has been pushed to three different
+git hosting repositories.  The intention has been to have a reduntant
+setup where those being very careful in pulling code can pull the
+same code from more source trees, and they should all match.  If they
+do not match, something unexpected has happened.
+
+For a while now, Codeberg has been the primary repository, where
+GitHub and GitLab has been code-mirrors only.  This will not change for
+the time being.
+
+With this release, another distributed approach is being tested out.
+The Radicle network has been added as well, which is a distributed
+git hosting.  This is a very different approach from the ones most
+users knows quite well.  Radicle does not have a centralised server,
+but all the repository data is distributed across a number of nodes
+in the Radicle network.  For now, only the source code will pushed
+to the Radicle network, as a code-mirror in parallel to GitLab and
+GitHub.
+
+For more details about Radicle: <https://radicle.xyz/>
+
+Consider the Radicle repositories provided as experimental for the
+time being.  We will spend some time getting to know Radicle better
+before we decide how we will move forward with Radicle in the future.
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7be7427480d3540d43dd818eddb6eb5860956459
-Gerrit-Change-Number: 1476
-Gerrit-PatchSet: 7
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+David Sommerseth
+OpenVPN Inc
 
---hWpanwhRc58=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #7</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail">View C=
-hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">socket: Fix various conversion warnings<br><br>-=
- We assume that addrinfo-&gt;ai_family always fits<br>  into a sa_family_t,=
- so we do not check those.<br>- Reduce places where we explicitly pass ai_f=
-amily<br>  and prefer sock-&gt;info.af.<br>- Make sure that --bind-dev has =
-a suitable length.<br>- Treat PROTO_* as uint8_t where possible (however,<b=
-r>  much code uses proto =3D -1 for various error handling).<br><br>Change-=
-Id: I7be7427480d3540d43dd818eddb6eb5860956459<br>Signed-off-by: Frank Licht=
-enheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>M src/=
-openvpn/socket.c<br>M src/openvpn/socket_util.c<br>3 files changed, 30 inse=
-rtions(+), 40 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
--family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-.openvpn.net:29418/openvpn refs/changes/76/1476/7</pre><pre style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/=
-openvpn/options.c b/src/openvpn/options.c</span><br><span>index fdbc678..e1=
-c62bd 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>++=
-+ b/src/openvpn/options.c</span><br><span>@@ -6492,7 +6492,15 @@</span><br>=
-<span>     else if (streq(p[0], &quot;bind-dev&quot;) &amp;&amp; p[1])</spa=
-n><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_SOCKFLA=
-GS);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&=
-gt;bind_dev =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if (strlen(p[1]) &lt;=3D IFNAMSIZ)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            options-&gt;bind_dev =3D p[1];</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            msg(msglevel, &quot;argument to --bind-dev is longer=
- than allowed %u&quot;, IFNAMSIZ);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            goto err;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        }</span><br><span>     }</span><br><span> #endif</=
-span><br><span>     else if (streq(p[0], &quot;txqueuelen&quot;) &amp;&amp;=
- p[1] &amp;&amp; !p[2])</span><br><span>@@ -6578,11 +6586,9 @@</span><br><s=
-pan>     }</span><br><span>     else if (streq(p[0], &quot;proto&quot;) &am=
-p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int proto;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        sa_family_t af;</span><br><span>      =
-   VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        proto =3D ascii2proto(p[1]);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        af =3D ascii2af(p[=
-1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int pro=
-to =3D ascii2proto(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        sa_family_t af =3D ascii2af(p[1]);</span><br><span>         i=
-f (proto &lt; 0)</span><br><span>         {</span><br><span>             ms=
-g(msglevel, &quot;Bad protocol: &#39;%s&#39;. Allowed protocols with --prot=
-o option: %s&quot;, p[1],</span><br><span>diff --git a/src/openvpn/socket.c=
- b/src/openvpn/socket.c</span><br><span>index 0b72684..33c12db 100644</span=
-><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/soc=
-ket.c</span><br><span>@@ -649,28 +649,23 @@</span><br><span> }</span><br><s=
-pan> </span><br><span> static void</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-bind_local(struct link_socket *sock, const sa_family_t ai_fami=
-ly)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bind_local(struc=
-t link_socket *sock)</span><br><span> {</span><br><span>     /* bind to loc=
-al address/port */</span><br><span>     if (sock-&gt;bind_local)</span><br>=
-<span>     {</span><br><span>         if (sock-&gt;socks_proxy &amp;&amp; s=
-ock-&gt;info.proto =3D=3D PROTO_UDP)</span><br><span>         {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            socket_bind(sock-&gt;=
-ctrl_sd, sock-&gt;info.lsa-&gt;bind_local, ai_family, &quot;SOCKS&quot;, fa=
-lse);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            so=
-cket_bind(sock-&gt;ctrl_sd, sock-&gt;info.lsa-&gt;bind_local, sock-&gt;info=
-.af, &quot;SOCKS&quot;, false);</span><br><span>         }</span><br><span>=
-         else</span><br><span>         {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            socket_bind(sock-&gt;sd, sock-&gt;info.lsa-&=
-gt;bind_local, ai_family, &quot;TCP/UDP&quot;,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            socket_bind(sock-&gt;sd, sock-&gt;in=
-fo.lsa-&gt;bind_local, sock-&gt;info.af, &quot;TCP/UDP&quot;,</span><br><sp=
-an>                         sock-&gt;info.bind_ipv6_only);</span><br><span>=
-         }</span><br><span>     }</span><br><span> }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || d=
-efined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pra=
-gma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span> static void</span><br><span> create_=
-socket(struct link_socket *sock, struct addrinfo *addr)</span><br><span> {<=
-/span><br><span>@@ -702,7 +697,7 @@</span><br><span>     }</span><br><span>=
-     /* Set af field of sock-&gt;info, so it always reflects the address fa=
-mily</span><br><span>      * of the created socket */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;info.af =3D addr-&gt;ai_family=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sock-&gt;info.=
-af =3D (sa_family_t)addr-&gt;ai_family;</span><br><span> </span><br><span> =
-    /* set socket buffers based on --sndbuf and --rcvbuf options */</span><=
-br><span>     socket_set_buffers(sock-&gt;sd, &amp;sock-&gt;socket_buffer_s=
-izes, true);</span><br><span>@@ -714,8 +709,9 @@</span><br><span>     if (s=
-ock-&gt;bind_dev)</span><br><span>     {</span><br><span>         msg(M_INF=
-O, &quot;Using bind-dev %s&quot;, sock-&gt;bind_dev);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /* Note: We verify strlen of bind=
-_dev in options parsing */</span><br><span>         if (setsockopt(sock-&gt=
-;sd, SOL_SOCKET, SO_BINDTODEVICE, sock-&gt;bind_dev,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                       strlen(sock-&gt;bind=
-_dev) + 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-              (socklen_t)(strlen(sock-&gt;bind_dev) + 1))</span><br><span> =
-            !=3D 0)</span><br><span>         {</span><br><span>            =
- msg(M_WARN | M_ERRNO, &quot;WARN: setsockopt SO_BINDTODEVICE=3D%s failed&q=
-uot;, sock-&gt;bind_dev);</span><br><span>@@ -723,13 +719,9 @@</span><br><s=
-pan>     }</span><br><span> #endif</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    bind_local(sock, addr-&gt;ai_family);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bind_local(sock);=
-</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef TARGET_ANDROID</span><=
-br><span> static void</span><br><span> protect_fd_nonlocal(int fd, const st=
-ruct sockaddr *addr)</span><br><span>@@ -1161,13 +1153,8 @@</span><br><span=
->     }</span><br><span> }</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic i=
-gnored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-resolve_bind_local(struct link_socket *sock, const sa_family_t af)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+resolve_bind_local(struct=
- link_socket *sock)</span><br><span> {</span><br><span>     struct gc_arena=
- gc =3D gc_new();</span><br><span> </span><br><span>@@ -1183,12 +1170,12 @@=
-</span><br><span>         }</span><br><span> </span><br><span>         /* w=
-ill return AF_{INET|INET6}from local_host */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        status =3D get_cached_dns_entry(sock-&gt;dns=
-_cache, sock-&gt;local_host, sock-&gt;local_port, af,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        status =3D get_cached_dns_entry(s=
-ock-&gt;dns_cache, sock-&gt;local_host, sock-&gt;local_port, sock-&gt;info.=
-af,</span><br><span>                                       flags, &amp;sock=
--&gt;info.lsa-&gt;bind_local);</span><br><span> </span><br><span>         i=
-f (status)</span><br><span>         {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            status =3D openvpn_getaddrinfo(flags, sock-&gt;=
-local_host, sock-&gt;local_port, 0, NULL, af,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            status =3D openvpn_getaddrinfo(flags,=
- sock-&gt;local_host, sock-&gt;local_port, 0, NULL, sock-&gt;info.af,</span=
-><br><span>                                          &amp;sock-&gt;info.lsa=
--&gt;bind_local);</span><br><span>         }</span><br><span> </span><br><s=
-pan>@@ -1209,7 +1196,7 @@</span><br><span>             /* the resolved &#39=
-;local entry&#39; might have a different family than</span><br><span>      =
-        * what was globally configured</span><br><span>              */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            sock-&gt;info=
-.af =3D sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            sock-&gt;info.af =3D (sa_fa=
-mily_t)sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>    =
-     }</span><br><span>     }</span><br><span> </span><br><span>@@ -1405,7 =
-+1392,8 @@</span><br><span> </span><br><span>     sock-&gt;mark =3D o-&gt;m=
-ark;</span><br><span>     sock-&gt;bind_dev =3D o-&gt;bind_dev;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;info.proto =3D proto=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(proto &=
-gt;=3D 0 &amp;&amp; proto &lt; PROTO_N);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    sock-&gt;info.proto =3D (uint8_t)proto;</span><br>=
-<span>     sock-&gt;info.af =3D o-&gt;ce.af;</span><br><span>     sock-&gt;=
-info.remote_float =3D o-&gt;ce.remote_float;</span><br><span>     sock-&gt;=
-info.lsa =3D &amp;c-&gt;c1.link_socket_addrs[sock_index];</span><br><span>@=
-@ -1471,7 +1459,7 @@</span><br><span>     {</span><br><span>         if (so=
-ck-&gt;bind_local)</span><br><span>         {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            resolve_bind_local(sock, sock-&gt;info.=
-af);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            res=
-olve_bind_local(sock);</span><br><span>         }</span><br><span>         =
-resolve_remote(sock, 1, NULL);</span><br><span>     }</span><br><span>@@ -1=
-732,9 +1720,9 @@</span><br><span>              * and we should not connect =
-a remote */</span><br><span>             if (sock-&gt;info.af =3D=3D AF_UNS=
-PEC)</span><br><span>             {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                sock-&gt;info.af =3D (sa_family_t)sock-&gt;=
-info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>                 msg=
-(M_WARN, &quot;Could not determine IPv4/IPv6 protocol. Using %s&quot;,</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-                    addr_f=
-amily_name(sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family));</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                sock-&gt;info.af =3D=
- sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                    addr_family_name(sock-&gt;=
-info.af));</span><br><span>             }</span><br><span>             crea=
-te_socket(sock, sock-&gt;info.lsa-&gt;bind_local);</span><br><span>        =
- }</span><br><span>@@ -1794,10 +1782,6 @@</span><br><span>     }</span><br>=
-<span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> void</span><br><span> link_socket_close(=
-struct link_socket *sock)</span><br><span> {</span><br><span>@@ -2374,8 +23=
-58,8 @@</span><br><span>     else if (cmsg !=3D NULL)</span><br><span>     =
-{</span><br><span>         msg(M_WARN,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            &quot;CMSG received that cannot be parsed (cms=
-g_level=3D%d, cmsg_type=3D%d, cmsg=3Dlen=3D%d)&quot;,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            (int)cmsg-&gt;cmsg_level, (int)=
-cmsg-&gt;cmsg_type, (int)cmsg-&gt;cmsg_len);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            &quot;CMSG received that cannot be par=
-sed (cmsg_level=3D%d, cmsg_type=3D%d, cmsg=3Dlen=3D%zu)&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            cmsg-&gt;cmsg_level,=
- cmsg-&gt;cmsg_type, (size_t)cmsg-&gt;cmsg_len);</span><br><span>     }</sp=
-an><br><span> </span><br><span>     return buf-&gt;len;</span><br><span>dif=
-f --git a/src/openvpn/socket_util.c b/src/openvpn/socket_util.c</span><br><=
-span>index 0194f38..913ac69 100644</span><br><span>--- a/src/openvpn/socket=
-_util.c</span><br><span>+++ b/src/openvpn/socket_util.c</span><br><span>@@ =
--356,7 +356,7 @@</span><br><span>     const char *short_form;</span><br><sp=
-an>     const char *display_form;</span><br><span>     sa_family_t proto_af=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int proto;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t proto;</span>=
-<br><span> };</span><br><span> </span><br><span> /* Indexed by PROTO_x */</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/1476?usp=3Demail">change 1476</a>. To unsubscribe, =
-or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
-t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
-schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1476?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+---- Source tarballs ---------------------------------------------------
+* OpenVPN 3 Linux v27
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7be7427480d3540d43dd818eddb=
-6eb5860956459 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1476 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-27.tar.xz>
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-27.tar.xz=
+.asc>
 
-</body></html>=
+* GDBus++ v3
 
---hWpanwhRc58=--
+  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz>
+  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz.asc>
+
+---- SHA256 Checksums --------------------------------------------------
+
+d8c474032546bdd90b5b7f67e40c57b4b6030253f07bda7bb6ad0db84b9eed73  openvpn3-=
+linux-27.tar.xz
+c2da9a93a8db3555e640272f38b950702581ab219e87d62fc6797ee3f503224d  openvpn3-=
+linux-27.tar.xz.asc
+c7a053a13c4eb5811a542b747d5fcdb3a8e58a4a42c7237cc5e2e2ca72e0c94e  gdbuspp-3=
+.tar.xz
+b9cf732d7a347f324d6a5532dc48f80c2815dbf6704c169b4ee97a411506a99b  gdbuspp-3=
+.tar.xz.asc
+
+---- git references ----------------------------------------------------
+
+git repositories:
+
+ - OpenVPN 3 Linux
+   <https://codeberg.org/OpenVPN/openvpn3-linux> (PRIMARY)
+   <https://gitlab.com/openvpn/openvpn3-linux>   (code-only mirror)
+   <https://github.com/OpenVPN/openvpn3-linux>   (code-only mirror)
+=20=20=20
+   rad:zN58oopqzrAkTregNZaRQpgg7x3c              (Radicle, code-only mirror)
+   <https://app.radicle.xyz/nodes/iris.radicle.xyz/rad:zN58oopqzrAkTregNZaR=
+Qpgg7x3c>
+
+   git tag: v27
+   git commit: f0c5ff798e38439ea2595c6edfe392010f82394e
+
+
+ - GDBus++
+   <https://codeberg.org/OpenVPN/gdbuspp/>       (PRIMARY)
+   <https://gitlab.com/openvpn/gdbuspp/>         (code-only mirror)
+   <https://github.com/openvpn/gdbuspp/>         (code-only mirror)
+
+   rad:z2Tpg8xVSDgTpoU4Q5FN1aPGqf6mG             (Radicle, code-only mirror)
+   <https://app.radicle.xyz/nodes/iris.radicle.xyz/rad:z2Tpg8xVSDgTpoU4Q5FN=
+1aPGqf6mG>
+=20=20=20
+   git tag: v3
+   git commit: 96f7fb688ed2dea3f192c63c5fe283dbe4900f16
+
+---- Changes from v26 to v27 ---------------------------------------
+
+David Sommerseth (89):
+      deprecation: Remove openvpn3 config-show
+      spelling: Fix a few minor misspellings of OpenVPN
+      netcfg: Add missing throw keyword for exceptions
+      netcfg: NetCfgOptions::str() should be a const method
+      configmgr: Fix failing TransferOwnership() D-Bus method
+      configmgr: Set the log level earlier in the program startup
+      configmgr: Improve logging of imported persistent configuration profi=
+les
+      configmgr: Improve logging when configuration profile changes owner
+      coverity: Remove std::move() where not needed
+      coverity: Add missing initialization
+      coverity: Fix "dead code" findings
+      configmgr: Report errors when failing to delete profile file
+      log/journal: Catch date/timestamp parsing errors
+      netcfg/device: Use the object variable not ctor variable
+      netcfg: Remove pointless check for logservice in main function
+      sessionmgr: Catch exception in Session::GetDeviceName()
+      tests: Ensure request-queue test iterations do not overflow
+      sessionmgr: Improve exception handling in main()
+      ovpn3cli/session: Improve session_start() helper sigaction implementa=
+tion
+      coverity: Use std::move() on quite some objects
+      coverity: Fix incorrect std::string::find() usage
+      log: Catch all exceptions in openvpn3-service-log main()
+      client: Pass openvpn::ClientAPI::Config object as a ref to worker thr=
+ead
+      configmgr/proxy: Pass DBus::Object::Path as const refs
+      common/requiresqueue: Refactor argument passing - const ref std::stri=
+ng
+      code cleanup: Use std::vector::emplace_back()
+      code cleanup: Remove const from function returns
+      code cleanup: Pass string objects as const ref
+      code cleanup: Remove const flag from function arguments
+      client: Use DBus::Object::Path for variables containing a D-Bus path
+      client: Remove not needed virtual declaration on an override
+      events: Remove const arugment declaraions in methods
+      distro/systemd: Rework error handling in OpenVPN3systemd.__request_ha=
+ndler()
+      distro/systemd: Add a failsafe starting the same configuration more t=
+imes
+      events/status: Refactor Events::Status::PrintMode handling
+      client: Refactor DBus::Connection::Ptr passing
+      dbus/path: Code cleanup in generate_path_uuid()
+      client: Improve arg/env buffer allocation logic
+      common: Fix typ0 in terminal type detection
+      distro/systemd: Make the status reporting prettier
+      vendor: Upgrade to ASIO 1.36.0
+      netcfg: Make the Cleanup() D-Bus method call async
+      netcfg: Catch errors better when calling GetUID, GetPID and GetSubscr=
+iptionOwner
+      netcfg: Improve error handling in the Destroy() D-Bus method
+      netcfg/resolved: Pass if_index into resolved::Link object
+      netcfg/resolved: Refactor all log/debug functions to use fmt::format()
+      netcfg/resolved: Extend Link::BackgroundCall() with error callback
+      netcfg/resolved: Add missing lock_guard mutex in Link::Storage::NumEr=
+rors()
+      netcfg/resolved: Switch SetDefaultRoute() to use SetLinkDefaultRoute(=
+) D-Bus method
+      netcfg/resolved: Add Link::WaitForBackgroundTasks() method
+      netcfg/resolved: Rework background_call_data implementation
+      netcfg/resolved: Simplify the AsioWorkerClass implementation
+      dbus: Add GDBus++ support function - LookupObject()
+      dbus: Replace CheckObjectExists() with LookupObject()
+      netcfg/dco: Replace ASIO worker/io_context implementation
+      netcfg/proxy: Replace g_variant_new() with glib2::Builder
+      netcfg/device: Make the CreateVirtualInterface() call more robust
+      netcfg/proxy: Make Manager::getVirtualInterface() return std::shared_=
+ptr
+      client: Add more debug info in NetCfgTunBuilder::tun_builder_teardown=
+()
+      netcfg/dco: Refactor the DCO device teardown
+      log/journald: Add O3_SENDER_PID as log event meta data
+      ovpn3cli/journal: Add --pid argument to openvpn3-admin journal
+      docs: Remove outdated information from openvpn3-admin-journal man page
+      netcfg: Don't attach logging for net.openvpn.v3.netcfg.core
+      ovpn3cli: Mark "object not found" errors as ExitReason::ABORTED in qu=
+ery_user_input()
+      sessionmgr: Extend SessionManager::Session with GetConfigPath()
+      sessionmgr: Block starting duplicated sessions
+      ovpn3cli/session proxy: Improve error messages sent to the command li=
+ne user
+      common/utils: Slight refactoring of version retrival functions
+      common/utils: Move Doxygen comment for set_console_echo()
+      tests: Remove log-listener2 test program
+      netcfg/resolved: std::move() a arguments which can benefit from it
+      client: Catch DBus::Exception as well in ~NetCfgTunBuilder()
+      client: Log the D-Bus path to the NetCfg object on device creation
+      netcfg/proxy: Fix incorrect DCO::SwapKeys() D-Bus argument
+      client: Plug a file descriptor leak with virtual tun interfaces
+      python: Add openvpn3-desktop-session-watcher
+      tests/python: Add a simple example script for watching log/status cha=
+nges
+      configmgr: Add possibility for root to override Configuration::CheckA=
+CL() check
+      configmgr: Grant root access to TransferOwnership regardless of the c=
+onfiguraiton profile ACL
+      core: Update to OpenVPN 3 Core Library v3.11.6
+      client: device_path property cannot be empty
+      client: Check if client thread is joinable when disconnecting
+      client: Use std::make_shared() when creating CoreVPNClient
+      client: Properly assign main loop to signals in BackendClientObject
+      client: Properly signal connection is done in inactivity timeout
+      dbus/signals: Add callback hook to Signals::StatusChange
+      events/status: Extend Status::Check() to also check multiple StatusMi=
+nor codes
+      sessionmgr: Act upon StatusChange signals from backend client
+
+--------------------------------------------------------------------
+
+--------------y5gvZV95yvFzCJoRC3lJCeT0--
+
+--------------8IJ0rk0Z7TudvV3wCiTglUL0
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmmncTkACgkQhs+UTJZx
+/fLqlQ/+K7KZ7oiJ9KZuS4Nccqbbi90L6qlGuJuppdgY2rn82p3+/73G2bfuMbW/
+T7KyvIStAETY5673vtAxlux64TgATtFRd8xDJkGJFHyUMUZC/VBDQ+uPyLiusckp
+gKEGm640FnHQDdAyHSxRP1SDF8flbfAbjYCkDCY1H4vgADAgHQj3/B4owpklV+69
+uH2XUyKAyYlkg9p14PS+fJPudzafr5YW66EboUOp7kz+A31rBu+uVaLAC+tj803E
+Lu11MwMXA9E4aksgSLx5wKI3zjTvIoHb33JCn9FzxSbPzMUhPLwnHUFWvBuaSCl3
+o7522sKm6iM9wXr9/mnf67zHawMlnBZpChnkmPoq9GFzHD+rORLH3GQBR9rxIM8I
+ECsJ4AjK/LmsCEjFsvx0n5qcyVMJyOourYB1B+S/tSwhc2LGgO4VWWxOxH2OAbI6
+8nd161MPMcB0m0F/LYqOfX8gWWu9GggZ/ZP+J+m523IyRciSCtNcl/XkiU/8MyuP
+495JZavEUo9PSDTzlaD/hitcD2H4tmIaKhPcQHEoEGMCI4Tizsvdt2XpwKOiO4nY
+1XfXuOTrN7yRDJt9Lj9XNAd8zjNHGdRVHA3OYq6vs0U+Upa3148kVYlrBYRPeRHH
+j+5qz4V5/PRQwsunAlI1HsNJx8yGDA/OsBAkQflMIC29T9Mshxc=
+=t6az
+-----END PGP SIGNATURE-----
+
+--------------8IJ0rk0Z7TudvV3wCiTglUL0--
 
