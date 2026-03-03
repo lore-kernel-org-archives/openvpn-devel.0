@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 3 Mar 2026 16:41:54 +0000
-In-Reply-To: <gerrit.1772554170000.Iabe1992b2608661b862a81363574e957d18395f0@...2715...>
-References: <gerrit.1772554170000.Iabe1992b2608661b862a81363574e957d18395f0@...2715...>
+Date: Tue, 3 Mar 2026 16:47:40 +0000
+In-Reply-To: <gerrit.1768578994000.I7be7427480d3540d43dd818eddb6eb5860956459@...2715...>
+References: <gerrit.1768578994000.I7be7427480d3540d43dd818eddb6eb5860956459@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <6a890d6e41ffa2d64299dfc4cf4d99b3abd4909a-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <bb3e52296204c21aab1b586ac2aa60015706b680-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6a2TCTb77ik="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: Never use
- negative buf->len in link_socket_read*
+Content-Type: multipart/alternative; boundary="hWpanwhRc58="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: Fix various
+ conversion warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6a2TCTb77ik=
+--hWpanwhRc58=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,822 +32,505 @@ Hello plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1554?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#7).
 
 
-Change subject: socket: Never use negative buf->len in link_socket_read*
+Change subject: socket: Fix various conversion warnings
 ......................................................................
 
-socket: Never use negative buf->len in link_socket_read*
+socket: Fix various conversion warnings
 
-We really don't want to use negative buf lengths in
-our code. So remove some places where we did so before.
+- We assume that addrinfo->ai_family always fits
+  into a sa_family_t, so we do not check those.
+- Reduce places where we explicitly pass ai_family
+  and prefer sock->info.af.
+- Make sure that --bind-dev has a suitable length.
+- Treat PROTO_* as uint8_t where possible (however,
+  much code uses proto =3D -1 for various error handling).
 
-Change-Id: Iabe1992b2608661b862a81363574e957d18395f0
+Change-Id: I7be7427480d3540d43dd818eddb6eb5860956459
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/forward.c
+M src/openvpn/options.c
 M src/openvpn/socket.c
-M src/openvpn/socket.h
-M src/openvpn/tun.h
-4 files changed, 85 insertions(+), 70 deletions(-)
+M src/openvpn/socket_util.c
+3 files changed, 30 insertions(+), 40 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/54/1554/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/1476/7
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 5004e35..081e79a 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -929,14 +929,12 @@
-      * Set up for recvfrom call to read datagram
-      * sent to our TCP/UDP port.
-      */
--    int status;
--
-     /*ASSERT (!c->c2.to_tun.len);*/
-
-     c->c2.buf =3D c->c2.buffers->read_link_buf;
-     ASSERT(buf_init(&c->c2.buf, c->c2.frame.buf.headroom));
-
--    status =3D link_socket_read(sock, &c->c2.buf, &c->c2.from);
-+    ssize_t status =3D link_socket_read(sock, &c->c2.buf, &c->c2.from);
-
-     if (socket_connection_reset(sock, status))
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index fdbc678..e1c62bd 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6492,7 +6492,15 @@
+     else if (streq(p[0], "bind-dev") && p[1])
      {
-@@ -955,14 +953,14 @@
-             if (event_timeout_defined(&c->c2.explicit_exit_notification_in=
-terval))
-             {
-                 msg(D_STREAM_ERRORS,
--                    "Connection reset during exit notification period, ign=
-oring [%d]", status);
-+                    "Connection reset during exit notification period, ign=
-oring [%zd]", status);
-                 management_sleep(1);
-             }
-             else
-             {
-                 register_signal(c->sig, SIGUSR1,
-                                 "connection-reset"); /* SOFT-SIGUSR1 -- TC=
-P connection reset */
--                msg(D_STREAM_ERRORS, "Connection reset, restarting [%d]", =
-status);
-+                msg(D_STREAM_ERRORS, "Connection reset, restarting [%zd]",=
- status);
-             }
-         }
-         return;
-@@ -1026,7 +1024,7 @@
-      * Good, non-zero length packet received.
-      * Commence multi-stage processing of packet,
-      * such as authenticate, decrypt, decompress.
--     * If any stage fails, it sets buf.len to 0 or -1,
-+     * If any stage fails, it sets buf.len to 0,
-      * telling downstream stages to ignore the packet.
-      */
-     if (c->c2.buf.len > 0)
+         VERIFY_PERMISSION(OPT_P_SOCKFLAGS);
+-        options->bind_dev =3D p[1];
++        if (strlen(p[1]) <=3D IFNAMSIZ)
++        {
++            options->bind_dev =3D p[1];
++        }
++        else
++        {
++            msg(msglevel, "argument to --bind-dev is longer than allowed %=
+u", IFNAMSIZ);
++            goto err;
++        }
+     }
+ #endif
+     else if (streq(p[0], "txqueuelen") && p[1] && !p[2])
+@@ -6578,11 +6586,9 @@
+     }
+     else if (streq(p[0], "proto") && p[1] && !p[2])
+     {
+-        int proto;
+-        sa_family_t af;
+         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
+-        proto =3D ascii2proto(p[1]);
+-        af =3D ascii2af(p[1]);
++        int proto =3D ascii2proto(p[1]);
++        sa_family_t af =3D ascii2af(p[1]);
+         if (proto < 0)
+         {
+             msg(msglevel, "Bad protocol: '%s'. Allowed protocols with --pr=
+oto option: %s", p[1],
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 033444e..0b72684 100644
+index 0b72684..33c12db 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -1132,7 +1132,7 @@
-
- static void stream_buf_close(struct stream_buf *sb);
-
--static bool stream_buf_added(struct stream_buf *sb, int length_added);
-+static bool stream_buf_added(struct stream_buf *sb, ssize_t length_added);
-
- /* For stream protocols, allocate a buffer to build up packet.
-  * Called after frame has been finalized. */
-@@ -1794,6 +1794,10 @@
-     }
+@@ -649,28 +649,23 @@
  }
 
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic pop
-+#endif
-+
- void
- link_socket_close(struct link_socket *sock)
+ static void
+-bind_local(struct link_socket *sock, const sa_family_t ai_family)
++bind_local(struct link_socket *sock)
  {
-@@ -2130,12 +2134,13 @@
- }
-
- static bool
--stream_buf_added(struct stream_buf *sb, int length_added)
-+stream_buf_added(struct stream_buf *sb, ssize_t length_added)
- {
--    dmsg(D_STREAM_DEBUG, "STREAM: ADD length_added=3D%d", length_added);
-+    dmsg(D_STREAM_DEBUG, "STREAM: ADD length_added=3D%zd", length_added);
-     if (length_added > 0)
+     /* bind to local address/port */
+     if (sock->bind_local)
      {
--        sb->buf.len +=3D length_added;
-+        ASSERT(sb->buf.len + length_added <=3D INT_MAX);
-+        sb->buf.len +=3D (int)length_added;
-     }
-
-     /* if length unknown, see if we can get the length prefix from
-@@ -2238,10 +2243,10 @@
-  * Socket Read Routines
-  */
-
--int
-+ssize_t
- link_socket_read_tcp(struct link_socket *sock, struct buffer *buf)
- {
--    int len =3D 0;
-+    ssize_t len =3D 0;
-
-     if (!sock->stream_buf.residual_fully_formed)
-     {
-@@ -2272,7 +2277,8 @@
-         }
-         if (len <=3D 0)
+         if (sock->socks_proxy && sock->info.proto =3D=3D PROTO_UDP)
          {
--            return buf->len =3D len;
-+            buf->len =3D 0;
-+            return len;
+-            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, ai_fami=
+ly, "SOCKS", false);
++            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, sock->i=
+nfo.af, "SOCKS", false);
+         }
+         else
+         {
+-            socket_bind(sock->sd, sock->info.lsa->bind_local, ai_family, "=
+TCP/UDP",
++            socket_bind(sock->sd, sock->info.lsa->bind_local, sock->info.a=
+f, "TCP/UDP",
+                         sock->info.bind_ipv6_only);
          }
      }
-
-@@ -2304,14 +2310,14 @@
-     max_int(CMSG_SPACE(sizeof(struct in6_pktinfo)), CMSG_SPACE(sizeof(stru=
-ct in_addr)))
- #endif
-
--static socklen_t
-+static ssize_t
- link_socket_read_udp_posix_recvmsg(struct link_socket *sock, struct buffer=
- *buf,
--                                   struct link_socket_actual *from)
-+                                   struct link_socket_actual *from, sockle=
-n_t *fromlen)
- {
-     struct iovec iov;
-     uint8_t pktinfo_buf[PKTINFO_BUF_SIZE];
-     struct msghdr mesg =3D { 0 };
--    socklen_t fromlen =3D sizeof(from->dest.addr);
-+    *fromlen =3D sizeof(from->dest.addr);
-
-     ASSERT(sock->sd >=3D 0); /* can't happen */
-
-@@ -2320,62 +2326,67 @@
-     mesg.msg_iov =3D &iov;
-     mesg.msg_iovlen =3D 1;
-     mesg.msg_name =3D &from->dest.addr;
--    mesg.msg_namelen =3D fromlen;
-+    mesg.msg_namelen =3D *fromlen;
-     mesg.msg_control =3D pktinfo_buf;
--    mesg.msg_controllen =3D sizeof pktinfo_buf;
--    buf->len =3D recvmsg(sock->sd, &mesg, 0);
--    if (buf->len >=3D 0)
-+    mesg.msg_controllen =3D (socklen_t)sizeof(pktinfo_buf);
-+    ssize_t len =3D recvmsg(sock->sd, &mesg, 0);
-+    if (len < 0)
-     {
--        struct cmsghdr *cmsg;
--        fromlen =3D mesg.msg_namelen;
--        cmsg =3D CMSG_FIRSTHDR(&mesg);
--        if (cmsg !=3D NULL && CMSG_NXTHDR(&mesg, cmsg) =3D=3D NULL
-+        buf->len =3D 0;
-+        return len;
-+    }
-+    ASSERT(len <=3D INT_MAX);
-+    buf->len =3D (int)len;
-+    struct cmsghdr *cmsg;
-+    *fromlen =3D mesg.msg_namelen;
-+    cmsg =3D CMSG_FIRSTHDR(&mesg);
-+    if (cmsg !=3D NULL && CMSG_NXTHDR(&mesg, cmsg) =3D=3D NULL
- #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
--            && cmsg->cmsg_level =3D=3D SOL_IP && cmsg->cmsg_type =3D=3D IP=
-_PKTINFO
--            && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in_pktinfo)))
-+        && cmsg->cmsg_level =3D=3D SOL_IP && cmsg->cmsg_type =3D=3D IP_PKT=
-INFO
-+        && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in_pktinfo)))
- #elif defined(IP_RECVDSTADDR)
--            && cmsg->cmsg_level =3D=3D IPPROTO_IP && cmsg->cmsg_type =3D=
-=3D IP_RECVDSTADDR
--            && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in_addr)))
-+        && cmsg->cmsg_level =3D=3D IPPROTO_IP && cmsg->cmsg_type =3D=3D IP=
-_RECVDSTADDR
-+        && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in_addr)))
- #else /* if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST) */
- #error ENABLE_IP_PKTINFO is set without IP_PKTINFO xor IP_RECVDSTADDR (fix=
- syshead.h)
- #endif
--        {
-+    {
- #if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
--            struct in_pktinfo *pkti =3D (struct in_pktinfo *)CMSG_DATA(cms=
-g);
--            from->pi.in4.ipi_ifindex =3D
--                (sock->sockflags & SF_PKTINFO_COPY_IIF) ? pkti->ipi_ifinde=
-x : 0;
--            from->pi.in4.ipi_spec_dst =3D pkti->ipi_spec_dst;
-+        struct in_pktinfo *pkti =3D (struct in_pktinfo *)CMSG_DATA(cmsg);
-+        from->pi.in4.ipi_ifindex =3D
-+            (sock->sockflags & SF_PKTINFO_COPY_IIF) ? pkti->ipi_ifindex : =
-0;
-+        from->pi.in4.ipi_spec_dst =3D pkti->ipi_spec_dst;
- #elif defined(IP_RECVDSTADDR)
--            from->pi.in4 =3D *(struct in_addr *)CMSG_DATA(cmsg);
-+        from->pi.in4 =3D *(struct in_addr *)CMSG_DATA(cmsg);
- #else /* if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST) */
- #error ENABLE_IP_PKTINFO is set without IP_PKTINFO xor IP_RECVDSTADDR (fix=
- syshead.h)
- #endif
--        }
--        else if (cmsg !=3D NULL && CMSG_NXTHDR(&mesg, cmsg) =3D=3D NULL
--                 && cmsg->cmsg_level =3D=3D IPPROTO_IPV6 && cmsg->cmsg_typ=
-e =3D=3D IPV6_PKTINFO
--                 && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in6_pktinfo=
-)))
--        {
--            struct in6_pktinfo *pkti6 =3D (struct in6_pktinfo *)CMSG_DATA(=
-cmsg);
--            from->pi.in6.ipi6_ifindex =3D
--                (sock->sockflags & SF_PKTINFO_COPY_IIF) ? pkti6->ipi6_ifin=
-dex : 0;
--            from->pi.in6.ipi6_addr =3D pkti6->ipi6_addr;
--        }
--        else if (cmsg !=3D NULL)
--        {
--            msg(M_WARN,
--                "CMSG received that cannot be parsed (cmsg_level=3D%d, cms=
-g_type=3D%d, cmsg=3Dlen=3D%d)",
--                (int)cmsg->cmsg_level, (int)cmsg->cmsg_type, (int)cmsg->cm=
-sg_len);
--        }
-+    }
-+    else if (cmsg !=3D NULL && CMSG_NXTHDR(&mesg, cmsg) =3D=3D NULL
-+             && cmsg->cmsg_level =3D=3D IPPROTO_IPV6 && cmsg->cmsg_type =
-=3D=3D IPV6_PKTINFO
-+             && cmsg->cmsg_len >=3D CMSG_LEN(sizeof(struct in6_pktinfo)))
-+    {
-+        struct in6_pktinfo *pkti6 =3D (struct in6_pktinfo *)CMSG_DATA(cmsg=
-);
-+        from->pi.in6.ipi6_ifindex =3D
-+            (sock->sockflags & SF_PKTINFO_COPY_IIF) ? pkti6->ipi6_ifindex =
-: 0;
-+        from->pi.in6.ipi6_addr =3D pkti6->ipi6_addr;
-+    }
-+    else if (cmsg !=3D NULL)
-+    {
-+        msg(M_WARN,
-+            "CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_ty=
-pe=3D%d, cmsg=3Dlen=3D%d)",
-+            (int)cmsg->cmsg_level, (int)cmsg->cmsg_type, (int)cmsg->cmsg_l=
-en);
-     }
-
--    return fromlen;
-+    return buf->len;
  }
- #endif /* if ENABLE_IP_PKTINFO */
 
--int
-+ssize_t
- link_socket_read_udp_posix(struct link_socket *sock, struct buffer *buf,
-                            struct link_socket_actual *from)
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ static void
+ create_socket(struct link_socket *sock, struct addrinfo *addr)
  {
-+    ssize_t recvlen;
-     socklen_t fromlen =3D sizeof(from->dest.addr);
-     socklen_t expectedlen =3D af_addr_size(sock->info.af);
-     addr_zero_host(&from->dest);
-@@ -2386,16 +2397,23 @@
-     /* Both PROTO_UDPv4 and PROTO_UDPv6 */
-     if (sock->info.proto =3D=3D PROTO_UDP && sock->sockflags & SF_USE_IP_P=
-KTINFO)
-     {
--        fromlen =3D link_socket_read_udp_posix_recvmsg(sock, buf, from);
-+        recvlen =3D link_socket_read_udp_posix_recvmsg(sock, buf, from, &f=
-romlen);
+@@ -702,7 +697,7 @@
      }
-     else
+     /* Set af field of sock->info, so it always reflects the address family
+      * of the created socket */
+-    sock->info.af =3D addr->ai_family;
++    sock->info.af =3D (sa_family_t)addr->ai_family;
+
+     /* set socket buffers based on --sndbuf and --rcvbuf options */
+     socket_set_buffers(sock->sd, &sock->socket_buffer_sizes, true);
+@@ -714,8 +709,9 @@
+     if (sock->bind_dev)
+     {
+         msg(M_INFO, "Using bind-dev %s", sock->bind_dev);
++        /* Note: We verify strlen of bind_dev in options parsing */
+         if (setsockopt(sock->sd, SOL_SOCKET, SO_BINDTODEVICE, sock->bind_d=
+ev,
+-                       strlen(sock->bind_dev) + 1)
++                       (socklen_t)(strlen(sock->bind_dev) + 1))
+             !=3D 0)
+         {
+             msg(M_WARN | M_ERRNO, "WARN: setsockopt SO_BINDTODEVICE=3D%s f=
+ailed", sock->bind_dev);
+@@ -723,13 +719,9 @@
+     }
  #endif
-     {
--        buf->len =3D recvfrom(sock->sd, BPTR(buf), buf_forward_capacity(bu=
-f), 0, &from->dest.addr.sa,
--                            &fromlen);
-+        recvlen =3D recvfrom(sock->sd, BPTR(buf), buf_forward_capacity(buf=
-), 0,
-+                           &from->dest.addr.sa, &fromlen);
-     }
-+    if (recvlen < 0)
-+    {
-+        buf->len =3D 0;
-+        return recvlen;
-+    }
-+    ASSERT(recvlen <=3D INT_MAX);
-+    buf->len =3D (int)recvlen;
-     /* FIXME: won't do anything when sock->info.af =3D=3D AF_UNSPEC */
--    if (buf->len >=3D 0 && expectedlen && fromlen !=3D expectedlen)
-+    if (expectedlen && fromlen !=3D expectedlen)
-     {
-         bad_address_length(fromlen, expectedlen);
-     }
-@@ -2411,8 +2429,10 @@
- ssize_t
- link_socket_write_tcp(struct link_socket *sock, struct buffer *buf, struct=
- link_socket_actual *to)
- {
--    packet_size_type len =3D BLEN(buf);
--    dmsg(D_STREAM_DEBUG, "STREAM: WRITE %d offset=3D%d", (int)len, buf->of=
-fset);
-+    const int blen =3D BLEN(buf);
-+    ASSERT(blen >=3D 0 && blen <=3D PACKET_SIZE_MAX);
-+    packet_size_type len =3D (packet_size_type)blen;
-+    dmsg(D_STREAM_DEBUG, "STREAM: WRITE %u offset=3D%d", len, buf->offset);
-     ASSERT(len <=3D sock->stream_buf.maxlen);
-     len =3D htonps(len);
-     ASSERT(buf_write_prepend(buf, &len, sizeof(len)));
-@@ -2423,10 +2443,6 @@
- #endif
+
+-    bind_local(sock, addr->ai_family);
++    bind_local(sock);
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- #if ENABLE_IP_PKTINFO
+ #ifdef TARGET_ANDROID
+ static void
+ protect_fd_nonlocal(int fd, const struct sockaddr *addr)
+@@ -1161,13 +1153,8 @@
+     }
+ }
 
- ssize_t
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 3f46dc6..f11634e 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -54,6 +54,7 @@
-  */
-
- typedef uint16_t packet_size_type;
-+#define PACKET_SIZE_MAX UINT16_MAX
-=20
- /* convert a packet_size_type from host to network order */
- #define htonps(x) htons(x)
-@@ -441,7 +442,7 @@
- #endif /* if PORT_SHARE */
-
- static inline bool
--socket_connection_reset(const struct link_socket *sock, int status)
-+socket_connection_reset(const struct link_socket *sock, ssize_t status)
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+-#endif
+-
+ static void
+-resolve_bind_local(struct link_socket *sock, const sa_family_t af)
++resolve_bind_local(struct link_socket *sock)
  {
-     if (link_socket_connection_oriented(sock))
+     struct gc_arena gc =3D gc_new();
+
+@@ -1183,12 +1170,12 @@
+         }
+
+         /* will return AF_{INET|INET6}from local_host */
+-        status =3D get_cached_dns_entry(sock->dns_cache, sock->local_host,=
+ sock->local_port, af,
++        status =3D get_cached_dns_entry(sock->dns_cache, sock->local_host,=
+ sock->local_port, sock->info.af,
+                                       flags, &sock->info.lsa->bind_local);
+
+         if (status)
+         {
+-            status =3D openvpn_getaddrinfo(flags, sock->local_host, sock->=
+local_port, 0, NULL, af,
++            status =3D openvpn_getaddrinfo(flags, sock->local_host, sock->=
+local_port, 0, NULL, sock->info.af,
+                                          &sock->info.lsa->bind_local);
+         }
+
+@@ -1209,7 +1196,7 @@
+             /* the resolved 'local entry' might have a different family th=
+an
+              * what was globally configured
+              */
+-            sock->info.af =3D sock->info.lsa->bind_local->ai_family;
++            sock->info.af =3D (sa_family_t)sock->info.lsa->bind_local->ai_=
+family;
+         }
+     }
+
+@@ -1405,7 +1392,8 @@
+
+     sock->mark =3D o->mark;
+     sock->bind_dev =3D o->bind_dev;
+-    sock->info.proto =3D proto;
++    ASSERT(proto >=3D 0 && proto < PROTO_N);
++    sock->info.proto =3D (uint8_t)proto;
+     sock->info.af =3D o->ce.af;
+     sock->info.remote_float =3D o->ce.remote_float;
+     sock->info.lsa =3D &c->c1.link_socket_addrs[sock_index];
+@@ -1471,7 +1459,7 @@
      {
-@@ -568,7 +569,7 @@
-  * Socket Read Routines
-  */
+         if (sock->bind_local)
+         {
+-            resolve_bind_local(sock, sock->info.af);
++            resolve_bind_local(sock);
+         }
+         resolve_remote(sock, 1, NULL);
+     }
+@@ -1732,9 +1720,9 @@
+              * and we should not connect a remote */
+             if (sock->info.af =3D=3D AF_UNSPEC)
+             {
++                sock->info.af =3D (sa_family_t)sock->info.lsa->bind_local-=
+>ai_family;
+                 msg(M_WARN, "Could not determine IPv4/IPv6 protocol. Using=
+ %s",
+-                    addr_family_name(sock->info.lsa->bind_local->ai_family=
+));
+-                sock->info.af =3D sock->info.lsa->bind_local->ai_family;
++                    addr_family_name(sock->info.af));
+             }
+             create_socket(sock, sock->info.lsa->bind_local);
+         }
+@@ -1794,10 +1782,6 @@
+     }
+ }
 
--int link_socket_read_tcp(struct link_socket *sock, struct buffer *buf);
-+ssize_t link_socket_read_tcp(struct link_socket *sock, struct buffer *buf);
-
- #ifdef _WIN32
-
-@@ -588,20 +589,20 @@
-
- #else  /* ifdef _WIN32 */
-
--int link_socket_read_udp_posix(struct link_socket *sock, struct buffer *bu=
-f,
--                               struct link_socket_actual *from);
-+ssize_t link_socket_read_udp_posix(struct link_socket *sock, struct buffer=
- *buf,
-+                                   struct link_socket_actual *from);
-
- #endif /* ifdef _WIN32 */
-
- /* read a TCP or UDP packet from link */
--static inline int
-+static inline ssize_t
- link_socket_read(struct link_socket *sock, struct buffer *buf, struct link=
-_socket_actual *from)
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ void
+ link_socket_close(struct link_socket *sock)
  {
-     if (proto_is_udp(sock->info.proto) || socket_is_dco_win(sock))
-     /* unified UDPv4 and UDPv6, for DCO-WIN the kernel
-      * will strip the length header */
+@@ -2374,8 +2358,8 @@
+     else if (cmsg !=3D NULL)
      {
--        int res;
-+        ssize_t res;
+         msg(M_WARN,
+-            "CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_ty=
+pe=3D%d, cmsg=3Dlen=3D%d)",
+-            (int)cmsg->cmsg_level, (int)cmsg->cmsg_type, (int)cmsg->cmsg_l=
+en);
++            "CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_ty=
+pe=3D%d, cmsg=3Dlen=3D%zu)",
++            cmsg->cmsg_level, cmsg->cmsg_type, (size_t)cmsg->cmsg_len);
+     }
 
- #ifdef _WIN32
-         res =3D link_socket_read_udp_win32(sock, buf, from);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 34f4929..cf5eb3b 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -537,7 +537,7 @@
- }
+     return buf->len;
+diff --git a/src/openvpn/socket_util.c b/src/openvpn/socket_util.c
+index 0194f38..913ac69 100644
+--- a/src/openvpn/socket_util.c
++++ b/src/openvpn/socket_util.c
+@@ -356,7 +356,7 @@
+     const char *short_form;
+     const char *display_form;
+     sa_family_t proto_af;
+-    int proto;
++    uint8_t proto;
+ };
 
- static inline bool
--tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-+tuntap_is_dco_win_timeout(struct tuntap *tt, ssize_t status)
- {
-     return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() =3D=
-=3D ERROR_NETNAME_DELETED);
- }
-@@ -575,7 +575,7 @@
- }
-
- static inline bool
--tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-+tuntap_is_dco_win_timeout(struct tuntap *tt, ssize_t status)
- {
-     return false;
- }
+ /* Indexed by PROTO_x */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1554?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iabe1992b2608661b862a81363574e957d18395f0
-Gerrit-Change-Number: 1554
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I7be7427480d3540d43dd818eddb6eb5860956459
+Gerrit-Change-Number: 1476
+Gerrit-PatchSet: 7
 Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---6a2TCTb77ik=
+--hWpanwhRc58=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1554?usp=3Demail">View C=
+<p>flichtenheld <strong>uploaded patch set #7</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1476?usp=3Demail">View C=
 hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">socket: Never use negative buf-&gt;len in link_s=
-ocket_read*<br><br>We really don&#39;t want to use negative buf lengths in<=
-br>our code. So remove some places where we did so before.<br><br>Change-Id=
-: Iabe1992b2608661b862a81363574e957d18395f0<br>Signed-off-by: Frank Lichten=
-held &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/forward.c<br>M src/op=
-envpn/socket.c<br>M src/openvpn/socket.h<br>M src/openvpn/tun.h<br>4 files =
-changed, 85 insertions(+), 70 deletions(-)<br><br></pre><pre class=3D"block=
-s" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
-ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/54/1554/2</pre><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>d=
-iff --git a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>i=
-ndex 5004e35..081e79a 100644</span><br><span>--- a/src/openvpn/forward.c</s=
-pan><br><span>+++ b/src/openvpn/forward.c</span><br><span>@@ -929,14 +929,1=
-2 @@</span><br><span>      * Set up for recvfrom call to read datagram</spa=
-n><br><span>      * sent to our TCP/UDP port.</span><br><span>      */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    int status;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /*ASSERT (=
-!c-&gt;c2.to_tun.len);*/</span><br><span> </span><br><span>     c-&gt;c2.bu=
-f =3D c-&gt;c2.buffers-&gt;read_link_buf;</span><br><span>     ASSERT(buf_i=
-nit(&amp;c-&gt;c2.buf, c-&gt;c2.frame.buf.headroom));</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    status =3D link_socke=
-t_read(sock, &amp;c-&gt;c2.buf, &amp;c-&gt;c2.from);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ssize_t status =3D link_socket_read(s=
-ock, &amp;c-&gt;c2.buf, &amp;c-&gt;c2.from);</span><br><span> </span><br><s=
-pan>     if (socket_connection_reset(sock, status))</span><br><span>     {<=
-/span><br><span>@@ -955,14 +953,14 @@</span><br><span>             if (even=
-t_timeout_defined(&amp;c-&gt;c2.explicit_exit_notification_interval))</span=
-><br><span>             {</span><br><span>                 msg(D_STREAM_ERR=
-ORS,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-   &quot;Connection reset during exit notification period, ignoring [%d]&qu=
-ot;, status);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-              &quot;Connection reset during exit notification period, ignor=
-ing [%zd]&quot;, status);</span><br><span>                 management_sleep=
-(1);</span><br><span>             }</span><br><span>             else</span=
-><br><span>             {</span><br><span>                 register_signal(=
-c-&gt;sig, SIGUSR1,</span><br><span>                                 &quot;=
-connection-reset&quot;); /* SOFT-SIGUSR1 -- TCP connection reset */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(D_STREAM_=
-ERRORS, &quot;Connection reset, restarting [%d]&quot;, status);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                msg(D_STREAM_ER=
-RORS, &quot;Connection reset, restarting [%zd]&quot;, status);</span><br><s=
-pan>             }</span><br><span>         }</span><br><span>         retu=
-rn;</span><br><span>@@ -1026,7 +1024,7 @@</span><br><span>      * Good, non=
--zero length packet received.</span><br><span>      * Commence multi-stage =
-processing of packet,</span><br><span>      * such as authenticate, decrypt=
-, decompress.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * I=
-f any stage fails, it sets buf.len to 0 or -1,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     * If any stage fails, it sets buf.len to 0,=
-</span><br><span>      * telling downstream stages to ignore the packet.</s=
-pan><br><span>      */</span><br><span>     if (c-&gt;c2.buf.len &gt; 0)</s=
-pan><br><span>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</spa=
-n><br><span>index 033444e..0b72684 100644</span><br><span>--- a/src/openvpn=
-/socket.c</span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -11=
-32,7 +1132,7 @@</span><br><span> </span><br><span> static void stream_buf_c=
-lose(struct stream_buf *sb);</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-static bool stream_buf_added(struct stream_buf *sb=
-, int length_added);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+static bool stream_buf_added(struct stream_buf *sb, ssize_t length_added);=
-</span><br><span> </span><br><span> /* For stream protocols, allocate a buf=
-fer to build up packet.</span><br><span>  * Called after frame has been fin=
-alized. */</span><br><span>@@ -1794,6 +1794,10 @@</span><br><span>     }</s=
-pan><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if defined(__GNUC__) || defined(__clang__)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic pop</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> l=
-ink_socket_close(struct link_socket *sock)</span><br><span> {</span><br><sp=
-an>@@ -2130,12 +2134,13 @@</span><br><span> }</span><br><span> </span><br><=
-span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stre=
-am_buf_added(struct stream_buf *sb, int length_added)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+stream_buf_added(struct stream_buf *sb, s=
-size_t length_added)</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    dmsg(D_STREAM_DEBUG, &quot;STREAM: ADD length_added=
-=3D%d&quot;, length_added);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    dmsg(D_STREAM_DEBUG, &quot;STREAM: ADD length_added=3D%zd&quot;=
-, length_added);</span><br><span>     if (length_added &gt; 0)</span><br><s=
-pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        sb-=
-&gt;buf.len +=3D length_added;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        ASSERT(sb-&gt;buf.len + length_added &lt;=3D INT_MAX);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sb-&gt;buf.le=
-n +=3D (int)length_added;</span><br><span>     }</span><br><span> </span><b=
-r><span>     /* if length unknown, see if we can get the length prefix from=
-</span><br><span>@@ -2238,10 +2243,10 @@</span><br><span>  * Socket Read Ro=
-utines</span><br><span>  */</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ssize_t</span><br><span> link_socket_read_tcp(struct link_socket *s=
-ock, struct buffer *buf)</span><br><span> {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    int len =3D 0;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    ssize_t len =3D 0;</span><br><span> </span><br><sp=
-an>     if (!sock-&gt;stream_buf.residual_fully_formed)</span><br><span>   =
-  {</span><br><span>@@ -2272,7 +2277,8 @@</span><br><span>         }</span>=
-<br><span>         if (len &lt;=3D 0)</span><br><span>         {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            return buf-&gt;len =
-=3D len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- buf-&gt;len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            return len;</span><br><span>         }</span><br><span>     }</=
-span><br><span> </span><br><span>@@ -2304,14 +2310,14 @@</span><br><span>  =
-   max_int(CMSG_SPACE(sizeof(struct in6_pktinfo)), CMSG_SPACE(sizeof(struct=
- in_addr)))</span><br><span> #endif</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-static socklen_t</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+static ssize_t</span><br><span> link_socket_re=
-ad_udp_posix_recvmsg(struct link_socket *sock, struct buffer *buf,</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                              =
-     struct link_socket_actual *from)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                                   struct link_socket_act=
-ual *from, socklen_t *fromlen)</span><br><span> {</span><br><span>     stru=
-ct iovec iov;</span><br><span>     uint8_t pktinfo_buf[PKTINFO_BUF_SIZE];</=
-span><br><span>     struct msghdr mesg =3D { 0 };</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    socklen_t fromlen =3D sizeof(from-&gt;dest.=
-addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *fromlen =
-=3D sizeof(from-&gt;dest.addr);</span><br><span> </span><br><span>     ASSE=
-RT(sock-&gt;sd &gt;=3D 0); /* can&#39;t happen */</span><br><span> </span><=
-br><span>@@ -2320,62 +2326,67 @@</span><br><span>     mesg.msg_iov =3D &amp=
-;iov;</span><br><span>     mesg.msg_iovlen =3D 1;</span><br><span>     mesg=
-.msg_name =3D &amp;from-&gt;dest.addr;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    mesg.msg_namelen =3D fromlen;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    mesg.msg_namelen =3D *fromlen;</span><br=
-><span>     mesg.msg_control =3D pktinfo_buf;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    mesg.msg_controllen =3D sizeof pktinfo_buf;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf-&gt;len =3D recvm=
-sg(sock-&gt;sd, &amp;mesg, 0);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    if (buf-&gt;len &gt;=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    mesg.msg_controllen =3D (socklen_t)sizeof(pktinfo_b=
-uf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ssize_t len=
- =3D recvmsg(sock-&gt;sd, &amp;mesg, 0);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (len &lt; 0)</span><br><span>     {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        struct cmsghdr *cmsg;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        fromlen =3D mesg.=
-msg_namelen;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c=
-msg =3D CMSG_FIRSTHDR(&amp;mesg);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        if (cmsg !=3D NULL &amp;&amp; CMSG_NXTHDR(&amp;mesg, cm=
-sg) =3D=3D NULL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    buf-&gt;len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        return len;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(=
-len &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    buf-&gt;len =3D (int)len;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    struct cmsghdr *cmsg;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    *fromlen =3D mesg.msg_namelen;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    cmsg =3D CMSG_FIRSTHDR(&amp;mesg);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cmsg !=3D NULL=
- &amp;&amp; CMSG_NXTHDR(&amp;mesg, cmsg) =3D=3D NULL</span><br><span> #if d=
-efined(HAVE_IN_PKTINFO) &amp;&amp; defined(HAVE_IPI_SPEC_DST)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; cmsg-&gt;cms=
-g_level =3D=3D SOL_IP &amp;&amp; cmsg-&gt;cmsg_type =3D=3D IP_PKTINFO</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; cmsg=
--&gt;cmsg_len &gt;=3D CMSG_LEN(sizeof(struct in_pktinfo)))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; cmsg-&gt;cmsg_lev=
-el =3D=3D SOL_IP &amp;&amp; cmsg-&gt;cmsg_type =3D=3D IP_PKTINFO</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; cmsg-&gt;cm=
-sg_len &gt;=3D CMSG_LEN(sizeof(struct in_pktinfo)))</span><br><span> #elif =
-defined(IP_RECVDSTADDR)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            &amp;&amp; cmsg-&gt;cmsg_level =3D=3D IPPROTO_IP &amp;&amp; c=
-msg-&gt;cmsg_type =3D=3D IP_RECVDSTADDR</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            &amp;&amp; cmsg-&gt;cmsg_len &gt;=3D CMSG_LEN=
-(sizeof(struct in_addr)))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        &amp;&amp; cmsg-&gt;cmsg_level =3D=3D IPPROTO_IP &amp;&amp; c=
-msg-&gt;cmsg_type =3D=3D IP_RECVDSTADDR</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        &amp;&amp; cmsg-&gt;cmsg_len &gt;=3D CMSG_LEN(s=
-izeof(struct in_addr)))</span><br><span> #else /* if defined(HAVE_IN_PKTINF=
-O) &amp;&amp; defined(HAVE_IPI_SPEC_DST) */</span><br><span> #error ENABLE_=
-IP_PKTINFO is set without IP_PKTINFO xor IP_RECVDSTADDR (fix syshead.h)</sp=
-an><br><span> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span> #if defined(HAVE_IN_PKTINFO) &amp;&amp; defined(HAVE_IPI_SPEC_D=
-ST)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            struct=
- in_pktinfo *pkti =3D (struct in_pktinfo *)CMSG_DATA(cmsg);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            from-&gt;pi.in4.ipi_ifind=
-ex =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
- (sock-&gt;sockflags &amp; SF_PKTINFO_COPY_IIF) ? pkti-&gt;ipi_ifindex : 0;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            from-&gt;=
-pi.in4.ipi_spec_dst =3D pkti-&gt;ipi_spec_dst;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        struct in_pktinfo *pkti =3D (struct in_p=
-ktinfo *)CMSG_DATA(cmsg);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        from-&gt;pi.in4.ipi_ifindex =3D</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            (sock-&gt;sockflags &amp; SF_PKTINFO_=
-COPY_IIF) ? pkti-&gt;ipi_ifindex : 0;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        from-&gt;pi.in4.ipi_spec_dst =3D pkti-&gt;ipi_spe=
-c_dst;</span><br><span> #elif defined(IP_RECVDSTADDR)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            from-&gt;pi.in4 =3D *(struct in=
-_addr *)CMSG_DATA(cmsg);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        from-&gt;pi.in4 =3D *(struct in_addr *)CMSG_DATA(cmsg);</span>=
-<br><span> #else /* if defined(HAVE_IN_PKTINFO) &amp;&amp; defined(HAVE_IPI=
-_SPEC_DST) */</span><br><span> #error ENABLE_IP_PKTINFO is set without IP_P=
-KTINFO xor IP_RECVDSTADDR (fix syshead.h)</span><br><span> #endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        else if (cmsg !=3D NULL &amp;&amp; =
-CMSG_NXTHDR(&amp;mesg, cmsg) =3D=3D NULL</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                 &amp;&amp; cmsg-&gt;cmsg_level =3D=3D I=
-PPROTO_IPV6 &amp;&amp; cmsg-&gt;cmsg_type =3D=3D IPV6_PKTINFO</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                 &amp;&amp; cmsg-&g=
-t;cmsg_len &gt;=3D CMSG_LEN(sizeof(struct in6_pktinfo)))</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            struct in6_pktinfo *pkti6 =3D (struct in=
-6_pktinfo *)CMSG_DATA(cmsg);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            from-&gt;pi.in6.ipi6_ifindex =3D</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                (sock-&gt;sockflags &amp; S=
-F_PKTINFO_COPY_IIF) ? pkti6-&gt;ipi6_ifindex : 0;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            from-&gt;pi.in6.ipi6_addr =3D pkti6=
--&gt;ipi6_addr;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else if (c=
-msg !=3D NULL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_W=
-ARN,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                &=
-quot;CMSG received that cannot be parsed (cmsg_level=3D%d, cmsg_type=3D%d, =
-cmsg=3Dlen=3D%d)&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                (int)cmsg-&gt;cmsg_level, (int)cmsg-&gt;cmsg_type, (int)c=
-msg-&gt;cmsg_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (cmsg !=3D NULL=
- &amp;&amp; CMSG_NXTHDR(&amp;mesg, cmsg) =3D=3D NULL</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+             &amp;&amp; cmsg-&gt;cmsg_lev=
-el =3D=3D IPPROTO_IPV6 &amp;&amp; cmsg-&gt;cmsg_type =3D=3D IPV6_PKTINFO</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+             &amp;&amp=
-; cmsg-&gt;cmsg_len &gt;=3D CMSG_LEN(sizeof(struct in6_pktinfo)))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        struct in6_pktinfo *pkti6 =3D (st=
-ruct in6_pktinfo *)CMSG_DATA(cmsg);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        from-&gt;pi.in6.ipi6_ifindex =3D</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            (sock-&gt;sockflags &amp; =
-SF_PKTINFO_COPY_IIF) ? pkti6-&gt;ipi6_ifindex : 0;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        from-&gt;pi.in6.ipi6_addr =3D pkti6-=
-&gt;ipi6_addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (cmsg !=
-=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;CMSG r=
-eceived that cannot be parsed (cmsg_level=3D%d, cmsg_type=3D%d, cmsg=3Dlen=
-=3D%d)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      (int)cmsg-&gt;cmsg_level, (int)cmsg-&gt;cmsg_type, (int)cmsg-&gt;cmsg=
-_len);</span><br><span>     }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    return fromlen;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return buf-&gt;len;</span><br><span> }</span>=
-<br><span> #endif /* if ENABLE_IP_PKTINFO */</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ssize_t</span><br><span> link_socket_read_udp_posi=
-x(struct link_socket *sock, struct buffer *buf,</span><br><span>           =
-                 struct link_socket_actual *from)</span><br><span> {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    ssize_t recvlen;</span=
-><br><span>     socklen_t fromlen =3D sizeof(from-&gt;dest.addr);</span><br=
-><span>     socklen_t expectedlen =3D af_addr_size(sock-&gt;info.af);</span=
-><br><span>     addr_zero_host(&amp;from-&gt;dest);</span><br><span>@@ -238=
-6,16 +2397,23 @@</span><br><span>     /* Both PROTO_UDPv4 and PROTO_UDPv6 *=
-/</span><br><span>     if (sock-&gt;info.proto =3D=3D PROTO_UDP &amp;&amp; =
-sock-&gt;sockflags &amp; SF_USE_IP_PKTINFO)</span><br><span>     {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        fromlen =3D link_socke=
-t_read_udp_posix_recvmsg(sock, buf, from);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        recvlen =3D link_socket_read_udp_posix_recvm=
-sg(sock, buf, from, &amp;fromlen);</span><br><span>     }</span><br><span> =
-    else</span><br><span> #endif</span><br><span>     {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        buf-&gt;len =3D recvfrom(sock-&gt=
-;sd, BPTR(buf), buf_forward_capacity(buf), 0, &amp;from-&gt;dest.addr.sa,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
-     &amp;fromlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        recvlen =3D recvfrom(sock-&gt;sd, BPTR(buf), buf_forward_capacity(b=
-uf), 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-               &amp;from-&gt;dest.addr.sa, &amp;fromlen);</span><br><span> =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (recvle=
-n &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf-&gt;len =3D =
-0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return re=
-cvlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(recvlen &lt;=3D =
-INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf-&g=
-t;len =3D (int)recvlen;</span><br><span>     /* FIXME: won&#39;t do anythin=
-g when sock-&gt;info.af =3D=3D AF_UNSPEC */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    if (buf-&gt;len &gt;=3D 0 &amp;&amp; expectedlen =
-&amp;&amp; fromlen !=3D expectedlen)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (expectedlen &amp;&amp; fromlen !=3D expectedlen)</=
-span><br><span>     {</span><br><span>         bad_address_length(fromlen, =
-expectedlen);</span><br><span>     }</span><br><span>@@ -2411,8 +2429,10 @@=
-</span><br><span> ssize_t</span><br><span> link_socket_write_tcp(struct lin=
-k_socket *sock, struct buffer *buf, struct link_socket_actual *to)</span><b=
-r><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    packet_=
-size_type len =3D BLEN(buf);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    dmsg(D_STREAM_DEBUG, &quot;STREAM: WRITE %d offset=3D%d&quot;, (=
-int)len, buf-&gt;offset);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    const int blen =3D BLEN(buf);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    ASSERT(blen &gt;=3D 0 &amp;&amp; blen &lt;=3D PACKE=
-T_SIZE_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    pac=
-ket_size_type len =3D (packet_size_type)blen;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    dmsg(D_STREAM_DEBUG, &quot;STREAM: WRITE %u o=
-ffset=3D%d&quot;, len, buf-&gt;offset);</span><br><span>     ASSERT(len &lt=
-;=3D sock-&gt;stream_buf.maxlen);</span><br><span>     len =3D htonps(len);=
-</span><br><span>     ASSERT(buf_write_prepend(buf, &amp;len, sizeof(len)))=
-;</span><br><span>@@ -2423,10 +2443,6 @@</span><br><span> #endif</span><br>=
+e; white-space: pre-wrap;">socket: Fix various conversion warnings<br><br>-=
+ We assume that addrinfo-&gt;ai_family always fits<br>  into a sa_family_t,=
+ so we do not check those.<br>- Reduce places where we explicitly pass ai_f=
+amily<br>  and prefer sock-&gt;info.af.<br>- Make sure that --bind-dev has =
+a suitable length.<br>- Treat PROTO_* as uint8_t where possible (however,<b=
+r>  much code uses proto =3D -1 for various error handling).<br><br>Change-=
+Id: I7be7427480d3540d43dd818eddb6eb5860956459<br>Signed-off-by: Frank Licht=
+enheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/options.c<br>M src/=
+openvpn/socket.c<br>M src/openvpn/socket_util.c<br>3 files changed, 30 inse=
+rtions(+), 40 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+.openvpn.net:29418/openvpn refs/changes/76/1476/7</pre><pre style=3D"font-f=
+amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/=
+openvpn/options.c b/src/openvpn/options.c</span><br><span>index fdbc678..e1=
+c62bd 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>++=
++ b/src/openvpn/options.c</span><br><span>@@ -6492,7 +6492,15 @@</span><br>=
+<span>     else if (streq(p[0], &quot;bind-dev&quot;) &amp;&amp; p[1])</spa=
+n><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_SOCKFLA=
+GS);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&=
+gt;bind_dev =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        if (strlen(p[1]) &lt;=3D IFNAMSIZ)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            options-&gt;bind_dev =3D p[1];</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            msg(msglevel, &quot;argument to --bind-dev is longer=
+ than allowed %u&quot;, IFNAMSIZ);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            goto err;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        }</span><br><span>     }</span><br><span> #endif</=
+span><br><span>     else if (streq(p[0], &quot;txqueuelen&quot;) &amp;&amp;=
+ p[1] &amp;&amp; !p[2])</span><br><span>@@ -6578,11 +6586,9 @@</span><br><s=
+pan>     }</span><br><span>     else if (streq(p[0], &quot;proto&quot;) &am=
+p;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        int proto;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        sa_family_t af;</span><br><span>      =
+   VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        proto =3D ascii2proto(p[1]);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        af =3D ascii2af(p[=
+1]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int pro=
+to =3D ascii2proto(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        sa_family_t af =3D ascii2af(p[1]);</span><br><span>         i=
+f (proto &lt; 0)</span><br><span>         {</span><br><span>             ms=
+g(msglevel, &quot;Bad protocol: &#39;%s&#39;. Allowed protocols with --prot=
+o option: %s&quot;, p[1],</span><br><span>diff --git a/src/openvpn/socket.c=
+ b/src/openvpn/socket.c</span><br><span>index 0b72684..33c12db 100644</span=
+><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/soc=
+ket.c</span><br><span>@@ -649,28 +649,23 @@</span><br><span> }</span><br><s=
+pan> </span><br><span> static void</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-bind_local(struct link_socket *sock, const sa_family_t ai_fami=
+ly)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bind_local(struc=
+t link_socket *sock)</span><br><span> {</span><br><span>     /* bind to loc=
+al address/port */</span><br><span>     if (sock-&gt;bind_local)</span><br>=
+<span>     {</span><br><span>         if (sock-&gt;socks_proxy &amp;&amp; s=
+ock-&gt;info.proto =3D=3D PROTO_UDP)</span><br><span>         {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            socket_bind(sock-&gt;=
+ctrl_sd, sock-&gt;info.lsa-&gt;bind_local, ai_family, &quot;SOCKS&quot;, fa=
+lse);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            so=
+cket_bind(sock-&gt;ctrl_sd, sock-&gt;info.lsa-&gt;bind_local, sock-&gt;info=
+.af, &quot;SOCKS&quot;, false);</span><br><span>         }</span><br><span>=
+         else</span><br><span>         {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            socket_bind(sock-&gt;sd, sock-&gt;info.lsa-&=
+gt;bind_local, ai_family, &quot;TCP/UDP&quot;,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            socket_bind(sock-&gt;sd, sock-&gt;in=
+fo.lsa-&gt;bind_local, sock-&gt;info.af, &quot;TCP/UDP&quot;,</span><br><sp=
+an>                         sock-&gt;info.bind_ipv6_only);</span><br><span>=
+         }</span><br><span>     }</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || d=
+efined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pra=
+gma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span> static void</span><br><span> create_=
+socket(struct link_socket *sock, struct addrinfo *addr)</span><br><span> {<=
+/span><br><span>@@ -702,7 +697,7 @@</span><br><span>     }</span><br><span>=
+     /* Set af field of sock-&gt;info, so it always reflects the address fa=
+mily</span><br><span>      * of the created socket */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;info.af =3D addr-&gt;ai_family=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sock-&gt;info.=
+af =3D (sa_family_t)addr-&gt;ai_family;</span><br><span> </span><br><span> =
+    /* set socket buffers based on --sndbuf and --rcvbuf options */</span><=
+br><span>     socket_set_buffers(sock-&gt;sd, &amp;sock-&gt;socket_buffer_s=
+izes, true);</span><br><span>@@ -714,8 +709,9 @@</span><br><span>     if (s=
+ock-&gt;bind_dev)</span><br><span>     {</span><br><span>         msg(M_INF=
+O, &quot;Using bind-dev %s&quot;, sock-&gt;bind_dev);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /* Note: We verify strlen of bind=
+_dev in options parsing */</span><br><span>         if (setsockopt(sock-&gt=
+;sd, SOL_SOCKET, SO_BINDTODEVICE, sock-&gt;bind_dev,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                       strlen(sock-&gt;bind=
+_dev) + 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+              (socklen_t)(strlen(sock-&gt;bind_dev) + 1))</span><br><span> =
+            !=3D 0)</span><br><span>         {</span><br><span>            =
+ msg(M_WARN | M_ERRNO, &quot;WARN: setsockopt SO_BINDTODEVICE=3D%s failed&q=
+uot;, sock-&gt;bind_dev);</span><br><span>@@ -723,13 +719,9 @@</span><br><s=
+pan>     }</span><br><span> #endif</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    bind_local(sock, addr-&gt;ai_family);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bind_local(sock);=
+</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef TARGET_ANDROID</span><=
+br><span> static void</span><br><span> protect_fd_nonlocal(int fd, const st=
+ruct sockaddr *addr)</span><br><span>@@ -1161,13 +1153,8 @@</span><br><span=
+>     }</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic i=
+gnored &quot;-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-resolve_bind_local(struct link_socket *sock, const sa_family_t af)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+resolve_bind_local(struct=
+ link_socket *sock)</span><br><span> {</span><br><span>     struct gc_arena=
+ gc =3D gc_new();</span><br><span> </span><br><span>@@ -1183,12 +1170,12 @@=
+</span><br><span>         }</span><br><span> </span><br><span>         /* w=
+ill return AF_{INET|INET6}from local_host */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        status =3D get_cached_dns_entry(sock-&gt;dns=
+_cache, sock-&gt;local_host, sock-&gt;local_port, af,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        status =3D get_cached_dns_entry(s=
+ock-&gt;dns_cache, sock-&gt;local_host, sock-&gt;local_port, sock-&gt;info.=
+af,</span><br><span>                                       flags, &amp;sock=
+-&gt;info.lsa-&gt;bind_local);</span><br><span> </span><br><span>         i=
+f (status)</span><br><span>         {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            status =3D openvpn_getaddrinfo(flags, sock-&gt;=
+local_host, sock-&gt;local_port, 0, NULL, af,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            status =3D openvpn_getaddrinfo(flags,=
+ sock-&gt;local_host, sock-&gt;local_port, 0, NULL, sock-&gt;info.af,</span=
+><br><span>                                          &amp;sock-&gt;info.lsa=
+-&gt;bind_local);</span><br><span>         }</span><br><span> </span><br><s=
+pan>@@ -1209,7 +1196,7 @@</span><br><span>             /* the resolved &#39=
+;local entry&#39; might have a different family than</span><br><span>      =
+        * what was globally configured</span><br><span>              */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            sock-&gt;info=
+.af =3D sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            sock-&gt;info.af =3D (sa_fa=
+mily_t)sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>    =
+     }</span><br><span>     }</span><br><span> </span><br><span>@@ -1405,7 =
++1392,8 @@</span><br><span> </span><br><span>     sock-&gt;mark =3D o-&gt;m=
+ark;</span><br><span>     sock-&gt;bind_dev =3D o-&gt;bind_dev;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    sock-&gt;info.proto =3D proto=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(proto &=
+gt;=3D 0 &amp;&amp; proto &lt; PROTO_N);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    sock-&gt;info.proto =3D (uint8_t)proto;</span><br>=
+<span>     sock-&gt;info.af =3D o-&gt;ce.af;</span><br><span>     sock-&gt;=
+info.remote_float =3D o-&gt;ce.remote_float;</span><br><span>     sock-&gt;=
+info.lsa =3D &amp;c-&gt;c1.link_socket_addrs[sock_index];</span><br><span>@=
+@ -1471,7 +1459,7 @@</span><br><span>     {</span><br><span>         if (so=
+ck-&gt;bind_local)</span><br><span>         {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            resolve_bind_local(sock, sock-&gt;info.=
+af);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            res=
+olve_bind_local(sock);</span><br><span>         }</span><br><span>         =
+resolve_remote(sock, 1, NULL);</span><br><span>     }</span><br><span>@@ -1=
+732,9 +1720,9 @@</span><br><span>              * and we should not connect =
+a remote */</span><br><span>             if (sock-&gt;info.af =3D=3D AF_UNS=
+PEC)</span><br><span>             {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                sock-&gt;info.af =3D (sa_family_t)sock-&gt;=
+info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span>                 msg=
+(M_WARN, &quot;Could not determine IPv4/IPv6 protocol. Using %s&quot;,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                    addr_f=
+amily_name(sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family));</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                sock-&gt;info.af =3D=
+ sock-&gt;info.lsa-&gt;bind_local-&gt;ai_family;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                    addr_family_name(sock-&gt;=
+info.af));</span><br><span>             }</span><br><span>             crea=
+te_socket(sock, sock-&gt;info.lsa-&gt;bind_local);</span><br><span>        =
+ }</span><br><span>@@ -1794,10 +1782,6 @@</span><br><span>     }</span><br>=
 <span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
 );">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
 olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> #if ENABLE_IP_PKTINFO</span><br><span> <=
-/span><br><span> ssize_t</span><br><span>diff --git a/src/openvpn/socket.h =
-b/src/openvpn/socket.h</span><br><span>index 3f46dc6..f11634e 100644</span>=
-<br><span>--- a/src/openvpn/socket.h</span><br><span>+++ b/src/openvpn/sock=
-et.h</span><br><span>@@ -54,6 +54,7 @@</span><br><span>  */</span><br><span=
-> </span><br><span> typedef uint16_t packet_size_type;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#define PACKET_SIZE_MAX UINT16_MAX</span=
-><br><span> </span><br><span> /* convert a packet_size_type from host to ne=
-twork order */</span><br><span> #define htonps(x) htons(x)</span><br><span>=
-@@ -441,7 +442,7 @@</span><br><span> #endif /* if PORT_SHARE */</span><br><=
-span> </span><br><span> static inline bool</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-socket_connection_reset(const struct link_socket *sock=
-, int status)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+socket=
-_connection_reset(const struct link_socket *sock, ssize_t status)</span><br=
-><span> {</span><br><span>     if (link_socket_connection_oriented(sock))</=
-span><br><span>     {</span><br><span>@@ -568,7 +569,7 @@</span><br><span> =
- * Socket Read Routines</span><br><span>  */</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-int link_socket_read_tcp(struct li=
-nk_socket *sock, struct buffer *buf);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ssize_t link_socket_read_tcp(struct link_socket *sock, st=
-ruct buffer *buf);</span><br><span> </span><br><span> #ifdef _WIN32</span><=
-br><span> </span><br><span>@@ -588,20 +589,20 @@</span><br><span> </span><b=
-r><span> #else  /* ifdef _WIN32 */</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-int link_socket_read_udp_posix(struct link_=
-socket *sock, struct buffer *buf,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                               struct link_socket_actual *from)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssize_t link_socke=
-t_read_udp_posix(struct link_socket *sock, struct buffer *buf,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                                =
-   struct link_socket_actual *from);</span><br><span> </span><br><span> #en=
-dif /* ifdef _WIN32 */</span><br><span> </span><br><span> /* read a TCP or =
-UDP packet from link */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-static inline int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static inline ssize_t</span><br><span> link_socket_read(struct link_socket =
-*sock, struct buffer *buf, struct link_socket_actual *from)</span><br><span=
-> {</span><br><span>     if (proto_is_udp(sock-&gt;info.proto) || socket_is=
-_dco_win(sock))</span><br><span>     /* unified UDPv4 and UDPv6, for DCO-WI=
-N the kernel</span><br><span>      * will strip the length header */</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   int res;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-ssize_t res;</span><br><span> </span><br><span> #ifdef _WIN32</span><br><sp=
-an>         res =3D link_socket_read_udp_win32(sock, buf, from);</span><br>=
-<span>diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h</span><br><span>in=
-dex 34f4929..cf5eb3b 100644</span><br><span>--- a/src/openvpn/tun.h</span><=
-br><span>+++ b/src/openvpn/tun.h</span><br><span>@@ -537,7 +537,7 @@</span>=
-<br><span> }</span><br><span> </span><br><span> static inline bool</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-tuntap_is_dco_win_timeout(stru=
-ct tuntap *tt, int status)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+tuntap_is_dco_win_timeout(struct tuntap *tt, ssize_t status)</span><=
-br><span> {</span><br><span>     return tuntap_is_dco_win(tt) &amp;&amp; (s=
-tatus &lt; 0) &amp;&amp; (openvpn_errno() =3D=3D ERROR_NETNAME_DELETED);</s=
-pan><br><span> }</span><br><span>@@ -575,7 +575,7 @@</span><br><span> }</sp=
-an><br><span> </span><br><span> static inline bool</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-tuntap_is_dco_win_timeout(struct tuntap *tt, i=
-nt status)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tuntap_is=
-_dco_win_timeout(struct tuntap *tt, ssize_t status)</span><br><span> {</spa=
-n><br><span>     return false;</span><br><span> }</span><br><span></span><b=
-r></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1554?usp=3Demail">change 1554</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">=
-settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
-><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
-n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/155=
-4?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+0, 100%, 40%);">-</span><br><span> void</span><br><span> link_socket_close(=
+struct link_socket *sock)</span><br><span> {</span><br><span>@@ -2374,8 +23=
+58,8 @@</span><br><span>     else if (cmsg !=3D NULL)</span><br><span>     =
+{</span><br><span>         msg(M_WARN,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            &quot;CMSG received that cannot be parsed (cms=
+g_level=3D%d, cmsg_type=3D%d, cmsg=3Dlen=3D%d)&quot;,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            (int)cmsg-&gt;cmsg_level, (int)=
+cmsg-&gt;cmsg_type, (int)cmsg-&gt;cmsg_len);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            &quot;CMSG received that cannot be par=
+sed (cmsg_level=3D%d, cmsg_type=3D%d, cmsg=3Dlen=3D%zu)&quot;,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            cmsg-&gt;cmsg_level,=
+ cmsg-&gt;cmsg_type, (size_t)cmsg-&gt;cmsg_len);</span><br><span>     }</sp=
+an><br><span> </span><br><span>     return buf-&gt;len;</span><br><span>dif=
+f --git a/src/openvpn/socket_util.c b/src/openvpn/socket_util.c</span><br><=
+span>index 0194f38..913ac69 100644</span><br><span>--- a/src/openvpn/socket=
+_util.c</span><br><span>+++ b/src/openvpn/socket_util.c</span><br><span>@@ =
+-356,7 +356,7 @@</span><br><span>     const char *short_form;</span><br><sp=
+an>     const char *display_form;</span><br><span>     sa_family_t proto_af=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int proto;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t proto;</span>=
+<br><span> };</span><br><span> </span><br><span> /* Indexed by PROTO_x */</=
+span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1476?usp=3Demail">change 1476</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://=
+schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
+p://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1476?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iabe1992b2608661b862a8136357=
-4e957d18395f0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1554 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7be7427480d3540d43dd818eddb=
+6eb5860956459 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1476 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -857,5 +540,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---6a2TCTb77ik=--
+--hWpanwhRc58=--
 
