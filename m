@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed,  4 Mar 2026 12:04:49 +0100
-Message-ID: <20260304110455.15859-1-gert@...1296...>
-In-Reply-To: <gerrit.1769443458000.Ia3477b8ee7a637c15aad7f285144280595cda5d5@...2715...>
-References: <gerrit.1769443458000.Ia3477b8ee7a637c15aad7f285144280595cda5d5@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 4 Mar 2026 11:40:35 +0000
+In-Reply-To: <gerrit.1771373435000.I0f7237720b0892f5ba0caf60f941f9cc2241cdb6@...2715...>
+References: <gerrit.1771373435000.I0f7237720b0892f5ba0caf60f941f9cc2241cdb6@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <1c9500b48b46651905dbe341e9f335bc1835b0b3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] buffer: Add checked_snprintf function
- and use it in the code
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="MODtn9NGWSc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: wfp: add flag to
+ allow DNS traffic to loopback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,380 +19,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: d12fk <heiko@...515...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--MODtn9NGWSc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This reintroduces a function that converts the result
-of snprintf to a boolean since the check is always the
-same but annoyingly verbose. And it gets worse when you add
--Wsign-compare.
+Attention is currently required from: d12fk, plaisthos.
 
-So in preparation of introducing -Wsign-compare wrap this
-check in the function.
+flichtenheld has posted comments on this change by d12fk. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1541?usp=3Demail )
 
-This somewhat reverts the removal of openvpn_snprintf.
-But note that that was originally introduced to work
-around the broken snprintf of Windows. So this is not
-exactly the same. For this reason I also classified this
-as a buffer function and not a compat function.
+Change subject: wfp: add flag to allow DNS traffic to loopback
+......................................................................
 
-Change-Id: Ia3477b8ee7a637c15aad7f285144280595cda5d5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1489
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 1: Code-Review-1
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1489
-This mail reflects revision 6 of this Change.
+(2 comments)
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+File doc/man-sections/windows-options.rst:
 
-        
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 12a8ff9..8304fb7 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1134,6 +1134,17 @@
-     }
- }
- 
-+bool
-+checked_snprintf(char *str, size_t size, const char *format, ...)
-+{
-+    va_list arglist;
-+    va_start(arglist, format);
-+    ASSERT(size < INT_MAX);
-+    int len = vsnprintf(str, size, format, arglist);
-+    va_end(arglist);
-+    return (len >= 0 && len < (ssize_t)size);
-+}
-+
- #ifdef VERIFY_ALIGNMENT
- void
- valign4(const struct buffer *buf, const char *file, const int line)
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 7502050..86df1a5 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -971,6 +971,29 @@
-     return 0 == strncmp(str, prefix, strlen(prefix));
- }
- 
-+/**
-+ * Like snprintf() but returns an boolean.
-+ *
-+ * To check the return value of snprintf() one needs to
-+ * do multiple comparisons of the \p size parameter
-+ * against the return value. Doesn't get prettier by
-+ * them being different types with different signedness
-+ * and size.
-+ *
-+ * So this function allows to wrap all of that into one
-+ * boolean return value.
-+ *
-+ * @return true if snprintf() was successful and not truncated.
-+ */
-+bool checked_snprintf(char *str, size_t size, const char *format, ...)
-+#ifdef __GNUC__
-+#if __USE_MINGW_ANSI_STDIO
-+    __attribute__((format(gnu_printf, 3, 4)))
-+#else
-+    __attribute__((format(__printf__, 3, 4)))
-+#endif
-+#endif
-+    ;
- 
- /*
-  * Verify that a pointer is correctly aligned
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index e8931d7..7aaea3d 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -1014,7 +1014,7 @@
- {
-     char prefix[256];
- 
--    if (snprintf(prefix, sizeof(prefix), "%s:%d", func, line) >= sizeof(prefix))
-+    if (!checked_snprintf(prefix, sizeof(prefix), "%s:%d", func, line))
-     {
-         return mbed_log_err(flags, errval, func);
-     }
-@@ -1104,11 +1104,11 @@
-     char header[1000 + 1] = { 0 };
-     char footer[1000 + 1] = { 0 };
- 
--    if (snprintf(header, sizeof(header), "-----BEGIN %s-----\n", name) >= sizeof(header))
-+    if (!checked_snprintf(header, sizeof(header), "-----BEGIN %s-----\n", name))
-     {
-         return false;
-     }
--    if (snprintf(footer, sizeof(footer), "-----END %s-----\n", name) >= sizeof(footer))
-+    if (!checked_snprintf(footer, sizeof(footer), "-----END %s-----\n", name))
-     {
-         return false;
-     }
-@@ -1142,11 +1142,11 @@
-     char header[1000 + 1] = { 0 };
-     char footer[1000 + 1] = { 0 };
- 
--    if (snprintf(header, sizeof(header), "-----BEGIN %s-----", name) >= sizeof(header))
-+    if (!checked_snprintf(header, sizeof(header), "-----BEGIN %s-----", name))
-     {
-         return false;
-     }
--    if (snprintf(footer, sizeof(footer), "-----END %s-----", name) >= sizeof(footer))
-+    if (!checked_snprintf(footer, sizeof(footer), "-----END %s-----", name))
-     {
-         return false;
-     }
-diff --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_legacy.c
-index 00fe542..237564c 100644
---- a/src/openvpn/crypto_mbedtls_legacy.c
-+++ b/src/openvpn/crypto_mbedtls_legacy.c
-@@ -130,7 +130,7 @@
- {
-     char prefix[256];
- 
--    if (snprintf(prefix, sizeof(prefix), "%s:%d", func, line) >= sizeof(prefix))
-+    if (!checked_snprintf(prefix, sizeof(prefix), "%s:%d", func, line))
-     {
-         return mbed_log_err(flags, errval, func);
-     }
-@@ -246,11 +246,11 @@
-     char header[1000 + 1] = { 0 };
-     char footer[1000 + 1] = { 0 };
- 
--    if (snprintf(header, sizeof(header), "-----BEGIN %s-----\n", name) >= sizeof(header))
-+    if (!checked_snprintf(header, sizeof(header), "-----BEGIN %s-----\n", name))
-     {
-         return false;
-     }
--    if (snprintf(footer, sizeof(footer), "-----END %s-----\n", name) >= sizeof(footer))
-+    if (!checked_snprintf(footer, sizeof(footer), "-----END %s-----\n", name))
-     {
-         return false;
-     }
-@@ -283,11 +283,11 @@
-     char header[1000 + 1] = { 0 };
-     char footer[1000 + 1] = { 0 };
- 
--    if (snprintf(header, sizeof(header), "-----BEGIN %s-----", name) >= sizeof(header))
-+    if (!checked_snprintf(header, sizeof(header), "-----BEGIN %s-----", name))
-     {
-         return false;
-     }
--    if (snprintf(footer, sizeof(footer), "-----END %s-----", name) >= sizeof(footer))
-+    if (!checked_snprintf(footer, sizeof(footer), "-----END %s-----", name))
-     {
-         return false;
-     }
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index f4f7779..3a294ec 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -485,13 +485,11 @@
- 
-     if (j < 0)
-     {
--        const int ret = snprintf(name, sizeof(name), format, i);
--        name_ok = (ret > 0 && ret < sizeof(name));
-+        name_ok = checked_snprintf(name, sizeof(name), format, i);
-     }
-     else
-     {
--        const int ret = snprintf(name, sizeof(name), format, i, j);
--        name_ok = (ret > 0 && ret < sizeof(name));
-+        name_ok = checked_snprintf(name, sizeof(name), format, i, j);
-     }
- 
-     if (!name_ok)
-diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
-index 99ac45c..d992097 100644
---- a/src/openvpn/env_set.c
-+++ b/src/openvpn/env_set.c
-@@ -334,7 +334,7 @@
-     strcpy(tmpname, name);
-     while (NULL != env_set_get(es, tmpname) && counter < 1000)
-     {
--        ASSERT(snprintf(tmpname, tmpname_len, "%s_%u", name, counter) < tmpname_len);
-+        ASSERT(checked_snprintf(tmpname, tmpname_len, "%s_%u", name, counter));
-         counter++;
-     }
-     if (counter < 1000)
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 4f0eddf..3a6b272 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -550,9 +550,8 @@
-     {
-         ++attempts;
- 
--        const int ret = snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,
--                                 (unsigned long)get_random(), (unsigned long)get_random());
--        if (ret < 0 || ret >= sizeof(fname))
-+        if (!checked_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,
-+                              (unsigned long)get_random(), (unsigned long)get_random()))
-         {
-             msg(M_WARN, "ERROR: temporary filename too long");
-             return NULL;
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index b355827..9f3ec93 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -771,11 +771,10 @@
-                 }
- 
-                 /* send digest response */
--                int sret = snprintf(
--                    buf, sizeof(buf),
--                    "Proxy-Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", qop=%s, nc=%s, cnonce=\"%s\", response=\"%s\"%s",
--                    username, realm, nonce, uri, qop, nonce_count, cnonce, response, opaque_kv);
--                if (sret >= sizeof(buf))
-+                if (!checked_snprintf(
-+                        buf, sizeof(buf),
-+                        "Proxy-Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", qop=%s, nc=%s, cnonce=\"%s\", response=\"%s\"%s",
-+                        username, realm, nonce, uri, qop, nonce_count, cnonce, response, opaque_kv))
-                 {
-                     goto error;
-                 }
-diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index 5cb5912..19f3d54 100644
---- a/src/openvpn/socks.c
-+++ b/src/openvpn/socks.c
-@@ -119,10 +119,9 @@
-         goto cleanup;
-     }
- 
--    int sret = snprintf(to_send, sizeof(to_send), "\x01%c%s%c%s", (int)strlen(creds.username),
--                        creds.username, (int)strlen(creds.password), creds.password);
--    ASSERT(sret >= 0 && sret <= sizeof(to_send));
--
-+    ASSERT(checked_snprintf(to_send, sizeof(to_send), "\x01%c%s%c%s",
-+                            (int)strlen(creds.username), creds.username,
-+                            (int)strlen(creds.password), creds.password));
-     if (!proxy_send(sd, to_send, strlen(to_send)))
-     {
-         goto cleanup;
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 20fd2f0..686f823 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -198,7 +198,7 @@
-     size_t newlen = strlen(o->ncp_ciphers) + 1 + strlen(ciphername) + 1;
-     char *ncp_ciphers = gc_malloc(newlen, false, &o->gc);
- 
--    ASSERT(snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers, ciphername) < newlen);
-+    ASSERT(checked_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers, ciphername));
-     o->ncp_ciphers = ncp_ciphers;
- }
- 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 0b02a2f..9e30d25 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -548,7 +548,7 @@
-         goto cleanup;
-     }
- 
--    if (snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, PATH_SEPARATOR, serial) >= sizeof(fn))
-+    if (!checked_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, PATH_SEPARATOR, serial))
-     {
-         msg(D_HANDSHAKE, "VERIFY CRL: filename overflow");
-         goto cleanup;
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index adeaa13..ad5479c 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -93,9 +93,7 @@
- 
-         ret = mbedtls_x509_crt_verify_info(errstr, sizeof(errstr) - 1, "", *flags);
-         if (ret <= 0
--            && snprintf(errstr, sizeof(errstr), "Could not retrieve error string, flags=%" PRIx32,
--                        *flags)
--                   >= sizeof(errstr))
-+            && !checked_snprintf(errstr, sizeof(errstr), "Could not retrieve error string, flags=%" PRIx32, *flags))
-         {
-             errstr[0] = '\0';
-         }
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 3f9ee5d..ecebff7 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3558,9 +3558,7 @@
-             msg(M_FATAL, "Error enumerating registry subkeys of key: %s", ADAPTER_KEY);
-         }
- 
--        int ret = snprintf(unit_string, sizeof(unit_string), "%s\\%s", ADAPTER_KEY, enum_name);
--
--        if (ret < 0 || ret >= sizeof(unit_string))
-+        if (!checked_snprintf(unit_string, sizeof(unit_string), "%s\\%s", ADAPTER_KEY, enum_name))
-         {
-             msg(M_WARN, "Error constructing unit string for %s", enum_name);
-             continue;
-@@ -3673,10 +3671,9 @@
-             msg(M_FATAL, "Error enumerating registry subkeys of key: %s", NETWORK_CONNECTIONS_KEY);
-         }
- 
--        int ret = snprintf(connection_string, sizeof(connection_string), "%s\\%s\\Connection",
--                           NETWORK_CONNECTIONS_KEY, enum_name);
--
--        if (ret < 0 || ret >= sizeof(connection_string))
-+        if (!checked_snprintf(connection_string, sizeof(connection_string),
-+                              "%s\\%s\\Connection",
-+                              NETWORK_CONNECTIONS_KEY, enum_name))
-         {
-             msg(M_WARN, "Error constructing connection string for %s", enum_name);
-             continue;
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index b938d7b..ac449fd 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -881,9 +881,8 @@
-     char force_path[256];
-     char *sysroot = get_win_sys_path();
- 
--    if (snprintf(force_path, sizeof(force_path), "PATH=%s\\System32;%s;%s\\System32\\Wbem",
--                 sysroot, sysroot, sysroot)
--        >= sizeof(force_path))
-+    if (!checked_snprintf(force_path, sizeof(force_path), "PATH=%s\\System32;%s;%s\\System32\\Wbem",
-+                          sysroot, sysroot, sysroot))
-     {
-         msg(M_WARN, "env_block: default path truncated to %s", force_path);
-     }
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index 16949bc..d04f40a 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -424,6 +424,16 @@
- #endif
- }
- 
-+static void
-+test_checked_snprintf(void **state)
-+{
-+    char buf[10];
-+    assert_true(checked_snprintf(buf, sizeof(buf), "%s", "Hello"));
-+    assert_true(checked_snprintf(buf, sizeof(buf), "%s", "Hello Foo"));
-+    assert_false(checked_snprintf(buf, sizeof(buf), "%s", "Hello Foo!"));
-+    assert_false(checked_snprintf(buf, sizeof(buf), "%s", "Hello World!"));
-+}
-+
- void
- test_buffer_chomp(void **state)
- {
-@@ -528,6 +538,7 @@
-         cmocka_unit_test(test_character_class),
-         cmocka_unit_test(test_character_string_mod_buf),
-         cmocka_unit_test(test_snprintf),
-+        cmocka_unit_test(test_checked_snprintf),
-         cmocka_unit_test(test_buffer_chomp),
-         cmocka_unit_test(test_buffer_parse)
-     };
+http://gerrit.openvpn.net/c/openvpn/+/1541/comment/d5bb05f2_99eae1b5?usp=3D=
+email :
+PS1, Line 23:   Windows XP) to ignore said error. Note that pushing unknown=
+ options from
+Can we maybe remove this Windows XP mention as a drive-by fix?
+
+
+File src/openvpnserv/interactive.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1541/comment/c9ad5c85_76b9cf5a?usp=3D=
+email :
+PS1, Line 855:     if (msg->block_type >=3D 0 && msg->block_type < wfp_bloc=
+k_type_count)
+I don't understand this conditional. So if block_type is between 0 and wfp_=
+block_type_count, that is an error? Why?
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1541?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I0f7237720b0892f5ba0caf60f941f9cc2241cdb6
+Gerrit-Change-Number: 1541
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Wed, 04 Mar 2026 11:40:35 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--MODtn9NGWSc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: d12fk, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1541?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/windows-=
+options.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
+rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1541/comment/d5bb05f2_99eae1b5?usp=3D=
+email">Patch Set #1, Line 23:</a> <code style=3D"font-family:monospace,mono=
+space">  Windows XP) to ignore said error. Note that pushing unknown option=
+s from</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
+rap: break-word;">Can we maybe remove this Windows XP mention as a drive-by=
+ fix?</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/op=
+envpnserv/interactive.c:</p><ul style=3D"list-style: none; padding: 0;"><li=
+ style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1541/comment/c9ad5c85_76b=
+9cf5a?usp=3Demail">Patch Set #1, Line 855:</a> <code style=3D"font-family:m=
+onospace,monospace">    if (msg-&gt;block_type &gt;=3D 0 &amp;&amp; msg-&gt=
+;block_type &lt; wfp_block_type_count)</code></p><p class=3D"blocks" style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">I don&#39;t understand t=
+his conditional. So if block_type is between 0 and wfp_block_type_count, th=
+at is an error? Why?</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/1541?usp=3Demail">change 1541</a>. To u=
+nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
+t.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtyp=
+e=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" ite=
+mtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/1541?usp=3Demail"/><meta itemprop=3D"name"=
+ content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0f7237720b0892f5ba0caf60f94=
+1f9cc2241cdb6 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1541 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 04 Mar 2026 11:40:35=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--MODtn9NGWSc=--
 
