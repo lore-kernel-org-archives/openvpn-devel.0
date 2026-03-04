@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 4 Mar 2026 14:24:45 +0000
+Date: Wed, 4 Mar 2026 14:24:50 +0000
 In-Reply-To: <gerrit.1769443458000.Ia3477b8ee7a637c15aad7f285144280595cda5d5@...2715...>
 References: <gerrit.1769443458000.Ia3477b8ee7a637c15aad7f285144280595cda5d5@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c4ff83e54e192345235a92dab0ebdaea9f2f8a11-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c4ff83e54e192345235a92dab0ebdaea9f2f8a11-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="i7BAI7C4OoE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="kevqqwLLPZ0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: Add
  checked_snprintf function and use it in the code
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---i7BAI7C4OoE=
+--kevqqwLLPZ0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#7) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1489?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/14=
+89?usp=3Demail )
 
 Change subject: buffer: Add checked_snprintf function and use it in the code
 ......................................................................
@@ -79,7 +75,7 @@ M tests/unit_tests/openvpn/test_buffer.c
 15 files changed, 76 insertions(+), 42 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/1489/7
+
 
 diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
 index 280cbc8..745b1c8 100644
@@ -478,7 +474,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1489?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ia3477b8ee7a637c15aad7f285144280595cda5d5
@@ -489,363 +485,359 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---i7BAI7C4OoE=
+--kevqqwLLPZ0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #7</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1489?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">buffer: Add checked_snprintf functi=
-on and use it in the code<br><br>This reintroduces a function that converts=
- the result<br>of snprintf to a boolean since the check is always the<br>sa=
-me but annoyingly verbose. And it gets worse when you add<br>-Wsign-compare=
-.<br><br>So in preparation of introducing -Wsign-compare wrap this<br>check=
- in the function.<br><br>This somewhat reverts the removal of openvpn_snpri=
-ntf.<br>But note that that was originally introduced to work<br>around the =
-broken snprintf of Windows. So this is not<br>exactly the same. For this re=
-ason I also classified this<br>as a buffer function and not a compat functi=
-on.<br><br>Change-Id: Ia3477b8ee7a637c15aad7f285144280595cda5d5<br>Signed-o=
-ff-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering=
- &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvp=
-n/+/1489<br>Message-Id: &lt;20260304110455.15859-1-gert@...1296...&gt;<br>U=
-RL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg358=
-72.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M =
-src/openvpn/buffer.c<br>M src/openvpn/buffer.h<br>M src/openvpn/crypto_mbed=
-tls.c<br>M src/openvpn/crypto_mbedtls_legacy.c<br>M src/openvpn/dns.c<br>M =
-src/openvpn/env_set.c<br>M src/openvpn/platform.c<br>M src/openvpn/proxy.c<=
-br>M src/openvpn/socks.c<br>M src/openvpn/ssl_ncp.c<br>M src/openvpn/ssl_ve=
-rify.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/tun.c<br>M sr=
-c/openvpn/win32.c<br>M tests/unit_tests/openvpn/test_buffer.c<br>15 files c=
-hanged, 76 insertions(+), 42 deletions(-)<br><br></pre><pre class=3D"blocks=
-" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
-ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/1489/7</pre><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
-ff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><span>inde=
-x 280cbc8..745b1c8 100644</span><br><span>--- a/src/openvpn/buffer.c</span>=
-<br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -1134,6 +1134,17 @@=
-</span><br><span>     }</span><br><span> }</span><br><span> </span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+checked_snprintf(char *str, size_t size, const ch=
-ar *format, ...)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    va_list arglist;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    va_start(arglist=
-, format);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSER=
-T(size &lt; INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    int len =3D vsnprintf(str, size, format, arglist);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    va_end(arglist);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    return (len &gt;=3D 0 &amp;&amp; =
-len &lt; (ssize_t)size);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan> #ifdef VERIFY_ALIGNMENT</span><br><span> void</span><br><span> valign4=
-(const struct buffer *buf, const char *file, const int line)</span><br><spa=
-n>diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h</span><br><span>=
-index 7bb491d..040f752 100644</span><br><span>--- a/src/openvpn/buffer.h</s=
-pan><br><span>+++ b/src/openvpn/buffer.h</span><br><span>@@ -972,6 +972,29 =
-@@</span><br><span>     return 0 =3D=3D strncmp(str, prefix, strlen(prefix)=
-);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * Like snprintf() but returns an boolean.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * To check the return value of snprintf() one needs to</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * do multiple comparisons of=
- the \p size parameter</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * against the return value. Doesn&#39;t get prettier by</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * them being different types with =
-different signedness</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * and size.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * So this function all=
-ows to wrap all of that into one</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * boolean return value.</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @return true if snprintf() was successful and not truncated.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+bool checked_snprintf(char *str, size_t size, =
-const char *format, ...)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#ifdef __GNUC__</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#if __USE_MINGW_ANSI_STDIO</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    __attribute__((format(gnu_printf, 3, 4)))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    __attribute__((format(__printf__, 3, 4)))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    ;</span><br><span> </span><br><span> /*</span><br>=
-<span>  * Verify that a pointer is correctly aligned</span><br><span>diff -=
--git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><b=
-r><span>index e8931d7..7aaea3d 100644</span><br><span>--- a/src/openvpn/cry=
-pto_mbedtls.c</span><br><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br>=
-<span>@@ -1014,7 +1014,7 @@</span><br><span> {</span><br><span>     char pr=
-efix[256];</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, func, li=
-ne) &gt;=3D sizeof(prefix))</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    if (!checked_snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;=
-, func, line))</span><br><span>     {</span><br><span>         return mbed_=
-log_err(flags, errval, func);</span><br><span>     }</span><br><span>@@ -11=
-04,11 +1104,11 @@</span><br><span>     char header[1000 + 1] =3D { 0 };</sp=
-an><br><span>     char footer[1000 + 1] =3D { 0 };</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(header, siz=
-eof(header), &quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof(header)=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!checked_s=
-nprintf(header, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name))</s=
-pan><br><span>     {</span><br><span>         return false;</span><br><span=
->     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprin=
-tf(footer, sizeof(footer), &quot;-----END %s-----\n&quot;, name) &gt;=3D si=
-zeof(footer))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- (!checked_snprintf(footer, sizeof(footer), &quot;-----END %s-----\n&quot;,=
- name))</span><br><span>     {</span><br><span>         return false;</span=
-><br><span>     }</span><br><span>@@ -1142,11 +1142,11 @@</span><br><span> =
-    char header[1000 + 1] =3D { 0 };</span><br><span>     char footer[1000 =
-+ 1] =3D { 0 };</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if (snprintf(header, sizeof(header), &quot;-----BEGIN %s---=
---&quot;, name) &gt;=3D sizeof(header))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (!checked_snprintf(header, sizeof(header), &quot=
-;-----BEGIN %s-----&quot;, name))</span><br><span>     {</span><br><span>  =
-       return false;</span><br><span>     }</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    if (snprintf(footer, sizeof(footer), &quot;-----E=
-ND %s-----&quot;, name) &gt;=3D sizeof(footer))</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    if (!checked_snprintf(footer, sizeof(footer=
-), &quot;-----END %s-----&quot;, name))</span><br><span>     {</span><br><s=
-pan>         return false;</span><br><span>     }</span><br><span>diff --gi=
-t a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_legacy=
-.c</span><br><span>index 00fe542..237564c 100644</span><br><span>--- a/src/=
-openvpn/crypto_mbedtls_legacy.c</span><br><span>+++ b/src/openvpn/crypto_mb=
-edtls_legacy.c</span><br><span>@@ -130,7 +130,7 @@</span><br><span> {</span=
-><br><span>     char prefix[256];</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(prefix, sizeof(prefix), &q=
-uot;%s:%d&quot;, func, line) &gt;=3D sizeof(prefix))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snprintf(prefix, sizeof(=
-prefix), &quot;%s:%d&quot;, func, line))</span><br><span>     {</span><br><=
-span>         return mbed_log_err(flags, errval, func);</span><br><span>   =
-  }</span><br><span>@@ -246,11 +246,11 @@</span><br><span>     char header[=
-1000 + 1] =3D { 0 };</span><br><span>     char footer[1000 + 1] =3D { 0 };<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (snprintf(header, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name=
-) &gt;=3D sizeof(header))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    if (!checked_snprintf(header, sizeof(header), &quot;-----BEGIN %s=
------\n&quot;, name))</span><br><span>     {</span><br><span>         retur=
-n false;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (snprintf(footer, sizeof(footer), &quot;-----END %s-----\n=
-&quot;, name) &gt;=3D sizeof(footer))</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if (!checked_snprintf(footer, sizeof(footer), &quot;-=
-----END %s-----\n&quot;, name))</span><br><span>     {</span><br><span>    =
-     return false;</span><br><span>     }</span><br><span>@@ -283,11 +283,1=
-1 @@</span><br><span>     char header[1000 + 1] =3D { 0 };</span><br><span>=
-     char footer[1000 + 1] =3D { 0 };</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(header, sizeof(header), =
-&quot;-----BEGIN %s-----&quot;, name) &gt;=3D sizeof(header))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snprintf(header,=
- sizeof(header), &quot;-----BEGIN %s-----&quot;, name))</span><br><span>   =
-  {</span><br><span>         return false;</span><br><span>     }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(footer, sizeof=
-(footer), &quot;-----END %s-----&quot;, name) &gt;=3D sizeof(footer))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snprintf=
-(footer, sizeof(footer), &quot;-----END %s-----&quot;, name))</span><br><sp=
-an>     {</span><br><span>         return false;</span><br><span>     }</sp=
-an><br><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><=
-span>index f4f7779..3a294ec 100644</span><br><span>--- a/src/openvpn/dns.c<=
-/span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -485,13 +485,11 =
-@@</span><br><span> </span><br><span>     if (j &lt; 0)</span><br><span>   =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int =
-ret =3D snprintf(name, sizeof(name), format, i);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        name_ok =3D (ret &gt; 0 &amp;&amp; ret &=
-lt; sizeof(name));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       name_ok =3D checked_snprintf(name, sizeof(name), format, i);</span><=
-br><span>     }</span><br><span>     else</span><br><span>     {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        const int ret =3D snprin=
-tf(name, sizeof(name), format, i, j);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        name_ok =3D (ret &gt; 0 &amp;&amp; ret &lt; sizeof(=
-name));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        name=
-_ok =3D checked_snprintf(name, sizeof(name), format, i, j);</span><br><span=
->     }</span><br><span> </span><br><span>     if (!name_ok)</span><br><spa=
-n>diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><br><spa=
-n>index 99ac45c..d992097 100644</span><br><span>--- a/src/openvpn/env_set.c=
-</span><br><span>+++ b/src/openvpn/env_set.c</span><br><span>@@ -334,7 +334=
-,7 @@</span><br><span>     strcpy(tmpname, name);</span><br><span>     whil=
-e (NULL !=3D env_set_get(es, tmpname) &amp;&amp; counter &lt; 1000)</span><=
-br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  ASSERT(snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, counter) &=
-lt; tmpname_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      ASSERT(checked_snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name=
-, counter));</span><br><span>         counter++;</span><br><span>     }</sp=
-an><br><span>     if (counter &lt; 1000)</span><br><span>diff --git a/src/o=
-penvpn/platform.c b/src/openvpn/platform.c</span><br><span>index 4f0eddf..3=
-a6b272 100644</span><br><span>--- a/src/openvpn/platform.c</span><br><span>=
-+++ b/src/openvpn/platform.c</span><br><span>@@ -550,9 +550,8 @@</span><br>=
-<span>     {</span><br><span>         ++attempts;</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        const int ret =3D snp=
-rintf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                                 (=
-unsigned long)get_random(), (unsigned long)get_random());</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        if (ret &lt; 0 || ret &gt;=3D s=
-izeof(fname))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  if (!checked_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len, pr=
-efix,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-                (unsigned long)get_random(), (unsigned long)get_random()))<=
-/span><br><span>         {</span><br><span>             msg(M_WARN, &quot;E=
-RROR: temporary filename too long&quot;);</span><br><span>             retu=
-rn NULL;</span><br><span>diff --git a/src/openvpn/proxy.c b/src/openvpn/pro=
-xy.c</span><br><span>index b355827..9f3ec93 100644</span><br><span>--- a/sr=
-c/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><br><span=
->@@ -771,11 +771,10 @@</span><br><span>                 }</span><br><span> =
-</span><br><span>                 /* send digest response */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                int sret =3D snprint=
-f(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
- buf, sizeof(buf),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-                 &quot;Proxy-Authorization: Digest username=3D\&quot;%s\&qu=
-ot;, realm=3D\&quot;%s\&quot;, nonce=3D\&quot;%s\&quot;, uri=3D\&quot;%s\&q=
-uot;, qop=3D%s, nc=3D%s, cnonce=3D\&quot;%s\&quot;, response=3D\&quot;%s\&q=
-uot;%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-            username, realm, nonce, uri, qop, nonce_count, cnonce, response=
-, opaque_kv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-        if (sret &gt;=3D sizeof(buf))</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                if (!checked_snprintf(</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                        buf, sizeof(bu=
-f),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-        &quot;Proxy-Authorization: Digest username=3D\&quot;%s\&quot;, real=
-m=3D\&quot;%s\&quot;, nonce=3D\&quot;%s\&quot;, uri=3D\&quot;%s\&quot;, qop=
-=3D%s, nc=3D%s, cnonce=3D\&quot;%s\&quot;, response=3D\&quot;%s\&quot;%s&qu=
-ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-         username, realm, nonce, uri, qop, nonce_count, cnonce, response, o=
-paque_kv))</span><br><span>                 {</span><br><span>             =
-        goto error;</span><br><span>                 }</span><br><span>diff=
- --git a/src/openvpn/socks.c b/src/openvpn/socks.c</span><br><span>index 5c=
-b5912..19f3d54 100644</span><br><span>--- a/src/openvpn/socks.c</span><br><=
-span>+++ b/src/openvpn/socks.c</span><br><span>@@ -119,10 +119,9 @@</span><=
-br><span>         goto cleanup;</span><br><span>     }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    int sret =3D snprint=
-f(to_send, sizeof(to_send), &quot;\x01%c%s%c%s&quot;, (int)strlen(creds.use=
-rname),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-          creds.username, (int)strlen(creds.password), creds.password);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(sret &gt;=3D 0=
- &amp;&amp; sret &lt;=3D sizeof(to_send));</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    ASSERT(checked_snprintf(to_send, sizeof(to_send), &quot;\x01%c%s%c%s&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-               (int)strlen(creds.username), creds.username,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                            (int)st=
-rlen(creds.password), creds.password));</span><br><span>     if (!proxy_sen=
-d(sd, to_send, strlen(to_send)))</span><br><span>     {</span><br><span>   =
-      goto cleanup;</span><br><span>diff --git a/src/openvpn/ssl_ncp.c b/sr=
-c/openvpn/ssl_ncp.c</span><br><span>index 20fd2f0..686f823 100644</span><br=
-><span>--- a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn/ssl_nc=
-p.c</span><br><span>@@ -198,7 +198,7 @@</span><br><span>     size_t newlen =
-=3D strlen(o-&gt;ncp_ciphers) + 1 + strlen(ciphername) + 1;</span><br><span=
->     char *ncp_ciphers =3D gc_malloc(newlen, false, &amp;o-&gt;gc);</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT=
-(snprintf(ncp_ciphers, newlen, &quot;%s:%s&quot;, o-&gt;ncp_ciphers, cipher=
-name) &lt; newlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    ASSERT(checked_snprintf(ncp_ciphers, newlen, &quot;%s:%s&quot;, o-&gt;n=
-cp_ciphers, ciphername));</span><br><span>     o-&gt;ncp_ciphers =3D ncp_ci=
-phers;</span><br><span> }</span><br><span> </span><br><span>diff --git a/sr=
-c/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>index 8bd=
-8e96..d44f25f 100644</span><br><span>--- a/src/openvpn/ssl_verify.c</span><=
-br><span>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -548,7 +548,7 @@=
-</span><br><span>         goto cleanup;</span><br><span>     }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf=
-(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_dir, PATH_SEPARATOR, serial) &gt;=
-=3D sizeof(fn))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (!checked_snprintf(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_dir, PATH_SEP=
-ARATOR, serial))</span><br><span>     {</span><br><span>         msg(D_HAND=
-SHAKE, &quot;VERIFY CRL: filename overflow&quot;);</span><br><span>        =
- goto cleanup;</span><br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.=
-c b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>index adeaa13..ad5479c=
- 100644</span><br><span>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><s=
-pan>+++ b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>@@ -93,9 +93,7 @=
-@</span><br><span> </span><br><span>         ret =3D mbedtls_x509_crt_verif=
-y_info(errstr, sizeof(errstr) - 1, &quot;&quot;, *flags);</span><br><span> =
-        if (ret &lt;=3D 0</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            &amp;&amp; snprintf(errstr, sizeof(errstr), &quot;Could not=
- retrieve error string, flags=3D%&quot; PRIx32,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                        *flags)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                   &gt;=3D sizeof(errst=
-r))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &amp=
-;&amp; !checked_snprintf(errstr, sizeof(errstr), &quot;Could not retrieve e=
-rror string, flags=3D%&quot; PRIx32, *flags))</span><br><span>         {</s=
-pan><br><span>             errstr[0] =3D &#39;\0&#39;;</span><br><span>    =
-     }</span><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</=
-span><br><span>index 3f9ee5d..ecebff7 100644</span><br><span>--- a/src/open=
-vpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ -3558,=
-9 +3558,7 @@</span><br><span>             msg(M_FATAL, &quot;Error enumerat=
-ing registry subkeys of key: %s&quot;, ADAPTER_KEY);</span><br><span>      =
-   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        int ret =3D snprintf(unit_string, sizeof(unit_string), &quot;%s\\%=
-s&quot;, ADAPTER_KEY, enum_name);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (ret &lt; 0 || ret &gt;=3D sizeof(unit_string))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        if (!checked_snprintf(unit_string, si=
-zeof(unit_string), &quot;%s\\%s&quot;, ADAPTER_KEY, enum_name))</span><br><=
-span>         {</span><br><span>             msg(M_WARN, &quot;Error constr=
-ucting unit string for %s&quot;, enum_name);</span><br><span>             c=
-ontinue;</span><br><span>@@ -3673,10 +3671,9 @@</span><br><span>           =
-  msg(M_FATAL, &quot;Error enumerating registry subkeys of key: %s&quot;, N=
-ETWORK_CONNECTIONS_KEY);</span><br><span>         }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        int ret =3D snprint=
-f(connection_string, sizeof(connection_string), &quot;%s\\%s\\Connection&qu=
-ot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-          NETWORK_CONNECTIONS_KEY, enum_name);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        if (ret &lt; 0 || ret &gt;=3D sizeof(connection_string))</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!checked_snpri=
-ntf(connection_string, sizeof(connection_string),</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                              &quot;%s\\%s\\C=
-onnection&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                           NETWORK_CONNECTIONS_KEY, enum_name))</span><br><=
-span>         {</span><br><span>             msg(M_WARN, &quot;Error constr=
-ucting connection string for %s&quot;, enum_name);</span><br><span>        =
-     continue;</span><br><span>diff --git a/src/openvpn/win32.c b/src/openv=
-pn/win32.c</span><br><span>index b938d7b..ac449fd 100644</span><br><span>--=
-- a/src/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br=
-><span>@@ -881,9 +881,8 @@</span><br><span>     char force_path[256];</span=
-><br><span>     char *sysroot =3D get_win_sys_path();</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(force_pa=
-th, sizeof(force_path), &quot;PATH=3D%s\\System32;%s;%s\\System32\\Wbem&quo=
-t;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 s=
-ysroot, sysroot, sysroot)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        &gt;=3D sizeof(force_path))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (!checked_snprintf(force_path, sizeof(force_path=
-), &quot;PATH=3D%s\\System32;%s;%s\\System32\\Wbem&quot;,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                          sysroot, sy=
-sroot, sysroot))</span><br><span>     {</span><br><span>         msg(M_WARN=
-, &quot;env_block: default path truncated to %s&quot;, force_path);</span><=
-br><span>     }</span><br><span>diff --git a/tests/unit_tests/openvpn/test_=
-buffer.c b/tests/unit_tests/openvpn/test_buffer.c</span><br><span>index 1c7=
-8cf0..5f43e0d 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_bu=
-ffer.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_buffer.c</span><=
-br><span>@@ -424,6 +424,16 @@</span><br><span> #endif</span><br><span> }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+stat=
-ic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_checked=
-_snprintf(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char buf[1=
-0];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(=
-checked_snprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello&quot;));</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(checked=
-_snprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello Foo&quot;));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(checked_s=
-nprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello Foo!&quot;));</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(checked_sn=
-printf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello World!&quot;));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> test=
-_buffer_chomp(void **state)</span><br><span> {</span><br><span>@@ -528,6 +5=
-38,7 @@</span><br><span>         cmocka_unit_test(test_character_class),</s=
-pan><br><span>         cmocka_unit_test(test_character_string_mod_buf),</sp=
-an><br><span>         cmocka_unit_test(test_snprintf),</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_checked_sn=
-printf),</span><br><span>         cmocka_unit_test(test_buffer_chomp),</spa=
-n><br><span>         cmocka_unit_test(test_buffer_parse)</span><br><span>  =
-   };</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/1489?usp=3Demail">change 1489</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1489?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1489?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">buffer: Add checked_snprintf function and use it=
+ in the code<br><br>This reintroduces a function that converts the result<b=
+r>of snprintf to a boolean since the check is always the<br>same but annoyi=
+ngly verbose. And it gets worse when you add<br>-Wsign-compare.<br><br>So i=
+n preparation of introducing -Wsign-compare wrap this<br>check in the funct=
+ion.<br><br>This somewhat reverts the removal of openvpn_snprintf.<br>But n=
+ote that that was originally introduced to work<br>around the broken snprin=
+tf of Windows. So this is not<br>exactly the same. For this reason I also c=
+lassified this<br>as a buffer function and not a compat function.<br><br>Ch=
+ange-Id: Ia3477b8ee7a637c15aad7f285144280595cda5d5<br>Signed-off-by: Frank =
+Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...493...=
+1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1489<br>M=
+essage-Id: &lt;20260304110455.15859-1-gert@...1296...&gt;<br>URL: https://w=
+ww.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35872.html<br>Si=
+gned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/b=
+uffer.c<br>M src/openvpn/buffer.h<br>M src/openvpn/crypto_mbedtls.c<br>M sr=
+c/openvpn/crypto_mbedtls_legacy.c<br>M src/openvpn/dns.c<br>M src/openvpn/e=
+nv_set.c<br>M src/openvpn/platform.c<br>M src/openvpn/proxy.c<br>M src/open=
+vpn/socks.c<br>M src/openvpn/ssl_ncp.c<br>M src/openvpn/ssl_verify.c<br>M s=
+rc/openvpn/ssl_verify_mbedtls.c<br>M src/openvpn/tun.c<br>M src/openvpn/win=
+32.c<br>M tests/unit_tests/openvpn/test_buffer.c<br>15 files changed, 76 in=
+sertions(+), 42 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><span=
+>index 280cbc8..745b1c8 100644</span><br><span>--- a/src/openvpn/buffer.c</=
+span><br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -1134,6 +1134,=
+17 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+checked_snprintf(char *str, size_t size, con=
+st char *format, ...)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    va_list argl=
+ist;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    va_start(ar=
+glist, format);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+ASSERT(size &lt; INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    int len =3D vsnprintf(str, size, format, arglist);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    va_end(arglist);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    return (len &gt;=3D 0 &amp;&=
+amp; len &lt; (ssize_t)size);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span> #ifdef VERIFY_ALIGNMENT</span><br><span> void</span><br><span> va=
+lign4(const struct buffer *buf, const char *file, const int line)</span><br=
+><span>diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h</span><br><=
+span>index 7bb491d..040f752 100644</span><br><span>--- a/src/openvpn/buffer=
+.h</span><br><span>+++ b/src/openvpn/buffer.h</span><br><span>@@ -972,6 +97=
+2,29 @@</span><br><span>     return 0 =3D=3D strncmp(str, prefix, strlen(pr=
+efix));</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * Like snprintf() but returns an boolean.</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * To check the return value of snprintf() one needs to</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * do multiple compari=
+sons of the \p size parameter</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * against the return value. Doesn&#39;t get prettier by</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * them being different type=
+s with different signedness</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * and size.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * So this funct=
+ion allows to wrap all of that into one</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * boolean return value.</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * @return true if snprintf() was successful and not truncated.</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+bool checked_snprintf(char *str, size_t=
+ size, const char *format, ...)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#ifdef __GNUC__</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#if __USE_MINGW_ANSI_STDIO</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    __attribute__((format(gnu_printf, 3, 4)))</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    __attribute__((format(__printf__, 3, 4)))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    ;</span><br><span> </span><br><span> /*</spa=
+n><br><span>  * Verify that a pointer is correctly aligned</span><br><span>=
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</s=
+pan><br><span>index e8931d7..7aaea3d 100644</span><br><span>--- a/src/openv=
+pn/crypto_mbedtls.c</span><br><span>+++ b/src/openvpn/crypto_mbedtls.c</spa=
+n><br><span>@@ -1014,7 +1014,7 @@</span><br><span> {</span><br><span>     c=
+har prefix[256];</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    if (snprintf(prefix, sizeof(prefix), &quot;%s:%d&quot;, fu=
+nc, line) &gt;=3D sizeof(prefix))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (!checked_snprintf(prefix, sizeof(prefix), &quot;%s:%d=
+&quot;, func, line))</span><br><span>     {</span><br><span>         return=
+ mbed_log_err(flags, errval, func);</span><br><span>     }</span><br><span>=
+@@ -1104,11 +1104,11 @@</span><br><span>     char header[1000 + 1] =3D { 0 =
+};</span><br><span>     char footer[1000 + 1] =3D { 0 };</span><br><span> <=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(heade=
+r, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, name) &gt;=3D sizeof(h=
+eader))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!che=
+cked_snprintf(header, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, nam=
+e))</span><br><span>     {</span><br><span>         return false;</span><br=
+><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (=
+snprintf(footer, sizeof(footer), &quot;-----END %s-----\n&quot;, name) &gt;=
+=3D sizeof(footer))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    if (!checked_snprintf(footer, sizeof(footer), &quot;-----END %s-----\n&=
+quot;, name))</span><br><span>     {</span><br><span>         return false;=
+</span><br><span>     }</span><br><span>@@ -1142,11 +1142,11 @@</span><br><=
+span>     char header[1000 + 1] =3D { 0 };</span><br><span>     char footer=
+[1000 + 1] =3D { 0 };</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    if (snprintf(header, sizeof(header), &quot;-----BEGIN=
+ %s-----&quot;, name) &gt;=3D sizeof(header))</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (!checked_snprintf(header, sizeof(header),=
+ &quot;-----BEGIN %s-----&quot;, name))</span><br><span>     {</span><br><s=
+pan>         return false;</span><br><span>     }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    if (snprintf(footer, sizeof(footer), &quot;=
+-----END %s-----&quot;, name) &gt;=3D sizeof(footer))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snprintf(footer, sizeof(=
+footer), &quot;-----END %s-----&quot;, name))</span><br><span>     {</span>=
+<br><span>         return false;</span><br><span>     }</span><br><span>dif=
+f --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_=
+legacy.c</span><br><span>index 00fe542..237564c 100644</span><br><span>--- =
+a/src/openvpn/crypto_mbedtls_legacy.c</span><br><span>+++ b/src/openvpn/cry=
+pto_mbedtls_legacy.c</span><br><span>@@ -130,7 +130,7 @@</span><br><span> {=
+</span><br><span>     char prefix[256];</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(prefix, sizeof(prefix)=
+, &quot;%s:%d&quot;, func, line) &gt;=3D sizeof(prefix))</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snprintf(prefix, size=
+of(prefix), &quot;%s:%d&quot;, func, line))</span><br><span>     {</span><b=
+r><span>         return mbed_log_err(flags, errval, func);</span><br><span>=
+     }</span><br><span>@@ -246,11 +246,11 @@</span><br><span>     char head=
+er[1000 + 1] =3D { 0 };</span><br><span>     char footer[1000 + 1] =3D { 0 =
+};</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   if (snprintf(header, sizeof(header), &quot;-----BEGIN %s-----\n&quot;, n=
+ame) &gt;=3D sizeof(header))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    if (!checked_snprintf(header, sizeof(header), &quot;-----BEGIN=
+ %s-----\n&quot;, name))</span><br><span>     {</span><br><span>         re=
+turn false;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    if (snprintf(footer, sizeof(footer), &quot;-----END %s----=
+-\n&quot;, name) &gt;=3D sizeof(footer))</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (!checked_snprintf(footer, sizeof(footer), &quo=
+t;-----END %s-----\n&quot;, name))</span><br><span>     {</span><br><span> =
+        return false;</span><br><span>     }</span><br><span>@@ -283,11 +28=
+3,11 @@</span><br><span>     char header[1000 + 1] =3D { 0 };</span><br><sp=
+an>     char footer[1000 + 1] =3D { 0 };</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(header, sizeof(header=
+), &quot;-----BEGIN %s-----&quot;, name) &gt;=3D sizeof(header))</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snprintf(head=
+er, sizeof(header), &quot;-----BEGIN %s-----&quot;, name))</span><br><span>=
+     {</span><br><span>         return false;</span><br><span>     }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(footer, siz=
+eof(footer), &quot;-----END %s-----&quot;, name) &gt;=3D sizeof(footer))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!checked_snpri=
+ntf(footer, sizeof(footer), &quot;-----END %s-----&quot;, name))</span><br>=
+<span>     {</span><br><span>         return false;</span><br><span>     }<=
+/span><br><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><b=
+r><span>index f4f7779..3a294ec 100644</span><br><span>--- a/src/openvpn/dns=
+.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -485,13 +485,=
+11 @@</span><br><span> </span><br><span>     if (j &lt; 0)</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const i=
+nt ret =3D snprintf(name, sizeof(name), format, i);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        name_ok =3D (ret &gt; 0 &amp;&amp; =
+ret &lt; sizeof(name));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        name_ok =3D checked_snprintf(name, sizeof(name), format, i);</s=
+pan><br><span>     }</span><br><span>     else</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int ret =3D s=
+nprintf(name, sizeof(name), format, i, j);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        name_ok =3D (ret &gt; 0 &amp;&amp; ret &lt; si=
+zeof(name));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ name_ok =3D checked_snprintf(name, sizeof(name), format, i, j);</span><br>=
+<span>     }</span><br><span> </span><br><span>     if (!name_ok)</span><br=
+><span>diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><br=
+><span>index 99ac45c..d992097 100644</span><br><span>--- a/src/openvpn/env_=
+set.c</span><br><span>+++ b/src/openvpn/env_set.c</span><br><span>@@ -334,7=
+ +334,7 @@</span><br><span>     strcpy(tmpname, name);</span><br><span>    =
+ while (NULL !=3D env_set_get(es, tmpname) &amp;&amp; counter &lt; 1000)</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       ASSERT(snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;, name, count=
+er) &lt; tmpname_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        ASSERT(checked_snprintf(tmpname, tmpname_len, &quot;%s_%u&quot;,=
+ name, counter));</span><br><span>         counter++;</span><br><span>     =
+}</span><br><span>     if (counter &lt; 1000)</span><br><span>diff --git a/=
+src/openvpn/platform.c b/src/openvpn/platform.c</span><br><span>index 4f0ed=
+df..3a6b272 100644</span><br><span>--- a/src/openvpn/platform.c</span><br><=
+span>+++ b/src/openvpn/platform.c</span><br><span>@@ -550,9 +550,8 @@</span=
+><br><span>     {</span><br><span>         ++attempts;</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int ret =
+=3D snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                           =
+      (unsigned long)get_random(), (unsigned long)get_random());</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        if (ret &lt; 0 || ret &g=
+t;=3D sizeof(fname))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if (!checked_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_=
+len, prefix,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                       (unsigned long)get_random(), (unsigned long)get_rand=
+om()))</span><br><span>         {</span><br><span>             msg(M_WARN, =
+&quot;ERROR: temporary filename too long&quot;);</span><br><span>          =
+   return NULL;</span><br><span>diff --git a/src/openvpn/proxy.c b/src/open=
+vpn/proxy.c</span><br><span>index b355827..9f3ec93 100644</span><br><span>-=
+-- a/src/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</span><b=
+r><span>@@ -771,11 +771,10 @@</span><br><span>                 }</span><br>=
+<span> </span><br><span>                 /* send digest response */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                int sret =3D =
+snprintf(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+        buf, sizeof(buf),</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    &quot;Proxy-Authorization: Digest username=3D\&quot=
+;%s\&quot;, realm=3D\&quot;%s\&quot;, nonce=3D\&quot;%s\&quot;, uri=3D\&quo=
+t;%s\&quot;, qop=3D%s, nc=3D%s, cnonce=3D\&quot;%s\&quot;, response=3D\&quo=
+t;%s\&quot;%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                   username, realm, nonce, uri, qop, nonce_count, cnonce, r=
+esponse, opaque_kv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+               if (sret &gt;=3D sizeof(buf))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                if (!checked_snprintf(</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                        buf, si=
+zeof(buf),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+               &quot;Proxy-Authorization: Digest username=3D\&quot;%s\&quot=
+;, realm=3D\&quot;%s\&quot;, nonce=3D\&quot;%s\&quot;, uri=3D\&quot;%s\&quo=
+t;, qop=3D%s, nc=3D%s, cnonce=3D\&quot;%s\&quot;, response=3D\&quot;%s\&quo=
+t;%s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                username, realm, nonce, uri, qop, nonce_count, cnonce, resp=
+onse, opaque_kv))</span><br><span>                 {</span><br><span>      =
+               goto error;</span><br><span>                 }</span><br><sp=
+an>diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c</span><br><span>i=
+ndex 5cb5912..19f3d54 100644</span><br><span>--- a/src/openvpn/socks.c</spa=
+n><br><span>+++ b/src/openvpn/socks.c</span><br><span>@@ -119,10 +119,9 @@<=
+/span><br><span>         goto cleanup;</span><br><span>     }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int sret =3D =
+snprintf(to_send, sizeof(to_send), &quot;\x01%c%s%c%s&quot;, (int)strlen(cr=
+eds.username),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                 creds.username, (int)strlen(creds.password), creds.passwor=
+d);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(sret &g=
+t;=3D 0 &amp;&amp; sret &lt;=3D sizeof(to_send));</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    ASSERT(checked_snprintf(to_send, sizeof(to_send), &quot;\x01%c=
+%s%c%s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                      (int)strlen(creds.username), creds.username,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+(int)strlen(creds.password), creds.password));</span><br><span>     if (!pr=
+oxy_send(sd, to_send, strlen(to_send)))</span><br><span>     {</span><br><s=
+pan>         goto cleanup;</span><br><span>diff --git a/src/openvpn/ssl_ncp=
+.c b/src/openvpn/ssl_ncp.c</span><br><span>index 20fd2f0..686f823 100644</s=
+pan><br><span>--- a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn=
+/ssl_ncp.c</span><br><span>@@ -198,7 +198,7 @@</span><br><span>     size_t =
+newlen =3D strlen(o-&gt;ncp_ciphers) + 1 + strlen(ciphername) + 1;</span><b=
+r><span>     char *ncp_ciphers =3D gc_malloc(newlen, false, &amp;o-&gt;gc);=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ ASSERT(snprintf(ncp_ciphers, newlen, &quot;%s:%s&quot;, o-&gt;ncp_ciphers,=
+ ciphername) &lt; newlen);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ASSERT(checked_snprintf(ncp_ciphers, newlen, &quot;%s:%s&quot;, =
+o-&gt;ncp_ciphers, ciphername));</span><br><span>     o-&gt;ncp_ciphers =3D=
+ ncp_ciphers;</span><br><span> }</span><br><span> </span><br><span>diff --g=
+it a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><span>in=
+dex 8bd8e96..d44f25f 100644</span><br><span>--- a/src/openvpn/ssl_verify.c<=
+/span><br><span>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -548,7 +5=
+48,7 @@</span><br><span>         goto cleanup;</span><br><span>     }</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (s=
+nprintf(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_dir, PATH_SEPARATOR, serial=
+) &gt;=3D sizeof(fn))</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!checked_snprintf(fn, sizeof(fn), &quot;%s%c%s&quot;, crl_dir, PA=
+TH_SEPARATOR, serial))</span><br><span>     {</span><br><span>         msg(=
+D_HANDSHAKE, &quot;VERIFY CRL: filename overflow&quot;);</span><br><span>  =
+       goto cleanup;</span><br><span>diff --git a/src/openvpn/ssl_verify_mb=
+edtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>index adeaa13..a=
+d5479c 100644</span><br><span>--- a/src/openvpn/ssl_verify_mbedtls.c</span>=
+<br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</span><br><span>@@ -93,9 +=
+93,7 @@</span><br><span> </span><br><span>         ret =3D mbedtls_x509_crt=
+_verify_info(errstr, sizeof(errstr) - 1, &quot;&quot;, *flags);</span><br><=
+span>         if (ret &lt;=3D 0</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            &amp;&amp; snprintf(errstr, sizeof(errstr), &quot;Cou=
+ld not retrieve error string, flags=3D%&quot; PRIx32,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                        *flags)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                   &gt;=3D sizeof=
+(errstr))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  &amp;&amp; !checked_snprintf(errstr, sizeof(errstr), &quot;Could not retr=
+ieve error string, flags=3D%&quot; PRIx32, *flags))</span><br><span>       =
+  {</span><br><span>             errstr[0] =3D &#39;\0&#39;;</span><br><spa=
+n>         }</span><br><span>diff --git a/src/openvpn/tun.c b/src/openvpn/t=
+un.c</span><br><span>index 3f9ee5d..ecebff7 100644</span><br><span>--- a/sr=
+c/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><span>@@ =
+-3558,9 +3558,7 @@</span><br><span>             msg(M_FATAL, &quot;Error en=
+umerating registry subkeys of key: %s&quot;, ADAPTER_KEY);</span><br><span>=
+         }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        int ret =3D snprintf(unit_string, sizeof(unit_string), &quot=
+;%s\\%s&quot;, ADAPTER_KEY, enum_name);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     if (ret &lt; 0 || ret &gt;=3D sizeof(unit_string))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        if (!checked_snprintf(unit_stri=
+ng, sizeof(unit_string), &quot;%s\\%s&quot;, ADAPTER_KEY, enum_name))</span=
+><br><span>         {</span><br><span>             msg(M_WARN, &quot;Error =
+constructing unit string for %s&quot;, enum_name);</span><br><span>        =
+     continue;</span><br><span>@@ -3673,10 +3671,9 @@</span><br><span>     =
+        msg(M_FATAL, &quot;Error enumerating registry subkeys of key: %s&qu=
+ot;, NETWORK_CONNECTIONS_KEY);</span><br><span>         }</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int ret =3D s=
+nprintf(connection_string, sizeof(connection_string), &quot;%s\\%s\\Connect=
+ion&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+                NETWORK_CONNECTIONS_KEY, enum_name);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        if (ret &lt; 0 || ret &gt;=3D sizeof(connection_string))=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!checke=
+d_snprintf(connection_string, sizeof(connection_string),</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                              &quot;%s=
+\\%s\\Connection&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                              NETWORK_CONNECTIONS_KEY, enum_name))</spa=
+n><br><span>         {</span><br><span>             msg(M_WARN, &quot;Error=
+ constructing connection string for %s&quot;, enum_name);</span><br><span> =
+            continue;</span><br><span>diff --git a/src/openvpn/win32.c b/sr=
+c/openvpn/win32.c</span><br><span>index b938d7b..ac449fd 100644</span><br><=
+span>--- a/src/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</s=
+pan><br><span>@@ -881,9 +881,8 @@</span><br><span>     char force_path[256]=
+;</span><br><span>     char *sysroot =3D get_win_sys_path();</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (snprintf(f=
+orce_path, sizeof(force_path), &quot;PATH=3D%s\\System32;%s;%s\\System32\\W=
+bem&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+      sysroot, sysroot, sysroot)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        &gt;=3D sizeof(force_path))</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (!checked_snprintf(force_path, sizeof(for=
+ce_path), &quot;PATH=3D%s\\System32;%s;%s\\System32\\Wbem&quot;,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                          sysr=
+oot, sysroot, sysroot))</span><br><span>     {</span><br><span>         msg=
+(M_WARN, &quot;env_block: default path truncated to %s&quot;, force_path);<=
+/span><br><span>     }</span><br><span>diff --git a/tests/unit_tests/openvp=
+n/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c</span><br><span>in=
+dex 1c78cf0..5f43e0d 100644</span><br><span>--- a/tests/unit_tests/openvpn/=
+test_buffer.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_buffer.c<=
+/span><br><span>@@ -424,6 +424,16 @@</span><br><span> #endif</span><br><spa=
+n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_=
+checked_snprintf(void **state)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cha=
+r buf[10];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
+t_true(checked_snprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello&quot;=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(=
+checked_snprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello Foo&quot;));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ch=
+ecked_snprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello Foo!&quot;));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(che=
+cked_snprintf(buf, sizeof(buf), &quot;%s&quot;, &quot;Hello World!&quot;));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><spa=
+n> test_buffer_chomp(void **state)</span><br><span> {</span><br><span>@@ -5=
+28,6 +538,7 @@</span><br><span>         cmocka_unit_test(test_character_cla=
+ss),</span><br><span>         cmocka_unit_test(test_character_string_mod_bu=
+f),</span><br><span>         cmocka_unit_test(test_snprintf),</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_che=
+cked_snprintf),</span><br><span>         cmocka_unit_test(test_buffer_chomp=
+),</span><br><span>         cmocka_unit_test(test_buffer_parse)</span><br><=
+span>     };</span><br><span></span><br></pre><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1489?usp=3Demail">change 1489</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
+ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
+temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1489?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ia3477b8ee7a637c15aad7f28514=
@@ -863,5 +855,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---i7BAI7C4OoE=--
+--kevqqwLLPZ0=--
 
