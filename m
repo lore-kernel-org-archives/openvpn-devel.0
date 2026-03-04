@@ -1,10 +1,16 @@
-Date: Wed, 4 Mar 2026 22:50:32 +0100 (CET)
-Message-Id: <202603042150.624LoWbs068509@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260212110935.19541-1-frank@...2641...>
-References: <20260212110935.19541-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports: Review
- pkcs11-helper port
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Wed, 4 Mar 2026 22:31:40 +0000
+In-Reply-To: <gerrit.1772309250000.I5e17e184f666317df21460108da4f70670358ece@...2715...>
+References: <gerrit.1772309250000.I5e17e184f666317df21460108da4f70670358ece@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <17ae4250ec298e0eda793ecee6bfe7efb434bf4a-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="iW5/VOhKua4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use USER_PASS_LEN
+ for private key password buffer size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +19,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is "building funny things for windows" department which I do not
-know anything about - but if Yuriy says it's fine (and it does not
-touch actual code) who am I to complain.
+--iW5/VOhKua4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Lightly tested by pushing to GHA.
+selvanair has posted comments on this change by selvanair. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1553?usp=3Demail )
 
-Your patch has been applied to the master and release/2.7 branch
-(long-term maintenance).
+Change subject: Use USER_PASS_LEN for private key password buffer size
+......................................................................
 
-commit 4b2f1cd21c841c052f1fc9445c308a33ce79be79 (master)
-commit 30f7847c0b2916cd63fc2141839ba08edade0c55 (release/2.7)
-Author: Frank Lichtenheld
-Date:   Thu Feb 12 12:09:35 2026 +0100
 
-     vcpkg-ports: Review pkcs11-helper port
+Patch Set 1:
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1518
-     Message-Id: <20260212110935.19541-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35599.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+(1 comment)
+
+Patchset:
+
+PS1:
+Would be good to have this in 2.7.1..
+
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I5e17e184f666317df21460108da4f70670358ece
+Gerrit-Change-Number: 1553
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Comment-Date: Wed, 04 Mar 2026 22:31:40 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
+--iW5/VOhKua4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p><a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1553?usp=3Demail">View Change</a></p><p>1 c=
+omment:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin:=
+ 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;=
+"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: =
+4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1553?tab=3Dcomments&=
+amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"blocks" style=3D"white-s=
+pace: pre-wrap; word-wrap: break-word;">Would be good to have this in 2.7.1=
+..</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1553?usp=3Demail">change 1553</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1553?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5e17e184f666317df21460108da=
+4f70670358ece </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1553 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 04 Mar 2026 22:31:40=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+
+</body></html>=
+
+--iW5/VOhKua4=--
 
