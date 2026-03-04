@@ -1,11 +1,9 @@
+Date: Wed, 4 Mar 2026 17:11:49 +0100 (CET)
+Message-Id: <202603041611.624GBnan063432@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  4 Mar 2026 15:40:54 +0100
-Message-ID: <20260304144059.2518-1-gert@...1296...>
-In-Reply-To: <gerrit.1769512571000.Ida8e587a095bdfb821ee0a4783633f026d310476@...2715...>
-References: <gerrit.1769512571000.Ida8e587a095bdfb821ee0a4783633f026d310476@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] argv: Fix one type to avoid sign-compare
- warning
+In-Reply-To: <20260304142720.1311-1-gert@...1296...>
+References: <20260304142720.1311-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Enable -Wsign-compare
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,63 +14,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+Looks large, touches lots of files, but in effect does nothing more
+than "remove -Wno-sign-compare from CMakeLists/Autoconf, and add
+#pragma all over the place where we are hiding warnings, for now".
 
-len is already int, no need to throw another
-type into the mix.
+As we have agreed earlier on, this patch & the grunt of the "remove
+a block of warning and the #pragmas coming with it" work will only
+go to master (2.8-to-be).  If this excercise turns up real type handling
+bugs, they get backported, of course.
 
-Change-Id: Ida8e587a095bdfb821ee0a4783633f026d310476
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1494
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 4f0f2615f942feb3298f96b9c915d6682c5640e8
+Author: Frank Lichtenheld
+Date:   Wed Mar 4 15:27:12 2026 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1494
-This mail reflects revision 5 of this Change.
+     Enable -Wsign-compare
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1386
+     Message-Id: <20260304142720.1311-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35888.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-index b5d9603..6a5d92e 100644
---- a/src/openvpn/argv.c
-+++ b/src/openvpn/argv.c
-@@ -263,11 +263,6 @@
-     gc_free(&gc);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /**
-  *  Prepares argv format string for further processing
-  *
-@@ -389,7 +384,7 @@
-      *  Do the actual vsnprintf() operation, which expands the format
-      *  string with the provided arguments.
-      */
--    size_t size = len + 1;
-+    int size = len + 1;
-     char *buf = gc_malloc(size, false, &argres->gc);
-     len = vsnprintf(buf, size, f, arglist);
-     if (len < 0 || len >= size)
-@@ -423,10 +418,6 @@
-     return res;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /**
-  *  printf() variant which populates a struct argv.  It processes the
-  *  format string with the provided arguments.  For each space separator found
+
+--
+kind regards,
+
+Gert Doering
+
 
