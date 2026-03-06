@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri,  6 Mar 2026 17:29:19 +0100
-Message-ID: <20260306162925.2359-1-gert@...1296...>
-In-Reply-To: <gerrit.1771008284000.Ifc7ad2407b9cca8cfcef79d7392a058735416139@...2715...>
-References: <gerrit.1771008284000.Ifc7ad2407b9cca8cfcef79d7392a058735416139@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 6 Mar 2026 16:29:57 +0000
+In-Reply-To: <gerrit.1771008284000.Ibc7a6d8c61b9e584bf5d2d13fb5072b7a28fc53b@...2715...>
+References: <gerrit.1771008284000.Ibc7a6d8c61b9e584bf5d2d13fb5072b7a28fc53b@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c07aa351584df454ab3354e2b9ecaccae5765150-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] tun: Avoid sign-compare issues in
- tun_read_queue
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="RwQzr43qzIo="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: tls_crypt: Avoid a
+ sign-compare warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,160 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--RwQzr43qzIo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Just use the same type that the other values
-already have.
+Attention is currently required from: flichtenheld, plaisthos.
 
-While here review and remove some other useless
-casts in msg() calls.
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1524?usp=3Demail )
 
-Change-Id: Ifc7ad2407b9cca8cfcef79d7392a058735416139
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1525
----
+Change subject: tls_crypt: Avoid a sign-compare warning
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1525
-This mail reflects revision 3 of this Change.
+Patch Set 3: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8105db2..f46802f 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3264,24 +3264,18 @@
- 
- #elif defined(_WIN32)
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- int
- tun_read_queue(struct tuntap *tt, int maxsize)
- {
-     if (tt->reads.iostate == IOSTATE_INITIAL)
-     {
--        DWORD len;
-         BOOL status;
-         int err;
- 
-         /* reset buf to its initial state */
-         tt->reads.buf = tt->reads.buf_init;
- 
--        len = maxsize ? maxsize : BLEN(&tt->reads.buf);
-+        int len = maxsize ? maxsize : BLEN(&tt->reads.buf);
-         ASSERT(len <= BLEN(&tt->reads.buf));
- 
-         /* the overlapped read will signal this event on I/O completion */
-@@ -3298,8 +3292,8 @@
-             tt->reads.iostate = IOSTATE_IMMEDIATE_RETURN;
-             tt->reads.status = 0;
- 
--            dmsg(D_WIN32_IO, "WIN32 I/O: TAP Read immediate return [%d,%d]", (int)len,
--                 (int)tt->reads.size);
-+            dmsg(D_WIN32_IO, "WIN32 I/O: TAP Read immediate return [%d,%lu]", len,
-+                 tt->reads.size);
-         }
-         else
-         {
-@@ -3308,7 +3302,7 @@
-             {
-                 tt->reads.iostate = IOSTATE_QUEUED;
-                 tt->reads.status = err;
--                dmsg(D_WIN32_IO, "WIN32 I/O: TAP Read queued [%d]", (int)len);
-+                dmsg(D_WIN32_IO, "WIN32 I/O: TAP Read queued [%d]", len);
-             }
-             else /* error occurred */
-             {
-@@ -3316,7 +3310,7 @@
-                 ASSERT(SetEvent(tt->reads.overlapped.hEvent));
-                 tt->reads.iostate = IOSTATE_IMMEDIATE_RETURN;
-                 tt->reads.status = err;
--                dmsg(D_WIN32_IO, "WIN32 I/O: TAP Read error [%d] : %s", (int)len,
-+                dmsg(D_WIN32_IO, "WIN32 I/O: TAP Read error [%d] : %s", len,
-                      strerror_win32(status, &gc));
-                 gc_free(&gc);
-             }
-@@ -3353,8 +3347,8 @@
- 
-             tt->writes.status = 0;
- 
--            dmsg(D_WIN32_IO, "WIN32 I/O: TAP Write immediate return [%d,%d]", BLEN(&tt->writes.buf),
--                 (int)tt->writes.size);
-+            dmsg(D_WIN32_IO, "WIN32 I/O: TAP Write immediate return [%d,%lu]", BLEN(&tt->writes.buf),
-+                 tt->writes.size);
-         }
-         else
-         {
-@@ -5447,14 +5441,14 @@
-     if (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_VERSION, &info, sizeof(info), &info,
-                         sizeof(info), &len, NULL))
-     {
--        msg(D_TUNTAP_INFO, "TAP-Windows Driver Version %d.%d %s", (int)info[0], (int)info[1],
-+        msg(D_TUNTAP_INFO, "TAP-Windows Driver Version %lu.%lu %s", info[0], info[1],
-             (info[2] ? "(DEBUG)" : ""));
-     }
-     if (!(info[0] == TAP_WIN_MIN_MAJOR && info[1] >= TAP_WIN_MIN_MINOR))
-     {
-         msg(M_FATAL,
-             "ERROR:  This version of " PACKAGE_NAME
--            " requires a TAP-Windows driver that is at least version %d.%d -- If you recently upgraded your " PACKAGE_NAME
-+            " requires a TAP-Windows driver that is at least version %u.%u -- If you recently upgraded your " PACKAGE_NAME
-             " distribution, a reboot is probably required at this point to get Windows to see the new driver.",
-             TAP_WIN_MIN_MAJOR, TAP_WIN_MIN_MINOR);
-     }
-@@ -5465,8 +5459,8 @@
-     if (tt->type == DEV_TYPE_TUN && info[0] == 9 && info[1] < 8)
-     {
-         msg(M_INFO,
--            "WARNING:  Tap-Win32 driver version %d.%d does not support IPv6 in TUN mode. IPv6 will not work. Upgrade your Tap-Win32 driver.",
--            (int)info[0], (int)info[1]);
-+            "WARNING:  Tap-Win32 driver version %lu.%lu does not support IPv6 in TUN mode. IPv6 will not work. Upgrade your Tap-Win32 driver.",
-+            info[0], info[1]);
-     }
- 
-     /* tap driver 9.8 (2.2.0 and 2.2.1 release) is buggy
-@@ -5474,8 +5468,7 @@
-     if (tt->type == DEV_TYPE_TUN && info[0] == 9 && info[1] == 8)
-     {
-         msg(M_FATAL,
--            "ERROR:  Tap-Win32 driver version %d.%d is buggy regarding small IPv4 packets in TUN mode. Upgrade your Tap-Win32 driver.",
--            (int)info[0], (int)info[1]);
-+            "ERROR:  Tap-Win32 driver version 9.8 is buggy regarding small IPv4 packets in TUN mode. Upgrade your Tap-Win32 driver.");
-     }
- }
- 
-@@ -5487,7 +5480,7 @@
-     if (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_MTU, &mtu, sizeof(mtu), &mtu, sizeof(mtu), &len,
-                         NULL))
-     {
--        msg(D_MTU_INFO, "TAP-Windows MTU=%d", (int)mtu);
-+        msg(D_MTU_INFO, "TAP-Windows MTU=%lu", mtu);
-     }
- }
- 
-@@ -5608,10 +5601,6 @@
-     gc_free(&gc);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static void
- tuntap_set_connected(const struct tuntap *tt)
- {
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1524?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ibc7a6d8c61b9e584bf5d2d13fb5072b7a28fc53b
+Gerrit-Change-Number: 1524
+Gerrit-PatchSet: 3
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 06 Mar 2026 16:29:57 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--RwQzr43qzIo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1524?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1524?usp=3Demail=
+">change 1524</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1524?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibc7a6d8c61b9e584bf5d2d13fb5=
+072b7a28fc53b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1524 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 06 Mar 2026 16:29:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--RwQzr43qzIo=--
 
