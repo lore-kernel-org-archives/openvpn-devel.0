@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 6 Mar 2026 11:57:08 +0000
-References: <gerrit.1772798203000.Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5@...2715...>
+Date: Fri, 6 Mar 2026 11:57:09 +0000
+References: <gerrit.1772798203000.I777a3a5f4f137432a19746972e2aad1732184feb@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <4eb3fdc8ac32ae0b86aa76448645f05aabff8952-HTML@...2715...>
+Message-ID: <4d4eda70efc8fd942af8fab191ded7b9f1492d56-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="x/uqM64Huvg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: Change
- arguments to setenv_dns_option to avoid sign-compare warning
+Content-Type: multipart/alternative; boundary="fz9D8cg8cDE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_mbedtls: Avoid
+ conversion and sign-compare warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---x/uqM64Huvg=
+--fz9D8cg8cDE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,281 +32,369 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail
 
 to review the following change.
 
 
-Change subject: dns: Change arguments to setenv_dns_option to avoid sign-co=
-mpare warning
+Change subject: ssl_mbedtls: Avoid conversion and sign-compare warnings
 ......................................................................
 
-dns: Change arguments to setenv_dns_option to avoid sign-compare warning
+ssl_mbedtls: Avoid conversion and sign-compare warnings
 
-The change is a bit big to fix just one compare warning,
-but that is due to the highly interdependent code.
-
-Change-Id: Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5
+Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/dns.c
-1 file changed, 12 insertions(+), 21 deletions(-)
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_verify_mbedtls.c
+2 files changed, 17 insertions(+), 31 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/1558/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1559/1
 
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index a42d032..4388829 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -476,20 +476,15 @@
-     send_msg_iservice(o->msg_channel, &nrpt, sizeof(nrpt), &ack, "DNS");
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index a9506ef..edc2ba9 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -624,12 +624,6 @@
+     return 0;
  }
 
--#else /* ifdef _WIN32 */
--
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
 -#pragma GCC diagnostic ignored "-Wsign-compare"
 -#endif
-+#else  /* ifdef _WIN32 */
-
- static void
--setenv_dns_option(struct env_set *es, const char *format, int i, int j, co=
-nst char *value)
-+setenv_dns_option(struct env_set *es, const char *format, size_t i, size_t=
- j, const char *value)
+-
+ #if MBEDTLS_VERSION_NUMBER < 0x04000000
+ /**
+  * external_pkcs1_sign implements a mbed TLS rsa_sign_func callback, that =
+uses
+@@ -656,7 +650,6 @@
  {
-     char name[64];
-     bool name_ok =3D false;
+     struct external_context *const ctx =3D ctx_voidptr;
+     int rv;
+-    uint8_t *to_sign =3D NULL;
+     size_t asn_len =3D 0, oid_size =3D 0;
+     const char *oid =3D NULL;
 
--    if (j < 0)
-+    if (!j)
+@@ -688,11 +681,13 @@
+         asn_len =3D 10 + oid_size;
+     }
+
+-    if ((SIZE_MAX - hashlen) < asn_len || ctx->signature_length < (asn_len=
+ + hashlen))
++    if (ctx->signature_length < (asn_len + hashlen)
++        || (asn_len + hashlen) > UINT8_MAX)
      {
-         name_ok =3D checked_snprintf(name, sizeof(name), format, i);
+         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
      }
-@@ -512,11 +507,11 @@
-     struct gc_arena gc =3D gc_new();
-     const struct dns_server *s;
-     const struct dns_domain *d;
--    int i, j;
-+    size_t i, j;
 
-     for (i =3D 1, d =3D o->search_domains; d !=3D NULL; i++, d =3D d->next)
++    uint8_t *to_sign =3D NULL;
+     ALLOC_ARRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);
+     uint8_t *p =3D to_sign;
+     if (md_alg !=3D MBEDTLS_MD_NONE)
+@@ -707,20 +702,20 @@
+          * Digest ::=3D OCTET STRING
+          */
+         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;
+-        *p++ =3D (unsigned char)(0x08 + oid_size + hashlen);
++        *p++ =3D (uint8_t)(0x08 + oid_size + hashlen);
+         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;
+-        *p++ =3D (unsigned char)(0x04 + oid_size);
++        *p++ =3D (uint8_t)(0x04 + oid_size);
+         *p++ =3D MBEDTLS_ASN1_OID;
+-        *p++ =3D oid_size & 0xFF;
++        *p++ =3D (uint8_t)oid_size;
+         memcpy(p, oid, oid_size);
+         p +=3D oid_size;
+         *p++ =3D MBEDTLS_ASN1_NULL;
+         *p++ =3D 0x00;
+         *p++ =3D MBEDTLS_ASN1_OCTET_STRING;
+-        *p++ =3D hashlen;
++        *p++ =3D (uint8_t)hashlen;
+
+         /* Double-check ASN length */
+-        ASSERT(asn_len =3D=3D p - to_sign);
++        ASSERT(asn_len =3D=3D (uintptr_t)(p - to_sign));
+     }
+
+     /* Copy the hash to be signed */
+@@ -810,7 +805,7 @@
+         goto cleanup;
+     }
+
+-    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=3D dst_len)
++    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=3D (int)dst_le=
+n)
      {
--        setenv_dns_option(es, "dns_search_domain_%d", i, -1, d->name);
-+        setenv_dns_option(es, "dns_search_domain_%zu", i, 0, d->name);
+         goto cleanup;
      }
+@@ -923,6 +918,8 @@
+ {
+     size_t read_len =3D 0;
 
-     for (i =3D 1, s =3D o->servers; s !=3D NULL; i++, s =3D s->next)
-@@ -525,17 +520,17 @@
-         {
-             if (s->addr[j].family =3D=3D AF_INET)
-             {
--                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
-+                setenv_dns_option(es, "dns_server_%zu_address_%zu", i, j +=
- 1,
-                                   print_in_addr_t(s->addr[j].in.a4.s_addr,=
- IA_NET_ORDER, &gc));
-             }
-             else
-             {
--                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
-+                setenv_dns_option(es, "dns_server_%zu_address_%zu", i, j +=
- 1,
-                                   print_in6_addr(s->addr[j].in.a6, 0, &gc)=
-);
-             }
-             if (s->addr[j].port)
-             {
--                setenv_dns_option(es, "dns_server_%d_port_%d", i, j + 1,
-+                setenv_dns_option(es, "dns_server_%zu_port_%zu", i, j + 1,
-                                   print_in_port_t(s->addr[j].port, &gc));
-             }
-         }
-@@ -544,32 +539,28 @@
-         {
-             for (j =3D 1, d =3D s->domains; d !=3D NULL; j++, d =3D d->nex=
-t)
-             {
--                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i=
-, j, d->name);
-+                setenv_dns_option(es, "dns_server_%zu_resolve_domain_%d", =
-i, j, d->name);
-             }
-         }
++    ASSERT(out_len <=3D INT_MAX);
++
+     if (in->first_block =3D=3D NULL)
+     {
+         return MBEDTLS_ERR_SSL_WANT_READ;
+@@ -930,7 +927,7 @@
 
-         if (s->dnssec)
+     while (in->first_block !=3D NULL && read_len < out_len)
+     {
+-        int block_len =3D in->first_block->length - in->data_start;
++        size_t block_len =3D in->first_block->length - in->data_start;
+         if (block_len <=3D out_len - read_len)
          {
--            setenv_dns_option(es, "dns_server_%d_dnssec", i, -1, dnssec_va=
-lue(s->dnssec));
-+            setenv_dns_option(es, "dns_server_%zu_dnssec", i, 0, dnssec_va=
-lue(s->dnssec));
-         }
-
-         if (s->transport)
-         {
--            setenv_dns_option(es, "dns_server_%d_transport", i, -1, transp=
-ort_value(s->transport));
-+            setenv_dns_option(es, "dns_server_%zu_transport", i, 0, transp=
-ort_value(s->transport));
-         }
-         if (s->sni)
-         {
--            setenv_dns_option(es, "dns_server_%d_sni", i, -1, s->sni);
-+            setenv_dns_option(es, "dns_server_%zu_sni", i, 0, s->sni);
+             buffer_entry *cur_entry =3D in->first_block;
+@@ -956,7 +953,7 @@
          }
      }
 
-     gc_free(&gc);
+-    return read_len;
++    return (int)read_len;
+ }
+
+ static int
+@@ -975,6 +972,8 @@
+         return MBEDTLS_ERR_NET_SEND_FAILED;
+     }
+
++    ASSERT(len <=3D INT_MAX);
++
+     new_block->length =3D len;
+     new_block->next_block =3D NULL;
+
+@@ -992,7 +991,7 @@
+
+     out->last_block =3D new_block;
+
+-    return len;
++    return (int)len;
+ }
+
+ static int
+@@ -1012,7 +1011,7 @@
+ static void
+ my_debug(void *ctx, int level, const char *file, int line, const char *str)
+ {
+-    int my_loglevel =3D (level < 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;
++    unsigned int my_loglevel =3D (level < 3) ? D_TLS_DEBUG_MED : D_TLS_DEB=
+UG;
+     msg(my_loglevel, "mbed TLS msg (%s:%d): %s", file, line, str);
+ }
+
+@@ -1048,10 +1047,6 @@
+ #endif /* MBEDTLS_VERSION_NUMBER < 0x040000 */
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- static void
- updown_env_set(bool up, const struct dns_options *o, const struct tuntap *=
-tt, struct env_set *es)
+ int
+ tls_version_max(void)
+ {
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
+tls.c
+index 7495085..ad5479c 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -565,11 +565,6 @@
+     gc_free(&gc);
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
+ /*
+  * Save X509 fields to environment, using the naming convention:
+  *
+@@ -678,10 +673,6 @@
+     return fFound;
+ }
+
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ result_t
+ x509_verify_cert_eku(mbedtls_x509_crt *cert, const char *const expected_oi=
+d)
  {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5
-Gerrit-Change-Number: 1558
+Gerrit-Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb
+Gerrit-Change-Number: 1559
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---x/uqM64Huvg=
+--fz9D8cg8cDE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">dns: Change arguments to setenv_dns_option =
-to avoid sign-compare warning<br><br>The change is a bit big to fix just on=
-e compare warning,<br>but that is due to the highly interdependent code.<br=
-><br>Change-Id: Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5<br>Signed-off-by:=
- Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/dns.c<b=
-r>1 file changed, 12 insertions(+), 21 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/1558/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>=
-index a42d032..4388829 100644</span><br><span>--- a/src/openvpn/dns.c</span=
-><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -476,20 +476,15 @@</s=
-pan><br><span>     send_msg_iservice(o-&gt;msg_channel, &amp;nrpt, sizeof(n=
-rpt), &amp;ack, &quot;DNS&quot;);</span><br><span> }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#else /* ifdef _WIN32 */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnosti=
-c push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC dia=
-gnostic ignored &quot;-Wsign-compare&quot;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#else  /* ifdef _WIN32 */</span><br><span> </span><br><span> static=
- void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-setenv_dns_optio=
-n(struct env_set *es, const char *format, int i, int j, const char *value)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+setenv_dns_option(st=
-ruct env_set *es, const char *format, size_t i, size_t j, const char *value=
-)</span><br><span> {</span><br><span>     char name[64];</span><br><span>  =
-   bool name_ok =3D false;</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    if (j &lt; 0)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (!j)</span><br><span>     {</span><br><span>   =
-      name_ok =3D checked_snprintf(name, sizeof(name), format, i);</span><b=
-r><span>     }</span><br><span>@@ -512,11 +507,11 @@</span><br><span>     s=
-truct gc_arena gc =3D gc_new();</span><br><span>     const struct dns_serve=
-r *s;</span><br><span>     const struct dns_domain *d;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    int i, j;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    size_t i, j;</span><br><span> </span><br><sp=
-an>     for (i =3D 1, d =3D o-&gt;search_domains; d !=3D NULL; i++, d =3D d=
--&gt;next)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        setenv_dns_option(es, &quot;dns_search_domain_%d&quot;,=
- i, -1, d-&gt;name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        setenv_dns_option(es, &quot;dns_search_domain_%zu&quot;, i, 0, d-&=
-gt;name);</span><br><span>     }</span><br><span> </span><br><span>     for=
- (i =3D 1, s =3D o-&gt;servers; s !=3D NULL; i++, s =3D s-&gt;next)</span><=
-br><span>@@ -525,17 +520,17 @@</span><br><span>         {</span><br><span> =
-            if (s-&gt;addr[j].family =3D=3D AF_INET)</span><br><span>      =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-   setenv_dns_option(es, &quot;dns_server_%d_address_%d&quot;, i, j + 1,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                setenv=
-_dns_option(es, &quot;dns_server_%zu_address_%zu&quot;, i, j + 1,</span><br=
-><span>                                   print_in_addr_t(s-&gt;addr[j].in.=
-a4.s_addr, IA_NET_ORDER, &amp;gc));</span><br><span>             }</span><b=
-r><span>             else</span><br><span>             {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                setenv_dns_option(es, &q=
-uot;dns_server_%d_address_%d&quot;, i, j + 1,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                setenv_dns_option(es, &quot;dns_s=
-erver_%zu_address_%zu&quot;, i, j + 1,</span><br><span>                    =
-               print_in6_addr(s-&gt;addr[j].in.a6, 0, &amp;gc));</span><br>=
-<span>             }</span><br><span>             if (s-&gt;addr[j].port)</=
-span><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                setenv_dns_option(es, &quot;dns_server_%d_port_%d&q=
-uot;, i, j + 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            setenv_dns_option(es, &quot;dns_server_%zu_port_%zu&quot;, i, j=
- + 1,</span><br><span>                                   print_in_port_t(s-=
-&gt;addr[j].port, &amp;gc));</span><br><span>             }</span><br><span=
->         }</span><br><span>@@ -544,32 +539,28 @@</span><br><span>         =
-{</span><br><span>             for (j =3D 1, d =3D s-&gt;domains; d !=3D NU=
-LL; j++, d =3D d-&gt;next)</span><br><span>             {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                setenv_dns_option(es, &=
-quot;dns_server_%d_resolve_domain_%d&quot;, i, j, d-&gt;name);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                setenv_dns_optio=
-n(es, &quot;dns_server_%zu_resolve_domain_%d&quot;, i, j, d-&gt;name);</spa=
-n><br><span>             }</span><br><span>         }</span><br><span> </sp=
-an><br><span>         if (s-&gt;dnssec)</span><br><span>         {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            setenv_dns_option(=
-es, &quot;dns_server_%d_dnssec&quot;, i, -1, dnssec_value(s-&gt;dnssec));</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            setenv_dn=
-s_option(es, &quot;dns_server_%zu_dnssec&quot;, i, 0, dnssec_value(s-&gt;dn=
-ssec));</span><br><span>         }</span><br><span> </span><br><span>      =
-   if (s-&gt;transport)</span><br><span>         {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            setenv_dns_option(es, &quot;dns_se=
-rver_%d_transport&quot;, i, -1, transport_value(s-&gt;transport));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            setenv_dns_optio=
-n(es, &quot;dns_server_%zu_transport&quot;, i, 0, transport_value(s-&gt;tra=
-nsport));</span><br><span>         }</span><br><span>         if (s-&gt;sni=
-)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            setenv_dns_option(es, &quot;dns_server_%d_sni&quot;, i, =
--1, s-&gt;sni);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        setenv_dns_option(es, &quot;dns_server_%zu_sni&quot;, i, 0, s-&gt;s=
-ni);</span><br><span>         }</span><br><span>     }</span><br><span> </s=
-pan><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) |=
-| defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span> static void</span><br><span> updown_env_set(bool up, const struct dn=
-s_options *o, const struct tuntap *tt, struct env_set *es)</span><br><span>=
- {</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1558?usp=3Demail">change 1558</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1558?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">ssl_mbedtls: Avoid conversion and sign-comp=
+are warnings<br><br>Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb<br=
+>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/=
+openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>2 files chan=
+ged, 17 insertions(+), 31 deletions(-)<br><br></pre><pre class=3D"blocks" s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1559/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><sp=
+an>index a9506ef..edc2ba9 100644</span><br><span>--- a/src/openvpn/ssl_mbed=
+tls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -6=
+24,12 +624,6 @@</span><br><span>     return 0;</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
+_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ign=
+ored &quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span> #if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span> /*=
+*</span><br><span>  * external_pkcs1_sign implements a mbed TLS rsa_sign_fu=
+nc callback, that uses</span><br><span>@@ -656,7 +650,6 @@</span><br><span>=
+ {</span><br><span>     struct external_context *const ctx =3D ctx_voidptr;=
+</span><br><span>     int rv;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    uint8_t *to_sign =3D NULL;</span><br><span>     size_t asn_len =
+=3D 0, oid_size =3D 0;</span><br><span>     const char *oid =3D NULL;</span=
+><br><span> </span><br><span>@@ -688,11 +681,13 @@</span><br><span>        =
+ asn_len =3D 10 + oid_size;</span><br><span>     }</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((SIZE_MAX - hashlen)=
+ &lt; asn_len || ctx-&gt;signature_length &lt; (asn_len + hashlen))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ctx-&gt;signature_l=
+ength &lt; (asn_len + hashlen)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        || (asn_len + hashlen) &gt; UINT8_MAX)</span><br><span> =
+    {</span><br><span>         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;</span=
+><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    uint8_t *to_sign =3D NULL;</span><br><span>     ALLOC_A=
+RRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);</span><br><span>     uint8=
+_t *p =3D to_sign;</span><br><span>     if (md_alg !=3D MBEDTLS_MD_NONE)</s=
+pan><br><span>@@ -707,20 +702,20 @@</span><br><span>          * Digest ::=
+=3D OCTET STRING</span><br><span>          */</span><br><span>         *p++=
+ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D (unsigned char)(0x08 + oi=
+d_size + hashlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       *p++ =3D (uint8_t)(0x08 + oid_size + hashlen);</span><br><span>     =
+    *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D (unsigned char)(0=
+x04 + oid_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     *p++ =3D (uint8_t)(0x04 + oid_size);</span><br><span>         *p++ =3D=
+ MBEDTLS_ASN1_OID;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     *p++ =3D oid_size &amp; 0xFF;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        *p++ =3D (uint8_t)oid_size;</span><br><span>        =
+ memcpy(p, oid, oid_size);</span><br><span>         p +=3D oid_size;</span>=
+<br><span>         *p++ =3D MBEDTLS_ASN1_NULL;</span><br><span>         *p+=
++ =3D 0x00;</span><br><span>         *p++ =3D MBEDTLS_ASN1_OCTET_STRING;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D hashlen=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *p++ =3D (=
+uint8_t)hashlen;</span><br><span> </span><br><span>         /* Double-check=
+ ASN length */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ ASSERT(asn_len =3D=3D p - to_sign);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        ASSERT(asn_len =3D=3D (uintptr_t)(p - to_sign));</=
+span><br><span>     }</span><br><span> </span><br><span>     /* Copy the ha=
+sh to be signed */</span><br><span>@@ -810,7 +805,7 @@</span><br><span>    =
+     goto cleanup;</span><br><span>     }</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    if (openvpn_base64_decode(dst_b64=
+, dst, (int)dst_len) !=3D dst_len)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=
+=3D (int)dst_len)</span><br><span>     {</span><br><span>         goto clea=
+nup;</span><br><span>     }</span><br><span>@@ -923,6 +918,8 @@</span><br><=
+span> {</span><br><span>     size_t read_len =3D 0;</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(out_len &lt;=
+=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span>     if (in-&gt;first_block =3D=3D NULL)</span><br><span>     {<=
+/span><br><span>         return MBEDTLS_ERR_SSL_WANT_READ;</span><br><span>=
+@@ -930,7 +927,7 @@</span><br><span> </span><br><span>     while (in-&gt;fi=
+rst_block !=3D NULL &amp;&amp; read_len &lt; out_len)</span><br><span>     =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int block_le=
+n =3D in-&gt;first_block-&gt;length - in-&gt;data_start;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        size_t block_len =3D in-&gt;fi=
+rst_block-&gt;length - in-&gt;data_start;</span><br><span>         if (bloc=
+k_len &lt;=3D out_len - read_len)</span><br><span>         {</span><br><spa=
+n>             buffer_entry *cur_entry =3D in-&gt;first_block;</span><br><s=
+pan>@@ -956,7 +953,7 @@</span><br><span>         }</span><br><span>     }</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
+eturn read_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return (int)read_len;</span><br><span> }</span><br><span> </span><br><span>=
+ static int</span><br><span>@@ -975,6 +972,8 @@</span><br><span>         re=
+turn MBEDTLS_ERR_NET_SEND_FAILED;</span><br><span>     }</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(len &lt;=
+=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span>     new_block-&gt;length =3D len;</span><br><span>     new_bloc=
+k-&gt;next_block =3D NULL;</span><br><span> </span><br><span>@@ -992,7 +991=
+,7 @@</span><br><span> </span><br><span>     out-&gt;last_block =3D new_blo=
+ck;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    return len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return (int)len;</span><br><span> }</span><br><span> </span><br><span> stat=
+ic int</span><br><span>@@ -1012,7 +1011,7 @@</span><br><span> static void</=
+span><br><span> my_debug(void *ctx, int level, const char *file, int line, =
+const char *str)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    int my_loglevel =3D (level &lt; 3) ? D_TLS_DEBUG_MED : D_=
+TLS_DEBUG;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsig=
+ned int my_loglevel =3D (level &lt; 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;</sp=
+an><br><span>     msg(my_loglevel, &quot;mbed TLS msg (%s:%d): %s&quot;, fi=
+le, line, str);</span><br><span> }</span><br><span> </span><br><span>@@ -10=
+48,10 +1047,6 @@</span><br><span> #endif /* MBEDTLS_VERSION_NUMBER &lt; 0x0=
+40000 */</span><br><span> }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> =
+tls_version_max(void)</span><br><span> {</span><br><span>diff --git a/src/o=
+penvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><br><s=
+pan>index 7495085..ad5479c 100644</span><br><span>--- a/src/openvpn/ssl_ver=
+ify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</span>=
+<br><span>@@ -565,11 +565,6 @@</span><br><span>     gc_free(&amp;gc);</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;=
+-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+> /*</span><br><span>  * Save X509 fields to environment, using the naming =
+convention:</span><br><span>  *</span><br><span>@@ -678,10 +673,6 @@</span>=
+<br><span>     return fFound;</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defin=
+ed(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma =
+GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+result_t</span><br><span> x509_verify_cert_eku(mbedtls_x509_crt *cert, cons=
+t char *const expected_oid)</span><br><span> {</span><br><span></span><br><=
+/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/155=
+9?usp=3Demail">change 1559</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibfcc350c772227cfc0f2244fa2b=
-1625dcb7e6fb5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1558 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I777a3a5f4f137432a19746972e2=
+aad1732184feb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1559 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -319,5 +407,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---x/uqM64Huvg=--
+--fz9D8cg8cDE=--
 
