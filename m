@@ -1,15 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 6 Mar 2026 11:57:09 +0000
-References: <gerrit.1772798203000.I777a3a5f4f137432a19746972e2aad1732184feb@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <4d4eda70efc8fd942af8fab191ded7b9f1492d56-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 6 Mar 2026 13:30:00 +0000
+In-Reply-To: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
+References: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <7e06010879ac0daca12f8528faffd4f231d055b7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fz9D8cg8cDE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_mbedtls: Avoid
- conversion and sign-compare warnings
+Content-Type: multipart/alternative; boundary="KdlkYvY4x4o="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Optimise iterating
+ over all clients by remembering highest peer id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,394 +19,346 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fz9D8cg8cDE=
+--KdlkYvY4x4o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos,
+Hello flichtenheld,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
 
 
-Change subject: ssl_mbedtls: Avoid conversion and sign-compare warnings
+Change subject: Optimise iterating over all clients by remembering highest =
+peer id
 ......................................................................
 
-ssl_mbedtls: Avoid conversion and sign-compare warnings
+Optimise iterating over all clients by remembering highest peer id
 
-Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+This keeps track of the highest peer id that is currently allocated to avoid
+iterating over the empty tail of the m->instances array.
+
+Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f05c3
 ---
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_verify_mbedtls.c
-2 files changed, 17 insertions(+), 31 deletions(-)
+M src/openvpn/multi.c
+M src/openvpn/multi.h
+M src/openvpn/push_util.c
+3 files changed, 26 insertions(+), 10 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/1557/2
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1559/1
-
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index a9506ef..edc2ba9 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -624,12 +624,6 @@
-     return 0;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- #if MBEDTLS_VERSION_NUMBER < 0x04000000
- /**
-  * external_pkcs1_sign implements a mbed TLS rsa_sign_func callback, that =
-uses
-@@ -656,7 +650,6 @@
- {
-     struct external_context *const ctx =3D ctx_voidptr;
-     int rv;
--    uint8_t *to_sign =3D NULL;
-     size_t asn_len =3D 0, oid_size =3D 0;
-     const char *oid =3D NULL;
-
-@@ -688,11 +681,13 @@
-         asn_len =3D 10 + oid_size;
-     }
-
--    if ((SIZE_MAX - hashlen) < asn_len || ctx->signature_length < (asn_len=
- + hashlen))
-+    if (ctx->signature_length < (asn_len + hashlen)
-+        || (asn_len + hashlen) > UINT8_MAX)
-     {
-         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
-     }
-
-+    uint8_t *to_sign =3D NULL;
-     ALLOC_ARRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);
-     uint8_t *p =3D to_sign;
-     if (md_alg !=3D MBEDTLS_MD_NONE)
-@@ -707,20 +702,20 @@
-          * Digest ::=3D OCTET STRING
-          */
-         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;
--        *p++ =3D (unsigned char)(0x08 + oid_size + hashlen);
-+        *p++ =3D (uint8_t)(0x08 + oid_size + hashlen);
-         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;
--        *p++ =3D (unsigned char)(0x04 + oid_size);
-+        *p++ =3D (uint8_t)(0x04 + oid_size);
-         *p++ =3D MBEDTLS_ASN1_OID;
--        *p++ =3D oid_size & 0xFF;
-+        *p++ =3D (uint8_t)oid_size;
-         memcpy(p, oid, oid_size);
-         p +=3D oid_size;
-         *p++ =3D MBEDTLS_ASN1_NULL;
-         *p++ =3D 0x00;
-         *p++ =3D MBEDTLS_ASN1_OCTET_STRING;
--        *p++ =3D hashlen;
-+        *p++ =3D (uint8_t)hashlen;
-
-         /* Double-check ASN length */
--        ASSERT(asn_len =3D=3D p - to_sign);
-+        ASSERT(asn_len =3D=3D (uintptr_t)(p - to_sign));
-     }
-
-     /* Copy the hash to be signed */
-@@ -810,7 +805,7 @@
-         goto cleanup;
-     }
-
--    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=3D dst_len)
-+    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=3D (int)dst_le=
-n)
-     {
-         goto cleanup;
-     }
-@@ -923,6 +918,8 @@
- {
-     size_t read_len =3D 0;
-
-+    ASSERT(out_len <=3D INT_MAX);
-+
-     if (in->first_block =3D=3D NULL)
-     {
-         return MBEDTLS_ERR_SSL_WANT_READ;
-@@ -930,7 +927,7 @@
-
-     while (in->first_block !=3D NULL && read_len < out_len)
-     {
--        int block_len =3D in->first_block->length - in->data_start;
-+        size_t block_len =3D in->first_block->length - in->data_start;
-         if (block_len <=3D out_len - read_len)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 9d4ea49..653c7e0 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -601,6 +601,13 @@
+         if (mi->context.c2.tls_multi->peer_id !=3D MAX_PEER_ID)
          {
-             buffer_entry *cur_entry =3D in->first_block;
-@@ -956,7 +953,7 @@
-         }
-     }
-
--    return read_len;
-+    return (int)read_len;
- }
-
- static int
-@@ -975,6 +972,8 @@
-         return MBEDTLS_ERR_NET_SEND_FAILED;
-     }
-
-+    ASSERT(len <=3D INT_MAX);
+             m->instances[mi->context.c2.tls_multi->peer_id] =3D NULL;
 +
-     new_block->length =3D len;
-     new_block->next_block =3D NULL;
++            /* Adjust the max_peerid as this might have been the highest
++             * peer id instance */
++            while (m->max_peerid > 0 && m->instances[m->max_peerid] =3D=3D=
+ NULL)
++            {
++                m->max_peerid--;
++            }
+         }
 
-@@ -992,7 +991,7 @@
-
-     out->last_block =3D new_block;
-
--    return len;
-+    return (int)len;
- }
-
- static int
-@@ -1012,7 +1011,7 @@
- static void
- my_debug(void *ctx, int level, const char *file, int line, const char *str)
+         schedule_remove_entry(m->schedule, (struct schedule_entry *)mi);
+@@ -652,7 +659,7 @@
  {
--    int my_loglevel =3D (level < 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;
-+    unsigned int my_loglevel =3D (level < 3) ? D_TLS_DEBUG_MED : D_TLS_DEB=
-UG;
-     msg(my_loglevel, "mbed TLS msg (%s:%d): %s", file, line, str);
- }
+     if (m->hash)
+     {
+-        for (int i =3D 0; i < m->max_clients; i++)
++        for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+         {
+             struct multi_instance *mi =3D m->instances[i];
+             if (mi)
+@@ -1326,7 +1333,7 @@
+         {
+             int count =3D 0;
 
-@@ -1048,10 +1047,6 @@
- #endif /* MBEDTLS_VERSION_NUMBER < 0x040000 */
- }
+-            for (int i =3D 0; i < m->max_clients; i++)
++            for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+             {
+                 struct multi_instance *mi =3D m->instances[i];
+                 if (mi && mi !=3D new_mi && !mi->halt)
+@@ -2885,7 +2892,7 @@
+ #endif
+         mb =3D mbuf_alloc_buf(buf);
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- int
- tls_version_max(void)
+-        for (int i =3D 0; i < m->max_clients; i++)
++        for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+         {
+             struct multi_instance *mi =3D m->instances[i];
+
+@@ -3794,7 +3801,7 @@
+ multi_push_restart_schedule_exit(struct multi_context *m, bool next_server)
  {
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
-tls.c
-index 7495085..ad5479c 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -565,11 +565,6 @@
-     gc_free(&gc);
+     /* tell all clients to restart */
+-    for (int i =3D 0; i < m->max_clients; i++)
++    for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+     {
+         struct multi_instance *mi =3D m->instances[i];
+         if (mi && !mi->halt && proto_is_dgram(mi->context.c2.link_sockets[=
+0]->info.proto))
+@@ -3876,7 +3883,7 @@
+     struct multi_context *m =3D (struct multi_context *)arg;
+     int count =3D 0;
+
+-    for (int i =3D 0; i < m->max_clients; i++)
++    for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+     {
+         struct multi_instance *mi =3D m->instances[i];
+         if (mi && !mi->halt)
+@@ -3907,7 +3914,7 @@
+     maddr.proto =3D proto;
+     if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
+     {
+-        for (int i =3D 0; i < m->max_clients; i++)
++        for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+         {
+             struct multi_instance *mi =3D m->instances[i];
+             if (mi && !mi->halt && mroute_addr_equal(&maddr, &mi->real))
+@@ -4100,8 +4107,14 @@
+     }
+
+     /* should not really end up here, since multi_create_instance returns =
+null
+-     * if amount of clients exceeds max_clients */
++     * if amount of clients exceeds max_clients and this method would then
++     * also not been called */
+     ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
++
++    if (mi->context.c2.tls_multi->peer_id > m->max_peerid)
++    {
++        m->max_peerid =3D mi->context.c2.tls_multi->peer_id;
++    }
  }
 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /*
-  * Save X509 fields to environment, using the naming convention:
-  *
-@@ -678,10 +673,6 @@
-     return fFound;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- result_t
- x509_verify_cert_eku(mbedtls_x509_crt *cert, const char *const expected_oi=
-d)
+ #if defined(__GNUC__) || defined(__clang__)
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 498409d..17d850b 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -160,9 +160,12 @@
+  */
+ struct multi_context
  {
+-    struct multi_instance **instances; /**< Array of multi_instances. An i=
+nstance can be
++    struct multi_instance **instances; /**< Array of multi_instances with =
+the size of
++                                        *  max_clients.  An instance can be
+                                         * accessed using peer-id as an ind=
+ex. */
+-
++    uint32_t max_peerid;               /**< currently highest allocated pe=
+erid and
++                                        * maximum allocated/valid index in
++                                        * instances */
+     struct hash *hash;                 /**< VPN tunnel instances indexed b=
+y real
+                                         *   address of the remote peer. */
+     struct hash *vhash;                /**< VPN tunnel instances indexed by
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 6456554..529cc39 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -317,7 +317,7 @@
+
+     int count =3D 0;
+
+-    for (int i =3D 0; i < m->max_clients; i++)
++    for (uint32_t i =3D 0; i <=3D m->max_peerid; i++)
+     {
+         struct multi_instance *curr_mi =3D m->instances[i];
+
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb
-Gerrit-Change-Number: 1559
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f05c3
+Gerrit-Change-Number: 1557
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 
---fz9D8cg8cDE=
+--KdlkYvY4x4o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">ssl_mbedtls: Avoid conversion and sign-comp=
-are warnings<br><br>Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb<br=
->Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/=
-openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>2 files chan=
-ged, 17 insertions(+), 31 deletions(-)<br><br></pre><pre class=3D"blocks" s=
-tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
-ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1559/1</pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
---git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span><br><sp=
-an>index a9506ef..edc2ba9 100644</span><br><span>--- a/src/openvpn/ssl_mbed=
-tls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -6=
-24,12 +624,6 @@</span><br><span>     return 0;</span><br><span> }</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(_=
-_GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quot;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ign=
-ored &quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span> #if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><span> /*=
-*</span><br><span>  * external_pkcs1_sign implements a mbed TLS rsa_sign_fu=
-nc callback, that uses</span><br><span>@@ -656,7 +650,6 @@</span><br><span>=
- {</span><br><span>     struct external_context *const ctx =3D ctx_voidptr;=
-</span><br><span>     int rv;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    uint8_t *to_sign =3D NULL;</span><br><span>     size_t asn_len =
-=3D 0, oid_size =3D 0;</span><br><span>     const char *oid =3D NULL;</span=
-><br><span> </span><br><span>@@ -688,11 +681,13 @@</span><br><span>        =
- asn_len =3D 10 + oid_size;</span><br><span>     }</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((SIZE_MAX - hashlen)=
- &lt; asn_len || ctx-&gt;signature_length &lt; (asn_len + hashlen))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ctx-&gt;signature_l=
-ength &lt; (asn_len + hashlen)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        || (asn_len + hashlen) &gt; UINT8_MAX)</span><br><span> =
-    {</span><br><span>         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;</span=
-><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    uint8_t *to_sign =3D NULL;</span><br><span>     ALLOC_A=
-RRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);</span><br><span>     uint8=
-_t *p =3D to_sign;</span><br><span>     if (md_alg !=3D MBEDTLS_MD_NONE)</s=
-pan><br><span>@@ -707,20 +702,20 @@</span><br><span>          * Digest ::=
-=3D OCTET STRING</span><br><span>          */</span><br><span>         *p++=
- =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D (unsigned char)(0x08 + oi=
-d_size + hashlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       *p++ =3D (uint8_t)(0x08 + oid_size + hashlen);</span><br><span>     =
-    *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D (unsigned char)(0=
-x04 + oid_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     *p++ =3D (uint8_t)(0x04 + oid_size);</span><br><span>         *p++ =3D=
- MBEDTLS_ASN1_OID;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     *p++ =3D oid_size &amp; 0xFF;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        *p++ =3D (uint8_t)oid_size;</span><br><span>        =
- memcpy(p, oid, oid_size);</span><br><span>         p +=3D oid_size;</span>=
-<br><span>         *p++ =3D MBEDTLS_ASN1_NULL;</span><br><span>         *p+=
-+ =3D 0x00;</span><br><span>         *p++ =3D MBEDTLS_ASN1_OCTET_STRING;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D hashlen=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *p++ =3D (=
-uint8_t)hashlen;</span><br><span> </span><br><span>         /* Double-check=
- ASN length */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- ASSERT(asn_len =3D=3D p - to_sign);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        ASSERT(asn_len =3D=3D (uintptr_t)(p - to_sign));</=
-span><br><span>     }</span><br><span> </span><br><span>     /* Copy the ha=
-sh to be signed */</span><br><span>@@ -810,7 +805,7 @@</span><br><span>    =
-     goto cleanup;</span><br><span>     }</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (openvpn_base64_decode(dst_b64=
-, dst, (int)dst_len) !=3D dst_len)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=
-=3D (int)dst_len)</span><br><span>     {</span><br><span>         goto clea=
-nup;</span><br><span>     }</span><br><span>@@ -923,6 +918,8 @@</span><br><=
-span> {</span><br><span>     size_t read_len =3D 0;</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(out_len &lt;=
-=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span>     if (in-&gt;first_block =3D=3D NULL)</span><br><span>     {<=
-/span><br><span>         return MBEDTLS_ERR_SSL_WANT_READ;</span><br><span>=
-@@ -930,7 +927,7 @@</span><br><span> </span><br><span>     while (in-&gt;fi=
-rst_block !=3D NULL &amp;&amp; read_len &lt; out_len)</span><br><span>     =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int block_le=
-n =3D in-&gt;first_block-&gt;length - in-&gt;data_start;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        size_t block_len =3D in-&gt;fi=
-rst_block-&gt;length - in-&gt;data_start;</span><br><span>         if (bloc=
-k_len &lt;=3D out_len - read_len)</span><br><span>         {</span><br><spa=
-n>             buffer_entry *cur_entry =3D in-&gt;first_block;</span><br><s=
-pan>@@ -956,7 +953,7 @@</span><br><span>         }</span><br><span>     }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
-eturn read_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return (int)read_len;</span><br><span> }</span><br><span> </span><br><span>=
- static int</span><br><span>@@ -975,6 +972,8 @@</span><br><span>         re=
-turn MBEDTLS_ERR_NET_SEND_FAILED;</span><br><span>     }</span><br><span> <=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(len &lt;=
-=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span>     new_block-&gt;length =3D len;</span><br><span>     new_bloc=
-k-&gt;next_block =3D NULL;</span><br><span> </span><br><span>@@ -992,7 +991=
-,7 @@</span><br><span> </span><br><span>     out-&gt;last_block =3D new_blo=
-ck;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    return len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return (int)len;</span><br><span> }</span><br><span> </span><br><span> stat=
-ic int</span><br><span>@@ -1012,7 +1011,7 @@</span><br><span> static void</=
-span><br><span> my_debug(void *ctx, int level, const char *file, int line, =
-const char *str)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    int my_loglevel =3D (level &lt; 3) ? D_TLS_DEBUG_MED : D_=
-TLS_DEBUG;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsig=
-ned int my_loglevel =3D (level &lt; 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;</sp=
-an><br><span>     msg(my_loglevel, &quot;mbed TLS msg (%s:%d): %s&quot;, fi=
-le, line, str);</span><br><span> }</span><br><span> </span><br><span>@@ -10=
-48,10 +1047,6 @@</span><br><span> #endif /* MBEDTLS_VERSION_NUMBER &lt; 0x0=
-40000 */</span><br><span> }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> =
-tls_version_max(void)</span><br><span> {</span><br><span>diff --git a/src/o=
-penvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><br><s=
-pan>index 7495085..ad5479c 100644</span><br><span>--- a/src/openvpn/ssl_ver=
-ify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</span>=
-<br><span>@@ -565,11 +565,6 @@</span><br><span>     gc_free(&amp;gc);</span=
-><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;=
--Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
-> /*</span><br><span>  * Save X509 fields to environment, using the naming =
-convention:</span><br><span>  *</span><br><span>@@ -678,10 +673,6 @@</span>=
-<br><span>     return fFound;</span><br><span> }</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defin=
-ed(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma =
-GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
-dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
-result_t</span><br><span> x509_verify_cert_eku(mbedtls_x509_crt *cert, cons=
-t char *const expected_oid)</span><br><span> {</span><br><span></span><br><=
-/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/155=
-9?usp=3Demail">change 1559</a>. To unsubscribe, or for help writing mail fi=
-lters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?u=
-sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail">View Chan=
+ge</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Optimise iterating over all =
+clients by remembering highest peer id<br><br>This keeps track of the highe=
+st peer id that is currently allocated to avoid<br>iterating over the empty=
+ tail of the m-&gt;instances array.<br><br>Change-Id: If797f3fe178fba3f43fb=
+12898e5484bfb38f05c3<br>---<br>M src/openvpn/multi.c<br>M src/openvpn/multi=
+.h<br>M src/openvpn/push_util.c<br>3 files changed, 26 insertions(+), 10 de=
+letions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/57/1557/2</pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/multi.c =
+b/src/openvpn/multi.c</span><br><span>index 9d4ea49..653c7e0 100644</span><=
+br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.=
+c</span><br><span>@@ -601,6 +601,13 @@</span><br><span>         if (mi-&gt;=
+context.c2.tls_multi-&gt;peer_id !=3D MAX_PEER_ID)</span><br><span>        =
+ {</span><br><span>             m-&gt;instances[mi-&gt;context.c2.tls_multi=
+-&gt;peer_id] =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* =
+Adjust the max_peerid as this might have been the highest</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+             * peer id instance */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            while (m-&=
+gt;max_peerid &gt; 0 &amp;&amp; m-&gt;instances[m-&gt;max_peerid] =3D=3D NU=
+LL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                m-&gt;=
+max_peerid--;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      }</span><br><span>         }</span><br><span> </span><br><span>      =
+   schedule_remove_entry(m-&gt;schedule, (struct schedule_entry *)mi);</spa=
+n><br><span>@@ -652,7 +659,7 @@</span><br><span> {</span><br><span>     if =
+(m-&gt;hash)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (uint32_t i =
+=3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span>         {</span><b=
+r><span>             struct multi_instance *mi =3D m-&gt;instances[i];</spa=
+n><br><span>             if (mi)</span><br><span>@@ -1326,7 +1333,7 @@</spa=
+n><br><span>         {</span><br><span>             int count =3D 0;</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            for (uint32_t i =3D 0; i &lt;=3D=
+ m-&gt;max_peerid; i++)</span><br><span>             {</span><br><span>    =
+             struct multi_instance *mi =3D m-&gt;instances[i];</span><br><s=
+pan>                 if (mi &amp;&amp; mi !=3D new_mi &amp;&amp; !mi-&gt;ha=
+lt)</span><br><span>@@ -2885,7 +2892,7 @@</span><br><span> #endif</span><br=
+><span>         mb =3D mbuf_alloc_buf(buf);</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        for (int i =3D 0; i &lt; m-=
+&gt;max_clients; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        for (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br=
+><span>         {</span><br><span>             struct multi_instance *mi =
+=3D m-&gt;instances[i];</span><br><span> </span><br><span>@@ -3794,7 +3801,=
+7 @@</span><br><span> multi_push_restart_schedule_exit(struct multi_context=
+ *m, bool next_server)</span><br><span> {</span><br><span>     /* tell all =
+clients to restart */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    for (uint32_t i =3D 0; i &lt;=3D m-&g=
+t;max_peerid; i++)</span><br><span>     {</span><br><span>         struct m=
+ulti_instance *mi =3D m-&gt;instances[i];</span><br><span>         if (mi &=
+amp;&amp; !mi-&gt;halt &amp;&amp; proto_is_dgram(mi-&gt;context.c2.link_soc=
+kets[0]-&gt;info.proto))</span><br><span>@@ -3876,7 +3883,7 @@</span><br><s=
+pan>     struct multi_context *m =3D (struct multi_context *)arg;</span><br=
+><span>     int count =3D 0;</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; m-&gt;max_clients; i+=
++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (uint32_t=
+ i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span>     {</span><br=
+><span>         struct multi_instance *mi =3D m-&gt;instances[i];</span><br=
+><span>         if (mi &amp;&amp; !mi-&gt;halt)</span><br><span>@@ -3907,7 =
++3914,7 @@</span><br><span>     maddr.proto =3D proto;</span><br><span>    =
+ if (mroute_extract_openvpn_sockaddr(&amp;maddr, &amp;saddr, true))</span><=
+br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        for (uint32_t i =3D 0; i &lt;=3D m-&=
+gt;max_peerid; i++)</span><br><span>         {</span><br><span>            =
+ struct multi_instance *mi =3D m-&gt;instances[i];</span><br><span>        =
+     if (mi &amp;&amp; !mi-&gt;halt &amp;&amp; mroute_addr_equal(&amp;maddr=
+, &amp;mi-&gt;real))</span><br><span>@@ -4100,8 +4107,14 @@</span><br><span=
+>     }</span><br><span> </span><br><span>     /* should not really end up =
+here, since multi_create_instance returns null</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-     * if amount of clients exceeds max_clients */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * if amount of=
+ clients exceeds max_clients and this method would then</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * also not been called */</span><b=
+r><span>     ASSERT(mi-&gt;context.c2.tls_multi-&gt;peer_id &lt; m-&gt;max_=
+clients);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (mi-&gt;context.c2.tls=
+_multi-&gt;peer_id &gt; m-&gt;max_peerid)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        m-&gt;max_peerid =3D mi-&gt;context.c2.tls_multi-&gt;peer_i=
+d;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span> }</span><br><span> </span><br><span> #if defined(__GNUC__) || defined=
+(__clang__)</span><br><span>diff --git a/src/openvpn/multi.h b/src/openvpn/=
+multi.h</span><br><span>index 498409d..17d850b 100644</span><br><span>--- a=
+/src/openvpn/multi.h</span><br><span>+++ b/src/openvpn/multi.h</span><br><s=
+pan>@@ -160,9 +160,12 @@</span><br><span>  */</span><br><span> struct multi=
+_context</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    struct multi_instance **instances; /**&lt; Array of multi_instanc=
+es. An instance can be</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    struct multi_instance **instances; /**&lt; Array of multi_instances =
+with the size of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                                     *  max_clients.  An instance can be</s=
+pan><br><span>                                         * accessed using pee=
+r-id as an index. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t max_pee=
+rid;               /**&lt; currently highest allocated peerid and</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+           * maximum allocated/valid index in</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                                        * instanc=
+es */</span><br><span>     struct hash *hash;                 /**&lt; VPN t=
+unnel instances indexed by real</span><br><span>                           =
+              *   address of the remote peer. */</span><br><span>     struc=
+t hash *vhash;                /**&lt; VPN tunnel instances indexed by</span=
+><br><span>diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c</=
+span><br><span>index 6456554..529cc39 100644</span><br><span>--- a/src/open=
+vpn/push_util.c</span><br><span>+++ b/src/openvpn/push_util.c</span><br><sp=
+an>@@ -317,7 +317,7 @@</span><br><span> </span><br><span>     int count =3D=
+ 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    for (uint32_t i =3D 0; i &lt;=3D m-&g=
+t;max_peerid; i++)</span><br><span>     {</span><br><span>         struct m=
+ulti_instance *curr_mi =3D m-&gt;instances[i];</span><br><span> </span><br>=
+<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1557?usp=3Demail">change 1557</a>. To unsubscribe, or for he=
+lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
+s?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/1557?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I777a3a5f4f137432a19746972e2=
-aad1732184feb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1559 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If797f3fe178fba3f43fb12898e5=
+484bfb38f05c3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1557 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 
 </body></html>=
 
---fz9D8cg8cDE=--
+--KdlkYvY4x4o=--
 
