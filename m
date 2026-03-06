@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri,  6 Mar 2026 17:42:39 +0100
-Message-ID: <20260306164245.3486-1-gert@...1296...>
-In-Reply-To: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
-References: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
+From: "ralf_lici (Code Review)" <gerrit@...515...>
+Date: Fri, 6 Mar 2026 18:08:30 +0000
+References: <gerrit.1772820505000.I89f0aa9a23915c7783ae03793080ee989a437208@...2715...>
+Reply-To: ralf@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <5abeb608941f51179c5d1315da0e5a302ff79979-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Optimise iterating over all clients by
- remembering highest peer id
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="XXWTex97SG4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: doc: fix client-nat
+ syntax and examples
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,151 +18,182 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--XXWTex97SG4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This keeps track of the highest peer id that is currently allocated to avoid
-iterating over the empty tail of the m->instances array.
+Attention is currently required from: plaisthos.
 
-Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f05c3
-Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1557
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1560?usp=3Demail
+
+to review the following change.
+
+
+Change subject: doc: fix client-nat syntax and examples
+......................................................................
+
+doc: fix client-nat syntax and examples
+
+The client-nat documentation uses an incorrect command form and
+incomplete examples.
+
+Document the actual syntax accepted by openvpn:
+  client-nat snat|dnat network netmask alias
+
+Update examples to include all required arguments and rewrite the
+explanatory text to describe 'network', 'netmask', and 'alias'
+separately.
+
+Documentation-only change; no behavior change.
+
+Change-Id: I89f0aa9a23915c7783ae03793080ee989a437208
+Signed-off-by: Ralf Lici <ralf@...2726...>
 ---
+M doc/man-sections/client-options.rst
+1 file changed, 11 insertions(+), 6 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1557
-This mail reflects revision 3 of this Change.
 
-Signed-off-by line for the author was added as per our policy.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1560/1
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
+options.rst
+index b9ae7ce..85d25e5 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -132,16 +132,21 @@
+   ifconfig settings pushed to the client would create an IP numbering
+   conflict.
 
-        
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 9d4ea49..c03e821 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -601,6 +601,13 @@
-         if (mi->context.c2.tls_multi->peer_id != MAX_PEER_ID)
-         {
-             m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
++  Valid syntax:
++  ::
 +
-+            /* Adjust the max_peerid as this might have been the highest
-+             * peer id instance */
-+            while (m->max_peerid > 0 && m->instances[m->max_peerid] == NULL)
-+            {
-+                m->max_peerid--;
-+            }
-         }
- 
-         schedule_remove_entry(m->schedule, (struct schedule_entry *)mi);
-@@ -652,7 +659,7 @@
- {
-     if (m->hash)
-     {
--        for (int i = 0; i < m->max_clients; i++)
-+        for (uint32_t i = 0; i <= m->max_peerid; i++)
-         {
-             struct multi_instance *mi = m->instances[i];
-             if (mi)
-@@ -1326,7 +1333,7 @@
-         {
-             int count = 0;
- 
--            for (int i = 0; i < m->max_clients; i++)
-+            for (uint32_t i = 0; i <= m->max_peerid; i++)
-             {
-                 struct multi_instance *mi = m->instances[i];
-                 if (mi && mi != new_mi && !mi->halt)
-@@ -2885,7 +2892,7 @@
- #endif
-         mb = mbuf_alloc_buf(buf);
- 
--        for (int i = 0; i < m->max_clients; i++)
-+        for (uint32_t i = 0; i <= m->max_peerid; i++)
-         {
-             struct multi_instance *mi = m->instances[i];
- 
-@@ -3794,7 +3801,7 @@
- multi_push_restart_schedule_exit(struct multi_context *m, bool next_server)
- {
-     /* tell all clients to restart */
--    for (int i = 0; i < m->max_clients; i++)
-+    for (uint32_t i = 0; i <= m->max_peerid; i++)
-     {
-         struct multi_instance *mi = m->instances[i];
-         if (mi && !mi->halt && proto_is_dgram(mi->context.c2.link_sockets[0]->info.proto))
-@@ -3876,7 +3883,7 @@
-     struct multi_context *m = (struct multi_context *)arg;
-     int count = 0;
- 
--    for (int i = 0; i < m->max_clients; i++)
-+    for (uint32_t i = 0; i <= m->max_peerid; i++)
-     {
-         struct multi_instance *mi = m->instances[i];
-         if (mi && !mi->halt)
-@@ -3907,7 +3914,7 @@
-     maddr.proto = proto;
-     if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
-     {
--        for (int i = 0; i < m->max_clients; i++)
-+        for (uint32_t i = 0; i <= m->max_peerid; i++)
-         {
-             struct multi_instance *mi = m->instances[i];
-             if (mi && !mi->halt && mroute_addr_equal(&maddr, &mi->real))
-@@ -4100,8 +4107,14 @@
-     }
- 
-     /* should not really end up here, since multi_create_instance returns null
--     * if amount of clients exceeds max_clients */
-+     * if amount of clients exceeds max_clients and this method would then
-+     * also not have been called */
-     ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
++      client-nat snat|dnat network netmask alias
 +
-+    if (mi->context.c2.tls_multi->peer_id > m->max_peerid)
-+    {
-+        m->max_peerid = mi->context.c2.tls_multi->peer_id;
-+    }
- }
- 
- #if defined(__GNUC__) || defined(__clang__)
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 498409d..17d850b 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -160,9 +160,12 @@
-  */
- struct multi_context
- {
--    struct multi_instance **instances; /**< Array of multi_instances. An instance can be
-+    struct multi_instance **instances; /**< Array of multi_instances with the size of
-+                                        *  max_clients.  An instance can be
-                                         * accessed using peer-id as an index. */
--
-+    uint32_t max_peerid;               /**< currently highest allocated peerid and
-+                                        * maximum allocated/valid index in
-+                                        * instances */
-     struct hash *hash;                 /**< VPN tunnel instances indexed by real
-                                         *   address of the remote peer. */
-     struct hash *vhash;                /**< VPN tunnel instances indexed by
-diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
-index 6456554..529cc39 100644
---- a/src/openvpn/push_util.c
-+++ b/src/openvpn/push_util.c
-@@ -317,7 +317,7 @@
- 
-     int count = 0;
- 
--    for (int i = 0; i < m->max_clients; i++)
-+    for (uint32_t i = 0; i <= m->max_peerid; i++)
-     {
-         struct multi_instance *curr_mi = m->instances[i];
- 
+   Examples:
+   ::
+
+-      client-nat snat 192.168.0.0/255.255.0.0
+-      client-nat dnat 10.64.0.0/255.255.0.0
++      client-nat snat 192.168.0.0 255.255.0.0 10.64.0.0
++      client-nat dnat 10.64.0.0 255.255.0.0 192.168.0.0
+
+-  ``network/netmask`` (for example :code:`192.168.0.0/255.255.0.0`) defines
+-  the local view of a resource from the client perspective, while
+-  ``alias/netmask`` (for example :code:`10.64.0.0/255.255.0.0`) defines the
+-  remote view from the server perspective.
++  ``network`` and ``netmask`` (for example :code:`192.168.0.0
++  255.255.0.0`) define the local view of a resource from the client
++  perspective, while ``alias`` (for example :code:`10.64.0.0`) defines the
++  remote view from the server perspective using the same netmask.
+
+   Use :code:`snat` (source NAT) for resources owned by the client and
+   :code:`dnat` (destination NAT) for remote resources.
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1560?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I89f0aa9a23915c7783ae03793080ee989a437208
+Gerrit-Change-Number: 1560
+Gerrit-PatchSet: 1
+Gerrit-Owner: ralf_lici <ralf@...2726...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--XXWTex97SG4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>ralf_lici would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1560?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">doc: fix client-nat syntax and examples<br>=
+<br>The client-nat documentation uses an incorrect command form and<br>inco=
+mplete examples.<br><br>Document the actual syntax accepted by openvpn:<br>=
+  client-nat snat|dnat network netmask alias<br><br>Update examples to incl=
+ude all required arguments and rewrite the<br>explanatory text to describe =
+&#39;network&#39;, &#39;netmask&#39;, and &#39;alias&#39;<br>separately.<br=
+><br>Documentation-only change; no behavior change.<br><br>Change-Id: I89f0=
+aa9a23915c7783ae03793080ee989a437208<br>Signed-off-by: Ralf Lici &lt;ralf@...220...=
+..2726...&gt;<br>---<br>M doc/man-sections/client-options.rst<br>1 file cha=
+nged, 11 insertions(+), 6 deletions(-)<br><br></pre><pre class=3D"blocks" s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit.openvpn.net:29418/openvpn refs/changes/60/1560/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/doc/man-sections/client-options.rst b/doc/man-sections/client-optio=
+ns.rst</span><br><span>index b9ae7ce..85d25e5 100644</span><br><span>--- a/=
+doc/man-sections/client-options.rst</span><br><span>+++ b/doc/man-sections/=
+client-options.rst</span><br><span>@@ -132,16 +132,21 @@</span><br><span>  =
+ ifconfig settings pushed to the client would create an IP numbering</span>=
+<br><span>   conflict.</span><br><span> </span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  Valid syntax:</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  ::</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      client-nat =
+snat|dnat network netmask alias</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span>   Examples:</span><br><span>   ::</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-      client-na=
+t snat 192.168.0.0/255.255.0.0</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-      client-nat dnat 10.64.0.0/255.255.0.0</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+      client-nat snat 192.168.0.0 255.255=
+.0.0 10.64.0.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+ client-nat dnat 10.64.0.0 255.255.0.0 192.168.0.0</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  ``network/netmask`` (for e=
+xample :code:`192.168.0.0/255.255.0.0`) defines</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  the local view of a resource from the client pe=
+rspective, while</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``a=
+lias/netmask`` (for example :code:`10.64.0.0/255.255.0.0`) defines the</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  remote view from the ser=
+ver perspective.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `=
+`network`` and ``netmask`` (for example :code:`192.168.0.0</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  255.255.0.0`) define the local vie=
+w of a resource from the client</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  perspective, while ``alias`` (for example :code:`10.64.0.0`) =
+defines the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  remote=
+ view from the server perspective using the same netmask.</span><br><span> =
+</span><br><span>   Use :code:`snat` (source NAT) for resources owned by th=
+e client and</span><br><span>   :code:`dnat` (destination NAT) for remote r=
+esources.</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1560?usp=3Demail">change 1560</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1560?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I89f0aa9a23915c7783ae0379308=
+0ee989a437208 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1560 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--XXWTex97SG4=--
 
