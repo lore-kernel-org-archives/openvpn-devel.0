@@ -1,11 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon,  9 Mar 2026 14:32:36 +0100
-Message-ID: <20260309133236.29732-1-frank@...2641...>
-In-Reply-To: <gerrit.1769789455000.I23cc00aee47aef007ab2e7d50b52c6de299505db@...2715...>
-References: <gerrit.1769789455000.I23cc00aee47aef007ab2e7d50b52c6de299505db@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] ssl_verify_openssl: Clean up
- extract_x509_extension
+Date: Mon, 9 Mar 2026 14:41:17 +0100 (CET)
+Message-Id: <202603091341.629DfHa1074749@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20260309130546.7735-1-gert@...1296...>
+References: <20260309130546.7735-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc: fix client-nat syntax and
+ examples
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,107 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>
+To: Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-* Avoid sign-compare warning when comparing string
-  lengths
-* Use the nicer alias rfc822Name instead of the general ia5
-  from the GENERAL_NAME union.
-* Use the official ASN1_STRING_length API instead of accessing
-  the struct directly.
-* C11 changes
+This is an easy one for in-between... no code changes, so nothing to
+test, obviously-incorrect documentation beforehand, so quite useful to
+have :-)
 
-Change-Id: I23cc00aee47aef007ab2e7d50b52c6de299505db
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1507
----
+Your patch has been applied to the master, release/2.7 and release/2.6 branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 60986ae5337f2501d088f3a9c919799f9fce7355 (master)
+commit 16646eb01adbbeff94e498a9d6589671602d7280 (release/2.7)
+commit 0481d9374f6aa940002ad71eaea8f98c057fc491 (release/2.6)
+Author: Ralf Lici
+Date:   Mon Mar 9 14:05:40 2026 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1507
-This mail reflects revision 7 of this Change.
+     doc: fix client-nat syntax and examples
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+     Signed-off-by: Ralf Lici <ralf@...2726...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1560
+     Message-Id: <20260309130546.7735-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg35966.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 58f665c..46401cd 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -118,16 +118,10 @@
-     return nid == NID_subject_alt_name || nid == NID_issuer_alt_name;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- static bool
- extract_x509_extension(X509 *cert, char *fieldname, char *out, size_t size)
- {
-     bool retval = false;
--    char *buf = 0;
- 
-     if (!x509_username_field_ext_supported(fieldname))
-     {
-@@ -139,29 +133,28 @@
-     GENERAL_NAMES *extensions = X509_get_ext_d2i(cert, nid, NULL, NULL);
-     if (extensions)
-     {
--        int numalts;
--        int i;
-         /* get amount of alternatives,
-          * RFC2459 claims there MUST be at least
-          * one, but we don't depend on it...
-          */
- 
--        numalts = sk_GENERAL_NAME_num(extensions);
-+        int numalts = sk_GENERAL_NAME_num(extensions);
- 
-         /* loop through all alternatives */
--        for (i = 0; i < numalts; i++)
-+        for (int i = 0; i < numalts; i++)
-         {
-             /* get a handle to alternative name number i */
-             const GENERAL_NAME *name = sk_GENERAL_NAME_value(extensions, i);
-+            char *buf = NULL;
- 
-             switch (name->type)
-             {
-                 case GEN_EMAIL:
--                    if (ASN1_STRING_to_UTF8((unsigned char **)&buf, name->d.ia5) < 0)
-+                    if (ASN1_STRING_to_UTF8((unsigned char **)&buf, name->d.rfc822Name) < 0)
-                     {
-                         continue;
-                     }
--                    if (strlen(buf) != name->d.ia5->length)
-+                    if ((ssize_t)strlen(buf) != ASN1_STRING_length(name->d.rfc822Name))
-                     {
-                         msg(D_TLS_ERRORS, "ASN1 ERROR: string contained terminating zero");
-                         OPENSSL_free(buf);
-@@ -175,7 +168,7 @@
-                     break;
- 
-                 default:
--                    msg(D_TLS_DEBUG, "%s: ignoring general name field type %i", __func__,
-+                    msg(D_TLS_DEBUG, "%s: ignoring general name field type %d", __func__,
-                         name->type);
-                     break;
-             }
-@@ -185,10 +178,6 @@
-     return retval;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /*
-  * Extract a field from an X509 subject name.
-  *
+
+--
+kind regards,
+
+Gert Doering
+
 
