@@ -1,16 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 10 Mar 2026 10:51:31 +0000
-In-Reply-To: <gerrit.1770053869000.I1bc576c4c7ffacbb9300608d98b06b22f2475fd9@...2715...>
-References: <gerrit.1770053869000.I1bc576c4c7ffacbb9300608d98b06b22f2475fd9@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <df39503e10e064e3252df90928ce70aabe4f29a6-EmailReviewComments-HTML@...2715...>
+Date: Tue, 10 Mar 2026 12:31:29 +0000
+References: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
+Message-ID: <14f626763927ded1a4a0661105a72289b87c4dbc-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YNYcDFonkEM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: crypto: Change
- cipher_kt_*_size to return size_t instead of int
+Content-Type: multipart/alternative; boundary="oNMwgaduAHM="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Increase default
+ size of internal hash maps to 1024
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,136 +17,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YNYcDFonkEM=
+--oNMwgaduAHM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1563?usp=3Demail )
 
-plaisthos has posted comments on this change by flichtenheld. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1508?usp=3Demail )
 
-Change subject: crypto: Change cipher_kt_*_size to return size_t instead of=
- int
+Change subject: Increase default size of internal hash maps to 1024
 ......................................................................
 
+Increase default size of internal hash maps to 1024
 
-Patch Set 6: Code-Review-1
+The default of 256 seems quite low for today's standards and cause hash
+collisions quite quickly.
 
-(3 comments)
-
-File src/openvpn/crypto.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1508/comment/8b0e13d7_3c7a3f09?usp=3D=
-email :
-PS6, Line 91:         const unsigned int iv_len =3D cipher_ctx_iv_length(ct=
-x->cipher);
-Shouldn't this trigger a warning because we are putting a 8 byte int into a=
- 4 byte int
-
-
-File src/openvpn/crypto_backend.h:
-
-http://gerrit.openvpn.net/c/openvpn/+/1508/comment/c62f107f_bb65928c?usp=3D=
-email :
-PS6, Line 284: size_t cipher_kt_tag_size(const char *ciphername);
-I would like to have some more consistency here. We are making cipher_ctx_i=
-v_length an unsigned int but this a size_t
-
-
-http://gerrit.openvpn.net/c/openvpn/+/1508/comment/4d9f4906_47ca6c0c?usp=3D=
-email :
-PS6, Line 379: unsigned int cipher_ctx_block_size(const cipher_ctx_t *ctx);
-This is an unsigned int while the non context uses a different return type =
-of size_t
+Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M doc/man-sections/advanced-options.rst
+M src/openvpn/options.c
+2 files changed, 3 insertions(+), 3 deletions(-)
 
 
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/1563/1
+
+diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advan=
+ced-options.rst
+index e1115e4..d922d5d 100644
+--- a/doc/man-sections/advanced-options.rst
++++ b/doc/man-sections/advanced-options.rst
+@@ -36,7 +36,7 @@
+
+      hash-size r v
+
+-  By default, both tables are sized at 256 buckets.
++  By default, both tables are sized at 1024 buckets.
+
+ --bcast-buffers n
+   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 8daec42..630a4eb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -849,8 +849,8 @@
+ #endif
+     o->vlan_accept =3D VLAN_ALL;
+     o->vlan_pvid =3D 1;
+-    o->real_hash_size =3D 256;
+-    o->virtual_hash_size =3D 256;
++    o->real_hash_size =3D 1024;
++    o->virtual_hash_size =3D 1024;
+     o->n_bcast_buf =3D 256;
+     o->tcp_queue_limit =3D 64;
+     o->max_clients =3D 1024;
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1bc576c4c7ffacbb9300608d98b06b22f2475fd9
-Gerrit-Change-Number: 1508
-Gerrit-PatchSet: 6
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
+Gerrit-Change-Number: 1563
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 10 Mar 2026 10:51:31 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
 
---YNYcDFonkEM=
+--oNMwgaduAHM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail">V=
-iew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1508/comment/8b0e13d7_3c7a3f09?usp=3Demail">Patch Set=
- #6, Line 91:</a> <code style=3D"font-family:monospace,monospace">        c=
-onst unsigned int iv_len =3D cipher_ctx_iv_length(ctx-&gt;cipher);</code></=
-p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Shouldn&#39;t this trigger a warning because we are putting a 8 byte int=
- into a 4 byte int</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><=
-p>File src/openvpn/crypto_backend.h:</p><ul style=3D"list-style: none; padd=
-ing: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
-ottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1508/comment/=
-c62f107f_bb65928c?usp=3Demail">Patch Set #6, Line 284:</a> <code style=3D"f=
-ont-family:monospace,monospace">size_t cipher_kt_tag_size(const char *ciphe=
-rname);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">I would like to have some more consistency here. We are =
-making cipher_ctx_iv_length an unsigned int but this a size_t</p></li><li s=
-tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1508/comment/4d9f4906_47ca6=
-c0c?usp=3Demail">Patch Set #6, Line 379:</a> <code style=3D"font-family:mon=
-ospace,monospace">unsigned int cipher_ctx_block_size(const cipher_ctx_t *ct=
-x);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">This is an unsigned int while the non context uses a differe=
-nt return type of size_t</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail">change 1508</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1563?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Increase default size of internal hash maps to 1024<br><br>The default =
+of 256 seems quite low for today&#39;s standards and cause hash<br>collisio=
+ns quite quickly.<br><br>Change-Id: Ia699b0dfa407ac377970bb130434298eaaec59=
+2b<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M doc/m=
+an-sections/advanced-options.rst<br>M src/openvpn/options.c<br>2 files chan=
+ged, 3 insertions(+), 3 deletions(-)<br><br></pre><pre class=3D"blocks" sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
+h://gerrit.openvpn.net:29418/openvpn refs/changes/63/1563/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-opt=
+ions.rst</span><br><span>index e1115e4..d922d5d 100644</span><br><span>--- =
+a/doc/man-sections/advanced-options.rst</span><br><span>+++ b/doc/man-secti=
+ons/advanced-options.rst</span><br><span>@@ -36,7 +36,7 @@</span><br><span>=
+ </span><br><span>      hash-size r v</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-  By default, both tables are sized at 25=
+6 buckets.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  By defa=
+ult, both tables are sized at 1024 buckets.</span><br><span> </span><br><sp=
+an> --bcast-buffers n</span><br><span>   Allocate ``n`` buffers for broadca=
+st datagrams (default :code:`256`).</span><br><span>diff --git a/src/openvp=
+n/options.c b/src/openvpn/options.c</span><br><span>index 8daec42..630a4eb =
+100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/sr=
+c/openvpn/options.c</span><br><span>@@ -849,8 +849,8 @@</span><br><span> #e=
+ndif</span><br><span>     o-&gt;vlan_accept =3D VLAN_ALL;</span><br><span> =
+    o-&gt;vlan_pvid =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    o-&gt;real_hash_size =3D 256;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    o-&gt;virtual_hash_size =3D 256;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    o-&gt;real_hash_size =3D 1024;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    o-&gt;virtual_hash_siz=
+e =3D 1024;</span><br><span>     o-&gt;n_bcast_buf =3D 256;</span><br><span=
+>     o-&gt;tcp_queue_limit =3D 64;</span><br><span>     o-&gt;max_clients =
+=3D 1024;</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail">change 1563</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1bc576c4c7ffacbb9300608d98b=
-06b22f2475fd9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1508 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia699b0dfa407ac377970bb13043=
+4298eaaec592b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1563 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 10 Mar 2026 10:51:31=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---YNYcDFonkEM=--
+--oNMwgaduAHM=--
 
