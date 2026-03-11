@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Mar 2026 16:05:42 +0000
-In-Reply-To: <gerrit.1773243451000.I090f5b201d67f51d2e42df1914a8466bcfcb6bf8@...2715...>
-References: <gerrit.1773243451000.I090f5b201d67f51d2e42df1914a8466bcfcb6bf8@...2715...>
+Date: Wed, 11 Mar 2026 16:06:10 +0000
+In-Reply-To: <gerrit.1773243451000.Ia929c949cceaabe21a2937ad3217052aec4b2b4c@...2715...>
+References: <gerrit.1773243451000.Ia929c949cceaabe21a2937ad3217052aec4b2b4c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <25a89847ab1aefa8aeac06aacb902bb23b388247-EmailReviewComments-HTML@...2715...>
+Message-ID: <dee8adc82c5557a2e9640b6b61f9149f0d2a1a64-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WxzOvOTDsSw="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: [GHA] Install aws-lc
- under /opt/aws-lc and chache it
+Content-Type: multipart/alternative; boundary="DvkL/QmlflA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Show version and
+ double check we use the right TLS library in Github...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,83 +22,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WxzOvOTDsSw=
+--DvkL/QmlflA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
 flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1565?usp=3Demail )
+it.openvpn.net/c/openvpn/+/1566?usp=3Demail )
 
-Change subject: [GHA] Install aws-lc under /opt/aws-lc and chache it
+Change subject: Show version and  double check we use the right TLS library=
+ in Github Actions
 ......................................................................
 
 
-Patch Set 1: Code-Review-1
-
-(1 comment)
-
-File .github/workflows/build.yaml:
-
-http://gerrit.openvpn.net/c/openvpn/+/1565/comment/c79a40cd_3727f7f2?usp=3D=
-email :
-PS1, Line 476:           ref: ${{ env.AWS_LC_VERSION }}
-This breaks the renovate update
-
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1565?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I090f5b201d67f51d2e42df1914a8466bcfcb6bf8
-Gerrit-Change-Number: 1565
+Gerrit-Change-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c
+Gerrit-Change-Number: 1566
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 11 Mar 2026 16:05:42 +0000
-Gerrit-HasComments: Yes
+Gerrit-Comment-Date: Wed, 11 Mar 2026 16:06:10 +0000
+Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 
---WxzOvOTDsSw=
+--DvkL/QmlflA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1565?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File .github/workflows/build.ya=
-ml:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; =
-padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1565/comment/c79a40cd_3727f7f2?usp=3Demail">Pa=
-tch Set #1, Line 476:</a> <code style=3D"font-family:monospace,monospace"> =
-         ref: ${{ env.AWS_LC_VERSION }}</code></p><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">This breaks the renovate=
- update</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1565?usp=3Demail">change 1565</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1565?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail=
+">change 1566</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I090f5b201d67f51d2e42df1914a=
-8466bcfcb6bf8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1565 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia929c949cceaabe21a2937ad321=
+7052aec4b2b4c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1566 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -108,12 +91,12 @@ iew Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Mar 2026 16:05:42=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 11 Mar 2026 16:06:10=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---WxzOvOTDsSw=--
+--DvkL/QmlflA=--
 
