@@ -1,12 +1,13 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Mar 2026 17:48:49 +0000
+Date: Wed, 11 Mar 2026 18:51:06 +0000
+In-Reply-To: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@...2715...>
 References: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
-Message-ID: <70bcba5376c7593cab8632611523d46d6cd87968-HTML@...2715...>
+Message-ID: <5d4cdedf801622149738d35c852e73a8bbc378c0-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/kBTyNN4u5Q="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="71eMa0cLcX8="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change hash iv to a
  dynamically allocated ctx
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,12 +20,12 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/kBTyNN4u5Q=
+--71eMa0cLcX8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
-c/openvpn/+/1571?usp=3Demail )
+plaisthos has uploaded a new patch set (#2). ( http://gerrit.openvpn.net/c/=
+openvpn/+/1571?usp=3Demail )
 
 
 Change subject: Change hash iv to a dynamically allocated ctx
@@ -49,8 +50,7 @@ M tests/unit_tests/openvpn/test_misc.c
 6 files changed, 42 insertions(+), 23 deletions(-)
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/1571/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/1571/2
 
 diff --git a/src/openvpn/list.c b/src/openvpn/list.c
 index 50defb85..36d8ede 100644
@@ -192,7 +192,7 @@ index 57ea3fb..200e1e7 100644
 +++ b/src/openvpn/multi.c
 @@ -229,7 +229,7 @@
  #ifdef ENABLE_MANAGEMENT
-=20
+
  static uint64_t
 -cid_hash_function(const void *key, uint32_t iv)
 +cid_hash_function(const void *key, void *ctx)
@@ -254,7 +254,7 @@ n);
      /*
 diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
 n/test_misc.c
-index a8383de..422ea53 100644
+index a8383de..24bf22d 100644
 --- a/tests/unit_tests/openvpn/test_misc.c
 +++ b/tests/unit_tests/openvpn/test_misc.c
 @@ -125,11 +125,12 @@
@@ -282,36 +282,36 @@ index a8383de..422ea53 100644
 sh_function, word_compare_function);
 -    struct hash *nhash =3D hash_init(256, (uint32_t)get_random(), word_has=
 h_function, word_compare_function);
-+    struct hash *hash =3D hash_init(10000, hash_func_new_ctx, free, word_h=
-ash_function, word_compare_function);
-+    struct hash *nhash =3D hash_init(256, hash_func_new_ctx, free, word_ha=
-sh_function, word_compare_function);
++    struct hash *hash =3D hash_init(10000, hash_func_new_ctx(), free, word=
+_hash_function, word_compare_function);
++    struct hash *nhash =3D hash_init(256, hash_func_new_ctx(), free, word_=
+hash_function, word_compare_function);
 
      printf("hash_init n_buckets=3D%u mask=3D0x%08x\n", hash->n_buckets, ha=
 sh->mask);
 
 
---
+--=20
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1571?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde821899839324d
 Gerrit-Change-Number: 1571
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/kBTyNN4u5Q=
+--71eMa0cLcX8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
-oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/1571?usp=3Demail">View Change</a></p><pre class=
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
+>uploaded patch set #2</strong> to this change.</p><p><a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1571?usp=3Demail">View Change</a></p><pre class=
 =3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
 p;">Change hash iv to a dynamically allocated ctx<br><br>While for our own =
 hash function, always using an uint32_t works well, it does<br>not work ver=
@@ -323,7 +323,7 @@ rc/openvpn/mroute.c<br>M src/openvpn/mroute.h<br>M src/openvpn/multi.c<br>M=
  tests/unit_tests/openvpn/test_misc.c<br>6 files changed, 42 insertions(+),=
  23 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: m=
 onospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.n=
-et:29418/openvpn refs/changes/71/1571/1</pre><pre style=3D"font-family: mon=
+et:29418/openvpn refs/changes/71/1571/2</pre><pre style=3D"font-family: mon=
 ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/li=
 st.c b/src/openvpn/list.c</span><br><span>index 50defb85..36d8ede 100644</s=
 pan><br><span>--- a/src/openvpn/list.c</span><br><span>+++ b/src/openvpn/li=
@@ -473,7 +473,7 @@ olor: hsl(120, 100%, 40%);">+    m-&gt;inotify_watchers =3D</span><br><span=
 l_hash_size, NULL, free, int_hash_function, int_compare_function);</span><b=
 r><span> #endif</span><br><span> </span><br><span>     /*</span><br><span>d=
 iff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn=
-/test_misc.c</span><br><span>index a8383de..422ea53 100644</span><br><span>=
+/test_misc.c</span><br><span>index a8383de..24bf22d 100644</span><br><span>=
 --- a/tests/unit_tests/openvpn/test_misc.c</span><br><span>+++ b/tests/unit=
 _tests/openvpn/test_misc.c</span><br><span>@@ -125,11 +125,12 @@</span><br>=
 <span> </span><br><span> </span><br><span> static uint64_t</span><br><span =
@@ -496,27 +496,27 @@ sh_function, word_compare_function);</span><br><span style=3D"color: hsl(0,=
  100%, 40%);">-    struct hash *nhash =3D hash_init(256, (uint32_t)get_rand=
 om(), word_hash_function, word_compare_function);</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+    struct hash *hash =3D hash_init(10000, ha=
-sh_func_new_ctx, free, word_hash_function, word_compare_function);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    struct hash *nhash =3D h=
-ash_init(256, hash_func_new_ctx, free, word_hash_function, word_compare_fun=
-ction);</span><br><span> </span><br><span>     printf(&quot;hash_init n_buc=
-kets=3D%u mask=3D0x%08x\n&quot;, hash-&gt;n_buckets, hash-&gt;mask);</span>=
-<br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/1571?usp=3Demail">change 1571</a>. To =
-unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
-it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
-pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
-://gerrit.openvpn.net/c/openvpn/+/1571?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
+sh_func_new_ctx(), free, word_hash_function, word_compare_function);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct hash *nhash =3D=
+ hash_init(256, hash_func_new_ctx(), free, word_hash_function, word_compare=
+_function);</span><br><span> </span><br><span>     printf(&quot;hash_init n=
+_buckets=3D%u mask=3D0x%08x\n&quot;, hash-&gt;n_buckets, hash-&gt;mask);</s=
+pan><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/1571?usp=3Demail">change 1571</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
+temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
+n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/1571?usp=3Demail"/><meta itemprop=3D=
+"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde=
 821899839324d </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1571 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -524,5 +524,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---/kBTyNN4u5Q=--
+--71eMa0cLcX8=--
 
