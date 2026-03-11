@@ -1,14 +1,14 @@
 From: "ralf_lici (Code Review)" <gerrit@...515...>
-Date: Wed, 11 Mar 2026 08:51:33 +0000
+Date: Wed, 11 Mar 2026 09:13:11 +0000
 In-Reply-To: <gerrit.1725894771000.Iae04ad8715e40dfc76475c2c5b9a766c9604efc9@...2715...>
 References: <gerrit.1725894771000.Iae04ad8715e40dfc76475c2c5b9a766c9604efc9@...2715...>
 Reply-To: ralf@...2726..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cead5ed85d03ac012830725905ba465958e1d607-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c7c87472de21079e8945113df5d18e965da62885-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="r24kmRAR4ho="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="10vKaHVYUSs="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: options: add IPv4
  CIDR parsing for relevant directives
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---r24kmRAR4ho=
+--10vKaHVYUSs=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail
 
-to look at the new patch set (#12).
+to look at the new patch set (#13).
 
 
 Change subject: options: add IPv4 CIDR parsing for relevant directives
@@ -83,10 +83,10 @@ A tests/unit_tests/openvpn/mock_setenv.c
 A tests/unit_tests/openvpn/mock_signal.c
 M tests/unit_tests/openvpn/test_options_parse.c
 M tests/unit_tests/openvpn/test_ssl.c
-12 files changed, 675 insertions(+), 84 deletions(-)
+12 files changed, 680 insertions(+), 87 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/739/12
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/739/13
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 198c98f..5ce044b 100644
@@ -1017,7 +1017,7 @@ d.
  #endif /* ifndef OPTIONS_UTIL_H_ */
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
 n/Makefile.am
-index 1128eb4..bc29c99 100644
+index 1128eb4..1e5aa59 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
 @@ -102,6 +102,7 @@
@@ -1036,7 +1036,16 @@ index 1128eb4..bc29c99 100644
  	$(top_srcdir)/src/openvpn/ssl_openssl.c \
  	$(top_srcdir)/src/openvpn/ssl_mbedtls.c \
  	$(top_srcdir)/src/openvpn/ssl_util.c \
-@@ -225,9 +227,13 @@
+@@ -221,13 +223,18 @@
+ endif
+
+ options_parse_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_s=
+rcdir)/src/compat @TEST_CFLAGS@
+-options_parse_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/op=
+envpn
++options_parse_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/op=
+envpn \
++	$(SOCKETS_LIBS)
  options_parse_testdriver_SOURCES =3D test_options_parse.c \
  	mock_msg.c mock_msg.h test_common.h \
  	mock_get_random.c \
@@ -1050,7 +1059,14 @@ index 1128eb4..bc29c99 100644
  	$(top_srcdir)/src/openvpn/win32-util.c \
  	$(top_srcdir)/src/openvpn/platform.c
 
-@@ -370,7 +376,11 @@
+@@ -365,12 +372,16 @@
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
+envpn \
+ 	-DSOURCEDIR=3D\"$(top_srcdir)\" @TEST_CFLAGS@
+
+-misc_testdriver_LDFLAGS =3D @TEST_LDFLAGS@
++misc_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ $(SOCKETS_LIBS)
+
  misc_testdriver_SOURCES =3D test_misc.c \
  	mock_msg.c test_common.h  \
  	mock_get_random.c \
@@ -1062,7 +1078,14 @@ index 1128eb4..bc29c99 100644
  	$(top_srcdir)/src/openvpn/options_util.c \
  	$(top_srcdir)/src/openvpn/ssl_util.c \
  	$(top_srcdir)/src/openvpn/win32-util.c \
-@@ -389,10 +399,14 @@
+@@ -384,15 +395,20 @@
+
+ push_update_msg_testdriver_LDFLAGS =3D \
+ 	@TEST_LDFLAGS@ \
+-	-L$(top_srcdir)/src/openvpn
++	-L$(top_srcdir)/src/openvpn \
++	$(SOCKETS_LIBS)
+
  push_update_msg_testdriver_SOURCES =3D test_push_update_msg.c \
  	mock_msg.c \
  	mock_get_random.c \
@@ -1508,7 +1531,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Iae04ad8715e40dfc76475c2c5b9a766c9604efc9
 Gerrit-Change-Number: 739
-Gerrit-PatchSet: 12
+Gerrit-PatchSet: 13
 Gerrit-Owner: ralf_lici <ralf@...2726...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -1516,13 +1539,13 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---r24kmRAR4ho=
+--10vKaHVYUSs=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld, plaisthos. </p>
-<p>ralf_lici <strong>uploaded patch set #12</strong> to this change.</p><p>=
+<p>ralf_lici <strong>uploaded patch set #13</strong> to this change.</p><p>=
 <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail">View Chan=
 ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
 white-space: pre-wrap;">options: add IPv4 CIDR parsing for relevant directi=
@@ -1553,10 +1576,10 @@ ons.rst<br>M src/openvpn/options.c<br>M src/openvpn/options_util.c<br>M src=
 /openvpn/options_util.h<br>M tests/unit_tests/openvpn/Makefile.am<br>A test=
 s/unit_tests/openvpn/mock_setenv.c<br>A tests/unit_tests/openvpn/mock_signa=
 l.c<br>M tests/unit_tests/openvpn/test_options_parse.c<br>M tests/unit_test=
-s/openvpn/test_ssl.c<br>12 files changed, 675 insertions(+), 84 deletions(-=
+s/openvpn/test_ssl.c<br>12 files changed, 680 insertions(+), 87 deletions(-=
 )<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
 ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
-n refs/changes/39/739/12</pre><pre style=3D"font-family: monospace,monospac=
+n refs/changes/39/739/13</pre><pre style=3D"font-family: monospace,monospac=
 e; white-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.t=
 xt</span><br><span>index 198c98f..5ce044b 100644</span><br><span>--- a/CMak=
 eLists.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -778,6 +=
@@ -2428,7 +2451,7 @@ max_idx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
 style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* ifndef O=
 PTIONS_UTIL_H_ */</span><br><span>diff --git a/tests/unit_tests/openvpn/Mak=
 efile.am b/tests/unit_tests/openvpn/Makefile.am</span><br><span>index 1128e=
-b4..bc29c99 100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile.=
+b4..1e5aa59 100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile.=
 am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefile.am</span><br><sp=
 an>@@ -102,6 +102,7 @@</span><br><span> ssl_testdriver_SOURCES =3D test_ssl=
 .c \</span><br><span> 	mock_msg.c mock_msg.h test_common.h \</span><br><spa=
@@ -2442,494 +2465,511 @@ an> 	$(top_srcdir)/src/openvpn/platform.c \</span><br><span> 	$(top_srcdir)=
  40%);">+	$(top_srcdir)/src/openvpn/socket_util.c \</span><br><span> 	$(top=
 _srcdir)/src/openvpn/ssl_openssl.c \</span><br><span> 	$(top_srcdir)/src/op=
 envpn/ssl_mbedtls.c \</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_util.=
-c \</span><br><span>@@ -225,9 +227,13 @@</span><br><span> options_parse_tes=
-tdriver_SOURCES =3D test_options_parse.c \</span><br><span> 	mock_msg.c moc=
-k_msg.h test_common.h \</span><br><span> 	mock_get_random.c \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+	mock_management.c \</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+	mock_setenv.c \</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+	mock_signal.c \</span><br><span> 	=
-$(top_srcdir)/src/openvpn/options_parse.c \</span><br><span> 	$(top_srcdir)=
-/src/openvpn/options_util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/b=
-uffer.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_src=
-dir)/src/openvpn/socket_util.c \</span><br><span> 	$(top_srcdir)/src/openvp=
-n/win32-util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/platform.c</sp=
-an><br><span> </span><br><span>@@ -370,7 +376,11 @@</span><br><span> misc_t=
-estdriver_SOURCES =3D test_misc.c \</span><br><span> 	mock_msg.c test_commo=
-n.h  \</span><br><span> 	mock_get_random.c \</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+	mock_management.c \</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+	mock_setenv.c \</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+	mock_signal.c \</span><br><span> 	$(top_srcdir)/src=
-/openvpn/buffer.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-	$(top_srcdir)/src/openvpn/socket_util.c \</span><br><span> 	$(top_srcdir)/=
-src/openvpn/options_util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/ss=
-l_util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/win32-util.c \</span=
-><br><span>@@ -389,10 +399,14 @@</span><br><span> push_update_msg_testdrive=
-r_SOURCES =3D test_push_update_msg.c \</span><br><span> 	mock_msg.c \</span=
-><br><span> 	mock_get_random.c \</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+	mock_management.c \</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+	mock_setenv.c \</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+	mock_signal.c \</span><br><span> 	$(top_srcdir)/src/openvpn/buf=
-fer.c \</span><br><span> 	$(top_srcdir)/src/openvpn/platform.c \</span><br>=
-<span> 	$(top_srcdir)/src/openvpn/options_util.c \</span><br><span> 	$(top_=
-srcdir)/src/openvpn/otime.c \</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+	$(top_srcdir)/src/openvpn/socket_util.c \</span><br><span> 	$(to=
-p_srcdir)/src/openvpn/list.c</span><br><span> </span><br><span> socket_test=
-driver_CFLAGS  =3D \</span><br><span>diff --git a/tests/unit_tests/openvpn/=
-mock_setenv.c b/tests/unit_tests/openvpn/mock_setenv.c</span><br><span>new =
-file mode 100644</span><br><span>index 0000000..a35a295</span><br><span>---=
- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/mock_setenv.c</sp=
-an><br><span>@@ -0,0 +1,39 @@</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Ope=
-nVPN -- An application to securely tunnel IP networks</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP port, wi=
-th support for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *             session authentication and key exchange,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *             packet encrypti=
-on, packet authentication, and</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *             packet compression.</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@...515...&gt;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you =
-can redistribute it and/or modify</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *  it under the terms of the GNU General Public License vers=
-ion 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as publish=
-ed by the Free Software Foundation.</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  This program is distributed in the hope that it will be useful,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY=
-; without even the implied warranty of</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.=
-  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU Ge=
-neral Public License for more details.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  You should have received a copy of the GNU General Public License alo=
-ng</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this pro=
-gram; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#include &quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;sysh=
-ead.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;env_set.h&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+setenv_str(struct env_set *es, const char *name, c=
-onst char *value)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+setenv_int(struct env_set *es, const char *name, int value)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/op=
-envpn/mock_signal.c b/tests/unit_tests/openvpn/mock_signal.c</span><br><spa=
-n>new file mode 100644</span><br><span>index 0000000..4d27541</span><br><sp=
-an>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/mock_signal=
-.c</span><br><span>@@ -0,0 +1,47 @@</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  OpenVPN -- An application to securely tunnel IP networks</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP po=
-rt, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *             session authentication and key exchange,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet en=
-cryption, packet authentication, and</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *             packet compression.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@...1699...=
-.&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free softwa=
-re; you can redistribute it and/or modify</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *  it under the terms of the GNU General Public Lice=
-nse version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as=
- published by the Free Software Foundation.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  This program is distributed in the hope that it will be useful,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY =
-WARRANTY; without even the implied warranty of</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR =
-PURPOSE.  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  GNU General Public License for more details.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ *  You should have received a copy of the GNU General Public Lic=
-ense along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with =
-this program; if not, see &lt;https://www.gnu.org/licenses/&gt;.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#include &quot;config.h&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &q=
-uot;syshead.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;sock=
-et.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+struct signal_info siginfo_s=
-tatic; /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+signal_reset(struct signal_info *si=
-, int signum)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return signum;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+struct win32_signal win32_signal; /* GLOBAL */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+win32_signal_get(struct win32_signal *ws)</span><br><span style=3D"color: =
+c \</span><br><span>@@ -221,13 +223,18 @@</span><br><span> endif</span><br>=
+<span> </span><br><span> options_parse_testdriver_CFLAGS  =3D -I$(top_srcdi=
+r)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-options_parse_testdriver_LDFLAGS =3D @TES=
+T_LDFLAGS@ -L$(top_srcdir)/src/openvpn</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+options_parse_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(=
+top_srcdir)/src/openvpn \</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+	$(SOCKETS_LIBS)</span><br><span> options_parse_testdriver_SOURCES =
+=3D test_options_parse.c \</span><br><span> 	mock_msg.c mock_msg.h test_com=
+mon.h \</span><br><span> 	mock_get_random.c \</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+	mock_management.c \</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+	mock_setenv.c \</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+	mock_signal.c \</span><br><span> 	$(top_srcdir)/sr=
+c/openvpn/options_parse.c \</span><br><span> 	$(top_srcdir)/src/openvpn/opt=
+ions_util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/buffer.c \</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn=
+/socket_util.c \</span><br><span> 	$(top_srcdir)/src/openvpn/win32-util.c \=
+</span><br><span> 	$(top_srcdir)/src/openvpn/platform.c</span><br><span> </=
+span><br><span>@@ -365,12 +372,16 @@</span><br><span> 	-I$(top_srcdir)/incl=
+ude -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \</span><br><spa=
+n> 	-DSOURCEDIR=3D\&quot;$(top_srcdir)\&quot; @TEST_CFLAGS@</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-misc_testdriver_LDF=
+LAGS =3D @TEST_LDFLAGS@</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+misc_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ $(SOCKETS_LIBS)</span><br><s=
+pan> </span><br><span> misc_testdriver_SOURCES =3D test_misc.c \</span><br>=
+<span> 	mock_msg.c test_common.h  \</span><br><span> 	mock_get_random.c \</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+	mock_management.c \<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+	mock_setenv.c \</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+	mock_signal.c \</span>=
+<br><span> 	$(top_srcdir)/src/openvpn/buffer.c \</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/socket_util.c \</sp=
+an><br><span> 	$(top_srcdir)/src/openvpn/options_util.c \</span><br><span> =
+	$(top_srcdir)/src/openvpn/ssl_util.c \</span><br><span> 	$(top_srcdir)/src=
+/openvpn/win32-util.c \</span><br><span>@@ -384,15 +395,20 @@</span><br><sp=
+an> </span><br><span> push_update_msg_testdriver_LDFLAGS =3D \</span><br><s=
+pan> 	@TEST_LDFLAGS@ \</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-	-L$(top_srcdir)/src/openvpn</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+	-L$(top_srcdir)/src/openvpn \</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+	$(SOCKETS_LIBS)</span><br><span> </span><br><span> pu=
+sh_update_msg_testdriver_SOURCES =3D test_push_update_msg.c \</span><br><sp=
+an> 	mock_msg.c \</span><br><span> 	mock_get_random.c \</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+	mock_management.c \</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+	mock_setenv.c \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+	mock_signal.c \</span><br><span> 	$(top_=
+srcdir)/src/openvpn/buffer.c \</span><br><span> 	$(top_srcdir)/src/openvpn/=
+platform.c \</span><br><span> 	$(top_srcdir)/src/openvpn/options_util.c \</=
+span><br><span> 	$(top_srcdir)/src/openvpn/otime.c \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/socket_util.c =
+\</span><br><span> 	$(top_srcdir)/src/openvpn/list.c</span><br><span> </spa=
+n><br><span> socket_testdriver_CFLAGS  =3D \</span><br><span>diff --git a/t=
+ests/unit_tests/openvpn/mock_setenv.c b/tests/unit_tests/openvpn/mock_seten=
+v.c</span><br><span>new file mode 100644</span><br><span>index 0000000..a35=
+a295</span><br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/o=
+penvpn/mock_setenv.c</span><br><span>@@ -0,0 +1,39 @@</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networ=
+ks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             ov=
+er a single UDP port, with support for SSL/TLS-based</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             session authentication and=
+ key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
+          packet encryption, packet authentication, and</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *             packet compression.</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &=
+lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This progr=
+am is free software; you can redistribute it and/or modify</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU Ge=
+neral Public License version 2</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *  as published by the Free Software Foundation.</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  This program is distributed in the hope that it=
+ will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+ but WITHOUT ANY WARRANTY; without even the implied warranty of</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS =
+FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  GNU General Public License for more details.</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  You should have received a copy of the GNU G=
+eneral Public License along</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *  with this program; if not, see &lt;https://www.gnu.org/licenses=
+/&gt;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#include &quot;syshead.h&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+nclude &quot;env_set.h&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+setenv_str(struct env_set=
+ *es, const char *name, const char *value)</span><br><span style=3D"color: =
 hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
-pan>diff --git a/tests/unit_tests/openvpn/test_options_parse.c b/tests/unit=
-_tests/openvpn/test_options_parse.c</span><br><span>index 0b3d7fe..babafde =
-100644</span><br><span>--- a/tests/unit_tests/openvpn/test_options_parse.c<=
-/span><br><span>+++ b/tests/unit_tests/openvpn/test_options_parse.c</span><=
-br><span>@@ -34,6 +34,7 @@</span><br><span> #include &lt;cmocka.h&gt;</span=
-><br><span> </span><br><span> #include &quot;options.h&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#include &quot;options_util.h&quot=
-;</span><br><span> #include &quot;test_common.h&quot;</span><br><span> #inc=
-lude &quot;mock_msg.h&quot;</span><br><span> </span><br><span>@@ -249,20 +2=
-50,9 @@</span><br><span>     gc_init(&amp;o.gc);</span><br><span>     gc_in=
-it(&amp;o.dns_options.gc);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    char *p_expect_someopt[MAX_PARMS];</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    char *p_expect_otheropt[MAX_PAR=
-MS];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *p_expec=
-t_inlineopt[MAX_PARMS];</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    CLEAR(p_expect_someopt);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    CLEAR(p_expect_otheropt);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    CLEAR(p_expect_inlineopt);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    p_expect_someopt[0] =3D &quot;someopt&quot;;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p_expect_someopt[1=
-] =3D &quot;parm1&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    p_expect_someopt[2] =3D &quot;parm2&quot;;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    p_expect_otheropt[0] =3D &quot;otheropt&quo=
-t;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p_expect_other=
-opt[1] =3D &quot;1&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    p_expect_otheropt[2] =3D &quot;2&quot;;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    p_expect_inlineopt[0] =3D &quot;inlineopt&quo=
-t;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p_expect_inlin=
-eopt[1] =3D &quot;some text\nother text\n&quot;;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    char *p_expect_someopt[MAX_PARMS] =3D { &q=
-uot;someopt&quot;, &quot;parm1&quot;, &quot;parm2&quot;, NULL };</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    char *p_expect_otheropt[MA=
-X_PARMS] =3D { &quot;otheropt&quot;, &quot;1&quot;, &quot;2&quot;, NULL };<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *p_expect_i=
-nlineopt[MAX_PARMS] =3D { &quot;inlineopt&quot;, &quot;some text\nother tex=
-t\n&quot;, NULL };</span><br><span> </span><br><span>     /* basic test */<=
-/span><br><span>     expect_function_call(add_option);</span><br><span>@@ -=
-299,12 +289,209 @@</span><br><span>     gc_free(&amp;o.dns_options.gc);</sp=
-an><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+assert_tokens(char *actual[], const char *expected[], int max_idx)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt;=3D max_idx =
-+ 1; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!expected[i]=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            assert_null(actu=
-al[i]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-continue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        assert_non_n=
-ull(actual[i]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    assert_string_equal(actual[i], expected[i]);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+test_convert_ipv4_cidr_parms_c=
-ore(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena =
-gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- char *normalized[MAX_PARMS + 1] =3D { 0 };</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    /* non-CIDR input is returned unchanged */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    char *legacy[MAX_PARMS + 1] =3D { &qu=
-ot;route&quot;, &quot;10.8.0.0&quot;, &quot;255.255.255.0&quot;, NULL };</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *legacy=
-_expected[] =3D { &quot;route&quot;, &quot;10.8.0.0&quot;, &quot;255.255.25=
-5.0&quot;, NULL, NULL, NULL };</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(legacy, 1, 4, norma=
-lized, &amp;gc), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    assert_tokens(normalized, legacy_expected, 4);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* CIDR input is split and netmask is materialized */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *cidr[MAX_=
-PARMS + 1] =3D { &quot;route&quot;, &quot;10.8.0.0/24&quot;, NULL };</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *cidr_expec=
-ted[] =3D { &quot;route&quot;, &quot;10.8.0.0&quot;, &quot;255.255.255.0&qu=
-ot;, NULL, NULL, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_int_equal(convert_ipv4_cidr_parms(cidr, 1, 4, normalized, &=
-amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
-ert_tokens(normalized, cidr_expected, 4);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
 );">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+test_convert_ipv4_cidr_parms_coverage(vo=
-id **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D=
- gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char =
-*normalized[MAX_PARMS + 1] =3D { 0 };</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* success paths */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* route */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *route[] =
-=3D { &quot;route&quot;, &quot;10.1.2.0/24&quot;, &quot;192.0.2.1&quot;, &q=
-uot;7&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    const char *route_expected[] =3D { &quot;route&quot;, &quot;10.1.2.0&q=
-uot;, &quot;255.255.255.0&quot;, &quot;192.0.2.1&quot;, &quot;7&quot;,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
-             NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    assert_int_equal(convert_ipv4_cidr_parms(route, 1, 4, normalized, &amp=
-;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
-_tokens(normalized, route_expected, 4);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    /* ifconfig */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    CLEAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    char *ifconfig[] =3D { &quot;ifconfig&quot;, &quot;10.8.0.1/24&quot;=
-, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
-char *ifconfig_expected[] =3D { &quot;ifconfig&quot;, &quot;10.8.0.1&quot;,=
- &quot;255.255.255.0&quot;, NULL };</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(ifconfig, 1, 2=
-, normalized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    assert_tokens(normalized, ifconfig_expected, 2);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* server */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    char *server[] =3D { &quot;server&quot;, &quot;10=
-.8.0.0/24&quot;, &quot;nopool&quot;, NULL };</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    const char *server_expected[] =3D { &quot;serv=
-er&quot;, &quot;10.8.0.0&quot;, &quot;255.255.255.0&quot;, &quot;nopool&quo=
-t;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
-rt_int_equal(convert_ipv4_cidr_parms(server, 1, 3, normalized, &amp;gc), 1)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(=
-normalized, server_expected, 3);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- server-bridge */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  CLEAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    char *server_bridge[] =3D { &quot;server-bridge&quot;, &quot;10.8.0.1/=
-24&quot;, &quot;10.8.0.10&quot;, &quot;10.8.0.20&quot;, NULL };</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    const char *server_bridge_e=
-xpected[] =3D { &quot;server-bridge&quot;, &quot;10.8.0.1&quot;, &quot;255.=
-255.255.0&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                                          &quot;10.8.0.10&quot;, &quot;10.8=
-.0.20&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    assert_int_equal(convert_ipv4_cidr_parms(server_bridge, 1, 4, normaliz=
-ed, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  assert_tokens(normalized, server_bridge_expected, 4);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    /* iroute */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    char *iroute[] =3D { &quot;iroute&quot;, &quot;172.16.=
-0.0/16&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const char *iroute_expected[] =3D { &quot;iroute&quot;, &quot;172.16.=
-0.0&quot;, &quot;255.255.0.0&quot;, NULL };</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(iroute=
-, 1, 2, normalized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    assert_tokens(normalized, iroute_expected, 2);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /* ifconfig-push */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    char *ifconfig_push[] =3D { &quot;ifc=
-onfig-push&quot;, &quot;10.8.0.6/24&quot;, &quot;10.8.0.7&quot;, NULL };</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *ifconf=
-ig_push_expected[] =3D { &quot;ifconfig-push&quot;, &quot;10.8.0.6&quot;, &=
-quot;255.255.255.0&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                                             &quot;10.8.0.7&quot;, NU=
-LL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int=
-_equal(convert_ipv4_cidr_parms(ifconfig_push, 1, 3, normalized, &amp;gc), 1=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens=
-(normalized, ifconfig_push_expected, 3);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    /* ifconfig-push-constraint */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    char *ifconfig_push_constraint[] =3D { &quot;ifconf=
-ig-push-constraint&quot;, &quot;10.8.0.0/24&quot;, NULL };</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    const char *ifconfig_push_constr=
-aint_expected[] =3D { &quot;ifconfig-push-constraint&quot;, &quot;10.8.0.0&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-                                           &quot;255.255.255.0&quot;, NULL =
-};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_eq=
-ual(convert_ipv4_cidr_parms(ifconfig_push_constraint, 1, 2, normalized, &am=
-p;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-        1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
-rt_tokens(normalized, ifconfig_push_constraint_expected, 2);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* client-nat */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    char *client_nat[] =3D { &quot;client-nat&quo=
-t;, &quot;snat&quot;, &quot;192.168.0.0/16&quot;, &quot;10.0.0.0&quot;, NUL=
-L };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char =
-*client_nat_expected[] =3D { &quot;client-nat&quot;, &quot;snat&quot;, &quo=
-t;192.168.0.0&quot;, &quot;255.255.0.0&quot;,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                                          &quot;1=
-0.0.0.0&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    assert_int_equal(convert_ipv4_cidr_parms(client_nat, 2, 4, normalize=
-d, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- assert_tokens(normalized, client_nat_expected, 4);</span><br><span style=
+pan style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+setenv_int(struct env_set *es, const char *name=
+, int value)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --=
+git a/tests/unit_tests/openvpn/mock_signal.c b/tests/unit_tests/openvpn/moc=
+k_signal.c</span><br><span>new file mode 100644</span><br><span>index 00000=
+00..4d27541</span><br><span>--- /dev/null</span><br><span>+++ b/tests/unit_=
+tests/openvpn/mock_signal.c</span><br><span>@@ -0,0 +1,47 @@</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP=
+ networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        =
+     over a single UDP port, with support for SSL/TLS-based</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *             session authenticati=
+on and key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *             packet encryption, packet authentication, and</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *             packet compression=
+.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN=
+ Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This=
+ program is free software; you can redistribute it and/or modify</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the =
+GNU General Public License version 2</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  as published by the Free Software Foundation.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  This program is distributed in the hope t=
+hat it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FI=
+TNESS FOR A PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  GNU General Public License for more details.</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy of th=
+e GNU General Public License along</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  with this program; if not, see &lt;https://www.gnu.org/l=
+icenses/&gt;.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* CIDR prefix boundaries */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* /0 */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    CLEAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    char *route_default[MAX_PARMS + 1] =3D { &quot;route&quot;, &quot;=
-0.0.0.0/0&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    const char *route_default_expected[] =3D { &quot;route&quot;, &quo=
-t;0.0.0.0&quot;, &quot;0.0.0.0&quot;, NULL, NULL, NULL };</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cid=
-r_parms(route_default, 1, 4, normalized, &amp;gc), 1);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(normalized, route_defa=
-ult_expected, 4);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* /32 */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *route_host[MAX=
-_PARMS + 1] =3D { &quot;route&quot;, &quot;198.51.100.42/32&quot;, NULL };<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *rout=
-e_host_expected[] =3D { &quot;route&quot;, &quot;198.51.100.42&quot;, &quot=
-;255.255.255.255&quot;, NULL,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                                          NULL, NULL };</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_=
-ipv4_cidr_parms(route_host, 1, 4, normalized, &amp;gc), 1);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(normalized, route=
-_host_expected, 4);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* CIDR with DN=
-S-style network token */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    CLEAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    char *route_dns_cidr[] =3D { &quot;route&quot;, &quot;vpn.examp=
-le/24&quot;, &quot;192.0.2.1&quot;, NULL };</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const char *route_dns_cidr_expected[] =3D { &qu=
-ot;route&quot;, &quot;vpn.example&quot;, &quot;255.255.255.0&quot;,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
-                   &quot;192.0.2.1&quot;, NULL, NULL };</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_=
-parms(route_dns_cidr, 1, 4, normalized, &amp;gc), 1);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(normalized, route_dns_c=
-idr_expected, 4);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* non-CIDR passt=
-hrough (DNS-style network token) */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    char *route_dns[] =3D { &quot;route&quot;, &quot;vpn=
-.example&quot;, &quot;255.255.255.0&quot;, &quot;192.0.2.1&quot;, NULL };</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *route=
-_dns_expected[] =3D { &quot;route&quot;, &quot;vpn.example&quot;, &quot;255=
-.255.255.0&quot;, &quot;192.0.2.1&quot;,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                                         NULL, NULL };=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equa=
-l(convert_ipv4_cidr_parms(route_dns, 1, 4, normalized, &amp;gc), 0);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(normaliz=
-ed, route_dns_expected, 4);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* vari=
-ed network_idx/max_idx shapes */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CL=
-EAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- char *generic_shift[] =3D { &quot;opt&quot;, &quot;x&quot;, &quot;y&quot;,=
- &quot;10.9.0.0/25&quot;, &quot;tail&quot;, NULL };</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const char *generic_shift_expected[] =
-=3D { &quot;opt&quot;, &quot;x&quot;, &quot;y&quot;, &quot;10.9.0.0&quot;, =
-&quot;255.255.255.128&quot;,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                                             &quot;tail&quot;, NUL=
-L };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_=
-equal(convert_ipv4_cidr_parms(generic_shift, 3, 5, normalized, &amp;gc), 1)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(=
-normalized, generic_shift_expected, 5);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    CLEAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    char *near_limit[MAX_PARMS + 1] =3D { 0 };</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    near_limit[0] =3D &quot;opt&quot;;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    near_limit[MAX_PARMS =
-- 2] =3D &quot;203.0.113.0/24&quot;;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_int_equal(</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        convert_ipv4_cidr_parms(near_limit, MAX_PARMS - =
-2, MAX_PARMS - 1, normalized, &amp;gc), 1);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    assert_string_equal(normalized[0], &quot;opt&qu=
-ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_str=
-ing_equal(normalized[MAX_PARMS - 2], &quot;203.0.113.0&quot;);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(normaliz=
-ed[MAX_PARMS - 1], &quot;255.255.255.0&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    assert_null(normalized[MAX_PARMS]);</span><b=
+ 100%, 40%);">+#include &quot;syshead.h&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#include &quot;socket.h&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+ruct signal_info siginfo_static; /* GLOBAL */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+signal_re=
+set(struct signal_info *si, int signum)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    return signum;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+struct win32_signal win32_signal; /* GLOB=
+AL */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+win32_signal_get(struct win32_signal *ws)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#endif</span><br><span>diff --git a/tests/unit_tests/openvpn/test_opt=
+ions_parse.c b/tests/unit_tests/openvpn/test_options_parse.c</span><br><spa=
+n>index 0b3d7fe..babafde 100644</span><br><span>--- a/tests/unit_tests/open=
+vpn/test_options_parse.c</span><br><span>+++ b/tests/unit_tests/openvpn/tes=
+t_options_parse.c</span><br><span>@@ -34,6 +34,7 @@</span><br><span> #inclu=
+de &lt;cmocka.h&gt;</span><br><span> </span><br><span> #include &quot;optio=
+ns.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include =
+&quot;options_util.h&quot;</span><br><span> #include &quot;test_common.h&qu=
+ot;</span><br><span> #include &quot;mock_msg.h&quot;</span><br><span> </spa=
+n><br><span>@@ -249,20 +250,9 @@</span><br><span>     gc_init(&amp;o.gc);</=
+span><br><span>     gc_init(&amp;o.dns_options.gc);</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *p_expect_someopt[=
+MAX_PARMS];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *=
+p_expect_otheropt[MAX_PARMS];</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    char *p_expect_inlineopt[MAX_PARMS];</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    CLEAR(p_expect_someopt);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    CLEAR(p_expect_otheropt);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    CLEAR(p_expect_inlineopt);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    p_expect_someopt[0] =
+=3D &quot;someopt&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    p_expect_someopt[1] =3D &quot;parm1&quot;;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    p_expect_someopt[2] =3D &quot;parm2&quot;;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p_expect_otheropt[=
+0] =3D &quot;otheropt&quot;;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    p_expect_otheropt[1] =3D &quot;1&quot;;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    p_expect_otheropt[2] =3D &quot;2&quot;;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    p_expect_inlineopt[0=
+] =3D &quot;inlineopt&quot;;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    p_expect_inlineopt[1] =3D &quot;some text\nother text\n&quot;;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *p_expect_so=
+meopt[MAX_PARMS] =3D { &quot;someopt&quot;, &quot;parm1&quot;, &quot;parm2&=
+quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+har *p_expect_otheropt[MAX_PARMS] =3D { &quot;otheropt&quot;, &quot;1&quot;=
+, &quot;2&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    char *p_expect_inlineopt[MAX_PARMS] =3D { &quot;inlineopt&quot;, &=
+quot;some text\nother text\n&quot;, NULL };</span><br><span> </span><br><sp=
+an>     /* basic test */</span><br><span>     expect_function_call(add_opti=
+on);</span><br><span>@@ -299,12 +289,209 @@</span><br><span>     gc_free(&a=
+mp;o.dns_options.gc);</span><br><span> }</span><br><span> </span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+assert_tokens(char *actual[], const char *ex=
+pected[], int max_idx)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =
+=3D 0; i &lt;=3D max_idx + 1; ++i)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if (!expected[i])</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         assert_null(actual[i]);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            continue;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        assert_non_null(actual[i]);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        assert_string_equal(actual[i], expected[i]);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_=
+convert_ipv4_cidr_parms_core(void **state)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    char *normalized[MAX_PARMS + 1] =3D { 0 };</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    /* non-CIDR input is returned unchanged *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *legacy[M=
+AX_PARMS + 1] =3D { &quot;route&quot;, &quot;10.8.0.0&quot;, &quot;255.255.=
+255.0&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const char *legacy_expected[] =3D { &quot;route&quot;, &quot;10.8.0.0&=
+quot;, &quot;255.255.255.0&quot;, NULL, NULL, NULL };</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_pa=
+rms(legacy, 1, 4, normalized, &amp;gc), 0);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    assert_tokens(normalized, legacy_expected, 4);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    /* CIDR input is split and netmask =
+is materialized */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   CLEAR(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    char *cidr[MAX_PARMS + 1] =3D { &quot;route&quot;, &quot;10.8.0.0/24&=
+quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst char *cidr_expected[] =3D { &quot;route&quot;, &quot;10.8.0.0&quot;, &=
+quot;255.255.255.0&quot;, NULL, NULL, NULL };</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(cidr=
+, 1, 4, normalized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_tokens(normalized, cidr_expected, 4);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_convert_ipv4_c=
+idr_parms_coverage(void **state)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    char *normalized[MAX_PARMS + 1] =3D { 0 };</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    /* success paths */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    /* route */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    char *route[] =3D { &quot;route&quot;, &quot;10.1.2.0/24&quot;, &quot;=
+192.0.2.1&quot;, &quot;7&quot;, NULL };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const char *route_expected[] =3D { &quot;route&quot=
+;, &quot;10.1.2.0&quot;, &quot;255.255.255.0&quot;, &quot;192.0.2.1&quot;, =
+&quot;7&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                                NULL };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(route, 1, =
+4, normalized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    assert_tokens(normalized, route_expected, 4);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    /* ifconfig */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    char *ifconfig[] =3D { &quot;ifconfig&quot;, &quo=
+t;10.8.0.1/24&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const char *ifconfig_expected[] =3D { &quot;ifconfig&quot;, &q=
+uot;10.8.0.1&quot;, &quot;255.255.255.0&quot;, NULL };</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_p=
+arms(ifconfig, 1, 2, normalized, &amp;gc), 1);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_tokens(normalized, ifconfig_expected,=
+ 2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* server */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    char *server[] =3D { &quot;ser=
+ver&quot;, &quot;10.8.0.0/24&quot;, &quot;nopool&quot;, NULL };</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    const char *server_expected=
+[] =3D { &quot;server&quot;, &quot;10.8.0.0&quot;, &quot;255.255.255.0&quot=
+;, &quot;nopool&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(server, 1, 3, norma=
+lized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_tokens(normalized, server_expected, 3);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* server-bridge */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    char *server_bridge[] =3D { &quot;server-bridge&q=
+uot;, &quot;10.8.0.1/24&quot;, &quot;10.8.0.10&quot;, &quot;10.8.0.20&quot;=
+, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
+char *server_bridge_expected[] =3D { &quot;server-bridge&quot;, &quot;10.8.=
+0.1&quot;, &quot;255.255.255.0&quot;,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                                             &quot;10.8.0=
+.10&quot;, &quot;10.8.0.20&quot;, NULL };</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(server_b=
+ridge, 1, 4, normalized, &amp;gc), 1);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_tokens(normalized, server_bridge_expected, 4)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* iroute */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    char *iroute[] =3D { &quot;iroute=
+&quot;, &quot;172.16.0.0/16&quot;, NULL };</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    const char *iroute_expected[] =3D { &quot;iroute=
+&quot;, &quot;172.16.0.0&quot;, &quot;255.255.0.0&quot;, NULL };</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_i=
+pv4_cidr_parms(iroute, 1, 2, normalized, &amp;gc), 1);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(normalized, iroute_exp=
+ected, 2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /* ifconfig-push */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *ifconfig_pu=
+sh[] =3D { &quot;ifconfig-push&quot;, &quot;10.8.0.6/24&quot;, &quot;10.8.0=
+.7&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const char *ifconfig_push_expected[] =3D { &quot;ifconfig-push&quot;, &qu=
+ot;10.8.0.6&quot;, &quot;255.255.255.0&quot;,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                                             &quo=
+t;10.8.0.7&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    assert_int_equal(convert_ipv4_cidr_parms(ifconfig_push, 1, 3, nor=
+malized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_tokens(normalized, ifconfig_push_expected, 3);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* ifconfig-push-constraint */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    char *ifconfig_push_constraint[=
+] =3D { &quot;ifconfig-push-constraint&quot;, &quot;10.8.0.0/24&quot;, NULL=
+ };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *=
+ifconfig_push_constraint_expected[] =3D { &quot;ifconfig-push-constraint&qu=
+ot;, &quot;10.8.0.0&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                                                        &quot;255.25=
+5.255.0&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_int_equal(convert_ipv4_cidr_parms(ifconfig_push_constraint, 1=
+, 2, normalized, &amp;gc),</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                     1);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_tokens(normalized, ifconfig_push_constraint_expected=
+, 2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    /* client-nat */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    char *client_nat[] =3D { =
+&quot;client-nat&quot;, &quot;snat&quot;, &quot;192.168.0.0/16&quot;, &quot=
+;10.0.0.0&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    const char *client_nat_expected[] =3D { &quot;client-nat&quot;, &q=
+uot;snat&quot;, &quot;192.168.0.0&quot;, &quot;255.255.0.0&quot;,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+             &quot;10.0.0.0&quot;, NULL };</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(client_=
+nat, 2, 4, normalized, &amp;gc), 1);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_tokens(normalized, client_nat_expected, 4);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* CIDR prefix boundaries */</span><b=
 r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    /* error paths */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    char *route_invalid[] =3D { &quot;route&quot;, &quot;10.1.2.=
-0/33&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    assert_int_equal(convert_ipv4_cidr_parms(route_invalid, 1, 4, normalize=
-d, &amp;gc), -EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    char *route_invalid_negative_prefix[] =3D { &quot;route&quot;, &quot=
-;10.1.2.0/-1&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    assert_int_equal(convert_ipv4_cidr_parms(route_invalid_negative=
-_prefix, 1, 4, normalized,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                                             &amp;gc),</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                     -EINVAL);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *route_invali=
-d_plus_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/+24&quot;, NULL };<=
+lor: hsl(120, 100%, 40%);">+    /* /0 */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    char *route_default[MAX_PARMS + 1] =3D { &quot;=
+route&quot;, &quot;0.0.0.0/0&quot;, NULL };</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    const char *route_default_expected[] =3D { &quo=
+t;route&quot;, &quot;0.0.0.0&quot;, &quot;0.0.0.0&quot;, NULL, NULL, NULL }=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equ=
+al(convert_ipv4_cidr_parms(route_default, 1, 4, normalized, &amp;gc), 1);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(nor=
+malized, route_default_expected, 4);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  /* /32 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEA=
+R(normalized);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+har *route_host[MAX_PARMS + 1] =3D { &quot;route&quot;, &quot;198.51.100.42=
+/32&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const char *route_host_expected[] =3D { &quot;route&quot;, &quot;198.51.=
+100.42&quot;, &quot;255.255.255.255&quot;, NULL,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                          NULL=
+, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
+_int_equal(convert_ipv4_cidr_parms(route_host, 1, 4, normalized, &amp;gc), =
+1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_token=
+s(normalized, route_host_expected, 4);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    /* CIDR with DNS-style network token */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    char *route_dns_cidr[] =3D { &quot;route&quo=
+t;, &quot;vpn.example/24&quot;, &quot;192.0.2.1&quot;, NULL };</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const char *route_dns_cidr_e=
+xpected[] =3D { &quot;route&quot;, &quot;vpn.example&quot;, &quot;255.255.2=
+55.0&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                                      &quot;192.0.2.1&quot;, NULL, NULL };<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
-(convert_ipv4_cidr_parms(route_invalid_plus_prefix, 1, 4, normalized, &amp;=
-gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-      -EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-char *route_invalid_malformed_slash[] =3D { &quot;route&quot;, &quot;10.1.2=
-.0//24&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_int_equal(convert_ipv4_cidr_parms(route_invalid_malformed_slas=
-h, 1, 4, normalized,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                                             &amp;gc),</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                     -EINVAL);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    char *route_invalid_over=
-flow_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/999999999999999999999=
-&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-assert_int_equal(convert_ipv4_cidr_parms(route_invalid_overflow_prefix, 1, =
-4, normalized,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                                        &amp;gc),</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                     -EINVAL);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    char *route_invalid_empty_netw=
-ork[] =3D { &quot;route&quot;, &quot;/24&quot;, NULL };</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_=
-parms(route_invalid_empty_network, 1, 4, normalized, &amp;gc),</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                     -EINVAL);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *route_inval=
-id_no_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/&quot;, NULL };</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(con=
-vert_ipv4_cidr_parms(route_invalid_no_prefix, 1, 4, normalized, &amp;gc),</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
--EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *=
-route_invalid_alpha_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/2x&quo=
-t;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
-rt_int_equal(convert_ipv4_cidr_parms(route_invalid_alpha_prefix, 1, 4, norm=
+(convert_ipv4_cidr_parms(route_dns_cidr, 1, 4, normalized, &amp;gc), 1);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tokens(norm=
+alized, route_dns_cidr_expected, 4);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  /* non-CIDR passthrough (DNS-style network token) */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    char *route_dns[] =3D { &quot;rou=
+te&quot;, &quot;vpn.example&quot;, &quot;255.255.255.0&quot;, &quot;192.0.2=
+.1&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const char *route_dns_expected[] =3D { &quot;route&quot;, &quot;vpn.examp=
+le&quot;, &quot;255.255.255.0&quot;, &quot;192.0.2.1&quot;,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                                   =
+      NULL, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_int_equal(convert_ipv4_cidr_parms(route_dns, 1, 4, normalized, &=
+amp;gc), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_tokens(normalized, route_dns_expected, 4);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* varied network_idx/max_idx shapes */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    char *generic_shift[] =3D { &quot;opt&quot;, &quot;x&=
+quot;, &quot;y&quot;, &quot;10.9.0.0/25&quot;, &quot;tail&quot;, NULL };</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *generi=
+c_shift_expected[] =3D { &quot;opt&quot;, &quot;x&quot;, &quot;y&quot;, &qu=
+ot;10.9.0.0&quot;, &quot;255.255.255.128&quot;,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                                             &q=
+uot;tail&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_int_equal(convert_ipv4_cidr_parms(generic_shift, 3, 5, norma=
+lized, &amp;gc), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_tokens(normalized, generic_shift_expected, 5);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    CLEAR(normalized);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    char *near_limit[MAX_PARMS + 1] =3D { 0 };</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    near_limit[0] =3D &qu=
+ot;opt&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ne=
+ar_limit[MAX_PARMS - 2] =3D &quot;203.0.113.0/24&quot;;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        convert_ipv4_cidr_parms(near_=
+limit, MAX_PARMS - 2, MAX_PARMS - 1, normalized, &amp;gc), 1);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(normaliz=
+ed[0], &quot;opt&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_string_equal(normalized[MAX_PARMS - 2], &quot;203.0.113.0&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_st=
+ring_equal(normalized[MAX_PARMS - 1], &quot;255.255.255.0&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(normalized[MA=
+X_PARMS]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /* error paths */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    char *route_invalid[] =3D { &quot;route&q=
+uot;, &quot;10.1.2.0/33&quot;, NULL };</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(route_inval=
+id, 1, 4, normalized, &amp;gc), -EINVAL);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    char *route_invalid_negative_prefix[] =3D { &quot=
+;route&quot;, &quot;10.1.2.0/-1&quot;, NULL };</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(rou=
+te_invalid_negative_prefix, 1, 4, normalized,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                                             &amp=
+;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+       -EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ char *route_invalid_plus_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/=
++24&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   assert_int_equal(convert_ipv4_cidr_parms(route_invalid_plus_prefix, 1, 4=
+, normalized, &amp;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                     -EINVAL);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    char *route_invalid_malformed_slash[] =3D { &quot;route&=
+quot;, &quot;10.1.2.0//24&quot;, NULL };</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(route_inv=
+alid_malformed_slash, 1, 4, normalized,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                                             &amp;gc),<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+ -EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char =
+*route_invalid_overflow_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/99=
+9999999999999999999&quot;, NULL };</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(route_invalid_o=
+verflow_prefix, 1, 4, normalized,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                             &amp;gc),</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                     -EINV=
+AL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *route=
+_invalid_empty_network[] =3D { &quot;route&quot;, &quot;/24&quot;, NULL };<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
+(convert_ipv4_cidr_parms(route_invalid_empty_network, 1, 4, normalized, &am=
+p;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+        -EINVAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  char *route_invalid_no_prefix[] =3D { &quot;route&quot;, &quot;10.1.2.0/&=
+quot;, NULL };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
+ssert_int_equal(convert_ipv4_cidr_parms(route_invalid_no_prefix, 1, 4, norm=
 alized, &amp;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
                    -EINVAL);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *=
-client_nat_invalid[] =3D { &quot;client-nat&quot;, &quot;snat&quot;, &quot;=
-192.168.0.0/35&quot;, &quot;10.0.0.0&quot;, NULL };</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(convert_ipv4_cidr_pa=
-rms(client_nat_invalid, 2, 4, normalized, &amp;gc),</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     -EINVAL);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span> int</span><br><span> main(void)</span><br><span=
-> {</span><br><span>     const struct CMUnitTest tests[] =3D {</span><br><s=
-pan>         cmocka_unit_test(test_parse_line),</span><br><span>         cm=
-ocka_unit_test(test_read_config),</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        cmocka_unit_test(test_convert_ipv4_cidr_parms_core),<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_=
-test(test_convert_ipv4_cidr_parms_coverage),</span><br><span>     };</span>=
-<br><span> </span><br><span>     return cmocka_run_group_tests_name(&quot;o=
-ptions_parse&quot;, tests, NULL, NULL);</span><br><span>diff --git a/tests/=
-unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c</span><=
-br><span>index 2b73ee7..9182cb8 100644</span><br><span>--- a/tests/unit_tes=
-ts/openvpn/test_ssl.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_s=
-sl.c</span><br><span>@@ -51,8 +51,6 @@</span><br><span> /* Mock function to=
- be allowed to include win32.c which is required for</span><br><span>  * ge=
-tting the temp directory */</span><br><span> #ifdef _WIN32</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-struct signal_info siginfo_static; /* =
-GLOBAL */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span> const char *</span><br><span> strerror_win32(DWORD errnum, struct gc_=
-arena *gc)</span><br><span> {</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail">cha=
-nge 739</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
-itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
-rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+ 40%);">+    char *route_invalid_alpha_prefix[] =3D { &quot;route&quot;, &q=
+uot;10.1.2.0/2x&quot;, NULL };</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_int_equal(convert_ipv4_cidr_parms(route_invalid_alpha=
+_prefix, 1, 4, normalized, &amp;gc),</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                     -EINVAL);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    char *client_nat_invalid[] =3D { &quot;client-nat&quot;, &quot=
+;snat&quot;, &quot;192.168.0.0/35&quot;, &quot;10.0.0.0&quot;, NULL };</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(con=
+vert_ipv4_cidr_parms(client_nat_invalid, 2, 4, normalized, &amp;gc),</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                     -EINV=
+AL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><span> main(void)<=
+/span><br><span> {</span><br><span>     const struct CMUnitTest tests[] =3D=
+ {</span><br><span>         cmocka_unit_test(test_parse_line),</span><br><s=
+pan>         cmocka_unit_test(test_read_config),</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_convert_ipv4_cid=
+r_parms_core),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   cmocka_unit_test(test_convert_ipv4_cidr_parms_coverage),</span><br><span=
+>     };</span><br><span> </span><br><span>     return cmocka_run_group_tes=
+ts_name(&quot;options_parse&quot;, tests, NULL, NULL);</span><br><span>diff=
+ --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/tes=
+t_ssl.c</span><br><span>index 2b73ee7..9182cb8 100644</span><br><span>--- a=
+/tests/unit_tests/openvpn/test_ssl.c</span><br><span>+++ b/tests/unit_tests=
+/openvpn/test_ssl.c</span><br><span>@@ -51,8 +51,6 @@</span><br><span> /* M=
+ock function to be allowed to include win32.c which is required for</span><=
+br><span>  * getting the temp directory */</span><br><span> #ifdef _WIN32</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-struct signal_info sigi=
+nfo_static; /* GLOBAL */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span> const char *</span><br><span> strerror_win32(DWORD err=
+num, struct gc_arena *gc)</span><br><span> {</span><br><span></span><br></p=
+re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?u=
+sp=3Demail">change 739</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/739?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -2937,7 +2977,7 @@ temprop=3D"name" content=3D"View Change"/></div></div>
 <div style=3D"display:none"> Gerrit-Change-Id: Iae04ad8715e40dfc76475c2c5b9=
 a766c9604efc9 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 739 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 13 </div>
 <div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -2953,5 +2993,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---r24kmRAR4ho=--
+--10vKaHVYUSs=--
 
