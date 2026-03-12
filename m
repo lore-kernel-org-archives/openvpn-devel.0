@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 12 Mar 2026 18:31:38 +0100
-Message-ID: <20260312173144.15602-1-gert@...1296...>
-In-Reply-To: <gerrit.1770379369000.I73dba29719ea685f0427a3c479e7f1f176f09eba@...2715...>
-References: <gerrit.1770379369000.I73dba29719ea685f0427a3c479e7f1f176f09eba@...2715...>
+From: "d12fk (Code Review)" <gerrit@...515...>
+Date: Thu, 12 Mar 2026 21:58:03 +0000
+References: <gerrit.1773352679000.Ie502c982bda67d55ee74e4f2f66c26ea82698e60@...2715...>
+Reply-To: heiko@...515..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <947122a1eee000aea9ac694f91ed21f96b4dc2f4-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] auth_token: Clean up type handling in
- verify_auth_token and its UT
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="VumHgEXiDgQ="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: doc: fix typo with
+ --ingore-unknown-option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,188 +18,123 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--VumHgEXiDgQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-First of all remove the testing of renegotiation_seconds.
-Commit 9a5161704173e31f2510d3f5c29361f76e275d0f made it
-irrelevant for verify_auth_token but still left UTs for it.
-But AFAICT these UTs only test that renegotiation_seconds
-is bigger than auth_token_renewal, so it tests the UT
-setup routine...
+Attention is currently required from: plaisthos.
 
-Also improve the code to require less casts under
--Wsign-compare.
+Hello plaisthos,
 
-Add a comment that this code is not y38 safe if time_t
-is 32bit. Probably nothing we want to do from our side
-since in that case everything that uses "now" is borked.
-So we trust in the OS here...
+I'd like you to do a code review.
+Please visit
 
-Change-Id: I73dba29719ea685f0427a3c479e7f1f176f09eba
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1510
+    http://gerrit.openvpn.net/c/openvpn/+/1575?usp=3Demail
+
+to review the following change.
+
+
+Change subject: doc: fix typo with --ingore-unknown-option
+......................................................................
+
+doc: fix typo with --ingore-unknown-option
+
+Change-Id: Ie502c982bda67d55ee74e4f2f66c26ea82698e60
+Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
+M doc/man-sections/generic-options.rst
+1 file changed, 1 insertion(+), 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1510
-This mail reflects revision 6 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/75/1575/1
 
-        
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index eb2b4d5..d8ca125 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -287,11 +287,6 @@
-     return memcmp_constant_time(&hmac_output, hmac, 32) == 0;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- unsigned int
- verify_auth_token(struct user_pass *up, struct tls_multi *multi, struct tls_session *session)
- {
-@@ -318,7 +313,7 @@
- 
-     const uint8_t *sessid = b64decoded;
-     const uint8_t *tstamp_initial = sessid + AUTH_TOKEN_SESSION_ID_LEN;
--    const uint8_t *tstamp = tstamp_initial + sizeof(int64_t);
-+    const uint8_t *tstamp = tstamp_initial + sizeof(uint64_t);
- 
-     /* tstamp, tstamp_initial might not be aligned to an uint64, use memcpy
-      * to avoid unaligned access */
-@@ -348,9 +343,11 @@
-     }
- 
-     /* Accept session tokens only if their timestamp is in the acceptable range
--     * for renegotiations */
--    bool in_renegotiation_time =
--        now >= timestamp && now < timestamp + 2 * session->opt->auth_token_renewal;
-+     * for renegotiations.
-+     * Cast is required for systems with 32bit time_t, e.g. Windows x86.
-+     */
-+    const time_t token_reneg_deadline = (time_t)timestamp + 2 * session->opt->auth_token_renewal;
-+    bool in_renegotiation_time = now >= (time_t)timestamp && now < token_reneg_deadline;
- 
-     if (!in_renegotiation_time)
-     {
-@@ -369,7 +366,8 @@
-         ret |= AUTH_TOKEN_EXPIRED;
-     }
- 
--    if (multi->opt.auth_token_lifetime && now > timestamp_initial + multi->opt.auth_token_lifetime)
-+    const time_t token_eol = (time_t)timestamp_initial + multi->opt.auth_token_lifetime;
-+    if (multi->opt.auth_token_lifetime && now > token_eol)
-     {
-         ret |= AUTH_TOKEN_EXPIRED;
-     }
-@@ -396,10 +394,6 @@
-     return ret;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- wipe_auth_token(struct tls_multi *multi)
- {
-diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
-index 82c20c1..30d55f6 100644
---- a/tests/unit_tests/openvpn/test_auth_token.c
-+++ b/tests/unit_tests/openvpn/test_auth_token.c
-@@ -166,20 +166,19 @@
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), AUTH_TOKEN_HMAC_OK);
- }
- 
--/* Note: only on 32bit Windows builds */
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- static void
- auth_token_test_timeout(void **state)
- {
-     struct test_context *ctx = (struct test_context *)*state;
- 
--    now = 100000;
-+    const time_t initial_time = 100000;
-+    now = initial_time;
-     generate_auth_token(&ctx->up, &ctx->multi);
- 
-+    const time_t token_renew_window =
-+        initial_time + 2 * ctx->session->opt->auth_token_renewal;
-+    const time_t token_eol = initial_time + ctx->session->opt->auth_token_lifetime + 1;
-+
-     strcpy(ctx->up.password, ctx->multi.auth_token);
-     free(ctx->multi.auth_token_initial);
-     ctx->multi.auth_token_initial = NULL;
-@@ -188,26 +187,21 @@
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), AUTH_TOKEN_HMAC_OK);
- 
-     /* Token before validity, should be rejected */
--    now = 100000 - 100;
-+    now = initial_time - 100;
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
- 
--    /* Token no valid for renegotiate_seconds but still for renewal_time */
--    now = 100000 + 2 * ctx->session->opt->renegotiate_seconds - 20;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
--                     AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
--
--
--    now = 100000 + 2 * ctx->session->opt->auth_token_renewal - 20;
-+    /* Token still valid for renewal_time */
-+    now = token_renew_window - 20;
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), AUTH_TOKEN_HMAC_OK);
- 
-     /* Token past validity, should be rejected */
--    now = 100000 + 2 * ctx->session->opt->renegotiate_seconds + 20;
-+    now = token_renew_window + 20;
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
- 
--    /* But not when we reached our timeout */
--    now = 100000 + ctx->session->opt->auth_token_lifetime + 1;
-+    /* Token past lifetime, should be rejected */
-+    now = token_eol;
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
- 
-@@ -215,8 +209,8 @@
-     ctx->multi.auth_token_initial = NULL;
- 
-     /* regenerate the token util it hits the expiry */
--    now = 100000;
--    while (now < 100000 + ctx->session->opt->auth_token_lifetime + 1)
-+    now = initial_time;
-+    while (now < token_eol)
-     {
-         assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                          AUTH_TOKEN_HMAC_OK);
-@@ -234,10 +228,6 @@
-     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), AUTH_TOKEN_HMAC_OK);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static void
- zerohmac(char *token)
- {
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generi=
+c-options.rst
+index f46dfec..8132b48 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -219,7 +219,7 @@
+   Valid syntax:
+   ::
+
+-     ignore-unknown-options opt1 opt2 opt3 ... optN
++     ignore-unknown-option opt1 opt2 opt3 ... optN
+
+   When one of options ``opt1 ... optN`` is encountered in the configuration
+   file the configuration file parsing does not fail if this OpenVPN version
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1575?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie502c982bda67d55ee74e4f2f66c26ea82698e60
+Gerrit-Change-Number: 1575
+Gerrit-PatchSet: 1
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--VumHgEXiDgQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>d12fk would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1575?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">doc: fix typo with --ingore-unknown-option<=
+br><br>Change-Id: Ie502c982bda67d55ee74e4f2f66c26ea82698e60<br>Signed-off-b=
+y: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M doc/man-sections/generic=
+-options.rst<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre>=
+<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
+75/1575/1</pre><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;"><span>diff --git a/doc/man-sections/generic-options.rst b/doc/m=
+an-sections/generic-options.rst</span><br><span>index f46dfec..8132b48 1006=
+44</span><br><span>--- a/doc/man-sections/generic-options.rst</span><br><sp=
+an>+++ b/doc/man-sections/generic-options.rst</span><br><span>@@ -219,7 +21=
+9,7 @@</span><br><span>   Valid syntax:</span><br><span>   ::</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     ignore-unkno=
+wn-options opt1 opt2 opt3 ... optN</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+     ignore-unknown-option opt1 opt2 opt3 ... optN</span><br=
+><span> </span><br><span>   When one of options ``opt1 ... optN`` is encoun=
+tered in the configuration</span><br><span>   file the configuration file p=
+arsing does not fail if this OpenVPN version</span><br><span></span><br></p=
+re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1575?=
+usp=3Demail">change 1575</a>. To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1575?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie502c982bda67d55ee74e4f2f66=
+c26ea82698e60 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1575 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--VumHgEXiDgQ=--
 
