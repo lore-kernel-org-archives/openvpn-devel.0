@@ -1,16 +1,10 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Thu, 12 Mar 2026 15:29:30 +0000
+From: Gert Doering <gert@...1296...>
+Date: Thu, 12 Mar 2026 16:33:23 +0100
+Message-ID: <20260312153329.4700-1-gert@...1296...>
 In-Reply-To: <gerrit.1677175662000.I1292894fe7f537049a97bee97af4419e5e854a00@...2715...>
 References: <gerrit.1677175662000.I1292894fe7f537049a97bee97af4419e5e854a00@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <49f3cc92c1cdf20eab4cbe16763a433ed36b2333-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fzfln3k4B50="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add siphash
- reference implementation
+Subject: [Openvpn-devel] [PATCH v9] Add siphash reference implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +13,295 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---fzfln3k4B50=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+OpenSSL only supports SIPHASH with OpenSSL 3.1 and newer. The source code of
+siphash is quite small and has very liberal CC0 license, so include it instead
+of pulling an extra library for it.
 
-MaxF has posted comments on this change by plaisthos. ( http://gerrit.openv=
-pn.net/c/openvpn/+/29?usp=3Demail )
+Change-Id: I1292894fe7f537049a97bee97af4419e5e854a00
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: MaxF <max@...2606...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/29
+---
 
-Change subject: Add siphash reference implementation
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/29
+This mail reflects revision 9 of this Change.
 
-Patch Set 9: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+MaxF <max@...2606...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/29?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1292894fe7f537049a97bee97af4419e5e854a00
-Gerrit-Change-Number: 29
-Gerrit-PatchSet: 9
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 12 Mar 2026 15:29:30 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---fzfln3k4B50=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 9:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/29?usp=3Demail">Vie=
-w Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/29?usp=3Demail">ch=
-ange 29</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
-itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
-rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/29?usp=3Demail"/><meta it=
-emprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1292894fe7f537049a97bee97af=
-4419e5e854a00 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 29 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@...2606...&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 12 Mar 2026 15:29:30=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---fzfln3k4B50=--
+        
+diff --git a/src/openvpn/siphash.h b/src/openvpn/siphash.h
+new file mode 100644
+index 0000000..ef61110
+--- /dev/null
++++ b/src/openvpn/siphash.h
+@@ -0,0 +1,29 @@
++/*
++ * SipHash reference C implementation
++ *
++ * Copyright (c) 2012-2021 Jean-Philippe Aumasson
++ * <jeanphilippe.aumasson@...277...>
++ * Copyright (c) 2012-2014 Daniel J. Bernstein <djb@...2717...>
++ *
++ * To the extent possible under law, the author(s) have dedicated all copyright
++ * and related and neighboring rights to this software to the public domain
++ * worldwide. This software is distributed without any warranty.
++ *
++ * You should have received a copy of the CC0 Public Domain Dedication along
++ * with
++ * this software. If not, see
++ * <http://creativecommons.org/publicdomain/zero/1.0/>.
++ */
++
++#ifndef SIPHASH_H
++#define SIPHASH_H
++
++#include <inttypes.h>
++
++/* siphash always uses 128-bit keys */
++#define SIPHASH_KEY_SIZE 16
++
++int siphash(const void *in, size_t inlen, const void *k, uint8_t *out,
++            size_t outlen);
++
++#endif
+diff --git a/src/openvpn/siphash_reference.c b/src/openvpn/siphash_reference.c
+new file mode 100644
+index 0000000..b21a86e
+--- /dev/null
++++ b/src/openvpn/siphash_reference.c
+@@ -0,0 +1,224 @@
++/*
++ * SipHash reference C implementation
++ *
++ * Copyright 2012-2024 JP Aumasson
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
++ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
++ * IN THE SOFTWARE.
++ *
++ */
++
++/* Note:  the reference implementation is also available under CC0 license
++ * (dual licensed) we included the MIT license here since it is shorter */
++
++#include "siphash.h"
++#include <assert.h>
++#include <stddef.h>
++#include <stdint.h>
++
++/* default: SipHash-2-4 */
++#ifndef cROUNDS
++#define cROUNDS 2
++#endif
++#ifndef dROUNDS
++#define dROUNDS 4
++#endif
++
++#define ROTL(x, b) (uint64_t)(((x) << (b)) | ((x) >> (64 - (b))))
++
++#define U32TO8_LE(p, v)            \
++    (p)[0] = (uint8_t)((v));       \
++    (p)[1] = (uint8_t)((v) >> 8);  \
++    (p)[2] = (uint8_t)((v) >> 16); \
++    (p)[3] = (uint8_t)((v) >> 24);
++
++#define U64TO8_LE(p, v)              \
++    U32TO8_LE((p), (uint32_t)((v))); \
++    U32TO8_LE((p) + 4, (uint32_t)((v) >> 32));
++
++#define U8TO64_LE(p)                                           \
++    (((uint64_t)((p)[0])) | ((uint64_t)((p)[1]) << 8)          \
++     | ((uint64_t)((p)[2]) << 16) | ((uint64_t)((p)[3]) << 24) \
++     | ((uint64_t)((p)[4]) << 32) | ((uint64_t)((p)[5]) << 40) \
++     | ((uint64_t)((p)[6]) << 48) | ((uint64_t)((p)[7]) << 56))
++
++#define SIPROUND           \
++    do                     \
++    {                      \
++        v0 += v1;          \
++        v1 = ROTL(v1, 13); \
++        v1 ^= v0;          \
++        v0 = ROTL(v0, 32); \
++        v2 += v3;          \
++        v3 = ROTL(v3, 16); \
++        v3 ^= v2;          \
++        v0 += v3;          \
++        v3 = ROTL(v3, 21); \
++        v3 ^= v0;          \
++        v2 += v1;          \
++        v1 = ROTL(v1, 17); \
++        v1 ^= v2;          \
++        v2 = ROTL(v2, 32); \
++    } while (0)
++
++#ifdef DEBUG_SIPHASH
++#include <stdio.h>
++
++#define TRACE                                            \
++    do                                                   \
++    {                                                    \
++        printf("(%3zu) v0 %016" PRIx64 "\n", inlen, v0); \
++        printf("(%3zu) v1 %016" PRIx64 "\n", inlen, v1); \
++        printf("(%3zu) v2 %016" PRIx64 "\n", inlen, v2); \
++        printf("(%3zu) v3 %016" PRIx64 "\n", inlen, v3); \
++    } while (0)
++#else /* ifdef DEBUG_SIPHASH */
++#define TRACE
++#endif
++
++/*
++ *  Computes a SipHash value
++ * in: pointer to input data (read-only)
++ *  inlen: input data length in bytes (any size_t value)
++ * k: pointer to the key data (read-only), must be 16 bytes
++ * out: pointer to output data (write-only), outlen bytes must be allocated
++ *  outlen: length of the output in bytes, must be 8 or 16
++ */
++int
++siphash(const void *in, const size_t inlen, const void *k, uint8_t *out,
++        const size_t outlen)
++{
++    const unsigned char *ni = (const unsigned char *)in;
++    const unsigned char *kk = (const unsigned char *)k;
++
++    assert((outlen == 8) || (outlen == 16));
++    uint64_t v0 = UINT64_C(0x736f6d6570736575);
++    uint64_t v1 = UINT64_C(0x646f72616e646f6d);
++    uint64_t v2 = UINT64_C(0x6c7967656e657261);
++    uint64_t v3 = UINT64_C(0x7465646279746573);
++    uint64_t k0 = U8TO64_LE(kk);
++    uint64_t k1 = U8TO64_LE(kk + 8);
++    uint64_t m;
++    int i;
++    const unsigned char *end = ni + inlen - (inlen % sizeof(uint64_t));
++    const int left = inlen & 7;
++    uint64_t b = ((uint64_t)inlen) << 56;
++    v3 ^= k1;
++    v2 ^= k0;
++    v1 ^= k1;
++    v0 ^= k0;
++
++    if (outlen == 16)
++    {
++        v1 ^= 0xee;
++    }
++
++    for (; ni != end; ni += 8)
++    {
++        m = U8TO64_LE(ni);
++        v3 ^= m;
++
++        TRACE;
++        for (i = 0; i < cROUNDS; ++i)
++        {
++            SIPROUND;
++        }
++
++        v0 ^= m;
++    }
++
++    switch (left)
++    {
++        case 7:
++            b |= ((uint64_t)ni[6]) << 48;
++
++        /* FALLTHRU */
++        case 6:
++            b |= ((uint64_t)ni[5]) << 40;
++
++        /* FALLTHRU */
++        case 5:
++            b |= ((uint64_t)ni[4]) << 32;
++
++        /* FALLTHRU */
++        case 4:
++            b |= ((uint64_t)ni[3]) << 24;
++
++        /* FALLTHRU */
++        case 3:
++            b |= ((uint64_t)ni[2]) << 16;
++
++        /* FALLTHRU */
++        case 2:
++            b |= ((uint64_t)ni[1]) << 8;
++
++        /* FALLTHRU */
++        case 1:
++            b |= ((uint64_t)ni[0]);
++            break;
++
++        case 0:
++            break;
++    }
++
++    v3 ^= b;
++
++    TRACE;
++    for (i = 0; i < cROUNDS; ++i)
++    {
++        SIPROUND;
++    }
++
++    v0 ^= b;
++
++    if (outlen == 16)
++    {
++        v2 ^= 0xee;
++    }
++    else
++    {
++        v2 ^= 0xff;
++    }
++
++    TRACE;
++    for (i = 0; i < dROUNDS; ++i)
++    {
++        SIPROUND;
++    }
++
++    b = v0 ^ v1 ^ v2 ^ v3;
++    U64TO8_LE(out, b);
++
++    if (outlen == 8)
++    {
++        return 0;
++    }
++
++    v1 ^= 0xdd;
++
++    TRACE;
++    for (i = 0; i < dROUNDS; ++i)
++    {
++        SIPROUND;
++    }
++
++    b = v0 ^ v1 ^ v2 ^ v3;
++    U64TO8_LE(out + 8, b);
++
++    return 0;
++}
 
