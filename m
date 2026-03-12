@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 12 Mar 2026 08:41:18 +0100
-Message-ID: <20260312074123.30838-1-gert@...1296...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 12 Mar 2026 07:41:07 +0000
 In-Reply-To: <gerrit.1769789455000.I96b6acffd7e5149d4c9488a06e43c62711b31cfc@...2715...>
 References: <gerrit.1769789455000.I96b6acffd7e5149d4c9488a06e43c62711b31cfc@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <f856722167403dfa392b6f2522804df8f7f59511-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] error: Use SOCKET_UNDEFINED instead of
- -1 to avoid sign error on Windows
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="lPNEUu4Bb3g="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: error: Use
+ SOCKET_UNDEFINED instead of -1 to avoid sign error on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,112 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--lPNEUu4Bb3g=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-While here also mark a comparison we know is safe
-with an explicit cast.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I96b6acffd7e5149d4c9488a06e43c62711b31cfc
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1501
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1501?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: error: Use SOCKET_UNDEFINED instead of -1 to avoid sign err=
+or on Windows
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1501
-This mail reflects revision 7 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 7: Code-Review+2
 
-        
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 6fb4f32..2900352 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -97,15 +97,10 @@
-     forked = true;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- bool
- set_debug_level(const int level, const unsigned int flags)
- {
--    if (level >= 0 && level <= M_DEBUG_LEVEL)
-+    if (level >= 0 && (unsigned int)level <= M_DEBUG_LEVEL)
-     {
-         x_debug_level = (msglvl_t)level;
-         return true;
-@@ -118,10 +113,6 @@
-     return false;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- bool
- set_mute_cutoff(const int cutoff)
- {
-@@ -621,11 +612,6 @@
-     x_cs_verbose_level = verbose_level;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /*
-  * Called after most socket or tun/tap operations, via the inline
-  * function check_status().
-@@ -674,15 +660,22 @@
-         {
-             if (extended_msg)
-             {
--                msg(x_cs_info_level, "%s %s [%s]: %s (fd=" SOCKET_PRINTF ",code=%d)", description,
--                    sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "", extended_msg,
--                    openvpn_strerror(my_errno, crt_error, &gc), sock ? sock->sd : -1, my_errno);
-+                msg(x_cs_info_level, "%s %s [%s]: %s (fd=" SOCKET_PRINTF ",code=%d)",
-+                    description,
-+                    sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
-+                    extended_msg,
-+                    openvpn_strerror(my_errno, crt_error, &gc),
-+                    sock ? sock->sd : SOCKET_UNDEFINED,
-+                    my_errno);
-             }
-             else
-             {
--                msg(x_cs_info_level, "%s %s: %s (fd=" SOCKET_PRINTF ",code=%d)", description,
-+                msg(x_cs_info_level, "%s %s: %s (fd=" SOCKET_PRINTF ",code=%d)",
-+                    description,
-                     sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
--                    openvpn_strerror(my_errno, crt_error, &gc), sock ? sock->sd : -1, my_errno);
-+                    openvpn_strerror(my_errno, crt_error, &gc),
-+                    sock ? sock->sd : SOCKET_UNDEFINED,
-+                    my_errno);
-             }
- 
-             if (x_cs_err_delay_ms)
-@@ -694,10 +687,6 @@
-     }
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /*
-  * In multiclient mode, put a client-specific prefix
-  * before each message.
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1501?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I96b6acffd7e5149d4c9488a06e43c62711b31cfc
+Gerrit-Change-Number: 1501
+Gerrit-PatchSet: 7
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 12 Mar 2026 07:41:07 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--lPNEUu4Bb3g=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1501?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1501?usp=3Demail=
+">change 1501</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1501?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I96b6acffd7e5149d4c9488a06e4=
+3c62711b31cfc </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1501 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 12 Mar 2026 07:41:07=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--lPNEUu4Bb3g=--
 
