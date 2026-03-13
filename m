@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 13 Mar 2026 22:36:20 +0000
-In-Reply-To: <gerrit.1773243451000.I090f5b201d67f51d2e42df1914a8466bcfcb6bf8@...2715...>
-References: <gerrit.1773243451000.I090f5b201d67f51d2e42df1914a8466bcfcb6bf8@...2715...>
+Date: Fri, 13 Mar 2026 22:36:24 +0000
+In-Reply-To: <gerrit.1773243451000.Ia929c949cceaabe21a2937ad3217052aec4b2b4c@...2715...>
+References: <gerrit.1773243451000.Ia929c949cceaabe21a2937ad3217052aec4b2b4c@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5d9a1f507690c5e7558681141753131b961c1581-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5b66a2dfb067e7da8b53178ea08855bf794c4dcc-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6lYIn39K1h4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Install aws-lc
- under /opt/aws-lc
+Content-Type: multipart/alternative; boundary="lcU5loOkxPQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Show version and
+ double check we use the right TLS library in Github ...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,176 +19,170 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6lYIn39K1h4=
+--lcU5loOkxPQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#5) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1565?usp=3Demail )
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
+66?usp=3Demail )
 
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
-
-Change subject: GHA: Install aws-lc under /opt/aws-lc
+Change subject: Show version and double check we use the right TLS library =
+in Github Actions
 ......................................................................
 
-GHA: Install aws-lc under /opt/aws-lc
+Show version and double check we use the right TLS library in Github Actions
 
-The previous installation inside the OpenVPN workspace directory
-caused the AWS-LC installation to be deleted. And that caused to OpenSSL
-to be used instead of AWS-LC during the build
+We recently discovered that the AWS-LC builds in Github Actions were
+actually using OpenSSL. This will now cause an error if something like
+this happens in the future again.
 
-This also removes the --enable-werror flag from AWS-LC because it
-currently not even close to build without warnings.
-
-Change-Id: I090f5b201d67f51d2e42df1914a8466bcfcb6bf8
+Change-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c
 Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1565
-Message-Id: <20260313153007.31810-1-gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1566
+Message-Id: <20260313175324.12121-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-106.html
+115.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
 M .github/workflows/build.yaml
-1 file changed, 6 insertions(+), 6 deletions(-)
+1 file changed, 12 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/1565/5
+
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index b213192..2a2616b 100644
+index 2a2616b..dd8e472 100644
 --- a/.github/workflows/build.yaml
 +++ b/.github/workflows/build.yaml
-@@ -454,7 +454,7 @@
-       CC: ${{matrix.cc}}
-       CXX: ${{matrix.cxx}}
-       UBSAN_OPTIONS: print_stacktrace=3D1
--      AWS_LC_INSTALL: ${{ github.workspace }}/aws-lc/aws-lc-install
-+      AWS_LC_INSTALL: /opt/aws-lc
-
-     steps:
-       - name: Install dependencies
-@@ -465,7 +465,7 @@
-           path: aws-lc
-           # versioning=3Dsemver-coerced
-           repository: aws/aws-lc
--          ref: v1.67.0
-+          ref: v1.70.0
-       - uses: lukka/get-cmake@...2999... # v4.2.3
-       - name: "AWS-LC: build"
-         run: |
-@@ -480,10 +480,10 @@
-         run: autoreconf -fvi
-       - name: configure with AWS-LC
-         run: |
--          OPENSSL_CFLAGS=3D"-I/${{ env.AWS_LC_INSTALL }}/include" \
--          OPENSSL_LIBS=3D"-L/${{ env.AWS_LC_INSTALL }}/lib -lssl -lcrypto"=
- \
--          LDFLAGS=3D"-Wl,-rpath=3D/${{ env.AWS_LC_INSTALL }}/lib" \
--          ./configure --with-crypto-library=3Dopenssl --enable-werror
-+          OPENSSL_CFLAGS=3D"-I${{ env.AWS_LC_INSTALL }}/include" \
-+          OPENSSL_LIBS=3D"-L${{ env.AWS_LC_INSTALL }}/lib -lssl -lcrypto" \
-+          LDFLAGS=3D"-Wl,-rpath=3D${{ env.AWS_LC_INSTALL }}/lib" \
-+          ./configure --with-crypto-library=3Dopenssl
+@@ -363,6 +363,10 @@
+         run: ./configure --with-crypto-library=3Dopenssl ${{matrix.configu=
+reflags}} --enable-werror
        - name: make all
          run: make -j3
++      - name: Ensure the build uses LibreSSL
++        run: |
++          ./src/openvpn/openvpn --version
++          ./src/openvpn/openvpn --version | grep -q "library versions: Lib=
+reSSL"
        - name: configure checks
+         run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+@@ -422,6 +426,10 @@
+         run: ./configure --with-crypto-library=3Dmbedtls --enable-werror
+       - name: make all
+         run: make -j3
++      - name: Ensure the build uses mbed TLS 4.x
++        run: |
++          ./src/openvpn/openvpn --version
++          ./src/openvpn/openvpn --version | grep -q "library versions: mbe=
+d TLS 4."
+       - name: configure checks
+         run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+@@ -486,6 +494,10 @@
+           ./configure --with-crypto-library=3Dopenssl
+       - name: make all
+         run: make -j3
++      - name: Ensure the build uses AWS-LC
++        run: |
++          ./src/openvpn/openvpn --version
++          ./src/openvpn/openvpn --version | grep -q "library versions: AWS=
+-LC"
+       - name: configure checks
+         run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1565?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I090f5b201d67f51d2e42df1914a8466bcfcb6bf8
-Gerrit-Change-Number: 1565
-Gerrit-PatchSet: 5
+Gerrit-Change-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c
+Gerrit-Change-Number: 1566
+Gerrit-PatchSet: 4
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6lYIn39K1h4=
+--lcU5loOkxPQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #5</strong> to the change originally created by plaisthos.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1565?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">GHA: Install aws-lc under /o=
-pt/aws-lc<br><br>The previous installation inside the OpenVPN workspace dir=
-ectory<br>caused the AWS-LC installation to be deleted. And that caused to =
-OpenSSL<br>to be used instead of AWS-LC during the build<br><br>This also r=
-emoves the --enable-werror flag from AWS-LC because it<br>currently not eve=
-n close to build without warnings.<br><br>Change-Id: I090f5b201d67f51d2e42d=
-f1914a8466bcfcb6bf8<br>Signed-off-by: Arne Schwabe &lt;arne-openvpn@...1830...=
-...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Gerrit U=
-RL: https://gerrit.openvpn.net/c/openvpn/+/1565<br>Message-Id: &lt;20260313=
-153007.31810-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/ope=
-nvpn-devel@lists.sourceforge.net/msg36106.html<br>Signed-off-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 fi=
-le changed, 6 insertions(+), 6 deletions(-)<br><br></pre><pre class=3D"bloc=
-ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
-pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/1565/5</pre><pr=
-e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml</s=
-pan><br><span>index b213192..2a2616b 100644</span><br><span>--- a/.github/w=
-orkflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</spa=
-n><br><span>@@ -454,7 +454,7 @@</span><br><span>       CC: ${{matrix.cc}}</=
-span><br><span>       CXX: ${{matrix.cxx}}</span><br><span>       UBSAN_OPT=
-IONS: print_stacktrace=3D1</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-      AWS_LC_INSTALL: ${{ github.workspace }}/aws-lc/aws-lc-install</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      AWS_LC_INSTALL: =
-/opt/aws-lc</span><br><span> </span><br><span>     steps:</span><br><span> =
-      - name: Install dependencies</span><br><span>@@ -465,7 +465,7 @@</spa=
-n><br><span>           path: aws-lc</span><br><span>           # versioning=
-=3Dsemver-coerced</span><br><span>           repository: aws/aws-lc</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-          ref: v1.67.0</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+          ref: v1.70.0</sp=
-an><br><span>       - uses: lukka/get-cmake@...2999... # v4.2.3</span><br><=
-span>       - name: &quot;AWS-LC: build&quot;</span><br><span>         run:=
- |</span><br><span>@@ -480,10 +480,10 @@</span><br><span>         run: auto=
-reconf -fvi</span><br><span>       - name: configure with AWS-LC</span><br>=
-<span>         run: |</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-          OPENSSL_CFLAGS=3D&quot;-I/${{ env.AWS_LC_INSTALL }}/include&quot;=
- \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          OPENSSL_L=
-IBS=3D&quot;-L/${{ env.AWS_LC_INSTALL }}/lib -lssl -lcrypto&quot; \</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-          LDFLAGS=3D&quot;-Wl=
-,-rpath=3D/${{ env.AWS_LC_INSTALL }}/lib&quot; \</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-          ./configure --with-crypto-library=3Dop=
-enssl --enable-werror</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+          OPENSSL_CFLAGS=3D&quot;-I${{ env.AWS_LC_INSTALL }}/include&quot=
-; \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          OPENSS=
-L_LIBS=3D&quot;-L${{ env.AWS_LC_INSTALL }}/lib -lssl -lcrypto&quot; \</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+          LDFLAGS=3D&quot=
-;-Wl,-rpath=3D${{ env.AWS_LC_INSTALL }}/lib&quot; \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+          ./configure --with-crypto-libra=
-ry=3Dopenssl</span><br><span>       - name: make all</span><br><span>      =
-   run: make -j3</span><br><span>       - name: configure checks</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/1565?usp=3Demail">change 1565</a>. To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
-s?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1565?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1566?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Show version and double check we use the right T=
+LS library in Github Actions<br><br>We recently discovered that the AWS-LC =
+builds in Github Actions were<br>actually using OpenSSL. This will now caus=
+e an error if something like<br>this happens in the future again.<br><br>Ch=
+ange-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c<br>Signed-off-by: Arne S=
+chwabe &lt;arne-openvpn@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;f=
+rank@...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1=
+566<br>Message-Id: &lt;20260313175324.12121-1-gert@...1296...&gt;<br>URL: h=
+ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36115.ht=
+ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M .gith=
+ub/workflows/build.yaml<br>1 file changed, 12 insertions(+), 0 deletions(-)=
+<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
+</span><br><span>index 2a2616b..dd8e472 100644</span><br><span>--- a/.githu=
+b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
+span><br><span>@@ -363,6 +363,10 @@</span><br><span>         run: ./configu=
+re --with-crypto-library=3Dopenssl ${{matrix.configureflags}} --enable-werr=
+or</span><br><span>       - name: make all</span><br><span>         run: ma=
+ke -j3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name:=
+ Ensure the build uses LibreSSL</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        run: |</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+          ./src/openvpn/openvpn --version</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+          ./src/openvpn/openvpn --version | gr=
+ep -q &quot;library versions: LibreSSL&quot;</span><br><span>       - name:=
+ configure checks</span><br><span>         run: echo &#39;RUN_SUDO=3D&quot;=
+sudo -E&quot;&#39; &gt;tests/t_server_null.rc</span><br><span>       - name=
+: make check</span><br><span>@@ -422,6 +426,10 @@</span><br><span>         =
+run: ./configure --with-crypto-library=3Dmbedtls --enable-werror</span><br>=
+<span>       - name: make all</span><br><span>         run: make -j3</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Ensure the b=
+uild uses mbed TLS 4.x</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        run: |</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+        ./src/openvpn/openvpn --version</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+          ./src/openvpn/openvpn --version | grep -q &qu=
+ot;library versions: mbed TLS 4.&quot;</span><br><span>       - name: confi=
+gure checks</span><br><span>         run: echo &#39;RUN_SUDO=3D&quot;sudo -=
+E&quot;&#39; &gt;tests/t_server_null.rc</span><br><span>       - name: make=
+ check</span><br><span>@@ -486,6 +494,10 @@</span><br><span>           ./co=
+nfigure --with-crypto-library=3Dopenssl</span><br><span>       - name: make=
+ all</span><br><span>         run: make -j3</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      - name: Ensure the build uses AWS-LC</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        run: |</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+          ./src/openvpn/openvpn -=
+-version</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          .=
+/src/openvpn/openvpn --version | grep -q &quot;library versions: AWS-LC&quo=
+t;</span><br><span>       - name: configure checks</span><br><span>        =
+ run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;tests/t_server_null=
+.rc</span><br><span>       - name: make check</span><br><span></span><br></=
+pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1566=
+?usp=3Demail">change 1566</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1566?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I090f5b201d67f51d2e42df1914a=
-8466bcfcb6bf8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1565 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia929c949cceaabe21a2937ad321=
+7052aec4b2b4c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1566 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -198,5 +192,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---6lYIn39K1h4=--
+--lcU5loOkxPQ=--
 
