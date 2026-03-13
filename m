@@ -1,10 +1,10 @@
-Date: Fri, 13 Mar 2026 18:56:22 +0100 (CET)
-Message-Id: <202603131756.62DHuMlG070601@...2054...>
+Date: Fri, 13 Mar 2026 23:36:10 +0100 (CET)
+Message-Id: <202603132236.62DMaAW4074023@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260313153007.31810-1-gert@...1296...>
-References: <20260313153007.31810-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GHA: Install aws-lc under
- /opt/aws-lc
+In-Reply-To: <20260313175324.12121-1-gert@...1296...>
+References: <20260313175324.12121-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Show version and double check
+ we use the right TLS library in Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a build fix, so no actual code change - just ensure that our
-GH actions actually *do* build with AWS-LC (... and subsequently
-discover the error fixed by the just-applied commit)
-
-Mildly tested by pushing to my GH repo.
+Very reasonable addition - "make sure we actually built & linked the
+TLS library we're trying to test".  Tested via GHA.
 
 Your patch has been applied to the master and release/2.7 branch.
 
-commit 30c1c8cd61db9eb35f6c263a0ca3ec0714c88eb4 (master)
-commit 7158e76feb980443d97ebe321b2a7a54659b7ab4 (release/2.7)
+commit a659605d8c14be58d9b556bc82ea8660b4fe4192 (master)
+commit 1b2518e67c9a34f6176ddcae38aa25ae667bdb97 (release/2.7)
 Author: Arne Schwabe
-Date:   Fri Mar 13 16:30:01 2026 +0100
+Date:   Fri Mar 13 18:53:16 2026 +0100
 
-     GHA: Install aws-lc under /opt/aws-lc
+     Show version and double check we use the right TLS library in Github Actions
 
      Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
      Acked-by: Frank Lichtenheld <frank@...2641...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1565
-     Message-Id: <20260313153007.31810-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36106.html
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1566
+     Message-Id: <20260313175324.12121-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36115.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
