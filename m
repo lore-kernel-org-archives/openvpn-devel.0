@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Fri, 13 Mar 2026 13:43:14 +0000
-In-Reply-To: <gerrit.1773243451000.I7843ff1422cc3b46870749b2daab1698646d43eb@...2715...>
-References: <gerrit.1773243451000.I7843ff1422cc3b46870749b2daab1698646d43eb@...2715...>
+In-Reply-To: <gerrit.1773243451000.Ia929c949cceaabe21a2937ad3217052aec4b2b4c@...2715...>
+References: <gerrit.1773243451000.Ia929c949cceaabe21a2937ad3217052aec4b2b4c@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <5486d66cdbeb2e183cfd5431c3063149481f28ec-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <a4c727545fed7ab541cc952a5d104b286ad975f7-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1F8G5mIrLcA="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: AWS-LC: Add missing
- return and cast in ssl_tls1_PRF
+Content-Type: multipart/alternative; boundary="MlOLRdq/PGA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Show version and
+ double check we use the right TLS library in Github...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,117 +22,171 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---1F8G5mIrLcA=
+--MlOLRdq/PGA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: plaisthos.
 
 Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1567?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail
 
 to look at the new patch set (#3).
 
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
 
 
-Change subject: AWS-LC: Add missing return and cast in ssl_tls1_PRF
+Change subject: Show version and  double check we use the right TLS library=
+ in Github Actions
 ......................................................................
 
-AWS-LC: Add missing return and cast in ssl_tls1_PRF
+Show version and  double check we use the right TLS library in Github Actio=
+ns
 
-Change-Id: I7843ff1422cc3b46870749b2daab1698646d43eb
+We recently discovered that the AWS-LC builds in Github Actions were
+actually using OpenSSL. This will now cause an error if something like
+this happens in the future again.
+
+Change-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c
 ---
-M src/openvpn/crypto_openssl.c
-1 file changed, 2 insertions(+), 1 deletion(-)
+M .github/workflows/build.yaml
+1 file changed, 12 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/1567/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/1566/3
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index de3878d..b6e2106 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -1412,7 +1412,8 @@
- ssl_tls1_PRF(const uint8_t *label, size_t label_len, const uint8_t *sec, s=
-ize_t slen, uint8_t *out1,
-              size_t olen)
- {
--    CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen, label, label_le=
-n, NULL, 0, NULL, 0);
-+    return CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec, slen,
-+                           (const char *)label, label_len, NULL, 0, NULL, =
-0);
- }
- #elif !defined(LIBRESSL_VERSION_NUMBER) && !defined(ENABLE_CRYPTO_WOLFSSL)
- #if defined(__GNUC__) || defined(__clang__)
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 2a2616b..dd8e472 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -363,6 +363,10 @@
+         run: ./configure --with-crypto-library=3Dopenssl ${{matrix.configu=
+reflags}} --enable-werror
+       - name: make all
+         run: make -j3
++      - name: Ensure the build uses LibreSSL
++        run: |
++          ./src/openvpn/openvpn --version
++          ./src/openvpn/openvpn --version | grep -q "library versions: Lib=
+reSSL"
+       - name: configure checks
+         run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+@@ -422,6 +426,10 @@
+         run: ./configure --with-crypto-library=3Dmbedtls --enable-werror
+       - name: make all
+         run: make -j3
++      - name: Ensure the build uses mbed TLS 4.x
++        run: |
++          ./src/openvpn/openvpn --version
++          ./src/openvpn/openvpn --version | grep -q "library versions: mbe=
+d TLS 4."
+       - name: configure checks
+         run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
+@@ -486,6 +494,10 @@
+           ./configure --with-crypto-library=3Dopenssl
+       - name: make all
+         run: make -j3
++      - name: Ensure the build uses AWS-LC
++        run: |
++          ./src/openvpn/openvpn --version
++          ./src/openvpn/openvpn --version | grep -q "library versions: AWS=
+-LC"
+       - name: configure checks
+         run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
+       - name: make check
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1567?usp=3Demail
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I7843ff1422cc3b46870749b2daab1698646d43eb
-Gerrit-Change-Number: 1567
+Gerrit-Change-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c
+Gerrit-Change-Number: 1566
 Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 
---1F8G5mIrLcA=
+--MlOLRdq/PGA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
+rently required from: plaisthos. </p>
 <p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1567?usp=3Demail">View Chan=
-ge</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">AWS-LC: Add missing return a=
-nd cast in ssl_tls1_PRF<br><br>Change-Id: I7843ff1422cc3b46870749b2daab1698=
-646d43eb<br>---<br>M src/openvpn/crypto_openssl.c<br>1 file changed, 2 inse=
-rtions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-f=
-amily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.o=
-penvpn.net:29418/openvpn refs/changes/67/1567/3</pre><pre style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/op=
-envpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br><span>index=
- de3878d..b6e2106 100644</span><br><span>--- a/src/openvpn/crypto_openssl.c=
-</span><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><span>@@ -141=
-2,7 +1412,8 @@</span><br><span> ssl_tls1_PRF(const uint8_t *label, size_t l=
-abel_len, const uint8_t *sec, size_t slen, uint8_t *out1,</span><br><span> =
-             size_t olen)</span><br><span> {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    CRYPTO_tls1_prf(EVP_md5_sha1(), out1, olen, sec,=
- slen, label, label_len, NULL, 0, NULL, 0);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    return CRYPTO_tls1_prf(EVP_md5_sha1(), out1, ol=
-en, sec, slen,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                      (const char *)label, label_len, NULL, 0, NULL, 0);</s=
-pan><br><span> }</span><br><span> #elif !defined(LIBRESSL_VERSION_NUMBER) &=
-amp;&amp; !defined(ENABLE_CRYPTO_WOLFSSL)</span><br><span> #if defined(__GN=
-UC__) || defined(__clang__)</span><br><span></span><br></pre><p>To view, vi=
-sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1567?usp=3Demail">chan=
-ge 1567</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
-itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
-rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1567?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1566?usp=3Demail">View Chan=
+ge</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule i=
+s unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">Show version and  double check we use t=
+he right TLS library in Github Actions<br><br>We recently discovered that t=
+he AWS-LC builds in Github Actions were<br>actually using OpenSSL. This wil=
+l now cause an error if something like<br>this happens in the future again.=
+<br><br>Change-Id: Ia929c949cceaabe21a2937ad3217052aec4b2b4c<br>---<br>M .g=
+ithub/workflows/build.yaml<br>1 file changed, 12 insertions(+), 0 deletions=
+(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
+vpn refs/changes/66/1566/3</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/.github/workflows/build.yam=
+l b/.github/workflows/build.yaml</span><br><span>index 2a2616b..dd8e472 100=
+644</span><br><span>--- a/.github/workflows/build.yaml</span><br><span>+++ =
+b/.github/workflows/build.yaml</span><br><span>@@ -363,6 +363,10 @@</span><=
+br><span>         run: ./configure --with-crypto-library=3Dopenssl ${{matri=
+x.configureflags}} --enable-werror</span><br><span>       - name: make all<=
+/span><br><span>         run: make -j3</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+      - name: Ensure the build uses LibreSSL</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        run: |</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+          ./src/openvpn/openvpn --ve=
+rsion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          ./sr=
+c/openvpn/openvpn --version | grep -q &quot;library versions: LibreSSL&quot=
+;</span><br><span>       - name: configure checks</span><br><span>         =
+run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;tests/t_server_null.=
+rc</span><br><span>       - name: make check</span><br><span>@@ -422,6 +426=
+,10 @@</span><br><span>         run: ./configure --with-crypto-library=3Dmb=
+edtls --enable-werror</span><br><span>       - name: make all</span><br><sp=
+an>         run: make -j3</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+      - name: Ensure the build uses mbed TLS 4.x</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        run: |</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+          ./src/openvpn/openvpn --version</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+          ./src/openvpn=
+/openvpn --version | grep -q &quot;library versions: mbed TLS 4.&quot;</spa=
+n><br><span>       - name: configure checks</span><br><span>         run: e=
+cho &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;tests/t_server_null.rc</sp=
+an><br><span>       - name: make check</span><br><span>@@ -486,6 +494,10 @@=
+</span><br><span>           ./configure --with-crypto-library=3Dopenssl</sp=
+an><br><span>       - name: make all</span><br><span>         run: make -j3=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Ensur=
+e the build uses AWS-LC</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        run: |</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+         ./src/openvpn/openvpn --version</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+          ./src/openvpn/openvpn --version | grep -q &q=
+uot;library versions: AWS-LC&quot;</span><br><span>       - name: configure=
+ checks</span><br><span>         run: echo &#39;RUN_SUDO=3D&quot;sudo -E&qu=
+ot;&#39; &gt;tests/t_server_null.rc</span><br><span>       - name: make che=
+ck</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1566?usp=3Demail">change 1566</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1566?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7843ff1422cc3b46870749b2daa=
-b1698646d43eb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1567 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia929c949cceaabe21a2937ad321=
+7052aec4b2b4c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1566 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -142,10 +196,8 @@ b1698646d43eb </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 
 </body></html>=
 
---1F8G5mIrLcA=--
+--MlOLRdq/PGA=--
 
