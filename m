@@ -1,11 +1,10 @@
+Date: Sat, 14 Mar 2026 11:49:39 +0100 (CET)
+Message-Id: <202603141049.62EAndlj085173@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri, 13 Mar 2026 23:38:28 +0100
-Message-ID: <20260313223833.3813-1-gert@...1296...>
-In-Reply-To: <gerrit.1771343792000.Ic877f9a9c6459c6eb97cde1099f47f0b196b8084@...2715...>
-References: <gerrit.1771343792000.Ic877f9a9c6459c6eb97cde1099f47f0b196b8084@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] systemd: Change LimitNPROC to TasksMax
- and increase limit
+In-Reply-To: <20260313223833.3813-1-gert@...1296...>
+References: <20260313223833.3813-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: systemd: Change LimitNPROC to
+ TasksMax and increase limit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@...2641...>
+While I could care less about systemd, arguably this was a non-helpful
+setting (wrong variable and over-strict limit) - so this is a reasonable
+change.  Arne ACKed v1 (name change), v2 also bumps the limit.
 
-There were some complaints about valid setups
-that ran into problems with LimitNPROC. This
-is especially true since LimitNPROC limits
-the total amounts of threads running for the
-same uid, so if multiple openvpn services run
-under the same user, they will compete for
-resources. As suggested in the systemd
-documentation change this to TasksMax which
-really counts the threads running in one
-specific service.
+Your patch has been applied to the master and release/2.7 branch.
 
-Also increase the limit. When using e.g.
-resolvconf for DNS configuration the limit
-can be exhausted just due to the amount of
-nested shell scripts.
+commit c02964f0b20d860176545dbeaf54b11127e9f8a3 (master)
+commit 8a156abb4b40dee63174fd45fe66e4591409b497 (release/2.7)
+Author: Frank Lichtenheld
+Date:   Fri Mar 13 23:38:28 2026 +0100
 
-Github: Fixes #929
-Change-Id: Ic877f9a9c6459c6eb97cde1099f47f0b196b8084
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1539
----
+     systemd: Change LimitNPROC to TasksMax and increase limit
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1539
+     Message-Id: <20260313223833.3813-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36123.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1539
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+--
+kind regards,
 
-        
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
-index 326bb73..340603e 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -12,7 +12,7 @@
- WorkingDirectory=/etc/openvpn/client
- ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_SYS_NICE
--LimitNPROC=10
-+TasksMax=20
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
- ProtectSystem=true
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index d43bce1..3462f33 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -12,7 +12,7 @@
- WorkingDirectory=/etc/openvpn/server
- ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_SYS_NICE CAP_AUDIT_WRITE
--LimitNPROC=10
-+TasksMax=20
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
- ProtectSystem=true
+Gert Doering
+
 
