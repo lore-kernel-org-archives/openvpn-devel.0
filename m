@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 14 Mar 2026 17:07:33 +0000
+Date: Sat, 14 Mar 2026 17:07:35 +0000
 In-Reply-To: <gerrit.1770053869000.I1bc576c4c7ffacbb9300608d98b06b22f2475fd9@...2715...>
 References: <gerrit.1770053869000.I1bc576c4c7ffacbb9300608d98b06b22f2475fd9@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <05dbb3b63c1681d57b2c3110faa028479d18f916-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <05dbb3b63c1681d57b2c3110faa028479d18f916-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w+BtwqThV1E="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Gounu3c/da0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: crypto: Change
  cipher_kt_*_size to return unsigned instead of int
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---w+BtwqThV1E=
+--Gounu3c/da0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#10) to the change originally created b=
-y flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
+08?usp=3Demail )
 
 Change subject: crypto: Change cipher_kt_*_size to return unsigned instead =
 of int
@@ -77,7 +73,7 @@ M src/openvpn/options.c
 11 files changed, 87 insertions(+), 110 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/08/1508/10
+
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
 index 748b5b5..7954e8a 100644
@@ -104,7 +100,7 @@ index 748b5b5..7954e8a 100644
 
          ASSERT(iv_len >=3D OPENVPN_AEAD_MIN_IV_LEN && iv_len <=3D OPENVPN_=
 MAX_IV_LENGTH);
-
+=20
 @@ -128,7 +123,7 @@
 
          /* This generates the IV by XORing the implicit part of the IV
@@ -463,7 +459,7 @@ l_len < 1)
 @@ -111,18 +107,14 @@
          buf_write(&hkdf_label, context, context_len);
      }
-
+=20
 -    ASSERT(buf_len(&hkdf_label) =3D=3D hkdf_label_len);
 +    ASSERT(buf_len(&hkdf_label) =3D=3D (int)hkdf_label_len);
 
@@ -889,7 +885,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I1bc576c4c7ffacbb9300608d98b06b22f2475fd9
@@ -899,638 +895,635 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---w+BtwqThV1E=
+--Gounu3c/da0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #10</strong> to the change originally created by flichtenhe=
-ld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail=
-">View Change</a></p><p>The following approvals got outdated and were remov=
-ed:
-Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">crypto: Change cipher_kt_*_size=
- to return unsigned instead of int<br><br>OpenSSL uses int but never return=
-s negative values.<br>mbedTLS &lt; 4 uses size_t and mbedTLS &gt;=3D 4 does=
-n&#39;t have<br>its own implementation, so we can choose.<br><br>We chose u=
-nsigned int since size_t seems a bit silly for<br>values that are never eve=
-n close to UINT_MAX.<br>Making it unsigned makes it easier in most cases to=
- write<br>code that doesn&#39;t have sign-compare issues.<br><br>Also chang=
-e cipher_ctx_iv_length and cipher_ctx_block_size<br>to return an unsigned v=
-alue for similar reasons.<br><br>v7:<br> - switch to unsigned int instead o=
-f size_t<br><br>Change-Id: I1bc576c4c7ffacbb9300608d98b06b22f2475fd9<br>Sig=
-ned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Sc=
-hwabe &lt;arne-openvpn@...1227...&gt;<br>Gerrit URL: https://gerrit.openvpn=
-.net/c/openvpn/+/1508<br>Message-Id: &lt;20260313175209.12024-1-gert@...1826...=
-6...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1768...=
-ge.net/msg36114.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;=
-<br>---<br>M src/openvpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvp=
-n/crypto_backend.h<br>M src/openvpn/crypto_epoch.c<br>M src/openvpn/crypto_=
-epoch.h<br>M src/openvpn/crypto_mbedtls.c<br>M src/openvpn/crypto_mbedtls.h=
-<br>M src/openvpn/crypto_mbedtls_legacy.c<br>M src/openvpn/crypto_openssl.c=
-<br>M src/openvpn/dco_linux.c<br>M src/openvpn/options.c<br>11 files change=
-d, 87 insertions(+), 110 deletions(-)<br><br></pre><pre class=3D"blocks" st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull s=
-sh://gerrit.openvpn.net:29418/openvpn refs/changes/08/1508/10</pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
---git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index 7=
-48b5b5..7954e8a 100644</span><br><span>--- a/src/openvpn/crypto.c</span><br=
-><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -39,11 +39,6 @@</span>=
-<br><span> </span><br><span> #include &quot;memdbg.h&quot;</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__=
-) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><span>  * Encry=
-ption and Compression Routines.</span><br><span>  *</span><br><span>@@ -93,=
-7 +88,7 @@</span><br><span>     {</span><br><span>         struct buffer iv=
-_buffer;</span><br><span>         uint8_t iv[OPENVPN_MAX_IV_LENGTH] =3D { 0=
- };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int =
-iv_len =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        const unsigned int iv_len =3D cipher_c=
-tx_iv_length(ctx-&gt;cipher);</span><br><span> </span><br><span>         AS=
-SERT(iv_len &gt;=3D OPENVPN_AEAD_MIN_IV_LEN &amp;&amp; iv_len &lt;=3D OPENV=
-PN_MAX_IV_LENGTH);</span><br><span> </span><br><span>@@ -128,7 +123,7 @@</s=
-pan><br><span> </span><br><span>         /* This generates the IV by XORing=
- the implicit part of the IV</span><br><span>          * with the packet id=
- already written to the iv buffer */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        for (int i =3D 0; i &lt; iv_len; i++)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        for (unsigned int i =3D 0;=
- i &lt; iv_len; i++)</span><br><span>         {</span><br><span>           =
-  iv[i] =3D iv[i] ^ ctx-&gt;implicit_iv[i];</span><br><span>         }</spa=
-n><br><span>@@ -214,8 +209,7 @@</span><br><span>         if (ctx-&gt;cipher=
-)</span><br><span>         {</span><br><span>             uint8_t iv_buf[OP=
-ENVPN_MAX_IV_LENGTH] =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            const int iv_size =3D cipher_ctx_iv_length(ctx-&gt;ci=
-pher);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            int=
- outlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- const unsigned int iv_size =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span=
-><br><span> </span><br><span>             /* Reserve space for HMAC */</spa=
-n><br><span>             if (ctx-&gt;hmac)</span><br><span>@@ -274,6 +268,7=
- @@</span><br><span>             }</span><br><span> </span><br><span>      =
-       /* Encrypt packet ID, payload */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            int outlen;</span><br><span>             AS=
-SERT(cipher_ctx_update(ctx-&gt;cipher, BEND(&amp;work), &amp;outlen, BPTR(b=
-uf), BLEN(buf)));</span><br><span>             ASSERT(buf_inc_len(&amp;work=
-, outlen));</span><br><span> </span><br><span>@@ -282,7 +277,7 @@</span><br=
-><span>             ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span=
-> </span><br><span>             /* For all CBC mode ciphers, check the last=
- block is complete */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            ASSERT(cipher_ctx_mode(ctx-&gt;cipher) !=3D OPENVPN_MODE_CBC ||=
- outlen =3D=3D iv_size);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            ASSERT(cipher_ctx_mode(ctx-&gt;cipher) !=3D OPENVPN_MODE_C=
-BC || outlen =3D=3D (int)iv_size);</span><br><span>         }</span><br><sp=
-an>         else /* No Encryption */</span><br><span>         {</span><br><=
-span>@@ -486,7 +481,7 @@</span><br><span>     /* Combine IV from explicit p=
-art from packet and implicit part from context */</span><br><span>     {</s=
-pan><br><span>         uint8_t iv[OPENVPN_MAX_IV_LENGTH] =3D { 0 };</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        const int iv_len =3D =
-cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        const unsigned int iv_len =3D cipher_ctx_iv_lengt=
-h(ctx-&gt;cipher);</span><br><span> </span><br><span>         /* Read packe=
-t id. For epoch data format also lookup the epoch key</span><br><span>     =
-     * to be able to use the implicit IV of the correct decryption key */</=
-span><br><span>@@ -526,7 +521,7 @@</span><br><span> </span><br><span>      =
-   /* This generates the IV by XORing the implicit part of the IV</span><br=
-><span>          * with the packet id already written to the iv buffer */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        for (int i =3D =
-0; i &lt; iv_len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        for (unsigned int i =3D 0; i &lt; iv_len; i++)</span><br><span> =
-        {</span><br><span>             iv[i] =3D iv[i] ^ ctx-&gt;implicit_i=
-v[i];</span><br><span>         }</span><br><span>@@ -666,7 +661,7 @@</span>=
-<br><span> </span><br><span>         if (ctx-&gt;cipher)</span><br><span>  =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c=
-onst int iv_size =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            const unsigned int iv_si=
-ze =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span>             u=
-int8_t iv_buf[OPENVPN_MAX_IV_LENGTH] =3D { 0 };</span><br><span>           =
-  int outlen;</span><br><span> </span><br><span>@@ -674,7 +669,7 @@</span><=
-br><span>             ASSERT(buf_init(&amp;work, frame-&gt;buf.headroom));<=
-/span><br><span> </span><br><span>             /* read the IV from the pack=
-et */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (=
-buf-&gt;len &lt; iv_size)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            if (buf-&gt;len &lt; (int)iv_size)</span><br><span>      =
-       {</span><br><span>                 CRYPT_ERROR(&quot;missing IV info=
-&quot;);</span><br><span>             }</span><br><span>@@ -804,10 +799,10 =
-@@</span><br><span>     return ret;</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-unsigned int</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+size_t</span><br><span> calcula=
-te_crypto_overhead(const struct key_type *kt, unsigned int pkt_id_size, boo=
-l occ)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    unsigned int crypto_overhead =3D 0;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    size_t crypto_overhead =3D 0;</span><br><span> =
-</span><br><span>     if (!cipher_kt_mode_cbc(kt-&gt;cipher))</span><br><sp=
-an>     {</span><br><span>@@ -865,7 +860,7 @@</span><br><span>     {</span>=
-<br><span>         msg(M_WARN,</span><br><span>             &quot;WARNING: =
-INSECURE cipher (%s) with block size less than 128&quot;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            &quot; bit (%d bit).  This a=
-llows attacks like SWEET32.  Mitigate by &quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            &quot; bit (%u bit).  This allows a=
-ttacks like SWEET32.  Mitigate by &quot;</span><br><span>             &quot=
-;using a --cipher with a larger block size (e.g. AES-256-CBC). &quot;</span=
-><br><span>             &quot;Support for these insecure ciphers will be re=
-moved in &quot;</span><br><span>             &quot;OpenVPN 2.8.&quot;,</spa=
-n><br><span>@@ -1010,12 +1005,12 @@</span><br><span>         cipher_ctx_ini=
-t(ctx-&gt;cipher, key-&gt;cipher, kt-&gt;cipher, enc);</span><br><span> </s=
-pan><br><span>         const char *ciphername =3D cipher_kt_name(kt-&gt;cip=
-her);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_CI=
-PHER_INIT, &quot;%s: Cipher &#39;%s&#39; initialized with %d bit key&quot;,=
- prefix, ciphername,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        msg(D_CIPHER_INIT, &quot;%s: Cipher &#39;%s&#39; initialized with =
-%u bit key&quot;, prefix, ciphername,</span><br><span>             cipher_k=
-t_key_size(kt-&gt;cipher) * 8);</span><br><span> </span><br><span>         =
-dmsg(D_SHOW_KEYS, &quot;%s: CIPHER KEY: %s&quot;, prefix,</span><br><span> =
-             format_hex(key-&gt;cipher, cipher_kt_key_size(kt-&gt;cipher), =
-0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-dmsg(D_CRYPTO_DEBUG, &quot;%s: CIPHER block_size=3D%d iv_size=3D%d&quot;, p=
-refix,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dmsg(=
-D_CRYPTO_DEBUG, &quot;%s: CIPHER block_size=3D%u iv_size=3D%u&quot;, prefix=
-,</span><br><span>              cipher_kt_block_size(kt-&gt;cipher), cipher=
-_kt_iv_size(kt-&gt;cipher));</span><br><span>         warn_insecure_key_typ=
-e(ciphername);</span><br><span>     }</span><br><span>@@ -1112,8 +1107,8 @@=
-</span><br><span> static bool</span><br><span> key_is_zero(struct key *key,=
- const struct key_type *kt)</span><br><span> {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    int cipher_length =3D cipher_kt_key_size(kt-&g=
-t;cipher);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (in=
-t i =3D 0; i &lt; cipher_length; ++i)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    size_t cipher_length =3D cipher_kt_key_size(kt-&gt;ci=
-pher);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size=
-_t i =3D 0; i &lt; cipher_length; ++i)</span><br><span>     {</span><br><sp=
-an>         if (key-&gt;cipher[i])</span><br><span>         {</span><br><sp=
-an>@@ -1171,7 +1166,7 @@</span><br><span> key_print(const struct key *key, =
-const struct key_type *kt, const char *prefix)</span><br><span> {</span><br=
-><span>     struct gc_arena gc =3D gc_new();</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    dmsg(D_SHOW_KEY_SOURCE, &quot;%s (cipher, %s, %d=
- bits): %s&quot;, prefix, cipher_kt_name(kt-&gt;cipher),</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOURCE, &quot;%s (=
-cipher, %s, %u bits): %s&quot;, prefix, cipher_kt_name(kt-&gt;cipher),</spa=
-n><br><span>          cipher_kt_key_size(kt-&gt;cipher) * 8,</span><br><spa=
-n>          format_hex(key-&gt;cipher, cipher_kt_key_size(kt-&gt;cipher), 0=
-, &amp;gc));</span><br><span>     dmsg(D_SHOW_KEY_SOURCE, &quot;%s (hmac, %=
-s, %d bits): %s&quot;, prefix, md_kt_name(kt-&gt;digest),</span><br><span>@=
-@ -1280,10 +1275,6 @@</span><br><span>     gc_free(&amp;gc);</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span> const char *</span><br><span> print_key_file=
-name(const char *str, bool is_inline)</span><br><span> {</span><br><span>@@=
- -1756,7 +1747,7 @@</span><br><span> void</span><br><span> print_cipher(con=
-st char *ciphername)</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    printf(&quot;%s  (%d bit key, &quot;, cipher_kt_name(=
-ciphername), cipher_kt_key_size(ciphername) * 8);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    printf(&quot;%s  (%u bit key, &quot;, cip=
-her_kt_name(ciphername), cipher_kt_key_size(ciphername) * 8);</span><br><sp=
-an> </span><br><span>     if (cipher_kt_block_size(ciphername) =3D=3D 1)</s=
-pan><br><span>     {</span><br><span>@@ -1764,7 +1755,7 @@</span><br><span>=
-     }</span><br><span>     else</span><br><span>     {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        printf(&quot;%d bit block&quot;, =
-cipher_kt_block_size(ciphername) * 8);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        printf(&quot;%u bit block&quot;, cipher_kt_block=
-_size(ciphername) * 8);</span><br><span>     }</span><br><span> </span><br>=
-<span>     if (!cipher_kt_mode_cbc(ciphername))</span><br><span>diff --git =
-a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>index 1744653=
-..fbca2a0 100644</span><br><span>--- a/src/openvpn/crypto.h</span><br><span=
->+++ b/src/openvpn/crypto.h</span><br><span>@@ -165,13 +165,13 @@</span><br=
-><span>     uint8_t cipher[MAX_CIPHER_KEY_LENGTH];</span><br><span> </span>=
-<br><span>     /** Number of bytes set in the cipher key material */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    int cipher_size;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int cipher_siz=
-e;</span><br><span> </span><br><span>     /** %Key material for HMAC operat=
-ions. */</span><br><span>     uint8_t hmac[MAX_HMAC_KEY_LENGTH];</span><br>=
-<span> </span><br><span>     /** Number of bytes set in the HMac key materi=
-al */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int hmac_siz=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1508?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">crypto: Change cipher_kt_*_size to return unsign=
+ed instead of int<br><br>OpenSSL uses int but never returns negative values=
+.<br>mbedTLS &lt; 4 uses size_t and mbedTLS &gt;=3D 4 doesn&#39;t have<br>i=
+ts own implementation, so we can choose.<br><br>We chose unsigned int since=
+ size_t seems a bit silly for<br>values that are never even close to UINT_M=
+AX.<br>Making it unsigned makes it easier in most cases to write<br>code th=
+at doesn&#39;t have sign-compare issues.<br><br>Also change cipher_ctx_iv_l=
+ength and cipher_ctx_block_size<br>to return an unsigned value for similar =
+reasons.<br><br>v7:<br> - switch to unsigned int instead of size_t<br><br>C=
+hange-Id: I1bc576c4c7ffacbb9300608d98b06b22f2475fd9<br>Signed-off-by: Frank=
+ Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Arne Schwabe &lt;arne-op=
+envpn@...1227...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/=
+1508<br>Message-Id: &lt;20260313175209.12024-1-gert@...1296...&gt;<br>URL: =
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36114.h=
+tml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/=
+openvpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/crypto_backend.=
+h<br>M src/openvpn/crypto_epoch.c<br>M src/openvpn/crypto_epoch.h<br>M src/=
+openvpn/crypto_mbedtls.c<br>M src/openvpn/crypto_mbedtls.h<br>M src/openvpn=
+/crypto_mbedtls_legacy.c<br>M src/openvpn/crypto_openssl.c<br>M src/openvpn=
+/dco_linux.c<br>M src/openvpn/options.c<br>11 files changed, 87 insertions(=
++), 110 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span=
+>index 748b5b5..7954e8a 100644</span><br><span>--- a/src/openvpn/crypto.c</=
+span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -39,11 +39,6 @=
+@</span><br><span> </span><br><span> #include &quot;memdbg.h&quot;</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
+__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><span> =
+ * Encryption and Compression Routines.</span><br><span>  *</span><br><span=
+>@@ -93,7 +88,7 @@</span><br><span>     {</span><br><span>         struct b=
+uffer iv_buffer;</span><br><span>         uint8_t iv[OPENVPN_MAX_IV_LENGTH]=
+ =3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        co=
+nst int iv_len =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        const unsigned int iv_len =3D =
+cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span> </span><br><span>   =
+      ASSERT(iv_len &gt;=3D OPENVPN_AEAD_MIN_IV_LEN &amp;&amp; iv_len &lt;=
+=3D OPENVPN_MAX_IV_LENGTH);</span><br><span> </span><br><span>@@ -128,7 +12=
+3,7 @@</span><br><span> </span><br><span>         /* This generates the IV =
+by XORing the implicit part of the IV</span><br><span>          * with the =
+packet id already written to the iv buffer */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        for (int i =3D 0; i &lt; iv_len; i++)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (unsigned int=
+ i =3D 0; i &lt; iv_len; i++)</span><br><span>         {</span><br><span>  =
+           iv[i] =3D iv[i] ^ ctx-&gt;implicit_iv[i];</span><br><span>      =
+   }</span><br><span>@@ -214,8 +209,7 @@</span><br><span>         if (ctx-&=
+gt;cipher)</span><br><span>         {</span><br><span>             uint8_t =
+iv_buf[OPENVPN_MAX_IV_LENGTH] =3D { 0 };</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            const int iv_size =3D cipher_ctx_iv_length(c=
+tx-&gt;cipher);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      int outlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          const unsigned int iv_size =3D cipher_ctx_iv_length(ctx-&gt;ciphe=
+r);</span><br><span> </span><br><span>             /* Reserve space for HMA=
+C */</span><br><span>             if (ctx-&gt;hmac)</span><br><span>@@ -274=
+,6 +268,7 @@</span><br><span>             }</span><br><span> </span><br><sp=
+an>             /* Encrypt packet ID, payload */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            int outlen;</span><br><span>      =
+       ASSERT(cipher_ctx_update(ctx-&gt;cipher, BEND(&amp;work), &amp;outle=
+n, BPTR(buf), BLEN(buf)));</span><br><span>             ASSERT(buf_inc_len(=
+&amp;work, outlen));</span><br><span> </span><br><span>@@ -282,7 +277,7 @@<=
+/span><br><span>             ASSERT(buf_inc_len(&amp;work, outlen));</span>=
+<br><span> </span><br><span>             /* For all CBC mode ciphers, check=
+ the last block is complete */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            ASSERT(cipher_ctx_mode(ctx-&gt;cipher) !=3D OPENVPN_MO=
+DE_CBC || outlen =3D=3D iv_size);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            ASSERT(cipher_ctx_mode(ctx-&gt;cipher) !=3D OPENV=
+PN_MODE_CBC || outlen =3D=3D (int)iv_size);</span><br><span>         }</spa=
+n><br><span>         else /* No Encryption */</span><br><span>         {</s=
+pan><br><span>@@ -486,7 +481,7 @@</span><br><span>     /* Combine IV from e=
+xplicit part from packet and implicit part from context */</span><br><span>=
+     {</span><br><span>         uint8_t iv[OPENVPN_MAX_IV_LENGTH] =3D { 0 }=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const int iv=
+_len =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        const unsigned int iv_len =3D cipher_ctx=
+_iv_length(ctx-&gt;cipher);</span><br><span> </span><br><span>         /* R=
+ead packet id. For epoch data format also lookup the epoch key</span><br><s=
+pan>          * to be able to use the implicit IV of the correct decryption=
+ key */</span><br><span>@@ -526,7 +521,7 @@</span><br><span> </span><br><sp=
+an>         /* This generates the IV by XORing the implicit part of the IV<=
+/span><br><span>          * with the packet id already written to the iv bu=
+ffer */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        for (i=
+nt i =3D 0; i &lt; iv_len; i++)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        for (unsigned int i =3D 0; i &lt; iv_len; i++)</span><b=
+r><span>         {</span><br><span>             iv[i] =3D iv[i] ^ ctx-&gt;i=
+mplicit_iv[i];</span><br><span>         }</span><br><span>@@ -666,7 +661,7 =
+@@</span><br><span> </span><br><span>         if (ctx-&gt;cipher)</span><br=
+><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        const int iv_size =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            const unsigned =
+int iv_size =3D cipher_ctx_iv_length(ctx-&gt;cipher);</span><br><span>     =
+        uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] =3D { 0 };</span><br><span>  =
+           int outlen;</span><br><span> </span><br><span>@@ -674,7 +669,7 @=
+@</span><br><span>             ASSERT(buf_init(&amp;work, frame-&gt;buf.hea=
+droom));</span><br><span> </span><br><span>             /* read the IV from=
+ the packet */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     if (buf-&gt;len &lt; iv_size)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            if (buf-&gt;len &lt; (int)iv_size)</span><br><sp=
+an>             {</span><br><span>                 CRYPT_ERROR(&quot;missin=
+g IV info&quot;);</span><br><span>             }</span><br><span>@@ -804,10=
+ +799,10 @@</span><br><span>     return ret;</span><br><span> }</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-unsigned int</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+size_t</span><br><span=
+> calculate_crypto_overhead(const struct key_type *kt, unsigned int pkt_id_=
+size, bool occ)</span><br><span> {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    unsigned int crypto_overhead =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    size_t crypto_overhead =3D 0;</span><=
+br><span> </span><br><span>     if (!cipher_kt_mode_cbc(kt-&gt;cipher))</sp=
+an><br><span>     {</span><br><span>@@ -865,7 +860,7 @@</span><br><span>   =
+  {</span><br><span>         msg(M_WARN,</span><br><span>             &quot=
+;WARNING: INSECURE cipher (%s) with block size less than 128&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            &quot; bit (%d bit=
+).  This allows attacks like SWEET32.  Mitigate by &quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            &quot; bit (%u bit).  Thi=
+s allows attacks like SWEET32.  Mitigate by &quot;</span><br><span>        =
+     &quot;using a --cipher with a larger block size (e.g. AES-256-CBC). &q=
+uot;</span><br><span>             &quot;Support for these insecure ciphers =
+will be removed in &quot;</span><br><span>             &quot;OpenVPN 2.8.&q=
+uot;,</span><br><span>@@ -1010,12 +1005,12 @@</span><br><span>         ciph=
+er_ctx_init(ctx-&gt;cipher, key-&gt;cipher, kt-&gt;cipher, enc);</span><br>=
+<span> </span><br><span>         const char *ciphername =3D cipher_kt_name(=
+kt-&gt;cipher);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  msg(D_CIPHER_INIT, &quot;%s: Cipher &#39;%s&#39; initialized with %d bit =
+key&quot;, prefix, ciphername,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        msg(D_CIPHER_INIT, &quot;%s: Cipher &#39;%s&#39; initial=
+ized with %u bit key&quot;, prefix, ciphername,</span><br><span>           =
+  cipher_kt_key_size(kt-&gt;cipher) * 8);</span><br><span> </span><br><span=
+>         dmsg(D_SHOW_KEYS, &quot;%s: CIPHER KEY: %s&quot;, prefix,</span><=
+br><span>              format_hex(key-&gt;cipher, cipher_kt_key_size(kt-&gt=
+;cipher), 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        dmsg(D_CRYPTO_DEBUG, &quot;%s: CIPHER block_size=3D%d iv_size=3D%=
+d&quot;, prefix,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     dmsg(D_CRYPTO_DEBUG, &quot;%s: CIPHER block_size=3D%u iv_size=3D%u&quo=
+t;, prefix,</span><br><span>              cipher_kt_block_size(kt-&gt;ciphe=
+r), cipher_kt_iv_size(kt-&gt;cipher));</span><br><span>         warn_insecu=
+re_key_type(ciphername);</span><br><span>     }</span><br><span>@@ -1112,8 =
++1107,8 @@</span><br><span> static bool</span><br><span> key_is_zero(struct=
+ key *key, const struct key_type *kt)</span><br><span> {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    int cipher_length =3D cipher_kt_key_=
+size(kt-&gt;cipher);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   for (int i =3D 0; i &lt; cipher_length; ++i)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    size_t cipher_length =3D cipher_kt_key_size=
+(kt-&gt;cipher);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ for (size_t i =3D 0; i &lt; cipher_length; ++i)</span><br><span>     {</sp=
+an><br><span>         if (key-&gt;cipher[i])</span><br><span>         {</sp=
+an><br><span>@@ -1171,7 +1166,7 @@</span><br><span> key_print(const struct =
+key *key, const struct key_type *kt, const char *prefix)</span><br><span> {=
+</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_SHOW_KEY_SOURCE, &quot;%s (ciph=
+er, %s, %d bits): %s&quot;, prefix, cipher_kt_name(kt-&gt;cipher),</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_SHOW_KEY_SOURCE, =
+&quot;%s (cipher, %s, %u bits): %s&quot;, prefix, cipher_kt_name(kt-&gt;cip=
+her),</span><br><span>          cipher_kt_key_size(kt-&gt;cipher) * 8,</spa=
+n><br><span>          format_hex(key-&gt;cipher, cipher_kt_key_size(kt-&gt;=
+cipher), 0, &amp;gc));</span><br><span>     dmsg(D_SHOW_KEY_SOURCE, &quot;%=
+s (hmac, %s, %d bits): %s&quot;, prefix, md_kt_name(kt-&gt;digest),</span><=
+br><span>@@ -1280,10 +1275,6 @@</span><br><span>     gc_free(&amp;gc);</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span> const char *</span><br><span> prin=
+t_key_filename(const char *str, bool is_inline)</span><br><span> {</span><b=
+r><span>@@ -1756,7 +1747,7 @@</span><br><span> void</span><br><span> print_=
+cipher(const char *ciphername)</span><br><span> {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    printf(&quot;%s  (%d bit key, &quot;, ciphe=
+r_kt_name(ciphername), cipher_kt_key_size(ciphername) * 8);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;%s  (%u bit key, &=
+quot;, cipher_kt_name(ciphername), cipher_kt_key_size(ciphername) * 8);</sp=
+an><br><span> </span><br><span>     if (cipher_kt_block_size(ciphername) =
+=3D=3D 1)</span><br><span>     {</span><br><span>@@ -1764,7 +1755,7 @@</spa=
+n><br><span>     }</span><br><span>     else</span><br><span>     {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        printf(&quot;%d bit b=
+lock&quot;, cipher_kt_block_size(ciphername) * 8);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        printf(&quot;%u bit block&quot;, cip=
+her_kt_block_size(ciphername) * 8);</span><br><span>     }</span><br><span>=
+ </span><br><span>     if (!cipher_kt_mode_cbc(ciphername))</span><br><span=
+>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span><br><span>i=
+ndex 1744653..fbca2a0 100644</span><br><span>--- a/src/openvpn/crypto.h</sp=
+an><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@@ -165,13 +165,13 =
+@@</span><br><span>     uint8_t cipher[MAX_CIPHER_KEY_LENGTH];</span><br><s=
+pan> </span><br><span>     /** Number of bytes set in the cipher key materi=
+al */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int cipher_s=
+ize;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned in=
+t cipher_size;</span><br><span> </span><br><span>     /** %Key material for=
+ HMAC operations. */</span><br><span>     uint8_t hmac[MAX_HMAC_KEY_LENGTH]=
+;</span><br><span> </span><br><span>     /** Number of bytes set in the HMa=
+c key material */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+int hmac_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    u=
+nsigned int hmac_size;</span><br><span> </span><br><span>     /** the epoch=
+ of the key. Only defined/non zero if key parameters</span><br><span>      =
+* represent a data channel epoch key parameters.</span><br><span>@@ -549,8 =
++549,8 @@</span><br><span>  *                      incorrect way as all pre=
+vious OpenVPN versions did, to</span><br><span>  *                      end=
+ up with identical numbers for OCC compatibility</span><br><span>  */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-unsigned int calculate_cryp=
+to_overhead(const struct key_type *kt, unsigned int pkt_id_size,</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                                =
+       bool occ);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+si=
+ze_t calculate_crypto_overhead(const struct key_type *kt, unsigned int pkt_=
+id_size,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+                      bool occ);</span><br><span> </span><br><span> /** Ret=
+urn the worst-case OpenVPN crypto overhead (in bytes) */</span><br><span> u=
+nsigned int crypto_max_overhead(void);</span><br><span>diff --git a/src/ope=
+nvpn/crypto_backend.h b/src/openvpn/crypto_backend.h</span><br><span>index =
+7f5507a..0bfa8b4 100644</span><br><span>--- a/src/openvpn/crypto_backend.h<=
+/span><br><span>+++ b/src/openvpn/crypto_backend.h</span><br><span>@@ -251,=
+7 +251,7 @@</span><br><span>  *</span><br><span>  * @return              (D=
+efault) size of keys used by the cipher, in bytes.</span><br><span>  */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-int cipher_kt_key_size(co=
+nst char *ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+unsigned int cipher_kt_key_size(const char *ciphername);</span><br><span=
+> </span><br><span> /**</span><br><span>  * Returns the size of the IV used=
+ by the cipher, in bytes, or 0 if no IV is</span><br><span>@@ -262,7 +262,7=
+ @@</span><br><span>  * @return              Size of the IV, in bytes, or 0=
+ if the cipher does not</span><br><span>  *                      use an IV.=
+</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+int cipher_kt_iv_size(const char *ciphername);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+unsigned int cipher_kt_iv_size(const char *ciphe=
+rname);</span><br><span> </span><br><span> /**</span><br><span>  * Returns =
+the block size of the cipher, in bytes.</span><br><span>@@ -271,7 +271,7 @@=
+</span><br><span>  *</span><br><span>  * @return              Block size, i=
+n bytes.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-int cipher_kt_block_size(const char *ciphername);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+unsigned int cipher_kt_block_size(con=
+st char *ciphername);</span><br><span> </span><br><span> /**</span><br><spa=
+n>  * Returns the MAC tag size of the cipher, in bytes.</span><br><span>@@ =
+-281,7 +281,7 @@</span><br><span>  * @return              Tag size in bytes=
+, or 0 if the tag size could not be</span><br><span>  *                    =
+  determined.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-int cipher_kt_tag_size(const char *ciphername);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+unsigned int cipher_kt_tag_size(co=
+nst char *ciphername);</span><br><span> </span><br><span> /**</span><br><sp=
+an>  * Returns true if we consider this cipher to be insecure.</span><br><s=
+pan>@@ -358,7 +358,7 @@</span><br><span>  * @return              Size of th=
+e IV, in bytes, or \c 0 if the cipher does not</span><br><span>  *         =
+             use an IV.</span><br><span>  */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-int cipher_ctx_iv_length(const cipher_ctx_t *ctx);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int cipher_c=
+tx_iv_length(const cipher_ctx_t *ctx);</span><br><span> </span><br><span> /=
+**</span><br><span>  * Gets the computed message authenticated code (MAC) t=
+ag for this cipher.</span><br><span>@@ -376,7 +376,7 @@</span><br><span>  *=
+</span><br><span>  * @return              Block size, in bytes, or 0 if ctx=
+ was NULL.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-int cipher_ctx_block_size(const cipher_ctx_t *ctx);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+unsigned int cipher_ctx_block_siz=
+e(const cipher_ctx_t *ctx);</span><br><span> </span><br><span> /**</span><b=
+r><span>  * Returns the mode that the cipher runs in.</span><br><span>diff =
+--git a/src/openvpn/crypto_epoch.c b/src/openvpn/crypto_epoch.c</span><br><=
+span>index f04ba4b4..54225bf 100644</span><br><span>--- a/src/openvpn/crypt=
+o_epoch.c</span><br><span>+++ b/src/openvpn/crypto_epoch.c</span><br><span>=
+@@ -39,17 +39,18 @@</span><br><span> #include &quot;integer.h&quot;</span><=
+br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-ovpn_hkdf_expand(const uint8_t *secret, const uint8_t *info, int=
+ info_len, uint8_t *out,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                 int out_len)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ovpn_hkdf_expand(const uint8_t *secret, const uint8_t *info, s=
+ize_t info_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+             uint8_t *out, size_t out_len)</span><br><span> {</span><br><sp=
+an>     hmac_ctx_t *hmac_ctx =3D hmac_ctx_new();</span><br><span>     hmac_=
+ctx_init(hmac_ctx, secret, &quot;SHA256&quot;);</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    const int digest_size =3D S=
+HA256_DIGEST_LENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    ASSERT(info_len &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const unsigned int digest_size =3D SHA256_DIGEST_LEN=
+GTH;</span><br><span> </span><br><span>     /* T(0) =3D empty string */</sp=
+an><br><span>     uint8_t t_prev[SHA256_DIGEST_LENGTH];</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    int t_prev_len =3D 0;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    unsigned int t_prev_len =3D 0;<=
+/span><br><span> </span><br><span>     for (uint8_t block =3D 1; (block - 1=
+) * digest_size &lt; out_len; block++)</span><br><span>     {</span><br><sp=
+an>@@ -57,14 +58,14 @@</span><br><span> </span><br><span>         /* calcul=
+ate T(block) */</span><br><span>         hmac_ctx_update(hmac_ctx, t_prev, =
+t_prev_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        h=
+mac_ctx_update(hmac_ctx, info, info_len);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        hmac_ctx_update(hmac_ctx, info, (int)info_len=
+);</span><br><span>         hmac_ctx_update(hmac_ctx, &amp;block, 1);</span=
+><br><span>         hmac_ctx_final(hmac_ctx, t_prev);</span><br><span>     =
+    t_prev_len =3D digest_size;</span><br><span> </span><br><span>         =
+/* Copy a full hmac output or remaining bytes */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        int out_offset =3D (block - 1) * digest_=
+size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int copy=
+len =3D min_int(digest_size, out_len - out_offset);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        size_t out_offset =3D (block - 1)=
+ * digest_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    size_t copylen =3D min_size(digest_size, out_len - out_offset);</span><=
+br><span> </span><br><span>         memcpy(out + out_offset, t_prev, copyle=
+n);</span><br><span>     }</span><br><span>@@ -72,14 +73,9 @@</span><br><sp=
+an>     hmac_ctx_free(hmac_ctx);</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#prag=
+ma GCC diagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#pragma GCC diagnostic ignored &quot;-Wsign-compare&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><span> ovpn_expand_l=
+abel(const uint8_t *secret, size_t secret_len, const uint8_t *label, size_t=
+ label_len,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+        const uint8_t *context, size_t context_len, uint8_t *out, int out_l=
+en)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+  const uint8_t *context, size_t context_len, uint8_t *out, size_t out_len)=
+</span><br><span> {</span><br><span>     if (secret_len !=3D 32 || label_le=
+n &gt; 250 || context_len &gt; 255 || label_len &lt; 1)</span><br><span>   =
+  {</span><br><span>@@ -89,7 +85,7 @@</span><br><span>          * need need=
+ to be in range */</span><br><span>         return false;</span><br><span> =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(out_l=
+en &gt;=3D 0 &amp;&amp; out_len &lt;=3D UINT16_MAX);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ASSERT(out_len &lt;=3D UINT16_MAX);</=
+span><br><span> </span><br><span>     struct gc_arena gc =3D gc_new();</spa=
+n><br><span>     /* 2 byte for the outlen encoded as uint16, 5 bytes for &q=
+uot;ovpn &quot;,</span><br><span>@@ -111,18 +107,14 @@</span><br><span>    =
+     buf_write(&amp;hkdf_label, context, context_len);</span><br><span>    =
+ }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   ASSERT(buf_len(&amp;hkdf_label) =3D=3D hkdf_label_len);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(buf_len(&amp;hkdf_label) =
+=3D=3D (int)hkdf_label_len);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    ovpn_hkdf_expand(secret, buf_bptr(&amp;hkdf_la=
+bel), buf_len(&amp;hkdf_label), out, out_len);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    ovpn_hkdf_expand(secret, buf_bptr(&amp;hkdf_=
+label), hkdf_label_len, out, out_len);</span><br><span> </span><br><span>  =
+   gc_free(&amp;gc);</span><br><span>     return true;</span><br><span> }</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if d=
+efined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span> /**</span><br><span>  * Iterates the epoch key to =
+make it E_n+1, ie increase the epoch by one</span><br><span>  * and derive =
+the new key material accordingly</span><br><span>diff --git a/src/openvpn/c=
+rypto_epoch.h b/src/openvpn/crypto_epoch.h</span><br><span>index 2b3d345..0=
+fb76d5 100644</span><br><span>--- a/src/openvpn/crypto_epoch.h</span><br><s=
+pan>+++ b/src/openvpn/crypto_epoch.h</span><br><span>@@ -38,8 +38,8 @@</spa=
+n><br><span>  *  @param out      output keying material</span><br><span>  *=
+  @param out_len  length of output keying material</span><br><span>  */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-void ovpn_hkdf_expand(con=
+st uint8_t *secret, const uint8_t *info, int info_len, uint8_t *out,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                      int ou=
+t_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void ovpn_hk=
+df_expand(const uint8_t *secret, const uint8_t *info, size_t info_len,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                      ui=
+nt8_t *out, size_t out_len);</span><br><span> </span><br><span> /**</span><=
+br><span>  * Variant of the RFC 8446 TLS 1.3  HKDF-Expand-Label function wi=
+th the</span><br><span>@@ -59,8 +59,8 @@</span><br><span>  * @return</span>=
+<br><span>  */</span><br><span> bool ovpn_expand_label(const uint8_t *secre=
+t, size_t secret_len, const uint8_t *label,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                       size_t label_len, const uint8_=
+t *context, size_t context_len, uint8_t *out,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                       int out_len);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                       size_t labe=
+l_len, const uint8_t *context, size_t context_len,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                       uint8_t *out, size_t =
+out_len);</span><br><span> </span><br><span> /**</span><br><span>  * Genera=
+te a data channel key pair from the epoch key</span><br><span>diff --git a/=
+src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><span=
+>index 7aaea3d..c41daef 100644</span><br><span>--- a/src/openvpn/crypto_mbe=
+dtls.c</span><br><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>@=
+@ -160,7 +160,7 @@</span><br><span>     if (cipher_info-&gt;key_bytes &gt; =
+MAX_CIPHER_KEY_LENGTH)</span><br><span>     {</span><br><span>         msg(=
+D_LOW,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &qu=
+ot;Cipher algorithm &#39;%s&#39; uses a default key size (%d bytes) &quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;Ci=
+pher algorithm &#39;%s&#39; uses a default key size (%u bytes) &quot;</span=
+><br><span>             &quot;which is larger than &quot; PACKAGE_NAME &quo=
+t;&#39;s current maximum key size &quot;</span><br><span>             &quot=
+;(%d bytes)&quot;,</span><br><span>             ciphername, cipher_info-&gt=
+;key_bytes, MAX_CIPHER_KEY_LENGTH);</span><br><span>@@ -183,7 +183,7 @@</sp=
+an><br><span>     return cipher_info-&gt;name;</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span>=
+ cipher_kt_key_size(const char *ciphername)</span><br><span> {</span><br><s=
+pan>     const cipher_info_t *cipher_info =3D cipher_get(ciphername);</span=
+><br><span>@@ -194,7 +194,7 @@</span><br><span>     return cipher_info-&gt;=
+key_bytes;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+unsigned int</span><br><span> cipher_kt_iv_size(const char *ciphe=
+rname)</span><br><span> {</span><br><span>     const cipher_info_t *cipher_=
+info =3D cipher_get(ciphername);</span><br><span>@@ -206,7 +206,7 @@</span>=
+<br><span>     return cipher_info-&gt;iv_bytes;</span><br><span> }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span=
+> cipher_kt_block_size(const char *ciphername)</span><br><span> {</span><br=
+><span>     const cipher_info_t *cipher_info =3D cipher_get(ciphername);</s=
+pan><br><span>@@ -217,7 +217,7 @@</span><br><span>     return cipher_info-&=
+gt;block_size;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_tag_size(const char=
+ *ciphername)</span><br><span> {</span><br><span>     if (cipher_kt_mode_ae=
+ad(ciphername))</span><br><span>@@ -310,20 +310,20 @@</span><br><span> </sp=
+an><br><span>     psa_set_key_type(&amp;ctx-&gt;key_attributes, ctx-&gt;cip=
+her_info-&gt;psa_key_type);</span><br><span>     psa_set_key_algorithm(&amp=
+;ctx-&gt;key_attributes, ctx-&gt;cipher_info-&gt;psa_alg);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    psa_set_key_bits(&amp;ctx-&gt;key_=
+attributes, (size_t)ctx-&gt;cipher_info-&gt;key_bytes * 8);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    psa_set_key_bits(&amp;ctx-&gt;k=
+ey_attributes, ctx-&gt;cipher_info-&gt;key_bytes * 8);</span><br><span>    =
+ psa_set_key_usage_flags(&amp;ctx-&gt;key_attributes,</span><br><span>     =
+                        enc =3D=3D OPENVPN_OP_ENCRYPT ? PSA_KEY_USAGE_ENCRY=
+PT : PSA_KEY_USAGE_DECRYPT);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    if (psa_import_key(&amp;ctx-&gt;key_attributes=
+, key, (size_t)ctx-&gt;cipher_info-&gt;key_bytes, &amp;ctx-&gt;key) !=3D PS=
+A_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (p=
+sa_import_key(&amp;ctx-&gt;key_attributes, key, ctx-&gt;cipher_info-&gt;key=
+_bytes, &amp;ctx-&gt;key) !=3D PSA_SUCCESS)</span><br><span>     {</span><b=
+r><span>         msg(M_FATAL, &quot;psa_import_key failed&quot;);</span><br=
+><span>     }</span><br><span> </span><br><span>     /* make sure we used a=
+ big enough key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ ASSERT(psa_get_key_bits(&amp;ctx-&gt;key_attributes) =3D=3D (size_t)(8 * c=
+tx-&gt;cipher_info-&gt;key_bytes));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    ASSERT(psa_get_key_bits(&amp;ctx-&gt;key_attributes) =
+=3D=3D (8 * ctx-&gt;cipher_info-&gt;key_bytes));</span><br><span> }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><spa=
+n> cipher_ctx_iv_length(const cipher_ctx_t *ctx)</span><br><span> {</span><=
+br><span>     return ctx-&gt;cipher_info-&gt;iv_bytes;</span><br><span>@@ -=
+341,7 +341,7 @@</span><br><span>     return 1;</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span>=
+ cipher_ctx_block_size(const cipher_ctx_t *ctx)</span><br><span> {</span><b=
+r><span>     return ctx-&gt;cipher_info-&gt;block_size;</span><br><span>dif=
+f --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h</span=
+><br><span>index 16d41e4..04346a9 100644</span><br><span>--- a/src/openvpn/=
+crypto_mbedtls.h</span><br><span>+++ b/src/openvpn/crypto_mbedtls.h</span><=
+br><span>@@ -70,9 +70,9 @@</span><br><span>     const char *name;</span><br=
+><span>     psa_key_type_t psa_key_type;</span><br><span>     psa_algorithm=
+_t psa_alg;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ke=
+y_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int iv_by=
+tes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int block_siz=
 e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int =
-hmac_size;</span><br><span> </span><br><span>     /** the epoch of the key.=
- Only defined/non zero if key parameters</span><br><span>      * represent =
-a data channel epoch key parameters.</span><br><span>@@ -549,8 +549,8 @@</s=
-pan><br><span>  *                      incorrect way as all previous OpenVP=
-N versions did, to</span><br><span>  *                      end up with ide=
-ntical numbers for OCC compatibility</span><br><span>  */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-unsigned int calculate_crypto_overhead(=
-const struct key_type *kt, unsigned int pkt_id_size,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                                       bool=
- occ);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+size_t calcul=
-ate_crypto_overhead(const struct key_type *kt, unsigned int pkt_id_size,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-           bool occ);</span><br><span> </span><br><span> /** Return the wor=
-st-case OpenVPN crypto overhead (in bytes) */</span><br><span> unsigned int=
- crypto_max_overhead(void);</span><br><span>diff --git a/src/openvpn/crypto=
-_backend.h b/src/openvpn/crypto_backend.h</span><br><span>index 7f5507a..0b=
-fa8b4 100644</span><br><span>--- a/src/openvpn/crypto_backend.h</span><br><=
-span>+++ b/src/openvpn/crypto_backend.h</span><br><span>@@ -251,7 +251,7 @@=
-</span><br><span>  *</span><br><span>  * @return              (Default) siz=
-e of keys used by the cipher, in bytes.</span><br><span>  */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-int cipher_kt_key_size(const char *c=
-iphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned=
- int cipher_kt_key_size(const char *ciphername);</span><br><span> </span><b=
-r><span> /**</span><br><span>  * Returns the size of the IV used by the cip=
-her, in bytes, or 0 if no IV is</span><br><span>@@ -262,7 +262,7 @@</span><=
-br><span>  * @return              Size of the IV, in bytes, or 0 if the cip=
-her does not</span><br><span>  *                      use an IV.</span><br>=
-<span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int cipher_=
-kt_iv_size(const char *ciphername);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+unsigned int cipher_kt_iv_size(const char *ciphername);</sp=
-an><br><span> </span><br><span> /**</span><br><span>  * Returns the block s=
-ize of the cipher, in bytes.</span><br><span>@@ -271,7 +271,7 @@</span><br>=
-<span>  *</span><br><span>  * @return              Block size, in bytes.</s=
-pan><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int=
- cipher_kt_block_size(const char *ciphername);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+unsigned int cipher_kt_block_size(const char *ci=
-phername);</span><br><span> </span><br><span> /**</span><br><span>  * Retur=
-ns the MAC tag size of the cipher, in bytes.</span><br><span>@@ -281,7 +281=
-,7 @@</span><br><span>  * @return              Tag size in bytes, or 0 if t=
-he tag size could not be</span><br><span>  *                      determine=
-d.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-int cipher_kt_tag_size(const char *ciphername);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+unsigned int cipher_kt_tag_size(const char *c=
-iphername);</span><br><span> </span><br><span> /**</span><br><span>  * Retu=
-rns true if we consider this cipher to be insecure.</span><br><span>@@ -358=
-,7 +358,7 @@</span><br><span>  * @return              Size of the IV, in by=
-tes, or \c 0 if the cipher does not</span><br><span>  *                    =
-  use an IV.</span><br><span>  */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-int cipher_ctx_iv_length(const cipher_ctx_t *ctx);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+unsigned int cipher_ctx_iv_lengt=
-h(const cipher_ctx_t *ctx);</span><br><span> </span><br><span> /**</span><b=
-r><span>  * Gets the computed message authenticated code (MAC) tag for this=
- cipher.</span><br><span>@@ -376,7 +376,7 @@</span><br><span>  *</span><br>=
-<span>  * @return              Block size, in bytes, or 0 if ctx was NULL.<=
-/span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-i=
-nt cipher_ctx_block_size(const cipher_ctx_t *ctx);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+unsigned int cipher_ctx_block_size(const cip=
-her_ctx_t *ctx);</span><br><span> </span><br><span> /**</span><br><span>  *=
- Returns the mode that the cipher runs in.</span><br><span>diff --git a/src=
-/openvpn/crypto_epoch.c b/src/openvpn/crypto_epoch.c</span><br><span>index =
-f04ba4b4..54225bf 100644</span><br><span>--- a/src/openvpn/crypto_epoch.c</=
-span><br><span>+++ b/src/openvpn/crypto_epoch.c</span><br><span>@@ -39,17 +=
-39,18 @@</span><br><span> #include &quot;integer.h&quot;</span><br><span> <=
-/span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-ovpn_hkdf_expand(const uint8_t *secret, const uint8_t *info, int info_len, =
-uint8_t *out,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-         int out_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ovpn_hkdf_expand(const uint8_t *secret, const uint8_t *info, size_t info_=
-len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-  uint8_t *out, size_t out_len)</span><br><span> {</span><br><span>     hma=
-c_ctx_t *hmac_ctx =3D hmac_ctx_new();</span><br><span>     hmac_ctx_init(hm=
-ac_ctx, secret, &quot;SHA256&quot;);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    const int digest_size =3D SHA256_DIGES=
-T_LENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT=
-(info_len &lt;=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    const unsigned int digest_size =3D SHA256_DIGEST_LENGTH;</span>=
-<br><span> </span><br><span>     /* T(0) =3D empty string */</span><br><spa=
-n>     uint8_t t_prev[SHA256_DIGEST_LENGTH];</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    int t_prev_len =3D 0;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    unsigned int t_prev_len =3D 0;</span><br><=
-span> </span><br><span>     for (uint8_t block =3D 1; (block - 1) * digest_=
-size &lt; out_len; block++)</span><br><span>     {</span><br><span>@@ -57,1=
-4 +58,14 @@</span><br><span> </span><br><span>         /* calculate T(block=
-) */</span><br><span>         hmac_ctx_update(hmac_ctx, t_prev, t_prev_len)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        hmac_ctx_upd=
-ate(hmac_ctx, info, info_len);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        hmac_ctx_update(hmac_ctx, info, (int)info_len);</span><b=
-r><span>         hmac_ctx_update(hmac_ctx, &amp;block, 1);</span><br><span>=
-         hmac_ctx_final(hmac_ctx, t_prev);</span><br><span>         t_prev_=
-len =3D digest_size;</span><br><span> </span><br><span>         /* Copy a f=
-ull hmac output or remaining bytes */</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        int out_offset =3D (block - 1) * digest_size;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        int copylen =3D min=
-_int(digest_size, out_len - out_offset);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        size_t out_offset =3D (block - 1) * digest_siz=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t co=
-pylen =3D min_size(digest_size, out_len - out_offset);</span><br><span> </s=
-pan><br><span>         memcpy(out + out_offset, t_prev, copylen);</span><br=
-><span>     }</span><br><span>@@ -72,14 +73,9 @@</span><br><span>     hmac_=
-ctx_free(hmac_ctx);</span><br><span> }</span><br><span> </span><br><span st=
+key_bytes;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsig=
+ned int iv_bytes;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  unsigned int block_size;</span><br><span> } cipher_info_t;</span><br><spa=
+n> </span><br><span> typedef union psa_cipher_or_aead_operation</span><br><=
+span>diff --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_=
+mbedtls_legacy.c</span><br><span>index b234632..087d94c 100644</span><br><s=
+pan>--- a/src/openvpn/crypto_mbedtls_legacy.c</span><br><span>+++ b/src/ope=
+nvpn/crypto_mbedtls_legacy.c</span><br><span>@@ -236,7 +236,6 @@</span><br>=
+<span> #if defined(__GNUC__) || defined(__clang__)</span><br><span> #pragma=
+ GCC diagnostic push</span><br><span> #pragma GCC diagnostic ignored &quot;=
+-Wconversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pr=
+agma GCC diagnostic ignored &quot;-Wsign-compare&quot;</span><br><span> #en=
+dif</span><br><span> </span><br><span> bool</span><br><span>@@ -446,7 +445,=
+7 @@</span><br><span>     return translate_cipher_name_to_openvpn(mbedtls_c=
+ipher_info_get_name(cipher_kt));</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_k=
+ey_size(const char *ciphername)</span><br><span> {</span><br><span>     con=
+st mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><=
+span>@@ -456,10 +455,10 @@</span><br><span>         return 0;</span><br><sp=
+an>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    return (int)mbedtls_cipher_info_get_key_bitlen(cipher_kt) / 8;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_cip=
+her_info_get_key_bitlen(cipher_kt) / 8;</span><br><span> }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher=
+_kt_iv_size(const char *ciphername)</span><br><span> {</span><br><span>    =
+ const mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><=
+br><span>@@ -468,10 +467,10 @@</span><br><span>     {</span><br><span>     =
+    return 0;</span><br><span>     }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    return (int)mbedtls_cipher_info_get_iv_size(cipher_kt);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_c=
+ipher_info_get_iv_size(cipher_kt);</span><br><span> }</span><br><span> </sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_b=
+lock_size(const char *ciphername)</span><br><span> {</span><br><span>     c=
+onst mbedtls_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br=
+><span>@@ -479,10 +478,10 @@</span><br><span>     {</span><br><span>       =
+  return 0;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    return (int)mbedtls_cipher_info_get_block_size(cipher_kt);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_=
+cipher_info_get_block_size(cipher_kt);</span><br><span> }</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_=
+kt_tag_size(const char *ciphername)</span><br><span> {</span><br><span>    =
+ if (cipher_kt_mode_aead(ciphername))</span><br><span>@@ -595,10 +594,10 @@=
+</span><br><span>     }</span><br><span> </span><br><span>     /* make sure=
+ we used a big enough key */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    ASSERT(mbedtls_cipher_get_key_bitlen(ctx) &lt;=3D key_bitlen);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT((size_t)mb=
+edtls_cipher_get_key_bitlen(ctx) &lt;=3D key_bitlen);</span><br><span> }</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br=
+><span> cipher_ctx_iv_length(const mbedtls_cipher_context_t *ctx)</span><br=
+><span> {</span><br><span>     return mbedtls_cipher_get_iv_size(ctx);</spa=
+n><br><span>@@ -607,7 +606,7 @@</span><br><span> int</span><br><span> ciphe=
+r_ctx_get_tag(cipher_ctx_t *ctx, uint8_t *tag, int tag_len)</span><br><span=
+> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tag_len &g=
+t; SIZE_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(tag_len &lt; 0)</span><br><span>     {</span><br><span>         return 0;<=
+/span><br><span>     }</span><br><span>@@ -620,10 +619,10 @@</span><br><spa=
+n>     return 1;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+unsigned int</span><br><span> cipher_ctx_block_size(const m=
+bedtls_cipher_context_t *ctx)</span><br><span> {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    return (int)mbedtls_cipher_get_block_size(ct=
+x);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedt=
+ls_cipher_get_block_size(ctx);</span><br><span> }</span><br><span> </span><=
+br><span> int</span><br><span>@@ -679,7 +678,7 @@</span><br><span> int</spa=
+n><br><span> cipher_ctx_update_ad(cipher_ctx_t *ctx, const uint8_t *src, in=
+t src_len)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    if (src_len &gt; SIZE_MAX)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (src_len &lt; 0)</span><br><span>     {</span><br=
+><span>         return 0;</span><br><span>     }</span><br><span>diff --git=
+ a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br><s=
+pan>index b6e2106..19cb9a9 100644</span><br><span>--- a/src/openvpn/crypto_=
+openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><spa=
+n>@@ -669,25 +669,27 @@</span><br><span>     return translate_cipher_name_t=
+o_openvpn(name);</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_key_size(const char=
+ *ciphername)</span><br><span> {</span><br><span>     evp_cipher_type *ciph=
+er =3D cipher_get(ciphername);</span><br><span>     int size =3D EVP_CIPHER=
+_key_length(cipher);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    ASSERT(size &gt;=3D 0);</span><br><span>     EVP_CIPHER_free(cipher);<=
+/span><br><span>     return size;</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_i=
+v_size(const char *ciphername)</span><br><span> {</span><br><span>     evp_=
+cipher_type *cipher =3D cipher_get(ciphername);</span><br><span>     int iv=
+size =3D EVP_CIPHER_iv_length(cipher);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    ASSERT(ivsize &gt;=3D 0);</span><br><span>     EVP_C=
+IPHER_free(cipher);</span><br><span>     return ivsize;</span><br><span> }<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><=
+br><span> cipher_kt_block_size(const char *ciphername)</span><br><span> {</=
+span><br><span>     /*</span><br><span>@@ -733,10 +735,11 @@</span><br><spa=
+n>     EVP_CIPHER_free(cbc_cipher);</span><br><span>     EVP_CIPHER_free(ci=
+pher);</span><br><span>     free(name);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    ASSERT(block_size &gt;=3D 0);</span><br><span>     =
+return block_size;</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_tag_size(const ch=
+ar *ciphername)</span><br><span> {</span><br><span>     if (cipher_kt_mode_=
+aead(ciphername))</span><br><span>@@ -872,7 +875,7 @@</span><br><span>     =
+EVP_CIPHER_free(kt);</span><br><span> }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+unsigned int</span><br><span> cipher_ctx_iv_length(cons=
+t EVP_CIPHER_CTX *ctx)</span><br><span> {</span><br><span>     return EVP_C=
+IPHER_CTX_iv_length(ctx);</span><br><span>@@ -884,7 +887,7 @@</span><br><sp=
+an>     return EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_GET_TAG, tag_size, ta=
+g_buf);</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+unsigned int</span><br><span> cipher_ctx_block_size(const EVP_CIPHER=
+_CTX *ctx)</span><br><span> {</span><br><span>     return EVP_CIPHER_CTX_bl=
+ock_size(ctx);</span><br><span>@@ -1190,11 +1193,6 @@</span><br><span>     =
+HMAC_CTX_free(ctx);</span><br><span> }</span><br><span> </span><br><span st=
 yle=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang=
 __)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagno=
 stic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC =
 diagnostic ignored &quot;-Wsign-compare&quot;</span><br><span style=3D"colo=
 r: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span> bool</span><br><span> ovpn_expand_label(const ui=
-nt8_t *secret, size_t secret_len, const uint8_t *label, size_t label_len,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  const=
- uint8_t *context, size_t context_len, uint8_t *out, int out_len)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                  const uint8=
-_t *context, size_t context_len, uint8_t *out, size_t out_len)</span><br><s=
-pan> {</span><br><span>     if (secret_len !=3D 32 || label_len &gt; 250 ||=
- context_len &gt; 255 || label_len &lt; 1)</span><br><span>     {</span><br=
-><span>@@ -89,7 +85,7 @@</span><br><span>          * need need to be in ran=
-ge */</span><br><span>         return false;</span><br><span>     }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(out_len &gt;=3D 0 =
-&amp;&amp; out_len &lt;=3D UINT16_MAX);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    ASSERT(out_len &lt;=3D UINT16_MAX);</span><br><span=
-> </span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>  =
-   /* 2 byte for the outlen encoded as uint16, 5 bytes for &quot;ovpn &quot=
-;,</span><br><span>@@ -111,18 +107,14 @@</span><br><span>         buf_write=
-(&amp;hkdf_label, context, context_len);</span><br><span>     }</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(buf_=
-len(&amp;hkdf_label) =3D=3D hkdf_label_len);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    ASSERT(buf_len(&amp;hkdf_label) =3D=3D (int)hk=
-df_label_len);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    ovpn_hkdf_expand(secret, buf_bptr(&amp;hkdf_label), buf_len(=
-&amp;hkdf_label), out, out_len);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    ovpn_hkdf_expand(secret, buf_bptr(&amp;hkdf_label), hkdf_l=
-abel_len, out, out_len);</span><br><span> </span><br><span>     gc_free(&am=
-p;gc);</span><br><span>     return true;</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC_=
-_) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#pragma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span> /**</span><br><span>  * Iterates the epoch key to make it E_n+1,=
- ie increase the epoch by one</span><br><span>  * and derive the new key ma=
-terial accordingly</span><br><span>diff --git a/src/openvpn/crypto_epoch.h =
-b/src/openvpn/crypto_epoch.h</span><br><span>index 2b3d345..0fb76d5 100644<=
-/span><br><span>--- a/src/openvpn/crypto_epoch.h</span><br><span>+++ b/src/=
-openvpn/crypto_epoch.h</span><br><span>@@ -38,8 +38,8 @@</span><br><span>  =
-*  @param out      output keying material</span><br><span>  *  @param out_l=
-en  length of output keying material</span><br><span>  */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void ovpn_hkdf_expand(const uint8_t *se=
-cret, const uint8_t *info, int info_len, uint8_t *out,</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                      int out_len);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+void ovpn_hkdf_expand(cons=
-t uint8_t *secret, const uint8_t *info, size_t info_len,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                      uint8_t *out, si=
-ze_t out_len);</span><br><span> </span><br><span> /**</span><br><span>  * V=
-ariant of the RFC 8446 TLS 1.3  HKDF-Expand-Label function with the</span><=
-br><span>@@ -59,8 +59,8 @@</span><br><span>  * @return</span><br><span>  */=
-</span><br><span> bool ovpn_expand_label(const uint8_t *secret, size_t secr=
-et_len, const uint8_t *label,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                       size_t label_len, const uint8_t *context, si=
-ze_t context_len, uint8_t *out,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                       int out_len);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                       size_t label_len, const u=
-int8_t *context, size_t context_len,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                       uint8_t *out, size_t out_len);</spa=
-n><br><span> </span><br><span> /**</span><br><span>  * Generate a data chan=
-nel key pair from the epoch key</span><br><span>diff --git a/src/openvpn/cr=
-ypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><span>index 7aaea3d=
-..c41daef 100644</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><=
-br><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>@@ -160,7 +160,=
-7 @@</span><br><span>     if (cipher_info-&gt;key_bytes &gt; MAX_CIPHER_KEY=
-_LENGTH)</span><br><span>     {</span><br><span>         msg(D_LOW,</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;Cipher algo=
-rithm &#39;%s&#39; uses a default key size (%d bytes) &quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            &quot;Cipher algorithm=
- &#39;%s&#39; uses a default key size (%u bytes) &quot;</span><br><span>   =
-          &quot;which is larger than &quot; PACKAGE_NAME &quot;&#39;s curre=
-nt maximum key size &quot;</span><br><span>             &quot;(%d bytes)&qu=
-ot;,</span><br><span>             ciphername, cipher_info-&gt;key_bytes, MA=
-X_CIPHER_KEY_LENGTH);</span><br><span>@@ -183,7 +183,7 @@</span><br><span> =
-    return cipher_info-&gt;name;</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_k=
-ey_size(const char *ciphername)</span><br><span> {</span><br><span>     con=
-st cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><br><span>@=
-@ -194,7 +194,7 @@</span><br><span>     return cipher_info-&gt;key_bytes;</=
-span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+un=
-signed int</span><br><span> cipher_kt_iv_size(const char *ciphername)</span=
-><br><span> {</span><br><span>     const cipher_info_t *cipher_info =3D cip=
-her_get(ciphername);</span><br><span>@@ -206,7 +206,7 @@</span><br><span>  =
-   return cipher_info-&gt;iv_bytes;</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_=
-block_size(const char *ciphername)</span><br><span> {</span><br><span>     =
-const cipher_info_t *cipher_info =3D cipher_get(ciphername);</span><br><spa=
-n>@@ -217,7 +217,7 @@</span><br><span>     return cipher_info-&gt;block_siz=
-e;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+unsigned int</span><br><span> cipher_kt_tag_size(const char *ciphername)<=
-/span><br><span> {</span><br><span>     if (cipher_kt_mode_aead(ciphername)=
-)</span><br><span>@@ -310,20 +310,20 @@</span><br><span> </span><br><span> =
-    psa_set_key_type(&amp;ctx-&gt;key_attributes, ctx-&gt;cipher_info-&gt;p=
-sa_key_type);</span><br><span>     psa_set_key_algorithm(&amp;ctx-&gt;key_a=
-ttributes, ctx-&gt;cipher_info-&gt;psa_alg);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    psa_set_key_bits(&amp;ctx-&gt;key_attributes, (s=
-ize_t)ctx-&gt;cipher_info-&gt;key_bytes * 8);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    psa_set_key_bits(&amp;ctx-&gt;key_attributes,=
- ctx-&gt;cipher_info-&gt;key_bytes * 8);</span><br><span>     psa_set_key_u=
-sage_flags(&amp;ctx-&gt;key_attributes,</span><br><span>                   =
-          enc =3D=3D OPENVPN_OP_ENCRYPT ? PSA_KEY_USAGE_ENCRYPT : PSA_KEY_U=
-SAGE_DECRYPT);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (psa_import_key(&amp;ctx-&gt;key_attributes, key, (size_t=
-)ctx-&gt;cipher_info-&gt;key_bytes, &amp;ctx-&gt;key) !=3D PSA_SUCCESS)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (psa_import_key(=
-&amp;ctx-&gt;key_attributes, key, ctx-&gt;cipher_info-&gt;key_bytes, &amp;c=
-tx-&gt;key) !=3D PSA_SUCCESS)</span><br><span>     {</span><br><span>      =
-   msg(M_FATAL, &quot;psa_import_key failed&quot;);</span><br><span>     }<=
-/span><br><span> </span><br><span>     /* make sure we used a big enough ke=
-y */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(psa_ge=
-t_key_bits(&amp;ctx-&gt;key_attributes) =3D=3D (size_t)(8 * ctx-&gt;cipher_=
-info-&gt;key_bytes));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    ASSERT(psa_get_key_bits(&amp;ctx-&gt;key_attributes) =3D=3D (8 * ctx-=
-&gt;cipher_info-&gt;key_bytes));</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_ctx_=
-iv_length(const cipher_ctx_t *ctx)</span><br><span> {</span><br><span>     =
-return ctx-&gt;cipher_info-&gt;iv_bytes;</span><br><span>@@ -341,7 +341,7 @=
-@</span><br><span>     return 1;</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_ctx_=
-block_size(const cipher_ctx_t *ctx)</span><br><span> {</span><br><span>    =
- return ctx-&gt;cipher_info-&gt;block_size;</span><br><span>diff --git a/sr=
-c/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h</span><br><span>i=
-ndex 16d41e4..04346a9 100644</span><br><span>--- a/src/openvpn/crypto_mbedt=
-ls.h</span><br><span>+++ b/src/openvpn/crypto_mbedtls.h</span><br><span>@@ =
--70,9 +70,9 @@</span><br><span>     const char *name;</span><br><span>     =
-psa_key_type_t psa_key_type;</span><br><span>     psa_algorithm_t psa_alg;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int key_bytes;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    int iv_bytes;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    int block_size;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int key_bytes;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int iv_b=
-ytes;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned i=
-nt block_size;</span><br><span> } cipher_info_t;</span><br><span> </span><b=
-r><span> typedef union psa_cipher_or_aead_operation</span><br><span>diff --=
-git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_lega=
-cy.c</span><br><span>index b234632..087d94c 100644</span><br><span>--- a/sr=
-c/openvpn/crypto_mbedtls_legacy.c</span><br><span>+++ b/src/openvpn/crypto_=
-mbedtls_legacy.c</span><br><span>@@ -236,7 +236,6 @@</span><br><span> #if d=
-efined(__GNUC__) || defined(__clang__)</span><br><span> #pragma GCC diagnos=
-tic push</span><br><span> #pragma GCC diagnostic ignored &quot;-Wconversion=
-&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC dia=
-gnostic ignored &quot;-Wsign-compare&quot;</span><br><span> #endif</span><b=
-r><span> </span><br><span> bool</span><br><span>@@ -446,7 +445,7 @@</span><=
-br><span>     return translate_cipher_name_to_openvpn(mbedtls_cipher_info_g=
-et_name(cipher_kt));</span><br><span> }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_key_size(const =
-char *ciphername)</span><br><span> {</span><br><span>     const mbedtls_cip=
-her_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span>@@ -456,1=
-0 +455,10 @@</span><br><span>         return 0;</span><br><span>     }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn (int)mbedtls_cipher_info_get_key_bitlen(cipher_kt) / 8;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_cipher_info_get_k=
-ey_bitlen(cipher_kt) / 8;</span><br><span> }</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_iv_size(co=
-nst char *ciphername)</span><br><span> {</span><br><span>     const mbedtls=
-_cipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span>@@ -4=
-68,10 +467,10 @@</span><br><span>     {</span><br><span>         return 0;<=
-/span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    return (int)mbedtls_cipher_info_get_iv_size(cipher_kt);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_cipher_info_get=
-_iv_size(cipher_kt);</span><br><span> }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_block_size(cons=
-t char *ciphername)</span><br><span> {</span><br><span>     const mbedtls_c=
-ipher_info_t *cipher_kt =3D cipher_get(ciphername);</span><br><span>@@ -479=
-,10 +478,10 @@</span><br><span>     {</span><br><span>         return 0;</s=
-pan><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   return (int)mbedtls_cipher_info_get_block_size(cipher_kt);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_cipher_info_ge=
-t_block_size(cipher_kt);</span><br><span> }</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_tag_size(co=
-nst char *ciphername)</span><br><span> {</span><br><span>     if (cipher_kt=
-_mode_aead(ciphername))</span><br><span>@@ -595,10 +594,10 @@</span><br><sp=
-an>     }</span><br><span> </span><br><span>     /* make sure we used a big=
- enough key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASS=
-ERT(mbedtls_cipher_get_key_bitlen(ctx) &lt;=3D key_bitlen);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    ASSERT((size_t)mbedtls_cipher_g=
-et_key_bitlen(ctx) &lt;=3D key_bitlen);</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> cipher=
-_ctx_iv_length(const mbedtls_cipher_context_t *ctx)</span><br><span> {</spa=
-n><br><span>     return mbedtls_cipher_get_iv_size(ctx);</span><br><span>@@=
- -607,7 +606,7 @@</span><br><span> int</span><br><span> cipher_ctx_get_tag(=
-cipher_ctx_t *ctx, uint8_t *tag, int tag_len)</span><br><span> {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (tag_len &gt; SIZE_MAX)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tag_len &lt; =
-0)</span><br><span>     {</span><br><span>         return 0;</span><br><spa=
-n>     }</span><br><span>@@ -620,10 +619,10 @@</span><br><span>     return =
-1;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+unsigned int</span><br><span> cipher_ctx_block_size(const mbedtls_cipher_=
-context_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    return (int)mbedtls_cipher_get_block_size(ctx);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_cipher_get_=
-block_size(ctx);</span><br><span> }</span><br><span> </span><br><span> int<=
-/span><br><span>@@ -679,7 +678,7 @@</span><br><span> int</span><br><span> c=
-ipher_ctx_update_ad(cipher_ctx_t *ctx, const uint8_t *src, int src_len)</sp=
-an><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
- (src_len &gt; SIZE_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (src_len &lt; 0)</span><br><span>     {</span><br><span>       =
-  return 0;</span><br><span>     }</span><br><span>diff --git a/src/openvpn=
-/crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br><span>index b6e2=
-106..19cb9a9 100644</span><br><span>--- a/src/openvpn/crypto_openssl.c</spa=
-n><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><span>@@ -669,25 +=
-669,27 @@</span><br><span>     return translate_cipher_name_to_openvpn(name=
-);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+unsigned int</span><br><span> cipher_kt_key_size(const char *ciphername)<=
-/span><br><span> {</span><br><span>     evp_cipher_type *cipher =3D cipher_=
-get(ciphername);</span><br><span>     int size =3D EVP_CIPHER_key_length(ci=
-pher);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(si=
-ze &gt;=3D 0);</span><br><span>     EVP_CIPHER_free(cipher);</span><br><spa=
-n>     return size;</span><br><span> }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+unsigned int</span><br><span> cipher_kt_iv_size(const ch=
-ar *ciphername)</span><br><span> {</span><br><span>     evp_cipher_type *ci=
-pher =3D cipher_get(ciphername);</span><br><span>     int ivsize =3D EVP_CI=
-PHER_iv_length(cipher);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    ASSERT(ivsize &gt;=3D 0);</span><br><span>     EVP_CIPHER_free(ciph=
-er);</span><br><span>     return ivsize;</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+unsigned int</span><br><span> ciphe=
-r_kt_block_size(const char *ciphername)</span><br><span> {</span><br><span>=
-     /*</span><br><span>@@ -733,10 +735,11 @@</span><br><span>     EVP_CIPH=
-ER_free(cbc_cipher);</span><br><span>     EVP_CIPHER_free(cipher);</span><b=
-r><span>     free(name);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    ASSERT(block_size &gt;=3D 0);</span><br><span>     return block_si=
-ze;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+unsigned int</span><br><span> cipher_kt_tag_size(const char *ciphername)=
-</span><br><span> {</span><br><span>     if (cipher_kt_mode_aead(ciphername=
-))</span><br><span>@@ -872,7 +875,7 @@</span><br><span>     EVP_CIPHER_free=
-(kt);</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+unsigned int</span><br><span> cipher_ctx_iv_length(const EVP_CIPHER_CT=
-X *ctx)</span><br><span> {</span><br><span>     return EVP_CIPHER_CTX_iv_le=
-ngth(ctx);</span><br><span>@@ -884,7 +887,7 @@</span><br><span>     return =
-EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_GET_TAG, tag_size, tag_buf);</span><=
-br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unsigned=
- int</span><br><span> cipher_ctx_block_size(const EVP_CIPHER_CTX *ctx)</spa=
-n><br><span> {</span><br><span>     return EVP_CIPHER_CTX_block_size(ctx);<=
-/span><br><span>@@ -1190,11 +1193,6 @@</span><br><span>     HMAC_CTX_free(c=
-tx);</span><br><span> }</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic igno=
-red &quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span> void</span><br><span> hmac_ctx_init(HMAC_CTX *ctx, const uint8_=
-t *key, const char *mdname)</span><br><span> {</span><br><span>@@ -1209,13 =
-+1207,9 @@</span><br><span>     }</span><br><span> </span><br><span>     /*=
- make sure we used a big enough key */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    ASSERT(HMAC_size(ctx) &lt;=3D key_len);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    ASSERT((ssize_t)HMAC_size(ctx)=
- &lt;=3D key_len);</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang_=
-_)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnos=
-tic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> void</span>=
-<br><span> hmac_ctx_cleanup(HMAC_CTX *ctx)</span><br><span> {</span><br><sp=
-an>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br=
-><span>index b92fa43..b878428 100644</span><br><span>--- a/src/openvpn/dco_=
-linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -6=
-12,7 +612,8 @@</span><br><span>     msg(D_DCO_DEBUG, &quot;%s: slot %d, key=
--id %d, peer-id %d, cipher %s, epoch %d&quot;, __func__, slot, keyid, peeri=
-d,</span><br><span>         ciphername, epoch);</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    const int key_len =3D ciphe=
-r_kt_key_size(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    const size_t key_len =3D cipher_kt_key_size(ciphername);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(key_len &lt;=3D =
-INT_MAX);</span><br><span>     const int nonce_tail_len =3D 8;</span><br><s=
-pan> </span><br><span>     struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(=
-dco, OVPN_CMD_KEY_NEW);</span><br><span>@@ -634,7 +635,7 @@</span><br><span=
->     struct nlattr *key_enc =3D nla_nest_start(nl_msg, OVPN_A_KEYCONF_ENCR=
-YPT_DIR);</span><br><span>     if (dco_cipher !=3D OVPN_CIPHER_ALG_NONE)</s=
-pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       NLA_PUT(nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, key_len, encrypt_key);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        NLA_PUT(nl_msg,=
- OVPN_A_KEYDIR_CIPHER_KEY, (int)key_len, encrypt_key);</span><br><span>    =
-     NLA_PUT(nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, nonce_tail_len, encrypt_iv);=
-</span><br><span>     }</span><br><span>     nla_nest_end(nl_msg, key_enc);=
-</span><br><span>@@ -642,7 +643,7 @@</span><br><span>     struct nlattr *ke=
-y_dec =3D nla_nest_start(nl_msg, OVPN_A_KEYCONF_DECRYPT_DIR);</span><br><sp=
-an>     if (dco_cipher !=3D OVPN_CIPHER_ALG_NONE)</span><br><span>     {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        NLA_PUT(nl_msg, =
-OVPN_A_KEYDIR_CIPHER_KEY, key_len, decrypt_key);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        NLA_PUT(nl_msg, OVPN_A_KEYDIR_CIPHER_K=
-EY, (int)key_len, decrypt_key);</span><br><span>         NLA_PUT(nl_msg, OV=
-PN_A_KEYDIR_NONCE_TAIL, nonce_tail_len, decrypt_iv);</span><br><span>     }=
-</span><br><span>     nla_nest_end(nl_msg, key_dec);</span><br><span>diff -=
--git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index =
-e065e63..1db781d 100644</span><br><span>--- a/src/openvpn/options.c</span><=
-br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -4430,7 +4430,7 @@<=
-/span><br><span>         /* Skip resolving BF-CBC to allow SSL libraries wi=
-thout BF-CBC</span><br><span>          * to work here in the default config=
-uration */</span><br><span>         const char *ciphername =3D o-&gt;cipher=
-name;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int keys=
-ize =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s=
-ize_t keysize =3D 0;</span><br><span> </span><br><span>         if (strcmp(=
-o-&gt;ciphername, &quot;BF-CBC&quot;) =3D=3D 0)</span><br><span>         {<=
-/span><br><span>@@ -4453,7 +4453,7 @@</span><br><span>             buf_prin=
-tf(&amp;out, &quot;,cipher %s&quot;, ciphername);</span><br><span>         =
-}</span><br><span>         buf_printf(&amp;out, &quot;,auth %s&quot;, md_kt=
-_name(kt.digest));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     buf_printf(&amp;out, &quot;,keysize %d&quot;, keysize);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        buf_printf(&amp;out, &quot=
-;,keysize %zu&quot;, keysize);</span><br><span>         if (o-&gt;shared_se=
-cret_file)</span><br><span>         {</span><br><span>             buf_prin=
-tf(&amp;out, &quot;,secret&quot;);</span><br><span></span><br></pre><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demai=
-l">change 1508</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
-p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
- itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
-op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1508?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ 40%);">-</span><br><span> void</span><br><span> hmac_ctx_init(HMAC_CTX *ct=
+x, const uint8_t *key, const char *mdname)</span><br><span> {</span><br><sp=
+an>@@ -1209,13 +1207,9 @@</span><br><span>     }</span><br><span> </span><b=
+r><span>     /* make sure we used a big enough key */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    ASSERT(HMAC_size(ctx) &lt;=3D key_len);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT((ssize_t=
+)HMAC_size(ctx) &lt;=3D key_len);</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || d=
+efined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pra=
+gma GCC diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an> void</span><br><span> hmac_ctx_cleanup(HMAC_CTX *ctx)</span><br><span> =
+{</span><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_li=
+nux.c</span><br><span>index b92fa43..b878428 100644</span><br><span>--- a/s=
+rc/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span>=
+<br><span>@@ -612,7 +612,8 @@</span><br><span>     msg(D_DCO_DEBUG, &quot;%=
+s: slot %d, key-id %d, peer-id %d, cipher %s, epoch %d&quot;, __func__, slo=
+t, keyid, peerid,</span><br><span>         ciphername, epoch);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const int ke=
+y_len =3D cipher_kt_key_size(ciphername);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    const size_t key_len =3D cipher_kt_key_size(ciphe=
+rname);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(k=
+ey_len &lt;=3D INT_MAX);</span><br><span>     const int nonce_tail_len =3D =
+8;</span><br><span> </span><br><span>     struct nl_msg *nl_msg =3D ovpn_dc=
+o_nlmsg_create(dco, OVPN_CMD_KEY_NEW);</span><br><span>@@ -634,7 +635,7 @@<=
+/span><br><span>     struct nlattr *key_enc =3D nla_nest_start(nl_msg, OVPN=
+_A_KEYCONF_ENCRYPT_DIR);</span><br><span>     if (dco_cipher !=3D OVPN_CIPH=
+ER_ALG_NONE)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        NLA_PUT(nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, key_len, en=
+crypt_key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+NLA_PUT(nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, (int)key_len, encrypt_key);</span=
+><br><span>         NLA_PUT(nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, nonce_tail_le=
+n, encrypt_iv);</span><br><span>     }</span><br><span>     nla_nest_end(nl=
+_msg, key_enc);</span><br><span>@@ -642,7 +643,7 @@</span><br><span>     st=
+ruct nlattr *key_dec =3D nla_nest_start(nl_msg, OVPN_A_KEYCONF_DECRYPT_DIR)=
+;</span><br><span>     if (dco_cipher !=3D OVPN_CIPHER_ALG_NONE)</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        N=
+LA_PUT(nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, key_len, decrypt_key);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        NLA_PUT(nl_msg, OVPN_A_=
+KEYDIR_CIPHER_KEY, (int)key_len, decrypt_key);</span><br><span>         NLA=
+_PUT(nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, nonce_tail_len, decrypt_iv);</span><=
+br><span>     }</span><br><span>     nla_nest_end(nl_msg, key_dec);</span><=
+br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><=
+br><span>index e065e63..1db781d 100644</span><br><span>--- a/src/openvpn/op=
+tions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -443=
+0,7 +4430,7 @@</span><br><span>         /* Skip resolving BF-CBC to allow S=
+SL libraries without BF-CBC</span><br><span>          * to work here in the=
+ default configuration */</span><br><span>         const char *ciphername =
+=3D o-&gt;ciphername;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        int keysize =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        size_t keysize =3D 0;</span><br><span> </span><br><span>    =
+     if (strcmp(o-&gt;ciphername, &quot;BF-CBC&quot;) =3D=3D 0)</span><br><=
+span>         {</span><br><span>@@ -4453,7 +4453,7 @@</span><br><span>     =
+        buf_printf(&amp;out, &quot;,cipher %s&quot;, ciphername);</span><br=
+><span>         }</span><br><span>         buf_printf(&amp;out, &quot;,auth=
+ %s&quot;, md_kt_name(kt.digest));</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        buf_printf(&amp;out, &quot;,keysize %d&quot;, keysize)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_printf=
+(&amp;out, &quot;,keysize %zu&quot;, keysize);</span><br><span>         if =
+(o-&gt;shared_secret_file)</span><br><span>         {</span><br><span>     =
+        buf_printf(&amp;out, &quot;,secret&quot;);</span><br><span></span><=
+br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1508?usp=3Demail">change 1508</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/15=
+08?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I1bc576c4c7ffacbb9300608d98b=
@@ -1546,5 +1539,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---w+BtwqThV1E=--
+--Gounu3c/da0=--
 
