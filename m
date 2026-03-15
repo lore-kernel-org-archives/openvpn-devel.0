@@ -1,11 +1,11 @@
 From: luca.boccassi@...277...
-Date: Sun, 15 Mar 2026 18:39:55 +0000
-Message-ID: <20260315184337.1541272-2-luca.boccassi@...277...>
+Date: Sun, 15 Mar 2026 18:39:56 +0000
+Message-ID: <20260315184337.1541272-3-luca.boccassi@...277...>
 In-Reply-To: <20260315184337.1541272-1-luca.boccassi@...277...>
 References: <20260315184337.1541272-1-luca.boccassi@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Increase TLS_CHANNEL_BUF_SIZE from 2048
- to 8192
+Subject: [Openvpn-devel] [PATCH 2/2] Unconditionally set USER_PASS_LEN to
+ 4096
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,28 +21,32 @@ Cc: Luca Boccassi <luca.boccassi@...277...>
 
 From: Luca Boccassi <luca.boccassi@...277...>
 
-When authenticating via a JWT token 2048 bytes are not enough, which
-breaks the auth process. In my local case the token is ~2100 bytes.
-Bump the maximum harcoded size from 2k to 8k to leave some headroom.
+When authenticating via a JWT token 128 bytes are not enough, which
+breaks the auth process. Currently the hardcoded password limit is
+increased to 4k when PKCS11 is enabled, for similar reasons.
+Remove the compile time conditional and always set the limit to 4k.
 
 Signed-off-by: Luca Boccassi <luca.boccassi@...277...>
 ---
- src/openvpn/common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/misc.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/src/openvpn/common.h b/src/openvpn/common.h
-index aa7b7217..fbe6239a 100644
---- a/src/openvpn/common.h
-+++ b/src/openvpn/common.h
-@@ -67,7 +67,7 @@ typedef unsigned long ptr_type;
-  * maximum size of a single TLS message (cleartext).
-  * This parameter must be >= PUSH_BUNDLE_SIZE
-  */
--#define TLS_CHANNEL_BUF_SIZE 2048
-+#define TLS_CHANNEL_BUF_SIZE 8192
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index e9cfadba..2c495d41 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -58,11 +58,7 @@ struct user_pass
+     bool protected;
  
- /* TLS control buffer minimum size
-  *
+ /* max length of username/password */
+-#ifdef ENABLE_PKCS11
+ #define USER_PASS_LEN 4096
+-#else
+-#define USER_PASS_LEN 128
+-#endif
+     /* Note that username and password are expected to be null-terminated */
+     char username[USER_PASS_LEN];
+     char password[USER_PASS_LEN];
 -- 
 2.47.3
 
