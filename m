@@ -1,16 +1,8 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 14 Mar 2026 17:16:12 +0000
-In-Reply-To: <gerrit.1772798203000.Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5@...2715...>
-References: <gerrit.1772798203000.Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <76a6d8520ae057d5b113c2b63328aef317548fa3-EmailReviewComments-HTML@...2715...>
+From: luca.boccassi@...277...
+Date: Sun, 15 Mar 2026 18:39:54 +0000
+Message-ID: <20260315184337.1541272-1-luca.boccassi@...277...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="52f17s3uRdo="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: Change
- arguments to setenv_dns_option to avoid sign-compare warning
+Subject: [Openvpn-devel] [PATCH 0/2] Two small fixes for auth via tokens
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +11,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Luca Boccassi <luca.boccassi@...277...>
 
---52f17s3uRdo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Luca Boccassi <luca.boccassi@...277...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+When JWT (json web tokens) are used by a server to authenticate
+the client, the default TLS channel buffer size and password length
+are too small.
+In my local case connecting to an Azure VPN server, the Entra ID
+token is ~2100 bytes.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1558?usp=3Demail )
+With these two small changes, it is possible to successfully
+connect to an Azure VPN endpoint using the OpenVPN 2.7 client,
+using a dummy username, an Entra token as password and the
+server-secret from the azvpn XML config that users get as tls-auth
+key.
 
-The change is no longer submittable: Code-Review is unsatisfied now.
+Luca Boccassi (2):
+  Increase TLS_CHANNEL_BUF_SIZE from 2048 to 8192
+  Unconditionally set USER_PASS_LEN to 4096
 
-Change subject: dns: Change arguments to setenv_dns_option to avoid sign-co=
-mpare warning
-......................................................................
+ src/openvpn/common.h | 2 +-
+ src/openvpn/misc.h   | 4 ----
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
+-- 
+2.47.3
 
-Patch Set 3: Code-Review-1
-
-(1 comment)
-
-Patchset:
-
-PS3:
-I withdraw my +2 for the time being, because I do not understand why this i=
-s needed in the first place - also, the *new* code brings `"dns_server_%zu_=
-resolve_domain_%d", i, j` which can't be right (second `%d`)
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5
-Gerrit-Change-Number: 1558
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sat, 14 Mar 2026 17:16:12 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---52f17s3uRdo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p>The change is no longer submittable: Code-Review is unsatisfied now.=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1558?tab=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I withdraw =
-my +2 for the time being, because I do not understand why this is needed in=
- the first place - also, the *new* code brings `&quot;dns_server_%zu_resolv=
-e_domain_%d&quot;, i, j` which can&#39;t be right (second `%d`)</p></li></u=
-l></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1558?usp=3Demail">change 1558</a>. To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Dema=
-il">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1558?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ibfcc350c772227cfc0f2244fa2b=
-1625dcb7e6fb5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1558 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 14 Mar 2026 17:16:12=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---52f17s3uRdo=--
 
