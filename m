@@ -1,8 +1,11 @@
 From: luca.boccassi@...277...
-Date: Sun, 15 Mar 2026 18:39:54 +0000
-Message-ID: <20260315184337.1541272-1-luca.boccassi@...277...>
+Date: Sun, 15 Mar 2026 18:39:55 +0000
+Message-ID: <20260315184337.1541272-2-luca.boccassi@...277...>
+In-Reply-To: <20260315184337.1541272-1-luca.boccassi@...277...>
+References: <20260315184337.1541272-1-luca.boccassi@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 0/2] Two small fixes for auth via tokens
+Subject: [Openvpn-devel] [PATCH 1/2] Increase TLS_CHANNEL_BUF_SIZE from 2048
+ to 8192
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +21,28 @@ Cc: Luca Boccassi <luca.boccassi@...277...>
 
 From: Luca Boccassi <luca.boccassi@...277...>
 
-When JWT (json web tokens) are used by a server to authenticate
-the client, the default TLS channel buffer size and password length
-are too small.
-In my local case connecting to an Azure VPN server, the Entra ID
-token is ~2100 bytes.
+When authenticating via a JWT token 2048 bytes are not enough, which
+breaks the auth process. In my local case the token is ~2100 bytes.
+Bump the maximum harcoded size from 2k to 8k to leave some headroom.
 
-With these two small changes, it is possible to successfully
-connect to an Azure VPN endpoint using the OpenVPN 2.7 client,
-using a dummy username, an Entra token as password and the
-server-secret from the azvpn XML config that users get as tls-auth
-key.
-
-Luca Boccassi (2):
-  Increase TLS_CHANNEL_BUF_SIZE from 2048 to 8192
-  Unconditionally set USER_PASS_LEN to 4096
-
+Signed-off-by: Luca Boccassi <luca.boccassi@...277...>
+---
  src/openvpn/common.h | 2 +-
- src/openvpn/misc.h   | 4 ----
- 2 files changed, 1 insertion(+), 5 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index aa7b7217..fbe6239a 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -67,7 +67,7 @@ typedef unsigned long ptr_type;
+  * maximum size of a single TLS message (cleartext).
+  * This parameter must be >= PUSH_BUNDLE_SIZE
+  */
+-#define TLS_CHANNEL_BUF_SIZE 2048
++#define TLS_CHANNEL_BUF_SIZE 8192
+ 
+ /* TLS control buffer minimum size
+  *
 -- 
 2.47.3
 
