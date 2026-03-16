@@ -1,10 +1,16 @@
-Date: Mon, 16 Mar 2026 14:52:08 +0100 (CET)
-Message-Id: <202603161352.62GDq8Ht031528@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260316121148.25189-1-frank@...2641...>
-References: <20260316121148.25189-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unnecessary OpenSSL init
- and cleanup commands in unit tests
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 16 Mar 2026 13:52:19 +0000
+In-Reply-To: <gerrit.1773243451000.I228f6fd9ff18256f09d4348df1fc48853f8e7306@...2715...>
+References: <gerrit.1773243451000.I228f6fd9ff18256f09d4348df1fc48853f8e7306@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <d72cb983352061c87c7a870c3c82a4ce423d2541-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="CpAMGMdUbqA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove unnecessary
+ OpenSSL init and cleanup commands in unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +19,309 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is quite reasonable, making sure the unit tests follow the same 
-code paths as "the main application".  As such, I think it needs to go
-into 2.7 as well (done).
+--CpAMGMdUbqA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Lightly tested on an OpenSSL build.
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1568?usp=3Demail )
 
-Your patch has been applied to the master and release/2.7 branch.
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
 
-commit 369c7510788d44747b75fceb61edbf30b87638f0 (master)
-commit 0bb9a2502124d97c937a910dc95154ab2db54036 ( release/2.7)
-Author: Arne Schwabe
-Date:   Mon Mar 16 13:11:48 2026 +0100
 
-     Remove unnecessary OpenSSL init and cleanup commands in unit tests
+Change subject: Remove unnecessary OpenSSL init and cleanup commands in uni=
+t tests
+......................................................................
 
-     Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1568
-     Message-Id: <20260316121148.25189-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36153.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Remove unnecessary OpenSSL init and cleanup commands in unit tests
 
+After the removal of OpenSSL 1.0.2 support these instructions are
+no longer needed and the main OpenVPN program also no longer calls
+them in init_ssl_lib or free_ssl_lib.
+
+Also remove them from the unit tests. This also solves a
+deprecation warning on EVP_cleanup when compiling with aws-lc
+
+Change-Id: I228f6fd9ff18256f09d4348df1fc48853f8e7306
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1568
+Message-Id: <20260316121148.25189-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
+153.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M tests/unit_tests/openvpn/test_auth_token.c
+M tests/unit_tests/openvpn/test_crypto.c
+M tests/unit_tests/openvpn/test_ncp.c
+M tests/unit_tests/openvpn/test_pkt.c
+M tests/unit_tests/openvpn/test_tls_crypt.c
+5 files changed, 5 insertions(+), 43 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/1568/4
+
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
+openvpn/test_auth_token.c
+index 82c20c1..d28bd8a 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -428,11 +428,5 @@
+         cmocka_unit_test_setup_teardown(auth_token_test_session_mismatch, =
+setup, teardown)
+     };
+
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret =3D cmocka_run_group_tests_name("auth-token tests", tests, NUL=
+L, NULL);
+-
+-    return ret;
++    return cmocka_run_group_tests_name("auth-token tests", tests, NULL, NU=
+LL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index 1679d88..cb4eaa2 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -963,15 +963,5 @@
+         cmocka_unit_test(epoch_test_derive_data_key)
+     };
+
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret =3D cmocka_run_group_tests_name("crypto tests", tests, NULL, N=
+ULL);
+-
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
+-#endif
+-
+-    return ret;
++    return cmocka_run_group_tests_name("crypto tests", tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
+/test_ncp.c
+index 52a41ee..29365db 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -407,8 +407,6 @@
+ main(void)
+ {
+     openvpn_unit_test_setup();
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
++
+     return cmocka_run_group_tests(ncp_tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn=
+/test_pkt.c
+index a94732d..cad2ce0 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -765,15 +765,5 @@
+         cmocka_unit_test(test_extract_control_message)
+     };
+
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret =3D cmocka_run_group_tests_name("pkt tests", tests, NULL, NULL=
+);
+-
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
+-#endif
+-
+-    return ret;
++    return cmocka_run_group_tests_name("pkt tests", tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
+penvpn/test_tls_crypt.c
+index ed82279..1776d71 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -673,15 +673,5 @@
+         cmocka_unit_test(test_tls_crypt_v2_write_client_key_file_metadata),
+     };
+
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret =3D cmocka_run_group_tests_name("tls-crypt tests", tests, NULL=
+, NULL);
+-
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
+-#endif
+-
+-    return ret;
++    return cmocka_run_group_tests_name("tls-crypt tests", tests, NULL, NUL=
+L);
+ }
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1568?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I228f6fd9ff18256f09d4348df1fc48853f8e7306
+Gerrit-Change-Number: 1568
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--CpAMGMdUbqA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #4</strong> to the change originally created by plaisthos.<=
+/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1568?usp=3Demail">Vi=
+ew Change</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Remove unnecessary OpenSSL i=
+nit and cleanup commands in unit tests<br><br>After the removal of OpenSSL =
+1.0.2 support these instructions are<br>no longer needed and the main OpenV=
+PN program also no longer calls<br>them in init_ssl_lib or free_ssl_lib.<br=
+><br>Also remove them from the unit tests. This also solves a<br>deprecatio=
+n warning on EVP_cleanup when compiling with aws-lc<br><br>Change-Id: I228f=
+6fd9ff18256f09d4348df1fc48853f8e7306<br>Signed-off-by: Arne Schwabe &lt;arn=
+e-openvpn@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2723...=
+.&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1568<br>Message=
+-Id: &lt;20260316121148.25189-1-frank@...2641...&gt;<br>URL: https://www.ma=
+il-archive.com/openvpn-devel@lists.sourceforge.net/msg36153.html<br>Signed-=
+off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M tests/unit_tests/o=
+penvpn/test_auth_token.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>M t=
+ests/unit_tests/openvpn/test_ncp.c<br>M tests/unit_tests/openvpn/test_pkt.c=
+<br>M tests/unit_tests/openvpn/test_tls_crypt.c<br>5 files changed, 5 inser=
+tions(+), 43 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
+openvpn.net:29418/openvpn refs/changes/68/1568/4</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/tests=
+/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_=
+token.c</span><br><span>index 82c20c1..d28bd8a 100644</span><br><span>--- a=
+/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/test_auth_token.c</span><br><span>@@ -428,11 +428,5 @@</spa=
+n><br><span>         cmocka_unit_test_setup_teardown(auth_token_test_sessio=
+n_mismatch, setup, teardown)</span><br><span>     };</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_=
+OPENSSL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL_a=
+dd_all_algorithms();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D cmocka_run_group_test=
+s_name(&quot;auth-token tests&quot;, tests, NULL, NULL);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return cmocka_run_group_tests_name(&quot;auth-token tests&quo=
+t;, tests, NULL, NULL);</span><br><span> }</span><br><span>diff --git a/tes=
+ts/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.=
+c</span><br><span>index 1679d88..cb4eaa2 100644</span><br><span>--- a/tests=
+/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tests/unit_tests/op=
+envpn/test_crypto.c</span><br><span>@@ -963,15 +963,5 @@</span><br><span>  =
+       cmocka_unit_test(epoch_test_derive_data_key)</span><br><span>     };=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if=
+ defined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    OpenSSL_add_all_algorithms();</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =
+=3D cmocka_run_group_tests_name(&quot;crypto tests&quot;, tests, NULL, NULL=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_OPENSSL)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_cleanup();</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    return cmocka_run_group_tests_name(&quot;crypto tests&quot;, tes=
+ts, NULL, NULL);</span><br><span> }</span><br><span>diff --git a/tests/unit=
+_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c</span><br><=
+span>index 52a41ee..29365db 100644</span><br><span>--- a/tests/unit_tests/o=
+penvpn/test_ncp.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_ncp.c=
+</span><br><span>@@ -407,8 +407,6 @@</span><br><span> main(void)</span><br>=
+<span> {</span><br><span>     openvpn_unit_test_setup();</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_OPENSSL)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL_add_all_algorit=
+hms();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     return=
+ cmocka_run_group_tests(ncp_tests, NULL, NULL);</span><br><span> }</span><b=
+r><span>diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests=
+/openvpn/test_pkt.c</span><br><span>index a94732d..cad2ce0 100644</span><br=
+><span>--- a/tests/unit_tests/openvpn/test_pkt.c</span><br><span>+++ b/test=
+s/unit_tests/openvpn/test_pkt.c</span><br><span>@@ -765,15 +765,5 @@</span>=
+<br><span>         cmocka_unit_test(test_extract_control_message)</span><br=
+><span>     };</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    OpenSSL_add_all_algorithms();</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    int ret =3D cmocka_run_group_tests_name(&quot;pkt tests&quot;, tests, N=
+ULL, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_OPENS=
+SL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_cleanup();=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    return cmocka_run_group_tests_name(&quot;pkt tests&quot;,=
+ tests, NULL, NULL);</span><br><span> }</span><br><span>diff --git a/tests/=
+unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_cry=
+pt.c</span><br><span>index ed82279..1776d71 100644</span><br><span>--- a/te=
+sts/unit_tests/openvpn/test_tls_crypt.c</span><br><span>+++ b/tests/unit_te=
+sts/openvpn/test_tls_crypt.c</span><br><span>@@ -673,15 +673,5 @@</span><br=
+><span>         cmocka_unit_test(test_tls_crypt_v2_write_client_key_file_me=
+tadata),</span><br><span>     };</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL_add_all_algorithms();=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    int ret =3D cmocka_run_group_tests_name(&quot;tls-cry=
+pt tests&quot;, tests, NULL, NULL);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if def=
+ined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    EVP_cleanup();</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    return cmocka_run_group_tests_nam=
+e(&quot;tls-crypt tests&quot;, tests, NULL, NULL);</span><br><span> }</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1568?usp=3Demail">change 1568</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/1568?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I228f6fd9ff18256f09d4348df1f=
+c48853f8e7306 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1568 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--CpAMGMdUbqA=--
 
