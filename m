@@ -1,20 +1,8 @@
+From: luca.boccassi@...277...
+Date: Mon, 16 Mar 2026 22:43:21 +0000
+Message-ID: <20260316224531.315912-1-luca.boccassi@...277...>
 MIME-Version: 1.0
-References: <20260315184337.1541272-1-luca.boccassi@...277...>
- <20260315230620.1594780-1-luca.boccassi@...277...>
- <20260315230620.1594780-2-luca.boccassi@...277...>
- <b54e0eae-8fe2-420e-ba24-4d73ca50086d@...1227...>
- <CAMw=ZnQy+i0debrWv2ya=xy12_h1EmrRVfiuKEK9-aWZ6GJRoQ@...278...>
- <150f9ffe-bf48-43dd-86aa-b69961de1f99@...1227...>
- <CAMw=ZnQxvpy2Xx2rFHZCJprzx=SG_SC-i1O80noVRT7_BAOKJQ@...278...>
- <af798d10-e06c-46f7-a45d-378f76b9bafa@...1227...>
- <CAMw=ZnR7QBEo1tueV_mKnq=RJGNOtVfWoapmYiAy1WteX4rBoA@...278...>
- <4d2efb18-77e7-47a3-b5c4-b7f14d2f5f2a@...1227...>
-In-Reply-To: <4d2efb18-77e7-47a3-b5c4-b7f14d2f5f2a@...1227...>
-From: Luca Boccassi <luca.boccassi@...277...>
-Date: Mon, 16 Mar 2026 20:50:18 +0000
-Message-ID: <CAMw=ZnTw+4OJPuxOw5QM1yrOMLXpHjT87fJmwLrBSSyMWUk-5Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Increase TLS_CHANNEL_BUF_SIZE
- from 2048 to 8192
+Subject: [Openvpn-devel] [PATCH] Fix password usage with ENABLE_PKCS11
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,127 +11,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Mon, 16 Mar 2026 at 12:30, Arne Schwabe <arne@...1227...> wrote:
->
-> Am 16.03.26 um 13:17 schrieb Luca Boccassi:
-> >
-> > Oh it's even worse than that, I assure you :-) It's an internal
-> > reimplementation, it does not use the open source server sadly. But it
-> > is the openvpn protocol, and it works once the allowance for a large
-> > password is made.
-> >
-> > I am trying to get the standard network-manager + openvpn setup to
-> > work with it, to at least be spared from having to use the absolutely
-> > horrendous proprietary client that comes with it.
-> > In case you are curious, the network-manager-openvpn side is here:
-> > https://gitlab.gnome.org/bluca/NetworkManager-openvpn/-/commits/entra_auth?ref_type=heads
-> > With these changes, it works nicely.
-> >
-> > Of course I'm more than happy to get the client changes here in a form
-> > that is acceptable to you, but would really appreciate guidance, as
-> > you can tell I am completely new to this project. The only limitation
-> > I have is that I can't change how the server works (I wish...), but on
-> > the client side I am open to anything that works.
->
-> Yeah the problem is that they made changes that are not really
-> acceptable in general for our project. You basically would need a
-> special azvpn mode in OpenVPN that is only activated via a configuration
-> option or similar and that would also have a lot of code overhead to
-> enable/disable this mode in various parts of OpenVPN. And we need some
-> strong reason to include such a hack mode that we need to maintain then
-> forever in our code base.
->
-> I am afraid that for now using a specially patched version is probably
-> easier/better to do.
+From: Luca Boccassi <luca.boccassi@...277...>
 
-Unfortunately a specially patched version cannot really work, as this
-really needs to work with the packaged client in normal distros. Can't
-tell other people to do their own building and patching and security
-maintenance and so on...
+With ENABLE_PKCS11 USER_PASS_LEN is set to 4096 bytes.
 
-But I'm not sure why a special mode would be needed in the first
-place, with additional burden to support?
+But if a user specifies a large password, as allowed by the limit,
+there are two places in the client that fail to handle it:
 
-There are only 2 changes needed, and both have to do with ensuring the
-password size that can already be supported (4096) actually works
-through the stack. Right now the client you can install on Ubuntu or
-Fedora or any other distro, where it is built with PKCS11 enabled,
-takes 4k passwords already, so that part works, as the second patch of
-the series is really a cleanup. The issue is that there are 2 places
-in the client where this breaks:
+- in the TLS handling functions a single read/write is done into/out of
+  the TLS layer, using a fixed size buffer at 2048 bytes, so the rest
+  of the password is truncated
+- in the management protocol when processing a "password" field another
+  fixed buffer at 256 bytes is used, so the rest of the password is
+  truncated
 
-1) The TLS buffer as per the first patch, as the client doesn't do
-multiple passes, but instead expect a single write to the TLS layer to
-be sufficient, but it supports 2k instead of the 4k that is the max
-password size
-2) The management protocol that network-manager uses to configure the
-password at runtime, which takes 256 bytes at most in a command, as
-per the third patch
+Use int_max(xyz, USER_PASS_LEN) to define these buffers. In normal builds
+the current hardcoded values will stay the same, as they are higher.
+In ENABLE_PKCS11 builds the 4096 value will be higher which will allow
+longer passwords to work when communicating to the server and in the
+management protocol.
 
-So the goal here would be simply to ensure the client works with the
-existing max password size.
+Testing new client/old server shows no issues with a password that follows
+the existing 2048 bytes limit. In order to use a > 2048 bytes password,
+the server needs to be updated to this change too, otherwise it will truncate
+it, but that is the same as status quo: only passwords < 2048 bytes work, so
+there should be no regression.
 
-Please let me know if I am missing something, but as far as I can
-tell, I have tried to check for compatibility issues, but I could not
-see one with the TLS buffer increase. I ran an unmodified 2.7.0
-server, and a modified client, using TLS, and the client could connect
-just fine to the unmodified server, even if the TLS buffer is larger -
-it's just a buffer after all.
+This enables the use case where JIT use-once tokens are used as passwords.
 
-The only scenario I can think of that won't be compatible, is if
-someone tries to send a password larger than 2K - but that is already
-broken today? So in what way would that be a compatibility issue,
-given it already doesn't work, despite the max password size already
-being 4K? Is there a situation in which this would be a problem in a
-way that it isn't today that I am missing?
+Signed-off-by: Luca Boccassi <luca.boccassi@...277...>
+---
+Alternative to:
 
-This is the config I tested with, server:
+https://sourceforge.net/p/openvpn/mailman/openvpn-devel/thread/20260315230620.1594780-1-luca.boccassi%40gmail.com/#msg59309452
 
-dev tun
-topology subnet
-server 10.99.99.0 255.255.255.0
-proto tcp-server
-port 11940
-ca /tmp/ovpn-compat-test/ca.crt
-cert /tmp/ovpn-compat-test/server.crt
-key /tmp/ovpn-compat-test/server.key
-tls-auth /tmp/ovpn-compat-test/ta.key 0
-cipher AES-256-GCM
-auth SHA256
-verb 4
-keepalive 10 60
-script-security 2
-auth-user-pass-verify /bin/true via-env
-username-as-common-name
-verify-client-cert none
+Instead of hardcoding larger buffers, simply use USER_PASS_LEN, so that
+builds without ENABLE_PKCS11 are not affected.
 
-client:
+With these small changes, it is possible to successfully
+connect to an Azure VPN endpoint using the OpenVPN 2.7 client,
+using a dummy username, an Entra token as password and the
+server-secret from the azvpn XML config that users get as tls-auth
+key.
 
-client
-dev tun
-proto tcp-client
-remote 127.0.0.1 11940
-ca /tmp/ovpn-compat-test/ca.crt
-cert /tmp/ovpn-compat-test/client.crt
-key /tmp/ovpn-compat-test/client.key
-tls-auth /tmp/ovpn-compat-test/ta.key 1
-cipher AES-256-GCM
-auth SHA256
-auth-user-pass /tmp/ovpn-compat-test/userpass.txt
-verb 4
-nobind
-connect-timeout 10
+ src/openvpn/common.h        | 2 +-
+ src/openvpn/manage.c        | 2 +-
+ src/openvpn/options.h       | 4 ++--
+ src/openvpn/options_parse.c | 2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-For the management protocol, if increasing the options size is not ok,
-how about adding a new 'password-long' or somesuch option to the
-protocol, that allows receiving a password that is up to the current
-max of 4k?
-Happy to work on this if it is preferable.
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index aa7b7217..e1096b98 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -67,7 +67,7 @@ typedef unsigned long ptr_type;
+  * maximum size of a single TLS message (cleartext).
+  * This parameter must be >= PUSH_BUNDLE_SIZE
+  */
+-#define TLS_CHANNEL_BUF_SIZE 2048
++#define TLS_CHANNEL_BUF_SIZE max_int(2048, USER_PASS_LEN)
+ 
+ /* TLS control buffer minimum size
+  *
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index df72f15f..ea9bd8b0 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -2655,7 +2655,7 @@ man_connection_init(struct management *man)
+          * Allocate helper objects for command line input and
+          * command output from/to the socket.
+          */
+-        man->connection.in = command_line_new(1024);
++        man->connection.in = command_line_new(max_int(1024, USER_PASS_LEN));
+         man->connection.out = buffer_list_new();
+ 
+         /*
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 3d8b5059..a46c0d7c 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -53,8 +53,8 @@
+ /*
+  * Max size of options line and parameter.
+  */
+-#define OPTION_PARM_SIZE 256
+-#define OPTION_LINE_SIZE 256
++#define OPTION_PARM_SIZE max_int(256, USER_PASS_LEN)
++#define OPTION_LINE_SIZE max_int(256, USER_PASS_LEN)
+ 
+ extern const char title_string[];
+ 
+diff --git a/src/openvpn/options_parse.c b/src/openvpn/options_parse.c
+index cb51ad24..1372a5fb 100644
+--- a/src/openvpn/options_parse.c
++++ b/src/openvpn/options_parse.c
+@@ -374,7 +374,7 @@ read_config_file(struct options *options, const char *file, int level, const cha
+                 int offset = 0;
+                 CLEAR(p);
+                 ++line_num;
+-                if (strlen(line) == OPTION_LINE_SIZE)
++                if ((int)strlen(line) == OPTION_LINE_SIZE)
+                 {
+                     msg(msglevel,
+                         "In %s:%d: Maximum option line length (%d) exceeded, line starts with %s",
+-- 
+2.47.3
 
-Thanks for your feedback!
 
