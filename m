@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Mon, 16 Mar 2026 11:56:47 +0000
-In-Reply-To: <gerrit.1772798203000.I777a3a5f4f137432a19746972e2aad1732184feb@...2715...>
-References: <gerrit.1772798203000.I777a3a5f4f137432a19746972e2aad1732184feb@...2715...>
+In-Reply-To: <gerrit.1770379369000.I73dba29719ea685f0427a3c479e7f1f176f09eba@...2715...>
+References: <gerrit.1770379369000.I73dba29719ea685f0427a3c479e7f1f176f09eba@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <f7ce6fe78873f86886948cb00c598225e7255524-EmailReplacePatchSet-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <6617527354c1e7fb143e697a7ff4b364263cae14-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nCD9YuWbjmE="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl_mbedtls: Avoid
- conversion and sign-compare warnings
+Content-Type: multipart/alternative; boundary="ZVHDveLkgFk="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: auth_token: Clean up
+ type handling in verify_auth_token and its UT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,398 +22,427 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nCD9YuWbjmE=
+--ZVHDveLkgFk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld.
 
-Hello cron2, plaisthos,
+Hello plaisthos,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1510?usp=3Demail
 
-to look at the new patch set (#5).
+to look at the new patch set (#7).
 
 The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
  now.
 
 
-Change subject: ssl_mbedtls: Avoid conversion and sign-compare warnings
+Change subject: auth_token: Clean up type handling in verify_auth_token and=
+ its UT
 ......................................................................
 
-ssl_mbedtls: Avoid conversion and sign-compare warnings
+auth_token: Clean up type handling in verify_auth_token and its UT
 
-Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb
+First of all remove the testing of renegotiation_seconds.
+Commit 9a5161704173e31f2510d3f5c29361f76e275d0f made it
+irrelevant for verify_auth_token but still left UTs for it.
+But AFAICT these UTs only test that renegotiation_seconds
+is bigger than auth_token_renewal, so it tests the UT
+setup routine...
+
+Also improve the code to require less casts under
+-Wsign-compare.
+
+Add a comment that this code is not y38 safe if time_t
+is 32bit. Probably nothing we want to do from our side
+since in that case everything that uses "now" is borked.
+So we trust in the OS here...
+
+Change-Id: I73dba29719ea685f0427a3c479e7f1f176f09eba
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/ssl_mbedtls.c
-M src/openvpn/ssl_verify_mbedtls.c
-2 files changed, 17 insertions(+), 31 deletions(-)
+M src/openvpn/auth_token.c
+M tests/unit_tests/openvpn/test_auth_token.c
+2 files changed, 22 insertions(+), 38 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1559/5
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/10/1510/7
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index a9506ef..d0c481e 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -624,12 +624,6 @@
-     return 0;
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index eb2b4d5..d8ca125 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -287,11 +287,6 @@
+     return memcmp_constant_time(&hmac_output, hmac, 32) =3D=3D 0;
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
 -#pragma GCC diagnostic ignored "-Wsign-compare"
 -#endif
 -
- #if MBEDTLS_VERSION_NUMBER < 0x04000000
- /**
-  * external_pkcs1_sign implements a mbed TLS rsa_sign_func callback, that =
-uses
-@@ -656,7 +650,6 @@
+ unsigned int
+ verify_auth_token(struct user_pass *up, struct tls_multi *multi, struct tl=
+s_session *session)
  {
-     struct external_context *const ctx =3D ctx_voidptr;
-     int rv;
--    uint8_t *to_sign =3D NULL;
-     size_t asn_len =3D 0, oid_size =3D 0;
-     const char *oid =3D NULL;
+@@ -318,7 +313,7 @@
 
-@@ -688,11 +681,13 @@
-         asn_len =3D 10 + oid_size;
+     const uint8_t *sessid =3D b64decoded;
+     const uint8_t *tstamp_initial =3D sessid + AUTH_TOKEN_SESSION_ID_LEN;
+-    const uint8_t *tstamp =3D tstamp_initial + sizeof(int64_t);
++    const uint8_t *tstamp =3D tstamp_initial + sizeof(uint64_t);
+
+     /* tstamp, tstamp_initial might not be aligned to an uint64, use memcpy
+      * to avoid unaligned access */
+@@ -348,9 +343,11 @@
      }
 
--    if ((SIZE_MAX - hashlen) < asn_len || ctx->signature_length < (asn_len=
- + hashlen))
-+    if (ctx->signature_length < (asn_len + hashlen)
-+        || (asn_len + hashlen) > UINT8_MAX)
+     /* Accept session tokens only if their timestamp is in the acceptable =
+range
+-     * for renegotiations */
+-    bool in_renegotiation_time =3D
+-        now >=3D timestamp && now < timestamp + 2 * session->opt->auth_tok=
+en_renewal;
++     * for renegotiations.
++     * Cast is required for systems with 32bit time_t, e.g. Windows x86.
++     */
++    const time_t token_reneg_deadline =3D (time_t)timestamp + 2 * session-=
+>opt->auth_token_renewal;
++    bool in_renegotiation_time =3D now >=3D (time_t)timestamp && now < tok=
+en_reneg_deadline;
+
+     if (!in_renegotiation_time)
      {
-         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
-     }
-=20
-+    uint8_t *to_sign =3D NULL;
-     ALLOC_ARRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);
-     uint8_t *p =3D to_sign;
-     if (md_alg !=3D MBEDTLS_MD_NONE)
-@@ -707,20 +702,20 @@
-          * Digest ::=3D OCTET STRING
-          */
-         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;
--        *p++ =3D (unsigned char)(0x08 + oid_size + hashlen);
-+        *p++ =3D (uint8_t)(0x08 + oid_size + hashlen);
-         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;
--        *p++ =3D (unsigned char)(0x04 + oid_size);
-+        *p++ =3D (uint8_t)(0x04 + oid_size);
-         *p++ =3D MBEDTLS_ASN1_OID;
--        *p++ =3D oid_size & 0xFF;
-+        *p++ =3D (uint8_t)oid_size;
-         memcpy(p, oid, oid_size);
-         p +=3D oid_size;
-         *p++ =3D MBEDTLS_ASN1_NULL;
-         *p++ =3D 0x00;
-         *p++ =3D MBEDTLS_ASN1_OCTET_STRING;
--        *p++ =3D hashlen;
-+        *p++ =3D (uint8_t)hashlen;
-
-         /* Double-check ASN length */
--        ASSERT(asn_len =3D=3D p - to_sign);
-+        ASSERT(asn_len =3D=3D (uintptr_t)(p - to_sign));
+@@ -369,7 +366,8 @@
+         ret |=3D AUTH_TOKEN_EXPIRED;
      }
 
-     /* Copy the hash to be signed */
-@@ -810,7 +805,7 @@
-         goto cleanup;
-     }
-
--    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=3D dst_len)
-+    if (openvpn_base64_decode(dst_b64, dst, (int)dst_len) !=3D (int)dst_le=
-n)
+-    if (multi->opt.auth_token_lifetime && now > timestamp_initial + multi-=
+>opt.auth_token_lifetime)
++    const time_t token_eol =3D (time_t)timestamp_initial + multi->opt.auth=
+_token_lifetime;
++    if (multi->opt.auth_token_lifetime && now > token_eol)
      {
-         goto cleanup;
+         ret |=3D AUTH_TOKEN_EXPIRED;
      }
-@@ -923,6 +918,8 @@
- {
-     size_t read_len =3D 0;
-
-+    ASSERT(out_len <=3D INT_MAX);
-+
-     if (in->first_block =3D=3D NULL)
-     {
-         return MBEDTLS_ERR_SSL_WANT_READ;
-@@ -930,7 +927,7 @@
-
-     while (in->first_block !=3D NULL && read_len < out_len)
-     {
--        int block_len =3D in->first_block->length - in->data_start;
-+        size_t block_len =3D in->first_block->length - in->data_start;
-         if (block_len <=3D out_len - read_len)
-         {
-             buffer_entry *cur_entry =3D in->first_block;
-@@ -956,7 +953,7 @@
-         }
-     }
-
--    return read_len;
-+    return (int)read_len;
+@@ -396,10 +394,6 @@
+     return ret;
  }
 
- static int
-@@ -975,6 +972,8 @@
-         return MBEDTLS_ERR_NET_SEND_FAILED;
-     }
-
-+    ASSERT(len <=3D INT_MAX);
-+
-     new_block->length =3D len;
-     new_block->next_block =3D NULL;
-
-@@ -992,7 +991,7 @@
-
-     out->last_block =3D new_block;
-
--    return len;
-+    return (int)len;
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ void
+ wipe_auth_token(struct tls_multi *multi)
+ {
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
+openvpn/test_auth_token.c
+index 82c20c1..30d55f6 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -166,20 +166,19 @@
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+), AUTH_TOKEN_HMAC_OK);
  }
 
- static int
-@@ -1012,7 +1011,7 @@
+-/* Note: only on 32bit Windows builds */
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
  static void
- my_debug(void *ctx, int level, const char *file, int line, const char *str)
+ auth_token_test_timeout(void **state)
  {
--    int my_loglevel =3D (level < 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;
-+    msglvl_t my_loglevel =3D (level < 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;
-     msg(my_loglevel, "mbed TLS msg (%s:%d): %s", file, line, str);
- }
+     struct test_context *ctx =3D (struct test_context *)*state;
 
-@@ -1048,10 +1047,6 @@
- #endif /* MBEDTLS_VERSION_NUMBER < 0x040000 */
+-    now =3D 100000;
++    const time_t initial_time =3D 100000;
++    now =3D initial_time;
+     generate_auth_token(&ctx->up, &ctx->multi);
+
++    const time_t token_renew_window =3D
++        initial_time + 2 * ctx->session->opt->auth_token_renewal;
++    const time_t token_eol =3D initial_time + ctx->session->opt->auth_toke=
+n_lifetime + 1;
++
+     strcpy(ctx->up.password, ctx->multi.auth_token);
+     free(ctx->multi.auth_token_initial);
+     ctx->multi.auth_token_initial =3D NULL;
+@@ -188,26 +187,21 @@
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+), AUTH_TOKEN_HMAC_OK);
+
+     /* Token before validity, should be rejected */
+-    now =3D 100000 - 100;
++    now =3D initial_time - 100;
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+),
+                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
+
+-    /* Token no valid for renegotiate_seconds but still for renewal_time */
+-    now =3D 100000 + 2 * ctx->session->opt->renegotiate_seconds - 20;
+-    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+),
+-                     AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
+-
+-
+-    now =3D 100000 + 2 * ctx->session->opt->auth_token_renewal - 20;
++    /* Token still valid for renewal_time */
++    now =3D token_renew_window - 20;
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+), AUTH_TOKEN_HMAC_OK);
+
+     /* Token past validity, should be rejected */
+-    now =3D 100000 + 2 * ctx->session->opt->renegotiate_seconds + 20;
++    now =3D token_renew_window + 20;
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+),
+                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
+
+-    /* But not when we reached our timeout */
+-    now =3D 100000 + ctx->session->opt->auth_token_lifetime + 1;
++    /* Token past lifetime, should be rejected */
++    now =3D token_eol;
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+),
+                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);
+
+@@ -215,8 +209,8 @@
+     ctx->multi.auth_token_initial =3D NULL;
+
+     /* regenerate the token util it hits the expiry */
+-    now =3D 100000;
+-    while (now < 100000 + ctx->session->opt->auth_token_lifetime + 1)
++    now =3D initial_time;
++    while (now < token_eol)
+     {
+         assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->ses=
+sion),
+                          AUTH_TOKEN_HMAC_OK);
+@@ -234,10 +228,6 @@
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session=
+), AUTH_TOKEN_HMAC_OK);
  }
 
 -#if defined(__GNUC__) || defined(__clang__)
 -#pragma GCC diagnostic pop
 -#endif
 -
- int
- tls_version_max(void)
- {
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
-tls.c
-index 7495085..ad5479c 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -565,11 +565,6 @@
-     gc_free(&gc);
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /*
-  * Save X509 fields to environment, using the naming convention:
-  *
-@@ -678,10 +673,6 @@
-     return fFound;
- }
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- result_t
- x509_verify_cert_eku(mbedtls_x509_crt *cert, const char *const expected_oi=
-d)
+ static void
+ zerohmac(char *token)
  {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1510?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I777a3a5f4f137432a19746972e2aad1732184feb
-Gerrit-Change-Number: 1559
-Gerrit-PatchSet: 5
+Gerrit-Change-Id: I73dba29719ea685f0427a3c479e7f1f176f09eba
+Gerrit-Change-Number: 1510
+Gerrit-PatchSet: 7
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---nCD9YuWbjmE=
+--ZVHDveLkgFk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #5</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?usp=3Demail">View C=
+rently required from: flichtenheld. </p>
+<p>flichtenheld <strong>uploaded patch set #7</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1510?usp=3Demail">View C=
 hange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRul=
 e is unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">ssl_mbedtls: Avoid conversion and si=
-gn-compare warnings<br><br>Change-Id: I777a3a5f4f137432a19746972e2aad173218=
-4feb<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br=
->M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>2 fil=
-es changed, 17 insertions(+), 31 deletions(-)<br><br></pre><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/59/1559/5</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c</span>=
-<br><span>index a9506ef..d0c481e 100644</span><br><span>--- a/src/openvpn/s=
-sl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</span><br><spa=
-n>@@ -624,12 +624,6 @@</span><br><span>     return 0;</span><br><span> }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if de=
-fined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wconversion&quo=
-t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnos=
-tic ignored &quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span> #if MBEDTLS_VERSION_NUMBER &lt; 0x04000000</span><br><s=
-pan> /**</span><br><span>  * external_pkcs1_sign implements a mbed TLS rsa_=
-sign_func callback, that uses</span><br><span>@@ -656,7 +650,6 @@</span><br=
-><span> {</span><br><span>     struct external_context *const ctx =3D ctx_v=
-oidptr;</span><br><span>     int rv;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    uint8_t *to_sign =3D NULL;</span><br><span>     size_t a=
-sn_len =3D 0, oid_size =3D 0;</span><br><span>     const char *oid =3D NULL=
-;</span><br><span> </span><br><span>@@ -688,11 +681,13 @@</span><br><span> =
-        asn_len =3D 10 + oid_size;</span><br><span>     }</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((SIZE_MAX - h=
-ashlen) &lt; asn_len || ctx-&gt;signature_length &lt; (asn_len + hashlen))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ctx-&gt;sign=
-ature_length &lt; (asn_len + hashlen)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        || (asn_len + hashlen) &gt; UINT8_MAX)</span><br>=
-<span>     {</span><br><span>         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA=
-;</span><br><span>     }</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    uint8_t *to_sign =3D NULL;</span><br><span>     =
-ALLOC_ARRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);</span><br><span>   =
-  uint8_t *p =3D to_sign;</span><br><span>     if (md_alg !=3D MBEDTLS_MD_N=
-ONE)</span><br><span>@@ -707,20 +702,20 @@</span><br><span>          * Dige=
-st ::=3D OCTET STRING</span><br><span>          */</span><br><span>        =
- *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D (unsigned char)(0x08=
- + oid_size + hashlen);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        *p++ =3D (uint8_t)(0x08 + oid_size + hashlen);</span><br><span>=
-         *p++ =3D MBEDTLS_ASN1_SEQUENCE | MBEDTLS_ASN1_CONSTRUCTED;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D (unsigned ch=
-ar)(0x04 + oid_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        *p++ =3D (uint8_t)(0x04 + oid_size);</span><br><span>         *p+=
-+ =3D MBEDTLS_ASN1_OID;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        *p++ =3D oid_size &amp; 0xFF;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        *p++ =3D (uint8_t)oid_size;</span><br><span>   =
-      memcpy(p, oid, oid_size);</span><br><span>         p +=3D oid_size;</=
-span><br><span>         *p++ =3D MBEDTLS_ASN1_NULL;</span><br><span>       =
-  *p++ =3D 0x00;</span><br><span>         *p++ =3D MBEDTLS_ASN1_OCTET_STRIN=
-G;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        *p++ =3D ha=
-shlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *p++ =
-=3D (uint8_t)hashlen;</span><br><span> </span><br><span>         /* Double-=
-check ASN length */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      ASSERT(asn_len =3D=3D p - to_sign);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        ASSERT(asn_len =3D=3D (uintptr_t)(p - to_sign=
-));</span><br><span>     }</span><br><span> </span><br><span>     /* Copy t=
-he hash to be signed */</span><br><span>@@ -810,7 +805,7 @@</span><br><span=
->         goto cleanup;</span><br><span>     }</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (openvpn_base64_decode(ds=
-t_b64, dst, (int)dst_len) !=3D dst_len)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (openvpn_base64_decode(dst_b64, dst, (int)dst_le=
-n) !=3D (int)dst_len)</span><br><span>     {</span><br><span>         goto =
-cleanup;</span><br><span>     }</span><br><span>@@ -923,6 +918,8 @@</span><=
-br><span> {</span><br><span>     size_t read_len =3D 0;</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(out_len &l=
-t;=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span>     if (in-&gt;first_block =3D=3D NULL)</span><br><span>     =
-{</span><br><span>         return MBEDTLS_ERR_SSL_WANT_READ;</span><br><spa=
-n>@@ -930,7 +927,7 @@</span><br><span> </span><br><span>     while (in-&gt;=
-first_block !=3D NULL &amp;&amp; read_len &lt; out_len)</span><br><span>   =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int block_=
-len =3D in-&gt;first_block-&gt;length - in-&gt;data_start;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        size_t block_len =3D in-&gt;=
-first_block-&gt;length - in-&gt;data_start;</span><br><span>         if (bl=
-ock_len &lt;=3D out_len - read_len)</span><br><span>         {</span><br><s=
-pan>             buffer_entry *cur_entry =3D in-&gt;first_block;</span><br>=
-<span>@@ -956,7 +953,7 @@</span><br><span>         }</span><br><span>     }=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- return read_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  return (int)read_len;</span><br><span> }</span><br><span> </span><br><spa=
-n> static int</span><br><span>@@ -975,6 +972,8 @@</span><br><span>         =
-return MBEDTLS_ERR_NET_SEND_FAILED;</span><br><span>     }</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(len &lt=
-;=3D INT_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span>     new_block-&gt;length =3D len;</span><br><span>     new_blo=
-ck-&gt;next_block =3D NULL;</span><br><span> </span><br><span>@@ -992,7 +99=
-1,7 @@</span><br><span> </span><br><span>     out-&gt;last_block =3D new_bl=
-ock;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    return len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return (int)len;</span><br><span> }</span><br><span> </span><br><span> sta=
-tic int</span><br><span>@@ -1012,7 +1011,7 @@</span><br><span> static void<=
-/span><br><span> my_debug(void *ctx, int level, const char *file, int line,=
- const char *str)</span><br><span> {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    int my_loglevel =3D (level &lt; 3) ? D_TLS_DEBUG_MED : D=
-_TLS_DEBUG;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msgl=
-vl_t my_loglevel =3D (level &lt; 3) ? D_TLS_DEBUG_MED : D_TLS_DEBUG;</span>=
-<br><span>     msg(my_loglevel, &quot;mbed TLS msg (%s:%d): %s&quot;, file,=
- line, str);</span><br><span> }</span><br><span> </span><br><span>@@ -1048,=
-10 +1047,6 @@</span><br><span> #endif /* MBEDTLS_VERSION_NUMBER &lt; 0x0400=
-00 */</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span> tls=
-_version_max(void)</span><br><span> {</span><br><span>diff --git a/src/open=
-vpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c</span><br><span=
->index 7495085..ad5479c 100644</span><br><span>--- a/src/openvpn/ssl_verify=
-_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls.c</span><br=
-><span>@@ -565,11 +565,6 @@</span><br><span>     gc_free(&amp;gc);</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Ws=
-ign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#end=
-if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /=
-*</span><br><span>  * Save X509 fields to environment, using the naming con=
-vention:</span><br><span>  *</span><br><span>@@ -678,10 +673,6 @@</span><br=
-><span>     return fFound;</span><br><span> }</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(=
-__clang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC=
- diagnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> res=
-ult_t</span><br><span> x509_verify_cert_eku(mbedtls_x509_crt *cert, const c=
-har *const expected_oid)</span><br><span> {</span><br><span></span><br></pr=
-e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?u=
-sp=3Demail">change 1559</a>. To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settin=
-gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
-itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1559?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ace,monospace; white-space: pre-wrap;">auth_token: Clean up type handling i=
+n verify_auth_token and its UT<br><br>First of all remove the testing of re=
+negotiation_seconds.<br>Commit 9a5161704173e31f2510d3f5c29361f76e275d0f mad=
+e it<br>irrelevant for verify_auth_token but still left UTs for it.<br>But =
+AFAICT these UTs only test that renegotiation_seconds<br>is bigger than aut=
+h_token_renewal, so it tests the UT<br>setup routine...<br><br>Also improve=
+ the code to require less casts under<br>-Wsign-compare.<br><br>Add a comme=
+nt that this code is not y38 safe if time_t<br>is 32bit. Probably nothing w=
+e want to do from our side<br>since in that case everything that uses &quot=
+;now&quot; is borked.<br>So we trust in the OS here...<br><br>Change-Id: I7=
+3dba29719ea685f0427a3c479e7f1f176f09eba<br>Signed-off-by: Frank Lichtenheld=
+ &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/auth_token.c<br>M tests/u=
+nit_tests/openvpn/test_auth_token.c<br>2 files changed, 22 insertions(+), 3=
+8 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
+:29418/openvpn refs/changes/10/1510/7</pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/auth=
+_token.c b/src/openvpn/auth_token.c</span><br><span>index eb2b4d5..d8ca125 =
+100644</span><br><span>--- a/src/openvpn/auth_token.c</span><br><span>+++ b=
+/src/openvpn/auth_token.c</span><br><span>@@ -287,11 +287,6 @@</span><br><s=
+pan>     return memcmp_constant_time(&amp;hmac_output, hmac, 32) =3D=3D 0;<=
+/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &=
+quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span> unsigned int</span><br><span> verify_auth_token(struct user_pass *up=
+, struct tls_multi *multi, struct tls_session *session)</span><br><span> {<=
+/span><br><span>@@ -318,7 +313,7 @@</span><br><span> </span><br><span>     =
+const uint8_t *sessid =3D b64decoded;</span><br><span>     const uint8_t *t=
+stamp_initial =3D sessid + AUTH_TOKEN_SESSION_ID_LEN;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    const uint8_t *tstamp =3D tstamp_initia=
+l + sizeof(int64_t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const uint8_t *tstamp =3D tstamp_initial + sizeof(uint64_t);</span><br=
+><span> </span><br><span>     /* tstamp, tstamp_initial might not be aligne=
+d to an uint64, use memcpy</span><br><span>      * to avoid unaligned acces=
+s */</span><br><span>@@ -348,9 +343,11 @@</span><br><span>     }</span><br>=
+<span> </span><br><span>     /* Accept session tokens only if their timesta=
+mp is in the acceptable range</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-     * for renegotiations */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    bool in_renegotiation_time =3D</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        now &gt;=3D timestamp &amp;&amp; now &l=
+t; timestamp + 2 * session-&gt;opt-&gt;auth_token_renewal;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     * for renegotiations.</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+     * Cast is required for s=
+ystems with 32bit time_t, e.g. Windows x86.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    const time_t token_reneg_deadline =3D (time_t)timestamp + 2=
+ * session-&gt;opt-&gt;auth_token_renewal;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    bool in_renegotiation_time =3D now &gt;=3D (time=
+_t)timestamp &amp;&amp; now &lt; token_reneg_deadline;</span><br><span> </s=
+pan><br><span>     if (!in_renegotiation_time)</span><br><span>     {</span=
+><br><span>@@ -369,7 +366,8 @@</span><br><span>         ret |=3D AUTH_TOKEN=
+_EXPIRED;</span><br><span>     }</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (multi-&gt;opt.auth_token_lifetime &amp=
+;&amp; now &gt; timestamp_initial + multi-&gt;opt.auth_token_lifetime)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    const time_t token_e=
+ol =3D (time_t)timestamp_initial + multi-&gt;opt.auth_token_lifetime;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (multi-&gt;opt.aut=
+h_token_lifetime &amp;&amp; now &gt; token_eol)</span><br><span>     {</spa=
+n><br><span>         ret |=3D AUTH_TOKEN_EXPIRED;</span><br><span>     }</s=
+pan><br><span>@@ -396,10 +394,6 @@</span><br><span>     return ret;</span><=
+br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span> void</span><br><span> wipe_auth_tok=
+en(struct tls_multi *multi)</span><br><span> {</span><br><span>diff --git a=
+/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test=
+_auth_token.c</span><br><span>index 82c20c1..30d55f6 100644</span><br><span=
+>--- a/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>+++ b/tes=
+ts/unit_tests/openvpn/test_auth_token.c</span><br><span>@@ -166,20 +166,19 =
+@@</span><br><span>     assert_int_equal(verify_auth_token(&amp;ctx-&gt;up,=
+ &amp;ctx-&gt;multi, ctx-&gt;session), AUTH_TOKEN_HMAC_OK);</span><br><span=
+> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+/* Note: only on 32bit Windows builds */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignor=
+ed &quot;-Wsign-compare&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span> static void</span><br><span> auth_token_test_timeout(void **stat=
+e)</span><br><span> {</span><br><span>     struct test_context *ctx =3D (st=
+ruct test_context *)*state;</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    now =3D 100000;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    const time_t initial_time =3D 100000;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    now =3D initial_time;</sp=
+an><br><span>     generate_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi);=
+</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const time_t token_renew_window =3D</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        initial_time + 2 * ctx-&gt;session-&gt;opt-&gt;a=
+uth_token_renewal;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const time_t token_eol =3D initial_time + ctx-&gt;session-&gt;opt-&gt;au=
+th_token_lifetime + 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span>     strcpy(ctx-&gt;up.password, ctx-&gt;multi.auth_tok=
+en);</span><br><span>     free(ctx-&gt;multi.auth_token_initial);</span><br=
+><span>     ctx-&gt;multi.auth_token_initial =3D NULL;</span><br><span>@@ -=
+188,26 +187,21 @@</span><br><span>     assert_int_equal(verify_auth_token(&=
+amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session), AUTH_TOKEN_HMAC_OK);<=
+/span><br><span> </span><br><span>     /* Token before validity, should be =
+rejected */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    now =
+=3D 100000 - 100;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  now =3D initial_time - 100;</span><br><span>     assert_int_equal(verify_=
+auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session),</span><br=
+><span>                      AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* T=
+oken no valid for renegotiate_seconds but still for renewal_time */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    now =3D 100000 + 2 * ctx-=
+&gt;session-&gt;opt-&gt;renegotiate_seconds - 20;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    assert_int_equal(verify_auth_token(&amp;ctx=
+-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session),</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                     AUTH_TOKEN_HMAC_OK | AUTH_TOK=
+EN_EXPIRED);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    now =3D 100000 + 2 * ctx-&gt;session-&gt;opt-&g=
+t;auth_token_renewal - 20;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /* Token still valid for renewal_time */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    now =3D token_renew_window - 20;</spa=
+n><br><span>     assert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;c=
+tx-&gt;multi, ctx-&gt;session), AUTH_TOKEN_HMAC_OK);</span><br><span> </spa=
+n><br><span>     /* Token past validity, should be rejected */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    now =3D 100000 + 2 * ctx-&gt;s=
+ession-&gt;opt-&gt;renegotiate_seconds + 20;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    now =3D token_renew_window + 20;</span><br><sp=
+an>     assert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;mu=
+lti, ctx-&gt;session),</span><br><span>                      AUTH_TOKEN_HMA=
+C_OK | AUTH_TOKEN_EXPIRED);</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    /* But not when we reached our timeout */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    now =3D 100000 + ctx-&g=
+t;session-&gt;opt-&gt;auth_token_lifetime + 1;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    /* Token past lifetime, should be rejected *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    now =3D token_=
+eol;</span><br><span>     assert_int_equal(verify_auth_token(&amp;ctx-&gt;u=
+p, &amp;ctx-&gt;multi, ctx-&gt;session),</span><br><span>                  =
+    AUTH_TOKEN_HMAC_OK | AUTH_TOKEN_EXPIRED);</span><br><span> </span><br><=
+span>@@ -215,8 +209,8 @@</span><br><span>     ctx-&gt;multi.auth_token_init=
+ial =3D NULL;</span><br><span> </span><br><span>     /* regenerate the toke=
+n util it hits the expiry */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    now =3D 100000;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    while (now &lt; 100000 + ctx-&gt;session-&gt;opt-&gt;auth_token_li=
+fetime + 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    now =
+=3D initial_time;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  while (now &lt; token_eol)</span><br><span>     {</span><br><span>       =
+  assert_int_equal(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, c=
+tx-&gt;session),</span><br><span>                          AUTH_TOKEN_HMAC_=
+OK);</span><br><span>@@ -234,10 +228,6 @@</span><br><span>     assert_int_e=
+qual(verify_auth_token(&amp;ctx-&gt;up, &amp;ctx-&gt;multi, ctx-&gt;session=
+), AUTH_TOKEN_HMAC_OK);</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__c=
+lang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC di=
+agnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static=
+ void</span><br><span> zerohmac(char *token)</span><br><span> {</span><br><=
+span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1510?usp=3Demail">change 1510</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/1510?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I777a3a5f4f137432a19746972e2=
-aad1732184feb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1559 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I73dba29719ea685f0427a3c479e=
+7f1f176f09eba </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1510 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
 
 </body></html>=
 
---nCD9YuWbjmE=--
+--ZVHDveLkgFk=--
 
