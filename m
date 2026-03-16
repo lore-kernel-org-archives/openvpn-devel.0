@@ -1,18 +1,11 @@
-Message-ID: <af798d10-e06c-46f7-a45d-378f76b9bafa@...1227...>
-Date: Mon, 16 Mar 2026 13:11:39 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Date: Mon, 16 Mar 2026 13:11:48 +0100
+Message-ID: <20260316121148.25189-1-frank@...2641...>
+In-Reply-To: <gerrit.1773243451000.I228f6fd9ff18256f09d4348df1fc48853f8e7306@...2715...>
+References: <gerrit.1773243451000.I228f6fd9ff18256f09d4348df1fc48853f8e7306@...2715...>
 MIME-Version: 1.0
-References: <20260315184337.1541272-1-luca.boccassi@...277...>
- <20260315230620.1594780-1-luca.boccassi@...277...>
- <20260315230620.1594780-2-luca.boccassi@...277...>
- <b54e0eae-8fe2-420e-ba24-4d73ca50086d@...1227...>
- <CAMw=ZnQy+i0debrWv2ya=xy12_h1EmrRVfiuKEK9-aWZ6GJRoQ@...278...>
- <150f9ffe-bf48-43dd-86aa-b69961de1f99@...1227...>
- <CAMw=ZnQxvpy2Xx2rFHZCJprzx=SG_SC-i1O80noVRT7_BAOKJQ@...278...>
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <CAMw=ZnQxvpy2Xx2rFHZCJprzx=SG_SC-i1O80noVRT7_BAOKJQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Increase TLS_CHANNEL_BUF_SIZE
- from 2048 to 8192
+Subject: [Openvpn-devel] [PATCH v3] Remove unnecessary OpenSSL init and
+ cleanup commands in unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,22 +14,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Luca Boccassi <luca.boccassi@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne@...1227...>, Arne Schwabe <arne-openvpn@...1227...>
 
+From: Arne Schwabe <arne@...1227...>
 
-> 
-> The issue here is that the handshake fails, as the azvpn server
-> expects a full token to be received, but it gets truncated. I have no
-> control over the server, just the client. Do you have a suggestion on
-> how to solve this in a way that would be acceptable?
+After the removal of OpenSSL 1.0.2 support these instructions are
+no longer needed and the main OpenVPN program also no longer calls
+them in init_ssl_lib or free_ssl_lib.
 
-I have no Idea what the azvpn server is and what they are doing but it 
-looks like they are using some hacks that were never submitted upstream 
-and also had no communication with our project. So it is not surprising 
-that this does not work with the normal open source client.
+Also remove them from the unit tests. This also solves a
+deprecation warning on EVP_cleanup when compiling with aws-lc
 
-Arne
+Change-Id: I228f6fd9ff18256f09d4348df1fc48853f8e7306
+Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1568
+---
+
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
+
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1568
+This mail reflects revision 3 of this Change.
+
+Signed-off-by line for the author was added as per our policy.
+
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
+
+Note that I fixed the commit message subject line.
+
+        
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
+index 82c20c1..d28bd8a 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -428,11 +428,5 @@
+         cmocka_unit_test_setup_teardown(auth_token_test_session_mismatch, setup, teardown)
+     };
+ 
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret = cmocka_run_group_tests_name("auth-token tests", tests, NULL, NULL);
+-
+-    return ret;
++    return cmocka_run_group_tests_name("auth-token tests", tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 1679d88..cb4eaa2 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -963,15 +963,5 @@
+         cmocka_unit_test(epoch_test_derive_data_key)
+     };
+ 
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret = cmocka_run_group_tests_name("crypto tests", tests, NULL, NULL);
+-
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
+-#endif
+-
+-    return ret;
++    return cmocka_run_group_tests_name("crypto tests", tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index 52a41ee..29365db 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -407,8 +407,6 @@
+ main(void)
+ {
+     openvpn_unit_test_setup();
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
++
+     return cmocka_run_group_tests(ncp_tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index a94732d..cad2ce0 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -765,15 +765,5 @@
+         cmocka_unit_test(test_extract_control_message)
+     };
+ 
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret = cmocka_run_group_tests_name("pkt tests", tests, NULL, NULL);
+-
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
+-#endif
+-
+-    return ret;
++    return cmocka_run_group_tests_name("pkt tests", tests, NULL, NULL);
+ }
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index ed82279..1776d71 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -673,15 +673,5 @@
+         cmocka_unit_test(test_tls_crypt_v2_write_client_key_file_metadata),
+     };
+ 
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    OpenSSL_add_all_algorithms();
+-#endif
+-
+-    int ret = cmocka_run_group_tests_name("tls-crypt tests", tests, NULL, NULL);
+-
+-#if defined(ENABLE_CRYPTO_OPENSSL)
+-    EVP_cleanup();
+-#endif
+-
+-    return ret;
++    return cmocka_run_group_tests_name("tls-crypt tests", tests, NULL, NULL);
+ }
 
