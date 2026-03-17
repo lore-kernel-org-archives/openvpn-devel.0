@@ -1,9 +1,16 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 17 Mar 2026 15:19:16 +0100
-Message-ID: <20260317141916.437559-1-a@...2181...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 17 Mar 2026 14:43:39 +0000
+In-Reply-To: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
+References: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <ceffeb59c00e6bf76fa5c42d088f862026bdca2f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH ovpn net] ovpn: fix race between deleting
- interface and adding new peer
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ZpGrDZm4eZw="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Do not support
+ tls_ctx_set_cert_profile on AWS-LC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,80 +19,171 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>, Hyunwoo Kim <imv4bel@...277...>, Sabrina Dubroca <sd@...2891...>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Antonio Quartulli <antonio@...515...>
+--ZpGrDZm4eZw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-While deleting an existing ovpn interface, there is a very
-narrow window where adding a new peer via netlink may cause
-the netdevice to hang and prevent its unregistration.
+Attention is currently required from: flichtenheld, plaisthos.
 
-It may happen during ovpn_dellink(), when all existing peers are
-freed and the device is queued for deregistration, but a
-CMD_PEER_NEW message comes in adding a new peer that takes again
-a reference to the netdev.
+Hello flichtenheld,
 
-At this point there is no way to release the device because we are
-under the assumption that all peers were already released.
+I'd like you to reexamine a change. Please visit
 
-Fix the race condition by releasing all peers in ndo_uninit(),
-when the netdevice has already been removed from the netdev
-list and thus an incoming CMD_PEER_NEW cannot have any effect
-anymore.
+    http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail
 
-At this point ovpn_dellink() becomes empty and can just be
-removed.
+to look at the new patch set (#2).
 
-Reported-by: Hyunwoo Kim <imv4bel@...277...>
-Closes: https://lore.kernel.org/netdev/aaVgJ16edTfQkYbx@...3012.../
-Suggested-by: Sabrina Dubroca <sd@...2891...>
-Fixes: 80747caef33d ("ovpn: introduce the ovpn_peer object")
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
+
+
+Change subject: Do not support tls_ctx_set_cert_profile on AWS-LC
+......................................................................
+
+Do not support tls_ctx_set_cert_profile on AWS-LC
+
+SSL_CTX_set_security_level does nothing on AWS-LC and gives a deprecated
+warning on compile. It is better to give the user a warning than to
+effectively silently ignore it as well.
+
+Change-Id: I74841d3611c62d3c59fc839bc73a0c83ce025262
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- drivers/net/ovpn/main.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+M src/openvpn/ssl_openssl.c
+1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
-index 2e0420febda0..0eab305780c7 100644
---- a/drivers/net/ovpn/main.c
-+++ b/drivers/net/ovpn/main.c
-@@ -92,6 +92,8 @@ static void ovpn_net_uninit(struct net_device *dev)
- {
- 	struct ovpn_priv *ovpn = netdev_priv(dev);
- 
-+	cancel_delayed_work_sync(&ovpn->keepalive_work);
-+	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
- 	gro_cells_destroy(&ovpn->gro_cells);
- }
- 
-@@ -208,15 +210,6 @@ static int ovpn_newlink(struct net_device *dev,
- 	return register_netdevice(dev);
- }
- 
--static void ovpn_dellink(struct net_device *dev, struct list_head *head)
--{
--	struct ovpn_priv *ovpn = netdev_priv(dev);
--
--	cancel_delayed_work_sync(&ovpn->keepalive_work);
--	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
--	unregister_netdevice_queue(dev, head);
--}
--
- static int ovpn_fill_info(struct sk_buff *skb, const struct net_device *dev)
- {
- 	struct ovpn_priv *ovpn = netdev_priv(dev);
-@@ -235,7 +228,6 @@ static struct rtnl_link_ops ovpn_link_ops = {
- 	.policy = ovpn_policy,
- 	.maxtype = IFLA_OVPN_MAX,
- 	.newlink = ovpn_newlink,
--	.dellink = ovpn_dellink,
- 	.fill_info = ovpn_fill_info,
- };
- 
--- 
-2.52.0
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1579/2
+
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 48cbaa8..a26663a 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -518,8 +518,9 @@
+ void
+ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+ {
+-#if OPENSSL_VERSION_NUMBER > 0x10100000L \
+-    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3=
+060000fL)
++#if OPENSSL_VERSION_NUMBER > 0x10100000L                                  =
+          \
++    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3=
+060000fL) \
++    && !defined(OPENSSL_IS_AWSLC)
+     /* OpenSSL does not have certificate profiles, but a complex set of
+      * callbacks that we could try to implement to achieve something simil=
+ar.
+      * For now, use OpenSSL's security levels to achieve similar (but not =
+equal)
+@@ -549,8 +550,8 @@
+     if (profile)
+     {
+         msg(M_WARN,
+-            "WARNING: OpenSSL 1.1.0 and LibreSSL do not support "
+-            "--tls-cert-profile, ignoring user-set profile: '%s'",
++            "WARNING: OpenSSL 1.1.0, AWS-LC and LibreSSL < 3.6.0 do not "
++            "support --tls-cert-profile, ignoring user-set profile: '%s'",
+             profile);
+     }
+ #endif /* if OPENSSL_VERSION_NUMBER > 0x10100000L */
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I74841d3611c62d3c59fc839bc73a0c83ce025262
+Gerrit-Change-Number: 1579
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+
+--ZpGrDZm4eZw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail">View Chan=
+ge</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Do not support tls_ctx_set_c=
+ert_profile on AWS-LC<br><br>SSL_CTX_set_security_level does nothing on AWS=
+-LC and gives a deprecated<br>warning on compile. It is better to give the =
+user a warning than to<br>effectively silently ignore it as well.<br><br>Ch=
+ange-Id: I74841d3611c62d3c59fc839bc73a0c83ce025262<br>Signed-off-by: Arne S=
+chwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>1 f=
+ile changed, 5 insertions(+), 4 deletions(-)<br><br></pre><pre class=3D"blo=
+cks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
+ pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/1579/2</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><=
+br><span>index 48cbaa8..a26663a 100644</span><br><span>--- a/src/openvpn/ss=
+l_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span=
+>@@ -518,8 +518,9 @@</span><br><span> void</span><br><span> tls_ctx_set_cer=
+t_profile(struct tls_root_ctx *ctx, const char *profile)</span><br><span> {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if OPENSSL_VERSION_N=
+UMBER &gt; 0x10100000L \</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &amp;&amp; (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NU=
+MBER &gt; 0x3060000fL)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#if OPENSSL_VERSION_NUMBER &gt; 0x10100000L                             =
+               \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ &amp;&amp; (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER &=
+gt; 0x3060000fL) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   &amp;&amp; !defined(OPENSSL_IS_AWSLC)</span><br><span>     /* OpenSSL do=
+es not have certificate profiles, but a complex set of</span><br><span>    =
+  * callbacks that we could try to implement to achieve something similar.<=
+/span><br><span>      * For now, use OpenSSL&#39;s security levels to achie=
+ve similar (but not equal)</span><br><span>@@ -549,8 +550,8 @@</span><br><s=
+pan>     if (profile)</span><br><span>     {</span><br><span>         msg(M=
+_WARN,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &qu=
+ot;WARNING: OpenSSL 1.1.0 and LibreSSL do not support &quot;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            &quot;--tls-cert-profile=
+, ignoring user-set profile: &#39;%s&#39;&quot;,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            &quot;WARNING: OpenSSL 1.1.0, AWS-=
+LC and LibreSSL &lt; 3.6.0 do not &quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            &quot;support --tls-cert-profile, ignoring=
+ user-set profile: &#39;%s&#39;&quot;,</span><br><span>             profile=
+);</span><br><span>     }</span><br><span> #endif /* if OPENSSL_VERSION_NUM=
+BER &gt; 0x10100000L */</span><br><span></span><br></pre><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail">change 1=
+579</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
+"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
+scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
+" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I74841d3611c62d3c59fc839bc73=
+a0c83ce025262 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1579 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+
+</body></html>=
+
+--ZpGrDZm4eZw=--
 
