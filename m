@@ -1,9 +1,9 @@
-Message-ID: <fa27e92c-5192-4f37-8a90-129ab90b592a@...1227...>
-Date: Tue, 17 Mar 2026 01:06:27 +0100
 MIME-Version: 1.0
 References: <20260316224531.315912-1-luca.boccassi@...277...>
-From: Arne Schwabe <arne@...1227...>
 In-Reply-To: <20260316224531.315912-1-luca.boccassi@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 16 Mar 2026 20:07:38 -0400
+Message-ID: <CAKuzo_gRotwfVONQSn-yj1otvUNocAeUZqX8YjkRhP_L9jfb7A@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix password usage with ENABLE_PKCS11
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,12 +13,13 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: luca.boccassi@...277..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: luca.boccassi@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-
-Am 16.03.2026 um 23:43 schrieb luca.boccassi@...277...:
+On Mon, Mar 16, 2026 at 6:48=E2=80=AFPM <luca.boccassi@...277...> wrote:
+>
 > From: Luca Boccassi <luca.boccassi@...277...>
 >
 > With ENABLE_PKCS11 USER_PASS_LEN is set to 4096 bytes.
@@ -26,63 +27,56 @@ Am 16.03.2026 um 23:43 schrieb luca.boccassi@...277...:
 > But if a user specifies a large password, as allowed by the limit,
 > there are two places in the client that fail to handle it:
 >
-> - in the TLS handling functions a single read/write is done into/out of
->    the TLS layer, using a fixed size buffer at 2048 bytes, so the rest
->    of the password is truncated
-> - in the management protocol when processing a "password" field another
->    fixed buffer at 256 bytes is used, so the rest of the password is
->    truncated
->
-> Use int_max(xyz, USER_PASS_LEN) to define these buffers. In normal builds
-> the current hardcoded values will stay the same, as they are higher.
-> In ENABLE_PKCS11 builds the 4096 value will be higher which will allow
-> longer passwords to work when communicating to the server and in the
-> management protocol.
->
-> Testing new client/old server shows no issues with a password that follows
-> the existing 2048 bytes limit. In order to use a > 2048 bytes password,
-> the server needs to be updated to this change too, otherwise it will truncate
-> it, but that is the same as status quo: only passwords < 2048 bytes work, so
-> there should be no regression.
->
-> This enables the use case where JIT use-once tokens are used as passwords.
->
-> Signed-off-by: Luca Boccassi <luca.boccassi@...277...>
-> ---
-> Alternative to:
->
-> https://sourceforge.net/p/openvpn/mailman/openvpn-devel/thread/20260315230620.1594780-1-luca.boccassi%40gmail.com/#msg59309452
->
-> Instead of hardcoding larger buffers, simply use USER_PASS_LEN, so that
-> builds without ENABLE_PKCS11 are not affected.
->
-> With these small changes, it is possible to successfully
-> connect to an Azure VPN endpoint using the OpenVPN 2.7 client,
-> using a dummy username, an Entra token as password and the
-> server-secret from the azvpn XML config that users get as tls-auth
-> key.
->
->   src/openvpn/common.h        | 2 +-
->   src/openvpn/manage.c        | 2 +-
->   src/openvpn/options.h       | 4 ++--
->   src/openvpn/options_parse.c | 2 +-
->   4 files changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/src/openvpn/common.h b/src/openvpn/common.h
-> index aa7b7217..e1096b98 100644
-> --- a/src/openvpn/common.h
-> +++ b/src/openvpn/common.h
-> @@ -67,7 +67,7 @@ typedef unsigned long ptr_type;
->    * maximum size of a single TLS message (cleartext).
->    * This parameter must be >= PUSH_BUNDLE_SIZE
->    */
-> -#define TLS_CHANNEL_BUF_SIZE 2048
-> +#define TLS_CHANNEL_BUF_SIZE max_int(2048, USER_PASS_LEN) "
 
-This would still mean that builds that use ENABLE_PKCS11 are 
-potientially incompatible with builds without that flag and with older 
-version.
+The misunderstanding here is the assumption that ENABLE_PKCS11 builds
+were supposed to support username/password > 128. They do not -- the
+4096 number was added for some local usage (like private key passwords
+and PINs, or some misunderstanding, I guess), not meant to apply to
+password data to be passed from client to server or other way -- that
+never worked.
 
-Arne
+As you have already seen, there are existing limits in multiple places
+that make larger than 128 byte username/password not to work reliably
+(or possibly 255). Management and option parsing always had 255 byte
+limitations, the 2048 tls-channel-buffer limits password+username to
+about 1600 bytes or thereabout.
 
+I'm not saying we should not support larger passwords. In fact I do
+feel that allowing the management interface to pass longer passwords
+could be a useful goal if it can be done with minimal disruption (say
+keep username + password fit in current control TLS buffers). But even
+there, the "right" way to do it may be to use multi-line base64 as we
+already do in the daemon -> client direction. If anyone has
+"passwords" longer than 1k bytes or so, they are doing something wrong
+and fixing it in the wrong place. "I have no access to the broken
+piece of software, so let us fix it here" is not going to be
+acceptable.
+
+In any case, this has to be done carefully. There are a number of
+implicit "protocol" changes in your patch:
+
+(i) option parsing size -- are we going to define a new version of
+config files that support longer lines? Looks like a wrong solution.
+(ii) management interface -- do we support this only for UI
+client-versions > x? How would the UI client know whether the daemon
+will accept long lines?
+(iii) control channel --- how to ensure backward compatibility?
+
+I do not see your patches addressing any of these questions. Hence the
+pushback. As Arne suggested, consider applying it locally for personal
+use if it works in your case.
+
+Selva
+
+PS. This is not the first time this issue has come up -- search
+openvpn devel list archives for past discussions. Here are some:
+
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg16674.h=
+tml
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12535.h=
+tml
+
+
+
+Selva
 
