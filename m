@@ -1,16 +1,9 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 17 Mar 2026 13:48:48 +0000
-In-Reply-To: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
-References: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <11340c931cb54d84c704a91d2b2ed2125fcfc6fd-EmailReviewComments-HTML@...2715...>
+From: Antonio Quartulli <a@...2181...>
+Date: Tue, 17 Mar 2026 15:19:16 +0100
+Message-ID: <20260317141916.437559-1-a@...2181...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9Ip/1c/ICZA="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Do not support
- tls_ctx_set_cert_profile on AWS-LC
+Subject: [Openvpn-devel] [PATCH ovpn net] ovpn: fix race between deleting
+ interface and adding new peer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,104 +12,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>, Hyunwoo Kim <imv4bel@...277...>, Sabrina Dubroca <sd@...2891...>
 
---9Ip/1c/ICZA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Antonio Quartulli <antonio@...515...>
 
-Attention is currently required from: plaisthos.
+While deleting an existing ovpn interface, there is a very
+narrow window where adding a new peer via netlink may cause
+the netdevice to hang and prevent its unregistration.
 
-flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1579?usp=3Demail )
+It may happen during ovpn_dellink(), when all existing peers are
+freed and the device is queued for deregistration, but a
+CMD_PEER_NEW message comes in adding a new peer that takes again
+a reference to the netdev.
 
-Change subject: Do not support tls_ctx_set_cert_profile on AWS-LC
-......................................................................
+At this point there is no way to release the device because we are
+under the assumption that all peers were already released.
 
+Fix the race condition by releasing all peers in ndo_uninit(),
+when the netdevice has already been removed from the netdev
+list and thus an incoming CMD_PEER_NEW cannot have any effect
+anymore.
 
-Patch Set 1: Code-Review-1
+At this point ovpn_dellink() becomes empty and can just be
+removed.
 
-(1 comment)
+Reported-by: Hyunwoo Kim <imv4bel@...277...>
+Closes: https://lore.kernel.org/netdev/aaVgJ16edTfQkYbx@...3012.../
+Suggested-by: Sabrina Dubroca <sd@...2891...>
+Fixes: 80747caef33d ("ovpn: introduce the ovpn_peer object")
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ drivers/net/ovpn/main.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-File src/openvpn/ssl_openssl.c:
+diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
+index 2e0420febda0..0eab305780c7 100644
+--- a/drivers/net/ovpn/main.c
++++ b/drivers/net/ovpn/main.c
+@@ -92,6 +92,8 @@ static void ovpn_net_uninit(struct net_device *dev)
+ {
+ 	struct ovpn_priv *ovpn = netdev_priv(dev);
+ 
++	cancel_delayed_work_sync(&ovpn->keepalive_work);
++	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
+ 	gro_cells_destroy(&ovpn->gro_cells);
+ }
+ 
+@@ -208,15 +210,6 @@ static int ovpn_newlink(struct net_device *dev,
+ 	return register_netdevice(dev);
+ }
+ 
+-static void ovpn_dellink(struct net_device *dev, struct list_head *head)
+-{
+-	struct ovpn_priv *ovpn = netdev_priv(dev);
+-
+-	cancel_delayed_work_sync(&ovpn->keepalive_work);
+-	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
+-	unregister_netdevice_queue(dev, head);
+-}
+-
+ static int ovpn_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ {
+ 	struct ovpn_priv *ovpn = netdev_priv(dev);
+@@ -235,7 +228,6 @@ static struct rtnl_link_ops ovpn_link_ops = {
+ 	.policy = ovpn_policy,
+ 	.maxtype = IFLA_OVPN_MAX,
+ 	.newlink = ovpn_newlink,
+-	.dellink = ovpn_dellink,
+ 	.fill_info = ovpn_fill_info,
+ };
+ 
+-- 
+2.52.0
 
-http://gerrit.openvpn.net/c/openvpn/+/1579/comment/fd1c6741_ace25285?usp=3D=
-email :
-PS1, Line 553:             "WARNING: OpenSSL 1.1.0, aws-lc and LibreSSL do =
-not support "
-Should we update this to say LibreSSL 3.5.0? Since it does not seem to affe=
-ct newer libressl?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I74841d3611c62d3c59fc839bc73a0c83ce025262
-Gerrit-Change-Number: 1579
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Tue, 17 Mar 2026 13:48:48 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---9Ip/1c/ICZA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
-t.openvpn.net/c/openvpn/+/1579/comment/fd1c6741_ace25285?usp=3Demail">Patch=
- Set #1, Line 553:</a> <code style=3D"font-family:monospace,monospace">    =
-        &quot;WARNING: OpenSSL 1.1.0, aws-lc and LibreSSL do not support &q=
-uot;</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wra=
-p: break-word;">Should we update this to say LibreSSL 3.5.0? Since it does =
-not seem to affect newer libressl?</p></li></ul></li></ul><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail">change =
-1579</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1579?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I74841d3611c62d3c59fc839bc73=
-a0c83ce025262 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1579 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Mar 2026 13:48:48=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---9Ip/1c/ICZA=--
 
