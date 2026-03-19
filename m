@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 19 Mar 2026 13:06:49 +0000
-In-Reply-To: <gerrit.1773251317000.Ib8140107f98164d2a2e1768a6d8ac65016cd7f7c@...2715...>
-References: <gerrit.1773251317000.Ib8140107f98164d2a2e1768a6d8ac65016cd7f7c@...2715...>
+Date: Thu, 19 Mar 2026 14:17:13 +0000
+In-Reply-To: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
+References: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <3d745f1c31401f999551b85a9cf2d00a27bc970e-EmailReviewComments-HTML@...2715...>
+Message-ID: <d0e00e580b32ea827fb730e5d388be0944cae864-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="jZfNnvDggN4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change hash values
- in our hash map from uint32_t to uint64_t
+Content-Type: multipart/alternative; boundary="VWTi4unuIK8="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Increase default
+ size of internal hash maps to 4 * --max-clients
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +19,268 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---jZfNnvDggN4=
+--VWTi4unuIK8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
-plaisthos has posted comments on this change by plaisthos. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1570?usp=3Demail )
+Hello flichtenheld,
 
-Change subject: Change hash values in our hash map from uint32_t to uint64_t
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail
+
+to look at the new patch set (#6).
+
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
+
+
+Change subject: Increase default size of internal hash maps to 4 * --max-cl=
+ients
 ......................................................................
 
+Increase default size of internal hash maps to 4 * --max-clients
 
-Patch Set 3:
+The default of 256 seems quite low as with (at least) 1024 possible
+entries we have a guaranteed collisions. Using 4 times the number
+of possible entries for real addresses should reduce collisions quite
+a bit while also leaving some headroom for the virtual addresses hash
+where a client might have more than one address.
 
-(1 comment)
+A reason to keep the limit so low are the memory requirements. Each
+bucket has the size of one linked-list pointer (4 byte or 32 bit and
+8 byte for 64 bit). So 256 buckets use 1 or 2 kB while 4096 will use
+16 kB or 32 kB.
 
-File src/openvpn/multi.c:
+When the current limit was set 20 years ago this might have been a
+meaningful memory saving but today the collision probability is
+more important.
 
-http://gerrit.openvpn.net/c/openvpn/+/1570/comment/301d83f2_79ac416f?usp=3D=
-email :
-PS2, Line 255:     return (uint32_t)(uintptr_t)key;
-> Why not remove the uint32_t cast here?
-Acknowledged
+Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M doc/man-sections/advanced-options.rst
+M doc/man-sections/server-options.rst
+M src/openvpn/options.c
+3 files changed, 24 insertions(+), 4 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/1563/6
+
+diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advan=
+ced-options.rst
+index e1115e4..73ca44a 100644
+--- a/doc/man-sections/advanced-options.rst
++++ b/doc/man-sections/advanced-options.rst
+@@ -36,7 +36,8 @@
+
+      hash-size r v
+
+-  By default, both tables are sized at 256 buckets.
++  By default, both tables are sized at 4 times ``--max-clients`` buckets.
++  With the default of 1024 of ``--max-clients`` this gives 4096 buckets.
+
+ --bcast-buffers n
+   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
+options.rst
+index 03ce651..eb8e273 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -414,7 +414,7 @@
+      iroute-ipv6 ipv6addr/bits
+
+ --max-clients n
+-  Limit server to a maximum of ``n`` concurrent clients.
++  Limit server to a maximum of ``n`` concurrent clients. Defaults to 1024.
+
+ --max-routes-per-client n
+   Allow a maximum of ``n`` internal routes per client (default
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1db781d..24f2407 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -849,8 +849,6 @@
+ #endif
+     o->vlan_accept =3D VLAN_ALL;
+     o->vlan_pvid =3D 1;
+-    o->real_hash_size =3D 256;
+-    o->virtual_hash_size =3D 256;
+     o->n_bcast_buf =3D 256;
+     o->tcp_queue_limit =3D 64;
+     o->max_clients =3D 1024;
+@@ -3724,6 +3722,22 @@
+     gc_free(&gc);
+ }
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
++/**
++ * Sets the internal hash maps sizes according to the max_clients
++ *
++ */
++static void
++helper_hashmap_sizes(struct options *o)
++{
++    if (!o->real_hash_size)
++    {
++        o->real_hash_size =3D 4 * o->max_clients;
++    }
++    if (!o->virtual_hash_size)
++    {
++        o->virtual_hash_size =3D 4 * o->max_clients;
++    }
++}
+
+ static void
+ options_postprocess_mutate(struct options *o, struct env_set *es)
+@@ -3739,6 +3753,11 @@
+     helper_keepalive(o);
+     helper_tcp_nodelay(o);
+
++    if (o->mode =3D=3D MODE_SERVER)
++    {
++        helper_hashmap_sizes(o);
++    }
++
+     options_postprocess_setdefault_ncpciphers(o);
+     options_set_backwards_compatible_options(o);
+     options_process_mutate_prf(o);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1570?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib8140107f98164d2a2e1768a6d8ac65016cd7f7c
-Gerrit-Change-Number: 1570
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
+Gerrit-Change-Number: 1563
+Gerrit-PatchSet: 6
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 19 Mar 2026 13:06:49 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---jZfNnvDggN4=
+--VWTi4unuIK8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1570?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/multi.c:</p><ul st=
-yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1570/comment/301d83f2_79ac416f?usp=3Demail">Patch Set #2, L=
-ine 255:</a> <code style=3D"font-family:monospace,monospace">    return (ui=
-nt32_t)(uintptr_t)key;</code></p><p><blockquote style=3D"border-left: 1px s=
-olid #aaa; margin: 10px 0; padding: 0 10px;">Why not remove the uint32_t ca=
-st here?</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">Acknowledged</p></li></ul></li></ul><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1570?usp=3Demail">cha=
-nge 1570</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1570?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail">View Chan=
+ge</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule i=
+s unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">Increase default size of internal hash =
+maps to 4 * --max-clients<br><br>The default of 256 seems quite low as with=
+ (at least) 1024 possible<br>entries we have a guaranteed collisions. Using=
+ 4 times the number<br>of possible entries for real addresses should reduce=
+ collisions quite<br>a bit while also leaving some headroom for the virtual=
+ addresses hash<br>where a client might have more than one address.<br><br>=
+A reason to keep the limit so low are the memory requirements. Each<br>buck=
+et has the size of one linked-list pointer (4 byte or 32 bit and<br>8 byte =
+for 64 bit). So 256 buckets use 1 or 2 kB while 4096 will use<br>16 kB or 3=
+2 kB.<br><br>When the current limit was set 20 years ago this might have be=
+en a<br>meaningful memory saving but today the collision probability is<br>=
+more important.<br><br>Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b=
+<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M doc/man=
+-sections/advanced-options.rst<br>M doc/man-sections/server-options.rst<br>=
+M src/openvpn/options.c<br>3 files changed, 24 insertions(+), 4 deletions(-=
+)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
+n refs/changes/63/1563/6</pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/advanced-opt=
+ions.rst b/doc/man-sections/advanced-options.rst</span><br><span>index e111=
+5e4..73ca44a 100644</span><br><span>--- a/doc/man-sections/advanced-options=
+.rst</span><br><span>+++ b/doc/man-sections/advanced-options.rst</span><br>=
+<span>@@ -36,7 +36,8 @@</span><br><span> </span><br><span>      hash-size r=
+ v</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ By default, both tables are sized at 256 buckets.</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  By default, both tables are sized at 4 tim=
+es ``--max-clients`` buckets.</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  With the default of 1024 of ``--max-clients`` this gives 4096 b=
+uckets.</span><br><span> </span><br><span> --bcast-buffers n</span><br><spa=
+n>   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).<=
+/span><br><span>diff --git a/doc/man-sections/server-options.rst b/doc/man-=
+sections/server-options.rst</span><br><span>index 03ce651..eb8e273 100644</=
+span><br><span>--- a/doc/man-sections/server-options.rst</span><br><span>++=
++ b/doc/man-sections/server-options.rst</span><br><span>@@ -414,7 +414,7 @@=
+</span><br><span>      iroute-ipv6 ipv6addr/bits</span><br><span> </span><b=
+r><span> --max-clients n</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  Limit server to a maximum of ``n`` concurrent clients.</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  Limit server to a maximum of ``n`=
+` concurrent clients. Defaults to 1024.</span><br><span> </span><br><span> =
+--max-routes-per-client n</span><br><span>   Allow a maximum of ``n`` inter=
+nal routes per client (default</span><br><span>diff --git a/src/openvpn/opt=
+ions.c b/src/openvpn/options.c</span><br><span>index 1db781d..24f2407 10064=
+4</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/ope=
+nvpn/options.c</span><br><span>@@ -849,8 +849,6 @@</span><br><span> #endif<=
+/span><br><span>     o-&gt;vlan_accept =3D VLAN_ALL;</span><br><span>     o=
+-&gt;vlan_pvid =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    o-&gt;real_hash_size =3D 256;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    o-&gt;virtual_hash_size =3D 256;</span><br><span>     o-&gt=
+;n_bcast_buf =3D 256;</span><br><span>     o-&gt;tcp_queue_limit =3D 64;</s=
+pan><br><span>     o-&gt;max_clients =3D 1024;</span><br><span>@@ -3724,6 +=
+3722,22 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span>=
+<br><span> #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Sets the internal hash maps sizes acco=
+rding to the max_clients</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+helper_hashmap_sizes(struct options =
+*o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (!o-&gt;real_hash_size)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        o-&gt;real_hash_size =3D 4 * =
+o-&gt;max_clients;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!o-&gt;=
+virtual_hash_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;v=
+irtual_hash_size =3D 4 * o-&gt;max_clients;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+}</span><br><span> </span><br><span> static void</span><br><span>=
+ options_postprocess_mutate(struct options *o, struct env_set *es)</span><b=
+r><span>@@ -3739,6 +3753,11 @@</span><br><span>     helper_keepalive(o);</s=
+pan><br><span>     helper_tcp_nodelay(o);</span><br><span> </span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;mode =3D=3D MODE_SERV=
+ER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        helper_hashmap_sizes(o=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     options_p=
+ostprocess_setdefault_ncpciphers(o);</span><br><span>     options_set_backw=
+ards_compatible_options(o);</span><br><span>     options_process_mutate_prf=
+(o);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/1563?usp=3Demail">change 1563</a>. To unsubsc=
+ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
+vpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1563?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib8140107f98164d2a2e1768a6d8=
-ac65016cd7f7c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1570 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia699b0dfa407ac377970bb13043=
+4298eaaec592b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1563 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 19 Mar 2026 13:06:49=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---jZfNnvDggN4=--
+--VWTi4unuIK8=--
 
