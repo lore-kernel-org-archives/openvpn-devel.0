@@ -1,16 +1,12 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 19 Mar 2026 14:41:11 +0000
-In-Reply-To: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
-References: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
-Reply-To: antonio@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <824b4701f152abd3d09071b2efda49b9ce987892-EmailReviewComments-HTML@...2715...>
+Message-ID: <3a5f2f6a-0145-4ae7-bb21-cf1c36b51501@...2181...>
+Date: Thu, 19 Mar 2026 15:42:46 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5ZHEy7NCgSk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Increase default
- size of internal hash maps to 4 * --max-clients
+References: <20260317141916.437559-1-a@...2181...> <abwJl_hNK3fqV45Y@...2915...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <abwJl_hNK3fqV45Y@...2915...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn net] ovpn: fix race between
+ deleting interface and adding new peer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +15,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Sabrina Dubroca <sd@...2891...>
+Cc: openvpn-devel@lists.sourceforge.net, Hyunwoo Kim <imv4bel@...277...>
 
---5ZHEy7NCgSk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 19/03/2026 15:35, Sabrina Dubroca wrote:
+> 2026-03-17, 15:19:16 +0100, Antonio Quartulli wrote:
+>> From: Antonio Quartulli <antonio@...515...>
+>>
+>> While deleting an existing ovpn interface, there is a very
+>> narrow window where adding a new peer via netlink may cause
+>> the netdevice to hang and prevent its unregistration.
+>>
+>> It may happen during ovpn_dellink(), when all existing peers are
+>> freed and the device is queued for deregistration, but a
+>> CMD_PEER_NEW message comes in adding a new peer that takes again
+>> a reference to the netdev.
+>>
+>> At this point there is no way to release the device because we are
+>> under the assumption that all peers were already released.
+>>
+>> Fix the race condition by releasing all peers in ndo_uninit(),
+>> when the netdevice has already been removed from the netdev
+>> list and thus an incoming CMD_PEER_NEW cannot have any effect
+>> anymore.
+>>
+>> At this point ovpn_dellink() becomes empty and can just be
+>> removed.
+>>
+>> Reported-by: Hyunwoo Kim <imv4bel@...277...>
+>> Closes: https://lore.kernel.org/netdev/aaVgJ16edTfQkYbx@...3012.../
+>> Suggested-by: Sabrina Dubroca <sd@...2891...>
+>> Fixes: 80747caef33d ("ovpn: introduce the ovpn_peer object")
+>> Signed-off-by: Antonio Quartulli <antonio@...515...>
+>> ---
+>>   drivers/net/ovpn/main.c | 12 ++----------
+>>   1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> Reviewed-by: Sabrina Dubroca <sd@...2891...>
+> 
+> Thanks. This issue probably got introduced when I made you move some
+> stuff from the UNREGISTER notifier into deletion, during the initial
+> review.
+> 
 
-Attention is currently required from: plaisthos.
-
-ordex has posted comments on this change by plaisthos. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1563?usp=3Demail )
-
-Change subject: Increase default size of internal hash maps to 4 * --max-cl=
-ients
-......................................................................
+I also think it was around those times.
+This area has been reshuffled quite a bit :)
 
 
-Patch Set 6: Code-Review+2
+Will send to net ASAP.
 
-(1 comment)
+Thanks!
 
-Patchset:
+Regards,
 
-PS6:=20
-I'd personally just add a remark in the commit next to 1024 to make it clea=
-r that this is the default max-client value, because at first glance it was=
-n't obvious to me.
+-- 
+Antonio Quartulli
 
-Other than that, the patch looks good!
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
-Gerrit-Change-Number: 1563
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <antonio@...2726...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Thu, 19 Mar 2026 14:41:11 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---5ZHEy7NCgSk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/1563?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I&#39;d per=
-sonally just add a remark in the commit next to 1024 to make it clear that =
-this is the default max-client value, because at first glance it wasn&#39;t=
- obvious to me.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word=
--wrap: break-word;">Other than that, the patch looks good!</p></li></ul></l=
-i></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-563?usp=3Demail">change 1563</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">s=
-ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
-"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1563=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia699b0dfa407ac377970bb13043=
-4298eaaec592b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1563 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 19 Mar 2026 14:41:11=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---5ZHEy7NCgSk=--
 
