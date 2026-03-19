@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 19 Mar 2026 13:01:11 +0000
+Date: Thu, 19 Mar 2026 13:03:38 +0000
 In-Reply-To: <gerrit.1677175662000.I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0@...2715...>
 References: <gerrit.1677175662000.I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <4e495251e1f5be18f35b85891390ec4a7555dd3e-EmailReviewComments-HTML@...2715...>
+Message-ID: <b104396ff77f232ad17d498f910b20735d40c93f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YdrovWjt+To="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="7L/ghUU+Hng="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Allow to use
  OpenSSL's SIPHASH implementation when available
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---YdrovWjt+To=
+--7L/ghUU+Hng=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -40,13 +40,13 @@ Patch Set 12:
 
 File src/openvpn/siphash_openssl.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/31/comment/2d5438c5_a914d406?usp=3Dem=
+http://gerrit.openvpn.net/c/openvpn/+/31/comment/12f675bd_1df71d40?usp=3Dem=
 ail :
-PS11, Line 20:  *  You should have received a copy of the GNU General Publi=
-c License along
-> This is an old version of the GPL header, please update to the one curren=
-tly used in the rest of the [=E2=80=A6]
-Done
+PS11, Line 123: #else /* if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSI=
+ON_NUMBER >=3D 0x30000000L */
+> The comment here is wrong
+I will remove the comment since clang format does not seem to enforce this =
+it is better to leave it out then to have to update it every time.
 
 
 
@@ -65,12 +65,12 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 19 Mar 2026 13:01:11 +0000
+Gerrit-Comment-Date: Thu, 19 Mar 2026 13:03:38 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
 
---YdrovWjt+To=
+--7L/ghUU+Hng=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -81,21 +81,22 @@ ange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><l=
 i style=3D"margin: 0; padding: 0;"><p>File src/openvpn/siphash_openssl.c:</=
 p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
 ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/31/comment/2d5438c5_a914d406?usp=3Demail">Patch Set=
- #11, Line 20:</a> <code style=3D"font-family:monospace,monospace"> *  You =
-should have received a copy of the GNU General Public License along</code><=
-/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
-ding: 0 10px;">This is an old version of the GPL header, please update to t=
-he one currently used in the rest of the [=E2=80=A6]</blockquote></p><p cla=
-ss=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done<=
-/p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/31?usp=3Demail">change 31</a>. To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?us=
-p=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/31?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
-/div></div>
+openvpn.net/c/openvpn/+/31/comment/12f675bd_1df71d40?usp=3Demail">Patch Set=
+ #11, Line 123:</a> <code style=3D"font-family:monospace,monospace">#else /=
+* if defined(ENABLE_CRYPTO_OPENSSL) &amp;&amp; OPENSSL_VERSION_NUMBER &gt;=
+=3D 0x30000000L */</code></p><p><blockquote style=3D"border-left: 1px solid=
+ #aaa; margin: 10px 0; padding: 0 10px;">The comment here is wrong</blockqu=
+ote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
+k-word;">I will remove the comment since clang format does not seem to enfo=
+rce this it is better to leave it out then to have to update it every time.=
+</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/31?usp=3Demail">change 31</a>. To unsubscribe, or for help =
+writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?u=
+sp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/31?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -112,7 +113,7 @@ d54a1c1bf7aa0 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 19 Mar 2026 13:01:11=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 19 Mar 2026 13:03:38=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
@@ -121,5 +122,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---YdrovWjt+To=--
+--7L/ghUU+Hng=--
 
