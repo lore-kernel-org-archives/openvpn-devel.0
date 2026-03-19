@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Thu, 19 Mar 2026 14:17:13 +0000
-In-Reply-To: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
-References: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
+In-Reply-To: <gerrit.1772719451000.Ibf8865e451866e1fffc8dbc8ad5ecf6bc5577ce4@...2715...>
+References: <gerrit.1772719451000.Ibf8865e451866e1fffc8dbc8ad5ecf6bc5577ce4@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <d0e00e580b32ea827fb730e5d388be0944cae864-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <17b2e78b6274ec2cd71829f6e3a7be2c85121ea3-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VWTi4unuIK8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Increase default
- size of internal hash maps to 4 * --max-clients
+Content-Type: multipart/alternative; boundary="m82EUPIqcuo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove
+ multi_context->iter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,254 +22,692 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VWTi4unuIK8=
+--m82EUPIqcuo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
 Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1556?usp=3Demail
 
 to look at the new patch set (#6).
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
 
 
-Change subject: Increase default size of internal hash maps to 4 * --max-cl=
-ients
+Change subject: Remove multi_context->iter
 ......................................................................
 
-Increase default size of internal hash maps to 4 * --max-clients
+Remove multi_context->iter
 
-The default of 256 seems quite low as with (at least) 1024 possible
-entries we have a guaranteed collisions. Using 4 times the number
-of possible entries for real addresses should reduce collisions quite
-a bit while also leaving some headroom for the virtual addresses hash
-where a client might have more than one address.
+The multi_context->iter is basically a hash with only one bucket. This makes
+m->iter a linear list. Instead of maintaining this extra list use
+m->instances instead. This is a fixed sized continuous array, so iterating
+over it should be very quick. When the number of connected clients
+approaches max_clients, iterating over a static array should be faster than
+a linked list, especially when considering cache locality.
 
-A reason to keep the limit so low are the memory requirements. Each
-bucket has the size of one linked-list pointer (4 byte or 32 bit and
-8 byte for 64 bit). So 256 buckets use 1 or 2 kB while 4096 will use
-16 kB or 32 kB.
+Of the several places where m->iter is used only one is potentially on a
+critical path: the usage of m->iter in multi_bcast.
 
-When the current limit was set 20 years ago this might have been a
-meaningful memory saving but today the collision probability is
-more important.
+However this performance difference would be only visible with a lightly
+loaded server with very few clients. And even in this scenario I could
+not manage to measure a difference.
 
-Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
+Change-Id: Ibf8865e451866e1fffc8dbc8ad5ecf6bc5577ce4
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M doc/man-sections/advanced-options.rst
-M doc/man-sections/server-options.rst
-M src/openvpn/options.c
-3 files changed, 24 insertions(+), 4 deletions(-)
+M src/openvpn/multi.c
+M src/openvpn/multi.h
+M src/openvpn/push_util.c
+3 files changed, 25 insertions(+), 83 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/63/1563/6
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/1556/6
 
-diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advan=
-ced-options.rst
-index e1115e4..73ca44a 100644
---- a/doc/man-sections/advanced-options.rst
-+++ b/doc/man-sections/advanced-options.rst
-@@ -36,7 +36,8 @@
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 1625fd0..9d4ea49 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -300,14 +300,6 @@
+     m->vhash =3D hash_init(t->options.virtual_hash_size, (uint32_t)get_ran=
+dom(),
+                          mroute_addr_hash_function, mroute_addr_compare_fu=
+nction);
 
-      hash-size r v
-
--  By default, both tables are sized at 256 buckets.
-+  By default, both tables are sized at 4 times ``--max-clients`` buckets.
-+  With the default of 1024 of ``--max-clients`` this gives 4096 buckets.
-
- --bcast-buffers n
-   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-=
-options.rst
-index 03ce651..eb8e273 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -414,7 +414,7 @@
-      iroute-ipv6 ipv6addr/bits
-
- --max-clients n
--  Limit server to a maximum of ``n`` concurrent clients.
-+  Limit server to a maximum of ``n`` concurrent clients. Defaults to 1024.
-
- --max-routes-per-client n
-   Allow a maximum of ``n`` internal routes per client (default
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1db781d..24f2407 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -849,8 +849,6 @@
+-    /*
+-     * This hash table is a clone of m->hash but with a
+-     * bucket size of one so that it can be used
+-     * for fast iteration through the list.
+-     */
+-    m->iter =3D hash_init(1, (uint32_t)get_random(), mroute_addr_hash_func=
+tion,
+-                        mroute_addr_compare_function);
+-
+ #ifdef ENABLE_MANAGEMENT
+     m->cid_hash =3D hash_init(t->options.real_hash_size, 0, cid_hash_funct=
+ion, cid_compare_function);
  #endif
-     o->vlan_accept =3D VLAN_ALL;
-     o->vlan_pvid =3D 1;
--    o->real_hash_size =3D 256;
--    o->virtual_hash_size =3D 256;
-     o->n_bcast_buf =3D 256;
-     o->tcp_queue_limit =3D 64;
-     o->max_clients =3D 1024;
-@@ -3724,6 +3722,22 @@
-     gc_free(&gc);
- }
- #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-+/**
-+ * Sets the internal hash maps sizes according to the max_clients
-+ *
-+ */
-+static void
-+helper_hashmap_sizes(struct options *o)
-+{
-+    if (!o->real_hash_size)
-+    {
-+        o->real_hash_size =3D 4 * o->max_clients;
-+    }
-+    if (!o->virtual_hash_size)
-+    {
-+        o->virtual_hash_size =3D 4 * o->max_clients;
-+    }
-+}
+@@ -591,10 +583,6 @@
+         {
+             ASSERT(hash_remove(m->hash, &mi->real));
+         }
+-        if (mi->did_iter)
+-        {
+-            ASSERT(hash_remove(m->iter, &mi->real));
+-        }
+ #ifdef ENABLE_MANAGEMENT
+         if (mi->did_cid_hash)
+         {
+@@ -664,23 +652,19 @@
+ {
+     if (m->hash)
+     {
+-        struct hash_iterator hi;
+-        struct hash_element *he;
+-
+-        hash_iterator_init(m->iter, &hi);
+-        while ((he =3D hash_iterator_next(&hi)))
++        for (int i =3D 0; i < m->max_clients; i++)
+         {
+-            struct multi_instance *mi =3D (struct multi_instance *)he->val=
+ue;
+-            mi->did_iter =3D false;
+-            multi_close_instance(m, mi, true);
++            struct multi_instance *mi =3D m->instances[i];
++            if (mi)
++            {
++                multi_close_instance(m, mi, true);
++            }
+         }
+-        hash_iterator_free(&hi);
 
- static void
- options_postprocess_mutate(struct options *o, struct env_set *es)
-@@ -3739,6 +3753,11 @@
-     helper_keepalive(o);
-     helper_tcp_nodelay(o);
+         multi_reap_all(m);
 
-+    if (o->mode =3D=3D MODE_SERVER)
-+    {
-+        helper_hashmap_sizes(o);
-+    }
+         hash_free(m->hash);
+         hash_free(m->vhash);
+-        hash_free(m->iter);
+ #ifdef ENABLE_MANAGEMENT
+         hash_free(m->cid_hash);
+ #endif
+@@ -760,14 +744,6 @@
+         generate_prefix(mi);
+     }
+
+-    if (!hash_add(m->iter, &mi->real, mi, false))
+-    {
+-        msg(D_MULTI_LOW, "MULTI: unable to add real address [%s] to iterat=
+or hash table",
+-            mroute_addr_print(&mi->real, &gc));
+-        goto err;
+-    }
+-    mi->did_iter =3D true;
+-
+ #ifdef ENABLE_MANAGEMENT
+     do
+     {
+@@ -1348,27 +1324,21 @@
+         const char *new_cn =3D tls_common_name(new_mi->context.c2.tls_mult=
+i, true);
+         if (new_cn)
+         {
+-            struct hash_iterator hi;
+-            struct hash_element *he;
+             int count =3D 0;
+
+-            hash_iterator_init(m->iter, &hi);
+-            while ((he =3D hash_iterator_next(&hi)))
++            for (int i =3D 0; i < m->max_clients; i++)
+             {
+-                struct multi_instance *mi =3D (struct multi_instance *)he-=
+>value;
+-                if (mi !=3D new_mi && !mi->halt)
++                struct multi_instance *mi =3D m->instances[i];
++                if (mi && mi !=3D new_mi && !mi->halt)
+                 {
+                     const char *cn =3D tls_common_name(mi->context.c2.tls_=
+multi, true);
+                     if (cn && !strcmp(cn, new_cn))
+                     {
+-                        mi->did_iter =3D false;
+                         multi_close_instance(m, mi, false);
+-                        hash_iterator_delete_element(&hi);
+                         ++count;
+                     }
+                 }
+             }
+-            hash_iterator_free(&hi);
+
+             if (count)
+             {
+@@ -2906,9 +2876,6 @@
+ multi_bcast(struct multi_context *m, const struct buffer *buf,
+             const struct multi_instance *sender_instance, uint16_t vid)
+ {
+-    struct hash_iterator hi;
+-    struct hash_element *he;
+-    struct multi_instance *mi;
+     struct mbuf_buffer *mb;
+
+     if (BLEN(buf) > 0)
+@@ -2917,12 +2884,12 @@
+         printf("BCAST len=3D%d\n", BLEN(buf));
+ #endif
+         mb =3D mbuf_alloc_buf(buf);
+-        hash_iterator_init(m->iter, &hi);
+
+-        while ((he =3D hash_iterator_next(&hi)))
++        for (int i =3D 0; i < m->max_clients; i++)
+         {
+-            mi =3D (struct multi_instance *)he->value;
+-            if (mi !=3D sender_instance && !mi->halt)
++            struct multi_instance *mi =3D m->instances[i];
 +
-     options_postprocess_setdefault_ncpciphers(o);
-     options_set_backwards_compatible_options(o);
-     options_process_mutate_prf(o);
++            if (mi && mi !=3D sender_instance && !mi->halt)
+             {
+                 if (vid !=3D 0 && vid !=3D mi->context.options.vlan_pvid)
+                 {
+@@ -2931,8 +2898,6 @@
+                 multi_add_mbuf(m, mi, mb);
+             }
+         }
+-
+-        hash_iterator_free(&hi);
+         mbuf_free_buf(mb);
+     }
+ }
+@@ -3182,7 +3147,6 @@
+
+     /* remove old address from hash table before changing address */
+     ASSERT(hash_remove(m->hash, &mi->real));
+-    ASSERT(hash_remove(m->iter, &mi->real));
+
+     /* change external network address of the remote peer */
+     mi->real =3D real;
+@@ -3198,7 +3162,6 @@
+     tls_update_remote_addr(mi->context.c2.tls_multi, &mi->context.c2.from);
+
+     ASSERT(hash_add(m->hash, &mi->real, mi, false));
+-    ASSERT(hash_add(m->iter, &mi->real, mi, false));
+
+ #ifdef ENABLE_MANAGEMENT
+     ASSERT(hash_add(m->cid_hash, &mi->context.c2.mda_context.cid, mi, true=
+));
+@@ -3830,22 +3793,17 @@
+ static void
+ multi_push_restart_schedule_exit(struct multi_context *m, bool next_server)
+ {
+-    struct hash_iterator hi;
+-    struct hash_element *he;
+-
+     /* tell all clients to restart */
+-    hash_iterator_init(m->iter, &hi);
+-    while ((he =3D hash_iterator_next(&hi)))
++    for (int i =3D 0; i < m->max_clients; i++)
+     {
+-        struct multi_instance *mi =3D (struct multi_instance *)he->value;
+-        if (!mi->halt && proto_is_dgram(mi->context.c2.link_sockets[0]->in=
+fo.proto))
++        struct multi_instance *mi =3D m->instances[i];
++        if (mi && !mi->halt && proto_is_dgram(mi->context.c2.link_sockets[=
+0]->info.proto))
+         {
+             send_control_channel_string(&mi->context, next_server ? "RESTA=
+RT,[N]" : "RESTART",
+                                         D_PUSH);
+             multi_schedule_context_wakeup(m, mi);
+         }
+     }
+-    hash_iterator_free(&hi);
+
+     /* reschedule signal */
+     ASSERT(!openvpn_gettimeofday(&m->deferred_shutdown_signal.wakeup, NULL=
+));
+@@ -3916,15 +3874,12 @@
+ management_callback_kill_by_cn(void *arg, const char *del_cn)
+ {
+     struct multi_context *m =3D (struct multi_context *)arg;
+-    struct hash_iterator hi;
+-    struct hash_element *he;
+     int count =3D 0;
+
+-    hash_iterator_init(m->iter, &hi);
+-    while ((he =3D hash_iterator_next(&hi)))
++    for (int i =3D 0; i < m->max_clients; i++)
+     {
+-        struct multi_instance *mi =3D (struct multi_instance *)he->value;
+-        if (!mi->halt)
++        struct multi_instance *mi =3D m->instances[i];
++        if (mi && !mi->halt)
+         {
+             const char *cn =3D tls_common_name(mi->context.c2.tls_multi, f=
+alse);
+             if (cn && !strcmp(cn, del_cn))
+@@ -3934,7 +3889,6 @@
+             }
+         }
+     }
+-    hash_iterator_free(&hi);
+     return count;
+ }
+
+@@ -3942,8 +3896,6 @@
+ management_callback_kill_by_addr(void *arg, const in_addr_t addr, const ui=
+nt16_t port, const uint8_t proto)
+ {
+     struct multi_context *m =3D (struct multi_context *)arg;
+-    struct hash_iterator hi;
+-    struct hash_element *he;
+     struct openvpn_sockaddr saddr;
+     struct mroute_addr maddr;
+     int count =3D 0;
+@@ -3955,17 +3907,15 @@
+     maddr.proto =3D proto;
+     if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
+     {
+-        hash_iterator_init(m->iter, &hi);
+-        while ((he =3D hash_iterator_next(&hi)))
++        for (int i =3D 0; i < m->max_clients; i++)
+         {
+-            struct multi_instance *mi =3D (struct multi_instance *)he->val=
+ue;
+-            if (!mi->halt && mroute_addr_equal(&maddr, &mi->real))
++            struct multi_instance *mi =3D m->instances[i];
++            if (mi && !mi->halt && mroute_addr_equal(&maddr, &mi->real))
+             {
+                 multi_signal_instance(m, mi, SIGTERM);
+                 ++count;
+             }
+         }
+-        hash_iterator_free(&hi);
+     }
+     return count;
+ }
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index c686e47..498409d 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -132,7 +132,6 @@
+     struct in6_addr reporting_addr_ipv6; /* IPv6 address in status listing=
+ */
+
+     bool did_real_hash;
+-    bool did_iter;
+ #ifdef ENABLE_MANAGEMENT
+     bool did_cid_hash;
+     struct buffer_list *cc_config;
+@@ -168,9 +167,6 @@
+                                         *   address of the remote peer. */
+     struct hash *vhash;                /**< VPN tunnel instances indexed by
+                                         *   virtual address of remote host=
+s. */
+-    struct hash *iter;                 /**< VPN tunnel instances indexed b=
+y real
+-                                        *   address of the remote peer, op=
+timized
+-                                        *   for iteration. */
+     struct schedule *schedule;
+     struct mbuf_set *mbuf;             /**< Set of buffers for passing data
+                                         *   channel packets between VPN tu=
+nnel
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 51c7b5f..6456554 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -316,15 +316,12 @@
+     }
+
+     int count =3D 0;
+-    struct hash_iterator hi;
+-    const struct hash_element *he;
+
+-    hash_iterator_init(m->iter, &hi);
+-    while ((he =3D hash_iterator_next(&hi)))
++    for (int i =3D 0; i < m->max_clients; i++)
+     {
+-        struct multi_instance *curr_mi =3D he->value;
++        struct multi_instance *curr_mi =3D m->instances[i];
+
+-        if (curr_mi->halt || !support_push_update(curr_mi))
++        if (!curr_mi || curr_mi->halt || !support_push_update(curr_mi))
+         {
+             continue;
+         }
+@@ -338,7 +335,6 @@
+         count++;
+     }
+
+-    hash_iterator_free(&hi);
+     buffer_list_free(msgs);
+     gc_free(&gc);
+     return count;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1556?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
-Gerrit-Change-Number: 1563
+Gerrit-Change-Id: Ibf8865e451866e1fffc8dbc8ad5ecf6bc5577ce4
+Gerrit-Change-Number: 1556
 Gerrit-PatchSet: 6
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 
---VWTi4unuIK8=
+--m82EUPIqcuo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
+rently required from: flichtenheld, plaisthos. </p>
 <p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1563?usp=3Demail">View Chan=
-ge</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule i=
-s unsatisfied now.</p><pre class=3D"blocks" style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;">Increase default size of internal hash =
-maps to 4 * --max-clients<br><br>The default of 256 seems quite low as with=
- (at least) 1024 possible<br>entries we have a guaranteed collisions. Using=
- 4 times the number<br>of possible entries for real addresses should reduce=
- collisions quite<br>a bit while also leaving some headroom for the virtual=
- addresses hash<br>where a client might have more than one address.<br><br>=
-A reason to keep the limit so low are the memory requirements. Each<br>buck=
-et has the size of one linked-list pointer (4 byte or 32 bit and<br>8 byte =
-for 64 bit). So 256 buckets use 1 or 2 kB while 4096 will use<br>16 kB or 3=
-2 kB.<br><br>When the current limit was set 20 years ago this might have be=
-en a<br>meaningful memory saving but today the collision probability is<br>=
-more important.<br><br>Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b=
-<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M doc/man=
--sections/advanced-options.rst<br>M doc/man-sections/server-options.rst<br>=
-M src/openvpn/options.c<br>3 files changed, 24 insertions(+), 4 deletions(-=
-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
-n refs/changes/63/1563/6</pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;"><span>diff --git a/doc/man-sections/advanced-opt=
-ions.rst b/doc/man-sections/advanced-options.rst</span><br><span>index e111=
-5e4..73ca44a 100644</span><br><span>--- a/doc/man-sections/advanced-options=
-.rst</span><br><span>+++ b/doc/man-sections/advanced-options.rst</span><br>=
-<span>@@ -36,7 +36,8 @@</span><br><span> </span><br><span>      hash-size r=
- v</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
- By default, both tables are sized at 256 buckets.</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  By default, both tables are sized at 4 tim=
-es ``--max-clients`` buckets.</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  With the default of 1024 of ``--max-clients`` this gives 4096 b=
-uckets.</span><br><span> </span><br><span> --bcast-buffers n</span><br><spa=
-n>   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).<=
-/span><br><span>diff --git a/doc/man-sections/server-options.rst b/doc/man-=
-sections/server-options.rst</span><br><span>index 03ce651..eb8e273 100644</=
-span><br><span>--- a/doc/man-sections/server-options.rst</span><br><span>++=
-+ b/doc/man-sections/server-options.rst</span><br><span>@@ -414,7 +414,7 @@=
-</span><br><span>      iroute-ipv6 ipv6addr/bits</span><br><span> </span><b=
-r><span> --max-clients n</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-  Limit server to a maximum of ``n`` concurrent clients.</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  Limit server to a maximum of ``n`=
-` concurrent clients. Defaults to 1024.</span><br><span> </span><br><span> =
---max-routes-per-client n</span><br><span>   Allow a maximum of ``n`` inter=
-nal routes per client (default</span><br><span>diff --git a/src/openvpn/opt=
-ions.c b/src/openvpn/options.c</span><br><span>index 1db781d..24f2407 10064=
-4</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/ope=
-nvpn/options.c</span><br><span>@@ -849,8 +849,6 @@</span><br><span> #endif<=
-/span><br><span>     o-&gt;vlan_accept =3D VLAN_ALL;</span><br><span>     o=
--&gt;vlan_pvid =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    o-&gt;real_hash_size =3D 256;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    o-&gt;virtual_hash_size =3D 256;</span><br><span>     o-&gt=
-;n_bcast_buf =3D 256;</span><br><span>     o-&gt;tcp_queue_limit =3D 64;</s=
-pan><br><span>     o-&gt;max_clients =3D 1024;</span><br><span>@@ -3724,6 +=
-3722,22 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span>=
-<br><span> #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * Sets the internal hash maps sizes acco=
-rding to the max_clients</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+helper_hashmap_sizes(struct options =
-*o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!o-&gt;real_hash_size)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        o-&gt;real_hash_size =3D 4 * =
-o-&gt;max_clients;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!o-&gt;=
-virtual_hash_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;v=
-irtual_hash_size =3D 4 * o-&gt;max_clients;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+}</span><br><span> </span><br><span> static void</span><br><span>=
- options_postprocess_mutate(struct options *o, struct env_set *es)</span><b=
-r><span>@@ -3739,6 +3753,11 @@</span><br><span>     helper_keepalive(o);</s=
-pan><br><span>     helper_tcp_nodelay(o);</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;mode =3D=3D MODE_SERV=
-ER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        helper_hashmap_sizes(o=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     options_p=
-ostprocess_setdefault_ncpciphers(o);</span><br><span>     options_set_backw=
-ards_compatible_options(o);</span><br><span>     options_process_mutate_prf=
-(o);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/1563?usp=3Demail">change 1563</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1563?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1556?usp=3Demail">View Chan=
+ge</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><p>The change is no longer submittable: Co=
+de-Review and checks~ChecksSubmitRule are unsatisfied now.</p><pre class=3D=
+"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+>Remove multi_context-&gt;iter<br><br>The multi_context-&gt;iter is basical=
+ly a hash with only one bucket. This makes<br>m-&gt;iter a linear list. Ins=
+tead of maintaining this extra list use<br>m-&gt;instances instead. This is=
+ a fixed sized continuous array, so iterating<br>over it should be very qui=
+ck. When the number of connected clients<br>approaches max_clients, iterati=
+ng over a static array should be faster than<br>a linked list, especially w=
+hen considering cache locality.<br><br>Of the several places where m-&gt;it=
+er is used only one is potentially on a<br>critical path: the usage of m-&g=
+t;iter in multi_bcast.<br><br>However this performance difference would be =
+only visible with a lightly<br>loaded server with very few clients. And eve=
+n in this scenario I could<br>not manage to measure a difference.<br><br>Ch=
+ange-Id: Ibf8865e451866e1fffc8dbc8ad5ecf6bc5577ce4<br>Signed-off-by: Arne S=
+chwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/multi.c<br>M src/ope=
+nvpn/multi.h<br>M src/openvpn/push_util.c<br>3 files changed, 25 insertions=
+(+), 83 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openv=
+pn.net:29418/openvpn refs/changes/56/1556/6</pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
+n/multi.c b/src/openvpn/multi.c</span><br><span>index 1625fd0..9d4ea49 1006=
+44</span><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/open=
+vpn/multi.c</span><br><span>@@ -300,14 +300,6 @@</span><br><span>     m-&gt=
+;vhash =3D hash_init(t-&gt;options.virtual_hash_size, (uint32_t)get_random(=
+),</span><br><span>                          mroute_addr_hash_function, mro=
+ute_addr_compare_function);</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    /*</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-     * This hash table is a clone of m-&gt;hash but with a</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-     * bucket size of one so =
+that it can be used</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+   * for fast iteration through the list.</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    m-&gt;iter =3D hash_init(1, (uint32_t)get_random(), mroute_addr_h=
+ash_function,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                mroute_addr_compare_function);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span> #ifdef ENABLE_MANAGEMENT</span><=
+br><span>     m-&gt;cid_hash =3D hash_init(t-&gt;options.real_hash_size, 0,=
+ cid_hash_function, cid_compare_function);</span><br><span> #endif</span><b=
+r><span>@@ -591,10 +583,6 @@</span><br><span>         {</span><br><span>   =
+          ASSERT(hash_remove(m-&gt;hash, &amp;mi-&gt;real));</span><br><spa=
+n>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
+f (mi-&gt;did_iter)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            AS=
+SERT(hash_remove(m-&gt;iter, &amp;mi-&gt;real));</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span> #ifdef ENABLE_MANAGEM=
+ENT</span><br><span>         if (mi-&gt;did_cid_hash)</span><br><span>     =
+    {</span><br><span>@@ -664,23 +652,19 @@</span><br><span> {</span><br><s=
+pan>     if (m-&gt;hash)</span><br><span>     {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        struct hash_iterator hi;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        struct hash_element *he;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        hash_iterator_init(m-&gt;iter, &amp;hi);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        while ((he =
+=3D hash_iterator_next(&amp;hi)))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</spa=
+n><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            struct multi_instance *mi =3D (struct multi_instance *)he-&gt;=
+value;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            mi-=
+&gt;did_iter =3D false;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            multi_close_instance(m, mi, true);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            struct multi_instance *mi =3D m-&g=
+t;instances[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        if (mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      multi_close_instance(m, mi, true);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            }</span><br><span>         }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        hash_iterator_free(&amp;hi)=
+;</span><br><span> </span><br><span>         multi_reap_all(m);</span><br><=
+span> </span><br><span>         hash_free(m-&gt;hash);</span><br><span>    =
+     hash_free(m-&gt;vhash);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        hash_free(m-&gt;iter);</span><br><span> #ifdef ENABLE_MANAGE=
+MENT</span><br><span>         hash_free(m-&gt;cid_hash);</span><br><span> #=
+endif</span><br><span>@@ -760,14 +744,6 @@</span><br><span>         generat=
+e_prefix(mi);</span><br><span>     }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    if (!hash_add(m-&gt;iter, &amp;mi-&gt;=
+real, mi, false))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_MULTI_=
+LOW, &quot;MULTI: unable to add real address [%s] to iterator hash table&qu=
+ot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            mrout=
+e_addr_print(&amp;mi-&gt;real, &amp;gc));</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        goto err;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    mi-&gt;did_iter =3D true;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>     do<=
+/span><br><span>     {</span><br><span>@@ -1348,27 +1324,21 @@</span><br><s=
+pan>         const char *new_cn =3D tls_common_name(new_mi-&gt;context.c2.t=
+ls_multi, true);</span><br><span>         if (new_cn)</span><br><span>     =
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            stru=
+ct hash_iterator hi;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           struct hash_element *he;</span><br><span>             int count =
+=3D 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            hash_iterator_init(m-&gt;iter, &amp;hi);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            while ((he =3D hash_iterator_=
+next(&amp;hi)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span>  =
+           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       struct multi_instance *mi =3D (struct multi_instance *)he-&gt;value;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (m=
+i !=3D new_mi &amp;&amp; !mi-&gt;halt)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                struct multi_instance *mi =3D m-&gt;inst=
+ances[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      if (mi &amp;&amp; mi !=3D new_mi &amp;&amp; !mi-&gt;halt)</span><br><=
+span>                 {</span><br><span>                     const char *cn=
+ =3D tls_common_name(mi-&gt;context.c2.tls_multi, true);</span><br><span>  =
+                   if (cn &amp;&amp; !strcmp(cn, new_cn))</span><br><span> =
+                    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+                        mi-&gt;did_iter =3D false;</span><br><span>        =
+                 multi_close_instance(m, mi, false);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                        hash_iterator_delet=
+e_element(&amp;hi);</span><br><span>                         ++count;</span=
+><br><span>                     }</span><br><span>                 }</span>=
+<br><span>             }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            hash_iterator_free(&amp;hi);</span><br><span> </span><br><sp=
+an>             if (count)</span><br><span>             {</span><br><span>@=
+@ -2906,9 +2876,6 @@</span><br><span> multi_bcast(struct multi_context *m, =
+const struct buffer *buf,</span><br><span>             const struct multi_i=
+nstance *sender_instance, uint16_t vid)</span><br><span> {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    struct hash_iterator hi;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash_element *he;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instanc=
+e *mi;</span><br><span>     struct mbuf_buffer *mb;</span><br><span> </span=
+><br><span>     if (BLEN(buf) &gt; 0)</span><br><span>@@ -2917,12 +2884,12 =
+@@</span><br><span>         printf(&quot;BCAST len=3D%d\n&quot;, BLEN(buf))=
+;</span><br><span> #endif</span><br><span>         mb =3D mbuf_alloc_buf(bu=
+f);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        hash_itera=
+tor_init(m-&gt;iter, &amp;hi);</span><br><span> </span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        while ((he =3D hash_iterator_next(&amp;h=
+i)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (in=
+t i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span>         {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            mi =3D (struct m=
+ulti_instance *)he-&gt;value;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            if (mi !=3D sender_instance &amp;&amp; !mi-&gt;halt)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            struct mul=
+ti_instance *mi =3D m-&gt;instances[i];</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            if (mi &amp;&amp; mi !=3D sender_instance &amp;&amp; !mi-&gt;h=
+alt)</span><br><span>             {</span><br><span>                 if (vi=
+d !=3D 0 &amp;&amp; vid !=3D mi-&gt;context.options.vlan_pvid)</span><br><s=
+pan>                 {</span><br><span>@@ -2931,8 +2898,6 @@</span><br><spa=
+n>                 multi_add_mbuf(m, mi, mb);</span><br><span>             =
+}</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        hash_i=
+terator_free(&amp;hi);</span><br><span>         mbuf_free_buf(mb);</span><b=
+r><span>     }</span><br><span> }</span><br><span>@@ -3182,7 +3147,6 @@</sp=
+an><br><span> </span><br><span>     /* remove old address from hash table b=
+efore changing address */</span><br><span>     ASSERT(hash_remove(m-&gt;has=
+h, &amp;mi-&gt;real));</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    ASSERT(hash_remove(m-&gt;iter, &amp;mi-&gt;real));</span><br><span> </=
+span><br><span>     /* change external network address of the remote peer *=
+/</span><br><span>     mi-&gt;real =3D real;</span><br><span>@@ -3198,7 +31=
+62,6 @@</span><br><span>     tls_update_remote_addr(mi-&gt;context.c2.tls_m=
+ulti, &amp;mi-&gt;context.c2.from);</span><br><span> </span><br><span>     =
+ASSERT(hash_add(m-&gt;hash, &amp;mi-&gt;real, mi, false));</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(hash_add(m-&gt;iter, &amp;m=
+i-&gt;real, mi, false));</span><br><span> </span><br><span> #ifdef ENABLE_M=
+ANAGEMENT</span><br><span>     ASSERT(hash_add(m-&gt;cid_hash, &amp;mi-&gt;=
+context.c2.mda_context.cid, mi, true));</span><br><span>@@ -3830,22 +3793,1=
+7 @@</span><br><span> static void</span><br><span> multi_push_restart_sched=
+ule_exit(struct multi_context *m, bool next_server)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash_iterator h=
+i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash_ele=
+ment *he;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span>     /* tell all clients to restart */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    hash_iterator_init(m-&gt;iter, &amp;hi);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    while ((he =3D hash_iterat=
+or_next(&amp;hi)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct multi_i=
+nstance *mi =3D (struct multi_instance *)he-&gt;value;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if (!mi-&gt;halt &amp;&amp; proto_=
+is_dgram(mi-&gt;context.c2.link_sockets[0]-&gt;info.proto))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        struct multi_instance *mi =
+=3D m-&gt;instances[i];</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (mi &amp;&amp; !mi-&gt;halt &amp;&amp; proto_is_dgram(mi-&gt=
+;context.c2.link_sockets[0]-&gt;info.proto))</span><br><span>         {</sp=
+an><br><span>             send_control_channel_string(&amp;mi-&gt;context, =
+next_server ? &quot;RESTART,[N]&quot; : &quot;RESTART&quot;,</span><br><spa=
+n>                                         D_PUSH);</span><br><span>       =
+      multi_schedule_context_wakeup(m, mi);</span><br><span>         }</spa=
+n><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ hash_iterator_free(&amp;hi);</span><br><span> </span><br><span>     /* res=
+chedule signal */</span><br><span>     ASSERT(!openvpn_gettimeofday(&amp;m-=
+&gt;deferred_shutdown_signal.wakeup, NULL));</span><br><span>@@ -3916,15 +3=
+874,12 @@</span><br><span> management_callback_kill_by_cn(void *arg, const =
+char *del_cn)</span><br><span> {</span><br><span>     struct multi_context =
+*m =3D (struct multi_context *)arg;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    struct hash_iterator hi;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    struct hash_element *he;</span><br><span>     int =
+count =3D 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    hash_iterator_init(m-&gt;iter, &amp;hi);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    while ((he =3D hash_iterator_next(&amp;=
+hi)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i=
+ =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span>     {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        struct multi_instance *mi =
+=3D (struct multi_instance *)he-&gt;value;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        if (!mi-&gt;halt)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        struct multi_instance *mi =3D m-&gt;inst=
+ances[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
+ (mi &amp;&amp; !mi-&gt;halt)</span><br><span>         {</span><br><span>  =
+           const char *cn =3D tls_common_name(mi-&gt;context.c2.tls_multi, =
+false);</span><br><span>             if (cn &amp;&amp; !strcmp(cn, del_cn))=
+</span><br><span>@@ -3934,7 +3889,6 @@</span><br><span>             }</span=
+><br><span>         }</span><br><span>     }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    hash_iterator_free(&amp;hi);</span><br><span>   =
+  return count;</span><br><span> }</span><br><span> </span><br><span>@@ -39=
+42,8 +3896,6 @@</span><br><span> management_callback_kill_by_addr(void *arg=
+, const in_addr_t addr, const uint16_t port, const uint8_t proto)</span><br=
+><span> {</span><br><span>     struct multi_context *m =3D (struct multi_co=
+ntext *)arg;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struc=
+t hash_iterator hi;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  struct hash_element *he;</span><br><span>     struct openvpn_sockaddr sad=
+dr;</span><br><span>     struct mroute_addr maddr;</span><br><span>     int=
+ count =3D 0;</span><br><span>@@ -3955,17 +3907,15 @@</span><br><span>     =
+maddr.proto =3D proto;</span><br><span>     if (mroute_extract_openvpn_sock=
+addr(&amp;maddr, &amp;saddr, true))</span><br><span>     {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        hash_iterator_init(m-&gt;iter,=
+ &amp;hi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        whi=
+le ((he =3D hash_iterator_next(&amp;hi)))</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        for (int i =3D 0; i &lt; m-&gt;max_clients; i=
+++)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            struct multi_instance *mi =3D (struct multi_instance *=
+)he-&gt;value;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     if (!mi-&gt;halt &amp;&amp; mroute_addr_equal(&amp;maddr, &amp;mi-&gt;=
+real))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            s=
+truct multi_instance *mi =3D m-&gt;instances[i];</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            if (mi &amp;&amp; !mi-&gt;halt &am=
+p;&amp; mroute_addr_equal(&amp;maddr, &amp;mi-&gt;real))</span><br><span>  =
+           {</span><br><span>                 multi_signal_instance(m, mi, =
+SIGTERM);</span><br><span>                 ++count;</span><br><span>       =
+      }</span><br><span>         }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        hash_iterator_free(&amp;hi);</span><br><span>     }</s=
+pan><br><span>     return count;</span><br><span> }</span><br><span>diff --=
+git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><span>index c686e=
+47..498409d 100644</span><br><span>--- a/src/openvpn/multi.h</span><br><spa=
+n>+++ b/src/openvpn/multi.h</span><br><span>@@ -132,7 +132,6 @@</span><br><=
+span>     struct in6_addr reporting_addr_ipv6; /* IPv6 address in status li=
+sting */</span><br><span> </span><br><span>     bool did_real_hash;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    bool did_iter;</span><br>=
+<span> #ifdef ENABLE_MANAGEMENT</span><br><span>     bool did_cid_hash;</sp=
+an><br><span>     struct buffer_list *cc_config;</span><br><span>@@ -168,9 =
++167,6 @@</span><br><span>                                         *   addr=
+ess of the remote peer. */</span><br><span>     struct hash *vhash;        =
+        /**&lt; VPN tunnel instances indexed by</span><br><span>           =
+                              *   virtual address of remote hosts. */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash *iter;     =
+            /**&lt; VPN tunnel instances indexed by real</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                                        =
+*   address of the remote peer, optimized</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                                        *   for iterati=
+on. */</span><br><span>     struct schedule *schedule;</span><br><span>    =
+ struct mbuf_set *mbuf;             /**&lt; Set of buffers for passing data=
+</span><br><span>                                         *   channel packe=
+ts between VPN tunnel</span><br><span>diff --git a/src/openvpn/push_util.c =
+b/src/openvpn/push_util.c</span><br><span>index 51c7b5f..6456554 100644</sp=
+an><br><span>--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/openvp=
+n/push_util.c</span><br><span>@@ -316,15 +316,12 @@</span><br><span>     }<=
+/span><br><span> </span><br><span>     int count =3D 0;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    struct hash_iterator hi;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    const struct hash_element *he;=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ hash_iterator_init(m-&gt;iter, &amp;hi);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    while ((he =3D hash_iterator_next(&amp;hi)))</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &l=
+t; m-&gt;max_clients; i++)</span><br><span>     {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        struct multi_instance *curr_mi =3D he-&=
+gt;value;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        st=
+ruct multi_instance *curr_mi =3D m-&gt;instances[i];</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (curr_mi-&gt;ha=
+lt || !support_push_update(curr_mi))</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        if (!curr_mi || curr_mi-&gt;halt || !support_push_=
+update(curr_mi))</span><br><span>         {</span><br><span>             co=
+ntinue;</span><br><span>         }</span><br><span>@@ -338,7 +335,6 @@</spa=
+n><br><span>         count++;</span><br><span>     }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    hash_iterator_free(&am=
+p;hi);</span><br><span>     buffer_list_free(msgs);</span><br><span>     gc=
+_free(&amp;gc);</span><br><span>     return count;</span><br><span></span><=
+br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/1556?usp=3Demail">change 1556</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail"=
+>settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage=
+"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActi=
+on"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/15=
+56?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia699b0dfa407ac377970bb13043=
-4298eaaec592b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1563 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibf8865e451866e1fffc8dbc8ad5=
+ecf6bc5577ce4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1556 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -279,8 +717,10 @@ ent=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 
 </body></html>=
 
---VWTi4unuIK8=--
+--m82EUPIqcuo=--
 
