@@ -1,11 +1,10 @@
+Date: Sun, 22 Mar 2026 13:03:07 +0100 (CET)
+Message-Id: <202603221203.62MC37DV052139@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sun, 22 Mar 2026 12:12:01 +0100
-Message-ID: <20260322111207.8346-1-gert@...1296...>
-In-Reply-To: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
-References: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Do not support tls_ctx_set_cert_profile
- on AWS-LC
+In-Reply-To: <20260322111131.8251-1-gert@...1296...>
+References: <20260322111131.8251-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use openssl_err_t typedef to
+ deal with difference between TLS libraries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Looks reasonable, has ACK from Frank, and is so localized that it makes
+sense to include this in 2.7 - "long term compatibility" things.
 
-SSL_CTX_set_security_level does nothing on AWS-LC and gives a deprecated
-warning on compile. It is better to give the user a warning than to
-effectively silently ignore it as well.
+Lightly tested the 2.7 change on an linux/openssl build.
 
-Change-Id: I74841d3611c62d3c59fc839bc73a0c83ce025262
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1579
----
+Your patch has been applied to the master and release/2.7 branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit ee2af6655d1dae8b87d8128e2afeec4f5506d79b (master)
+commit ca6c9a8886918ae85fe3295a920eace480aa3971 (release/2.7)
+Author: Arne Schwabe
+Date:   Sun Mar 22 12:11:15 2026 +0100
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1579
-This mail reflects revision 2 of this Change.
+     Use openssl_err_t typedef to deal with difference between TLS libraries
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1578
+     Message-Id: <20260322111131.8251-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36242.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 48cbaa8..a26663a 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -518,8 +518,9 @@
- void
- tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
- {
--#if OPENSSL_VERSION_NUMBER > 0x10100000L \
--    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3060000fL)
-+#if OPENSSL_VERSION_NUMBER > 0x10100000L                                            \
-+    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3060000fL) \
-+    && !defined(OPENSSL_IS_AWSLC)
-     /* OpenSSL does not have certificate profiles, but a complex set of
-      * callbacks that we could try to implement to achieve something similar.
-      * For now, use OpenSSL's security levels to achieve similar (but not equal)
-@@ -549,8 +550,8 @@
-     if (profile)
-     {
-         msg(M_WARN,
--            "WARNING: OpenSSL 1.1.0 and LibreSSL do not support "
--            "--tls-cert-profile, ignoring user-set profile: '%s'",
-+            "WARNING: OpenSSL 1.1.0, AWS-LC and LibreSSL < 3.6.0 do not "
-+            "support --tls-cert-profile, ignoring user-set profile: '%s'",
-             profile);
-     }
- #endif /* if OPENSSL_VERSION_NUMBER > 0x10100000L */
+
+--
+kind regards,
+
+Gert Doering
+
 
