@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Sun, 22 Mar 2026 12:11:15 +0100
-Message-ID: <20260322111131.8251-1-gert@...1296...>
-In-Reply-To: <gerrit.1773754326000.I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7@...2715...>
-References: <gerrit.1773754326000.I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7@...2715...>
+Date: Sun, 22 Mar 2026 12:12:01 +0100
+Message-ID: <20260322111207.8346-1-gert@...1296...>
+In-Reply-To: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
+References: <gerrit.1773754326000.I74841d3611c62d3c59fc839bc73a0c83ce025262@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Use openssl_err_t typedef to deal with
- difference between TLS libraries
+Subject: [Openvpn-devel] [PATCH v2] Do not support tls_ctx_set_cert_profile
+ on AWS-LC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,73 +20,51 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Arne Schwabe <arne@...1227...>
 
-AWS-LC and OpenSSL disagree on the type of that errors are reported in.
+SSL_CTX_set_security_level does nothing on AWS-LC and gives a deprecated
+warning on compile. It is better to give the user a warning than to
+effectively silently ignore it as well.
 
-Instead of having a lot of glue code and casting back and forth, use a
-typedef to always use the right type.
-
-Change-Id: I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7
+Change-Id: I74841d3611c62d3c59fc839bc73a0c83ce025262
 Signed-off-by: Arne Schwabe <arne@...1227...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1578
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1579
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1578
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1579
+This mail reflects revision 2 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 19cb9a9..9900d06 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -229,7 +229,7 @@
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 48cbaa8..a26663a 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -518,8 +518,9 @@
  void
- crypto_print_openssl_errors(const unsigned int flags)
+ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
  {
--    unsigned long err = 0;
-+    openssl_err_t err = 0;
-     int line, errflags;
-     const char *file, *data, *func;
- 
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index ab011d3..8fdb39a 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -45,6 +45,15 @@
- #include <openssl/x509.h>
- #include <openssl/err.h>
- 
-+/* Define the type of error. This is something that is less
-+ * intrusive than casts everywhere */
-+#if defined(OPENSSL_IS_AWSLC)
-+typedef uint32_t openssl_err_t;
-+#else
-+typedef unsigned long openssl_err_t;
-+#endif
-+
-+
- /* Functionality missing in 1.1.0 */
- #if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
- #define SSL_CTX_set1_groups SSL_CTX_set1_curves
-@@ -157,12 +166,12 @@
-     /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */
- }
- 
--static inline unsigned long
-+static inline openssl_err_t
- ERR_get_error_all(const char **file, int *line, const char **func, const char **data, int *flags)
- {
-     static const char *empty = "";
-     *func = empty;
--    unsigned long err = ERR_get_error_line_data(file, line, data, flags);
-+    openssl_err_t err = ERR_get_error_line_data(file, line, data, flags);
-     return err;
- }
- 
+-#if OPENSSL_VERSION_NUMBER > 0x10100000L \
+-    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3060000fL)
++#if OPENSSL_VERSION_NUMBER > 0x10100000L                                            \
++    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3060000fL) \
++    && !defined(OPENSSL_IS_AWSLC)
+     /* OpenSSL does not have certificate profiles, but a complex set of
+      * callbacks that we could try to implement to achieve something similar.
+      * For now, use OpenSSL's security levels to achieve similar (but not equal)
+@@ -549,8 +550,8 @@
+     if (profile)
+     {
+         msg(M_WARN,
+-            "WARNING: OpenSSL 1.1.0 and LibreSSL do not support "
+-            "--tls-cert-profile, ignoring user-set profile: '%s'",
++            "WARNING: OpenSSL 1.1.0, AWS-LC and LibreSSL < 3.6.0 do not "
++            "support --tls-cert-profile, ignoring user-set profile: '%s'",
+             profile);
+     }
+ #endif /* if OPENSSL_VERSION_NUMBER > 0x10100000L */
 
