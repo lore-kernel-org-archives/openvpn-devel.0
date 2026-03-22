@@ -1,9 +1,11 @@
-Date: Sun, 22 Mar 2026 04:36:00 +0000
-From: Rudi Heitbaum <rudi@...2993...>
-Message-ID: <ab9xsPqPbK_jLNF2@...3014...>
+Date: Sun, 22 Mar 2026 07:19:37 +0000
+From: azban <me@...3015...>
+Message-ID: <mzoefoeqRopySw9np2VgZ1sGVs9t8K_MOTi9xy0z8evXtTPgWY75aoy-XNxqWC14hcuup_X-pBCpZgmV2EoHb8D4xWrlVgEQhlSZLcSKmzI=@azban.net>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] ssl_verify_openssl: use official
- ASN1_STRING_ API
+Content-Type: multipart/alternative;
+ boundary="b1=_CF3ZLyBJiwPkw5nuqs0ZHnPYwfwbdaQAtbKBIpZyp0Y"
+Subject: [Openvpn-devel] [PATCH] handle result from
+ DcoKeyConfig_ParseFromString
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,65 +14,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--b1=_CF3ZLyBJiwPkw5nuqs0ZHnPYwfwbdaQAtbKBIpZyp0Y
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: base64
 
-ASN1_STRING are now opaque types in OpenSSL 4.x — the internal data and
-length fields are no longer directly accessible. Use the accessor API
-instead. Accessors have been available since OpenSSL 1.1.0
+VGhpcyBwcmV2aW91c2x5IHdhcm5lZCB3aXRoIHVudXNlZC1yZXN1bHQsIHdoaWNoIGZhaWxzIGNv
+bXBpbGF0aW9uIGlmIHlvdSBhcmUgYnVpbGRpbmcgd2l0aCB3YXJuaW5ncyBhcyBlcnJvcnMuIFRo
+aXMgY2hlY2tzIHRoZSByZXN1bHQgYW5kIHRocm93cyBhbiBleGNlcHRpb24gaWYgdGhlIHBhcnNp
+bmcgZmFpbHMuCgpTaWduZWQtb2ZmLWJ5OiBhemJhbiA8bWVALi4uMzAxNS4uLj4KCi0tLQpzcmMv
+bmV0Y2ZnL25ldGNmZy1kY28uY3BwIHwgNCArKystCjEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlv
+bnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9zcmMvbmV0Y2ZnL25ldGNmZy1kY28u
+Y3BwIGIvc3JjL25ldGNmZy9uZXRjZmctZGNvLmNwcAppbmRleCAyOTBjMTJhOC4uZjQxODM2YmYg
+MTAwNjQ0Ci0tLSBhL3NyYy9uZXRjZmcvbmV0Y2ZnLWRjby5jcHAKKysrIGIvc3JjL25ldGNmZy9u
+ZXRjZmctZGNvLmNwcApAQCAtMjY1LDcgKzI2NSw5IEBAIHZvaWQgTmV0Q2ZnRENPOjptZXRob2Rf
+bmV3X2tleShHVmFyaWFudCAqcGFyYW1zKQpzdGQ6OnN0cmluZyBrZXlfY29uZmlnID0gZ2xpYjI6
+OlZhbHVlOjpFeHRyYWN0PHN0ZDo6c3RyaW5nPihwYXJhbXMsIDEpOwoKRGNvS2V5Q29uZmlnIGRj
+b19rYzsKLSBkY29fa2MuUGFyc2VGcm9tU3RyaW5nKGJhc2U2NC0+ZGVjb2RlKGtleV9jb25maWcp
+KTsKKyBpZiAoIWRjb19rYy5QYXJzZUZyb21TdHJpbmcoYmFzZTY0LT5kZWNvZGUoa2V5X2NvbmZp
+ZykpKSB7CisgdGhyb3cgTmV0Q2ZnRXhjZXB0aW9uKCJGYWlsZWQgdG8gcGFyc2UgRENPIGtleSBj
+b25maWciKTsKKyB9CgphdXRvIGNvcHlLZXlEaXJlY3Rpb24gPSBbXShjb25zdCBEY29LZXlDb25m
+aWdfS2V5RGlyZWN0aW9uICZzcmMsIEtvUmVrZXk6OktleURpcmVjdGlvbiAmZHN0KQp7LS0gMi41
+MS4y
 
-The ASN1_STRING_length accessor is already in use, but not consistently
-applied. Standardise on using ASN1_STRING_length and ASN1_STRING_get0_data
-which allows for successful build of OpenSSL 4.x
+--b1=_CF3ZLyBJiwPkw5nuqs0ZHnPYwfwbdaQAtbKBIpZyp0Y
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Signed-off-by: Rudi Heitbaum <rudi@...2993...>
----
- src/openvpn/ssl_verify_openssl.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+PGRpdiBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0
+cHg7Ij48c3Bhbj48c3Bhbj5UaGlzIHByZXZpb3VzbHkgd2FybmVkIHdpdGggdW51c2VkLXJlc3Vs
+dCwgd2hpY2ggZmFpbHMgY29tcGlsYXRpb24gaWYgeW91IGFyZSBidWlsZGluZyB3aXRoIHdhcm5p
+bmdzIGFzIGVycm9ycy4gVGhpcyBjaGVja3MgdGhlIHJlc3VsdCBhbmQgdGhyb3dzIGFuIGV4Y2Vw
+dGlvbiBpZiB0aGUgcGFyc2luZyBmYWlscy48L3NwYW4+PC9zcGFuPjxkaXY+PHNwYW4+PGJyPjwv
+c3Bhbj48L2Rpdj48ZGl2PjxzcGFuPjxzcGFuPlNpZ25lZC1vZmYtYnk6IGF6YmFuICZsdDs8YSB0
+YXJnZXQ9Il9ibGFuayIgcmVsPSJub3JlZmVycmVyIG5vZm9sbG93IG5vb3BlbmVyIiBocmVmPSJt
+YWlsdG86bWVALi4uMzAxNS4uLiI+bWVALi4uMzAxNS4uLjwvYT4mZ3Q7PC9zcGFuPjxicj48L3Nw
+YW4+PC9kaXY+PGRpdj48c3Bhbj4tLS08L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDtzcmMv
+bmV0Y2ZnL25ldGNmZy1kY28uY3BwIHwgNCArKystPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5i
+c3A7MSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKTwvc3Bhbj48
+L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxzcGFuPmRpZmYgLS1naXQgYS9zcmMvbmV0Y2ZnL25l
+dGNmZy1kY28uY3BwIGIvc3JjL25ldGNmZy9uZXRjZmctZGNvLmNwcDwvc3Bhbj48L2Rpdj48ZGl2
+PjxzcGFuPmluZGV4IDI5MGMxMmE4Li5mNDE4MzZiZiAxMDA2NDQ8L3NwYW4+PC9kaXY+PGRpdj48
+c3Bhbj4tLS0gYS9zcmMvbmV0Y2ZnL25ldGNmZy1kY28uY3BwPC9zcGFuPjwvZGl2PjxkaXY+PHNw
+YW4+KysrIGIvc3JjL25ldGNmZy9uZXRjZmctZGNvLmNwcDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFu
+PkBAIC0yNjUsNyArMjY1LDkgQEAgdm9pZCBOZXRDZmdEQ086Om1ldGhvZF9uZXdfa2V5KEdWYXJp
+YW50ICpwYXJhbXMpPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwOyAmbmJzcDtz
+dGQ6OnN0cmluZyBrZXlfY29uZmlnID0gZ2xpYjI6OlZhbHVlOjpFeHRyYWN0Jmx0O3N0ZDo6c3Ry
+aW5nJmd0OyhwYXJhbXMsIDEpOzwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPiZuYnNwOzwvc3Bhbj48
+L2Rpdj48ZGl2PjxzcGFuPiZuYnNwOyAmbmJzcDsgJm5ic3A7RGNvS2V5Q29uZmlnIGRjb19rYzs8
+L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4tICZuYnNwOyAmbmJzcDtkY29fa2MuUGFyc2VGcm9tU3Ry
+aW5nKGJhc2U2NC0mZ3Q7ZGVjb2RlKGtleV9jb25maWcpKTs8L3NwYW4+PC9kaXY+PGRpdj48c3Bh
+bj4rICZuYnNwOyAmbmJzcDtpZiAoIWRjb19rYy5QYXJzZUZyb21TdHJpbmcoYmFzZTY0LSZndDtk
+ZWNvZGUoa2V5X2NvbmZpZykpKSB7PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+KyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDt0aHJvdyBOZXRDZmdFeGNlcHRpb24oIkZhaWxlZCB0byBwYXJzZSBE
+Q08ga2V5IGNvbmZpZyIpOzwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPisgJm5ic3A7ICZuYnNwO308
+L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDs8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJz
+cDsgJm5ic3A7ICZuYnNwO2F1dG8gY29weUtleURpcmVjdGlvbiA9IFtdKGNvbnN0IERjb0tleUNv
+bmZpZ19LZXlEaXJlY3Rpb24gJmFtcDtzcmMsIEtvUmVrZXk6OktleURpcmVjdGlvbiAmYW1wO2Rz
+dCk8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7ICZuYnNwO3s8L3NwYW4+PC9k
+aXY+PHNwYW4+PHNwYW4+LS0gPC9zcGFuPjwvc3Bhbj48c3Bhbj4yLjUxLjI8L3NwYW4+PGJyPjwv
+ZGl2Pg0KPGRpdiBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNp
+emU6IDE0cHg7IiBjbGFzcz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2sgcHJvdG9ubWFpbF9z
+aWduYXR1cmVfYmxvY2stZW1wdHkiPg0KICAgIDxkaXYgY2xhc3M9InByb3Rvbm1haWxfc2lnbmF0
+dXJlX2Jsb2NrLXVzZXIgcHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPjwvZGl2Pg0K
+ICAgIA0KICAgICAgICAgICAgPGRpdiBjbGFzcz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2st
+cHJvdG9uIHByb3Rvbm1haWxfc2lnbmF0dXJlX2Jsb2NrLWVtcHR5Ij4NCiAgICAgICAgDQogICAg
+ICAgICAgICA8L2Rpdj4NCjwvZGl2Pg0K
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 46401cd3..d96879bd 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -259,7 +259,7 @@ backend_x509_get_username(char *common_name, size_t cn_len, char *x509_username_
-     {
-         ASN1_INTEGER *asn1_i = X509_get_serialNumber(peer_cert);
-         struct gc_arena gc = gc_new();
--        char *serial = format_hex_ex(asn1_i->data, asn1_i->length, 0, 1 | FHE_CAPS, NULL, &gc);
-+        char *serial = format_hex_ex(ASN1_STRING_get0_data(asn1_i), ASN1_STRING_length(asn1_i), 0, 1 | FHE_CAPS, NULL, &gc);
- 
-         if (!serial || cn_len <= strlen(serial) + 2)
-         {
-@@ -313,7 +313,7 @@ backend_x509_get_serial_hex(openvpn_x509_cert_t *cert, struct gc_arena *gc)
- {
-     const ASN1_INTEGER *asn1_i = X509_get_serialNumber(cert);
- 
--    return format_hex_ex(asn1_i->data, asn1_i->length, 0, 1, ":", gc);
-+    return format_hex_ex(ASN1_STRING_get0_data(asn1_i), ASN1_STRING_length(asn1_i), 0, 1, ":", gc);
- }
- 
- result_t
-@@ -626,7 +626,7 @@ x509_verify_ns_cert_type(openvpn_x509_cert_t *peer_cert, const int usage)
-         {
-             ASN1_BIT_STRING *ns;
-             ns = X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NULL, NULL);
--            result = (ns && ns->length > 0 && (ns->data[0] & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
-+            result = (ns && ASN1_STRING_length(ns) > 0 && (ASN1_STRING_get0_data(ns)[0] & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
-             if (result == SUCCESS)
-             {
-                 msg(M_WARN, "X509: Certificate is a client certificate yet it's purpose "
-@@ -654,7 +654,7 @@ x509_verify_ns_cert_type(openvpn_x509_cert_t *peer_cert, const int usage)
-         {
-             ASN1_BIT_STRING *ns;
-             ns = X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NULL, NULL);
--            result = (ns && ns->length > 0 && (ns->data[0] & NS_SSL_SERVER)) ? SUCCESS : FAILURE;
-+            result = (ns && ASN1_STRING_length(ns) > 0 && (ASN1_STRING_get0_data(ns)[0] & NS_SSL_SERVER)) ? SUCCESS : FAILURE;
-             if (result == SUCCESS)
-             {
-                 msg(M_WARN, "X509: Certificate is a server certificate yet it's purpose "
--- 
-2.53.0
+--b1=_CF3ZLyBJiwPkw5nuqs0ZHnPYwfwbdaQAtbKBIpZyp0Y--
 
 
