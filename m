@@ -1,16 +1,13 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Mar 2026 12:03:20 +0000
-In-Reply-To: <gerrit.1773754326000.I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7@...2715...>
-References: <gerrit.1773754326000.I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <011b4b199b043615c6ec6301a90f0479f1eb81f7-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------4vIUiXnQ0Gymy6iGBtILGNOQ"
+Message-ID: <6253558a-1f0a-4484-8bdb-455b9b1bd01d@...1227...>
+Date: Sun, 22 Mar 2026 13:40:32 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mkkoEaKVEhI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use openssl_err_t
- typedef to deal with difference between TLS libraries
+References: <ab9xsPqPbK_jLNF2@...3014...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <ab9xsPqPbK_jLNF2@...3014...>
+Subject: Re: [Openvpn-devel] [PATCH] ssl_verify_openssl: use official
+ ASN1_STRING_ API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,191 +16,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Rudi Heitbaum <rudi@...2993...>, openvpn-devel@lists.sourceforge.net
 
---mkkoEaKVEhI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-78?usp=3Demail )
-
-Change subject: Use openssl_err_t typedef to deal with difference between T=
-LS libraries
-......................................................................
-
-Use openssl_err_t typedef to deal with difference between TLS libraries
-
-AWS-LC and OpenSSL disagree on the type of that errors are reported in.
-
-Instead of having a lot of glue code and casting back and forth, use a
-typedef to always use the right type.
-
-Change-Id: I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1578
-Message-Id: <20260322111131.8251-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-242.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/crypto_openssl.c
-M src/openvpn/openssl_compat.h
-2 files changed, 12 insertions(+), 3 deletions(-)
+This is a multi-part message in MIME format.
+--------------4vIUiXnQ0Gymy6iGBtILGNOQ
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
 
+Am 22.03.2026 um 05:36 schrieb Rudi Heitbaum via Openvpn-devel:
+> ASN1_STRING are now opaque types in OpenSSL 4.x — the internal data and
+> length fields are no longer directly accessible. Use the accessor API
+> instead. Accessors have been available since OpenSSL 1.1.0
+>
+> The ASN1_STRING_length accessor is already in use, but not consistently
+> applied. Standardise on using ASN1_STRING_length and ASN1_STRING_get0_data
+> which allows for successful build of OpenSSL 4.x
+>
+> Signed-off-by: Rudi Heitbaum<rudi@...2993...>
 
+Looks good and the GIthub build for it in the PR are also green with 
+aws-lc and libressl (ssl_verify_openssl: use official ASN1_STRING_ API 
+by heitbaum · Pull Request #1003 · OpenVPN/openvpn 
+<https://github.com/OpenVPN/openvpn/pull/1003>)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 19cb9a9..9900d06 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -229,7 +229,7 @@
- void
- crypto_print_openssl_errors(const unsigned int flags)
- {
--    unsigned long err =3D 0;
-+    openssl_err_t err =3D 0;
-     int line, errflags;
-     const char *file, *data, *func;
+Acked-By: Arne Schwabe <arne@...1227...>
 
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index ab011d3..8fdb39a 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -45,6 +45,15 @@
- #include <openssl/x509.h>
- #include <openssl/err.h>
+--------------4vIUiXnQ0Gymy6iGBtILGNOQ
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-+/* Define the type of error. This is something that is less
-+ * intrusive than casts everywhere */
-+#if defined(OPENSSL_IS_AWSLC)
-+typedef uint32_t openssl_err_t;
-+#else
-+typedef unsigned long openssl_err_t;
-+#endif
-+
-+
- /* Functionality missing in 1.1.0 */
- #if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
- #define SSL_CTX_set1_groups SSL_CTX_set1_curves
-@@ -157,12 +166,12 @@
-     /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */
- }
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p><br>
+    </p>
+    <div class="moz-cite-prefix">Am 22.03.2026 um 05:36 schrieb Rudi
+      Heitbaum via Openvpn-devel:<br>
+    </div>
+    <blockquote type="cite" cite="mid:ab9xsPqPbK_jLNF2@...3014...">
+      <pre wrap="" class="moz-quote-pre">ASN1_STRING are now opaque types in OpenSSL 4.x — the internal data and
+length fields are no longer directly accessible. Use the accessor API
+instead. Accessors have been available since OpenSSL 1.1.0
 
--static inline unsigned long
-+static inline openssl_err_t
- ERR_get_error_all(const char **file, int *line, const char **func, const c=
-har **data, int *flags)
- {
-     static const char *empty =3D "";
-     *func =3D empty;
--    unsigned long err =3D ERR_get_error_line_data(file, line, data, flags);
-+    openssl_err_t err =3D ERR_get_error_line_data(file, line, data, flags);
-     return err;
- }
+The ASN1_STRING_length accessor is already in use, but not consistently
+applied. Standardise on using ASN1_STRING_length and ASN1_STRING_get0_data
+which allows for successful build of OpenSSL 4.x
 
+Signed-off-by: Rudi Heitbaum <a class="moz-txt-link-rfc2396E" href="mailto:rudi@...2993...">&lt;rudi@...2993...&gt;</a></pre>
+    </blockquote>
+    <br>
+    <p>Looks good and the GIthub build for it in the PR are also green
+      with aws-lc and libressl (<a
+        href="https://github.com/OpenVPN/openvpn/pull/1003">ssl_verify_openssl:
+        use official ASN1_STRING_ API by heitbaum · Pull Request #1003 ·
+        OpenVPN/openvpn</a>) </p>
+    <p>Acked-By: Arne Schwabe <a class="moz-txt-link-rfc2396E" href="mailto:arne@...1227...">&lt;arne@...1227...&gt;</a></p>
+  </body>
+</html>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1578?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7
-Gerrit-Change-Number: 1578
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---mkkoEaKVEhI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1578?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Use openssl_err_t typedef to deal with differenc=
-e between TLS libraries<br><br>AWS-LC and OpenSSL disagree on the type of t=
-hat errors are reported in.<br><br>Instead of having a lot of glue code and=
- casting back and forth, use a<br>typedef to always use the right type.<br>=
-<br>Change-Id: I4adbdf0c8b82fd7de309aa5f6f3b0c8157c5ffe7<br>Signed-off-by: =
-Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;fra=
-nk@...2641...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/157=
-8<br>Message-Id: &lt;20260322111131.8251-1-gert@...1296...&gt;<br>URL: http=
-s://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36242.html<=
-br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
-vpn/crypto_openssl.c<br>M src/openvpn/openssl_compat.h<br>2 files changed, =
-12 insertions(+), 3 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c=
-</span><br><span>index 19cb9a9..9900d06 100644</span><br><span>--- a/src/op=
-envpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</=
-span><br><span>@@ -229,7 +229,7 @@</span><br><span> void</span><br><span> c=
-rypto_print_openssl_errors(const unsigned int flags)</span><br><span> {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned long err =3D=
- 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openssl_err_=
-t err =3D 0;</span><br><span>     int line, errflags;</span><br><span>     =
-const char *file, *data, *func;</span><br><span> </span><br><span>diff --gi=
-t a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h</span><br><=
-span>index ab011d3..8fdb39a 100644</span><br><span>--- a/src/openvpn/openss=
-l_compat.h</span><br><span>+++ b/src/openvpn/openssl_compat.h</span><br><sp=
-an>@@ -45,6 +45,15 @@</span><br><span> #include &lt;openssl/x509.h&gt;</spa=
-n><br><span> #include &lt;openssl/err.h&gt;</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* Define the type of error. This=
- is something that is less</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * intrusive than casts everywhere */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#if defined(OPENSSL_IS_AWSLC)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+typedef uint32_t openssl_err_t;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+typedef unsigned long openssl_err_t;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span> /* Functionality missing in 1.1.0 */</=
-span><br><span> #if OPENSSL_VERSION_NUMBER &lt; 0x10101000L &amp;&amp; !def=
-ined(ENABLE_CRYPTO_WOLFSSL)</span><br><span> #define SSL_CTX_set1_groups SS=
-L_CTX_set1_curves</span><br><span>@@ -157,12 +166,12 @@</span><br><span>   =
-  /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */</spa=
-n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-static inline unsigned long</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+static inline openssl_err_t</span><br><span> ERR_get_err=
-or_all(const char **file, int *line, const char **func, const char **data, =
-int *flags)</span><br><span> {</span><br><span>     static const char *empt=
-y =3D &quot;&quot;;</span><br><span>     *func =3D empty;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    unsigned long err =3D ERR_get_error=
-_line_data(file, line, data, flags);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    openssl_err_t err =3D ERR_get_error_line_data(file, li=
-ne, data, flags);</span><br><span>     return err;</span><br><span> }</span=
-><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/1578?usp=3Demail">change 1578</a>. To=
- unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
-rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
-ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
-temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1578?usp=3Demail"/><meta itemprop=3D"nam=
-e" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4adbdf0c8b82fd7de309aa5f6f3=
-b0c8157c5ffe7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1578 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---mkkoEaKVEhI=--
+--------------4vIUiXnQ0Gymy6iGBtILGNOQ--
 
