@@ -1,13 +1,16 @@
-Content-Type: multipart/alternative;
- boundary="------------4vIUiXnQ0Gymy6iGBtILGNOQ"
-Message-ID: <6253558a-1f0a-4484-8bdb-455b9b1bd01d@...1227...>
-Date: Sun, 22 Mar 2026 13:40:32 +0100
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 23 Mar 2026 11:53:23 +0000
+In-Reply-To: <gerrit.1774014824000.I8ca07e2bbb5de229204191d61e90f084a58969af@...2715...>
+References: <gerrit.1774014824000.I8ca07e2bbb5de229204191d61e90f084a58969af@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <4e495a8a7c97362c4fd57cfd3377d4325ebd83d5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-References: <ab9xsPqPbK_jLNF2@...3014...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <ab9xsPqPbK_jLNF2@...3014...>
-Subject: Re: [Openvpn-devel] [PATCH] ssl_verify_openssl: use official
- ASN1_STRING_ API
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="DtXiEuMISzc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change type of
+ option flag from unsigned int to uint64_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +19,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Rudi Heitbaum <rudi@...2993...>, openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------4vIUiXnQ0Gymy6iGBtILGNOQ
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--DtXiEuMISzc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: plaisthos.
+
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1583?usp=3Demail )
+
+Change subject: Change type of option flag from unsigned int to uint64_t
+......................................................................
 
 
-Am 22.03.2026 um 05:36 schrieb Rudi Heitbaum via Openvpn-devel:
-> ASN1_STRING are now opaque types in OpenSSL 4.x — the internal data and
-> length fields are no longer directly accessible. Use the accessor API
-> instead. Accessors have been available since OpenSSL 1.1.0
->
-> The ASN1_STRING_length accessor is already in use, but not consistently
-> applied. Standardise on using ASN1_STRING_length and ASN1_STRING_get0_data
-> which allows for successful build of OpenSSL 4.x
->
-> Signed-off-by: Rudi Heitbaum<rudi@...2993...>
+Patch Set 1: Code-Review-1
 
-Looks good and the GIthub build for it in the PR are also green with 
-aws-lc and libressl (ssl_verify_openssl: use official ASN1_STRING_ API 
-by heitbaum · Pull Request #1003 · OpenVPN/openvpn 
-<https://github.com/OpenVPN/openvpn/pull/1003>)
+(1 comment)
 
-Acked-By: Arne Schwabe <arne@...1227...>
+File src/openvpn/options.c:
 
---------------4vIUiXnQ0Gymy6iGBtILGNOQ
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+http://gerrit.openvpn.net/c/openvpn/+/1583/comment/09db2965_cffb26da?usp=3D=
+email :
+PS1, Line 5991:             read_config_string("[PEER-OPTIONS]", &sub, p[1]=
+, msglevel, OPT_P_CONNECTION,
+Is this change supposed to be here?
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p><br>
-    </p>
-    <div class="moz-cite-prefix">Am 22.03.2026 um 05:36 schrieb Rudi
-      Heitbaum via Openvpn-devel:<br>
-    </div>
-    <blockquote type="cite" cite="mid:ab9xsPqPbK_jLNF2@...3014...">
-      <pre wrap="" class="moz-quote-pre">ASN1_STRING are now opaque types in OpenSSL 4.x — the internal data and
-length fields are no longer directly accessible. Use the accessor API
-instead. Accessors have been available since OpenSSL 1.1.0
 
-The ASN1_STRING_length accessor is already in use, but not consistently
-applied. Standardise on using ASN1_STRING_length and ASN1_STRING_get0_data
-which allows for successful build of OpenSSL 4.x
 
-Signed-off-by: Rudi Heitbaum <a class="moz-txt-link-rfc2396E" href="mailto:rudi@...2993...">&lt;rudi@...2993...&gt;</a></pre>
-    </blockquote>
-    <br>
-    <p>Looks good and the GIthub build for it in the PR are also green
-      with aws-lc and libressl (<a
-        href="https://github.com/OpenVPN/openvpn/pull/1003">ssl_verify_openssl:
-        use official ASN1_STRING_ API by heitbaum · Pull Request #1003 ·
-        OpenVPN/openvpn</a>) </p>
-    <p>Acked-By: Arne Schwabe <a class="moz-txt-link-rfc2396E" href="mailto:arne@...1227...">&lt;arne@...1227...&gt;</a></p>
-  </body>
-</html>
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1583?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
---------------4vIUiXnQ0Gymy6iGBtILGNOQ--
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8ca07e2bbb5de229204191d61e90f084a58969af
+Gerrit-Change-Number: 1583
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Mon, 23 Mar 2026 11:53:23 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--DtXiEuMISzc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1583?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/options.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1583/comment/09db2965_cffb26da?usp=3Demail">Patch Set=
+ #1, Line 5991:</a> <code style=3D"font-family:monospace,monospace">       =
+     read_config_string(&quot;[PEER-OPTIONS]&quot;, &amp;sub, p[1], msgleve=
+l, OPT_P_CONNECTION,</code></p><p class=3D"blocks" style=3D"white-space: pr=
+e-wrap; word-wrap: break-word;">Is this change supposed to be here?</p></li=
+></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/1583?usp=3Demail">change 1583</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1583?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8ca07e2bbb5de229204191d61e9=
+0f084a58969af </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1583 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 23 Mar 2026 11:53:23=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--DtXiEuMISzc=--
 
