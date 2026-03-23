@@ -1,16 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 23 Mar 2026 12:48:24 +0000
-In-Reply-To: <gerrit.1774014824000.I8ca07e2bbb5de229204191d61e90f084a58969af@...2715...>
-References: <gerrit.1774014824000.I8ca07e2bbb5de229204191d61e90f084a58969af@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <6f15da0dc2166d9f9765f9646d1994d09951d6f8-EmailReviewComments-HTML@...2715...>
+Date: Mon, 23 Mar 2026 13:57:12 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <acE4qHX_Eavkcn_H@...1296...>
+References: <20260309133236.29732-1-frank@...2641...>
+ <202603100827.62A8RJqm094150@...2054...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature"; boundary="3E7xWZo8cYt5IrW6"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="v1sIQdA60Vo="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change type of
- option flag from unsigned int to uint64_t
+In-Reply-To: <202603100827.62A8RJqm094150@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: ssl_verify_openssl: Clean
+ up extract_x509_extension
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,83 +18,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---v1sIQdA60Vo=
-Content-Type: text/plain; charset="UTF-8"
+--3E7xWZo8cYt5IrW6
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: plaisthos.
+Hi,
 
-flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1583?usp=3Demail )
+On Tue, Mar 10, 2026 at 09:27:19AM +0100, Gert Doering wrote:
+> This looked good to me, but "OpenSSL innards" are still foreign territory,
+> so thanks Arne for looking at the ia5/rfc822Name change (I found it=20
+> surprising since we had an "ia5->length" before and now need to do
+> ASN1_STRING_LENGTH(), but I'm sure there is a good reason behind this).
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit 66060627a8cf05c8761d75985e76482d20df4f29
+> Author: Frank Lichtenheld
+> Date:   Mon Mar 9 14:32:36 2026 +0100
+>=20
+>      ssl_verify_openssl: Clean up extract_x509_extension
 
-Change subject: Change type of option flag from unsigned int to uint64_t
-......................................................................
+As suggested by Rudi Heitbaum in GH PR 1003, I have cherry-picked this
+back to release/2.7 - it's "long term compat".  We expect OpenVPN 2.7.x
+to be maintained for long enough that OpenSSL4 becomes a thing, and then
+we need the patch - so we can do it right away, and be not surprised.
 
+The patch is the same as in the master branch, except for the #pragma
+removal - which git does not care much about ("you want it gone, it was
+not there in the first place, so the net result is what you want").
 
-Patch Set 2: Code-Review+2
+Mildly tested via GH actions.
 
+commit 5f0a168311a53b935f776d4c1566c4f2f3cde98b (release/2.7)
+Author: Frank Lichtenheld <frank@...2641...>
+Date:   Mon Mar 9 14:32:36 2026 +0100
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1583?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+    ssl_verify_openssl: Clean up extract_x509_extension
+...
+    (cherry picked from commit 66060627a8cf05c8761d75985e76482d20df4f29)
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8ca07e2bbb5de229204191d61e90f084a58969af
-Gerrit-Change-Number: 1583
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 23 Mar 2026 12:48:24 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+gert
 
---v1sIQdA60Vo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1583?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1583?usp=3Demail=
-">change 1583</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1583?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+Gert Doering - Munich, Germany                             gert@...1296...
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8ca07e2bbb5de229204191d61e9=
-0f084a58969af </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1583 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 23 Mar 2026 12:48:24=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+--3E7xWZo8cYt5IrW6
+Content-Type: application/pgp-signature; name=signature.asc
 
-</body></html>=
+-----BEGIN PGP SIGNATURE-----
 
---v1sIQdA60Vo=--
+iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmnBOKYACgkQHYKe/spW
+KBK0dgv/eJ8MzxROV6epMnFAxIPzbd6acYro+yG43bEatwjX8d2IGo4fWjKQ6WLu
+5TM+Xjb/d/G6xrgC6bp/ffWDTlm+1QN0FTQUYvjfGE4hZdZ0n7navxkyMbXHvHaB
+Ccj4O9pAcbAWGrQfUQ7XrPD6DI+BXATBa4GtckGWIkosTKgpLrm/DUR/TXtpcSNg
+BujK1zQ5djFi6GUmb74oqt5AiJbCOW7r/rWuKRckwxkToBIgjXUt/H4q2/HJEKvN
+n8Ui+gA2tdylKcUDmOcNCUIdr76Yzm0nOydKPvwfCPeFVEWHX6Z6R2N51jLDMa+Z
+5Enr6oF7ifmL6Tw3eVRU9JzkagHKO3+XA5Dxk0drI+Yf3VW5zwoijREi6gQGOFAU
+mULP5IXT0R311IndblWq4h1VK3voPTcV5tHt9FOQUj40/fXIgrymzWsjzkAzJW8Z
+ozLvSMqmYK7WDhCTh66n7fbnfZwD2b3bnbwVlzAaI9IYPRFLyiuzMDNTDxTZpjXD
+q62a+B6/
+=oRly
+-----END PGP SIGNATURE-----
+
+--3E7xWZo8cYt5IrW6--
 
