@@ -1,11 +1,14 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 25 Mar 2026 13:45:26 +0100
-Message-ID: <20260325124526.124049-1-frank@...2641...>
-In-Reply-To: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
-References: <gerrit.1773145887000.Ia699b0dfa407ac377970bb130434298eaaec592b@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 25 Mar 2026 13:30:36 +0000
+References: <gerrit.1774445432000.Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
+Message-ID: <e9d5f159a5d216613bfd5fbe71769a081b7ad10b-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] Increase default size of internal hash
- maps to 4 * --max-clients
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="JLwnLXQXAIU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use const
+ specifices in extract_x509_field_ssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,118 +17,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...1227...>, Antonio Quartulli <antonio@...2726...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--JLwnLXQXAIU=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The default of 256 seems quite low as with (at least) 1024 possible
-entries (the --max-clients default setting) we have a guaranteed
-collisions. Using 4 times the number of possible entries for real
-addresses should reduce collisions quite a bit while also leaving
-some headroom for the virtual addresses hash where a client might
-have more than one address.
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1588?usp=3Demail )
 
-A reason to keep the limit so low are the memory requirements. Each
-bucket has the size of one linked-list pointer (4 byte or 32 bit and
-8 byte for 64 bit). So 256 buckets use 1 or 2 kB while 4096 will use
-16 kB or 32 kB.
 
-When the current limit was set 20 years ago this might have been a
-meaningful memory saving but today the collision probability is
-more important.
+Change subject: Use const specifices in  extract_x509_field_ssl
+......................................................................
 
-Change-Id: Ia699b0dfa407ac377970bb130434298eaaec592b
+Use const specifices in  extract_x509_field_ssl
+
+The new OpenSSL 4.0 will return const objects from these objects, so
+make them const in our code as well.
+
+Change-Id: Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a
 Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Antonio Quartulli <antonio@...2726...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1563
 ---
+M src/openvpn/ssl_verify_openssl.c
+1 file changed, 2 insertions(+), 4 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1563
-This mail reflects revision 7 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@...2726...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1588/1
 
-        
-diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
-index e1115e4..73ca44a 100644
---- a/doc/man-sections/advanced-options.rst
-+++ b/doc/man-sections/advanced-options.rst
-@@ -36,7 +36,8 @@
- 
-      hash-size r v
- 
--  By default, both tables are sized at 256 buckets.
-+  By default, both tables are sized at 4 times ``--max-clients`` buckets.
-+  With the default of 1024 of ``--max-clients`` this gives 4096 buckets.
- 
- --bcast-buffers n
-   Allocate ``n`` buffers for broadcast datagrams (default :code:`256`).
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-index 03ce651..eb8e273 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -414,7 +414,7 @@
-      iroute-ipv6 ipv6addr/bits
- 
- --max-clients n
--  Limit server to a maximum of ``n`` concurrent clients.
-+  Limit server to a maximum of ``n`` concurrent clients. Defaults to 1024.
- 
- --max-routes-per-client n
-   Allow a maximum of ``n`` internal routes per client (default
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1db781d..24f2407 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -849,8 +849,6 @@
- #endif
-     o->vlan_accept = VLAN_ALL;
-     o->vlan_pvid = 1;
--    o->real_hash_size = 256;
--    o->virtual_hash_size = 256;
-     o->n_bcast_buf = 256;
-     o->tcp_queue_limit = 64;
-     o->max_clients = 1024;
-@@ -3724,6 +3722,22 @@
-     gc_free(&gc);
- }
- #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-+/**
-+ * Sets the internal hash maps sizes according to the max_clients
-+ *
-+ */
-+static void
-+helper_hashmap_sizes(struct options *o)
-+{
-+    if (!o->real_hash_size)
-+    {
-+        o->real_hash_size = 4 * o->max_clients;
-+    }
-+    if (!o->virtual_hash_size)
-+    {
-+        o->virtual_hash_size = 4 * o->max_clients;
-+    }
-+}
- 
- static void
- options_postprocess_mutate(struct options *o, struct env_set *es)
-@@ -3739,6 +3753,11 @@
-     helper_keepalive(o);
-     helper_tcp_nodelay(o);
- 
-+    if (o->mode == MODE_SERVER)
-+    {
-+        helper_hashmap_sizes(o);
-+    }
-+
-     options_postprocess_setdefault_ncpciphers(o);
-     options_set_backwards_compatible_options(o);
-     options_process_mutate_prf(o);
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index fc14789..f39f34a 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -195,8 +195,6 @@
+ {
+     int lastpos =3D -1;
+     int tmp =3D -1;
+-    X509_NAME_ENTRY *x509ne =3D NULL;
+-    ASN1_STRING *asn1 =3D NULL;
+     unsigned char *buf =3D NULL;
+
+     ASN1_OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);
+@@ -222,13 +220,13 @@
+         return FAILURE;
+     }
+
+-    x509ne =3D X509_NAME_get_entry(x509, lastpos);
++    const X509_NAME_ENTRY *x509ne =3D X509_NAME_get_entry(x509, lastpos);
+     if (!x509ne)
+     {
+         return FAILURE;
+     }
+
+-    asn1 =3D X509_NAME_ENTRY_get_data(x509ne);
++    const ASN1_STRING *asn1 =3D asn1 =3D X509_NAME_ENTRY_get_data(x509ne);
+     if (!asn1)
+     {
+         return FAILURE;
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a
+Gerrit-Change-Number: 1588
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--JLwnLXQXAIU=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1588?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Use const specifices in  extract_x509_field_ssl<br><br>The new OpenSSL =
+4.0 will return const objects from these objects, so<br>make them const in =
+our code as well.<br><br>Change-Id: Ia43bb88d9ddf2e82c638011353a64c770f2c2c=
+0a<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/o=
+penvpn/ssl_verify_openssl.c<br>1 file changed, 2 insertions(+), 4 deletions=
+(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
+vpn refs/changes/88/1588/1</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify_open=
+ssl.c b/src/openvpn/ssl_verify_openssl.c</span><br><span>index fc14789..f39=
+f34a 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><b=
+r><span>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -195,8 +1=
+95,6 @@</span><br><span> {</span><br><span>     int lastpos =3D -1;</span><=
+br><span>     int tmp =3D -1;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    X509_NAME_ENTRY *x509ne =3D NULL;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    ASN1_STRING *asn1 =3D NULL;</span><br><span>   =
+  unsigned char *buf =3D NULL;</span><br><span> </span><br><span>     ASN1_=
+OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);</span><br><span>@@ -=
+222,13 +220,13 @@</span><br><span>         return FAILURE;</span><br><span>=
+     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    x509ne =3D X509_NAME_get_entry(x509, lastpos);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const X509_NAME_ENTRY *x509ne =3D X50=
+9_NAME_get_entry(x509, lastpos);</span><br><span>     if (!x509ne)</span><b=
+r><span>     {</span><br><span>         return FAILURE;</span><br><span>   =
+  }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    asn1 =3D X509_NAME_ENTRY_get_data(x509ne);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const ASN1_STRING *asn1 =3D asn1 =3D X509_NA=
+ME_ENTRY_get_data(x509ne);</span><br><span>     if (!asn1)</span><br><span>=
+     {</span><br><span>         return FAILURE;</span><br><span></span><br>=
+</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/15=
+88?usp=3Demail">change 1588</a>. To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia43bb88d9ddf2e82c638011353a=
+64c770f2c2c0a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1588 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--JLwnLXQXAIU=--
 
