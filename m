@@ -1,10 +1,16 @@
-Date: Thu, 26 Mar 2026 15:18:47 +0100 (CET)
-Message-Id: <202603261418.62QEIlP9044696@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260326110658.25741-1-gert@...1296...>
-References: <20260326110658.25741-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use const specifices in
- extract_x509_field_ssl
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Mar 2026 14:18:57 +0000
+In-Reply-To: <gerrit.1774445432000.Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a@...2715...>
+References: <gerrit.1774445432000.Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <291dfddf3fbbce1d2b9587f7b49343cb805c4617-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="0M6xATGxvZA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use const
+ specifices in extract_x509_field_ssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +19,155 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Makes sense, is straightforward enough, and for long-term compat, needs
-to be in master + 2.7
+--0M6xATGxvZA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master and release/2.7 branch.
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail )
 
-commit 3316a18ebe6669d5e31b17ab0356a533b846d1bc (master)
-commit 82f676574dce2f391d2cb7332068f0fc6dca5387 (release/2.7)
-Author: Arne Schwabe
-Date:   Thu Mar 26 12:06:52 2026 +0100
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
 
-     Use const specifices in extract_x509_field_ssl
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1588
-     Message-Id: <20260326110658.25741-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36291.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change subject: Use const specifices in extract_x509_field_ssl
+......................................................................
 
+Use const specifices in extract_x509_field_ssl
+
+The new OpenSSL 4.0 will return const objects from these objects, so
+make them const in our code as well.
+
+Change-Id: Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1588
+Message-Id: <20260326110658.25741-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
+291.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/ssl_verify_openssl.c
+1 file changed, 2 insertions(+), 4 deletions(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/88/1588/3
+
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index d96879b..08946cd 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -195,8 +195,6 @@
+ {
+     int lastpos =3D -1;
+     int tmp =3D -1;
+-    X509_NAME_ENTRY *x509ne =3D NULL;
+-    ASN1_STRING *asn1 =3D NULL;
+     unsigned char *buf =3D NULL;
+
+     ASN1_OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);
+@@ -222,13 +220,13 @@
+         return FAILURE;
+     }
+
+-    x509ne =3D X509_NAME_get_entry(x509, lastpos);
++    const X509_NAME_ENTRY *x509ne =3D X509_NAME_get_entry(x509, lastpos);
+     if (!x509ne)
+     {
+         return FAILURE;
+     }
+
+-    asn1 =3D X509_NAME_ENTRY_get_data(x509ne);
++    const ASN1_STRING *asn1 =3D X509_NAME_ENTRY_get_data(x509ne);
+     if (!asn1)
+     {
+         return FAILURE;
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a
+Gerrit-Change-Number: 1588
+Gerrit-PatchSet: 3
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--0M6xATGxvZA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #3</strong> to the change originally created by plaisthos.<=
+/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail">Vi=
+ew Change</a></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">Use const specifices in extr=
+act_x509_field_ssl<br><br>The new OpenSSL 4.0 will return const objects fro=
+m these objects, so<br>make them const in our code as well.<br><br>Change-I=
+d: Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a<br>Signed-off-by: Arne Schwabe=
+ &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2723...=
+.&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1588<br>Message=
+-Id: &lt;20260326110658.25741-1-gert@...1296...&gt;<br>URL: https://www.mai=
+l-archive.com/openvpn-devel@lists.sourceforge.net/msg36291.html<br>Signed-o=
+ff-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/ssl_ver=
+ify_openssl.c<br>1 file changed, 2 insertions(+), 4 deletions(-)<br><br></p=
+re><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chang=
+es/88/1588/3</pre><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/op=
+envpn/ssl_verify_openssl.c</span><br><span>index d96879b..08946cd 100644</s=
+pan><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/=
+src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -195,8 +195,6 @@</span>=
+<br><span> {</span><br><span>     int lastpos =3D -1;</span><br><span>     =
+int tmp =3D -1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    X5=
+09_NAME_ENTRY *x509ne =3D NULL;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    ASN1_STRING *asn1 =3D NULL;</span><br><span>     unsigned cha=
+r *buf =3D NULL;</span><br><span> </span><br><span>     ASN1_OBJECT *field_=
+name_obj =3D OBJ_txt2obj(field_name, 0);</span><br><span>@@ -222,13 +220,13=
+ @@</span><br><span>         return FAILURE;</span><br><span>     }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    x509ne =
+=3D X509_NAME_get_entry(x509, lastpos);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const X509_NAME_ENTRY *x509ne =3D X509_NAME_get_ent=
+ry(x509, lastpos);</span><br><span>     if (!x509ne)</span><br><span>     {=
+</span><br><span>         return FAILURE;</span><br><span>     }</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    asn1 =3D X=
+509_NAME_ENTRY_get_data(x509ne);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    const ASN1_STRING *asn1 =3D X509_NAME_ENTRY_get_data(x509n=
+e);</span><br><span>     if (!asn1)</span><br><span>     {</span><br><span>=
+         return FAILURE;</span><br><span></span><br></pre><p>To view, visit=
+ <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail">change =
+1588</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
+temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
+l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia43bb88d9ddf2e82c638011353a=
+64c770f2c2c0a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1588 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--0M6xATGxvZA=--
 
