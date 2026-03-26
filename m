@@ -1,15 +1,16 @@
-Date: Thu, 26 Mar 2026 08:55:13 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <acTmYYJRIdtwscY0@...1296...>
-References: <20260322014606.1415363-1-luca.boccassi@...277...>
- <CAKuzo_iwvHHST4br9F+V0vGHQUOBSw0ju_yGTtCXGj7ws59pXA@...278...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 26 Mar 2026 10:10:41 +0000
+In-Reply-To: <gerrit.1774445432000.Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a@...2715...>
+References: <gerrit.1774445432000.Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <2affa07760f3fc4b5c84d48e7640f6eb6b346460-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature"; boundary="kDgnDnzLo1DCvDyB"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_iwvHHST4br9F+V0vGHQUOBSw0ju_yGTtCXGj7ws59pXA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] management: add multi-line base64 input
- for passwords
+Content-Type: multipart/alternative; boundary="FbxQrDZ5JDE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use const
+ specifices in extract_x509_field_ssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,55 +19,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: luca.boccassi@...277..., openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---kDgnDnzLo1DCvDyB
-Content-Type: text/plain; charset="us-ascii"
+--FbxQrDZ5JDE=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: plaisthos.
 
-On Wed, Mar 25, 2026 at 05:54:01PM -0400, Selva Nair wrote:
-> I have only skimmed through the patch, but reusing "password" with no
-> argument could break existing UI clients, hypothetically.  If any UI clie=
-nt
-> is currently using an empty password to quit the dialog, it will get into=
- a
-> stalemate. I guess a new keyword or an extra token after 'Auth'  to
-> indicate multi-line input would be required.
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1588?usp=3Demail )
 
-Bump the mgmt version, query it?
+Change subject: Use const specifices in  extract_x509_field_ssl
+......................................................................
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Patch Set 2: Code-Review+2
 
---kDgnDnzLo1DCvDyB
-Content-Type: application/pgp-signature; name=signature.asc
 
------BEGIN PGP SIGNATURE-----
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmnE5lcACgkQHYKe/spW
-KBIxKQv/SEk0rPKE0/G+4nFvskOL+vZEr9BGt5H60sZ3Q+q7PK/nBYdm9evspGPo
-pioNPoWHBJzn0xZQLm2CzgXLBuwbfXLNF4/OwnrNwYo6fYV2Ld1cl7Mm60k9421M
-w+0ID1AJqQKK/+HBjMGfFxm4ZBwzfNqllCySjMqU33AuS0b6ejjNSoDHx0acfjCM
-nUWj1oAPizbOQLwKhxhpZJQ51NSNJlTiDUykqCZjo+ll8GPFJhPEPdvxEwfigwCq
-W6a9BirsTaNynMytpG6mLxccJI8P0bbhGi3mI2sQUFqxxS2XTD9j2pSW5RieHBbU
-+p2bq2XmVH6BsclNL8huX/FeItTvl+lRAN5NURk2a0Ci8krd4L2vkc31U47pty7y
-+TaiWR/zlsx8hQrlnqcPoZEMEDFfqHs1hjOw6keIRTcrE3zODnSjYSKCnlJ903OB
-LUnLwXfyq+6thU+49/rGPtRYafW0prWARgnWBOInjXKb7c0Sj5rSm3ZMgBcXQHkG
-zHsu5m11
-=zAH1
------END PGP SIGNATURE-----
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia43bb88d9ddf2e82c638011353a64c770f2c2c0a
+Gerrit-Change-Number: 1588
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Thu, 26 Mar 2026 10:10:41 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---kDgnDnzLo1DCvDyB--
+--FbxQrDZ5JDE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail=
+">change 1588</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1588?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia43bb88d9ddf2e82c638011353a=
+64c770f2c2c0a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1588 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 26 Mar 2026 10:10:41=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--FbxQrDZ5JDE=--
 
