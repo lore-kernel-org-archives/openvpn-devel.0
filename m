@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Thu, 26 Mar 2026 14:06:55 +0000
+Date: Thu, 26 Mar 2026 14:06:53 +0000
 In-Reply-To: <gerrit.1774267774000.I8adffc3152b5b502a820a8ae0f901717e4831f81@...2715...>
 References: <gerrit.1774267774000.I8adffc3152b5b502a820a8ae0f901717e4831f81@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a502029fb6fdfe617cc82f9a402bd2294405fb32-HTML@...2715...>
+Message-ID: <a502029fb6fdfe617cc82f9a402bd2294405fb32-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6iN3+6ajaBk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="qRAJcMuIaTU="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: ssl_verify_openssl:
  use official ASN1_STRING_ API
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6iN3+6ajaBk=
+--qRAJcMuIaTU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-84?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1584?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
+
 
 Change subject: ssl_verify_openssl: use official ASN1_STRING_ API
 ......................................................................
@@ -56,7 +60,7 @@ M src/openvpn/ssl_verify_openssl.c
 1 file changed, 4 insertions(+), 4 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/84/1584/2
 
 diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
 ssl.c
@@ -116,7 +120,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1584?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I8adffc3152b5b502a820a8ae0f901717e4831f81
@@ -126,81 +130,84 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6iN3+6ajaBk=
+--qRAJcMuIaTU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1584?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">ssl_verify_openssl: use official ASN1_STRING_ AP=
-I<br><br>ASN1_STRING are now opaque types in OpenSSL 4.x =E2=80=94 the inte=
-rnal data and<br>length fields are no longer directly accessible. Use the a=
-ccessor API<br>instead. Accessors have been available since OpenSSL 1.1.0<b=
-r><br>The ASN1_STRING_length accessor is already in use, but not consistent=
-ly<br>applied. Standardise on using ASN1_STRING_length and ASN1_STRING_get0=
-_data<br>which allows for successful build of OpenSSL 4.x<br><br>Change-Id:=
- I8adffc3152b5b502a820a8ae0f901717e4831f81<br>Signed-off-by: Rudi Heitbaum =
-&lt;rudi@...2993...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...2639...=
-..&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1584<br>Messag=
-e-Id: &lt;20260323121908.730-1-gert@...1296...&gt;<br>URL: https://www.mail=
--archive.com/openvpn-devel@lists.sourceforge.net/msg36254.html<br>Signed-of=
-f-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/ssl_veri=
-fy_openssl.c<br>1 file changed, 4 insertions(+), 4 deletions(-)<br><br></pr=
-e>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_o=
-penssl.c</span><br><span>index 46401cd..d96879b 100644</span><br><span>--- =
-a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/src/openvpn/ssl_ve=
-rify_openssl.c</span><br><span>@@ -259,7 +259,7 @@</span><br><span>     {</=
-span><br><span>         ASN1_INTEGER *asn1_i =3D X509_get_serialNumber(peer=
-_cert);</span><br><span>         struct gc_arena gc =3D gc_new();</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        char *serial =3D format=
-_hex_ex(asn1_i-&gt;data, asn1_i-&gt;length, 0, 1 | FHE_CAPS, NULL, &amp;gc)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        char *seri=
-al =3D format_hex_ex(ASN1_STRING_get0_data(asn1_i), ASN1_STRING_length(asn1=
-_i), 0, 1 | FHE_CAPS, NULL, &amp;gc);</span><br><span> </span><br><span>   =
-      if (!serial || cn_len &lt;=3D strlen(serial) + 2)</span><br><span>   =
-      {</span><br><span>@@ -313,7 +313,7 @@</span><br><span> {</span><br><s=
-pan>     const ASN1_INTEGER *asn1_i =3D X509_get_serialNumber(cert);</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return=
- format_hex_ex(asn1_i-&gt;data, asn1_i-&gt;length, 0, 1, &quot;:&quot;, gc)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return format_=
-hex_ex(ASN1_STRING_get0_data(asn1_i), ASN1_STRING_length(asn1_i), 0, 1, &qu=
-ot;:&quot;, gc);</span><br><span> }</span><br><span> </span><br><span> resu=
-lt_t</span><br><span>@@ -626,7 +626,7 @@</span><br><span>         {</span><=
-br><span>             ASN1_BIT_STRING *ns;</span><br><span>             ns =
-=3D X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NULL, NULL);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            result =3D (ns &=
-amp;&amp; ns-&gt;length &gt; 0 &amp;&amp; (ns-&gt;data[0] &amp; NS_SSL_CLIE=
-NT)) ? SUCCESS : FAILURE;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            result =3D (ns &amp;&amp; ASN1_STRING_length(ns) &gt; 0 &=
-amp;&amp; (ASN1_STRING_get0_data(ns)[0] &amp; NS_SSL_CLIENT)) ? SUCCESS : F=
-AILURE;</span><br><span>             if (result =3D=3D SUCCESS)</span><br><=
-span>             {</span><br><span>                 msg(M_WARN, &quot;X509=
-: Certificate is a client certificate yet it&#39;s purpose &quot;</span><br=
-><span>@@ -654,7 +654,7 @@</span><br><span>         {</span><br><span>     =
-        ASN1_BIT_STRING *ns;</span><br><span>             ns =3D X509_get_e=
-xt_d2i(peer_cert, NID_netscape_cert_type, NULL, NULL);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            result =3D (ns &amp;&amp; ns-&=
-gt;length &gt; 0 &amp;&amp; (ns-&gt;data[0] &amp; NS_SSL_SERVER)) ? SUCCESS=
- : FAILURE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    result =3D (ns &amp;&amp; ASN1_STRING_length(ns) &gt; 0 &amp;&amp; (ASN=
-1_STRING_get0_data(ns)[0] &amp; NS_SSL_SERVER)) ? SUCCESS : FAILURE;</span>=
-<br><span>             if (result =3D=3D SUCCESS)</span><br><span>         =
-    {</span><br><span>                 msg(M_WARN, &quot;X509: Certificate =
-is a server certificate yet it&#39;s purpose &quot;</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1584?usp=3Demail">change 1584</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-584?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1584?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by plaisthos</p><pre class=3D"blocks" style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;">ssl_verify_openssl: use officia=
+l ASN1_STRING_ API<br><br>ASN1_STRING are now opaque types in OpenSSL 4.x =
+=E2=80=94 the internal data and<br>length fields are no longer directly acc=
+essible. Use the accessor API<br>instead. Accessors have been available sin=
+ce OpenSSL 1.1.0<br><br>The ASN1_STRING_length accessor is already in use, =
+but not consistently<br>applied. Standardise on using ASN1_STRING_length an=
+d ASN1_STRING_get0_data<br>which allows for successful build of OpenSSL 4.x=
+<br><br>Change-Id: I8adffc3152b5b502a820a8ae0f901717e4831f81<br>Signed-off-=
+by: Rudi Heitbaum &lt;rudi@...2993...&gt;<br>Acked-by: Arne Schwabe &lt;arn=
+e-openvpn@...1227...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvp=
+n/+/1584<br>Message-Id: &lt;20260323121908.730-1-gert@...1296...&gt;<br>URL=
+: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36254=
+.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M sr=
+c/openvpn/ssl_verify_openssl.c<br>1 file changed, 4 insertions(+), 4 deleti=
+ons(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/84/1584/2</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify_o=
+penssl.c b/src/openvpn/ssl_verify_openssl.c</span><br><span>index 46401cd..=
+d96879b 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span=
+><br><span>+++ b/src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -259,7=
+ +259,7 @@</span><br><span>     {</span><br><span>         ASN1_INTEGER *as=
+n1_i =3D X509_get_serialNumber(peer_cert);</span><br><span>         struct =
+gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        char *serial =3D format_hex_ex(asn1_i-&gt;data, asn1_i-&gt;leng=
+th, 0, 1 | FHE_CAPS, NULL, &amp;gc);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        char *serial =3D format_hex_ex(ASN1_STRING_get0_da=
+ta(asn1_i), ASN1_STRING_length(asn1_i), 0, 1 | FHE_CAPS, NULL, &amp;gc);</s=
+pan><br><span> </span><br><span>         if (!serial || cn_len &lt;=3D strl=
+en(serial) + 2)</span><br><span>         {</span><br><span>@@ -313,7 +313,7=
+ @@</span><br><span> {</span><br><span>     const ASN1_INTEGER *asn1_i =3D =
+X509_get_serialNumber(cert);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    return format_hex_ex(asn1_i-&gt;data, asn1_i-&=
+gt;length, 0, 1, &quot;:&quot;, gc);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    return format_hex_ex(ASN1_STRING_get0_data(asn1_i), AS=
+N1_STRING_length(asn1_i), 0, 1, &quot;:&quot;, gc);</span><br><span> }</spa=
+n><br><span> </span><br><span> result_t</span><br><span>@@ -626,7 +626,7 @@=
+</span><br><span>         {</span><br><span>             ASN1_BIT_STRING *n=
+s;</span><br><span>             ns =3D X509_get_ext_d2i(peer_cert, NID_nets=
+cape_cert_type, NULL, NULL);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            result =3D (ns &amp;&amp; ns-&gt;length &gt; 0 &amp;&amp=
+; (ns-&gt;data[0] &amp; NS_SSL_CLIENT)) ? SUCCESS : FAILURE;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            result =3D (ns &amp;&a=
+mp; ASN1_STRING_length(ns) &gt; 0 &amp;&amp; (ASN1_STRING_get0_data(ns)[0] =
+&amp; NS_SSL_CLIENT)) ? SUCCESS : FAILURE;</span><br><span>             if =
+(result =3D=3D SUCCESS)</span><br><span>             {</span><br><span>    =
+             msg(M_WARN, &quot;X509: Certificate is a client certificate ye=
+t it&#39;s purpose &quot;</span><br><span>@@ -654,7 +654,7 @@</span><br><sp=
+an>         {</span><br><span>             ASN1_BIT_STRING *ns;</span><br><=
+span>             ns =3D X509_get_ext_d2i(peer_cert, NID_netscape_cert_type=
+, NULL, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     result =3D (ns &amp;&amp; ns-&gt;length &gt; 0 &amp;&amp; (ns-&gt;data=
+[0] &amp; NS_SSL_SERVER)) ? SUCCESS : FAILURE;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            result =3D (ns &amp;&amp; ASN1_STRIN=
+G_length(ns) &gt; 0 &amp;&amp; (ASN1_STRING_get0_data(ns)[0] &amp; NS_SSL_S=
+ERVER)) ? SUCCESS : FAILURE;</span><br><span>             if (result =3D=3D=
+ SUCCESS)</span><br><span>             {</span><br><span>                 m=
+sg(M_WARN, &quot;X509: Certificate is a server certificate yet it&#39;s pur=
+pose &quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/1584?usp=3Demail">change 1584</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemty=
+pe=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1584?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I8adffc3152b5b502a820a8ae0f9=
@@ -216,5 +223,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---6iN3+6ajaBk=--
+--qRAJcMuIaTU=--
 
