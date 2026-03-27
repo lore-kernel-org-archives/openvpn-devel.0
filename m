@@ -1,10 +1,11 @@
-Date: Thu, 26 Mar 2026 17:49:42 +0100 (CET)
-Message-Id: <202603261649.62QGngUe046899@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260312173144.15602-1-gert@...1296...>
-References: <20260312173144.15602-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: auth_token: Clean up type
- handling in verify_auth_token and its UT
+Date: Fri, 27 Mar 2026 15:45:55 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <acaYI8dJvKrMzoLz@...2685...>
+References: <20260326062016.3856597-1-haixiao.yan.cn@...3018...>
+MIME-Version: 1.0
+In-Reply-To: <20260326062016.3856597-1-haixiao.yan.cn@...3018...>
+Subject: Re: [Openvpn-devel] [PATCH] tests: skip test execution when
+ cross-compiling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +14,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+Content-Disposition: inline
+To: haixiao.yan.cn@...3018...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Arne owns that code, ACKed it, so who am I to ask :-) - that said, I
-still ran the unit tests, and things still work (and the changes look
-good, and improve readability)
+On Thu, Mar 26, 2026 at 02:20:16PM +0800, haixiao.yan.cn--- via Openvpn-devel wrote:
+> From: Haixiao Yan <haixiao.yan.cn@...3018...>
+> 
+> The auth-pam unit test Makefile.am unconditionally assigns the TESTS variable,
+> causing test execution to fail during cross-compilation because the target
+> binaries are not executable on the build host.
+> 
+> Signed-off-by: Haixiao Yan <haixiao.yan.cn@...3018...>
+> ---
+>  tests/unit_tests/plugins/auth-pam/Makefile.am | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/tests/unit_tests/plugins/auth-pam/Makefile.am b/tests/unit_tests/plugins/auth-pam/Makefile.am
+> index ba32013ac920..7da299ccde92 100644
+> --- a/tests/unit_tests/plugins/auth-pam/Makefile.am
+> +++ b/tests/unit_tests/plugins/auth-pam/Makefile.am
+> @@ -4,8 +4,10 @@ AM_TESTSUITE_SUMMARY_HEADER = ' for $(PACKAGE_STRING) auth_pam Plugin Unit-Tests
+>  
+>  if ENABLE_PLUGIN_AUTH_PAM
+>  check_PROGRAMS = auth_pam_testdriver
+> +if !CROSS_COMPILING
+>  TESTS = $(check_PROGRAMS)
+>  endif
+> +endif
 
-Your patch has been applied to the master branch.
+Makes sense and is consistent with existing Makefile.am files in
+example_test and openvpn.
 
-commit 5933af1620a93bb06b8c48b6f1f0eb23ed13cbf9
-Author: Frank Lichtenheld
-Date:   Thu Mar 12 18:31:38 2026 +0100
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-     auth_token: Clean up type handling in verify_auth_token and its UT
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1510
-     Message-Id: <20260312173144.15602-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36079.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
