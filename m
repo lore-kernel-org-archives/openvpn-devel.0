@@ -1,14 +1,14 @@
 From: "Bluca (Code Review)" <gerrit@...515...>
-Date: Sun, 29 Mar 2026 22:55:52 +0000
+Date: Sun, 29 Mar 2026 23:31:51 +0000
 In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 Reply-To: luca.boccassi@...277..., arne-openvpn@...1227...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <c13721472673ab7cda5338aa6b23eae22c04a778-EmailReviewComments-HTML@...2715...>
+Message-ID: <dc076f68fd404b0326eefb5c13753817369d32a1-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zDPJfjJye58="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="loOgi/MQjyY="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: add
  base64 multi-line input for passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: selvanair <selva.nair@...277...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---zDPJfjJye58=
+--loOgi/MQjyY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -42,13 +42,9 @@ Patch Set 7:
 Patchset:
 
 PS6:
-> Done
-One test failed (222 succeeded) - is it a known issue? The linked page with=
- the result doesn't load for me:
-
-ubuntu-2510-factory--with-crypto-librarymbedtls
-
-http://buildbot.community.aws.openvpn.in:8010/#/builders/455/builds/1027
+> One test failed (222 succeeded) - is it a known issue? The linked page wi=
+th the result doesn't load  [=E2=80=A6]
+nvm, it passed on rerun, all green now
 
 
 
@@ -69,13 +65,14 @@ Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Sun, 29 Mar 2026 22:55:52 +0000
+Gerrit-Comment-Date: Sun, 29 Mar 2026 23:31:51 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: Bluca <luca.boccassi@...277...>
 Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---zDPJfjJye58=
+--loOgi/MQjyY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -87,21 +84,18 @@ Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
 e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
 1593?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Done=
-</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">One test failed (222 succeeded) - is it a known issue? Th=
-e linked page with the result doesn&#39;t load for me:</p><p class=3D"block=
-s" style=3D"white-space: pre-wrap; word-wrap: break-word;">ubuntu-2510-fact=
-ory--with-crypto-librarymbedtls</p><p class=3D"blocks" style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">http://buildbot.community.aws.openvpn.i=
-n:8010/#/builders/455/builds/1027</p></li></ul></li></ul><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">change 1=
-593</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div item=
-scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail"/><meta it=
-emprop=3D"name" content=3D"View Change"/></div></div>
+tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">One =
+test failed (222 succeeded) - is it a known issue? The linked page with the=
+ result doesn&#39;t load  [=E2=80=A6]</blockquote></p><p class=3D"blocks" s=
+tyle=3D"white-space: pre-wrap; word-wrap: break-word;">nvm, it passed on re=
+run, all green now</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">change 1593</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail"/><meta itemprop=3D"name" =
+content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -122,16 +116,18 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
 277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 29 Mar 2026 22:55:52=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 29 Mar 2026 23:31:51=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
 n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: Bluca &lt;luca.boccassi@...220...=
+..277...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
 ...277...&gt; </div>
 
 </body></html>=
 
---zDPJfjJye58=--
+--loOgi/MQjyY=--
 
