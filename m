@@ -1,14 +1,14 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Sun, 29 Mar 2026 21:48:39 +0000
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Sun, 29 Mar 2026 21:52:54 +0000
 In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
  luca.boccassi@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <c2f05f8c993aed0875b9d128ca2314250e0a1e06-EmailReviewComments-HTML@...2715...>
+Message-ID: <38adc419d08f7e554068a367cd5b1c5b83185b69-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="bmVT/Q3d0SU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="4aCBaVVOqZ0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: add
  base64 multi-line input for passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +20,15 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Bluca <luca.boccassi@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: selvanair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---bmVT/Q3d0SU=
+--4aCBaVVOqZ0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Bluca, plaisthos.
+Attention is currently required from: Bluca.
 
-selvanair has posted comments on this change by Bluca. ( http://gerrit.open=
+plaisthos has posted comments on this change by Bluca. ( http://gerrit.open=
 vpn.net/c/openvpn/+/1593?usp=3Demail )
 
 Change subject: management: add base64 multi-line input for passwords
@@ -42,7 +42,10 @@ Patch Set 6:
 Patchset:
 
 PS6:
-Can someone with access please enable buildbot runs on this?
+> Can someone with access please enable buildbot runs on this?
+I don't have the rights to do that but builds are triggered depending on wh=
+o uploads a patch. If I or you are pushing this patch again as patchset 7 i=
+t will build.
 
 
 
@@ -61,33 +64,37 @@ Gerrit-Owner: Bluca <luca.boccassi@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: Bluca <luca.boccassi@...277...>
-Gerrit-Comment-Date: Sun, 29 Mar 2026 21:48:39 +0000
+Gerrit-Comment-Date: Sun, 29 Mar 2026 21:52:54 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---bmVT/Q3d0SU=
+--4aCBaVVOqZ0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Bluca, plaisthos. </p>
+rently required from: Bluca. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
 e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
 e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1593?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Can someone wit=
-h access please enable buildbot runs on this?</p></li></ul></li></ul><p>To =
-view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Dema=
-il">change 1593</a>. To unsubscribe, or for help writing mail filters, visi=
-t <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.<=
-/p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemp=
-rop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+1593?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p><blockquote s=
+tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Can =
+someone with access please enable buildbot runs on this?</blockquote></p><p=
+ class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I=
+ don&#39;t have the rights to do that but builds are triggered depending on=
+ who uploads a patch. If I or you are pushing this patch again as patchset =
+7 it will build.</p></li></ul></li></ul><p>To view, visit <a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">change 1593</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1593?usp=3Demail"/><meta itemprop=3D"name" con=
+tent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -104,16 +111,16 @@ be21ac958f233 </div>
 77...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: Bluca &lt;luca.boccassi@...1665...=
 77...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 29 Mar 2026 21:48:39=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 29 Mar 2026 21:52:54=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
+...277...&gt; </div>
 
 </body></html>=
 
---bmVT/Q3d0SU=--
+--4aCBaVVOqZ0=--
 
