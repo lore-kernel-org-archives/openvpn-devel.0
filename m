@@ -1,14 +1,14 @@
 From: "Bluca (Code Review)" <gerrit@...515...>
-Date: Sun, 29 Mar 2026 01:02:32 +0000
+Date: Sun, 29 Mar 2026 01:03:15 +0000
 In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 Reply-To: luca.boccassi@...277..., arne-openvpn@...1227...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <e6567090e9feca95422e08fd1565e98637314298-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <ab5fd5c34c852a796f55ffadbddb3a7fbec2f869-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nu0eNyEpoTo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="z6j6RtrULbw="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: add
  base64 multi-line input for passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, selvanair <selva.nair@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nu0eNyEpoTo=
+--z6j6RtrULbw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#5).
 
 
 Change subject: management: add base64 multi-line input for passwords
@@ -63,10 +63,10 @@ M src/openvpn/manage.h
 3 files changed, 105 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1593/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1593/5
 
 diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 41e2a91..e1ee4bd 100644
+index 41e2a91..73a6ba9 100644
 --- a/doc/management-notes.txt
 +++ b/doc/management-notes.txt
 @@ -313,6 +313,22 @@
@@ -87,7 +87,7 @@ index 41e2a91..e1ee4bd 100644
 +  In this format, the password is base64-encoded and split across
 +  multiple lines, followed by END.  Each line can be at most 1024
 +  bytes.  This is the same format used by pk-sig and certificate
-+  commands. Requires OpenVPN 2.7+ management version >=3D 6.
++  commands. Requires OpenVPN 2.7.1+ management version >=3D 6.
 +
    The PASSWORD real-time message type can also be used to
    indicate password or other types of authentication failure:
@@ -280,7 +280,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8ebe21ac958f233
 Gerrit-Change-Number: 1593
-Gerrit-PatchSet: 4
+Gerrit-PatchSet: 5
 Gerrit-Owner: Bluca <luca.boccassi@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: selvanair <selva.nair@...277...>
@@ -288,13 +288,13 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: Bluca <luca.boccassi@...277...>
 
---nu0eNyEpoTo=
+--z6j6RtrULbw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Bluca, plaisthos. </p>
-<p>Bluca <strong>uploaded patch set #4</strong> to this change.</p><p><a hr=
+<p>Bluca <strong>uploaded patch set #5</strong> to this change.</p><p><a hr=
 ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">View Change</=
 a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
 e-space: pre-wrap;">management: add base64 multi-line input for passwords<b=
@@ -309,10 +309,10 @@ use-once<br>token.<br><br>Declare management version 6 for this feature.<br=
 otes.txt<br>M src/openvpn/manage.c<br>M src/openvpn/manage.h<br>3 files cha=
 nged, 105 insertions(+), 3 deletions(-)<br><br></pre><pre class=3D"blocks" =
 style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
- ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1593/4</pre><pre st=
+ ssh://gerrit.openvpn.net:29418/openvpn refs/changes/93/1593/5</pre><pre st=
 yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
  --git a/doc/management-notes.txt b/doc/management-notes.txt</span><br><spa=
-n>index 41e2a91..e1ee4bd 100644</span><br><span>--- a/doc/management-notes.=
+n>index 41e2a91..73a6ba9 100644</span><br><span>--- a/doc/management-notes.=
 txt</span><br><span>+++ b/doc/management-notes.txt</span><br><span>@@ -313,=
 6 +313,22 @@</span><br><span>   The escaping rules are the same as for the =
 config file.</span><br><span>   See the &quot;Command Parsing&quot; section=
@@ -335,57 +335,57 @@ olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
 ollowed by END.  Each line can be at most 1024</span><br><span style=3D"col=
 or: hsl(120, 100%, 40%);">+  bytes.  This is the same format used by pk-sig=
  and certificate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  c=
-ommands. Requires OpenVPN 2.7+ management version &gt;=3D 6.</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   The PASSWORD r=
-eal-time message type can also be used to</span><br><span>   indicate passw=
-ord or other types of authentication failure:</span><br><span> </span><br><=
-span>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><sp=
-an>index df72f15..d828df0 100644</span><br><span>--- a/src/openvpn/manage.c=
-</span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -31,6 +31,7 =
-@@</span><br><span> #include &quot;error.h&quot;</span><br><span> #include =
-&quot;fdmisc.h&quot;</span><br><span> #include &quot;options.h&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;base64.h&qu=
-ot;</span><br><span> #include &quot;sig.h&quot;</span><br><span> #include &=
-quot;event.h&quot;</span><br><span> #include &quot;otime.h&quot;</span><br>=
-<span>@@ -70,6 +71,7 @@</span><br><span>     MCV_DEFAULT =3D 1,</span><br><=
-span>     MCV_PKSIGN =3D 2,</span><br><span>     MCV_PKSIGN_ALG =3D 3,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    MCV_MULTILINE_PASSWO=
-RD =3D 4,</span><br><span> };</span><br><span> </span><br><span> struct man=
-agement *management; /* GLOBAL */</span><br><span>@@ -107,6 +109,8 @@</span=
-><br><span>     msg(M_CLIENT, &quot;                         where action i=
-s reply string.&quot;);</span><br><span>     msg(M_CLIENT, &quot;net       =
-             : (Windows only) Show network info and routing table.&quot;);<=
-/span><br><span>     msg(M_CLIENT, &quot;password type p        : Enter pas=
-sword p for a queried OpenVPN password.&quot;);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &quot;password type          =
-: (version &gt;3) Enter password base64-encoded on&quot;);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &quot;            =
-             subsequent lines followed by END.&quot;);</span><br><span>    =
- msg(M_CLIENT, &quot;remote type [host port] : Override remote directive, t=
-ype=3DACCEPT|MOD|SKIP.&quot;);</span><br><span>     msg(M_CLIENT, &quot;rem=
-ote-entry-count     : Get number of available remote entries.&quot;);</span=
-><br><span>     msg(M_CLIENT, &quot;remote-entry-get  i|all [j]: Get remote=
- entry at index =3D i to to j-1 or all.&quot;);</span><br><span>@@ -1012,6 =
-+1016,41 @@</span><br><span>     }</span><br><span> }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * Enter multi-line base64 mode for rec=
-eiving a password that exceeds the</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * single-line parameter size limit. The management client s=
-ends:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  password TYPE</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *  &lt;base64-encoded password l=
-ine 1&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  &lt;ba=
-se64-encoded password line 2&gt;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *  ...</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  END</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param man           The =
-management interface struct</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @param type          The type of password being entered (e.g. &q=
-uot;Auth&quot;, &quot;Private Key&quot;, etc)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+man_query_password_base64(struct management *man, const char *type)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+ommands. Requires OpenVPN 2.7.1+ management version &gt;=3D 6.</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   The PASSWORD=
+ real-time message type can also be used to</span><br><span>   indicate pas=
+sword or other types of authentication failure:</span><br><span> </span><br=
+><span>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><=
+span>index df72f15..d828df0 100644</span><br><span>--- a/src/openvpn/manage=
+.c</span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -31,6 +31,=
+7 @@</span><br><span> #include &quot;error.h&quot;</span><br><span> #includ=
+e &quot;fdmisc.h&quot;</span><br><span> #include &quot;options.h&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;base64.h&=
+quot;</span><br><span> #include &quot;sig.h&quot;</span><br><span> #include=
+ &quot;event.h&quot;</span><br><span> #include &quot;otime.h&quot;</span><b=
+r><span>@@ -70,6 +71,7 @@</span><br><span>     MCV_DEFAULT =3D 1,</span><br=
+><span>     MCV_PKSIGN =3D 2,</span><br><span>     MCV_PKSIGN_ALG =3D 3,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    MCV_MULTILINE_PASS=
+WORD =3D 4,</span><br><span> };</span><br><span> </span><br><span> struct m=
+anagement *management; /* GLOBAL */</span><br><span>@@ -107,6 +109,8 @@</sp=
+an><br><span>     msg(M_CLIENT, &quot;                         where action=
+ is reply string.&quot;);</span><br><span>     msg(M_CLIENT, &quot;net     =
+               : (Windows only) Show network info and routing table.&quot;)=
+;</span><br><span>     msg(M_CLIENT, &quot;password type p        : Enter p=
+assword p for a queried OpenVPN password.&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &quot;password type        =
+  : (version &gt;3) Enter password base64-encoded on&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &quot;          =
+               subsequent lines followed by END.&quot;);</span><br><span>  =
+   msg(M_CLIENT, &quot;remote type [host port] : Override remote directive,=
+ type=3DACCEPT|MOD|SKIP.&quot;);</span><br><span>     msg(M_CLIENT, &quot;r=
+emote-entry-count     : Get number of available remote entries.&quot;);</sp=
+an><br><span>     msg(M_CLIENT, &quot;remote-entry-get  i|all [j]: Get remo=
+te entry at index =3D i to to j-1 or all.&quot;);</span><br><span>@@ -1012,=
+6 +1016,41 @@</span><br><span>     }</span><br><span> }</span><br><span> </=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * Enter multi-line base64 mode for r=
+eceiving a password that exceeds the</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * single-line parameter size limit. The management client=
+ sends:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  password TYPE</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *  &lt;base64-encoded password=
+ line 1&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  &lt;=
+base64-encoded password line 2&gt;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  ...</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  END</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param man           Th=
+e management interface struct</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * @param type          The type of password being entered (e.g. =
+&quot;Auth&quot;, &quot;Private Key&quot;, etc)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+man_query_password_base64(struct management *man, const char *type)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    const bool needed =3D ((man-&gt;conne=
 ction.up_query_mode =3D=3D UP_QUERY_PASS</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+                          || man-&gt;connection.up_que=
@@ -512,7 +512,7 @@ View Change"/></div></div>
 <div style=3D"display:none"> Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8e=
 be21ac958f233 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1593 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: Bluca &lt;luca.boccassi@...1663...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -528,5 +528,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---nu0eNyEpoTo=--
+--z6j6RtrULbw=--
 
