@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 30 Mar 2026 13:36:39 +0200
-Message-ID: <20260330113648.19896-1-gert@...1296...>
-In-Reply-To: <gerrit.1773071900000.Iecc3e3d5d13cb85c1f287ad4816e1e6a7b2bcdef@...2715...>
-References: <gerrit.1773071900000.Iecc3e3d5d13cb85c1f287ad4816e1e6a7b2bcdef@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 30 Mar 2026 11:38:11 +0000
+In-Reply-To: <gerrit.1769789455000.I2f6502da1832edcb273a0dfa9b3ef940bec2d711@...2715...>
+References: <gerrit.1769789455000.I2f6502da1832edcb273a0dfa9b3ef940bec2d711@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <8491bdba8be76d1ebd5d28ede7ca9efbbe7d3e8f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] buffer: Avoid sign-compare warnings
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="FsaUs1pzn+g="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: wfp_block: Avoid
+ sign-compare warning with Fwpm* return types
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,142 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--FsaUs1pzn+g=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Switch buffer_list size and max_size to size_t
-- Guard some unavoidable size_t -> int conversions
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: Iecc3e3d5d13cb85c1f287ad4816e1e6a7b2bcdef
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1561
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1506?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: wfp_block: Avoid sign-compare warning with Fwpm* return typ=
+es
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1561
-This mail reflects revision 5 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 10: Code-Review+2
 
-        
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 75110ed..71f3769 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -53,7 +53,7 @@
- void
- buf_size_error(const size_t size)
- {
--    msg(M_FATAL, "fatal buffer size error, size=%lu", (unsigned long)size);
-+    msg(M_FATAL, "fatal buffer size error, size=%zu", size);
- }
- 
- struct buffer
-@@ -280,11 +280,6 @@
-     return ret;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- /*
-  * write a string to the end of a buffer that was
-  * truncated by buf_printf
-@@ -295,7 +290,7 @@
-     if (buf_forward_capacity(buf) <= 1)
-     {
-         size_t len = strlen(str) + 1;
--        if (len < buf_forward_capacity_total(buf))
-+        if (buf_size_valid(len) && (int)len < buf_forward_capacity_total(buf))
-         {
-             memcpy(buf->data + buf->capacity - len, str, len);
-         }
-@@ -782,7 +777,7 @@
- buf_string_match_head_str(const struct buffer *src, const char *match)
- {
-     const size_t size = strlen(match);
--    if (size > src->len)
-+    if (!buf_size_valid(size) || (int)size > src->len)
-     {
-         return false;
-     }
-@@ -1196,7 +1191,7 @@
- bool
- buffer_list_defined(const struct buffer_list *ol)
- {
--    return ol && ol->head != NULL;
-+    return ol && ol->head != NULL && ol->size > 0;
- }
- 
- void
-@@ -1223,7 +1218,7 @@
-         struct buffer_entry *e = buffer_list_push_data(ol, str, len + 1);
-         if (e)
-         {
--            e->buf.len = (int)len; /* Don't count trailing '\0' as part of length */
-+            e->buf.len--; /* Don't count trailing '\0' as part of length */
-         }
-     }
- }
-@@ -1249,6 +1244,7 @@
-         }
-         e->buf = alloc_buf(size);
-         memcpy(e->buf.data, data, size);
-+        /* Note: size implicitly checked by alloc_buf */
-         e->buf.len = (int)size;
-         ol->tail = e;
-     }
-@@ -1274,7 +1270,7 @@
-     const size_t sep_len = strlen(sep);
-     struct buffer_entry *more = bl->head;
-     size_t size = 0;
--    int count = 0;
-+    size_t count = 0;
-     for (; more; ++count)
-     {
-         size_t extra_len = BLENZ(&more->buf) + sep_len;
-@@ -1313,10 +1309,6 @@
-     }
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- buffer_list_aggregate(struct buffer_list *bl, const size_t max)
- {
-@@ -1326,7 +1318,7 @@
- void
- buffer_list_pop(struct buffer_list *ol)
- {
--    if (ol && ol->head)
-+    if (buffer_list_defined(ol))
-     {
-         struct buffer_entry *e = ol->head->next;
-         free_buf(&ol->head->buf);
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 040f752..fcc923b 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -1149,8 +1149,8 @@
- {
-     struct buffer_entry *head; /* next item to pop/peek */
-     struct buffer_entry *tail; /* last item pushed */
--    int size;                  /* current number of entries */
--    int max_size;              /* maximum size list should grow to */
-+    size_t size;               /* current number of entries */
-+    size_t max_size;           /* maximum size list should grow to */
- };
- 
- /**
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I2f6502da1832edcb273a0dfa9b3ef940bec2d711
+Gerrit-Change-Number: 1506
+Gerrit-PatchSet: 10
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 30 Mar 2026 11:38:11 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--FsaUs1pzn+g=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail">=
+View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
+iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demai=
+l">change 1506</a>. To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2f6502da1832edcb273a0dfa9b3=
+ef940bec2d711 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1506 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Mar 2026 11:38:11=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--FsaUs1pzn+g=--
 
