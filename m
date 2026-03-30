@@ -1,14 +1,14 @@
 From: "Bluca (Code Review)" <gerrit@...515...>
-Date: Mon, 30 Mar 2026 14:31:08 +0000
+Date: Mon, 30 Mar 2026 14:31:51 +0000
 In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 Reply-To: luca.boccassi@...277..., arne-openvpn@...1227...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <2b5fad709ed8d2b20c794d0c052b46de3cf27f1f-EmailReviewComments-HTML@...2715...>
+Message-ID: <4877876e5418e575fb2c79839ef19405b9a4be7b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="yVkdHPigm0c="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="dIcdbb6YuRE="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: add
  base64 multi-line input for passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---yVkdHPigm0c=
+--dIcdbb6YuRE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,29 +34,16 @@ Change subject: management: add base64 multi-line input for passwords
 ......................................................................
 
 
-Patch Set 8:
+Patch Set 9:
 
-(2 comments)
+(1 comment)
 
 Patchset:
 
-PS8:
-> That said, limitations on password length that could fit in the TLS buffe=
-r still stands, so unclear of its immediate utility.
-
-I have a WIP branch with another proposal for the TLS buffer issue, which w=
-ill hopefully be more acceptable. But it is technically unrelated to this m=
-anagement protocol change, so I'm waiting for this to be approved and merge=
-d first. Hope that's ok!
-
-
-File doc/management-notes.txt:
-
-http://gerrit.openvpn.net/c/openvpn/+/1593/comment/71172fcd_66764247?usp=3D=
-email :
-PS8, Line 531:     >PASSWORD:Need 'Auth' username -- version 4 or greater
-> Please add a line here to keep track of client versions. [=E2=80=A6]
-Done
+PS6:
+> nvm, it passed on rerun, all green now
+Could you please push again, so that the CI runs again with the latest revi=
+sion? Thanks!
 
 
 
@@ -70,7 +57,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8ebe21ac958f233
 Gerrit-Change-Number: 1593
-Gerrit-PatchSet: 8
+Gerrit-PatchSet: 9
 Gerrit-Owner: Bluca <luca.boccassi@...277...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -79,49 +66,37 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Mon, 30 Mar 2026 14:31:08 +0000
+Gerrit-Comment-Date: Mon, 30 Mar 2026 14:31:51 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: Bluca <luca.boccassi@...277...>
 Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---yVkdHPigm0c=
+--dIcdbb6YuRE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: cron2, plaisthos, selvanair. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">View =
-Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-sty=
-le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
-le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1593?tab=3Dcomments&amp;usp=3Demail">Patch Set #8:</a> </p><blockquote cla=
-ss=3D"blocks" style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
-: 0 10px;"><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">That said, limitations on password length that could fit in the=
- TLS buffer still stands, so unclear of its immediate utility.</p></blockqu=
-ote><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">I have a WIP branch with another proposal for the TLS buffer issue, wh=
-ich will hopefully be more acceptable. But it is technically unrelated to t=
-his management protocol change, so I&#39;m waiting for this to be approved =
-and merged first. Hope that&#39;s ok!</p></li></ul></li><li style=3D"margin=
-: 0; padding: 0;"><p>File doc/management-notes.txt:</p><ul style=3D"list-st=
-yle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
-yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1593/comment/71172fcd_66764247?usp=3Demail">Patch Set #8, Line 531:</a> <=
-code style=3D"font-family:monospace,monospace">    &gt;PASSWORD:Need &#39;A=
-uth&#39; username -- version 4 or greater</code></p><p><blockquote style=3D=
-"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Please add =
-a line here to keep track of client versions. [=E2=80=A6]</blockquote></p><=
-p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1593?usp=3Demail">change 1593</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sche=
-ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/1593?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1593?tab=3Dcomments&amp;usp=3Demail">Patch Set #6:</a> </p><p><blockquote s=
+tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">nvm,=
+ it passed on rerun, all green now</blockquote></p><p class=3D"blocks" styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">Could you please push a=
+gain, so that the CI runs again with the latest revision? Thanks!</p></li><=
+/ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1593?usp=3Demail">change 1593</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3De=
+mail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1593?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -129,7 +104,7 @@ schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
 <div style=3D"display:none"> Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8e=
 be21ac958f233 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1593 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none"> Gerrit-Owner: Bluca &lt;luca.boccassi@...1663...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -146,14 +121,18 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
 277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Mar 2026 14:31:08=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Mar 2026 14:31:51=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: Bluca &lt;luca.boccassi@...220...=
+..277...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
 ...277...&gt; </div>
 
 </body></html>=
 
---yVkdHPigm0c=--
+--dIcdbb6YuRE=--
 
