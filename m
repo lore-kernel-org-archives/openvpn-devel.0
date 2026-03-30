@@ -1,11 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 30 Mar 2026 20:08:54 +0200
-Message-ID: <20260330180900.16608-1-gert@...1296...>
-In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
-References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 30 Mar 2026 21:27:24 +0000
+References: <gerrit.1774906039000.I1a6dfc175075636bc7a5761215547077a9dc397a@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <3e95a633dbc2e2384e97cca872eca423b9293b4a-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v11] management: add base64 multi-line input
- for passwords
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="zhSgOsZGUhk="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: ssl_ncp: Fix type
+ of "found" parameter of check_pull_client_ncp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,230 +18,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Luca Boccassi <luca.boccassi@...277...>
+--zhSgOsZGUhk=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Allow management clients to send long passwords via the
-usual multi-line base64 encoded protocol.
+Attention is currently required from: plaisthos.
 
-A client declares MCV 5 support and sends a 'password <type>'
-line, followed by as many lines (each up to 1024 bytes) as
-needed, in base64 encoded format, terminated by 'END'.
+Hello plaisthos,
 
-This is useful when a password is a JIT-generated use-once
-token.
+I'd like you to do a code review.
+Please visit
 
-Declare management version 6 for this feature.
+    http://gerrit.openvpn.net/c/openvpn/+/1594?usp=3Demail
 
-Change-Id: Ib99f171fb69d51f2260b44edf8ebe21ac958f233
-Signed-off-by: Luca Boccassi <luca.boccassi@...277...>
-Acked-by: Selva Nair <selva.nair@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1593
+to review the following change.
+
+
+Change subject: ssl_ncp: Fix type of "found" parameter of check_pull_client=
+_ncp
+......................................................................
+
+ssl_ncp: Fix type of "found" parameter of check_pull_client_ncp
+
+In commit 91fd9614f980b02772e4dfbb09144c822ec97df0 type
+of "found" was changed to uint64_t. But due to -Wconversion
+not yet enabled in all of init.c one occurence of the old
+type was missed.
+
+Change-Id: I1a6dfc175075636bc7a5761215547077a9dc397a
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpn/ssl_ncp.c
+M src/openvpn/ssl_ncp.h
+2 files changed, 2 insertions(+), 2 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1593
-This mail reflects revision 11 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Selva Nair <selva.nair@...277...>
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/94/1594/1
 
-        
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 7da4aaf..1126468 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -326,6 +326,22 @@
-   The escaping rules are the same as for the config file.
-   See the "Command Parsing" section below for more info.
- 
-+  If the password is too long to fit in a single command line
-+  (longer than 256 bytes), the management interface client should
-+  use the multi-line base64 format instead.  This requires that
-+  the management client has announced version >= 5 via the
-+  "version" command:
-+
-+    password "Auth"
-+    [BASE64_PASSWORD_LINE]
-+    ...
-+    END
-+
-+  In this format, the password is base64-encoded and split across
-+  multiple lines, followed by END.  Each line can be at most 1024
-+  bytes.  This is the same format used by pk-sig and certificate
-+  commands. Requires OpenVPN management version >= 6.
-+
-   The PASSWORD real-time message type can also be used to
-   indicate password or other types of authentication failure:
- 
-@@ -513,6 +529,7 @@
-     >PK_SIGN:[base64]           -- version 2 or greater
-     >PK_SIGN:[base64],[alg]     -- version 3 or greater
-     >PASSWORD:Need 'Auth' username -- version 4 or greater
-+    multiline password from client -- version 5 or greater
- 
- COMMAND -- auth-retry
- ---------------------
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 6cab7db..c22a2a4 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -31,6 +31,7 @@
- #include "error.h"
- #include "fdmisc.h"
- #include "options.h"
-+#include "base64.h"
- #include "sig.h"
- #include "event.h"
- #include "otime.h"
-@@ -68,6 +69,7 @@
-     MCV_PKSIGN = 2,
-     MCV_PKSIGN_ALG = 3,
-     MCV_USERNAME_ONLY = 4,
-+    MCV_MULTILINE_PASSWORD = 5,
- };
- 
- struct management *management; /* GLOBAL */
-@@ -105,6 +107,8 @@
-     msg(M_CLIENT, "                         where action is reply string.");
-     msg(M_CLIENT, "net                    : (Windows only) Show network info and routing table.");
-     msg(M_CLIENT, "password type p        : Enter password p for a queried OpenVPN password.");
-+    msg(M_CLIENT, "password type          : (version >=5) Enter password base64-encoded on");
-+    msg(M_CLIENT, "                         subsequent lines followed by END.");
-     msg(M_CLIENT, "remote type [host port] : Override remote directive, type=ACCEPT|MOD|SKIP.");
-     msg(M_CLIENT, "remote-entry-count     : Get number of available remote entries.");
-     msg(M_CLIENT, "remote-entry-get  i|all [j]: Get remote entry at index = i to to j-1 or all.");
-@@ -1019,6 +1023,41 @@
-     }
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index fdac6925..649665a 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -307,7 +307,7 @@
  }
- 
-+/**
-+ * Enter multi-line base64 mode for receiving a password that exceeds the
-+ * single-line parameter size limit. The management client sends:
-+ *
-+ *  password TYPE
-+ *  <base64-encoded password line 1>
-+ *  <base64-encoded password line 2>
-+ *  ...
-+ *  END
-+ *
-+ * @param man           The management interface struct
-+ * @param type          The type of password being entered (e.g. "Auth", "Private Key", etc)
-+ */
-+static void
-+man_query_password_base64(struct management *man, const char *type)
-+{
-+    const bool needed = ((man->connection.up_query_mode == UP_QUERY_PASS
-+                          || man->connection.up_query_mode == UP_QUERY_USER_PASS)
-+                         && man->connection.up_query_type);
-+    if (!needed)
-+    {
-+        msg(M_CLIENT, "ERROR: no password is currently needed at this time");
-+        return;
-+    }
-+    if (!man->connection.up_query_type || !streq(man->connection.up_query_type, type))
-+    {
-+        msg(M_CLIENT, "ERROR: password of type '%s' entered, but we need one of type '%s'",
-+            type, man->connection.up_query_type);
-+        return;
-+    }
-+    struct man_connection *mc = &man->connection;
-+    mc->in_extra_cmd = IEC_PASSWORD;
-+    in_extra_reset(mc, IER_NEW);
-+}
-+
- static void
- in_extra_dispatch(struct management *man)
+
+ bool
+-check_pull_client_ncp(struct context *c, const unsigned int found)
++check_pull_client_ncp(struct context *c, const uint64_t found)
  {
-@@ -1052,6 +1091,41 @@
-             man->connection.ext_cert_input = man->connection.in_extra;
-             man->connection.in_extra = NULL;
-             return;
-+
-+        case IEC_PASSWORD:
-+        {
-+            char decoded[USER_PASS_LEN];
-+            CLEAR(decoded);
-+
-+            buffer_list_aggregate(man->connection.in_extra,
-+                                  OPENVPN_BASE64_LENGTH(USER_PASS_LEN) + 1024);
-+            struct buffer *buf = buffer_list_peek(man->connection.in_extra);
-+
-+            if (buf && BLEN(buf) > 0)
-+            {
-+                if (OPENVPN_BASE64_DECODED_LENGTH(BLEN(buf)) >= USER_PASS_LEN)
-+                {
-+                    msg(M_CLIENT, "ERROR: password too long");
-+                    buf_clear(buf);
-+                    break;
-+                }
-+                int len = openvpn_base64_decode(BSTR(buf), decoded,
-+                                                USER_PASS_LEN - 1);
-+                if (len < 0)
-+                {
-+                    msg(M_CLIENT, "ERROR: could not base64-decode password");
-+                    buf_clear(buf);
-+                    break;
-+                }
-+                decoded[len] = '\0';
-+                buf_clear(buf);
-+            }
-+
-+            man_query_password(man, man->connection.up_query_type,
-+                               decoded);
-+            secure_memzero(decoded, sizeof(decoded));
-+            break;
-+        }
-     }
-     in_extra_reset(&man->connection, IER_RESET);
- }
-@@ -1598,9 +1672,20 @@
-     }
-     else if (streq(p[0], "password"))
+     if (found & OPT_P_NCP)
      {
--        if (man_need(man, p, 2, 0))
-+        if (man_need(man, p, 1, MN_AT_LEAST))
-         {
--            man_query_password(man, p[1], p[2]);
-+            if (p[2])
-+            {
-+                man_query_password(man, p[1], p[2]);
-+            }
-+            else if (man->connection.client_version >= MCV_MULTILINE_PASSWORD)
-+            {
-+                man_query_password_base64(man, p[1]);
-+            }
-+            else
-+            {
-+                msg(M_CLIENT, "ERROR: the 'password' command requires 2 parameters");
-+            }
-         }
-     }
-     else if (streq(p[0], "forget-passwords"))
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index e5ad23f..27d3b60 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -50,7 +50,7 @@
- #include "socket_util.h"
- #include "mroute.h"
- 
--#define MANAGEMENT_VERSION                  5
-+#define MANAGEMENT_VERSION                  6
- #define MANAGEMENT_N_PASSWORD_RETRIES       3
- #define MANAGEMENT_LOG_HISTORY_INITIAL_SIZE 100
- #define MANAGEMENT_ECHO_BUFFER_SIZE         100
-@@ -297,6 +297,7 @@
- #define IEC_RSA_SIGN    3
- #define IEC_CERTIFICATE 4
- #define IEC_PK_SIGN     5
-+#define IEC_PASSWORD    6
-     int in_extra_cmd;
-     struct buffer_list *in_extra;
-     unsigned long in_extra_cid;
+diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
+index 837f662..dc3a750 100644
+--- a/src/openvpn/ssl_ncp.h
++++ b/src/openvpn/ssl_ncp.h
+@@ -49,7 +49,7 @@
+  *
+  * @return  Wether the client NCP process suceeded or failed
+  */
+-bool check_pull_client_ncp(struct context *c, unsigned int found);
++bool check_pull_client_ncp(struct context *c, uint64_t found);
+
+ /**
+  * Iterates through the ciphers in server_list and return the first
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1594?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1a6dfc175075636bc7a5761215547077a9dc397a
+Gerrit-Change-Number: 1594
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--zhSgOsZGUhk=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1594?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">ssl_ncp: Fix type of &quot;found&quot; para=
+meter of check_pull_client_ncp<br><br>In commit 91fd9614f980b02772e4dfbb091=
+44c822ec97df0 type<br>of &quot;found&quot; was changed to uint64_t. But due=
+ to -Wconversion<br>not yet enabled in all of init.c one occurence of the o=
+ld<br>type was missed.<br><br>Change-Id: I1a6dfc175075636bc7a5761215547077a=
+9dc397a<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---=
+<br>M src/openvpn/ssl_ncp.c<br>M src/openvpn/ssl_ncp.h<br>2 files changed, =
+2 insertions(+), 2 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
+errit.openvpn.net:29418/openvpn refs/changes/94/1594/1</pre><pre style=3D"f=
+ont-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a=
+/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c</span><br><span>index fdac69=
+25..649665a 100644</span><br><span>--- a/src/openvpn/ssl_ncp.c</span><br><s=
+pan>+++ b/src/openvpn/ssl_ncp.c</span><br><span>@@ -307,7 +307,7 @@</span><=
+br><span> }</span><br><span> </span><br><span> bool</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-check_pull_client_ncp(struct context *c, co=
+nst unsigned int found)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+check_pull_client_ncp(struct context *c, const uint64_t found)</span><b=
+r><span> {</span><br><span>     if (found &amp; OPT_P_NCP)</span><br><span>=
+     {</span><br><span>diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl=
+_ncp.h</span><br><span>index 837f662..dc3a750 100644</span><br><span>--- a/=
+src/openvpn/ssl_ncp.h</span><br><span>+++ b/src/openvpn/ssl_ncp.h</span><br=
+><span>@@ -49,7 +49,7 @@</span><br><span>  *</span><br><span>  * @return  W=
+ether the client NCP process suceeded or failed</span><br><span>  */</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-bool check_pull_client_ncp(s=
+truct context *c, unsigned int found);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+bool check_pull_client_ncp(struct context *c, uint64_t f=
+ound);</span><br><span> </span><br><span> /**</span><br><span>  * Iterates =
+through the ciphers in server_list and return the first</span><br><span></s=
+pan><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/1594?usp=3Demail">change 1594</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3De=
+mail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1594?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1a6dfc175075636bc7a57612155=
+47077a9dc397a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1594 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--zhSgOsZGUhk=--
 
