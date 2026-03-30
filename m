@@ -1,14 +1,14 @@
 From: "Bluca (Code Review)" <gerrit@...515...>
-Date: Mon, 30 Mar 2026 15:06:38 +0000
+Date: Mon, 30 Mar 2026 16:56:07 +0000
 In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
 Reply-To: luca.boccassi@...277..., arne-openvpn@...1227...,
  selva.nair@...277..., openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <6f965c44d989db2f947c78f289c917e70766d577-EmailReviewComments-HTML@...2715...>
+Message-ID: <c97f74319f0b3b2dcd88584bfb4eaf21e76c611b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mYDR58s9Zuc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2KBSAf+z024="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: add
  base64 multi-line input for passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,9 +19,10 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mYDR58s9Zuc=
+--2KBSAf+z024=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,19 +35,14 @@ Change subject: management: add base64 multi-line input for passwords
 ......................................................................
 
 
-Patch Set 9:
+Patch Set 11:
 
 (1 comment)
 
-File doc/management-notes.txt:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/1593/comment/bdf7c8e2_32c89363?usp=3D=
-email :
-PS9, Line 532:     >PASSWORD:multiline password from client -- version 5 or=
- greater
-> This is confusing as its not >PASSWORD: command from management server th=
-at is extended, but passwor [=E2=80=A6]
-Done
+PS11:
+thanks, CI all gree again
 
 
 
@@ -60,7 +56,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8ebe21ac958f233
 Gerrit-Change-Number: 1593
-Gerrit-PatchSet: 9
+Gerrit-PatchSet: 11
 Gerrit-Owner: Bluca <luca.boccassi@...277...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -69,12 +65,11 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Mon, 30 Mar 2026 15:06:38 +0000
+Gerrit-Comment-Date: Mon, 30 Mar 2026 16:56:07 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---mYDR58s9Zuc=
+--2KBSAf+z024=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -82,24 +77,19 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: cron2, plaisthos, selvanair. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/management-notes.txt:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1593/comment/bdf7c8e2_32c89363?usp=3Demail">Patch Set =
-#9, Line 532:</a> <code style=3D"font-family:monospace,monospace">    &gt;P=
-ASSWORD:multiline password from client -- version 5 or greater</code></p><p=
-><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding:=
- 0 10px;">This is confusing as its not &gt;PASSWORD: command from managemen=
-t server that is extended, but passwor [=E2=80=A6]</blockquote></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p=
-></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1593?usp=3Demail">change 1593</a>. To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?=
-usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
-EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
-org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/1593?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
-"/></div></div>
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1593?tab=3Dcomments&amp;usp=3Demail">Patch Set #11:</a> </p><p class=3D"blo=
+cks" style=3D"white-space: pre-wrap; word-wrap: break-word;">thanks, CI all=
+ gree again</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1593?usp=3Demail">change 1593</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http=
+://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/1593?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -107,7 +97,7 @@ openvpn/+/1593?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
 <div style=3D"display:none"> Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8e=
 be21ac958f233 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 1593 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 11 </div>
 <div style=3D"display:none"> Gerrit-Owner: Bluca &lt;luca.boccassi@...1663...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
@@ -124,14 +114,12 @@ ts.sourceforge.net&gt; </div>
 ; </div>
 <div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
 277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Mar 2026 15:06:38=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Mar 2026 16:56:07=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
 
 </body></html>=
 
---mYDR58s9Zuc=--
+--2KBSAf+z024=--
 
