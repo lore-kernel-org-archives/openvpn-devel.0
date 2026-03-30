@@ -1,10 +1,10 @@
-Date: Mon, 30 Mar 2026 13:07:25 +0200 (CEST)
-Message-Id: <202603301107.62UB7PZk035412@...2054...>
+Date: Mon, 30 Mar 2026 13:28:09 +0200 (CEST)
+Message-Id: <202603301128.62UBS9hb035860@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260326062016.3856597-1-haixiao.yan.cn@...3018...>
-References: <20260326062016.3856597-1-haixiao.yan.cn@...3018...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tests: skip test execution when
- cross-compiling
+In-Reply-To: <20260316134841.28362-1-gert@...1296...>
+References: <20260316134841.28362-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: socket: restore per-connection
+ lport override over global default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Haixiao Yan <haixiao.yan.cn@...3018...>
+To: Gianmarco De Gregori <gianmarco@...2726...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for finding that bug, and letting us know.
+Thanks for the fix.
+
+The change passes all BB and t_server tests, though this is mostly 
+meaningless here - no <connection> blocks are excercised.  So I ran
+this with a quick local config setup, with a global --lport and 
+two <connection> profiles, one of them with a local --lport, verifying
+that it indeed is honoured.
 
 Your patch has been applied to the master and release/2.7 branch (bugfix).
 
-commit 690aace41a68292412da3f313389e79d4a12bfbc (master)
-commit 66989b384dc0056e89942bfa0a1546a2644f7831 (release/2.7)
-Author: Haixiao Yan
-Date:   Thu Mar 26 14:20:16 2026 +0800
+commit 7ac5f89023b2c2870a210016a862ec042f709bb7 (master)
+commit b5039975bf629d33fbff0b0feae6d072378e7edc (release/2.7)
+Author: Gianmarco De Gregori
+Date:   Mon Mar 16 14:48:36 2026 +0100
 
-     tests: skip test execution when cross-compiling
+     socket: restore per-connection lport override over global default
 
-     Signed-off-by: Haixiao Yan <haixiao.yan.cn@...3018...>
-     Acked-By: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20260326062016.3856597-1-haixiao.yan.cn@...3018...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36288.html
+     Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+     Acked-by: Antonio Quartulli <antonio@...2726...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1555
+     Message-Id: <20260316134841.28362-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36164.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
