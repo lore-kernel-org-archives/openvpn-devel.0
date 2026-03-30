@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 30 Mar 2026 11:38:11 +0000
+From: Gert Doering <gert@...1296...>
+Date: Mon, 30 Mar 2026 13:38:19 +0200
+Message-ID: <20260330113826.20057-1-gert@...1296...>
 In-Reply-To: <gerrit.1769789455000.I2f6502da1832edcb273a0dfa9b3ef940bec2d711@...2715...>
 References: <gerrit.1769789455000.I2f6502da1832edcb273a0dfa9b3ef940bec2d711@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8491bdba8be76d1ebd5d28ede7ca9efbbe7d3e8f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FsaUs1pzn+g="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: wfp_block: Avoid
- sign-compare warning with Fwpm* return types
+Subject: [Openvpn-devel] [PATCH v10] wfp_block: Avoid sign-compare warning
+ with Fwpm* return types
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +14,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---FsaUs1pzn+g=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Frank Lichtenheld <frank@...2641...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+FWP_E_ALREADY_EXISTS is explictly casted to HRESULT which
+is LONG. But Fwpm* return DWORD. So if you compare an expected
+result with the actual result you get an sign-compare warning...
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1506?usp=3Demail )
+Change-Id: I2f6502da1832edcb273a0dfa9b3ef940bec2d711
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1506
+---
 
-Change subject: wfp_block: Avoid sign-compare warning with Fwpm* return typ=
-es
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1506
+This mail reflects revision 10 of this Change.
 
-Patch Set 10: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2f6502da1832edcb273a0dfa9b3ef940bec2d711
-Gerrit-Change-Number: 1506
-Gerrit-PatchSet: 10
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 30 Mar 2026 11:38:11 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---FsaUs1pzn+g=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 10:<span style=3D"border-radius: 3px; display: inline-block; m=
-argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
-></p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail">=
-View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
-iew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demai=
-l">change 1506</a>. To unsubscribe, or for help writing mail filters, visit=
- <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</=
-p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
- itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
-op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1506?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2f6502da1832edcb273a0dfa9b3=
-ef940bec2d711 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1506 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Mar 2026 11:38:11=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---FsaUs1pzn+g=--
+        
+diff --git a/src/openvpn/wfp_block.c b/src/openvpn/wfp_block.c
+index 74d19ce..4d38fdb 100644
+--- a/src/openvpn/wfp_block.c
++++ b/src/openvpn/wfp_block.c
+@@ -131,11 +131,6 @@
+     return err;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
+ /*
+  * Block outgoing local traffic, possibly DNS only, except for
+  * (i) adapter with the specified index (and loopback, if all is blocked)
+@@ -198,7 +193,7 @@
+        * do not treat "already exists" as an error */
+         err = add_sublayer(OPENVPN_WFP_BLOCK_SUBLAYER);
+ 
+-        if (err == FWP_E_ALREADY_EXISTS || err == ERROR_SUCCESS)
++        if (err == (DWORD)FWP_E_ALREADY_EXISTS || err == ERROR_SUCCESS)
+         {
+             msg_handler(0, "WFP Block: Added a persistent sublayer with pre-defined UUID");
+         }
+@@ -345,10 +340,6 @@
+     return err;
+ }
+ 
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ DWORD
+ delete_wfp_block_filters(HANDLE engine_handle)
+ {
 
