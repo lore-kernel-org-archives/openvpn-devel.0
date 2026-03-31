@@ -1,15 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 31 Mar 2026 16:24:02 +0000
-In-Reply-To: <gerrit.1774445432000.I5158fbb0762443ea4954e5745f520e83e019ed30@...2715...>
-References: <gerrit.1774445432000.I5158fbb0762443ea4954e5745f520e83e019ed30@...2715...>
+Date: Tue, 31 Mar 2026 16:24:12 +0000
+References: <gerrit.1774974242000.Id8680e6555a66024417d6eb9322d4fde79922453@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
-Message-ID: <7aab1892181f4b58d6447e4aa12fb6460ec34256-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <42c9153101c6d8af37a7601a6cfac943a0d479d9-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nr5IAMbk4Qg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not access
- internals of ASN1_INTEGER to print hex of serial
+Content-Type: multipart/alternative; boundary="08SzpQwCgvU="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Rename key* to
+ privkey* in cert_data.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,175 +19,498 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nr5IAMbk4Qg=
+--08SzpQwCgvU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded a new patch set (#2). ( http://gerrit.openvpn.net/c/=
-openvpn/+/1589?usp=3Demail )
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1597?usp=3Demail )
 
 
-Change subject: Do not access internals of ASN1_INTEGER to print hex of ser=
-ial
+Change subject: Rename key* to privkey* in cert_data.h
 ......................................................................
 
-Do not access internals of ASN1_INTEGER to print hex of serial
+Rename key* to privkey* in cert_data.h
 
-OpenSSL 4.0 does not allow internal access to to these data structures
-anymore. So use public methods to get the serial data and convert it to
-hex.
+The name key2 conflicts with our struct key2 and prevents these
+test keys from being used in test_ssl.c
 
-Change-Id: I5158fbb0762443ea4954e5745f520e83e019ed30
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Change-Id: Id8680e6555a66024417d6eb9322d4fde79922453
 ---
-M src/openvpn/ssl_verify_openssl.c
-1 file changed, 16 insertions(+), 6 deletions(-)
+M tests/unit_tests/openvpn/cert_data.h
+M tests/unit_tests/openvpn/test_cryptoapi.c
+M tests/unit_tests/openvpn/test_pkcs11.c
+3 files changed, 39 insertions(+), 39 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/89/1589/2
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 367f81a..558f004 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -255,17 +255,19 @@
-     }
-     else if (strcmp(LN_serialNumber, x509_username_field) =3D=3D 0)
-     {
--        ASN1_INTEGER *asn1_i =3D X509_get_serialNumber(peer_cert);
--        struct gc_arena gc =3D gc_new();
--        char *serial =3D format_hex_ex(ASN1_STRING_get0_data(asn1_i), ASN1=
-_STRING_length(asn1_i), 0, 1 | FHE_CAPS, NULL, &gc);
-+        const ASN1_INTEGER *asn1_i =3D X509_get_serialNumber(peer_cert);
-+
-+        BIGNUM *bn_serial =3D ASN1_INTEGER_to_BN(asn1_i, NULL);
-+        char *serial =3D BN_bn2hex(bn_serial);
-+        BN_free(bn_serial);
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/97/1597/1
 
-         if (!serial || cn_len <=3D strlen(serial) + 2)
-         {
--            gc_free(&gc);
-+            OPENSSL_free(serial);
-             return FAILURE;
-         }
-         snprintf(common_name, cn_len, "0x%s", serial);
--        gc_free(&gc);
-+        OPENSSL_free(serial);
-     }
-     else
-     {
-@@ -310,8 +312,16 @@
- backend_x509_get_serial_hex(openvpn_x509_cert_t *cert, struct gc_arena *gc)
+diff --git a/tests/unit_tests/openvpn/cert_data.h b/tests/unit_tests/openvp=
+n/cert_data.h
+index c5d897e..9c16929 100644
+--- a/tests/unit_tests/openvpn/cert_data.h
++++ b/tests/unit_tests/openvpn/cert_data.h
+@@ -52,11 +52,11 @@
+     "srXMaPe0lAea4etMSZsjIRPwGRMXBrwbRmb6iN2Cq40867HdaJoAryYig7IiDwSX\n"
+     "htCbOA6sX+60+FEOYDEx5cmkogl633Pw7LJ3ICkyzIrUSEt6BOT1Gsc1eQ=3D=3D\n"
+     "-----END CERTIFICATE-----\n";
+-static const char *const key1 =3D "-----BEGIN PRIVATE KEY-----\n"
+-                                "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wa=
+wIBAQQg5Xpw/lLvBrWjAWDq\n"
+-                                "L6dm/4a1or6AQ6O3yXYgw78B23ihRANCAAR4SRvnS=
+uGdJmPitKbqcFbcgyzsMBlh\n"
+-                                "4wWOrty4I0ZlIXxY2qEnyb3YKz4OdMGzpK7FLfQZe=
+hHg6LGblcLs4EW7\n"
+-                                "-----END PRIVATE KEY-----\n";
++static const char *const privkey1 =3D "-----BEGIN PRIVATE KEY-----\n"
++                                    "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHB=
+G0wawIBAQQg5Xpw/lLvBrWjAWDq\n"
++                                    "L6dm/4a1or6AQ6O3yXYgw78B23ihRANCAAR4S=
+RvnSuGdJmPitKbqcFbcgyzsMBlh\n"
++                                    "4wWOrty4I0ZlIXxY2qEnyb3YKz4OdMGzpK7FL=
+fQZehHg6LGblcLs4EW7\n"
++                                    "-----END PRIVATE KEY-----\n";
+ static const char *const hash1 =3D "A4B74F1D68AF50691F62CBD675E24C86553695=
+67";
+ static const char *const cname1 =3D "ovpn-test-ec1";
+
+@@ -77,7 +77,7 @@
+     "HeTsAlHjfFEReVDiNCI9vMQLKFKKWnAorT2+iyRueA3bt2gchf863BBhZvJddL7Q\n"
+     "KBa0osXw+eGBRAwsm7m1qCho3b3fN2nFAa+k07ptRkOeablmFdXE81nVlA=3D=3D\n"
+     "-----END CERTIFICATE-----\n";
+-#define key2 key1
++#define privkey2 privkey1
+ static const char *const hash2 =3D "FA18FD34BAABE47D6E2910E080F421C109CA97=
+F5";
+ static const char *const cname2 =3D "ovpn-test-ec2";
+
+@@ -103,34 +103,34 @@
+     "F6MgVGSxl6eylJgDYckvJiAbmcp2PD/LRQQOxQA0yqeAMg2cbdvclETuYD6zoFfu\n"
+     "Y8aO7dvDlw=3D=3D\n"
+     "-----END CERTIFICATE-----\n";
+-static const char *const key3 =3D "-----BEGIN PRIVATE KEY-----\n"
+-                                "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiA=
+gEAAoIBAQC7xFoR6fmoyfsJ\n"
+-                                "IQDKKgbYgFw0MzVuDAmpRx6KTEihgTchkQx9fHddW=
+bKiOUbcEnQi3LNux7P4QVl/\n"
+-                                "4dRR3skisBug6Vd5LXeBGZqmpu5XZiF4DgLz1lX21=
+G0aOogFWkie2qGEcso40159\n"
+-                                "x9FBDl5A3sLP18ubeex0pd/BzDFv6SLOTyVWO/GCN=
+c8IX/i0uN4mLvoVU00SeqwT\n"
+-                                "PnS+CRXrSq4JjGDJLsXl0/PlxkjsgU0yOOA0Z2d8F=
+zk3wClwP6Hc49BOMWKstUIh\n"
+-                                "LbG2DcIv8l29EuEj2w3ju/7gkewol96XQ2twpPvpo=
+VAaiVh/m7hQUcQORQCD6eJc\n"
+-                                "DjOZVCArAgMBAAECggEACqkuWAAJ3cyCBVWrXs8eD=
+mLTWV9i9DmYvtS75ixIn2rf\n"
+-                                "v3cl12YevN0f6FgKLuqZT3Vqdqq+DCVhuIIQ9QkKM=
+H8BQpSdE9NCCsFyZ23o8Gtr\n"
+-                                "EQ7ymfecb+RFwYx7NpqWrvZI32VJGArgPZH/zorLT=
+TGYrAZbmBtHEqRsXOuEDw97\n"
+-                                "slwwcWaa9ztaYC8/N/7fgsnydaCFSaOByRlWuyvSm=
+Hvn6ZwLv8ANOshY6fstC0Jb\n"
+-                                "BW0GpSe9eZPjpl71VT2RtpghqLV5+iAoFDHoT+eZv=
+BospcUGtfcZSU7RrBjKB8+a\n"
+-                                "U1d6hwKhduVs2peIQzl+FiOSdWriLcsZv79q4sBhs=
+QKBgQDUDVTf5BGJ8apOs/17\n"
+-                                "YVk+Ad8Ey8sXvsfk49psmlCRa8Z4g0LVXfrP94qzh=
+tl8U5kE9hs3nEF4j/kX1ZWG\n"
+-                                "k11tdsNTZN5x5bbAgEgPA6Ap6J/uto0HS8G0vSv0l=
+yBymdKA3p/i5Dx+8Nc9cGns\n"
+-                                "LGI9MvviLX7pQFIkvbaCkdKwYwKBgQDirowjWZnm7=
+BgVhF0G1m3DY9nQTYYU185W\n"
+-                                "UESaO5/nVzwUrA+FypJamD+AvmlSuY8rJeQAGAS6n=
+Qr9G8/617r+GwJnzRtxC6Vl\n"
+-                                "4OF5BJRsD70oX4CFOOlycMoJ8tzcYVH7NI8KVocjx=
+b+QW82hqSvEwSsvnwwn3eOW\n"
+-                                "nr5u5vIHmQKBgCuc3lL6Dl1ntdZgEIdau0cUjXDoF=
+Uo589TwxBDIID/4gaZxoMJP\n"
+-                                "hPFXAVDxMDPw4azyjSB/47tPKTUsuYcnMfT8kynIu=
+jOEwnSPLcLgxQU5kgM/ynuw\n"
+-                                "qhNpQOwaVRMc7f2RTCMXPBYDpNE/GJn5eu8JWGLpZ=
+ovEreBeoHX0VffvAoGAVrWn\n"
+-                                "+3mxykhzaf+oyg3KDNysG+cbq+tlDVVE+K5oG0keP=
+VYX1fjIBQmJ+QhdJ3y9jCbB\n"
+-                                "UVveqzeZVXqHEw/kgoD4aZZmsdZfnVnpRa5/y9o1Z=
+DUr50n+2nzUe/u/ijlb77iK\n"
+-                                "Is04gnGJNoI3ZWhdyrSNfXjcYH+bKClu9OM4n7kCg=
+YAorc3PAX7M0bsQrrqYxUS8\n"
+-                                "56UU0YdhAgYitjM7Fm/0iIm0vDpSevxL9js4HnnsS=
+MVR77spCBAGOCCZrTcI3Ejg\n"
+-                                "xKDYzh1xlfMRjJBuBu5Pd55ZAv9NXFGpsX5SO8fDZ=
+QJMwpcbQH36+UdqRRFDpjJ0\n"
+-                                "ZbX6nKcJ7jciJVKJds59Jg=3D=3D\n"
+-                                "-----END PRIVATE KEY-----\n";
++static const char *const privkey3 =3D "-----BEGIN PRIVATE KEY-----\n"
++                                    "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwg=
+gSiAgEAAoIBAQC7xFoR6fmoyfsJ\n"
++                                    "IQDKKgbYgFw0MzVuDAmpRx6KTEihgTchkQx9f=
+HddWbKiOUbcEnQi3LNux7P4QVl/\n"
++                                    "4dRR3skisBug6Vd5LXeBGZqmpu5XZiF4DgLz1=
+lX21G0aOogFWkie2qGEcso40159\n"
++                                    "x9FBDl5A3sLP18ubeex0pd/BzDFv6SLOTyVWO=
+/GCNc8IX/i0uN4mLvoVU00SeqwT\n"
++                                    "PnS+CRXrSq4JjGDJLsXl0/PlxkjsgU0yOOA0Z=
+2d8Fzk3wClwP6Hc49BOMWKstUIh\n"
++                                    "LbG2DcIv8l29EuEj2w3ju/7gkewol96XQ2twp=
+PvpoVAaiVh/m7hQUcQORQCD6eJc\n"
++                                    "DjOZVCArAgMBAAECggEACqkuWAAJ3cyCBVWrX=
+s8eDmLTWV9i9DmYvtS75ixIn2rf\n"
++                                    "v3cl12YevN0f6FgKLuqZT3Vqdqq+DCVhuIIQ9=
+QkKMH8BQpSdE9NCCsFyZ23o8Gtr\n"
++                                    "EQ7ymfecb+RFwYx7NpqWrvZI32VJGArgPZH/z=
+orLTTGYrAZbmBtHEqRsXOuEDw97\n"
++                                    "slwwcWaa9ztaYC8/N/7fgsnydaCFSaOByRlWu=
+yvSmHvn6ZwLv8ANOshY6fstC0Jb\n"
++                                    "BW0GpSe9eZPjpl71VT2RtpghqLV5+iAoFDHoT=
++eZvBospcUGtfcZSU7RrBjKB8+a\n"
++                                    "U1d6hwKhduVs2peIQzl+FiOSdWriLcsZv79q4=
+sBhsQKBgQDUDVTf5BGJ8apOs/17\n"
++                                    "YVk+Ad8Ey8sXvsfk49psmlCRa8Z4g0LVXfrP9=
+4qzhtl8U5kE9hs3nEF4j/kX1ZWG\n"
++                                    "k11tdsNTZN5x5bbAgEgPA6Ap6J/uto0HS8G0v=
+Sv0lyBymdKA3p/i5Dx+8Nc9cGns\n"
++                                    "LGI9MvviLX7pQFIkvbaCkdKwYwKBgQDirowjW=
+Znm7BgVhF0G1m3DY9nQTYYU185W\n"
++                                    "UESaO5/nVzwUrA+FypJamD+AvmlSuY8rJeQAG=
+AS6nQr9G8/617r+GwJnzRtxC6Vl\n"
++                                    "4OF5BJRsD70oX4CFOOlycMoJ8tzcYVH7NI8KV=
+ocjxb+QW82hqSvEwSsvnwwn3eOW\n"
++                                    "nr5u5vIHmQKBgCuc3lL6Dl1ntdZgEIdau0cUj=
+XDoFUo589TwxBDIID/4gaZxoMJP\n"
++                                    "hPFXAVDxMDPw4azyjSB/47tPKTUsuYcnMfT8k=
+ynIujOEwnSPLcLgxQU5kgM/ynuw\n"
++                                    "qhNpQOwaVRMc7f2RTCMXPBYDpNE/GJn5eu8JW=
+GLpZovEreBeoHX0VffvAoGAVrWn\n"
++                                    "+3mxykhzaf+oyg3KDNysG+cbq+tlDVVE+K5oG=
+0kePVYX1fjIBQmJ+QhdJ3y9jCbB\n"
++                                    "UVveqzeZVXqHEw/kgoD4aZZmsdZfnVnpRa5/y=
+9o1ZDUr50n+2nzUe/u/ijlb77iK\n"
++                                    "Is04gnGJNoI3ZWhdyrSNfXjcYH+bKClu9OM4n=
+7kCgYAorc3PAX7M0bsQrrqYxUS8\n"
++                                    "56UU0YdhAgYitjM7Fm/0iIm0vDpSevxL9js4H=
+nnsSMVR77spCBAGOCCZrTcI3Ejg\n"
++                                    "xKDYzh1xlfMRjJBuBu5Pd55ZAv9NXFGpsX5SO=
+8fDZQJMwpcbQH36+UdqRRFDpjJ0\n"
++                                    "ZbX6nKcJ7jciJVKJds59Jg=3D=3D\n"
++                                    "-----END PRIVATE KEY-----\n";
+ static const char *const hash3 =3D "2463628674E362578113F508BA05F29EF142E9=
+79";
+ static const char *const cname3 =3D "ovpn-test-rsa1";
+
+@@ -156,7 +156,7 @@
+     "353PpJJ9s2b/Fqoc4d7udqhQogA7jqbayTKhJxbT134l2NzqDROzuS0kXbX8bXCi\n"
+     "mXSa4c8=3D\n"
+     "-----END CERTIFICATE-----\n";
+-#define key4 key3
++#define privkey4 privkey3
+ static const char *const hash4 =3D "E1401D4497C944783E3D62CDBD2A1F69F5E507=
+1E";
+ #define cname4 cname3 /* same CN as that of cert3 */
+
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/o=
+penvpn/test_cryptoapi.c
+index 59a356d..db8b1ed 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -115,9 +115,9 @@
+ init_cert_data(void)
  {
-     const ASN1_INTEGER *asn1_i =3D X509_get_serialNumber(cert);
-+    BIGNUM *bn_serial =3D ASN1_INTEGER_to_BN(asn1_i, NULL);
-+    int len_serial =3D BN_num_bytes(bn_serial);
-+    unsigned char *buf =3D malloc(len_serial);
-+    BN_bn2binpad(bn_serial, buf, len_serial);
-
--    return format_hex_ex(ASN1_STRING_get0_data(asn1_i), ASN1_STRING_length=
-(asn1_i), 0, 1, ":", gc);
-+    char *ret =3D format_hex_ex(buf, len_serial, 0, 1, ":", gc);
-+    free(buf);
-+    BN_free(bn_serial);
-+
-+    return ret;
- }
-
- result_t
+     struct test_cert certs_local[] =3D {
+-        { cert1, key1, cname1, "OVPN TEST CA1", "OVPN Test Cert 1", hash1,=
+ 1 },
+-        { cert2, key2, cname2, "OVPN TEST CA2", "OVPN Test Cert 2", hash2,=
+ 1 },
+-        { cert3, key3, cname3, "OVPN TEST CA1", "OVPN Test Cert 3", hash3,=
+ 1 },
++        { cert1, privkey1, cname1, "OVPN TEST CA1", "OVPN Test Cert 1", ha=
+sh1, 1 },
++        { cert2, privkey2, cname2, "OVPN TEST CA2", "OVPN Test Cert 2", ha=
+sh2, 1 },
++        { cert3, privkey3, cname3, "OVPN TEST CA1", "OVPN Test Cert 3", ha=
+sh3, 1 },
+         { cert4, key4, cname4, "OVPN TEST CA2", "OVPN Test Cert 4", hash4,=
+ 0 },
+         { 0 }
+     };
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/open=
+vpn/test_pkcs11.c
+index 722f9b1..b35fbd2 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -143,7 +143,7 @@
+ {
+     struct test_cert certs_local[] =3D {
+         { cert1, key1, cname1, "OVPN TEST CA1", "OVPN Test Cert 1", { 0 },=
+ NULL },
+-        { cert2, key2, cname2, "OVPN TEST CA2", "OVPN Test Cert 2", { 0 },=
+ NULL },
++        { cert2, privkey2, cname2, "OVPN TEST CA2", "OVPN Test Cert 2", { =
+0 }, NULL },
+         { cert3, key3, cname3, "OVPN TEST CA1", "OVPN Test Cert 3", { 0 },=
+ NULL },
+         { cert4, key4, cname4, "OVPN TEST CA2", "OVPN Test Cert 4", { 0 },=
+ NULL },
+         { 0 }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1589?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1597?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I5158fbb0762443ea4954e5745f520e83e019ed30
-Gerrit-Change-Number: 1589
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Id8680e6555a66024417d6eb9322d4fde79922453
+Gerrit-Change-Number: 1597
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---nr5IAMbk4Qg=
+--08SzpQwCgvU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
->uploaded patch set #2</strong> to this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1589?usp=3Demail">View Change</a></p><pre class=
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1597?usp=3Demail">View Change</a></p><pre class=
 =3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">Do not access internals of ASN1_INTEGER to print hex of serial<br><br>O=
-penSSL 4.0 does not allow internal access to to these data structures<br>an=
-ymore. So use public methods to get the serial data and convert it to<br>he=
-x.<br><br>Change-Id: I5158fbb0762443ea4954e5745f520e83e019ed30<br>Signed-of=
-f-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl_veri=
-fy_openssl.c<br>1 file changed, 16 insertions(+), 6 deletions(-)<br><br></p=
-re><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chang=
-es/89/1589/2</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/op=
-envpn/ssl_verify_openssl.c</span><br><span>index 367f81a..558f004 100644</s=
-pan><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/=
-src/openvpn/ssl_verify_openssl.c</span><br><span>@@ -255,17 +255,19 @@</spa=
-n><br><span>     }</span><br><span>     else if (strcmp(LN_serialNumber, x5=
-09_username_field) =3D=3D 0)</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        ASN1_INTEGER *asn1_i =3D X509_get_s=
-erialNumber(peer_cert);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        char *serial =3D format_hex_ex(ASN1_STRING_get=
-0_data(asn1_i), ASN1_STRING_length(asn1_i), 0, 1 | FHE_CAPS, NULL, &amp;gc)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const ASN1=
-_INTEGER *asn1_i =3D X509_get_serialNumber(peer_cert);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        BIGNUM *bn_serial =3D ASN1_INTEGER_to_BN(asn1_i, NU=
-LL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        char *s=
-erial =3D BN_bn2hex(bn_serial);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        BN_free(bn_serial);</span><br><span> </span><br><span> =
-        if (!serial || cn_len &lt;=3D strlen(serial) + 2)</span><br><span> =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          OPENSSL_free(serial);</span><br><span>             return FAILURE=
-;</span><br><span>         }</span><br><span>         snprintf(common_name,=
- cn_len, &quot;0x%s&quot;, serial);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        gc_free(&amp;gc);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        OPENSSL_free(serial);</span><br><span>     }</s=
-pan><br><span>     else</span><br><span>     {</span><br><span>@@ -310,8 +3=
-12,16 @@</span><br><span> backend_x509_get_serial_hex(openvpn_x509_cert_t *=
-cert, struct gc_arena *gc)</span><br><span> {</span><br><span>     const AS=
-N1_INTEGER *asn1_i =3D X509_get_serialNumber(cert);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    BIGNUM *bn_serial =3D ASN1_INTEGER_to=
-_BN(asn1_i, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   int len_serial =3D BN_num_bytes(bn_serial);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    unsigned char *buf =3D malloc(len_serial);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    BN_bn2binpad(bn_s=
-erial, buf, len_serial);</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    return format_hex_ex(ASN1_STRING_get0_data(asn1_i)=
-, ASN1_STRING_length(asn1_i), 0, 1, &quot;:&quot;, gc);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    char *ret =3D format_hex_ex(buf, le=
-n_serial, 0, 1, &quot;:&quot;, gc);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    free(buf);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    BN_free(bn_serial);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return ret;</span><br><span> }</span><br><span> </span><br><span> result_t<=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/1589?usp=3Demail">change 1589</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
-/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1589?usp=3Demail"/><meta itemprop=3D"name" content=3D=
-"View Change"/></div></div>
+p;">Rename key* to privkey* in cert_data.h<br><br>The name key2 conflicts w=
+ith our struct key2 and prevents these<br>test keys from being used in test=
+_ssl.c<br><br>Change-Id: Id8680e6555a66024417d6eb9322d4fde79922453<br>---<b=
+r>M tests/unit_tests/openvpn/cert_data.h<br>M tests/unit_tests/openvpn/test=
+_cryptoapi.c<br>M tests/unit_tests/openvpn/test_pkcs11.c<br>3 files changed=
+, 39 insertions(+), 39 deletions(-)<br><br></pre><pre class=3D"blocks" styl=
+e=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh=
+://gerrit.openvpn.net:29418/openvpn refs/changes/97/1597/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/tests/unit_tests/openvpn/cert_data.h b/tests/unit_tests/openvpn/cert_=
+data.h</span><br><span>index c5d897e..9c16929 100644</span><br><span>--- a/=
+tests/unit_tests/openvpn/cert_data.h</span><br><span>+++ b/tests/unit_tests=
+/openvpn/cert_data.h</span><br><span>@@ -52,11 +52,11 @@</span><br><span>  =
+   &quot;srXMaPe0lAea4etMSZsjIRPwGRMXBrwbRmb6iN2Cq40867HdaJoAryYig7IiDwSX\n=
+&quot;</span><br><span>     &quot;htCbOA6sX+60+FEOYDEx5cmkogl633Pw7LJ3ICkyz=
+IrUSEt6BOT1Gsc1eQ=3D=3D\n&quot;</span><br><span>     &quot;-----END CERTIFI=
+CATE-----\n&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-sta=
+tic const char *const key1 =3D &quot;-----BEGIN PRIVATE KEY-----\n&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
+        &quot;MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg5Xpw/lLvBrWjA=
+WDq\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+                      &quot;L6dm/4a1or6AQ6O3yXYgw78B23ihRANCAAR4SRvnSuGdJmP=
+itKbqcFbcgyzsMBlh\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                                &quot;4wWOrty4I0ZlIXxY2qEnyb3YKz4OdMGzp=
+K7FLfQZehHg6LGblcLs4EW7\n&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                                &quot;-----END PRIVATE KEY-----\n=
+&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const=
+ char *const privkey1 =3D &quot;-----BEGIN PRIVATE KEY-----\n&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+         &quot;MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg5Xpw/lLvBrWj=
+AWDq\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                             &quot;L6dm/4a1or6AQ6O3yXYgw78B23ihRANCAAR4SRvn=
+SuGdJmPitKbqcFbcgyzsMBlh\n&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                                    &quot;4wWOrty4I0ZlIXxY2qEn=
+yb3YKz4OdMGzpK7FLfQZehHg6LGblcLs4EW7\n&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                                    &quot;-----END=
+ PRIVATE KEY-----\n&quot;;</span><br><span> static const char *const hash1 =
+=3D &quot;A4B74F1D68AF50691F62CBD675E24C8655369567&quot;;</span><br><span> =
+static const char *const cname1 =3D &quot;ovpn-test-ec1&quot;;</span><br><s=
+pan> </span><br><span>@@ -77,7 +77,7 @@</span><br><span>     &quot;HeTsAlHj=
+fFEReVDiNCI9vMQLKFKKWnAorT2+iyRueA3bt2gchf863BBhZvJddL7Q\n&quot;</span><br>=
+<span>     &quot;KBa0osXw+eGBRAwsm7m1qCho3b3fN2nFAa+k07ptRkOeablmFdXE81nVlA=
+=3D=3D\n&quot;</span><br><span>     &quot;-----END CERTIFICATE-----\n&quot;=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define key2 key1</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#define privkey2 privk=
+ey1</span><br><span> static const char *const hash2 =3D &quot;FA18FD34BAABE=
+47D6E2910E080F421C109CA97F5&quot;;</span><br><span> static const char *cons=
+t cname2 =3D &quot;ovpn-test-ec2&quot;;</span><br><span> </span><br><span>@=
+@ -103,34 +103,34 @@</span><br><span>     &quot;F6MgVGSxl6eylJgDYckvJiAbmcp=
+2PD/LRQQOxQA0yqeAMg2cbdvclETuYD6zoFfu\n&quot;</span><br><span>     &quot;Y8=
+aO7dvDlw=3D=3D\n&quot;</span><br><span>     &quot;-----END CERTIFICATE-----=
+\n&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static const=
+ char *const key3 =3D &quot;-----BEGIN PRIVATE KEY-----\n&quot;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                                &=
+quot;MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC7xFoR6fmoyfsJ\n&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+             &quot;IQDKKgbYgFw0MzVuDAmpRx6KTEihgTchkQx9fHddWbKiOUbcEnQi3LNu=
+x7P4QVl/\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                           &quot;4dRR3skisBug6Vd5LXeBGZqmpu5XZiF4DgLz1lX21G=
+0aOogFWkie2qGEcso40159\n&quot;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                                &quot;x9FBDl5A3sLP18ubeex0pd/BzDFv=
+6SLOTyVWO/GCNc8IX/i0uN4mLvoVU00SeqwT\n&quot;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                                &quot;PnS+CRXrSq4JjG=
+DJLsXl0/PlxkjsgU0yOOA0Z2d8Fzk3wClwP6Hc49BOMWKstUIh\n&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                                &quot;=
+LbG2DcIv8l29EuEj2w3ju/7gkewol96XQ2twpPvpoVAaiVh/m7hQUcQORQCD6eJc\n&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                        =
+        &quot;DjOZVCArAgMBAAECggEACqkuWAAJ3cyCBVWrXs8eDmLTWV9i9DmYvtS75ixIn=
+2rf\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+                      &quot;v3cl12YevN0f6FgKLuqZT3Vqdqq+DCVhuIIQ9QkKMH8BQpS=
+dE9NCCsFyZ23o8Gtr\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                                &quot;EQ7ymfecb+RFwYx7NpqWrvZI32VJGArgP=
+ZH/zorLTTGYrAZbmBtHEqRsXOuEDw97\n&quot;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                                &quot;slwwcWaa9ztaYC8/N/7=
+fgsnydaCFSaOByRlWuyvSmHvn6ZwLv8ANOshY6fstC0Jb\n&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                &quot;BW0Gp=
+Se9eZPjpl71VT2RtpghqLV5+iAoFDHoT+eZvBospcUGtfcZSU7RrBjKB8+a\n&quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                             =
+   &quot;U1d6hwKhduVs2peIQzl+FiOSdWriLcsZv79q4sBhsQKBgQDUDVTf5BGJ8apOs/17\n=
+&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+                 &quot;YVk+Ad8Ey8sXvsfk49psmlCRa8Z4g0LVXfrP94qzhtl8U5kE9hs3=
+nEF4j/kX1ZWG\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                               &quot;k11tdsNTZN5x5bbAgEgPA6Ap6J/uto0HS8G0vS=
+v0lyBymdKA3p/i5Dx+8Nc9cGns\n&quot;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                                &quot;LGI9MvviLX7pQFIkvbaCkdKw=
+YwKBgQDirowjWZnm7BgVhF0G1m3DY9nQTYYU185W\n&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                                &quot;UESaO5/nVz=
+wUrA+FypJamD+AvmlSuY8rJeQAGAS6nQr9G8/617r+GwJnzRtxC6Vl\n&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                                &q=
+uot;4OF5BJRsD70oX4CFOOlycMoJ8tzcYVH7NI8KVocjxb+QW82hqSvEwSsvnwwn3eOW\n&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
+            &quot;nr5u5vIHmQKBgCuc3lL6Dl1ntdZgEIdau0cUjXDoFUo589TwxBDIID/4g=
+aZxoMJP\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                          &quot;hPFXAVDxMDPw4azyjSB/47tPKTUsuYcnMfT8kynIujO=
+EwnSPLcLgxQU5kgM/ynuw\n&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                                &quot;qhNpQOwaVRMc7f2RTCMXPBYDpNE/G=
+Jn5eu8JWGLpZovEreBeoHX0VffvAoGAVrWn\n&quot;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                                &quot;+3mxykhzaf+oyg3=
+KDNysG+cbq+tlDVVE+K5oG0kePVYX1fjIBQmJ+QhdJ3y9jCbB\n&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                                &quot;U=
+VveqzeZVXqHEw/kgoD4aZZmsdZfnVnpRa5/y9o1ZDUr50n+2nzUe/u/ijlb77iK\n&quot;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
+       &quot;Is04gnGJNoI3ZWhdyrSNfXjcYH+bKClu9OM4n7kCgYAorc3PAX7M0bsQrrqYxU=
+S8\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+                     &quot;56UU0YdhAgYitjM7Fm/0iIm0vDpSevxL9js4HnnsSMVR77sp=
+CBAGOCCZrTcI3Ejg\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                                &quot;xKDYzh1xlfMRjJBuBu5Pd55ZAv9NXFGpsX=
+5SO8fDZQJMwpcbQH36+UdqRRFDpjJ0\n&quot;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                                &quot;ZbX6nKcJ7jciJVKJds59=
+Jg=3D=3D\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                           &quot;-----END PRIVATE KEY-----\n&quot;;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+static const char *const pr=
+ivkey3 =3D &quot;-----BEGIN PRIVATE KEY-----\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                    &quot=
+;MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC7xFoR6fmoyfsJ\n&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+               &quot;IQDKKgbYgFw0MzVuDAmpRx6KTEihgTchkQx9fHddWbKiOUbcEnQi3L=
+Nux7P4QVl/\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                                   &quot;4dRR3skisBug6Vd5LXeBGZqmpu5XZiF4Dg=
+Lz1lX21G0aOogFWkie2qGEcso40159\n&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                    &quot;x9FBDl5A3sLP18=
+ubeex0pd/BzDFv6SLOTyVWO/GCNc8IX/i0uN4mLvoVU00SeqwT\n&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                                    =
+&quot;PnS+CRXrSq4JjGDJLsXl0/PlxkjsgU0yOOA0Z2d8Fzk3wClwP6Hc49BOMWKstUIh\n&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+                    &quot;LbG2DcIv8l29EuEj2w3ju/7gkewol96XQ2twpPvpoVAaiVh/m=
+7hQUcQORQCD6eJc\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                                    &quot;DjOZVCArAgMBAAECggEACqkuWAAJ3=
+cyCBVWrXs8eDmLTWV9i9DmYvtS75ixIn2rf\n&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                                    &quot;v3cl12Yev=
+N0f6FgKLuqZT3Vqdqq+DCVhuIIQ9QkKMH8BQpSdE9NCCsFyZ23o8Gtr\n&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+     &quot;EQ7ymfecb+RFwYx7NpqWrvZI32VJGArgPZH/zorLTTGYrAZbmBtHEqRsXOuEDw97=
+\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+                         &quot;slwwcWaa9ztaYC8/N/7fgsnydaCFSaOByRlWuyvSmHvn=
+6ZwLv8ANOshY6fstC0Jb\n&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                                    &quot;BW0GpSe9eZPjpl71VT2Rtpgh=
+qLV5+iAoFDHoT+eZvBospcUGtfcZSU7RrBjKB8+a\n&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                    &quot;U1d6=
+hwKhduVs2peIQzl+FiOSdWriLcsZv79q4sBhsQKBgQDUDVTf5BGJ8apOs/17\n&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                          =
+          &quot;YVk+Ad8Ey8sXvsfk49psmlCRa8Z4g0LVXfrP94qzhtl8U5kE9hs3nEF4j/k=
+X1ZWG\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                              &quot;k11tdsNTZN5x5bbAgEgPA6Ap6J/uto0HS8G0vSv=
+0lyBymdKA3p/i5Dx+8Nc9cGns\n&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                                    &quot;LGI9MvviLX7pQFIkvba=
+CkdKwYwKBgQDirowjWZnm7BgVhF0G1m3DY9nQTYYU185W\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                    &quot=
+;UESaO5/nVzwUrA+FypJamD+AvmlSuY8rJeQAGAS6nQr9G8/617r+GwJnzRtxC6Vl\n&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+               &quot;4OF5BJRsD70oX4CFOOlycMoJ8tzcYVH7NI8KVocjxb+QW82hqSvEwS=
+svnwwn3eOW\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                                   &quot;nr5u5vIHmQKBgCuc3lL6Dl1ntdZgEIdau0=
+cUjXDoFUo589TwxBDIID/4gaZxoMJP\n&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                    &quot;hPFXAVDxMDPw4a=
+zyjSB/47tPKTUsuYcnMfT8kynIujOEwnSPLcLgxQU5kgM/ynuw\n&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                                    =
+&quot;qhNpQOwaVRMc7f2RTCMXPBYDpNE/GJn5eu8JWGLpZovEreBeoHX0VffvAoGAVrWn\n&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+                    &quot;+3mxykhzaf+oyg3KDNysG+cbq+tlDVVE+K5oG0kePVYX1fjIB=
+QmJ+QhdJ3y9jCbB\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                                    &quot;UVveqzeZVXqHEw/kgoD4aZZmsdZfn=
+VnpRa5/y9o1ZDUr50n+2nzUe/u/ijlb77iK\n&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                                    &quot;Is04gnGJN=
+oI3ZWhdyrSNfXjcYH+bKClu9OM4n7kCgYAorc3PAX7M0bsQrrqYxUS8\n&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+     &quot;56UU0YdhAgYitjM7Fm/0iIm0vDpSevxL9js4HnnsSMVR77spCBAGOCCZrTcI3Ejg=
+\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+                         &quot;xKDYzh1xlfMRjJBuBu5Pd55ZAv9NXFGpsX5SO8fDZQJM=
+wpcbQH36+UdqRRFDpjJ0\n&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                                    &quot;ZbX6nKcJ7jciJVKJds59Jg=
+=3D=3D\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                               &quot;-----END PRIVATE KEY-----\n&quot;;</sp=
+an><br><span> static const char *const hash3 =3D &quot;2463628674E362578113=
+F508BA05F29EF142E979&quot;;</span><br><span> static const char *const cname=
+3 =3D &quot;ovpn-test-rsa1&quot;;</span><br><span> </span><br><span>@@ -156=
+,7 +156,7 @@</span><br><span>     &quot;353PpJJ9s2b/Fqoc4d7udqhQogA7jqbayTK=
+hJxbT134l2NzqDROzuS0kXbX8bXCi\n&quot;</span><br><span>     &quot;mXSa4c8=3D=
+\n&quot;</span><br><span>     &quot;-----END CERTIFICATE-----\n&quot;;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define key4 key3</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#define privkey4 privkey3</s=
+pan><br><span> static const char *const hash4 =3D &quot;E1401D4497C944783E3=
+D62CDBD2A1F69F5E5071E&quot;;</span><br><span> #define cname4 cname3 /* same=
+ CN as that of cert3 */</span><br><span> </span><br><span>diff --git a/test=
+s/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_crypt=
+oapi.c</span><br><span>index 59a356d..db8b1ed 100644</span><br><span>--- a/=
+tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>+++ b/tests/unit_=
+tests/openvpn/test_cryptoapi.c</span><br><span>@@ -115,9 +115,9 @@</span><b=
+r><span> init_cert_data(void)</span><br><span> {</span><br><span>     struc=
+t test_cert certs_local[] =3D {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        { cert1, key1, cname1, &quot;OVPN TEST CA1&quot;, &quot;O=
+VPN Test Cert 1&quot;, hash1, 1 },</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        { cert2, key2, cname2, &quot;OVPN TEST CA2&quot;, &quo=
+t;OVPN Test Cert 2&quot;, hash2, 1 },</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        { cert3, key3, cname3, &quot;OVPN TEST CA1&quot;, &=
+quot;OVPN Test Cert 3&quot;, hash3, 1 },</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        { cert1, privkey1, cname1, &quot;OVPN TEST CA1=
+&quot;, &quot;OVPN Test Cert 1&quot;, hash1, 1 },</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        { cert2, privkey2, cname2, &quot;OVPN=
+ TEST CA2&quot;, &quot;OVPN Test Cert 2&quot;, hash2, 1 },</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        { cert3, privkey3, cname3, &=
+quot;OVPN TEST CA1&quot;, &quot;OVPN Test Cert 3&quot;, hash3, 1 },</span><=
+br><span>         { cert4, key4, cname4, &quot;OVPN TEST CA2&quot;, &quot;O=
+VPN Test Cert 4&quot;, hash4, 0 },</span><br><span>         { 0 }</span><br=
+><span>     };</span><br><span>diff --git a/tests/unit_tests/openvpn/test_p=
+kcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c</span><br><span>index 722f=
+9b1..b35fbd2 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_pkc=
+s11.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pkcs11.c</span><b=
+r><span>@@ -143,7 +143,7 @@</span><br><span> {</span><br><span>     struct =
+test_cert certs_local[] =3D {</span><br><span>         { cert1, key1, cname=
+1, &quot;OVPN TEST CA1&quot;, &quot;OVPN Test Cert 1&quot;, { 0 }, NULL },<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        { cert2, key2,=
+ cname2, &quot;OVPN TEST CA2&quot;, &quot;OVPN Test Cert 2&quot;, { 0 }, NU=
+LL },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        { cert=
+2, privkey2, cname2, &quot;OVPN TEST CA2&quot;, &quot;OVPN Test Cert 2&quot=
+;, { 0 }, NULL },</span><br><span>         { cert3, key3, cname3, &quot;OVP=
+N TEST CA1&quot;, &quot;OVPN Test Cert 3&quot;, { 0 }, NULL },</span><br><s=
+pan>         { cert4, key4, cname4, &quot;OVPN TEST CA2&quot;, &quot;OVPN T=
+est Cert 4&quot;, { 0 }, NULL },</span><br><span>         { 0 }</span><br><=
+span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/1597?usp=3Demail">change 1597</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/1597?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5158fbb0762443ea4954e5745f5=
-20e83e019ed30 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1589 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id8680e6555a66024417d6eb9322=
+d4fde79922453 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1597 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -196,5 +518,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---nr5IAMbk4Qg=--
+--08SzpQwCgvU=--
 
