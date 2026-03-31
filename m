@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 31 Mar 2026 17:32:26 +0000
-In-Reply-To: <gerrit.1771008284000.I701452496bb47c58b9728b08104dd5cb7823a94f@...2715...>
-References: <gerrit.1771008284000.I701452496bb47c58b9728b08104dd5cb7823a94f@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <26f57b03905241a0d412f07965fa7f61969010df-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Tue, 31 Mar 2026 19:33:57 +0200
+Message-ID: <20260331173403.3082-1-gert@...1296...>
+In-Reply-To: <gerrit.1774974242000.Iacbd8195cdedc7226bddc686ca8dccf9f25f8842@...2715...>
+References: <gerrit.1774974242000.Iacbd8195cdedc7226bddc686ca8dccf9f25f8842@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3nkt1nq9oyo="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: ssl: Avoid
- sign-compare warning in should_trigger_renegotiation
+Subject: [Openvpn-devel] [PATCH v2] Add unit test for printing various
+ details of certificates
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,120 +14,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---3nkt1nq9oyo=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+These unit tests will ensure that refactoring of these methods does not
+change the output.
 
-cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
-penvpn.net/c/openvpn/+/1526?usp=3Demail )
+Change-Id: Iacbd8195cdedc7226bddc686ca8dccf9f25f8842
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1598
+---
 
-Change subject: ssl: Avoid sign-compare warning in should_trigger_renegotia=
-tion
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1598
+This mail reflects revision 2 of this Change.
 
-Patch Set 7: Code-Review-1
+Acked-by according to Gerrit (reflected above):
 
-Copied votes on follow-up patch sets have been updated:
-* Code-Review-1 has been copied to patch set 8 (copy condition: "changekind=
-:NO_CHANGE OR changekind:TRIVIAL_REBASE OR is:MIN").
-
-(1 comment)
-
-File src/openvpn/ssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1526/comment/6043bf12_8e71cece?usp=3D=
-email :
-PS7, Line 2927:     if (session->opt->renegotiate_bytes > 0 && ks->n_bytes =
->=3D (counter_type)session->opt->renegotiate_bytes)
-I think we should look into making `session->opt->renegotiate_bytes` and `.=
-..packets` an `uint64_t` and initialize as `0` (not -1).   Saves on the cas=
-t, adds 3 more lines to the patch...  not sure if the end result is really =
-nicer, but it might worth looking at it.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1526?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I701452496bb47c58b9728b08104dd5cb7823a94f
-Gerrit-Change-Number: 1526
-Gerrit-PatchSet: 7
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 31 Mar 2026 17:32:26 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---3nkt1nq9oyo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1526?usp=3Demail">V=
-iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl.c:</p><ul =
-style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
-0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/1526/comment/6043bf12_8e71cece?usp=3Demail">Patch Set #7,=
- Line 2927:</a> <code style=3D"font-family:monospace,monospace">    if (ses=
-sion-&gt;opt-&gt;renegotiate_bytes &gt; 0 &amp;&amp; ks-&gt;n_bytes &gt;=3D=
- (counter_type)session-&gt;opt-&gt;renegotiate_bytes)</code></p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I think we=
- should look into making `session-&gt;opt-&gt;renegotiate_bytes` and `...pa=
-ckets` an `uint64_t` and initialize as `0` (not -1).   Saves on the cast, a=
-dds 3 more lines to the patch...  not sure if the end result is really nice=
-r, but it might worth looking at it.</p></li></ul></li></ul><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1526?usp=3Demail">chang=
-e 1526</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1526?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I701452496bb47c58b9728b08104=
-dd5cb7823a94f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1526 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 31 Mar 2026 17:32:26=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---3nkt1nq9oyo=--
+        
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index 2b73ee7..0e9cecf 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -46,7 +46,9 @@
+ #include "test_common.h"
+ #include "ssl.h"
+ #include "buffer.h"
++#include "cert_data.h"
+ #include "packet_id.h"
++#include "ssl_verify.h"
+ 
+ /* Mock function to be allowed to include win32.c which is required for
+  * getting the temp directory */
+@@ -750,6 +752,83 @@
+     test_data_channel_known_vectors_run(false);
+ }
+ 
++#if defined(ENABLE_CRYPTO_MBEDTLS)
++static openvpn_x509_cert_t *
++get_certificate(const char *cert_str)
++{
++    mbedtls_x509_crt *cert;
++    ALLOC_OBJ_CLEAR(cert, mbedtls_x509_crt);
++    int ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)cert_str,
++                                     strlen(cert_str) + 1);
++
++    assert_int_equal(ret, 0);
++    return cert;
++}
++
++static void
++free_certificate(openvpn_x509_cert_t *cert)
++{
++    mbedtls_x509_crt_free(cert);
++    free(cert);
++}
++#else
++static openvpn_x509_cert_t *
++get_certificate(const char *cert_str)
++{
++    BIO *in = BIO_new_mem_buf((char *)cert1, -1);
++    assert_non_null(in);
++    X509 *cert = PEM_read_bio_X509(in, NULL, NULL, NULL);
++    assert_non_null(cert);
++    BIO_free(in);
++    return cert;
++}
++
++static void
++free_certificate(openvpn_x509_cert_t *cert)
++{
++    X509_free(cert);
++}
++#endif
++
++void
++crypto_test_print_cert_details(void **state)
++{
++    openvpn_x509_cert_t *cert = get_certificate(cert1);
++    struct gc_arena gc = gc_new();
++
++    const char *fp = backend_x509_get_serial_hex(cert, &gc);
++
++    /* we messed this up between TLS libraries. But let's at least notice in
++     * the future ...*/
++#if defined(ENABLE_CRYPTO_MBEDTLS)
++    assert_string_equal(fp, "82:6B:DD:CC:BD:E5:5E:B7:08:F1:2D:68:00:3C:24:DE");
++#else
++    assert_string_equal(fp, "82:6b:dd:cc:bd:e5:5e:b7:08:f1:2d:68:00:3c:24:de");
++#endif
++
++    const char *sn = backend_x509_get_serial(cert, &gc);
++    assert_string_equal(sn, "173359713849739808110610111821055272158");
++
++    char username[TLS_USERNAME_LEN + 1] = { 0 }; /* null-terminated */
++
++    int ret = backend_x509_get_username(username, sizeof(username), "CN",
++                                        cert);
++
++    assert_string_equal(username, "ovpn-test-ec1");
++    assert_int_equal(ret, SUCCESS);
++
++#ifndef ENABLE_CRYPTO_MBEDTLS
++    /* mbed TLS does not implement this */
++    ret = backend_x509_get_username(username, sizeof(username), "serialNumber",
++                                    cert);
++    assert_int_equal(ret, SUCCESS);
++    assert_string_equal(username, "0x826BDDCCBDE55EB708F12D68003C24DE");
++#endif
++
++    gc_free(&gc);
++    free_certificate(cert);
++}
++
+ 
+ int
+ main(void)
+@@ -773,7 +852,9 @@
+         cmocka_unit_test(test_data_channel_roundtrip_aes_256_cbc),
+         cmocka_unit_test(test_data_channel_roundtrip_bf_cbc),
+         cmocka_unit_test(test_data_channel_known_vectors_epoch),
+-        cmocka_unit_test(test_data_channel_known_vectors_shortpktid)
++        cmocka_unit_test(test_data_channel_known_vectors_shortpktid),
++        cmocka_unit_test(crypto_test_print_cert_details)
++
+     };
+ 
+ #if defined(ENABLE_CRYPTO_OPENSSL)
 
