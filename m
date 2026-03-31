@@ -1,15 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 31 Mar 2026 16:24:02 +0000
-In-Reply-To: <gerrit.1774445432000.I77500d435f212a4bf42ee8cfca07d0285fe694f2@...2715...>
-References: <gerrit.1774445432000.I77500d435f212a4bf42ee8cfca07d0285fe694f2@...2715...>
+Date: Tue, 31 Mar 2026 16:24:11 +0000
+References: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
-Message-ID: <4a0dea37ab3f88ebad3177b20512b149f7f7986c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <70e28daf56d1fcb316441e97fce373c520a03cd8-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="84ZSVoZU3bo="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use
- ASN1_BIT_STRING_get_bit to check for netscape certificate usage
+Content-Type: multipart/alternative; boundary="WC40ZAsGVuQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: OpenSSL 4.0: Use
+ X509_check_certificate_times instead of X509_cmp_time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,154 +19,211 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---84ZSVoZU3bo=
+--WC40ZAsGVuQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded a new patch set (#2). ( http://gerrit.openvpn.net/c/=
-openvpn/+/1587?usp=3Demail )
+plaisthos has uploaded this change for review. ( http://gerrit.openvpn.net/=
+c/openvpn/+/1595?usp=3Demail )
 
 
-Change subject: Use ASN1_BIT_STRING_get_bit to check for netscape certifica=
-te usage
+Change subject: OpenSSL 4.0: Use X509_check_certificate_times instead of X5=
+09_cmp_time
 ......................................................................
 
-Use ASN1_BIT_STRING_get_bit to check for netscape certificate usage
+OpenSSL 4.0: Use X509_check_certificate_times instead of X509_cmp_time
 
-The ASN_BIT_STRING object has become opaque in OpenSSL 4.0. So instead
-of accessing the internal, we have to use a method now to check these
-attributes.
+The X509_cmp_time function is deprecated in OpenSSL 4.0. So we avoid it and
+use the new API.
 
-The bit counting in ANS.1 and of this method is a bit strange and
-it will count bits from the left instead of the right, so the previous
-mask of 0x80 for clients is now 0 and 0x40 for server is now 1.
-
-Change-Id: I77500d435f212a4bf42ee8cfca07d0285fe694f2
+Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M src/openvpn/ssl_verify_openssl.c
-1 file changed, 5 insertions(+), 4 deletions(-)
+M src/openvpn/ssl_openssl.c
+1 file changed, 47 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/87/1587/2
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 08946cd..7c0cbb3 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -624,7 +624,8 @@
-         {
-             ASN1_BIT_STRING *ns;
-             ns =3D X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NUL=
-L, NULL);
--            result =3D (ns && ASN1_STRING_length(ns) > 0 && (ASN1_STRING_g=
-et0_data(ns)[0] & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
-+            // bit 0 is to check if certificate is the client certificate
-+            result =3D ASN1_BIT_STRING_get_bit(ns, 0) ? SUCCESS : FAILURE;
-             if (result =3D=3D SUCCESS)
-             {
-                 msg(M_WARN, "X509: Certificate is a client certificate yet=
- it's purpose "
-@@ -650,9 +651,9 @@
-          */
-         if (result =3D=3D FAILURE)
-         {
--            ASN1_BIT_STRING *ns;
--            ns =3D X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NUL=
-L, NULL);
--            result =3D (ns && ASN1_STRING_length(ns) > 0 && (ASN1_STRING_g=
-et0_data(ns)[0] & NS_SSL_SERVER)) ? SUCCESS : FAILURE;
-+            ASN1_BIT_STRING *ns =3D X509_get_ext_d2i(peer_cert, NID_netsca=
-pe_cert_type, NULL, NULL);
-+            // Server bit is 1 for ASN1_BIT_STRING_get_bit
-+            result =3D ASN1_BIT_STRING_get_bit(ns, 1) ? SUCCESS : FAILURE;
-             if (result =3D=3D SUCCESS)
-             {
-                 msg(M_WARN, "X509: Certificate is a server certificate yet=
- it's purpose "
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/1595/1
+
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index c8dd55a..4650b85 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -634,6 +634,7 @@
+ #endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
+ }
+
++#if OPENSSL_VERSION_NUMBER < 0x40000000L
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+@@ -669,6 +670,52 @@
+         msg(M_WARN, "WARNING: Your certificate has expired!");
+     }
+ }
++#else
++void
++tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
++{
++    const X509 *cert;
++    ASSERT(ctx);
++
++    cert =3D SSL_CTX_get0_certificate(ctx->ctx);
++
++    if (cert =3D=3D NULL)
++    {
++        return; /* Nothing to check if there is no certificate */
++    }
++
++    X509_VERIFY_PARAM *vpm =3D X509_VERIFY_PARAM_new();
++
++    if (vpm =3D=3D NULL)
++    {
++        msg(D_TLS_DEBUG_MED, "Failed to initialise certificate verificatio=
+n parameters.");
++    }
++
++    X509_VERIFY_PARAM_set_flags(vpm, X509_V_FLAG_USE_CHECK_TIME);
++    X509_VERIFY_PARAM_set_time(vpm, now);
++
++    int error =3D 0;
++    int ret =3D X509_check_certificate_times(vpm, cert, &error);
++
++    if (error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD)
++    {
++        msg(D_TLS_DEBUG_MED, "Failed to read certificate notBefore field."=
+);
++    }
++    if (error =3D=3D X509_V_ERR_CERT_NOT_YET_VALID)
++    {
++        msg(M_WARN, "WARNING: Your certificate is not yet valid!");
++    }
++    if (ret =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD)
++    {
++        msg(D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
++    }
++    if (error =3D=3D X509_V_ERR_CERT_HAS_EXPIRED)
++    {
++        msg(M_WARN, "WARNING: Your certificate has expired!");
++    }
++    X509_VERIFY_PARAM_free(vpm);
++}
++#endif
+
+ void
+ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file, bool=
+ dh_file_inline)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I77500d435f212a4bf42ee8cfca07d0285fe694f2
-Gerrit-Change-Number: 1587
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
+Gerrit-Change-Number: 1595
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---84ZSVoZU3bo=
+--WC40ZAsGVuQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
->uploaded patch set #2</strong> to this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1587?usp=3Demail">View Change</a></p><pre class=
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>.</p><p><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1595?usp=3Demail">View Change</a></p><pre class=
 =3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">Use ASN1_BIT_STRING_get_bit to check for netscape certificate usage<br>=
-<br>The ASN_BIT_STRING object has become opaque in OpenSSL 4.0. So instead<=
-br>of accessing the internal, we have to use a method now to check these<br=
->attributes.<br><br>The bit counting in ANS.1 and of this method is a bit s=
-trange and<br>it will count bits from the left instead of the right, so the=
- previous<br>mask of 0x80 for clients is now 0 and 0x40 for server is now 1=
-.<br><br>Change-Id: I77500d435f212a4bf42ee8cfca07d0285fe694f2<br>Signed-off=
--by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl_verif=
-y_openssl.c<br>1 file changed, 5 insertions(+), 4 deletions(-)<br><br></pre=
-><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/87/1587/2</pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify_openssl.c b/src/open=
-vpn/ssl_verify_openssl.c</span><br><span>index 08946cd..7c0cbb3 100644</spa=
-n><br><span>--- a/src/openvpn/ssl_verify_openssl.c</span><br><span>+++ b/sr=
-c/openvpn/ssl_verify_openssl.c</span><br><span>@@ -624,7 +624,8 @@</span><b=
-r><span>         {</span><br><span>             ASN1_BIT_STRING *ns;</span>=
-<br><span>             ns =3D X509_get_ext_d2i(peer_cert, NID_netscape_cert=
-_type, NULL, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          result =3D (ns &amp;&amp; ASN1_STRING_length(ns) &gt; 0 &amp;&amp=
-; (ASN1_STRING_get0_data(ns)[0] &amp; NS_SSL_CLIENT)) ? SUCCESS : FAILURE;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            // bit 0=
- is to check if certificate is the client certificate</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            result =3D ASN1_BIT_STRING_ge=
-t_bit(ns, 0) ? SUCCESS : FAILURE;</span><br><span>             if (result =
-=3D=3D SUCCESS)</span><br><span>             {</span><br><span>            =
-     msg(M_WARN, &quot;X509: Certificate is a client certificate yet it&#39=
-;s purpose &quot;</span><br><span>@@ -650,9 +651,9 @@</span><br><span>     =
-     */</span><br><span>         if (result =3D=3D FAILURE)</span><br><span=
->         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  ASN1_BIT_STRING *ns;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            ns =3D X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NUL=
-L, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-result =3D (ns &amp;&amp; ASN1_STRING_length(ns) &gt; 0 &amp;&amp; (ASN1_ST=
-RING_get0_data(ns)[0] &amp; NS_SSL_SERVER)) ? SUCCESS : FAILURE;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            ASN1_BIT_STRING *n=
-s =3D X509_get_ext_d2i(peer_cert, NID_netscape_cert_type, NULL, NULL);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            // Server bi=
-t is 1 for ASN1_BIT_STRING_get_bit</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            result =3D ASN1_BIT_STRING_get_bit(ns, 1) ? SUCC=
-ESS : FAILURE;</span><br><span>             if (result =3D=3D SUCCESS)</spa=
-n><br><span>             {</span><br><span>                 msg(M_WARN, &qu=
-ot;X509: Certificate is a server certificate yet it&#39;s purpose &quot;</s=
-pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1587?usp=3Demail">change 1587</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1587?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+p;">OpenSSL 4.0: Use X509_check_certificate_times instead of X509_cmp_time<=
+br><br>The X509_cmp_time function is deprecated in OpenSSL 4.0. So we avoid=
+ it and<br>use the new API.<br><br>Change-Id: I6c2eda0e5bbb3a70b404f821e25d=
+ed81f0f5ddd5<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<=
+br>M src/openvpn/ssl_openssl.c<br>1 file changed, 47 insertions(+), 0 delet=
+ions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
+openvpn refs/changes/95/1595/1</pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl=
+.c b/src/openvpn/ssl_openssl.c</span><br><span>index c8dd55a..4650b85 10064=
+4</span><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src=
+/openvpn/ssl_openssl.c</span><br><span>@@ -634,6 +634,7 @@</span><br><span>=
+ #endif /* if OPENSSL_VERSION_NUMBER &lt; 0x30000000L */</span><br><span> }=
+</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+if OPENSSL_VERSION_NUMBER &lt; 0x40000000L</span><br><span> void</span><br>=
+<span> tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)</span><br><s=
+pan> {</span><br><span>@@ -669,6 +670,52 @@</span><br><span>         msg(M_=
+WARN, &quot;WARNING: Your certificate has expired!&quot;);</span><br><span>=
+     }</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_ctx_check_cert_time=
+(const struct tls_root_ctx *ctx)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst X509 *cert;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ ASSERT(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    cert =3D SSL_CTX_get0=
+_certificate(ctx-&gt;ctx);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cert=
+ =3D=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return; /* N=
+othing to check if there is no certificate */</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    X50=
+9_VERIFY_PARAM *vpm =3D X509_VERIFY_PARAM_new();</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (vpm =3D=3D NULL)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        msg(D_TLS_DEBUG_MED, &quot;Failed to initialise certificate verifi=
+cation parameters.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    X509_VERIFY_PARAM_set_=
+flags(vpm, X509_V_FLAG_USE_CHECK_TIME);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    X509_VERIFY_PARAM_set_time(vpm, now);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    int error =3D 0;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    int ret =3D X509_check_certificate_times(vpm, c=
+ert, &amp;error);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error =3D=3D =
+X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        msg(D_TLS_DEBUG_MED, &quot;Failed to read certificate notB=
+efore field.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error=
+ =3D=3D X509_V_ERR_CERT_NOT_YET_VALID)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        msg(M_WARN, &quot;WARNING: Your certificate is not yet valid!&=
+quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =3D=3D X509_V_=
+ERR_ERROR_IN_CERT_NOT_AFTER_FIELD)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        msg(D_TLS_DEBUG_MED, &quot;Failed to read certificate notAfter fie=
+ld.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error =3D=3D X=
+509_V_ERR_CERT_HAS_EXPIRED)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  msg(M_WARN, &quot;WARNING: Your certificate has expired!&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    X509_VERIFY_PARAM_free(vpm);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span> void=
+</span><br><span> tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const ch=
+ar *dh_file, bool dh_file_inline)</span><br><span></span><br></pre><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail=
+">change 1595</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I77500d435f212a4bf42ee8cfca0=
-7d0285fe694f2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1587 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25=
+ded81f0f5ddd5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1595 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -175,5 +231,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---84ZSVoZU3bo=--
+--WC40ZAsGVuQ=--
 
