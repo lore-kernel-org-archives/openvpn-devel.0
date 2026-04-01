@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 1 Apr 2026 10:24:45 +0000
-In-Reply-To: <gerrit.1774445432000.I77500d435f212a4bf42ee8cfca07d0285fe694f2@...2715...>
-References: <gerrit.1774445432000.I77500d435f212a4bf42ee8cfca07d0285fe694f2@...2715...>
+Date: Wed, 1 Apr 2026 10:34:38 +0000
+In-Reply-To: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
+References: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <8270503395f6523d513b2956daa33cc825c31afc-EmailReviewComments-HTML@...2715...>
+Message-ID: <1140488e3ea1af942fce40fdd43e13e997eb8c21-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WLpFqrOTgXM="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Use
- ASN1_BIT_STRING_get_bit to check for netscape certificate usage
+Content-Type: multipart/alternative; boundary="84+ocA3LKck="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: OpenSSL 4.0: Use
+ X509_check_certificate_times instead of X509_cmp_time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,107 +22,98 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WLpFqrOTgXM=
+--84+ocA3LKck=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
 flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1587?usp=3Demail )
+it.openvpn.net/c/openvpn/+/1595?usp=3Demail )
 
-Change subject: Use ASN1_BIT_STRING_get_bit to check for netscape certifica=
-te usage
+Change subject: OpenSSL 4.0: Use X509_check_certificate_times instead of X5=
+09_cmp_time
 ......................................................................
 
 
-Patch Set 3: Code-Review-1
+Patch Set 2: Code-Review-1
 
 (2 comments)
 
-Commit Message:
+File src/openvpn/ssl_openssl.c:
 
-http://gerrit.openvpn.net/c/openvpn/+/1587/comment/a6196a88_86a2feb6?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1595/comment/ce3d6801_f2791ace?usp=3D=
 email :
-PS3, Line 13: The bit counting in ANS.1 and of this method is a bit strange=
- and
-ASN
+PS2, Line 691:         msg(D_TLS_DEBUG_MED, "Failed to initialise certifica=
+te verification parameters.");
+Shouldn't we return from the function here?
 
 
-File src/openvpn/ssl_verify_openssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1587/comment/8acc94f5_568890ee?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1595/comment/ed877e20_2571c8e7?usp=3D=
 email :
-PS3, Line 621:          * case when its distribution will update to OpenSSL=
- 1.1
-This comments seems very obsolete? Apparently even newest OpenSSL allows us=
- to make this check? The actual warning is probably fine since it just says=
- "future", but the comment could clearly use some update?
+PS2, Line 708:     if (ret =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD)
+error, not ret
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I77500d435f212a4bf42ee8cfca07d0285fe694f2
-Gerrit-Change-Number: 1587
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
+Gerrit-Change-Number: 1595
+Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 01 Apr 2026 10:24:45 +0000
+Gerrit-Comment-Date: Wed, 01 Apr 2026 10:34:38 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
 
---WLpFqrOTgXM=
+--84+ocA3LKck=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail">V=
 iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
- 0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1587/comment/a6196a88_86a2feb6?usp=3Demail">Patch Set #3, Line=
- 13:</a> <code style=3D"font-family:monospace,monospace">The bit counting i=
-n ANS.1 and of this method is a bit strange and</code></p><p class=3D"block=
-s" style=3D"white-space: pre-wrap; word-wrap: break-word;">ASN</p></li></ul=
-></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_verify_o=
-penssl.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
-n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/1587/comment/8acc94f5_568890ee?usp=3Dema=
-il">Patch Set #3, Line 621:</a> <code style=3D"font-family:monospace,monosp=
-ace">         * case when its distribution will update to OpenSSL 1.1</code=
-></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-w=
-ord;">This comments seems very obsolete? Apparently even newest OpenSSL all=
-ows us to make this check? The actual warning is probably fine since it jus=
-t says &quot;future&quot;, but the comment could clearly use some update?</=
-p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1587?usp=3Demail">change 1587</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c=
-/openvpn/+/1587?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c=
+:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerr=
+it.openvpn.net/c/openvpn/+/1595/comment/ce3d6801_f2791ace?usp=3Demail">Patc=
+h Set #2, Line 691:</a> <code style=3D"font-family:monospace,monospace">   =
+     msg(D_TLS_DEBUG_MED, &quot;Failed to initialise certificate verificati=
+on parameters.&quot;);</code></p><p class=3D"blocks" style=3D"white-space: =
+pre-wrap; word-wrap: break-word;">Shouldn&#39;t we return from the function=
+ here?</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
+rgin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595/co=
+mment/ed877e20_2571c8e7?usp=3Demail">Patch Set #2, Line 708:</a> <code styl=
+e=3D"font-family:monospace,monospace">    if (ret =3D=3D X509_V_ERR_ERROR_I=
+N_CERT_NOT_AFTER_FIELD)</code></p><p class=3D"blocks" style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">error, not ret</p></li></ul></li></ul><p=
+>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=
+=3Demail">change 1595</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I77500d435f212a4bf42ee8cfca0=
-7d0285fe694f2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1587 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25=
+ded81f0f5ddd5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1595 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -131,12 +122,12 @@ e"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 01 Apr 2026 10:24:45=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 01 Apr 2026 10:34:38=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---WLpFqrOTgXM=--
+--84+ocA3LKck=--
 
