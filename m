@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Wed, 1 Apr 2026 11:56:52 +0000
-In-Reply-To: <gerrit.1774974242000.Iea1d13c160599f134587c6f1c2f4a90e7f5e3991@...2715...>
-References: <gerrit.1774974242000.Iea1d13c160599f134587c6f1c2f4a90e7f5e3991@...2715...>
+In-Reply-To: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
+References: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <4919df01330f26900d59a7a88ea342574518762b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <c0869b00523eb0ad05e8b4aa02d1785d4a8d4552-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Bep6Dqz2u7Y="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: OpenSSL 4.0: Make
- X509 objects const
+Content-Type: multipart/alternative; boundary="qVdfXns1sFo="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: OpenSSL 4.0: Use
+ X509_check_certificate_times instead of X509_cmp_time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Bep6Dqz2u7Y=
+--qVdfXns1sFo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,435 +32,226 @@ Hello flichtenheld,=20
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1596?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#3).
 
 The following approvals got outdated and were removed:
 Code-Review-1 by flichtenheld
 
 
-Change subject: OpenSSL 4.0: Make X509 objects const
+Change subject: OpenSSL 4.0: Use X509_check_certificate_times instead of X5=
+09_cmp_time
 ......................................................................
 
-OpenSSL 4.0: Make X509 objects const
+OpenSSL 4.0: Use X509_check_certificate_times instead of X509_cmp_time
 
-In OpenSSL 4.0 a lot of the APIs have changed to return const objects.
-Adjust our source code to use const objects as well.
+The X509_cmp_time function is deprecated in OpenSSL 4.0. So we avoid it and
+use the new API.
 
-Change-Id: Iea1d13c160599f134587c6f1c2f4a90e7f5e3991
+Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
 M src/openvpn/ssl_openssl.c
-M src/openvpn/ssl_verify_openssl.c
-2 files changed, 35 insertions(+), 30 deletions(-)
+1 file changed, 53 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/96/1596/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/1595/3
 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 3c33cc7..04e3521 100644
+index a26663a..fca1d73 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -1852,7 +1852,6 @@
-     STACK_OF(X509_NAME) *cert_names =3D NULL;
-     X509_LOOKUP *lookup =3D NULL;
-     X509_STORE *store =3D NULL;
--    X509_NAME *xn =3D NULL;
-     BIO *in =3D NULL;
-     int i, added =3D 0, prev =3D 0;
+@@ -615,6 +615,7 @@
+ #endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
+ }
 
-@@ -1916,21 +1915,26 @@
-                         }
-                     }
-
--                    xn =3D X509_get_subject_name(info->x509);
-+                    /* OpenSSL 4.0 has made X509_get_subject_name return c=
-onst
-+                     * but not adjusted the other functions to take const
-+                     * arguments, and other libraries do not have const
-+                     * arguments, so just ignore const here */
-+                    X509_NAME *xn =3D (X509_NAME *)X509_get_subject_name(i=
-nfo->x509);
-                     if (!xn)
-                     {
-                         continue;
-                     }
-
-+
-                     /* Don't add duplicate CA names */
--                    if (sk_X509_NAME_find(cert_names, xn) =3D=3D -1)
-+                    if (sk_X509_NAME_find(cert_names, (X509_NAME *)xn) =3D=
-=3D -1)
-                     {
--                        xn =3D X509_NAME_dup(xn);
--                        if (!xn)
-+                        X509_NAME *xn_dup =3D X509_NAME_dup(xn);
-+                        if (!xn_dup)
-                         {
-                             continue;
-                         }
--                        sk_X509_NAME_push(cert_names, xn);
-+                        sk_X509_NAME_push(cert_names, xn_dup);
-                     }
-                 }
-
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 3c57f7f..ef30620 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -191,7 +191,7 @@
-  * to contain result is grounds for error).
-  */
- static result_t
--extract_x509_field_ssl(X509_NAME *x509, const char *field_name, char *out,=
- size_t size)
-+extract_x509_field_ssl(const X509_NAME *x509, const char *field_name, char=
- *out, size_t size)
- {
-     int lastpos =3D -1;
-     int tmp =3D -1;
-@@ -209,7 +209,12 @@
-     do
-     {
-         lastpos =3D tmp;
-+#if OPENSSL_VERSION_NUMBER >=3D 0x30000000L
-         tmp =3D X509_NAME_get_index_by_OBJ(x509, field_name_obj, lastpos);
-+#else
-+        /* OpenSSL 1.1.x has the argument as non-const */
-+        tmp =3D X509_NAME_get_index_by_OBJ((X509_NAME *)x509, field_name_o=
-bj, lastpos);
-+#endif
-     } while (tmp > -1);
-
-     ASN1_OBJECT_free(field_name_obj);
-@@ -269,7 +274,7 @@
-     }
-     else
-     {
--        X509_NAME *x509_subject_name =3D X509_get_subject_name(peer_cert);
-+        const X509_NAME *x509_subject_name =3D X509_get_subject_name(peer_=
-cert);
-         if (x509_subject_name =3D=3D NULL)
-         {
-             msg(D_TLS_ERRORS, "X509 subject name is NULL");
-@@ -457,7 +462,7 @@
- x509_setenv_track(const struct x509_track *xt, struct env_set *es, const i=
-nt depth, X509 *x509)
- {
-     struct gc_arena gc =3D gc_new();
--    X509_NAME *x509_name =3D X509_get_subject_name(x509);
-+    const X509_NAME *x509_name =3D X509_get_subject_name(x509);
-     const char nullc =3D '\0';
-
-     while (xt)
-@@ -491,10 +496,10 @@
-                     int i =3D X509_NAME_get_index_by_NID(x509_name, xt->ni=
-d, -1);
-                     if (i >=3D 0)
-                     {
--                        X509_NAME_ENTRY *ent =3D X509_NAME_get_entry(x509_=
-name, i);
-+                        const X509_NAME_ENTRY *ent =3D X509_NAME_get_entry=
-(x509_name, i);
-                         if (ent)
-                         {
--                            ASN1_STRING *val =3D X509_NAME_ENTRY_get_data(=
-ent);
-+                            const ASN1_STRING *val =3D X509_NAME_ENTRY_get=
-_data(ent);
-                             unsigned char *buf =3D NULL;
-                             if (ASN1_STRING_to_UTF8(&buf, val) >=3D 0)
-                             {
-@@ -508,7 +513,11 @@
-                         i =3D X509_get_ext_by_NID(x509, xt->nid, -1);
-                         if (i >=3D 0)
-                         {
 +#if OPENSSL_VERSION_NUMBER < 0x40000000L
-                             X509_EXTENSION *ext =3D X509_get_ext(x509, i);
-+#else
-+                            const X509_EXTENSION *ext =3D X509_get_ext(x50=
-9, i);
-+#endif
-                             if (ext)
-                             {
-                                 BIO *bio =3D BIO_new(BIO_s_mem());
-@@ -544,51 +553,43 @@
  void
- x509_setenv(struct env_set *es, int cert_depth, openvpn_x509_cert_t *peer_=
-cert)
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
  {
--    int i, n;
--    int fn_nid;
--    ASN1_OBJECT *fn;
--    ASN1_STRING *val;
--    X509_NAME_ENTRY *ent;
--    const char *objbuf;
--    unsigned char *buf =3D NULL;
--    char *name_expand;
--    size_t name_expand_size;
--    X509_NAME *x509 =3D X509_get_subject_name(peer_cert);
-+    const X509_NAME *x509 =3D X509_get_subject_name(peer_cert);
+@@ -650,6 +651,58 @@
+         msg(M_WARN, "WARNING: Your certificate has expired!");
+     }
+ }
++#else
++void
++tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
++{
++    const X509 *cert;
++    ASSERT(ctx);
++
++    cert =3D SSL_CTX_get0_certificate(ctx->ctx);
++
++    if (cert =3D=3D NULL)
++    {
++        return; /* Nothing to check if there is no certificate */
++    }
++
++    X509_VERIFY_PARAM *vpm =3D X509_VERIFY_PARAM_new();
++
++    if (vpm =3D=3D NULL)
++    {
++        msg(D_TLS_DEBUG_MED, "Failed to initialise certificate verificatio=
+n parameters.");
++        return;
++    }
++
++    X509_VERIFY_PARAM_set_flags(vpm, X509_V_FLAG_USE_CHECK_TIME);
++    X509_VERIFY_PARAM_set_time(vpm, now);
++
++    int error =3D 0;
++    int ret =3D X509_check_certificate_times(vpm, cert, &error);
++    X509_VERIFY_PARAM_free(vpm);
++
++    if (ret =3D=3D 1)
++    {
++        return;
++    }
++
++    if (error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD)
++    {
++        msg(D_TLS_DEBUG_MED, "Failed to read certificate notBefore field."=
+);
++    }
++    if (error =3D=3D X509_V_ERR_CERT_NOT_YET_VALID)
++    {
++        msg(M_WARN, "WARNING: Your certificate is not yet valid!");
++    }
++    if (error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD)
++    {
++        msg(D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
++    }
++    if (error =3D=3D X509_V_ERR_CERT_HAS_EXPIRED)
++    {
++        msg(M_WARN, "WARNING: Your certificate has expired!");
++    }
++}
++#endif
 
--    n =3D X509_NAME_entry_count(x509);
--    for (i =3D 0; i < n; ++i)
-+    int n =3D X509_NAME_entry_count(x509);
-+    for (int i =3D 0; i < n; ++i)
-     {
--        ent =3D X509_NAME_get_entry(x509, i);
-+        const X509_NAME_ENTRY *ent =3D X509_NAME_get_entry(x509, i);
-         if (!ent)
-         {
-             continue;
-         }
--        fn =3D X509_NAME_ENTRY_get_object(ent);
-+        const ASN1_OBJECT *fn =3D X509_NAME_ENTRY_get_object(ent);
-         if (!fn)
-         {
-             continue;
-         }
--        val =3D X509_NAME_ENTRY_get_data(ent);
-+        const ASN1_STRING *val =3D X509_NAME_ENTRY_get_data(ent);
-         if (!val)
-         {
-             continue;
-         }
--        fn_nid =3D OBJ_obj2nid(fn);
-+        int fn_nid =3D OBJ_obj2nid(fn);
-         if (fn_nid =3D=3D NID_undef)
-         {
-             continue;
-         }
--        objbuf =3D OBJ_nid2sn(fn_nid);
-+        const char *objbuf =3D OBJ_nid2sn(fn_nid);
-         if (!objbuf)
-         {
-             continue;
-         }
-+        unsigned char *buf =3D NULL;
-         if (ASN1_STRING_to_UTF8(&buf, val) < 0)
-         {
-             continue;
-         }
--        name_expand_size =3D 64 + strlen(objbuf);
--        name_expand =3D (char *)malloc(name_expand_size);
-+        size_t name_expand_size =3D 64 + strlen(objbuf);
-+        char *name_expand =3D malloc(name_expand_size);
-         check_malloc_return(name_expand);
-         snprintf(name_expand, name_expand_size, "X509_%d_%s", cert_depth, =
-objbuf);
-         string_mod(name_expand, CC_PRINT, CC_CRLF, '_');
+ void
+ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file, bool=
+ dh_file_inline)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1596?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iea1d13c160599f134587c6f1c2f4a90e7f5e3991
-Gerrit-Change-Number: 1596
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
+Gerrit-Change-Number: 1595
+Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 
---Bep6Dqz2u7Y=
+--qVdfXns1sFo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld. </p>
-<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1596?usp=3Demail">View Chan=
+<p>plaisthos <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail">View Chan=
 ge</a></p><p>The following approvals got outdated and were removed:
 Code-Review-1 by flichtenheld</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">OpenSSL 4.0: Make X509 objec=
-ts const<br><br>In OpenSSL 4.0 a lot of the APIs have changed to return con=
-st objects.<br>Adjust our source code to use const objects as well.<br><br>=
-Change-Id: Iea1d13c160599f134587c6f1c2f4a90e7f5e3991<br>Signed-off-by: Arne=
- Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl_openssl.c<br>M=
- src/openvpn/ssl_verify_openssl.c<br>2 files changed, 35 insertions(+), 30 =
-deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
-9418/openvpn refs/changes/96/1596/4</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_op=
-enssl.c b/src/openvpn/ssl_openssl.c</span><br><span>index 3c33cc7..04e3521 =
-100644</span><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ =
-b/src/openvpn/ssl_openssl.c</span><br><span>@@ -1852,7 +1852,6 @@</span><br=
-><span>     STACK_OF(X509_NAME) *cert_names =3D NULL;</span><br><span>     =
-X509_LOOKUP *lookup =3D NULL;</span><br><span>     X509_STORE *store =3D NU=
-LL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    X509_NAME *xn =
-=3D NULL;</span><br><span>     BIO *in =3D NULL;</span><br><span>     int i=
-, added =3D 0, prev =3D 0;</span><br><span> </span><br><span>@@ -1916,21 +1=
-915,26 @@</span><br><span>                         }</span><br><span>      =
-               }</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                    xn =3D X509_get_subject_name(info-&gt;x509=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-   /* OpenSSL 4.0 has made X509_get_subject_name return const</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                     * but not ad=
-justed the other functions to take const</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                     * arguments, and other libraries =
-do not have const</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                   * arguments, so just ignore const here */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                    X509_NAME *xn =
-=3D (X509_NAME *)X509_get_subject_name(info-&gt;x509);</span><br><span>    =
-                 if (!xn)</span><br><span>                     {</span><br>=
-<span>                         continue;</span><br><span>                  =
-   }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span>                     /* Don&#39;t add duplicate CA name=
-s */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-   if (sk_X509_NAME_find(cert_names, xn) =3D=3D -1)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    if (sk_X509_NAME_find=
-(cert_names, (X509_NAME *)xn) =3D=3D -1)</span><br><span>                  =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-       xn =3D X509_NAME_dup(xn);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                        if (!xn)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                        X509_NAME *xn_dup =3D X509_=
-NAME_dup(xn);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-                  if (!xn_dup)</span><br><span>                         {</=
-span><br><span>                             continue;</span><br><span>     =
-                    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                        sk_X509_NAME_push(cert_names, xn);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                        sk_X509_NAME=
-_push(cert_names, xn_dup);</span><br><span>                     }</span><br=
-><span>                 }</span><br><span> </span><br><span>diff --git a/sr=
-c/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c</span><br=
-><span>index 3c57f7f..ef30620 100644</span><br><span>--- a/src/openvpn/ssl_=
-verify_openssl.c</span><br><span>+++ b/src/openvpn/ssl_verify_openssl.c</sp=
-an><br><span>@@ -191,7 +191,7 @@</span><br><span>  * to contain result is g=
-rounds for error).</span><br><span>  */</span><br><span> static result_t</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-extract_x509_field_ssl(X=
-509_NAME *x509, const char *field_name, char *out, size_t size)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+extract_x509_field_ssl(const X5=
-09_NAME *x509, const char *field_name, char *out, size_t size)</span><br><s=
-pan> {</span><br><span>     int lastpos =3D -1;</span><br><span>     int tm=
-p =3D -1;</span><br><span>@@ -209,7 +209,12 @@</span><br><span>     do</spa=
-n><br><span>     {</span><br><span>         lastpos =3D tmp;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#if OPENSSL_VERSION_NUMBER &gt;=3D=
- 0x30000000L</span><br><span>         tmp =3D X509_NAME_get_index_by_OBJ(x5=
-09, field_name_obj, lastpos);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    /* OpenSSL 1.1.x has the argument as non-const */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        tmp =3D X509_NAME_get_index_by_OB=
-J((X509_NAME *)x509, field_name_obj, lastpos);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif</span><br><span>     } while (tmp &gt; -1=
-);</span><br><span> </span><br><span>     ASN1_OBJECT_free(field_name_obj);=
-</span><br><span>@@ -269,7 +274,7 @@</span><br><span>     }</span><br><span=
->     else</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        X509_NAME *x509_subject_name =3D X509_get_subject_name(=
-peer_cert);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-const X509_NAME *x509_subject_name =3D X509_get_subject_name(peer_cert);</s=
-pan><br><span>         if (x509_subject_name =3D=3D NULL)</span><br><span> =
-        {</span><br><span>             msg(D_TLS_ERRORS, &quot;X509 subject=
- name is NULL&quot;);</span><br><span>@@ -457,7 +462,7 @@</span><br><span> =
-x509_setenv_track(const struct x509_track *xt, struct env_set *es, const in=
-t depth, X509 *x509)</span><br><span> {</span><br><span>     struct gc_aren=
-a gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- X509_NAME *x509_name =3D X509_get_subject_name(x509);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    const X509_NAME *x509_name =3D X509_=
-get_subject_name(x509);</span><br><span>     const char nullc =3D &#39;\0&#=
-39;;</span><br><span> </span><br><span>     while (xt)</span><br><span>@@ -=
-491,10 +496,10 @@</span><br><span>                     int i =3D X509_NAME_=
-get_index_by_NID(x509_name, xt-&gt;nid, -1);</span><br><span>              =
-       if (i &gt;=3D 0)</span><br><span>                     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                        X509_NAME_=
-ENTRY *ent =3D X509_NAME_get_entry(x509_name, i);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                        const X509_NAME_ENTRY=
- *ent =3D X509_NAME_get_entry(x509_name, i);</span><br><span>              =
-           if (ent)</span><br><span>                         {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                            ASN1_S=
-TRING *val =3D X509_NAME_ENTRY_get_data(ent);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                            const ASN1_STRING *va=
-l =3D X509_NAME_ENTRY_get_data(ent);</span><br><span>                      =
-       unsigned char *buf =3D NULL;</span><br><span>                       =
-      if (ASN1_STRING_to_UTF8(&amp;buf, val) &gt;=3D 0)</span><br><span>   =
-                          {</span><br><span>@@ -508,7 +513,11 @@</span><br>=
-<span>                         i =3D X509_get_ext_by_NID(x509, xt-&gt;nid, =
--1);</span><br><span>                         if (i &gt;=3D 0)</span><br><s=
-pan>                         {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if OPENSSL_VERSION_NUMBER &lt; 0x40000000L</span><br><span>    =
-                         X509_EXTENSION *ext =3D X509_get_ext(x509, i);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                            const X50=
-9_EXTENSION *ext =3D X509_get_ext(x509, i);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#endif</span><br><span>                            =
- if (ext)</span><br><span>                             {</span><br><span>  =
-                               BIO *bio =3D BIO_new(BIO_s_mem());</span><br=
-><span>@@ -544,51 +553,43 @@</span><br><span> void</span><br><span> x509_se=
-tenv(struct env_set *es, int cert_depth, openvpn_x509_cert_t *peer_cert)</s=
-pan><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-nt i, n;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int fn_ni=
-d;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASN1_OBJECT *fn=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASN1_STRING *val=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    X509_NAME_ENTRY =
-*ent;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *=
-objbuf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned c=
-har *buf =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- char *name_expand;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  size_t name_expand_size;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    X509_NAME *x509 =3D X509_get_subject_name(peer_cert);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const X509_NAME *x509 =3D X5=
-09_get_subject_name(peer_cert);</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    n =3D X509_NAME_entry_count(x509);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; n; ++=
-i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int n =3D X50=
-9_NAME_entry_count(x509);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    for (int i =3D 0; i &lt; n; ++i)</span><br><span>     {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        ent =3D X509_NAME_get_e=
-ntry(x509, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   const X509_NAME_ENTRY *ent =3D X509_NAME_get_entry(x509, i);</span><br><=
-span>         if (!ent)</span><br><span>         {</span><br><span>        =
-     continue;</span><br><span>         }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        fn =3D X509_NAME_ENTRY_get_object(ent);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        const ASN1_OBJECT *=
-fn =3D X509_NAME_ENTRY_get_object(ent);</span><br><span>         if (!fn)</=
-span><br><span>         {</span><br><span>             continue;</span><br>=
-<span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   val =3D X509_NAME_ENTRY_get_data(ent);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        const ASN1_STRING *val =3D X509_NAME_ENTRY_ge=
-t_data(ent);</span><br><span>         if (!val)</span><br><span>         {<=
-/span><br><span>             continue;</span><br><span>         }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        fn_nid =3D OBJ_obj2nid(=
-fn);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int fn_=
-nid =3D OBJ_obj2nid(fn);</span><br><span>         if (fn_nid =3D=3D NID_und=
-ef)</span><br><span>         {</span><br><span>             continue;</span=
-><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        objbuf =3D OBJ_nid2sn(fn_nid);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        const char *objbuf =3D OBJ_nid2sn(fn_nid);</span=
-><br><span>         if (!objbuf)</span><br><span>         {</span><br><span=
->             continue;</span><br><span>         }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        unsigned char *buf =3D NULL;</span><=
-br><span>         if (ASN1_STRING_to_UTF8(&amp;buf, val) &lt; 0)</span><br>=
-<span>         {</span><br><span>             continue;</span><br><span>   =
-      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        name_e=
-xpand_size =3D 64 + strlen(objbuf);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        name_expand =3D (char *)malloc(name_expand_size);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        size_t name_exp=
-and_size =3D 64 + strlen(objbuf);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        char *name_expand =3D malloc(name_expand_size);</span=
-><br><span>         check_malloc_return(name_expand);</span><br><span>     =
-    snprintf(name_expand, name_expand_size, &quot;X509_%d_%s&quot;, cert_de=
-pth, objbuf);</span><br><span>         string_mod(name_expand, CC_PRINT, CC=
-_CRLF, &#39;_&#39;);</span><br><span></span><br></pre><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/1596?usp=3Demail">change 1596=
-</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsco=
-pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
-ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/1596?usp=3Demail"/><meta itempro=
-p=3D"name" content=3D"View Change"/></div></div>
+: monospace,monospace; white-space: pre-wrap;">OpenSSL 4.0: Use X509_check_=
+certificate_times instead of X509_cmp_time<br><br>The X509_cmp_time functio=
+n is deprecated in OpenSSL 4.0. So we avoid it and<br>use the new API.<br><=
+br>Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5<br>Signed-off-by: A=
+rne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl_openssl.c<b=
+r>1 file changed, 53 insertions(+), 0 deletions(-)<br><br></pre><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/95/1595/3<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c<=
+/span><br><span>index a26663a..fca1d73 100644</span><br><span>--- a/src/ope=
+nvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><b=
+r><span>@@ -615,6 +615,7 @@</span><br><span> #endif /* if OPENSSL_VERSION_N=
+UMBER &lt; 0x30000000L */</span><br><span> }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#if OPENSSL_VERSION_NUMBER &lt; =
+0x40000000L</span><br><span> void</span><br><span> tls_ctx_check_cert_time(=
+const struct tls_root_ctx *ctx)</span><br><span> {</span><br><span>@@ -650,=
+6 +651,58 @@</span><br><span>         msg(M_WARN, &quot;WARNING: Your certi=
+ficate has expired!&quot;);</span><br><span>     }</span><br><span> }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+tls_ctx_check_cert_time(const struct tls_root_ctx *ctx=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    const X509 *cert;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(ctx);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    cert =3D SSL_CTX_get0_certificate(ctx-&gt;ctx);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (cert =3D=3D NULL)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        return; /* Nothing to check if there is n=
+o certificate */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    X509_VERIFY_PARAM *vpm =3D X509_=
+VERIFY_PARAM_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (vpm =3D=3D =
+NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_TLS_DEBUG_MED,=
+ &quot;Failed to initialise certificate verification parameters.&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    X509_VERIFY_PARAM_set_flags(vpm, X509_V_FLAG_USE_CHECK_=
+TIME);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    X509_VERI=
+FY_PARAM_set_time(vpm, now);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int er=
+ror =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int r=
+et =3D X509_check_certificate_times(vpm, cert, &amp;error);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    X509_VERIFY_PARAM_free(vpm);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (ret =3D=3D 1)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error =
+=3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        msg(D_TLS_DEBUG_MED, &quot;Failed to read certifica=
+te notBefore field.&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (error =3D=3D X509_V_ERR_CERT_NOT_YET_VALID)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        msg(M_WARN, &quot;WARNING: Your certificate is not yet =
+valid!&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (error =3D=
+=3D X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        msg(D_TLS_DEBUG_MED, &quot;Failed to read certificate n=
+otAfter field.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (err=
+or =3D=3D X509_V_ERR_CERT_HAS_EXPIRED)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        msg(M_WARN, &quot;WARNING: Your certificate has expired!&quot;=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span> void</s=
+pan><br><span> tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char =
+*dh_file, bool dh_file_inline)</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail">c=
+hange 1595</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iea1d13c160599f134587c6f1c2f=
-4a90e7f5e3991 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1596 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25=
+ded81f0f5ddd5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1595 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -472,5 +263,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---Bep6Dqz2u7Y=--
+--qVdfXns1sFo=--
 
