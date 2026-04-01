@@ -1,15 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 1 Apr 2026 11:56:52 +0000
-In-Reply-To: <gerrit.1774997396000.Ic9c993cb8dcfedfd6f99f416c286e0968eb45255@...2715...>
-References: <gerrit.1774997396000.Ic9c993cb8dcfedfd6f99f416c286e0968eb45255@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net
-Message-ID: <67bc94ca8a2a7da64ae96001d36393b54a5ea85d-EmailReplacePatchSet-HTML@...2715...>
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Wed, 1 Apr 2026 11:58:40 +0000
+In-Reply-To: <gerrit.1775000509000.I1c18b3cf4a454444a61941d88a702a140b0ac23d@...2715...>
+References: <gerrit.1775000509000.I1c18b3cf4a454444a61941d88a702a140b0ac23d@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <ba76af5edbc7d83db736ef662740f88715a81993-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pGr03J0h3fM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: GHA: Add OpenSSL 4.0
- build
+Content-Type: multipart/alternative; boundary="8JkM2HPCF5Y="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add unit tests for
+ 'auth-user-pass username-only'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,297 +19,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pGr03J0h3fM=
+--8JkM2HPCF5Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded a new patch set (#2). ( http://gerrit.openvpn.net/c/=
-openvpn/+/1601?usp=3Demail )
+Attention is currently required from: plaisthos.
 
+selvanair has posted comments on this change by selvanair. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1602?usp=3Demail )
 
-Change subject: GHA: Add OpenSSL 4.0 build
+Change subject: Add unit tests for 'auth-user-pass username-only'
 ......................................................................
 
-GHA: Add OpenSSL 4.0 build
 
-Change-Id: Ic9c993cb8dcfedfd6f99f416c286e0968eb45255
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M .github/workflows/build.yaml
-1 file changed, 81 insertions(+), 0 deletions(-)
+Patch Set 1:
+
+(1 comment)
+
+Patchset:
+
+PS1:
+No point in testing this for authfile and inline as those are not supported=
+ with username-only. Though the test works.
+The recommendation in those cases is to include a dummy password.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/01/1601/2
-
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 186662d..365e72a 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -390,6 +390,87 @@
-       - name: make check
-         run: make -j3 check VERBOSE=3D1
-
-+  openssl:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        os: [ubuntu-24.04]
-+        ssllib: [openssl]
-+        build: [ normal, asan ]
-+        configureflags: ["--with-openssl-engine=3Dno"]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=3Daddress -fno-sanitize-recover=3Dall  -fn=
-o-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame=
--pointer -g -O1"
-+            ldflags: -fsanitize=3Daddress -fno-sanitize-recover=3Dall
-+            cc: clang
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            cc: gcc
-+
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.s=
-sllib}} - 4.0"
-+    runs-on: ${{matrix.os}}
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      CC: ${{matrix.cc}}
-+      UBSAN_OPTIONS: print_stacktrace=3D1
-+      # versioning=3Dsemver-coerced
-+      OPENSSL_REPO: openssl/openssl
-+      OPENSSL_VERSION: openssl-4.0.0-beta1
-+      OPENSSL_INSTALL: /opt/openssl
-+
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-d=
-ev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils =
-libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-+      - name: Restore OpenSSL 4.0 from cache
-+        uses: actions/cache@...3010...
-+        id: openssl-cache
-+        with:
-+          path: ${{ env.OPENSSL_INSTALL }}
-+          key: ${{ matrix.os }}-openssl-${{matrix.build }}-${{ env.OPENSSL=
-_VERSION }}
-+      - name: "openssl: checkout"
-+        if: steps.openssl-cache.outputs.cache-hit !=3D 'true'
-+        uses: actions/checkout@...2998... # v6.0.2
-+        with:
-+          path: openssl
-+          repository: ${{ env.OPENSSL_REPO }}
-+          ref: ${{ env.OPENSSL_VERSION }}
-+      - name: "openssl: configure"
-+        if: steps.openssl-cache.outputs.cache-hit !=3D 'true'
-+        run: ./Configure  --prefix=3D${{ env.OPENSSL_INSTALL }} --libdir=
-=3D${{ env.OPENSSL_INSTALL }}/lib --openssldir=3D${{ env.OPENSSL_INSTALL }}=
- -g
-+        working-directory: openssl
-+      - name: "openssl: make all"
-+        if: steps.openssl-cache.outputs.cache-hit !=3D 'true'
-+        run: make -j3
-+        working-directory: openssl
-+      - name: "openssl: make install"
-+        if: steps.openssl-cache.outputs.cache-hit !=3D 'true'
-+        run: sudo make install
-+        working-directory: openssl
-+      - name: "ldconfig"
-+        run: sudo ldconfig
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2998... # v6.0.2
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure
-+        run: |
-+          OPENSSL_CFLAGS=3D"-I${{ env.OPENSSL_INSTALL }}/include" \
-+          OPENSSL_LIBS=3D"-L${{ env.OPENSSL_INSTALL }}/lib -lssl -lcrypto"=
- \
-+          LDFLAGS=3D"-Wl,-rpath=3D${{ env.OPENSSL_INSTALL }}/lib" \
-+          ./configure --with-crypto-library=3Dopenssl --enable-werror ${{m=
-atrix.configureflags}}
-+      - name: make all
-+        run: make -j3
-+      - name: Ensure the build uses Openssl
-+        run: |
-+          ./src/openvpn/openvpn --version
-+          ./src/openvpn/openvpn --version | grep -q "library versions: Ope=
-nSSL 4.0"
-+      - name: configure checks
-+        run: echo 'RUN_SUDO=3D"sudo -E"' >tests/t_server_null.rc
-+      - name: make check
-+        run: make -j3 check VERBOSE=3D1
-+
-   mbedtls4:
-     strategy:
-       fail-fast: false
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1601?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic9c993cb8dcfedfd6f99f416c286e0968eb45255
-Gerrit-Change-Number: 1601
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I1c18b3cf4a454444a61941d88a702a140b0ac23d
+Gerrit-Change-Number: 1602
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 01 Apr 2026 11:58:40 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
---pGr03J0h3fM=
+--8JkM2HPCF5Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
->uploaded patch set #2</strong> to this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1601?usp=3Demail">View Change</a></p><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">GHA: Add OpenSSL 4.0 build<br><br>Change-Id: Ic9c993cb8dcfedfd6f99f416c=
-286e0968eb45255<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>-=
---<br>M .github/workflows/build.yaml<br>1 file changed, 81 insertions(+), 0=
- deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:=
-29418/openvpn refs/changes/01/1601/2</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/.github/workflows=
-/build.yaml b/.github/workflows/build.yaml</span><br><span>index 186662d..3=
-65e72a 100644</span><br><span>--- a/.github/workflows/build.yaml</span><br>=
-<span>+++ b/.github/workflows/build.yaml</span><br><span>@@ -390,6 +390,87 =
-@@</span><br><span>       - name: make check</span><br><span>         run: =
-make -j3 check VERBOSE=3D1</span><br><span> </span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  openssl:</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    strategy:</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      fail-fast: false</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      matrix:</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        os: [ubuntu-24.04]</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        ssllib: [openssl]</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        build: [ normal, asan ]</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        configureflags: [&quot;--with-ope=
-nssl-engine=3Dno&quot;]</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        include:</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+          - build: asan</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            cflags: &quot;-fsanitize=3Daddress -fno-sanitize-recover=
-=3Dall  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno=
--omit-frame-pointer -g -O1&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            ldflags: -fsanitize=3Daddress -fno-sanitize-recove=
-r=3Dall</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-cc: clang</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-- build: normal</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        cflags: &quot;-O2 -g&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            ldflags: &quot;&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            cc: gcc</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    name: &quot;${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}}=
- - ${{matrix.ssllib}} - 4.0&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    runs-on: ${{matrix.os}}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    env:</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      CFLAGS: ${{ matrix.cflags }}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      LDFLAGS: ${{ matrix.ldflags }}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      CC: ${{matrix.cc}}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+      UBSAN_OPTIONS: print_=
-stacktrace=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
- # versioning=3Dsemver-coerced</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      OPENSSL_REPO: openssl/openssl</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+      OPENSSL_VERSION: openssl-4.0.0-beta1</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      OPENSSL_INSTALL: /o=
-pt/openssl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    steps:</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+      - name: Install dependencies</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: sudo apt =
-update &amp;&amp; sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev l=
-inux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automak=
-e autoconf pkg-config libcap-ng-dev libnl-genl-3-dev</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      - name: Restore OpenSSL 4.0 from ca=
-che</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: ac=
-tions/cache@...3010...</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        id: openssl-cache</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        with:</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+          path: ${{ env.OPENSSL_INSTALL }}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+          key: ${{ matrix.os }}-openssl-${{matrix=
-.build }}-${{ env.OPENSSL_VERSION }}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      - name: &quot;openssl: checkout&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if: steps.openssl-cache.ou=
-tputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        uses: actions/checkout@...2998... # v6.0.2</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        with:</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+          path: openssl</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+          repository: ${{ env.=
-OPENSSL_REPO }}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-      ref: ${{ env.OPENSSL_VERSION }}</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      - name: &quot;openssl: configure&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        if: steps.openssl-cache.=
-outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        run: ./Configure  --prefix=3D${{ env.OPENSSL_INST=
-ALL }} --libdir=3D${{ env.OPENSSL_INSTALL }}/lib --openssldir=3D${{ env.OPE=
-NSSL_INSTALL }} -g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       working-directory: openssl</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      - name: &quot;openssl: make all&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        if: steps.openssl-cache.outpu=
-ts.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        run: make -j3</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        working-directory: openssl</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      - name: &quot;openssl: make install&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if: steps=
-.openssl-cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        run: sudo make install</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        working-directory: ope=
-nssl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: &=
-quot;ldconfig&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        run: sudo ldconfig</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      - name: Checkout OpenVPN</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        uses: actions/checkout@...2998... # v6.0.2</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: autoconf</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: autoreconf=
- -fvi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: =
-configure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ru=
-n: |</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          OPENS=
-SL_CFLAGS=3D&quot;-I${{ env.OPENSSL_INSTALL }}/include&quot; \</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+          OPENSSL_LIBS=3D&quot;-=
-L${{ env.OPENSSL_INSTALL }}/lib -lssl -lcrypto&quot; \</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+          LDFLAGS=3D&quot;-Wl,-rpath=3D$=
-{{ env.OPENSSL_INSTALL }}/lib&quot; \</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+          ./configure --with-crypto-library=3Dopenssl --e=
-nable-werror ${{matrix.configureflags}}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      - name: make all</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        run: make -j3</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+      - name: Ensure the build uses Openssl</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        run: |</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+          ./src/openvpn/openvpn=
- --version</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
- ./src/openvpn/openvpn --version | grep -q &quot;library versions: OpenSSL =
-4.0&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - na=
-me: configure checks</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        run: echo &#39;RUN_SUDO=3D&quot;sudo -E&quot;&#39; &gt;tests/t_ser=
-ver_null.rc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - =
-name: make check</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     run: make -j3 check VERBOSE=3D1</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span>   mbedtls4:</span><br><span>     strateg=
-y:</span><br><span>       fail-fast: false</span><br><span></span><br></pre=
-><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1601?us=
-p=3Demail">change 1601</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1601?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1602?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">No point in tes=
+ting this for authfile and inline as those are not supported with username-=
+only. Though the test works.<br>The recommendation in those cases is to inc=
+lude a dummy password.</p></li></ul></li></ul><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail">change 1602</a>. To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemt=
+ype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" i=
+temtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic9c993cb8dcfedfd6f99f416c28=
-6e0968eb45255 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1601 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1c18b3cf4a454444a61941d88a7=
+02a140b0ac23d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1602 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 01 Apr 2026 11:58:40=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---pGr03J0h3fM=--
+--8JkM2HPCF5Y=--
 
