@@ -1,15 +1,8 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 2 Apr 2026 14:06:58 +0000
-References: <gerrit.1775138817000.I3157e1a228ac7058fca6a88f94076052e33d2e01@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <ffc56e9d8a14e65b663b2fa96383b386fa8e3010-HTML@...2715...>
+Date: Thu, 2 Apr 2026 22:28:19 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ac7RYw64E9gCQMan@...2685...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="d6ZYMNF7Gm0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: build: Use info
- fetched from version.m4
+Subject: [Openvpn-devel] OpenVPN 2.7.1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,164 +11,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
---d6ZYMNF7Gm0=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The OpenVPN community project team is proud to release OpenVPN 2.7.1.
+This is a bug fix release.
 
-Attention is currently required from: plaisthos.
+New features:
 
-Hello plaisthos,
+* Add a new username-only flag argument to --auth-user-pass which will now make 
+  OpenVPN only query for username and send a dummy password to the server. This is 
+  only useful if auth schemes are used on the server side that will do some sort of 
+  external challenge base on username, and not password authentication. See 
+  discussion in GH OpenVPN/openvpn#501 (starting Jan 30, 2024).
+* Increase default sizing of internal hash maps to 4 * --max-clients. The default 
+  used to be 256 with a --max-clients default of 1024 - this is bad for 
+  performance, while the memory savings are minimal. On a very memory constrained 
+  system, reduce --max-clients.
 
-I'd like you to do a code review.
-Please visit
+User-visible Changes:
 
-    http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail
+* When compiled with the AWS-LC SSL library, using --tls-cert-profile will now 
+  print a run-time warning - the library does not support it, so it would silently do 
+  nothing.
+* Systemd unit files: change LimitNPROC to TasksMax and increase limit (GH: 
+  OpenVPN/openvpn#929)
+* Documentation improvements.
+* port-share: log incoming connections at verb 3, not on error level anymore (GH: 
+  OpenVPN/openvpn#976).
 
-to review the following change.
+Bugfixes:
 
+* Fix usage of --lport inside a <connection> block - this got broken with the 
+  multi-socket patchset (GH: OpenVPN/openvpn#995)
+* Do not try to run auto-pam unit test when cross-compiling.
+* Do not break private-key passphrases of length >= 64 (GH: OpenVPN/openvpn#993)
+* Fix obscure ASSERT() crash on TCP connects with TAP and no ip config.
+* Make DCO work on FreeBSD systems that have no IPv4 support in kernel (FreeBSD 
+  PR 286263)
+* Make DCO work on Linux on big endian (namely, MIPS and PowerPC)
+  (GH: OpenVPN/ovpn-dco#96)
+* Fixup responses to management interface version command (for >= 4)
+* Make --enable-async-push work on FreeBSD 15 (which has native
+  inotify support, and consequently no libinotify.pc anymore)
+* Adjust some code parts to new "const" handling on string function
+  returns (ISO C23, as implemented by glibc 2.43 and newer).
 
-Change subject: build: Use info fetched from version.m4
-......................................................................
+Windows MSI changes since 2.7.1:
 
-build: Use info fetched from version.m4
+* Make sure that included openvpnserv2.exe is signed
+  (GH: OpenVPN/openvpn-build#1293)
+* Included openvpn-gui updated to 11.62.0.0
+  * Translation updates
 
-Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01
-Signed-off-by: Luis Cruz <luis.cruz@...3019...>
----
-M CMakeLists.txt
-M config.h.cmake.in
-2 files changed, 7 insertions(+), 3 deletions(-)
+More details can be found in the Changes document:
 
+<https://github.com/OpenVPN/openvpn/blob/v2.7.1/Changes.rst>
 
+Source code and Windows installers can be downloaded from our download page:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/1605/1
+<https://openvpn.net/community/>
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 198c98f..72e349c 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -141,6 +141,10 @@
- set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})
- set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})
+Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the various
+official Community repositories:
 
-+set(TAP_WIN_COMPONENT_ID "${PRODUCT_TAP_WIN_COMPONENT_ID}")
-+set(TAP_WIN_MIN_MAJOR ${PRODUCT_TAP_WIN_MIN_MAJOR})
-+set(TAP_WIN_MIN_MINOR ${PRODUCT_TAP_WIN_MIN_MINOR})
-+
- set(CMAKE_C_STANDARD 11)
+<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
 
- # Set the various defines for config.h.cmake.in
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index a93fcd5..ae1d264 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -366,13 +366,13 @@
- #undef SYSTEMD_ASK_PASSWORD_PATH
-
- /* The tap-windows id */
--#define TAP_WIN_COMPONENT_ID "tap0901"
-+#define TAP_WIN_COMPONENT_ID "@TAP_WIN_COMPONENT_ID@"
-
- /* The tap-windows version number is required for OpenVPN */
--#define TAP_WIN_MIN_MAJOR 9
-+#define TAP_WIN_MIN_MAJOR @TAP_WIN_MIN_MAJOR@
-
- /* The tap-windows version number is required for OpenVPN */
--#define TAP_WIN_MIN_MINOR 9
-+#define TAP_WIN_MIN_MINOR @TAP_WIN_MIN_MINOR@
-
- /* Are we running on Mac OS X? */
- #cmakedefine TARGET_DARWIN
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01
-Gerrit-Change-Number: 1605
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-
---d6ZYMNF7Gm0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">build: Use info fetched from version.m4<br>=
-<br>Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01<br>Signed-off-by: =
-Luis Cruz &lt;luis.cruz@...3019...&gt;<br>---<br>M CMakeLists.txt<br>M conf=
-ig.h.cmake.in<br>2 files changed, 7 insertions(+), 3 deletions(-)<br><br></=
-pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
-ges/05/1605/1</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><b=
-r><span>index 198c98f..72e349c 100644</span><br><span>--- a/CMakeLists.txt<=
-/span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -141,6 +141,10 @@</=
-span><br><span> set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})</span><=
-br><span> set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(TAP_W=
-IN_COMPONENT_ID &quot;${PRODUCT_TAP_WIN_COMPONENT_ID}&quot;)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+set(TAP_WIN_MIN_MAJOR ${PRODUCT_TA=
-P_WIN_MIN_MAJOR})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+se=
-t(TAP_WIN_MIN_MINOR ${PRODUCT_TAP_WIN_MIN_MINOR})</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> set(CMAKE_C_STANDARD 11)</s=
-pan><br><span> </span><br><span> # Set the various defines for config.h.cma=
-ke.in</span><br><span>diff --git a/config.h.cmake.in b/config.h.cmake.in</s=
-pan><br><span>index a93fcd5..ae1d264 100644</span><br><span>--- a/config.h.=
-cmake.in</span><br><span>+++ b/config.h.cmake.in</span><br><span>@@ -366,13=
- +366,13 @@</span><br><span> #undef SYSTEMD_ASK_PASSWORD_PATH</span><br><sp=
-an> </span><br><span> /* The tap-windows id */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#define TAP_WIN_COMPONENT_ID &quot;tap0901&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TAP_WIN_COMPO=
-NENT_ID &quot;@TAP_WIN_COMPONENT_ID@&quot;</span><br><span> </span><br><spa=
-n> /* The tap-windows version number is required for OpenVPN */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#define TAP_WIN_MIN_MAJOR 9</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TAP_WIN_MIN_MAJOR=
- @TAP_WIN_MIN_MAJOR@</span><br><span> </span><br><span> /* The tap-windows =
-version number is required for OpenVPN */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#define TAP_WIN_MIN_MINOR 9</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#define TAP_WIN_MIN_MINOR @TAP_WIN_MIN_MINOR@</=
-span><br><span> </span><br><span> /* Are we running on Mac OS X? */</span><=
-br><span> #cmakedefine TARGET_DARWIN</span><br><span></span><br></pre><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Dem=
-ail">change 1605</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3157e1a228ac7058fca6a88f940=
-76052e33d2e01 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1605 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-
-</body></html>=
-
---d6ZYMNF7Gm0=--
+Kind regards,
+-- 
+  Frank Lichtenheld
 
