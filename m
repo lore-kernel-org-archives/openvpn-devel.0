@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 2 Apr 2026 12:24:04 +0000
-In-Reply-To: <gerrit.1774445432000.I77500d435f212a4bf42ee8cfca07d0285fe694f2@...2715...>
-References: <gerrit.1774445432000.I77500d435f212a4bf42ee8cfca07d0285fe694f2@...2715...>
+Date: Thu, 2 Apr 2026 14:06:58 +0000
+References: <gerrit.1775138817000.I3157e1a228ac7058fca6a88f94076052e33d2e01@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <0eb21031dc7566848eb7b9edc0a93385c9540f8c-EmailReviewComments-HTML@...2715...>
+Message-ID: <ffc56e9d8a14e65b663b2fa96383b386fa8e3010-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="n5CHJ6J3GZg="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use
- ASN1_BIT_STRING_get_bit to check for netscape certificate usage
+Content-Type: multipart/alternative; boundary="d6ZYMNF7Gm0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: build: Use info
+ fetched from version.m4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,81 +21,161 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---n5CHJ6J3GZg=
+--d6ZYMNF7Gm0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1587?usp=3Demail )
+Hello plaisthos,
 
-Change subject: Use ASN1_BIT_STRING_get_bit to check for netscape certifica=
-te usage
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail
+
+to review the following change.
+
+
+Change subject: build: Use info fetched from version.m4
 ......................................................................
 
+build: Use info fetched from version.m4
 
-Patch Set 6: Code-Review+2
+Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01
+Signed-off-by: Luis Cruz <luis.cruz@...3019...>
+---
+M CMakeLists.txt
+M config.h.cmake.in
+2 files changed, 7 insertions(+), 3 deletions(-)
 
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/05/1605/1
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 198c98f..72e349c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -141,6 +141,10 @@
+ set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})
+ set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})
+
++set(TAP_WIN_COMPONENT_ID "${PRODUCT_TAP_WIN_COMPONENT_ID}")
++set(TAP_WIN_MIN_MAJOR ${PRODUCT_TAP_WIN_MIN_MAJOR})
++set(TAP_WIN_MIN_MINOR ${PRODUCT_TAP_WIN_MIN_MINOR})
++
+ set(CMAKE_C_STANDARD 11)
+
+ # Set the various defines for config.h.cmake.in
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index a93fcd5..ae1d264 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -366,13 +366,13 @@
+ #undef SYSTEMD_ASK_PASSWORD_PATH
+
+ /* The tap-windows id */
+-#define TAP_WIN_COMPONENT_ID "tap0901"
++#define TAP_WIN_COMPONENT_ID "@TAP_WIN_COMPONENT_ID@"
+
+ /* The tap-windows version number is required for OpenVPN */
+-#define TAP_WIN_MIN_MAJOR 9
++#define TAP_WIN_MIN_MAJOR @TAP_WIN_MIN_MAJOR@
+
+ /* The tap-windows version number is required for OpenVPN */
+-#define TAP_WIN_MIN_MINOR 9
++#define TAP_WIN_MIN_MINOR @TAP_WIN_MIN_MINOR@
+
+ /* Are we running on Mac OS X? */
+ #cmakedefine TARGET_DARWIN
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I77500d435f212a4bf42ee8cfca07d0285fe694f2
-Gerrit-Change-Number: 1587
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01
+Gerrit-Change-Number: 1605
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Thu, 02 Apr 2026 12:24:04 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
 
---n5CHJ6J3GZg=
+--d6ZYMNF7Gm0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail=
-">change 1587</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1587?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">build: Use info fetched from version.m4<br>=
+<br>Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01<br>Signed-off-by: =
+Luis Cruz &lt;luis.cruz@...3019...&gt;<br>---<br>M CMakeLists.txt<br>M conf=
+ig.h.cmake.in<br>2 files changed, 7 insertions(+), 3 deletions(-)<br><br></=
+pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chan=
+ges/05/1605/1</pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><b=
+r><span>index 198c98f..72e349c 100644</span><br><span>--- a/CMakeLists.txt<=
+/span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -141,6 +141,10 @@</=
+span><br><span> set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})</span><=
+br><span> set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})</span><=
+br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(TAP_W=
+IN_COMPONENT_ID &quot;${PRODUCT_TAP_WIN_COMPONENT_ID}&quot;)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+set(TAP_WIN_MIN_MAJOR ${PRODUCT_TA=
+P_WIN_MIN_MAJOR})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+se=
+t(TAP_WIN_MIN_MINOR ${PRODUCT_TAP_WIN_MIN_MINOR})</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span> set(CMAKE_C_STANDARD 11)</s=
+pan><br><span> </span><br><span> # Set the various defines for config.h.cma=
+ke.in</span><br><span>diff --git a/config.h.cmake.in b/config.h.cmake.in</s=
+pan><br><span>index a93fcd5..ae1d264 100644</span><br><span>--- a/config.h.=
+cmake.in</span><br><span>+++ b/config.h.cmake.in</span><br><span>@@ -366,13=
+ +366,13 @@</span><br><span> #undef SYSTEMD_ASK_PASSWORD_PATH</span><br><sp=
+an> </span><br><span> /* The tap-windows id */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#define TAP_WIN_COMPONENT_ID &quot;tap0901&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TAP_WIN_COMPO=
+NENT_ID &quot;@TAP_WIN_COMPONENT_ID@&quot;</span><br><span> </span><br><spa=
+n> /* The tap-windows version number is required for OpenVPN */</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#define TAP_WIN_MIN_MAJOR 9</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TAP_WIN_MIN_MAJOR=
+ @TAP_WIN_MIN_MAJOR@</span><br><span> </span><br><span> /* The tap-windows =
+version number is required for OpenVPN */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#define TAP_WIN_MIN_MINOR 9</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define TAP_WIN_MIN_MINOR @TAP_WIN_MIN_MINOR@</=
+span><br><span> </span><br><span> /* Are we running on Mac OS X? */</span><=
+br><span> #cmakedefine TARGET_DARWIN</span><br><span></span><br></pre><p>To=
+ view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Dem=
+ail">change 1605</a>. To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
+</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
+pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1605?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I77500d435f212a4bf42ee8cfca0=
-7d0285fe694f2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1587 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3157e1a228ac7058fca6a88f940=
+76052e33d2e01 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1605 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 02 Apr 2026 12:24:04=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---n5CHJ6J3GZg=--
+--d6ZYMNF7Gm0=--
 
