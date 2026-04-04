@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Sat,  4 Apr 2026 22:35:19 +0200
-Message-ID: <20260404203525.30790-1-gert@...1296...>
-In-Reply-To: <gerrit.1775324949000.I4d6501ddfb321f57a76841f29ff92c5a412908bb@...2715...>
-References: <gerrit.1775324949000.I4d6501ddfb321f57a76841f29ff92c5a412908bb@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 4 Apr 2026 20:36:01 +0000
+In-Reply-To: <gerrit.1775321000000.I46499ff1f40dbdb94b84d58d17457d0ccdd75288@...2715...>
+References: <gerrit.1775321000000.I46499ff1f40dbdb94b84d58d17457d0ccdd75288@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <ca1a6b6b5fd2005a75e814adc9caaed6254aafd5-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] openvpnmsica: Fix setting of iTicks in
- schedule_adapter_delete
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nQKeIk8v0nE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove various
+ unused structs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--nQKeIk8v0nE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Increase the integer, not the pointer.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Found by cppcheck.
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1607?usp=3Demail )
 
-Change-Id: I4d6501ddfb321f57a76841f29ff92c5a412908bb
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1608
----
+Change subject: Remove various unused structs
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1608
-This mail reflects revision 1 of this Change.
+Patch Set 1: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
 
-        
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index a145b64..fdb610c 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -613,7 +613,7 @@
-                 msica_arg_seq_add_tail(seq, szArgument);
-             }
- 
--            iTicks += MSICA_ADAPTER_TICK_SIZE;
-+            *iTicks += MSICA_ADAPTER_TICK_SIZE;
-             break; /* Adapter names are unique. There should be no other adapter with this name. */
-         }
-     }
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I46499ff1f40dbdb94b84d58d17457d0ccdd75288
+Gerrit-Change-Number: 1607
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sat, 04 Apr 2026 20:36:01 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--nQKeIk8v0nE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail=
+">change 1607</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I46499ff1f40dbdb94b84d58d174=
+57d0ccdd75288 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1607 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 04 Apr 2026 20:36:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--nQKeIk8v0nE=--
 
