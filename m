@@ -1,15 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Sat, 4 Apr 2026 18:56:25 +0000
-References: <gerrit.1775328983000.I04a01cf536ee6d48d54ba623dda460c4a98859f9@...2715...>
+Date: Sat, 4 Apr 2026 20:05:12 +0000
+In-Reply-To: <gerrit.1774445432000.I5158fbb0762443ea4954e5745f520e83e019ed30@...2715...>
+References: <gerrit.1774445432000.I5158fbb0762443ea4954e5745f520e83e019ed30@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <945803bb833575e79c75471c1708678a411f1da7-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <5ae4db6488074ff6d6497a646860ab66592ce023-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pJ0ba2jDujs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mtcp: Remove noop
- statement in multi_tcp_process_outgoing_link_ready
+Content-Type: multipart/alternative; boundary="Hr3ieecfHQk="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not access
+ internals of ASN1_INTEGER to print hex of serial
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,130 +22,111 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pJ0ba2jDujs=
+--Hr3ieecfHQk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: cron2, plaisthos.
 
-Hello plaisthos,
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1589?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demail
-
-to review the following change.
-
-
-Change subject: mtcp: Remove noop statement in multi_tcp_process_outgoing_l=
-ink_ready
+Change subject: Do not access internals of ASN1_INTEGER to print hex of ser=
+ial
 ......................................................................
 
-mtcp: Remove noop statement in multi_tcp_process_outgoing_link_ready
 
-Assigning to a parameter here has no effect. I can see no
-obvious alternative statement that might have been intended.
+Patch Set 6: Code-Review+2
 
-Found by cppcheck.
+(1 comment)
 
-Change-Id: I04a01cf536ee6d48d54ba623dda460c4a98859f9
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/mtcp.c
-1 file changed, 0 insertions(+), 4 deletions(-)
+Patchset:
+
+PS5:
+> This still fails -Werror builds on FreeBSD 13 with "OpenSSL 1.1.1w-freebs=
+d  11 Sep 2023". [=E2=80=A6]
+Rebase "fixed" that since it was caused by an earlier version of a patch st=
+ill in the branch.
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/09/1609/1
-
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 2eab7b7..7651b4d 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -155,10 +155,6 @@
-         ASSERT(mi =3D=3D item.instance);
-         mi->context.c2.to_link =3D item.buffer->buf;
-         ret =3D multi_process_outgoing_link_dowork(m, mi, mpp_flags);
--        if (!ret)
--        {
--            mi =3D NULL;
--        }
-         mbuf_free_buf(item.buffer);
-     }
-     return ret;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1589?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I04a01cf536ee6d48d54ba623dda460c4a98859f9
-Gerrit-Change-Number: 1609
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I5158fbb0762443ea4954e5745f520e83e019ed30
+Gerrit-Change-Number: 1589
+Gerrit-PatchSet: 6
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Comment-Date: Sat, 04 Apr 2026 20:05:12 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-To: cron2 <gert@...1296...>
 
---pJ0ba2jDujs=
+--Hr3ieecfHQk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">mtcp: Remove noop statement in multi_tcp_pr=
-ocess_outgoing_link_ready<br><br>Assigning to a parameter here has no effec=
-t. I can see no<br>obvious alternative statement that might have been inten=
-ded.<br><br>Found by cppcheck.<br><br>Change-Id: I04a01cf536ee6d48d54ba623d=
-da460c4a98859f9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt=
-;<br>---<br>M src/openvpn/mtcp.c<br>1 file changed, 0 insertions(+), 4 dele=
-tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418=
-/openvpn refs/changes/09/1609/1</pre><pre style=3D"font-family: monospace,m=
-onospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/mtcp.c b/s=
-rc/openvpn/mtcp.c</span><br><span>index 2eab7b7..7651b4d 100644</span><br><=
-span>--- a/src/openvpn/mtcp.c</span><br><span>+++ b/src/openvpn/mtcp.c</spa=
-n><br><span>@@ -155,10 +155,6 @@</span><br><span>         ASSERT(mi =3D=3D =
-item.instance);</span><br><span>         mi-&gt;context.c2.to_link =3D item=
-.buffer-&gt;buf;</span><br><span>         ret =3D multi_process_outgoing_li=
-nk_dowork(m, mi, mpp_flags);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        if (!ret)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   mi =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span>         mbuf_free_buf(item.buffer);</span><br><span>  =
-   }</span><br><span>     return ret;</span><br><span></span><br></pre><p>T=
-o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3De=
-mail">change 1609</a>. To unsubscribe, or for help writing mail filters, vi=
-sit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: cron2, plaisthos. </p>
+<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1589?usp=3Demail">V=
+iew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1589?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p><blockquo=
+te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
+This still fails -Werror builds on FreeBSD 13 with &quot;OpenSSL 1.1.1w-fre=
+ebsd  11 Sep 2023&quot;. [=E2=80=A6]</blockquote></p><p class=3D"blocks" st=
+yle=3D"white-space: pre-wrap; word-wrap: break-word;">Rebase &quot;fixed&qu=
+ot; that since it was caused by an earlier version of a patch still in the =
+branch.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1589?usp=3Demail">change 1589</a>. To unsubscribe, o=
+r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
+/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1589?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
+iew Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I04a01cf536ee6d48d54ba623dda=
-460c4a98859f9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1609 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5158fbb0762443ea4954e5745f5=
+20e83e019ed30 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1589 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 04 Apr 2026 20:05:12=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
 
 </body></html>=
 
---pJ0ba2jDujs=--
+--Hr3ieecfHQk=--
 
