@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Sat, 4 Apr 2026 16:51:32 +0000
-In-Reply-To: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
-References: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
+Date: Sat, 4 Apr 2026 17:49:11 +0000
+References: <gerrit.1775324949000.I4d6501ddfb321f57a76841f29ff92c5a412908bb@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <03a5d55010a8bc6e06ec5423d753ac94fa382738-EmailReviewComments-HTML@...2715...>
+Message-ID: <5f6b8d066e289ea53a338533df5ddebf62ab017b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Csu8YMntD3g="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: OpenSSL 4.0: Use
- X509_check_certificate_times instead of X509_cmp_time
+Content-Type: multipart/alternative; boundary="x5CIKzN7/tE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: openvpnmsica: Fix
+ setting of iTicks in schedule_adapter_delete
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,102 +21,128 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Csu8YMntD3g=
+--x5CIKzN7/tE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1595?usp=3Demail )
+Hello plaisthos,
 
-Change subject: OpenSSL 4.0: Use X509_check_certificate_times instead of X5=
-09_cmp_time
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1608?usp=3Demail
+
+to review the following change.
+
+
+Change subject: openvpnmsica: Fix setting of iTicks in schedule_adapter_del=
+ete
 ......................................................................
 
+openvpnmsica: Fix setting of iTicks in schedule_adapter_delete
 
-Patch Set 3:
+Increase the integer, not the pointer.
 
-(1 comment)
+Found by cppcheck.
 
-File src/openvpn/ssl_openssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1595/comment/7faf7350_74c0cf48?usp=3D=
-email :
-PS3, Line 688:     if (error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIE=
-LD)
-Not sure whether that is bikeshedding, but should we maybe use a case state=
-ment here? Looks more appropriate for checking the same variable against 4 =
-values.
+Change-Id: I4d6501ddfb321f57a76841f29ff92c5a412908bb
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpnmsica/openvpnmsica.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/08/1608/1
+
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsic=
+a.c
+index a145b64..fdb610c 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -613,7 +613,7 @@
+                 msica_arg_seq_add_tail(seq, szArgument);
+             }
+
+-            iTicks +=3D MSICA_ADAPTER_TICK_SIZE;
++            *iTicks +=3D MSICA_ADAPTER_TICK_SIZE;
+             break; /* Adapter names are unique. There should be no other a=
+dapter with this name. */
+         }
+     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1608?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
-Gerrit-Change-Number: 1595
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I4d6501ddfb321f57a76841f29ff92c5a412908bb
+Gerrit-Change-Number: 1608
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Sat, 04 Apr 2026 16:51:32 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
 
---Csu8YMntD3g=
+--x5CIKzN7/tE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/1595/comment/7faf7350_74c0cf48?usp=3Demail">Patch Set=
- #3, Line 688:</a> <code style=3D"font-family:monospace,monospace">    if (=
-error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD)</code></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Not sur=
-e whether that is bikeshedding, but should we maybe use a case statement he=
-re? Looks more appropriate for checking the same variable against 4 values.=
-</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1595?usp=3Demail">change 1595</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1595?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1608?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">openvpnmsica: Fix setting of iTicks in sche=
+dule_adapter_delete<br><br>Increase the integer, not the pointer.<br><br>Fo=
+und by cppcheck.<br><br>Change-Id: I4d6501ddfb321f57a76841f29ff92c5a412908b=
+b<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M =
+src/openvpnmsica/openvpnmsica.c<br>1 file changed, 1 insertion(+), 1 deleti=
+on(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
+envpn refs/changes/08/1608/1</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/src/openvpnmsica/openvpnm=
+sica.c b/src/openvpnmsica/openvpnmsica.c</span><br><span>index a145b64..fdb=
+610c 100644</span><br><span>--- a/src/openvpnmsica/openvpnmsica.c</span><br=
+><span>+++ b/src/openvpnmsica/openvpnmsica.c</span><br><span>@@ -613,7 +613=
+,7 @@</span><br><span>                 msica_arg_seq_add_tail(seq, szArgume=
+nt);</span><br><span>             }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            iTicks +=3D MSICA_ADAPTER_TICK_=
+SIZE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            *i=
+Ticks +=3D MSICA_ADAPTER_TICK_SIZE;</span><br><span>             break; /* =
+Adapter names are unique. There should be no other adapter with this name. =
+*/</span><br><span>         }</span><br><span>     }</span><br><span></span=
+><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/1608?usp=3Demail">change 1608</a>. To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demai=
+l">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
+tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1608?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25=
-ded81f0f5ddd5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1595 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d6501ddfb321f57a76841f29ff=
+92c5a412908bb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1608 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 04 Apr 2026 16:51:32=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---Csu8YMntD3g=--
+--x5CIKzN7/tE=--
 
