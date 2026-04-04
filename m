@@ -1,15 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Sat, 4 Apr 2026 16:43:22 +0000
-References: <gerrit.1775321000000.I46499ff1f40dbdb94b84d58d17457d0ccdd75288@...2715...>
+Date: Sat, 4 Apr 2026 16:51:32 +0000
+In-Reply-To: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
+References: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <a48081c484007d29a875f861bdd5750eccf48ba9-HTML@...2715...>
+Message-ID: <03a5d55010a8bc6e06ec5423d753ac94fa382738-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="tulBrcf57w8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove various
- unused structs
+Content-Type: multipart/alternative; boundary="Csu8YMntD3g="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: OpenSSL 4.0: Use
+ X509_check_certificate_times instead of X509_cmp_time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,232 +22,102 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---tulBrcf57w8=
+--Csu8YMntD3g=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
-Hello plaisthos,
+flichtenheld has posted comments on this change by plaisthos. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1595?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Remove various unused structs
+Change subject: OpenSSL 4.0: Use X509_check_certificate_times instead of X5=
+09_cmp_time
 ......................................................................
 
-Remove various unused structs
 
-Change-Id: I46499ff1f40dbdb94b84d58d17457d0ccdd75288
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/mtcp.c
-M src/openvpn/multi_io.c
-M src/openvpn/networking_sitnl.c
-M src/openvpn/route.c
-4 files changed, 0 insertions(+), 31 deletions(-)
+Patch Set 3:
+
+(1 comment)
+
+File src/openvpn/ssl_openssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/1595/comment/7faf7350_74c0cf48?usp=3D=
+email :
+PS3, Line 688:     if (error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIE=
+LD)
+Not sure whether that is bikeshedding, but should we maybe use a case state=
+ment here? Looks more appropriate for checking the same variable against 4 =
+values.
 
 
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/07/1607/1
-
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index b7bef46..2eab7b7 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -37,14 +37,6 @@
- #include <sys/inotify.h>
- #endif
-
--struct ta_iow_flags
--{
--    unsigned int flags;
--    unsigned int ret;
--    unsigned int tun;
--    unsigned int sock;
--};
--
- struct multi_instance *
- multi_create_instance_tcp(struct multi_context *m, struct link_socket *soc=
-k)
- {
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index f484fe2..e6f4e9c 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -46,14 +46,6 @@
- #define MULTI_IO_FILE_CLOSE_WRITE ((void *)5)
- #define MULTI_IO_DCO              ((void *)6)
-=20
--struct ta_iow_flags
--{
--    unsigned int flags;
--    unsigned int ret;
--    unsigned int tun;
--    unsigned int sock;
--};
--
- #ifdef ENABLE_DEBUG
- static const char *
- pract(int action)
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b88f03c..baf6f89 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -124,15 +124,6 @@
- typedef int (*sitnl_parse_reply_cb)(struct nlmsghdr *msg, void *arg);
-
- /**
-- * Object returned by route request operation
-- */
--struct sitnl_route_data_cb
--{
--    unsigned int iface;
--    inet_address_t gw;
--};
--
--/**
-  * Helper function used to easily add attributes to a rtnl message
-  */
- static int
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 1cfbf80..3b18f74 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3257,12 +3257,6 @@
-  * netlink(3), netlink(7), rtnetlink(7)
-  * https://www.virtualbox.org/svn/vbox/trunk/src/VBox/NetworkServices/NAT/
-  */
--struct rtreq
--{
--    struct nlmsghdr nh;
--    struct rtmsg rtm;
--    char attrbuf[512];
--};
-
- void
- get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6, const struc=
-t in6_addr *dest,
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I46499ff1f40dbdb94b84d58d17457d0ccdd75288
-Gerrit-Change-Number: 1607
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
+Gerrit-Change-Number: 1595
+Gerrit-PatchSet: 3
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Sat, 04 Apr 2026 16:51:32 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 
---tulBrcf57w8=
+--Csu8YMntD3g=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Remove various unused structs<br><br>Change=
--Id: I46499ff1f40dbdb94b84d58d17457d0ccdd75288<br>Signed-off-by: Frank Lich=
-tenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/mtcp.c<br>M src/op=
-envpn/multi_io.c<br>M src/openvpn/networking_sitnl.c<br>M src/openvpn/route=
-.c<br>4 files changed, 0 insertions(+), 31 deletions(-)<br><br></pre><pre c=
-lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/07/160=
-7/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br>=
-<span>index b7bef46..2eab7b7 100644</span><br><span>--- a/src/openvpn/mtcp.=
-c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -37,14 +37,6 =
-@@</span><br><span> #include &lt;sys/inotify.h&gt;</span><br><span> #endif<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-stru=
-ct ta_iow_flags</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int flags;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int ret;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int tun;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int sock;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span> struct multi_instance *<=
-/span><br><span> multi_create_instance_tcp(struct multi_context *m, struct =
-link_socket *sock)</span><br><span> {</span><br><span>diff --git a/src/open=
-vpn/multi_io.c b/src/openvpn/multi_io.c</span><br><span>index f484fe2..e6f4=
-e9c 100644</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++=
- b/src/openvpn/multi_io.c</span><br><span>@@ -46,14 +46,6 @@</span><br><spa=
-n> #define MULTI_IO_FILE_CLOSE_WRITE ((void *)5)</span><br><span> #define M=
-ULTI_IO_DCO              ((void *)6)</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-struct ta_iow_flags</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    unsigned int flags;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    unsigned int ret;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    unsigned int tun;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    unsigned int sock;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span> #ifdef ENABLE_DEBUG</span><br><span> static const char *</spa=
-n><br><span> pract(int action)</span><br><span>diff --git a/src/openvpn/net=
-working_sitnl.c b/src/openvpn/networking_sitnl.c</span><br><span>index b88f=
-03c..baf6f89 100644</span><br><span>--- a/src/openvpn/networking_sitnl.c</s=
-pan><br><span>+++ b/src/openvpn/networking_sitnl.c</span><br><span>@@ -124,=
-15 +124,6 @@</span><br><span> typedef int (*sitnl_parse_reply_cb)(struct nl=
-msghdr *msg, void *arg);</span><br><span> </span><br><span> /**</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- * Object returned by route reque=
-st operation</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-struct sitnl_route_data_cb<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    unsigned int iface;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    inet_address_t gw;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**<=
-/span><br><span>  * Helper function used to easily add attributes to a rtnl=
- message</span><br><span>  */</span><br><span> static int</span><br><span>d=
-iff --git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index=
- 1cfbf80..3b18f74 100644</span><br><span>--- a/src/openvpn/route.c</span><b=
-r><span>+++ b/src/openvpn/route.c</span><br><span>@@ -3257,12 +3257,6 @@</s=
-pan><br><span>  * netlink(3), netlink(7), rtnetlink(7)</span><br><span>  * =
-https://www.virtualbox.org/svn/vbox/trunk/src/VBox/NetworkServices/NAT/</sp=
-an><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stru=
-ct rtreq</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    struct nlmsghdr nh;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    struct rtmsg rtm;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    char attrbuf[512];</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span> </span><br=
-><span> void</span><br><span> get_default_gateway_ipv6(struct route_ipv6_ga=
-teway_info *rgi6, const struct in6_addr *dest,</span><br><span></span><br><=
-/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/160=
-7?usp=3Demail">change 1607</a>. To unsubscribe, or for help writing mail fi=
-lters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">set=
-tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
-iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?u=
-sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1595/comment/7faf7350_74c0cf48?usp=3Demail">Patch Set=
+ #3, Line 688:</a> <code style=3D"font-family:monospace,monospace">    if (=
+error =3D=3D X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD)</code></p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Not sur=
+e whether that is bikeshedding, but should we maybe use a case statement he=
+re? Looks more appropriate for checking the same variable against 4 values.=
+</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/1595?usp=3Demail">change 1595</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1595?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
+nge"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I46499ff1f40dbdb94b84d58d174=
-57d0ccdd75288 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1607 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25=
+ded81f0f5ddd5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1595 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 04 Apr 2026 16:51:32=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>=
 
---tulBrcf57w8=--
+--Csu8YMntD3g=--
 
