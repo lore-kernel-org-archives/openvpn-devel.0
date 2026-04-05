@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Sun, 5 Apr 2026 20:39:35 +0000
-References: <gerrit.1775421558000.Ied966413948cf3c935a8a1eb91172ef7a6948bdd@...2715...>
+Date: Sun, 5 Apr 2026 20:39:31 +0000
+References: <gerrit.1775421558000.Idfe2afd9616e17f0f80a914ff054ae18f0b6972b@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <acc8cc1baa11ddaea8a07a94294edc06b51fe89a-HTML@...2715...>
+Message-ID: <9084e5f77c8403789068208b51b07e5249dc6925-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="j4jAg2m5Kps="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: push: Make
- prepare_push_reply return void
+Content-Type: multipart/alternative; boundary="OYPTnA3qKII="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: networking_sitnl:
+ Make sitnl_parse_rtattr* return void
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---j4jAg2m5Kps=
+--OYPTnA3qKII=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,147 +32,186 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1616?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1614?usp=3Demail
 
 to review the following change.
 
 
-Change subject: push: Make prepare_push_reply return void
+Change subject: networking_sitnl: Make sitnl_parse_rtattr* return void
 ......................................................................
 
-push: Make prepare_push_reply return void
+networking_sitnl: Make sitnl_parse_rtattr* return void
 
 It returned a constant value so it didn't actually
-mean anything.
-
-While here also make it static.
+do anything.
 
 Identified by cppcheck.
 
-Change-Id: Ied966413948cf3c935a8a1eb91172ef7a6948bdd
+Change-Id: Idfe2afd9616e17f0f80a914ff054ae18f0b6972b
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/push.c
-1 file changed, 3 insertions(+), 6 deletions(-)
+M src/openvpn/networking_sitnl.c
+1 file changed, 5 insertions(+), 16 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1616/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/1614/1
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 835c433..564ce86 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -631,10 +631,8 @@
-  * @param c             context structure storing data for VPN tunnel
-  * @param gc            gc arena for allocating push options
-  * @param push_list     push list to where options are added
-- *
-- * @return true on success, false on failure.
-  */
--bool
-+static void
- prepare_push_reply(struct context *c, struct gc_arena *gc, struct push_lis=
-t *push_list)
- {
-     struct tls_multi *tls_multi =3D c->c2.tls_multi;
-@@ -734,8 +732,6 @@
-                 client_max_mtu, o->ce.tun_mtu, o->ce.tun_mtu);
-         }
-     }
--
--    return true;
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index baf6f89..b3f8e2b 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -1351,7 +1351,7 @@
+     return ret;
  }
 
- static bool
-@@ -1011,7 +1007,8 @@
-             struct push_list push_list =3D { 0 };
-             struct gc_arena gc =3D gc_new();
+-static int
++static void
+ sitnl_parse_rtattr_flags(struct rtattr *tb[], size_t max, struct rtattr *r=
+ta, size_t len,
+                          unsigned short flags)
+ {
+@@ -1375,14 +1375,12 @@
+     {
+         msg(D_ROUTE, "%s: %zu bytes not parsed! (rta_len=3D%u)", __func__,=
+ len, rta->rta_len);
+     }
+-
+-    return 0;
+ }
 
--            if (prepare_push_reply(c, &gc, &push_list) && send_push_reply(=
-c, &push_list))
-+            prepare_push_reply(c, &gc, &push_list);
-+            if (send_push_reply(c, &push_list))
-             {
-                 ret =3D PUSH_MSG_REQUEST;
-                 c->c2.sent_push_reply_expiry =3D now + 30;
+-static int
++static void
+ sitnl_parse_rtattr(struct rtattr *tb[], size_t max, struct rtattr *rta, si=
+ze_t len)
+ {
+-    return sitnl_parse_rtattr_flags(tb, max, rta, len, 0);
++    sitnl_parse_rtattr_flags(tb, max, rta, len, 0);
+ }
+
+ #define sitnl_parse_rtattr_nested(tb, max, rta) \
+@@ -1394,23 +1392,14 @@
+     char *type =3D arg;
+     struct ifinfomsg *ifi =3D NLMSG_DATA(n);
+     struct rtattr *tb[IFLA_MAX + 1];
+-    int ret;
+
+-    ret =3D sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n=
+));
+-    if (ret < 0)
+-    {
+-        return ret;
+-    }
++    sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n));
+
+     if (tb[IFLA_LINKINFO])
+     {
+         struct rtattr *tb_link[IFLA_INFO_MAX + 1];
+
+-        ret =3D sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MAX, tb[IFLA_=
+LINKINFO]);
+-        if (ret < 0)
+-        {
+-            return ret;
+-        }
++        sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MAX, tb[IFLA_LINKINFO=
+]);
+
+         if (!tb_link[IFLA_INFO_KIND])
+         {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1616?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1614?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ied966413948cf3c935a8a1eb91172ef7a6948bdd
-Gerrit-Change-Number: 1616
+Gerrit-Change-Id: Idfe2afd9616e17f0f80a914ff054ae18f0b6972b
+Gerrit-Change-Number: 1614
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---j4jAg2m5Kps=
+--OYPTnA3qKII=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1616?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1614?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">push: Make prepare_push_reply return void<b=
-r><br>It returned a constant value so it didn&#39;t actually<br>mean anythi=
-ng.<br><br>While here also make it static.<br><br>Identified by cppcheck.<b=
-r><br>Change-Id: Ied966413948cf3c935a8a1eb91172ef7a6948bdd<br>Signed-off-by=
-: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/push.c=
-<br>1 file changed, 3 insertions(+), 6 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/1616/1<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><spa=
-n>index 835c433..564ce86 100644</span><br><span>--- a/src/openvpn/push.c</s=
-pan><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -631,10 +631,8 @@=
-</span><br><span>  * @param c             context structure storing data fo=
-r VPN tunnel</span><br><span>  * @param gc            gc arena for allocati=
-ng push options</span><br><span>  * @param push_list     push list to where=
- options are added</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @return true on suc=
-cess, false on failure.</span><br><span>  */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+static void</span><br><span> prepare_push_reply(struct context *c, =
-struct gc_arena *gc, struct push_list *push_list)</span><br><span> {</span>=
-<br><span>     struct tls_multi *tls_multi =3D c-&gt;c2.tls_multi;</span><b=
-r><span>@@ -734,8 +732,6 @@</span><br><span>                 client_max_mtu=
-, o-&gt;ce.tun_mtu, o-&gt;ce.tun_mtu);</span><br><span>         }</span><br=
-><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    return true;</span><br><s=
-pan> }</span><br><span> </span><br><span> static bool</span><br><span>@@ -1=
-011,7 +1007,8 @@</span><br><span>             struct push_list push_list =
-=3D { 0 };</span><br><span>             struct gc_arena gc =3D gc_new();</s=
+ospace; white-space: pre-wrap;">networking_sitnl: Make sitnl_parse_rtattr* =
+return void<br><br>It returned a constant value so it didn&#39;t actually<b=
+r>do anything.<br><br>Identified by cppcheck.<br><br>Change-Id: Idfe2afd961=
+6e17f0f80a914ff054ae18f0b6972b<br>Signed-off-by: Frank Lichtenheld &lt;fran=
+k@...2641...&gt;<br>---<br>M src/openvpn/networking_sitnl.c<br>1 file chang=
+ed, 5 insertions(+), 16 deletions(-)<br><br></pre><pre class=3D"blocks" sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
+h://gerrit.openvpn.net:29418/openvpn refs/changes/14/1614/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c</span=
+><br><span>index baf6f89..b3f8e2b 100644</span><br><span>--- a/src/openvpn/=
+networking_sitnl.c</span><br><span>+++ b/src/openvpn/networking_sitnl.c</sp=
+an><br><span>@@ -1351,7 +1351,7 @@</span><br><span>     return ret;</span><=
+br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-static int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+tatic void</span><br><span> sitnl_parse_rtattr_flags(struct rtattr *tb[], s=
+ize_t max, struct rtattr *rta, size_t len,</span><br><span>                =
+          unsigned short flags)</span><br><span> {</span><br><span>@@ -1375=
+,14 +1375,12 @@</span><br><span>     {</span><br><span>         msg(D_ROUTE=
+, &quot;%s: %zu bytes not parsed! (rta_len=3D%u)&quot;, __func__, len, rta-=
+&gt;rta_len);</span><br><span>     }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    re=
+turn 0;</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+static void</span><br><span> sitnl_parse_rtattr(struct rtattr=
+ *tb[], size_t max, struct rtattr *rta, size_t len)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    return sitnl_parse_rta=
+ttr_flags(tb, max, rta, len, 0);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    sitnl_parse_rtattr_flags(tb, max, rta, len, 0);</span><br>=
+<span> }</span><br><span> </span><br><span> #define sitnl_parse_rtattr_nest=
+ed(tb, max, rta) \</span><br><span>@@ -1394,23 +1392,14 @@</span><br><span>=
+     char *type =3D arg;</span><br><span>     struct ifinfomsg *ifi =3D NLM=
+SG_DATA(n);</span><br><span>     struct rtattr *tb[IFLA_MAX + 1];</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    int ret;</span><br><span> <=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D sitnl_pars=
+e_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n));</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    if (ret &lt; 0)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        return ret;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n));</span=
+><br><span> </span><br><span>     if (tb[IFLA_LINKINFO])</span><br><span>  =
+   {</span><br><span>         struct rtattr *tb_link[IFLA_INFO_MAX + 1];</s=
 pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      if (prepare_push_reply(c, &amp;gc, &amp;push_list) &amp;&amp; send_pu=
-sh_reply(c, &amp;push_list))</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            prepare_push_reply(c, &amp;gc, &amp;push_list);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            if (send_push_=
-reply(c, &amp;push_list))</span><br><span>             {</span><br><span>  =
-               ret =3D PUSH_MSG_REQUEST;</span><br><span>                 c=
--&gt;c2.sent_push_reply_expiry =3D now + 30;</span><br><span></span><br></p=
-re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1616?=
-usp=3Demail">change 1616</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setti=
-ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
- itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
-ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1616?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+  ret =3D sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MAX, tb[IFLA_LINKINF=
+O]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (ret &=
+lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            return ret;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        sitnl_parse_rtattr_nested(t=
+b_link, IFLA_INFO_MAX, tb[IFLA_LINKINFO]);</span><br><span> </span><br><spa=
+n>         if (!tb_link[IFLA_INFO_KIND])</span><br><span>         {</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1614?usp=3Demail">change 1614</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1614?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ied966413948cf3c935a8a1eb911=
-72ef7a6948bdd </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1616 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idfe2afd9616e17f0f80a914ff05=
+4ae18f0b6972b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1614 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -185,5 +224,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---j4jAg2m5Kps=--
+--OYPTnA3qKII=--
 
