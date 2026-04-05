@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Sun, 5 Apr 2026 20:39:36 +0000
-References: <gerrit.1775421558000.I528f5fd200d877841e473e5e05b7ac7915fa2e33@...2715...>
+Date: Sun, 5 Apr 2026 20:39:37 +0000
+References: <gerrit.1775421558000.Id0caa497c4ff1ad8743cb23f332f003b2d3393ed@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <37107a1dff61bcf3be69a3b816ea37a7c0e63832-HTML@...2715...>
+Message-ID: <f1bb40b9451bef89e74ec2bf875f4a9fda58fe0b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/f7wHcrKxKs="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Rename variables
- that shadow other variables or functions
+Content-Type: multipart/alternative; boundary="3/ZggpT5O2o="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove various
+ useless assignments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/f7wHcrKxKs=
+--3/ZggpT5O2o=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,617 +32,715 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1618?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1617?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Rename variables that shadow other variables or functions
+Change subject: Remove various useless assignments
 ......................................................................
 
-Rename variables that shadow other variables or functions
+Remove various useless assignments
+
+The values assigned by these are never actually used
+for something.
 
 Identified by cppcheck.
 
-Change-Id: I528f5fd200d877841e473e5e05b7ac7915fa2e33
+Change-Id: Id0caa497c4ff1ad8743cb23f332f003b2d3393ed
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
+M src/openvpn/crypto.c
+M src/openvpn/error.h
+M src/openvpn/forward.c
 M src/openvpn/manage.c
 M src/openvpn/options.c
-M src/openvpn/push.c
-M src/openvpn/tls_crypt.c
-M src/openvpnserv/interactive.c
-M tests/unit_tests/openvpn/test_push_update_msg.c
-6 files changed, 42 insertions(+), 45 deletions(-)
+M src/openvpn/pkcs11_openssl.c
+M src/openvpn/push_util.c
+M src/openvpn/ssl_openssl.c
+M src/openvpnmsica/openvpnmsica.c
+M src/tapctl/tap.c
+M tests/unit_tests/openvpn/test_ssl.c
+M tests/unit_tests/openvpnserv/test_openvpnserv.c
+12 files changed, 22 insertions(+), 40 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/1618/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/17/1617/1
 
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 7954e8a..df9b905 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1204,8 +1204,6 @@
+     struct buffer work =3D alloc_buf_gc(BUF_SIZE(frame), &gc);
+     struct buffer encrypt_workspace =3D alloc_buf_gc(BUF_SIZE(frame), &gc);
+     struct buffer decrypt_workspace =3D alloc_buf_gc(BUF_SIZE(frame), &gc);
+-    struct buffer buf =3D clear_buf();
+-    void *buf_p;
+
+     /* init work */
+     ASSERT(buf_init(&work, frame->buf.headroom));
+@@ -1242,8 +1240,8 @@
+         ASSERT(rand_bytes(BPTR(&src), BLEN(&src)));
+
+         /* copy source to input buf */
+-        buf =3D work;
+-        buf_p =3D buf_write_alloc(&buf, BLENZ(&src));
++        struct buffer buf =3D work;
++        void *buf_p =3D buf_write_alloc(&buf, BLENZ(&src));
+         ASSERT(buf_p);
+         memcpy(buf_p, BPTR(&src), BLENZ(&src));
+
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 62948aa..62389af 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -406,8 +406,8 @@
+ openvpn_errno_maybe_crt(bool *crt_error)
+ {
+     int err =3D 0;
+-    *crt_error =3D false;
+ #ifdef _WIN32
++    *crt_error =3D false;
+     err =3D GetLastError();
+     if (err =3D=3D ERROR_SUCCESS)
+     {
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 27cfd36..53eab4d 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1746,7 +1746,6 @@
+ process_outgoing_link(struct context *c, struct link_socket *sock)
+ {
+     struct gc_arena gc =3D gc_new();
+-    int error_code =3D 0;
+
+     if (c->c2.to_link.len > 0 && c->c2.to_link.len <=3D c->c2.frame.buf.pa=
+yload_size)
+     {
+@@ -1821,7 +1820,7 @@
+         }
+
+         /* Check return status */
+-        error_code =3D openvpn_errno();
++        int error_code =3D openvpn_errno();
+         check_status(size, "write", sock, NULL);
+
+         if (size > 0)
 diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 31dcd4f..9efc08f 100644
+index d776908..31dcd4f 100644
 --- a/src/openvpn/manage.c
 +++ b/src/openvpn/manage.c
-@@ -1254,8 +1254,6 @@
+@@ -912,10 +912,9 @@
  static void
- man_load_stats(struct management *man)
+ man_remote_entry_count(struct management *man)
  {
--    extern counter_type link_read_bytes_global;
--    extern counter_type link_write_bytes_global;
-     int nclients =3D 0;
+-    unsigned count =3D 0;
+     if (man->persist.callback.remote_entry_count)
+     {
+-        count =3D (*man->persist.callback.remote_entry_count)(man->persist=
+.callback.arg);
++        unsigned int count =3D (*man->persist.callback.remote_entry_count)=
+(man->persist.callback.arg);
+         msg(M_CLIENT, "%u", count);
+         msg(M_CLIENT, "END");
+     }
+@@ -3660,7 +3659,6 @@
+     struct gc_arena gc =3D gc_new();
+     int ret =3D 0;
+     volatile int signal_received =3D 0;
+-    struct buffer alert_msg =3D clear_buf();
+     const bool standalone_disabled_save =3D man->persist.standalone_disabl=
+ed;
+     struct man_connection *mc =3D &man->connection;
 
-     if (man->persist.callback.n_clients)
+@@ -3672,6 +3670,7 @@
+
+         *state =3D EKS_SOLICIT;
+
++        struct buffer alert_msg;
+         if (b64_data)
+         {
+             alert_msg =3D alloc_buf_gc(strlen(b64_data) + strlen(prompt) +=
+ 3, &gc);
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 28275cc..186b2d2 100644
+index 200e3cd..28275cc 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2689,12 +2689,12 @@
-                     "may accept clients which do not present a certificate=
-");
-     }
-
--    const unsigned int tls_version_max =3D
-+    const unsigned int tls_ver_max =3D
-         (options->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERS=
-ION_MAX_MASK;
--    const unsigned int tls_version_min =3D
-+    const unsigned int tls_ver_min =3D
-         (options->ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERS=
-ION_MIN_MASK;
-
--    if (tls_version_max > 0 && tls_version_max < tls_version_min)
-+    if (tls_ver_max > 0 && tls_ver_max < tls_ver_min)
-     {
-         msg(M_USAGE, "--tls-version-min bigger than --tls-version-max");
-     }
-@@ -3641,16 +3641,16 @@
-         {
-             struct dns_domain **entry =3D &dns->search_domains;
-             ALLOC_OBJ_CLEAR_GC(*entry, struct dns_domain, &dns->gc);
--            struct dns_domain *new =3D *entry;
--            new->name =3D dhcp->domain;
--            entry =3D &new->next;
-+            struct dns_domain *domain =3D *entry;
-+            domain->name =3D dhcp->domain;
-+            entry =3D &domain->next;
-
-             for (unsigned int i =3D 0; i < dhcp->domain_search_list_len; +=
-+i)
+@@ -7091,7 +7091,6 @@
+             if (streq(p[1], "FORWARD_COMPATIBLE") && p[2] && streq(p[2], "=
+1"))
              {
-                 ALLOC_OBJ_CLEAR_GC(*entry, struct dns_domain, &dns->gc);
--                struct dns_domain *new =3D *entry;
--                new->name =3D dhcp->domain_search_list[i];
--                entry =3D &new->next;
-+                struct dns_domain *search_domain =3D *entry;
-+                search_domain->name =3D dhcp->domain_search_list[i];
-+                entry =3D &search_domain->next;
+                 options->forward_compatible =3D true;
+-                msglevel_fc =3D msglevel_forward_compatible(options, msgle=
+vel);
              }
+             setenv_str(es, p[1], p[2] ? p[2] : "");
+         }
+diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+index b6c1624..69c5a50 100644
+--- a/src/openvpn/pkcs11_openssl.c
++++ b/src/openvpn/pkcs11_openssl.c
+@@ -384,7 +384,6 @@
+     if (certificate !=3D NULL)
+     {
+         pkcs11h_certificate_freeCertificate(certificate);
+-        certificate =3D NULL;
+     }
 
-             struct dns_server *server =3D dns_server_get(&dns->servers, 0,=
- &dns->gc);
-@@ -3743,7 +3743,6 @@
- static void
- options_postprocess_mutate(struct options *o, struct env_set *es)
- {
--    int i;
      /*
-      * Process helper-type options which map to other, more complex
-      * sequences of options.
-@@ -3776,7 +3775,7 @@
-          * Convert remotes into connection list
-          */
-         const struct remote_list *rl =3D o->remote_list;
--        for (i =3D 0; i < rl->len; ++i)
-+        for (int i =3D 0; i < rl->len; ++i)
-         {
-             const struct remote_entry *re =3D rl->array[i];
-             struct connection_entry ce =3D o->ce;
-@@ -3798,14 +3797,14 @@
+@@ -400,7 +399,6 @@
+     if (openssl_session !=3D NULL)
+     {
+         pkcs11h_openssl_freeSession(openssl_session);
+-        openssl_session =3D NULL;
+     }
+     return ret;
+ #endif                                                          /* ifdef H=
+AVE_XKEY_PROVIDER */
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index e129403..2e5ac40 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -99,7 +99,6 @@
      }
 
-     ASSERT(o->connection_list);
--    for (i =3D 0; i < o->connection_list->len; ++i)
-+    for (int i =3D 0; i < o->connection_list->len; ++i)
-     {
-         options_postprocess_mutate_ce(o, o->connection_list->array[i]);
-     }
+     char *str =3D gc_strdup(s, gc);
+-    size_t i =3D 0;
 
-     if (o->ce.local_list)
+     while (*str)
      {
--        for (i =3D 0; i < o->ce.local_list->len; i++)
-+        for (int i =3D 0; i < o->ce.local_list->len; i++)
-         {
-             options_postprocess_mutate_le(&o->ce, o->ce.local_list->array[=
-i], o->mode);
-         }
-@@ -3833,7 +3832,7 @@
-     }
-
-     /* use the same listen list for every outgoing connection */
--    for (i =3D 0; i < o->connection_list->len; ++i)
-+    for (int i =3D 0; i < o->connection_list->len; ++i)
-     {
-         o->connection_list->array[i]->local_list =3D o->ce.local_list;
-     }
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 564ce86..ae0f0e2 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -994,10 +994,10 @@
-     else if (tls_authentication_status(c->c2.tls_multi) =3D=3D TLS_AUTHENT=
-ICATION_SUCCEEDED
-              && c->c2.tls_multi->multi_state >=3D CAS_CONNECT_DONE)
-     {
--        time_t now;
-+        time_t local_now;
-
--        openvpn_time(&now);
--        if (c->c2.sent_push_reply_expiry > now)
-+        openvpn_time(&local_now);
-+        if (c->c2.sent_push_reply_expiry > local_now)
-         {
-             ret =3D PUSH_MSG_ALREADY_REPLIED;
-         }
-@@ -1011,7 +1011,7 @@
-             if (send_push_reply(c, &push_list))
-             {
-                 ret =3D PUSH_MSG_REQUEST;
--                c->c2.sent_push_reply_expiry =3D now + 30;
-+                c->c2.sent_push_reply_expiry =3D local_now + 30;
+@@ -112,11 +111,11 @@
+                 /* if no commas were found go to fail, do not send any mes=
+sage */
+                 return false;
              }
-             gc_free(&gc);
++            /* copy from current position to (ci - 1) */
+             str[ci] =3D '\0';
+-            /* copy from i to (ci -1) */
+             struct buffer tmp =3D forge_msg(str, ",push-continuation 2", g=
+c);
+             buffer_list_push(msgs, BSTR(&tmp));
+-            i =3D ci + 1;
++            str +=3D ci + 1;
          }
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 70889dc..c25986f 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -769,24 +769,24 @@
+         else
+         {
+@@ -130,9 +129,8 @@
+                 struct buffer tmp =3D forge_msg(str, NULL, gc);
+                 buffer_list_push(msgs, BSTR(&tmp));
+             }
+-            i =3D strlen(str);
++            break;
+         }
+-        str =3D &str[i];
      }
+     return true;
+ }
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 234b0b6..44062c9 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2602,15 +2602,13 @@
+            "builtin EC curves. It does not list additional curves nor X448=
+ or X25519\n");
+ #ifndef OPENSSL_NO_EC
+     EC_builtin_curve *curves =3D NULL;
+-    size_t crv_len =3D 0;
+-    size_t n =3D 0;
 
-     /* Sanity check: load client key (as "client") */
--    struct key_ctx_bi test_client_key;
--    struct buffer test_wrapped_client_key;
-+    struct key_ctx_bi check_client_key;
-+    struct buffer check_wrapped_client_key;
-     struct key2 keydata;
-     msg(D_GENKEY, "Testing client-side key loading...");
--    tls_crypt_v2_init_client_key(&test_client_key, &keydata, &test_wrapped=
-_client_key, client_file,
-+    tls_crypt_v2_init_client_key(&check_client_key, &keydata, &check_wrapp=
-ed_client_key, client_file,
-                                  client_inline);
--    free_key_ctx_bi(&test_client_key);
-+    free_key_ctx_bi(&check_client_key);
-
-     /* Sanity check: unwrap and load client key (as "server") */
--    struct buffer test_metadata =3D alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA=
-_LEN, &gc);
--    struct key2 test_client_key2 =3D { 0 };
-+    struct buffer check_metadata =3D alloc_buf_gc(TLS_CRYPT_V2_MAX_METADAT=
-A_LEN, &gc);
-+    struct key2 check_client_key2 =3D { 0 };
-     free_key_ctx(&server_key);
-     tls_crypt_v2_init_server_key(&server_key, false, server_key_file, serv=
-er_key_inline);
-     msg(D_GENKEY, "Testing server-side key loading...");
--    ASSERT(tls_crypt_v2_unwrap_client_key(&test_client_key2, &test_metadat=
-a,
--                                          test_wrapped_client_key, &server=
-_key));
--    secure_memzero(&test_client_key2, sizeof(test_client_key2));
--    free_buf(&test_wrapped_client_key);
-+    ASSERT(tls_crypt_v2_unwrap_client_key(&check_client_key2, &check_metad=
-ata,
-+                                          check_wrapped_client_key, &serve=
-r_key));
-+    secure_memzero(&check_client_key2, sizeof(check_client_key2));
-+    free_buf(&check_wrapped_client_key);
-
- cleanup:
-     secure_memzero(&client_key, sizeof(client_key));
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 322461e..a2f9f09 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -540,19 +540,19 @@
- static DWORD
- InterfaceLuid(const char *iface_name, PNET_LUID luid)
- {
--    NETIO_STATUS status;
-+    NETIO_STATUS convert_status;
-     LPWSTR wide_name =3D utf8to16(iface_name);
-
-     if (wide_name)
+-    crv_len =3D EC_get_builtin_curves(NULL, 0);
++    size_t crv_len =3D EC_get_builtin_curves(NULL, 0);
+     ALLOC_ARRAY(curves, EC_builtin_curve, crv_len);
+     if (EC_get_builtin_curves(curves, crv_len))
      {
--        status =3D ConvertInterfaceAliasToLuid(wide_name, luid);
-+        convert_status =3D ConvertInterfaceAliasToLuid(wide_name, luid);
-         free(wide_name);
+         printf("\nAvailable Elliptic curves/groups:\n");
+-        for (n =3D 0; n < crv_len; n++)
++        for (size_t n =3D 0; n < crv_len; n++)
+         {
+             const char *sname;
+             sname =3D OBJ_nid2sn(curves[n].nid);
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsic=
+a.c
+index fdb610c..d698c04 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -711,7 +711,6 @@
+         uiResult =3D MsiViewFetch(hViewST, &hRecord);
+         if (uiResult =3D=3D ERROR_NO_MORE_ITEMS)
+         {
+-            uiResult =3D ERROR_SUCCESS;
+             break;
+         }
+         else if (uiResult !=3D ERROR_SUCCESS)
+diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
+index 16e3c0b..6ed395d 100644
+--- a/src/tapctl/tap.c
++++ b/src/tapctl/tap.c
+@@ -473,7 +473,7 @@
+                         return ERROR_OUTOFMEMORY;
+                     }
+
+-                    dwCountExpResult =3D ExpandEnvironmentStrings(szValue,=
+ szValueExp, dwCountExp);
++                    ExpandEnvironmentStrings(szValue, szValueExp, dwCountE=
+xp);
+                     free(szValue);
+                     *pszValue =3D szValueExp;
+                     return ERROR_SUCCESS;
+@@ -601,8 +601,6 @@
+                         _In_ DWORD dwProperty, _Out_opt_ LPDWORD pdwProper=
+tyRegDataType,
+                         _Out_ LPVOID *ppData)
+ {
+-    DWORD dwResult =3D ERROR_BAD_ARGUMENTS;
+-
+     if (ppData =3D=3D NULL)
+     {
+         return ERROR_BAD_ARGUMENTS;
+@@ -628,7 +626,7 @@
      }
      else
      {
--        status =3D ERROR_OUTOFMEMORY;
-+        convert_status =3D ERROR_OUTOFMEMORY;
-     }
--    return status;
-+    return convert_status;
- }
+-        dwResult =3D GetLastError();
++        DWORD dwResult =3D GetLastError();
+         if (dwResult =3D=3D ERROR_INSUFFICIENT_BUFFER)
+         {
+             /* Allocate on heap and retry. */
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
+/test_ssl.c
+index 0e9cecf..c40845a 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -303,8 +303,6 @@
+     struct buffer work =3D alloc_buf_gc(BUF_SIZE(&frame), &gc);
+     struct buffer encrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&frame), &gc=
+);
+     struct buffer decrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&frame), &gc=
+);
+-    struct buffer buf =3D clear_buf();
+-    void *buf_p;
 
- static BOOL
-@@ -1174,8 +1174,8 @@
-         goto out;
-     }
+     /* init work */
+     ASSERT(buf_init(&work, frame.buf.headroom));
+@@ -325,8 +323,8 @@
+         ASSERT(rand_bytes(BPTR(&src), BLEN(&src)));
 
--    SERVICE_STATUS status;
--    if (ControlService(dnssvc, SERVICE_CONTROL_PARAMCHANGE, &status) =3D=
-=3D 0)
-+    SERVICE_STATUS control_status;
-+    if (ControlService(dnssvc, SERVICE_CONTROL_PARAMCHANGE, &control_statu=
-s) =3D=3D 0)
-     {
-         MsgToEventLog(M_ERR, L"%S: ControlService call failed (%lu)", __fu=
-nc__, GetLastError());
-         goto out;
-@@ -3644,12 +3644,12 @@
- static DWORD WINAPI
- ServiceCtrlInteractive(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID c=
-tx)
+         /* copy source to input buf */
+-        buf =3D work;
+-        buf_p =3D buf_write_alloc(&buf, BLENZ(&src));
++        struct buffer buf =3D work;
++        void *buf_p =3D buf_write_alloc(&buf, BLENZ(&src));
+         ASSERT(buf_p);
+         memcpy(buf_p, BPTR(&src), BLENZ(&src));
+
+@@ -356,7 +354,6 @@
+     struct buffer encrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&frame), &gc=
+);
+     struct buffer decrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&frame), &gc=
+);
+     struct buffer work =3D alloc_buf_gc(BUF_SIZE(&frame), &gc);
+-    struct buffer buf =3D clear_buf();
+     struct buffer src =3D alloc_buf_gc(frame.buf.payload_size, &gc);
+     void *buf_p;
+
+@@ -371,7 +368,7 @@
+     ASSERT(rand_bytes(BPTR(&src), BLEN(&src)));
+
+     /* copy source to input buf */
+-    buf =3D work;
++    struct buffer buf =3D work;
+     buf_p =3D buf_write_alloc(&buf, BLENZ(&src));
+     ASSERT(buf_p);
+     memcpy(buf_p, BPTR(&src), BLENZ(&src));
+@@ -652,7 +649,6 @@
+     struct buffer work =3D alloc_buf_gc(BUF_SIZE(&frame), &gc);
+     struct buffer encrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&frame), &gc=
+);
+     struct buffer decrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&frame), &gc=
+);
+-    struct buffer buf =3D clear_buf();
+     void *buf_p;
+
+     /* init work */
+@@ -669,7 +665,7 @@
+     ASSERT(buf_write(&src, plaintext, strlen(plaintext)));
+
+     /* copy source to input buf */
+-    buf =3D work;
++    struct buffer buf =3D work;
+     buf_p =3D buf_write_alloc(&buf, BLENZ(&src));
+     ASSERT(buf_p);
+     memcpy(buf_p, BPTR(&src), BLENZ(&src));
+diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv.c b/tests/unit_t=
+ests/openvpnserv/test_openvpnserv.c
+index 45096a1..6a6aee4 100644
+--- a/tests/unit_tests/openvpnserv/test_openvpnserv.c
++++ b/tests/unit_tests/openvpnserv/test_openvpnserv.c
+@@ -57,13 +57,13 @@
+ static void
+ test_convert_itf_dns_domains(void **state)
  {
--    SERVICE_STATUS *status =3D ctx;
-+    SERVICE_STATUS *svc_status =3D ctx;
-     switch (ctrl_code)
-     {
-         case SERVICE_CONTROL_STOP:
--            status->dwCurrentState =3D SERVICE_STOP_PENDING;
--            ReportStatusToSCMgr(service, status);
-+            svc_status->dwCurrentState =3D SERVICE_STOP_PENDING;
-+            ReportStatusToSCMgr(service, svc_status);
-             if (exit_event)
-             {
-                 SetEvent(exit_event);
-diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_t=
-ests/openvpn/test_push_update_msg.c
-index 219b476..eb5b22c 100644
---- a/tests/unit_tests/openvpn/test_push_update_msg.c
-+++ b/tests/unit_tests/openvpn/test_push_update_msg.c
-@@ -350,8 +350,8 @@
+-    DWORD size, orig_size, len, res_len;
++    DWORD size, len, res_len;
+     LSTATUS err;
+     const DWORD glyph_size =3D sizeof(wchar_t);
 
-     /* Message 1: first batch of routes, continuation 2 (more coming) */
-     struct buffer buf1 =3D alloc_buf(512);
--    const char *msg1 =3D "PUSH_UPDATE, route 10.1.0.0 255.255.0.0, route 1=
-0.2.0.0 255.255.0.0, route 10.3.0.0 255.255.0.0,push-continuation 2";
--    buf_write(&buf1, msg1, strlen(msg1));
-+    const char *cmsg1 =3D "PUSH_UPDATE, route 10.1.0.0 255.255.0.0, route =
-10.2.0.0 255.255.0.0, route 10.3.0.0 255.255.0.0,push-continuation 2";
-+    buf_write(&buf1, cmsg1, strlen(cmsg1));
+     wchar_t domains_1[BUF_SIZE] =3D L"openvpn.com";
+     len =3D (DWORD)wcslen(domains_1) + 1;
+-    size =3D orig_size =3D len * glyph_size;
++    size =3D len * glyph_size;
+     wchar_t domains_1_res[BUF_SIZE] =3D L".openvpn.com";
+     res_len =3D len + 2; /* adds . and \0 */
+     err =3D ConvertItfDnsDomains(L"openvpn.net", domains_1, &size, BUF_SIZ=
+E);
+@@ -73,7 +73,7 @@
 
-     assert_int_equal(process_incoming_push_msg(c, &buf1, c->options.pull, =
-pull_permission_mask(c),
-                                                &option_types_found),
-@@ -360,8 +360,8 @@
+     wchar_t domains_2[BUF_SIZE] =3D L"openvpn.com,openvpn.net";
+     len =3D (DWORD)wcslen(domains_2) + 1;
+-    size =3D orig_size =3D len * glyph_size;
++    size =3D len * glyph_size;
+     wchar_t domains_2_res[BUF_SIZE] =3D L".openvpn.com";
+     res_len =3D (DWORD)wcslen(domains_2_res) + 2;
+     err =3D ConvertItfDnsDomains(L"openvpn.net", domains_2, &size, BUF_SIZ=
+E);
+@@ -83,7 +83,7 @@
 
-     /* Message 2: more routes, continuation 2 (more coming) */
-     struct buffer buf2 =3D alloc_buf(512);
--    const char *msg2 =3D "PUSH_UPDATE, route 10.4.0.0 255.255.0.0, route 1=
-0.5.0.0 255.255.0.0, route 10.6.0.0 255.255.0.0,push-continuation 2";
--    buf_write(&buf2, msg2, strlen(msg2));
-+    const char *cmsg2 =3D "PUSH_UPDATE, route 10.4.0.0 255.255.0.0, route =
-10.5.0.0 255.255.0.0, route 10.6.0.0 255.255.0.0,push-continuation 2";
-+    buf_write(&buf2, cmsg2, strlen(cmsg2));
+     wchar_t domains_3[BUF_SIZE] =3D L"openvpn.com,openvpn.net";
+     len =3D (DWORD)wcslen(domains_3) + 1;
+-    size =3D orig_size =3D len * glyph_size;
++    size =3D len * glyph_size;
+     wchar_t domains_3_res[BUF_SIZE] =3D L".openvpn.net";
+     res_len =3D (DWORD)wcslen(domains_3_res) + 2;
+     err =3D ConvertItfDnsDomains(L"openvpn.com", domains_3, &size, BUF_SIZ=
+E);
+@@ -93,7 +93,7 @@
 
-     assert_int_equal(process_incoming_push_msg(c, &buf2, c->options.pull, =
-pull_permission_mask(c),
-                                                &option_types_found),
-@@ -370,8 +370,8 @@
-
-     /* Message 3: final batch of routes, continuation 1 (last message) */
-     struct buffer buf3 =3D alloc_buf(512);
--    const char *msg3 =3D "PUSH_UPDATE, route 10.7.0.0 255.255.0.0, route 1=
-0.8.0.0 255.255.0.0, route 10.9.0.0 255.255.0.0,push-continuation 1";
--    buf_write(&buf3, msg3, strlen(msg3));
-+    const char *cmsg3 =3D "PUSH_UPDATE, route 10.7.0.0 255.255.0.0, route =
-10.8.0.0 255.255.0.0, route 10.9.0.0 255.255.0.0,push-continuation 1";
-+    buf_write(&buf3, cmsg3, strlen(cmsg3));
-
-     assert_int_equal(process_incoming_push_msg(c, &buf3, c->options.pull, =
-pull_permission_mask(c),
-                                                &option_types_found),
+     wchar_t domains_4[BUF_SIZE] =3D L"openvpn.com,openvpn.net";
+     len =3D (DWORD)wcslen(domains_4) + 1;
+-    size =3D orig_size =3D len * glyph_size;
++    size =3D len * glyph_size;
+     wchar_t domains_4_res[BUF_SIZE] =3D L".openvpn.com\0.openvpn.net";
+     res_len =3D len + 3; /* adds two . and one \0 */
+     err =3D ConvertItfDnsDomains(NULL, domains_4, &size, BUF_SIZE);
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1618?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1617?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I528f5fd200d877841e473e5e05b7ac7915fa2e33
-Gerrit-Change-Number: 1618
+Gerrit-Change-Id: Id0caa497c4ff1ad8743cb23f332f003b2d3393ed
+Gerrit-Change-Number: 1617
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---/f7wHcrKxKs=
+--3/ZggpT5O2o=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1618?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1617?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Rename variables that shadow other variable=
-s or functions<br><br>Identified by cppcheck.<br><br>Change-Id: I528f5fd200=
-d877841e473e5e05b7ac7915fa2e33<br>Signed-off-by: Frank Lichtenheld &lt;fran=
-k@...2641...&gt;<br>---<br>M src/openvpn/manage.c<br>M src/openvpn/options.=
-c<br>M src/openvpn/push.c<br>M src/openvpn/tls_crypt.c<br>M src/openvpnserv=
-/interactive.c<br>M tests/unit_tests/openvpn/test_push_update_msg.c<br>6 fi=
-les changed, 42 insertions(+), 45 deletions(-)<br><br></pre><pre class=3D"b=
-locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/1618/1</pre>=
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span=
->index 31dcd4f..9efc08f 100644</span><br><span>--- a/src/openvpn/manage.c</=
-span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -1254,8 +1254,=
-6 @@</span><br><span> static void</span><br><span> man_load_stats(struct ma=
-nagement *man)</span><br><span> {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    extern counter_type link_read_bytes_global;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    extern counter_type link_write_by=
-tes_global;</span><br><span>     int nclients =3D 0;</span><br><span> </spa=
-n><br><span>     if (man-&gt;persist.callback.n_clients)</span><br><span>di=
-ff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>in=
-dex 28275cc..186b2d2 100644</span><br><span>--- a/src/openvpn/options.c</sp=
-an><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -2689,12 +2689,=
-12 @@</span><br><span>                     &quot;may accept clients which d=
-o not present a certificate&quot;);</span><br><span>     }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const unsigned i=
-nt tls_version_max =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    const unsigned int tls_ver_max =3D</span><br><span>         (options=
--&gt;ssl_flags &gt;&gt; SSLF_TLS_VERSION_MAX_SHIFT) &amp; SSLF_TLS_VERSION_=
-MAX_MASK;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const un=
-signed int tls_version_min =3D</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    const unsigned int tls_ver_min =3D</span><br><span>         =
-(options-&gt;ssl_flags &gt;&gt; SSLF_TLS_VERSION_MIN_SHIFT) &amp; SSLF_TLS_=
-VERSION_MIN_MASK;</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    if (tls_version_max &gt; 0 &amp;&amp; tls_version_max &lt=
-; tls_version_min)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (tls_ver_max &gt; 0 &amp;&amp; tls_ver_max &lt; tls_ver_min)</span><b=
-r><span>     {</span><br><span>         msg(M_USAGE, &quot;--tls-version-mi=
-n bigger than --tls-version-max&quot;);</span><br><span>     }</span><br><s=
-pan>@@ -3641,16 +3641,16 @@</span><br><span>         {</span><br><span>    =
-         struct dns_domain **entry =3D &amp;dns-&gt;search_domains;</span><=
-br><span>             ALLOC_OBJ_CLEAR_GC(*entry, struct dns_domain, &amp;dn=
-s-&gt;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
- struct dns_domain *new =3D *entry;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            new-&gt;name =3D dhcp-&gt;domain;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            entry =3D &amp;new-&gt;ne=
-xt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            stru=
-ct dns_domain *domain =3D *entry;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            domain-&gt;name =3D dhcp-&gt;domain;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            entry =3D &amp;domai=
-n-&gt;next;</span><br><span> </span><br><span>             for (unsigned in=
-t i =3D 0; i &lt; dhcp-&gt;domain_search_list_len; ++i)</span><br><span>   =
-          {</span><br><span>                 ALLOC_OBJ_CLEAR_GC(*entry, str=
-uct dns_domain, &amp;dns-&gt;gc);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                struct dns_domain *new =3D *entry;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                new-&gt;name =3D d=
-hcp-&gt;domain_search_list[i];</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                entry =3D &amp;new-&gt;next;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                struct dns_domain *search=
-_domain =3D *entry;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                search_domain-&gt;name =3D dhcp-&gt;domain_search_list[i];<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                entr=
-y =3D &amp;search_domain-&gt;next;</span><br><span>             }</span><br=
-><span> </span><br><span>             struct dns_server *server =3D dns_ser=
-ver_get(&amp;dns-&gt;servers, 0, &amp;dns-&gt;gc);</span><br><span>@@ -3743=
-,7 +3743,6 @@</span><br><span> static void</span><br><span> options_postpro=
-cess_mutate(struct options *o, struct env_set *es)</span><br><span> {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span>=
-     /*</span><br><span>      * Process helper-type options which map to ot=
-her, more complex</span><br><span>      * sequences of options.</span><br><=
-span>@@ -3776,7 +3775,7 @@</span><br><span>          * Convert remotes into=
- connection list</span><br><span>          */</span><br><span>         cons=
-t struct remote_list *rl =3D o-&gt;remote_list;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt; rl-&gt;len; ++i)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D =
-0; i &lt; rl-&gt;len; ++i)</span><br><span>         {</span><br><span>     =
-        const struct remote_entry *re =3D rl-&gt;array[i];</span><br><span>=
-             struct connection_entry ce =3D o-&gt;ce;</span><br><span>@@ -3=
-798,14 +3797,14 @@</span><br><span>     }</span><br><span> </span><br><span=
->     ASSERT(o-&gt;connection_list);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    for (i =3D 0; i &lt; o-&gt;connection_list-&gt;len; ++i)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D =
-0; i &lt; o-&gt;connection_list-&gt;len; ++i)</span><br><span>     {</span>=
-<br><span>         options_postprocess_mutate_ce(o, o-&gt;connection_list-&=
-gt;array[i]);</span><br><span>     }</span><br><span> </span><br><span>    =
- if (o-&gt;ce.local_list)</span><br><span>     {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt; o-&gt;ce.local_list=
--&gt;len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   for (int i =3D 0; i &lt; o-&gt;ce.local_list-&gt;len; i++)</span><br><sp=
-an>         {</span><br><span>             options_postprocess_mutate_le(&a=
-mp;o-&gt;ce, o-&gt;ce.local_list-&gt;array[i], o-&gt;mode);</span><br><span=
->         }</span><br><span>@@ -3833,7 +3832,7 @@</span><br><span>     }</s=
-pan><br><span> </span><br><span>     /* use the same listen list for every =
-outgoing connection */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    for (i =3D 0; i &lt; o-&gt;connection_list-&gt;len; ++i)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; o-&g=
-t;connection_list-&gt;len; ++i)</span><br><span>     {</span><br><span>    =
-     o-&gt;connection_list-&gt;array[i]-&gt;local_list =3D o-&gt;ce.local_l=
-ist;</span><br><span>     }</span><br><span>diff --git a/src/openvpn/push.c=
- b/src/openvpn/push.c</span><br><span>index 564ce86..ae0f0e2 100644</span><=
-br><span>--- a/src/openvpn/push.c</span><br><span>+++ b/src/openvpn/push.c<=
-/span><br><span>@@ -994,10 +994,10 @@</span><br><span>     else if (tls_aut=
-hentication_status(c-&gt;c2.tls_multi) =3D=3D TLS_AUTHENTICATION_SUCCEEDED<=
-/span><br><span>              &amp;&amp; c-&gt;c2.tls_multi-&gt;multi_state=
- &gt;=3D CAS_CONNECT_DONE)</span><br><span>     {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        time_t now;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        time_t local_now;</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        openvpn_time(&amp=
-;now);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c-&=
-gt;c2.sent_push_reply_expiry &gt; now)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        openvpn_time(&amp;local_now);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c2.sent_push_reply_e=
-xpiry &gt; local_now)</span><br><span>         {</span><br><span>          =
-   ret =3D PUSH_MSG_ALREADY_REPLIED;</span><br><span>         }</span><br><=
-span>@@ -1011,7 +1011,7 @@</span><br><span>             if (send_push_reply=
-(c, &amp;push_list))</span><br><span>             {</span><br><span>       =
-          ret =3D PUSH_MSG_REQUEST;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                c-&gt;c2.sent_push_reply_expiry =3D now + 30;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                c-&=
-gt;c2.sent_push_reply_expiry =3D local_now + 30;</span><br><span>          =
-   }</span><br><span>             gc_free(&amp;gc);</span><br><span>       =
-  }</span><br><span>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_=
-crypt.c</span><br><span>index 70889dc..c25986f 100644</span><br><span>--- a=
-/src/openvpn/tls_crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c</spa=
-n><br><span>@@ -769,24 +769,24 @@</span><br><span>     }</span><br><span> <=
-/span><br><span>     /* Sanity check: load client key (as &quot;client&quot=
-;) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct key_c=
-tx_bi test_client_key;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    struct buffer test_wrapped_client_key;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct key_ctx_bi check_client_key;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer check_wrapped=
-_client_key;</span><br><span>     struct key2 keydata;</span><br><span>    =
- msg(D_GENKEY, &quot;Testing client-side key loading...&quot;);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    tls_crypt_v2_init_client_key(=
-&amp;test_client_key, &amp;keydata, &amp;test_wrapped_client_key, client_fi=
-le,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_crypt_v2=
-_init_client_key(&amp;check_client_key, &amp;keydata, &amp;check_wrapped_cl=
-ient_key, client_file,</span><br><span>                                  cl=
-ient_inline);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free=
-_key_ctx_bi(&amp;test_client_key);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    free_key_ctx_bi(&amp;check_client_key);</span><br><span>=
- </span><br><span>     /* Sanity check: unwrap and load client key (as &quo=
-t;server&quot;) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- struct buffer test_metadata =3D alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN=
-, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct=
- key2 test_client_key2 =3D { 0 };</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    struct buffer check_metadata =3D alloc_buf_gc(TLS_CRYPT_V=
-2_MAX_METADATA_LEN, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    struct key2 check_client_key2 =3D { 0 };</span><br><span>    =
- free_key_ctx(&amp;server_key);</span><br><span>     tls_crypt_v2_init_serv=
-er_key(&amp;server_key, false, server_key_file, server_key_inline);</span><=
-br><span>     msg(D_GENKEY, &quot;Testing server-side key loading...&quot;)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(tls_crypt=
-_v2_unwrap_client_key(&amp;test_client_key2, &amp;test_metadata,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                                =
-          test_wrapped_client_key, &amp;server_key));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    secure_memzero(&amp;test_client_key2, s=
-izeof(test_client_key2));</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    free_buf(&amp;test_wrapped_client_key);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    ASSERT(tls_crypt_v2_unwrap_client_key(&amp;=
-check_client_key2, &amp;check_metadata,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                                          check_wrapped=
-_client_key, &amp;server_key));</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    secure_memzero(&amp;check_client_key2, sizeof(check_client_=
-key2));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free_buf=
-(&amp;check_wrapped_client_key);</span><br><span> </span><br><span> cleanup=
-:</span><br><span>     secure_memzero(&amp;client_key, sizeof(client_key));=
-</span><br><span>diff --git a/src/openvpnserv/interactive.c b/src/openvpnse=
-rv/interactive.c</span><br><span>index 322461e..a2f9f09 100644</span><br><s=
-pan>--- a/src/openvpnserv/interactive.c</span><br><span>+++ b/src/openvpnse=
-rv/interactive.c</span><br><span>@@ -540,19 +540,19 @@</span><br><span> sta=
-tic DWORD</span><br><span> InterfaceLuid(const char *iface_name, PNET_LUID =
-luid)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    NETIO_STATUS status;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    NETIO_STATUS convert_status;</span><br><span>     LPWSTR wide_n=
-ame =3D utf8to16(iface_name);</span><br><span> </span><br><span>     if (wi=
-de_name)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        status =3D ConvertInterfaceAliasToLuid(wide_name, luid);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        convert_stat=
-us =3D ConvertInterfaceAliasToLuid(wide_name, luid);</span><br><span>      =
-   free(wide_name);</span><br><span>     }</span><br><span>     else</span>=
+ospace; white-space: pre-wrap;">Remove various useless assignments<br><br>T=
+he values assigned by these are never actually used<br>for something.<br><b=
+r>Identified by cppcheck.<br><br>Change-Id: Id0caa497c4ff1ad8743cb23f332f00=
+3b2d3393ed<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>=
+---<br>M src/openvpn/crypto.c<br>M src/openvpn/error.h<br>M src/openvpn/for=
+ward.c<br>M src/openvpn/manage.c<br>M src/openvpn/options.c<br>M src/openvp=
+n/pkcs11_openssl.c<br>M src/openvpn/push_util.c<br>M src/openvpn/ssl_openss=
+l.c<br>M src/openvpnmsica/openvpnmsica.c<br>M src/tapctl/tap.c<br>M tests/u=
+nit_tests/openvpn/test_ssl.c<br>M tests/unit_tests/openvpnserv/test_openvpn=
+serv.c<br>12 files changed, 22 insertions(+), 40 deletions(-)<br><br></pre>=
+<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/=
+17/1617/1</pre><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;"><span>diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c<=
+/span><br><span>index 7954e8a..df9b905 100644</span><br><span>--- a/src/ope=
+nvpn/crypto.c</span><br><span>+++ b/src/openvpn/crypto.c</span><br><span>@@=
+ -1204,8 +1204,6 @@</span><br><span>     struct buffer work =3D alloc_buf_g=
+c(BUF_SIZE(frame), &amp;gc);</span><br><span>     struct buffer encrypt_wor=
+kspace =3D alloc_buf_gc(BUF_SIZE(frame), &amp;gc);</span><br><span>     str=
+uct buffer decrypt_workspace =3D alloc_buf_gc(BUF_SIZE(frame), &amp;gc);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct buffer buf =
+=3D clear_buf();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    v=
+oid *buf_p;</span><br><span> </span><br><span>     /* init work */</span><b=
+r><span>     ASSERT(buf_init(&amp;work, frame-&gt;buf.headroom));</span><br=
+><span>@@ -1242,8 +1240,8 @@</span><br><span>         ASSERT(rand_bytes(BPT=
+R(&amp;src), BLEN(&amp;src)));</span><br><span> </span><br><span>         /=
+* copy source to input buf */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        buf =3D work;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        buf_p =3D buf_write_alloc(&amp;buf, BLENZ(&amp;src));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct buffer buf=
+ =3D work;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        v=
+oid *buf_p =3D buf_write_alloc(&amp;buf, BLENZ(&amp;src));</span><br><span>=
+         ASSERT(buf_p);</span><br><span>         memcpy(buf_p, BPTR(&amp;sr=
+c), BLENZ(&amp;src));</span><br><span> </span><br><span>diff --git a/src/op=
+envpn/error.h b/src/openvpn/error.h</span><br><span>index 62948aa..62389af =
+100644</span><br><span>--- a/src/openvpn/error.h</span><br><span>+++ b/src/=
+openvpn/error.h</span><br><span>@@ -406,8 +406,8 @@</span><br><span> openvp=
+n_errno_maybe_crt(bool *crt_error)</span><br><span> {</span><br><span>     =
+int err =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    *cr=
+t_error =3D false;</span><br><span> #ifdef _WIN32</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    *crt_error =3D false;</span><br><span>   =
+  err =3D GetLastError();</span><br><span>     if (err =3D=3D ERROR_SUCCESS=
+)</span><br><span>     {</span><br><span>diff --git a/src/openvpn/forward.c=
+ b/src/openvpn/forward.c</span><br><span>index 27cfd36..53eab4d 100644</spa=
+n><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/f=
+orward.c</span><br><span>@@ -1746,7 +1746,6 @@</span><br><span> process_out=
+going_link(struct context *c, struct link_socket *sock)</span><br><span> {<=
+/span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int error_code =3D 0;</span><br><span> =
+</span><br><span>     if (c-&gt;c2.to_link.len &gt; 0 &amp;&amp; c-&gt;c2.t=
+o_link.len &lt;=3D c-&gt;c2.frame.buf.payload_size)</span><br><span>     {<=
+/span><br><span>@@ -1821,7 +1820,7 @@</span><br><span>         }</span><br>=
+<span> </span><br><span>         /* Check return status */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        error_code =3D openvpn_errno()=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int error_=
+code =3D openvpn_errno();</span><br><span>         check_status(size, &quot=
+;write&quot;, sock, NULL);</span><br><span> </span><br><span>         if (s=
+ize &gt; 0)</span><br><span>diff --git a/src/openvpn/manage.c b/src/openvpn=
+/manage.c</span><br><span>index d776908..31dcd4f 100644</span><br><span>---=
+ a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><b=
+r><span>@@ -912,10 +912,9 @@</span><br><span> static void</span><br><span> =
+man_remote_entry_count(struct management *man)</span><br><span> {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned count =3D 0;</span=
+><br><span>     if (man-&gt;persist.callback.remote_entry_count)</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c=
+ount =3D (*man-&gt;persist.callback.remote_entry_count)(man-&gt;persist.cal=
+lback.arg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+unsigned int count =3D (*man-&gt;persist.callback.remote_entry_count)(man-&=
+gt;persist.callback.arg);</span><br><span>         msg(M_CLIENT, &quot;%u&q=
+uot;, count);</span><br><span>         msg(M_CLIENT, &quot;END&quot;);</spa=
+n><br><span>     }</span><br><span>@@ -3660,7 +3659,6 @@</span><br><span>  =
+   struct gc_arena gc =3D gc_new();</span><br><span>     int ret =3D 0;</sp=
+an><br><span>     volatile int signal_received =3D 0;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    struct buffer alert_msg =3D clear_buf()=
+;</span><br><span>     const bool standalone_disabled_save =3D man-&gt;pers=
+ist.standalone_disabled;</span><br><span>     struct man_connection *mc =3D=
+ &amp;man-&gt;connection;</span><br><span> </span><br><span>@@ -3672,6 +367=
+0,7 @@</span><br><span> </span><br><span>         *state =3D EKS_SOLICIT;</=
+span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     struct buffer alert_msg;</span><br><span>         if (b64_data)</span>=
+<br><span>         {</span><br><span>             alert_msg =3D alloc_buf_g=
+c(strlen(b64_data) + strlen(prompt) + 3, &amp;gc);</span><br><span>diff --g=
+it a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index 20=
+0e3cd..28275cc 100644</span><br><span>--- a/src/openvpn/options.c</span><br=
+><span>+++ b/src/openvpn/options.c</span><br><span>@@ -7091,7 +7091,6 @@</s=
+pan><br><span>             if (streq(p[1], &quot;FORWARD_COMPATIBLE&quot;) =
+&amp;&amp; p[2] &amp;&amp; streq(p[2], &quot;1&quot;))</span><br><span>    =
+         {</span><br><span>                 options-&gt;forward_compatible =
+=3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    msglevel_fc =3D msglevel_forward_compatible(options, msglevel);</span><=
+br><span>             }</span><br><span>             setenv_str(es, p[1], p=
+[2] ? p[2] : &quot;&quot;);</span><br><span>         }</span><br><span>diff=
+ --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c</span>=
+<br><span>index b6c1624..69c5a50 100644</span><br><span>--- a/src/openvpn/p=
+kcs11_openssl.c</span><br><span>+++ b/src/openvpn/pkcs11_openssl.c</span><b=
+r><span>@@ -384,7 +384,6 @@</span><br><span>     if (certificate !=3D NULL)=
+</span><br><span>     {</span><br><span>         pkcs11h_certificate_freeCe=
+rtificate(certificate);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        certificate =3D NULL;</span><br><span>     }</span><br><span> </s=
+pan><br><span>     /*</span><br><span>@@ -400,7 +399,6 @@</span><br><span> =
+    if (openssl_session !=3D NULL)</span><br><span>     {</span><br><span> =
+        pkcs11h_openssl_freeSession(openssl_session);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        openssl_session =3D NULL;</span><br=
+><span>     }</span><br><span>     return ret;</span><br><span> #endif     =
+                                                     /* ifdef HAVE_XKEY_PRO=
+VIDER */</span><br><span>diff --git a/src/openvpn/push_util.c b/src/openvpn=
+/push_util.c</span><br><span>index e129403..2e5ac40 100644</span><br><span>=
+--- a/src/openvpn/push_util.c</span><br><span>+++ b/src/openvpn/push_util.c=
+</span><br><span>@@ -99,7 +99,6 @@</span><br><span>     }</span><br><span> =
+</span><br><span>     char *str =3D gc_strdup(s, gc);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    size_t i =3D 0;</span><br><span> </span=
+><br><span>     while (*str)</span><br><span>     {</span><br><span>@@ -112=
+,11 +111,11 @@</span><br><span>                 /* if no commas were found =
+go to fail, do not send any message */</span><br><span>                 ret=
+urn false;</span><br><span>             }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            /* copy from current position to (ci - 1)=
+ */</span><br><span>             str[ci] =3D &#39;\0&#39;;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            /* copy from i to (ci -1) =
+*/</span><br><span>             struct buffer tmp =3D forge_msg(str, &quot;=
+,push-continuation 2&quot;, gc);</span><br><span>             buffer_list_p=
+ush(msgs, BSTR(&amp;tmp));</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-            i =3D ci + 1;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            str +=3D ci + 1;</span><br><span>         }</span><b=
+r><span>         else</span><br><span>         {</span><br><span>@@ -130,9 =
++129,8 @@</span><br><span>                 struct buffer tmp =3D forge_msg(=
+str, NULL, gc);</span><br><span>                 buffer_list_push(msgs, BST=
+R(&amp;tmp));</span><br><span>             }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            i =3D strlen(str);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span>      =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        str =3D &=
+amp;str[i];</span><br><span>     }</span><br><span>     return true;</span>=
+<br><span> }</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/o=
+penvpn/ssl_openssl.c</span><br><span>index 234b0b6..44062c9 100644</span><b=
+r><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/s=
+sl_openssl.c</span><br><span>@@ -2602,15 +2602,13 @@</span><br><span>      =
+      &quot;builtin EC curves. It does not list additional curves nor X448 =
+or X25519\n&quot;);</span><br><span> #ifndef OPENSSL_NO_EC</span><br><span>=
+     EC_builtin_curve *curves =3D NULL;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    size_t crv_len =3D 0;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    size_t n =3D 0;</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    crv_len =3D EC_get_builtin_curves=
+(NULL, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_=
+t crv_len =3D EC_get_builtin_curves(NULL, 0);</span><br><span>     ALLOC_AR=
+RAY(curves, EC_builtin_curve, crv_len);</span><br><span>     if (EC_get_bui=
+ltin_curves(curves, crv_len))</span><br><span>     {</span><br><span>      =
+   printf(&quot;\nAvailable Elliptic curves/groups:\n&quot;);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        for (n =3D 0; n &lt; crv_le=
+n; n++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for =
+(size_t n =3D 0; n &lt; crv_len; n++)</span><br><span>         {</span><br>=
+<span>             const char *sname;</span><br><span>             sname =
+=3D OBJ_nid2sn(curves[n].nid);</span><br><span>diff --git a/src/openvpnmsic=
+a/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c</span><br><span>index fd=
+b610c..d698c04 100644</span><br><span>--- a/src/openvpnmsica/openvpnmsica.c=
+</span><br><span>+++ b/src/openvpnmsica/openvpnmsica.c</span><br><span>@@ -=
+711,7 +711,6 @@</span><br><span>         uiResult =3D MsiViewFetch(hViewST,=
+ &amp;hRecord);</span><br><span>         if (uiResult =3D=3D ERROR_NO_MORE_=
+ITEMS)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            uiResult =3D ERROR_SUCCESS;</span><br><span>       =
+      break;</span><br><span>         }</span><br><span>         else if (u=
+iResult !=3D ERROR_SUCCESS)</span><br><span>diff --git a/src/tapctl/tap.c b=
+/src/tapctl/tap.c</span><br><span>index 16e3c0b..6ed395d 100644</span><br><=
+span>--- a/src/tapctl/tap.c</span><br><span>+++ b/src/tapctl/tap.c</span><b=
+r><span>@@ -473,7 +473,7 @@</span><br><span>                         return=
+ ERROR_OUTOFMEMORY;</span><br><span>                     }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
+dwCountExpResult =3D ExpandEnvironmentStrings(szValue, szValueExp, dwCountE=
+xp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+     ExpandEnvironmentStrings(szValue, szValueExp, dwCountExp);</span><br><=
+span>                     free(szValue);</span><br><span>                  =
+   *pszValue =3D szValueExp;</span><br><span>                     return ER=
+ROR_SUCCESS;</span><br><span>@@ -601,8 +601,6 @@</span><br><span>          =
+               _In_ DWORD dwProperty, _Out_opt_ LPDWORD pdwPropertyRegDataT=
+ype,</span><br><span>                         _Out_ LPVOID *ppData)</span><=
+br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DWORD =
+dwResult =3D ERROR_BAD_ARGUMENTS;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span>     if (ppData =3D=3D NULL)</span><br><span> =
+    {</span><br><span>         return ERROR_BAD_ARGUMENTS;</span><br><span>=
+@@ -628,7 +626,7 @@</span><br><span>     }</span><br><span>     else</span>=
 <br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   status =3D ERROR_OUTOFMEMORY;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        convert_status =3D ERROR_OUTOFMEMORY;</span><br><span>=
-     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return stat=
-us;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return conve=
-rt_status;</span><br><span> }</span><br><span> </span><br><span> static BOO=
-L</span><br><span>@@ -1174,8 +1174,8 @@</span><br><span>         goto out;<=
-/span><br><span>     }</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    SERVICE_STATUS status;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    if (ControlService(dnssvc, SERVICE_CONTROL_PARA=
-MCHANGE, &amp;status) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    SERVICE_STATUS control_status;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if (ControlService(dnssvc, SERVICE_CONTROL_P=
-ARAMCHANGE, &amp;control_status) =3D=3D 0)</span><br><span>     {</span><br=
-><span>         MsgToEventLog(M_ERR, L&quot;%S: ControlService call failed =
-(%lu)&quot;, __func__, GetLastError());</span><br><span>         goto out;<=
-/span><br><span>@@ -3644,12 +3644,12 @@</span><br><span> static DWORD WINAP=
-I</span><br><span> ServiceCtrlInteractive(DWORD ctrl_code, DWORD event, LPV=
-OID data, LPVOID ctx)</span><br><span> {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    SERVICE_STATUS *status =3D ctx;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    SERVICE_STATUS *svc_status =3D ctx;<=
-/span><br><span>     switch (ctrl_code)</span><br><span>     {</span><br><s=
-pan>         case SERVICE_CONTROL_STOP:</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            status-&gt;dwCurrentState =3D SERVICE_STOP_PE=
-NDING;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            Rep=
-ortStatusToSCMgr(service, status);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            svc_status-&gt;dwCurrentState =3D SERVICE_STOP_P=
-ENDING;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-ReportStatusToSCMgr(service, svc_status);</span><br><span>             if (=
-exit_event)</span><br><span>             {</span><br><span>                =
- SetEvent(exit_event);</span><br><span>diff --git a/tests/unit_tests/openvp=
-n/test_push_update_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c<=
-/span><br><span>index 219b476..eb5b22c 100644</span><br><span>--- a/tests/u=
-nit_tests/openvpn/test_push_update_msg.c</span><br><span>+++ b/tests/unit_t=
-ests/openvpn/test_push_update_msg.c</span><br><span>@@ -350,8 +350,8 @@</sp=
-an><br><span> </span><br><span>     /* Message 1: first batch of routes, co=
-ntinuation 2 (more coming) */</span><br><span>     struct buffer buf1 =3D a=
-lloc_buf(512);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    con=
-st char *msg1 =3D &quot;PUSH_UPDATE, route 10.1.0.0 255.255.0.0, route 10.2=
-.0.0 255.255.0.0, route 10.3.0.0 255.255.0.0,push-continuation 2&quot;;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write(&amp;buf1, =
-msg1, strlen(msg1));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    const char *cmsg1 =3D &quot;PUSH_UPDATE, route 10.1.0.0 255.255.0.0, r=
-oute 10.2.0.0 255.255.0.0, route 10.3.0.0 255.255.0.0,push-continuation 2&q=
-uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write(=
-&amp;buf1, cmsg1, strlen(cmsg1));</span><br><span> </span><br><span>     as=
-sert_int_equal(process_incoming_push_msg(c, &amp;buf1, c-&gt;options.pull, =
-pull_permission_mask(c),</span><br><span>                                  =
-              &amp;option_types_found),</span><br><span>@@ -360,8 +360,8 @@=
-</span><br><span> </span><br><span>     /* Message 2: more routes, continua=
-tion 2 (more coming) */</span><br><span>     struct buffer buf2 =3D alloc_b=
-uf(512);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const cha=
-r *msg2 =3D &quot;PUSH_UPDATE, route 10.4.0.0 255.255.0.0, route 10.5.0.0 2=
-55.255.0.0, route 10.6.0.0 255.255.0.0,push-continuation 2&quot;;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write(&amp;buf2, msg2, =
-strlen(msg2));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
-onst char *cmsg2 =3D &quot;PUSH_UPDATE, route 10.4.0.0 255.255.0.0, route 1=
-0.5.0.0 255.255.0.0, route 10.6.0.0 255.255.0.0,push-continuation 2&quot;;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;b=
-uf2, cmsg2, strlen(cmsg2));</span><br><span> </span><br><span>     assert_i=
-nt_equal(process_incoming_push_msg(c, &amp;buf2, c-&gt;options.pull, pull_p=
-ermission_mask(c),</span><br><span>                                        =
-        &amp;option_types_found),</span><br><span>@@ -370,8 +370,8 @@</span=
-><br><span> </span><br><span>     /* Message 3: final batch of routes, cont=
-inuation 1 (last message) */</span><br><span>     struct buffer buf3 =3D al=
-loc_buf(512);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cons=
-t char *msg3 =3D &quot;PUSH_UPDATE, route 10.7.0.0 255.255.0.0, route 10.8.=
-0.0 255.255.0.0, route 10.9.0.0 255.255.0.0,push-continuation 1&quot;;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_write(&amp;buf3, m=
-sg3, strlen(msg3));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    const char *cmsg3 =3D &quot;PUSH_UPDATE, route 10.7.0.0 255.255.0.0, ro=
-ute 10.8.0.0 255.255.0.0, route 10.9.0.0 255.255.0.0,push-continuation 1&qu=
-ot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_write(&=
-amp;buf3, cmsg3, strlen(cmsg3));</span><br><span> </span><br><span>     ass=
-ert_int_equal(process_incoming_push_msg(c, &amp;buf3, c-&gt;options.pull, p=
-ull_permission_mask(c),</span><br><span>                                   =
-             &amp;option_types_found),</span><br><span></span><br></pre><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1618?usp=3D=
-email">change 1618</a>. To unsubscribe, or for help writing mail filters, v=
-isit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a=
->.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
-cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
-emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1618?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+   dwResult =3D GetLastError();</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        DWORD dwResult =3D GetLastError();</span><br><span>    =
+     if (dwResult =3D=3D ERROR_INSUFFICIENT_BUFFER)</span><br><span>       =
+  {</span><br><span>             /* Allocate on heap and retry. */</span><b=
+r><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests=
+/openvpn/test_ssl.c</span><br><span>index 0e9cecf..c40845a 100644</span><br=
+><span>--- a/tests/unit_tests/openvpn/test_ssl.c</span><br><span>+++ b/test=
+s/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -303,8 +303,6 @@</span><=
+br><span>     struct buffer work =3D alloc_buf_gc(BUF_SIZE(&amp;frame), &am=
+p;gc);</span><br><span>     struct buffer encrypt_workspace =3D alloc_buf_g=
+c(BUF_SIZE(&amp;frame), &amp;gc);</span><br><span>     struct buffer decryp=
+t_workspace =3D alloc_buf_gc(BUF_SIZE(&amp;frame), &amp;gc);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    struct buffer buf =3D clear_buf(=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    void *buf_p;</s=
+pan><br><span> </span><br><span>     /* init work */</span><br><span>     A=
+SSERT(buf_init(&amp;work, frame.buf.headroom));</span><br><span>@@ -325,8 +=
+323,8 @@</span><br><span>         ASSERT(rand_bytes(BPTR(&amp;src), BLEN(&a=
+mp;src)));</span><br><span> </span><br><span>         /* copy source to inp=
+ut buf */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf =
+=3D work;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf_=
+p =3D buf_write_alloc(&amp;buf, BLENZ(&amp;src));</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        struct buffer buf =3D work;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        void *buf_p =3D buf_w=
+rite_alloc(&amp;buf, BLENZ(&amp;src));</span><br><span>         ASSERT(buf_=
+p);</span><br><span>         memcpy(buf_p, BPTR(&amp;src), BLENZ(&amp;src))=
+;</span><br><span> </span><br><span>@@ -356,7 +354,6 @@</span><br><span>   =
+  struct buffer encrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&amp;frame), &a=
+mp;gc);</span><br><span>     struct buffer decrypt_workspace =3D alloc_buf_=
+gc(BUF_SIZE(&amp;frame), &amp;gc);</span><br><span>     struct buffer work =
+=3D alloc_buf_gc(BUF_SIZE(&amp;frame), &amp;gc);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    struct buffer buf =3D clear_buf();</span><br=
+><span>     struct buffer src =3D alloc_buf_gc(frame.buf.payload_size, &amp=
+;gc);</span><br><span>     void *buf_p;</span><br><span> </span><br><span>@=
+@ -371,7 +368,7 @@</span><br><span>     ASSERT(rand_bytes(BPTR(&amp;src), B=
+LEN(&amp;src)));</span><br><span> </span><br><span>     /* copy source to i=
+nput buf */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf =
+=3D work;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ buffer buf =3D work;</span><br><span>     buf_p =3D buf_write_alloc(&amp;b=
+uf, BLENZ(&amp;src));</span><br><span>     ASSERT(buf_p);</span><br><span> =
+    memcpy(buf_p, BPTR(&amp;src), BLENZ(&amp;src));</span><br><span>@@ -652=
+,7 +649,6 @@</span><br><span>     struct buffer work =3D alloc_buf_gc(BUF_S=
+IZE(&amp;frame), &amp;gc);</span><br><span>     struct buffer encrypt_works=
+pace =3D alloc_buf_gc(BUF_SIZE(&amp;frame), &amp;gc);</span><br><span>     =
+struct buffer decrypt_workspace =3D alloc_buf_gc(BUF_SIZE(&amp;frame), &amp=
+;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct buffe=
+r buf =3D clear_buf();</span><br><span>     void *buf_p;</span><br><span> <=
+/span><br><span>     /* init work */</span><br><span>@@ -669,7 +665,7 @@</s=
+pan><br><span>     ASSERT(buf_write(&amp;src, plaintext, strlen(plaintext))=
+);</span><br><span> </span><br><span>     /* copy source to input buf */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf =3D work;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D =
+work;</span><br><span>     buf_p =3D buf_write_alloc(&amp;buf, BLENZ(&amp;s=
+rc));</span><br><span>     ASSERT(buf_p);</span><br><span>     memcpy(buf_p=
+, BPTR(&amp;src), BLENZ(&amp;src));</span><br><span>diff --git a/tests/unit=
+_tests/openvpnserv/test_openvpnserv.c b/tests/unit_tests/openvpnserv/test_o=
+penvpnserv.c</span><br><span>index 45096a1..6a6aee4 100644</span><br><span>=
+--- a/tests/unit_tests/openvpnserv/test_openvpnserv.c</span><br><span>+++ b=
+/tests/unit_tests/openvpnserv/test_openvpnserv.c</span><br><span>@@ -57,13 =
++57,13 @@</span><br><span> static void</span><br><span> test_convert_itf_dn=
+s_domains(void **state)</span><br><span> {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    DWORD size, orig_size, len, res_len;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    DWORD size, len, res_len;</sp=
+an><br><span>     LSTATUS err;</span><br><span>     const DWORD glyph_size =
+=3D sizeof(wchar_t);</span><br><span> </span><br><span>     wchar_t domains=
+_1[BUF_SIZE] =3D L&quot;openvpn.com&quot;;</span><br><span>     len =3D (DW=
+ORD)wcslen(domains_1) + 1;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    size =3D orig_size =3D len * glyph_size;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    size =3D len * glyph_size;</span><br><spa=
+n>     wchar_t domains_1_res[BUF_SIZE] =3D L&quot;.openvpn.com&quot;;</span=
+><br><span>     res_len =3D len + 2; /* adds . and \0 */</span><br><span>  =
+   err =3D ConvertItfDnsDomains(L&quot;openvpn.net&quot;, domains_1, &amp;s=
+ize, BUF_SIZE);</span><br><span>@@ -73,7 +73,7 @@</span><br><span> </span><=
+br><span>     wchar_t domains_2[BUF_SIZE] =3D L&quot;openvpn.com,openvpn.ne=
+t&quot;;</span><br><span>     len =3D (DWORD)wcslen(domains_2) + 1;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    size =3D orig_size =3D le=
+n * glyph_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+size =3D len * glyph_size;</span><br><span>     wchar_t domains_2_res[BUF_S=
+IZE] =3D L&quot;.openvpn.com&quot;;</span><br><span>     res_len =3D (DWORD=
+)wcslen(domains_2_res) + 2;</span><br><span>     err =3D ConvertItfDnsDomai=
+ns(L&quot;openvpn.net&quot;, domains_2, &amp;size, BUF_SIZE);</span><br><sp=
+an>@@ -83,7 +83,7 @@</span><br><span> </span><br><span>     wchar_t domains=
+_3[BUF_SIZE] =3D L&quot;openvpn.com,openvpn.net&quot;;</span><br><span>    =
+ len =3D (DWORD)wcslen(domains_3) + 1;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    size =3D orig_size =3D len * glyph_size;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    size =3D len * glyph_size;</s=
+pan><br><span>     wchar_t domains_3_res[BUF_SIZE] =3D L&quot;.openvpn.net&=
+quot;;</span><br><span>     res_len =3D (DWORD)wcslen(domains_3_res) + 2;</=
+span><br><span>     err =3D ConvertItfDnsDomains(L&quot;openvpn.com&quot;, =
+domains_3, &amp;size, BUF_SIZE);</span><br><span>@@ -93,7 +93,7 @@</span><b=
+r><span> </span><br><span>     wchar_t domains_4[BUF_SIZE] =3D L&quot;openv=
+pn.com,openvpn.net&quot;;</span><br><span>     len =3D (DWORD)wcslen(domain=
+s_4) + 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size =3D=
+ orig_size =3D len * glyph_size;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    size =3D len * glyph_size;</span><br><span>     wchar_t do=
+mains_4_res[BUF_SIZE] =3D L&quot;.openvpn.com\0.openvpn.net&quot;;</span><b=
+r><span>     res_len =3D len + 3; /* adds two . and one \0 */</span><br><sp=
+an>     err =3D ConvertItfDnsDomains(NULL, domains_4, &amp;size, BUF_SIZE);=
+</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/1617?usp=3Demail">change 1617</a>. To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.=
+net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:=
+//schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1617?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I528f5fd200d877841e473e5e05b=
-7ac7915fa2e33 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1618 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id0caa497c4ff1ad8743cb23f332=
+f003b2d3393ed </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1617 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -655,5 +753,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---/f7wHcrKxKs=--
+--3/ZggpT5O2o=--
 
