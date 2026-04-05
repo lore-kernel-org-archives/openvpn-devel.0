@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 5 Apr 2026 10:23:36 +0000
-In-Reply-To: <gerrit.1775321000000.I46499ff1f40dbdb94b84d58d17457d0ccdd75288@...2715...>
-References: <gerrit.1775321000000.I46499ff1f40dbdb94b84d58d17457d0ccdd75288@...2715...>
+Date: Sun, 5 Apr 2026 10:28:06 +0000
+In-Reply-To: <gerrit.1775328983000.I04a01cf536ee6d48d54ba623dda460c4a98859f9@...2715...>
+References: <gerrit.1775328983000.I04a01cf536ee6d48d54ba623dda460c4a98859f9@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <770d2f72c152c72a8ed8f42ca920aca4361311d4-HTML@...2715...>
+Message-ID: <154df37cad51505f114718171ba29ac3f934331c-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vsL/P1zsBhQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove various
- unused structs
+Content-Type: multipart/alternative; boundary="a/v8BNb/EJE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mtcp: Remove noop
+ statement in multi_tcp_process_outgoing_link_ready
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,222 +19,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---vsL/P1zsBhQ=
+--a/v8BNb/EJE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
-07?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demail )
 
-Change subject: Remove various unused structs
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
+
+
+Change subject: mtcp: Remove noop statement in multi_tcp_process_outgoing_l=
+ink_ready
 ......................................................................
 
-Remove various unused structs
+mtcp: Remove noop statement in multi_tcp_process_outgoing_link_ready
 
-Change-Id: I46499ff1f40dbdb94b84d58d17457d0ccdd75288
+Assigning to a parameter here has no effect. I can see no
+obvious alternative statement that might have been intended.
+
+Found by cppcheck.
+
+Change-Id: I04a01cf536ee6d48d54ba623dda460c4a98859f9
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1607
-Message-Id: <20260404203615.30863-1-gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1609
+Message-Id: <20260404203335.30650-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-468.html
+478.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
 M src/openvpn/mtcp.c
-M src/openvpn/multi_io.c
-M src/openvpn/networking_sitnl.c
-M src/openvpn/route.c
-4 files changed, 0 insertions(+), 31 deletions(-)
+1 file changed, 0 insertions(+), 4 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/09/1609/2
 
 diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index b7bef46..2eab7b7 100644
+index 2eab7b7..7651b4d 100644
 --- a/src/openvpn/mtcp.c
 +++ b/src/openvpn/mtcp.c
-@@ -37,14 +37,6 @@
- #include <sys/inotify.h>
- #endif
-
--struct ta_iow_flags
--{
--    unsigned int flags;
--    unsigned int ret;
--    unsigned int tun;
--    unsigned int sock;
--};
--
- struct multi_instance *
- multi_create_instance_tcp(struct multi_context *m, struct link_socket *soc=
-k)
- {
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index f484fe2..e6f4e9c 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -46,14 +46,6 @@
- #define MULTI_IO_FILE_CLOSE_WRITE ((void *)5)
- #define MULTI_IO_DCO              ((void *)6)
-
--struct ta_iow_flags
--{
--    unsigned int flags;
--    unsigned int ret;
--    unsigned int tun;
--    unsigned int sock;
--};
--
- #ifdef ENABLE_DEBUG
- static const char *
- pract(int action)
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b88f03c..baf6f89 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -124,15 +124,6 @@
- typedef int (*sitnl_parse_reply_cb)(struct nlmsghdr *msg, void *arg);
-
- /**
-- * Object returned by route request operation
-- */
--struct sitnl_route_data_cb
--{
--    unsigned int iface;
--    inet_address_t gw;
--};
--
--/**
-  * Helper function used to easily add attributes to a rtnl message
-  */
- static int
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 1cfbf80..3b18f74 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3257,12 +3257,6 @@
-  * netlink(3), netlink(7), rtnetlink(7)
-  * https://www.virtualbox.org/svn/vbox/trunk/src/VBox/NetworkServices/NAT/
-  */
--struct rtreq
--{
--    struct nlmsghdr nh;
--    struct rtmsg rtm;
--    char attrbuf[512];
--};
-
- void
- get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6, const struc=
-t in6_addr *dest,
+@@ -155,10 +155,6 @@
+         ASSERT(mi =3D=3D item.instance);
+         mi->context.c2.to_link =3D item.buffer->buf;
+         ret =3D multi_process_outgoing_link_dowork(m, mi, mpp_flags);
+-        if (!ret)
+-        {
+-            mi =3D NULL;
+-        }
+         mbuf_free_buf(item.buffer);
+     }
+     return ret;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I46499ff1f40dbdb94b84d58d17457d0ccdd75288
-Gerrit-Change-Number: 1607
+Gerrit-Change-Id: I04a01cf536ee6d48d54ba623dda460c4a98859f9
+Gerrit-Change-Number: 1609
 Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---vsL/P1zsBhQ=
+--a/v8BNb/EJE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1607?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Remove various unused structs<br><br>Change-Id: =
-I46499ff1f40dbdb94b84d58d17457d0ccdd75288<br>Signed-off-by: Frank Lichtenhe=
-ld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&g=
-t;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1607<br>Message-Id=
-: &lt;20260404203615.30863-1-gert@...1296...&gt;<br>URL: https://www.mail-a=
-rchive.com/openvpn-devel@lists.sourceforge.net/msg36468.html<br>Signed-off-=
-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/mtcp.c<br>=
-M src/openvpn/multi_io.c<br>M src/openvpn/networking_sitnl.c<br>M src/openv=
-pn/route.c<br>4 files changed, 0 insertions(+), 31 deletions(-)<br><br></pr=
-e>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>ind=
-ex b7bef46..2eab7b7 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><=
-br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -37,14 +37,6 @@</span>=
-<br><span> #include &lt;sys/inotify.h&gt;</span><br><span> #endif</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-struct ta_iow=
-_flags</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    unsigned int flags;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int ret;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int tun;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int sock;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span> struct multi_instance *</span><br=
-><span> multi_create_instance_tcp(struct multi_context *m, struct link_sock=
-et *sock)</span><br><span> {</span><br><span>diff --git a/src/openvpn/multi=
-_io.c b/src/openvpn/multi_io.c</span><br><span>index f484fe2..e6f4e9c 10064=
-4</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++ b/src/op=
-envpn/multi_io.c</span><br><span>@@ -46,14 +46,6 @@</span><br><span> #defin=
-e MULTI_IO_FILE_CLOSE_WRITE ((void *)5)</span><br><span> #define MULTI_IO_D=
-CO              ((void *)6)</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-struct ta_iow_flags</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    unsigned int flags;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    unsigned int ret;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    unsigned int tun;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    unsigned int sock;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an> #ifdef ENABLE_DEBUG</span><br><span> static const char *</span><br><spa=
-n> pract(int action)</span><br><span>diff --git a/src/openvpn/networking_si=
-tnl.c b/src/openvpn/networking_sitnl.c</span><br><span>index b88f03c..baf6f=
-89 100644</span><br><span>--- a/src/openvpn/networking_sitnl.c</span><br><s=
-pan>+++ b/src/openvpn/networking_sitnl.c</span><br><span>@@ -124,15 +124,6 =
-@@</span><br><span> typedef int (*sitnl_parse_reply_cb)(struct nlmsghdr *ms=
-g, void *arg);</span><br><span> </span><br><span> /**</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * Object returned by route request operati=
-on</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-struct sitnl_route_data_cb</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    unsigned int iface;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    inet_address_t gw;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br>=
-<span>  * Helper function used to easily add attributes to a rtnl message</=
-span><br><span>  */</span><br><span> static int</span><br><span>diff --git =
-a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 1cfbf80..=
-3b18f74 100644</span><br><span>--- a/src/openvpn/route.c</span><br><span>++=
-+ b/src/openvpn/route.c</span><br><span>@@ -3257,12 +3257,6 @@</span><br><s=
-pan>  * netlink(3), netlink(7), rtnetlink(7)</span><br><span>  * https://ww=
-w.virtualbox.org/svn/vbox/trunk/src/VBox/NetworkServices/NAT/</span><br><sp=
-an>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-struct rtreq</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct nlmsghdr nh;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    struct rtmsg rtm;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    char attrbuf[512];</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-};</span><br><span> </span><br><span> vo=
-id</span><br><span> get_default_gateway_ipv6(struct route_ipv6_gateway_info=
- *rgi6, const struct in6_addr *dest,</span><br><span></span><br></pre><p>To=
- view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Dem=
-ail">change 1607</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1607?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1609?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">mtcp: Remove noop statement in mult=
+i_tcp_process_outgoing_link_ready<br><br>Assigning to a parameter here has =
+no effect. I can see no<br>obvious alternative statement that might have be=
+en intended.<br><br>Found by cppcheck.<br><br>Change-Id: I04a01cf536ee6d48d=
+54ba623dda460c4a98859f9<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2375...=
+41...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: =
+https://gerrit.openvpn.net/c/openvpn/+/1609<br>Message-Id: &lt;202604042033=
+35.30650-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn=
+-devel@lists.sourceforge.net/msg36478.html<br>Signed-off-by: Gert Doering &=
+lt;gert@...1296...&gt;<br>---<br>M src/openvpn/mtcp.c<br>1 file changed, 0 =
+insertions(+), 4 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"f=
+ont-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ger=
+rit.openvpn.net:29418/openvpn refs/changes/09/1609/2</pre><pre style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/s=
+rc/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 2eab7b7..7651b=
+4d 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><span>+++ b/sr=
+c/openvpn/mtcp.c</span><br><span>@@ -155,10 +155,6 @@</span><br><span>     =
+    ASSERT(mi =3D=3D item.instance);</span><br><span>         mi-&gt;contex=
+t.c2.to_link =3D item.buffer-&gt;buf;</span><br><span>         ret =3D mult=
+i_process_outgoing_link_dowork(m, mi, mpp_flags);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        if (!ret)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            mi =3D NULL;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        }</span><br><span>         mbuf_free_buf(item.buffer=
+);</span><br><span>     }</span><br><span>     return ret;</span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1609?usp=3Demail">change 1609</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=
+=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1609?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I46499ff1f40dbdb94b84d58d174=
-57d0ccdd75288 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1607 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I04a01cf536ee6d48d54ba623dda=
+460c4a98859f9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1609 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -247,5 +153,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---vsL/P1zsBhQ=--
+--a/v8BNb/EJE=--
 
