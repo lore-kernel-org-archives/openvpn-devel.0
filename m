@@ -1,10 +1,16 @@
-Date: Sun, 5 Apr 2026 16:32:45 +0200 (CEST)
-Message-Id: <202604051432.635EWjq6093470@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260405102209.31528-1-gert@...1296...>
-References: <20260405102209.31528-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: win: Fix nrpt_dnssec flag
- handling
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 5 Apr 2026 14:32:55 +0000
+In-Reply-To: <gerrit.1775320419000.Iff5be978817bfc0cd4d78818e7be7b90bad71f3c@...2715...>
+References: <gerrit.1775320419000.Iff5be978817bfc0cd4d78818e7be7b90bad71f3c@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <278d3a45368528a89764b7ac6692ba9d838268bc-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="jOb1D9tF3b0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: win: Fix
+ nrpt_dnssec flag handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +19,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, d12fk <heiko@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Good catch, and obvious bug... and use of enum for a "bit map style"
-flags thing was not really a good approach in the first place.  Now it
-will work ("any value *but* 0 will work"), but when this is extended
-to cover "more than 1 flag", going away from the enum would be a good
-plan.  For the bug fix, a minimal approach is suitable.
+--jOb1D9tF3b0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I have not tested this beyond "does it compile on Ubuntu/MinGW", but
-it looks very obviously correct ("stare at 'git grep nrpt_dnssec'").
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1606?usp=3Demail )
 
-Your patch has been applied to the master and release/2.7 branch.
+The following approvals got outdated and were removed:
+Code-Review+2 by cron2
 
-commit 08a19843a184c6cb8850ac9e6bf7ce0cd4d15d37 (master)
-commit 2aaa5e4d7c5bae35d7befdebeed065c634292151 (release/2.7)
-Author: Frank Lichtenheld
-Date:   Sun Apr 5 12:22:04 2026 +0200
 
-     win: Fix nrpt_dnssec flag handling
+Change subject: win: Fix nrpt_dnssec flag handling
+......................................................................
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1606
-     Message-Id: <20260405102209.31528-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36487.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+win: Fix nrpt_dnssec flag handling
 
+By default the first enum value is 0.
+But we check whether we set the flag by doing
+BOOL dnssec =3D (msg->flags & nrpt_dnssec) !=3D 0;
+This can't ever be true.
+
+Found by cppcheck.
+
+Change-Id: Iff5be978817bfc0cd4d78818e7be7b90bad71f3c
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1606
+Message-Id: <20260405102209.31528-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
+487.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M include/openvpn-msg.h
+1 file changed, 1 insertion(+), 1 deletion(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/1606/2
+
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index bef20cf..ca3267e 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -110,7 +110,7 @@
+
+ typedef enum
+ {
+-    nrpt_dnssec
++    nrpt_dnssec =3D 1 << 0,
+ } nrpt_flags_t;
+
+ #define NRPT_ADDR_NUM  8  /* Max. number of addresses */
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1606?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iff5be978817bfc0cd4d78818e7be7b90bad71f3c
+Gerrit-Change-Number: 1606
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: d12fk <heiko@...515...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--jOb1D9tF3b0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1606?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">win: Fix nrpt_dnssec flag handling<=
+br><br>By default the first enum value is 0.<br>But we check whether we set=
+ the flag by doing<br>BOOL dnssec =3D (msg-&gt;flags &amp; nrpt_dnssec) !=
+=3D 0;<br>This can&#39;t ever be true.<br><br>Found by cppcheck.<br><br>Cha=
+nge-Id: Iff5be978817bfc0cd4d78818e7be7b90bad71f3c<br>Signed-off-by: Frank L=
+ichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1386...=
+296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1606<br>Me=
+ssage-Id: &lt;20260405102209.31528-1-gert@...1296...&gt;<br>URL: https://ww=
+w.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36487.html<br>Sig=
+ned-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M include/openvp=
+n-msg.h<br>1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre =
+class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/06/16=
+06/2</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
+wrap;"><span>diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h</sp=
+an><br><span>index bef20cf..ca3267e 100644</span><br><span>--- a/include/op=
+envpn-msg.h</span><br><span>+++ b/include/openvpn-msg.h</span><br><span>@@ =
+-110,7 +110,7 @@</span><br><span> </span><br><span> typedef enum</span><br>=
+<span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nrpt_dnss=
+ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nrpt_dnssec =
+=3D 1 &lt;&lt; 0,</span><br><span> } nrpt_flags_t;</span><br><span> </span>=
+<br><span> #define NRPT_ADDR_NUM  8  /* Max. number of addresses */</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1606?usp=3Demail">change 1606</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema=
+.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sc=
+hema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/1606?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iff5be978817bfc0cd4d78818e7b=
+e7b90bad71f3c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1606 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--jOb1D9tF3b0=--
 
