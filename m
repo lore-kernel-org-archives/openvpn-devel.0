@@ -1,10 +1,16 @@
-Date: Sun, 5 Apr 2026 12:28:05 +0200 (CEST)
-Message-Id: <202604051028.635AS5pm089569@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260404203335.30650-1-gert@...1296...>
-References: <20260404203335.30650-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: mtcp: Remove noop statement in
- multi_tcp_process_outgoing_link_ready
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 5 Apr 2026 10:30:56 +0000
+In-Reply-To: <gerrit.1775344373000.Ie2285f5bf52f5c669fb01f9ae36d6aa1674f0929@...2715...>
+References: <gerrit.1775344373000.Ie2285f5bf52f5c669fb01f9ae36d6aa1674f0929@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c0b9b9ef1d93e9bbc9ffe234e3e1b562c1514eed-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="yqxh1Duj/dY="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: crypto_backend:
+ Remove md_full
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Another good catch :-) - and indeed, stare-at-code confirms your and
-cppcheck's analysis.  Dead code.  From the dark times.  As for the last
-patch, "master only" unless we want release/2.7 to be cppcheck-clean.
+--yqxh1Duj/dY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch.
+Attention is currently required from: flichtenheld, plaisthos.
 
-commit d44ed886c279de51a936cc0652c9b72c943a6558
-Author: Frank Lichtenheld
-Date:   Sat Apr 4 22:33:30 2026 +0200
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1612?usp=3Demail )
 
-     mtcp: Remove noop statement in multi_tcp_process_outgoing_link_ready
+Change subject: crypto_backend: Remove md_full
+......................................................................
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1609
-     Message-Id: <20260404203335.30650-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36478.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+
+Patch Set 1: Code-Review+2
 
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1612?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie2285f5bf52f5c669fb01f9ae36d6aa1674f0929
+Gerrit-Change-Number: 1612
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 05 Apr 2026 10:30:56 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
+--yqxh1Duj/dY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1612?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1612?usp=3Demail=
+">change 1612</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1612?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie2285f5bf52f5c669fb01f9ae36=
+d6aa1674f0929 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1612 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 05 Apr 2026 10:30:56=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--yqxh1Duj/dY=--
 
