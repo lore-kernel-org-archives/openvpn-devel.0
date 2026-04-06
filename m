@@ -1,15 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Sun, 5 Apr 2026 22:03:33 +0000
-References: <gerrit.1775426608000.I64da2328591ef2b9ee7502e574c878651cdf356a@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <e2e05ba7fb4b15d2b89bcd4158269406c5561133-HTML@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 6 Apr 2026 07:25:03 +0000
+In-Reply-To: <gerrit.1775421558000.Ia153e0de888c0ee21199b192f3471ce4c08cb5c7@...2715...>
+References: <gerrit.1775421558000.Ia153e0de888c0ee21199b192f3471ce4c08cb5c7@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b071f2f2f2b7565df495522ed9ebcce7831c3a04-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9Q4R1A1SVL0="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: test_packet_id: Add
- a check after malloc to ensure value is valid
+Content-Type: multipart/alternative; boundary="texEw4WgF5M="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Clarify operator
+ precedence in a & b ? c : d
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,129 +19,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---9Q4R1A1SVL0=
+--texEw4WgF5M=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos,
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1619?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1621?usp=3Demail
-
-to review the following change.
-
-
-Change subject: test_packet_id: Add a check after malloc to ensure value is=
- valid
+Change subject: Clarify operator precedence in a & b ? c : d
 ......................................................................
 
-test_packet_id: Add a check after malloc to ensure value is valid
 
-cppcheck complains about a potential null pointer dereference
-in reliable_get_num_output_sequenced_available. That is mostly
-theoretical, but still add a check.
+Patch Set 1: Code-Review-2
 
-Change-Id: I64da2328591ef2b9ee7502e574c878651cdf356a
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M tests/unit_tests/openvpn/test_packet_id.c
-1 file changed, 1 insertion(+), 0 deletions(-)
+(2 comments)
+
+Patchset:
+
+PS1:
+stray change to interactive.c?
 
 
+File src/openvpnserv/interactive.c:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1621/1
+http://gerrit.openvpn.net/c/openvpn/+/1619/comment/d7d72371_81303fee?usp=3D=
+email :
+PS1, Line 3414:                                  | PROCESS_TERMINATE | PROC=
+ESS_QUERY_INFORMATION;
+this looks very unrelated
 
-diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
-penvpn/test_packet_id.c
-index b7538bd..5dfd319 100644
---- a/tests/unit_tests/openvpn/test_packet_id.c
-+++ b/tests/unit_tests/openvpn/test_packet_id.c
-@@ -164,6 +164,7 @@
- test_get_num_output_sequenced_available(void **state)
- {
-     struct reliable *rel =3D malloc(sizeof(struct reliable));
-+    assert_non_null(rel);
-     reliable_init(rel, 100, 50, 8, false);
 
-     rel->array[5].active =3D true;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1621?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1619?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I64da2328591ef2b9ee7502e574c878651cdf356a
-Gerrit-Change-Number: 1621
+Gerrit-Change-Id: Ia153e0de888c0ee21199b192f3471ce4c08cb5c7
+Gerrit-Change-Number: 1619
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 06 Apr 2026 07:25:03 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---9Q4R1A1SVL0=
+--texEw4WgF5M=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1621?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">test_packet_id: Add a check after malloc to=
- ensure value is valid<br><br>cppcheck complains about a potential null poi=
-nter dereference<br>in reliable_get_num_output_sequenced_available. That is=
- mostly<br>theoretical, but still add a check.<br><br>Change-Id: I64da23285=
-91ef2b9ee7502e574c878651cdf356a<br>Signed-off-by: Frank Lichtenheld &lt;fra=
-nk@...2641...&gt;<br>---<br>M tests/unit_tests/openvpn/test_packet_id.c<br>=
-1 file changed, 1 insertion(+), 0 deletions(-)<br><br></pre><pre class=3D"b=
-locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/1621/1</pre>=
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_test=
-s/openvpn/test_packet_id.c</span><br><span>index b7538bd..5dfd319 100644</s=
-pan><br><span>--- a/tests/unit_tests/openvpn/test_packet_id.c</span><br><sp=
-an>+++ b/tests/unit_tests/openvpn/test_packet_id.c</span><br><span>@@ -164,=
-6 +164,7 @@</span><br><span> test_get_num_output_sequenced_available(void *=
-*state)</span><br><span> {</span><br><span>     struct reliable *rel =3D ma=
-lloc(sizeof(struct reliable));</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    assert_non_null(rel);</span><br><span>     reliable_init(rel=
-, 100, 50, 8, false);</span><br><span> </span><br><span>     rel-&gt;array[=
-5].active =3D true;</span><br><span></span><br></pre><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/1621?usp=3Demail">change 1621<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1621?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1619?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list=
+-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/1619?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">stray chan=
+ge to interactive.c?</p></li></ul></li><li style=3D"margin: 0; padding: 0;"=
+><p>File src/openvpnserv/interactive.c:</p><ul style=3D"list-style: none; p=
+adding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
+n-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1619/comme=
+nt/d7d72371_81303fee?usp=3Demail">Patch Set #1, Line 3414:</a> <code style=
+=3D"font-family:monospace,monospace">                                 | PRO=
+CESS_TERMINATE | PROCESS_QUERY_INFORMATION;</code></p><p class=3D"blocks" s=
+tyle=3D"white-space: pre-wrap; word-wrap: break-word;">this looks very unre=
+lated</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/1619?usp=3Demail">change 1619</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1619?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
+w Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I64da2328591ef2b9ee7502e574c=
-878651cdf356a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1621 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia153e0de888c0ee21199b192f34=
+71ce4c08cb5c7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1619 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 06 Apr 2026 07:25:03=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---9Q4R1A1SVL0=--
+--texEw4WgF5M=--
 
