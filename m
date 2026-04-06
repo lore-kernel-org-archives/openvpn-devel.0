@@ -1,10 +1,10 @@
-Date: Mon, 6 Apr 2026 12:01:16 +0200 (CEST)
-Message-Id: <202604061001.636A1GXD019192@...2054...>
+Date: Mon, 6 Apr 2026 12:30:17 +0200 (CEST)
+Message-Id: <202604061030.636AUHIe019762@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260406074729.29903-1-gert@...1296...>
-References: <20260406074729.29903-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: test_packet_id: Add a check
- after malloc to ensure value is valid
+In-Reply-To: <20260406072617.27790-1-gert@...1296...>
+References: <20260406072617.27790-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: push: Make prepare_push_reply
+ return void
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,22 +18,26 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-That's an easy one - test code, no dependencies on other patches, and
-tests itself :-)
+Interesting find.  I guess someone in some distant past assumed that
+we might see failure modes for prepare_push_reply()...
+
+stare-at-code says "this must be fine", but as it affects server code,
+I subjected it to the t_server testbed which does excercise PUSH quite
+a bit :-) - and everything still works.
 
 Your patch has been applied to the master branch.
 
-commit cdb0fbde266a3c3013c1354a985e82c33db8dcdb
+commit 5d7068fa181edd472cb55889bd8fdfe246ecede4
 Author: Frank Lichtenheld
-Date:   Mon Apr 6 09:47:24 2026 +0200
+Date:   Mon Apr 6 09:26:11 2026 +0200
 
-     test_packet_id: Add a check after malloc to ensure value is valid
+     push: Make prepare_push_reply return void
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1621
-     Message-Id: <20260406074729.29903-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36516.html
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1616
+     Message-Id: <20260406072617.27790-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36514.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
