@@ -1,17 +1,15 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Mon, 6 Apr 2026 11:37:50 +0000
-In-Reply-To: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
-References: <gerrit.1774477871000.Ib99f171fb69d51f2260b44edf8ebe21ac958f233@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
- luca.boccassi@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <1bf9147d9f1e6114757d3119649a1a50659b6a0c-HTML@...2715...>
+From: "Bluca (Code Review)" <gerrit@...515...>
+Date: Mon, 6 Apr 2026 11:44:07 +0000
+References: <gerrit.1775475846000.I055c64ca8b23066e70eea7d7deddfb14f5354c5f@...2715...>
+Reply-To: luca.boccassi@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <981a77a6368821bac7b0ae039e57cbda350e9e16-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IOyxoTDU9DY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: management: add
- base64 multi-line input for passwords
+Content-Type: multipart/alternative; boundary="lZ1bRpWjkHU="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add new helpers to
+ handle key exchange (S_SENT_KEY/S_START) with larg...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,534 +18,624 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Bluca <luca.boccassi@...277...>
-Cc: flichtenheld <frank@...2641...>, selvanair <selva.nair@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---IOyxoTDU9DY=
+--lZ1bRpWjkHU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: selvanair.
+Attention is currently required from: plaisthos.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-93?usp=3Demail )
+Hello plaisthos,
 
-Change subject: management: add base64 multi-line input for passwords
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Add new helpers to handle key exchange (S_SENT_KEY/S_START)=
+ with large passwords
 ......................................................................
 
-management: add base64 multi-line input for passwords
+Add new helpers to handle key exchange (S_SENT_KEY/S_START) with large pass=
+words
 
-Allow management clients to send long passwords via the
-usual multi-line base64 encoded protocol.
+The current key exchange uses an intermediate buffer hardcoded
+at 2048 bytes, that cannot handle anything longer, as it gets
+silently truncated.
 
-A client declares MCV 5 support and sends a 'password <type>'
-line, followed by as many lines (each up to 1024 bytes) as
-needed, in base64 encoded format, terminated by 'END'.
+This breaks using JIT use-once tokens for authentications, that
+are becoming common in enterprise devices to reduce attack
+surfaces, as the tokens are typically long JWT encoded strings.
 
-This is useful when a password is a JIT-generated use-once
-token.
+Add new helpers that, instead of doing a single 2048 bytes
+read/write from/to the TLS layer, reads/writes all the available
+data when doing the key method 2 exchange.
+Other stages of the protocol are unaffected. Note that this is
+an intermediary buffer, the TLS layer is already handling
+fragmented/reassembled frames appropriately, so there is no
+on-the-wire difference, aside from letting the client send more
+data.
 
-Declare management version 6 for this feature.
+Older servers will simply continue to truncate passwords longer
+than the existing limit, as they are doing currently, so no
+incompatible changes, behaviour stays the same and current valid
+passwords are still valid when the new client uses them.
+When an old client talks to a new server, likewise there are no
+changes, as the previous clients have the embedded limit, so all
+existing passwords will continue to work.
 
-Change-Id: Ib99f171fb69d51f2260b44edf8ebe21ac958f233
+Tested combinations:
+
+old client <--> new server
+new client <--> old server
+new client <--> new server
+
+With the last combination, a large password can be used successfully.
+With either an old server or old client, existing limits apply and
+a clear error is shown in case one tries a password longer than the
+existing limits.
+
+Change-Id: I055c64ca8b23066e70eea7d7deddfb14f5354c5f
 Signed-off-by: Luca Boccassi <luca.boccassi@...277...>
-Acked-by: Selva Nair <selva.nair@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1593
-Message-Id: <20260330180900.16608-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-360.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M doc/management-notes.txt
-M src/openvpn/manage.c
-M src/openvpn/manage.h
-3 files changed, 106 insertions(+), 3 deletions(-)
+M src/openvpn/common.h
+M src/openvpn/ssl.c
+M src/openvpn/ssl_common.h
+3 files changed, 116 insertions(+), 17 deletions(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/1622/1
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 7da4aaf..1126468 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -326,6 +326,22 @@
-   The escaping rules are the same as for the config file.
-   See the "Command Parsing" section below for more info.
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index aa7b721..b67a6f4 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -69,6 +69,16 @@
+  */
+ #define TLS_CHANNEL_BUF_SIZE 2048
 
-+  If the password is too long to fit in a single command line
-+  (longer than 256 bytes), the management interface client should
-+  use the multi-line base64 format instead.  This requires that
-+  the management client has announced version >=3D 5 via the
-+  "version" command:
++/*
++ * Buffer size for key method 2 exchange data. This needs to be
++ * large enough to hold the key source material, options string,
++ * username, password and peer info. When USER_PASS_LEN is larger
++ * than the default TLS channel size (e.g. with ENABLE_PKCS11),
++ * we need a larger buffer. The key exchange write and read paths
++ * handle this by doing multiple TLS writes/reads as needed.
++ */
++#define KEY_METHOD_BUF_SIZE (TLS_CHANNEL_BUF_SIZE + 2 * USER_PASS_LEN)
 +
-+    password "Auth"
-+    [BASE64_PASSWORD_LINE]
-+    ...
-+    END
-+
-+  In this format, the password is base64-encoded and split across
-+  multiple lines, followed by END.  Each line can be at most 1024
-+  bytes.  This is the same format used by pk-sig and certificate
-+  commands. Requires OpenVPN management version >=3D 6.
-+
-   The PASSWORD real-time message type can also be used to
-   indicate password or other types of authentication failure:
+ /* TLS control buffer minimum size
+  *
+  * A control frame might have IPv6 header (40 byte),
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 576157d..83bc46e 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -860,6 +860,8 @@
+     ks->plaintext_read_buf =3D alloc_buf(TLS_CHANNEL_BUF_SIZE);
+     ks->plaintext_write_buf =3D alloc_buf(TLS_CHANNEL_BUF_SIZE);
+     ks->ack_write_buf =3D alloc_buf(BUF_SIZE(&session->opt->frame));
++    ks->key_method_send_buf =3D alloc_buf(KEY_METHOD_BUF_SIZE);
++    ks->key_method_recv_buf =3D alloc_buf(KEY_METHOD_BUF_SIZE);
+     reliable_init(ks->send_reliable, BUF_SIZE(&session->opt->frame),
+                   session->opt->frame.buf.headroom, TLS_RELIABLE_N_SEND_BU=
+FFERS,
+                   ks->key_id ? false : session->opt->xmit_hold);
+@@ -915,6 +917,8 @@
+     free_buf(&ks->plaintext_read_buf);
+     free_buf(&ks->plaintext_write_buf);
+     free_buf(&ks->ack_write_buf);
++    free_buf(&ks->key_method_send_buf);
++    free_buf(&ks->key_method_recv_buf);
+     buffer_list_free(ks->paybuf);
 
-@@ -513,6 +529,7 @@
-     >PK_SIGN:[base64]           -- version 2 or greater
-     >PK_SIGN:[base64],[alg]     -- version 3 or greater
-     >PASSWORD:Need 'Auth' username -- version 4 or greater
-+    multiline password from client -- version 5 or greater
-
- COMMAND -- auth-retry
- ---------------------
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 6cab7db..c22a2a4 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -31,6 +31,7 @@
- #include "error.h"
- #include "fdmisc.h"
- #include "options.h"
-+#include "base64.h"
- #include "sig.h"
- #include "event.h"
- #include "otime.h"
-@@ -68,6 +69,7 @@
-     MCV_PKSIGN =3D 2,
-     MCV_PKSIGN_ALG =3D 3,
-     MCV_USERNAME_ONLY =3D 4,
-+    MCV_MULTILINE_PASSWORD =3D 5,
- };
-
- struct management *management; /* GLOBAL */
-@@ -105,6 +107,8 @@
-     msg(M_CLIENT, "                         where action is reply string."=
-);
-     msg(M_CLIENT, "net                    : (Windows only) Show network in=
-fo and routing table.");
-     msg(M_CLIENT, "password type p        : Enter password p for a queried=
- OpenVPN password.");
-+    msg(M_CLIENT, "password type          : (version >=3D5) Enter password=
- base64-encoded on");
-+    msg(M_CLIENT, "                         subsequent lines followed by E=
-ND.");
-     msg(M_CLIENT, "remote type [host port] : Override remote directive, ty=
-pe=3DACCEPT|MOD|SKIP.");
-     msg(M_CLIENT, "remote-entry-count     : Get number of available remote=
- entries.");
-     msg(M_CLIENT, "remote-entry-get  i|all [j]: Get remote entry at index =
-=3D i to to j-1 or all.");
-@@ -1019,6 +1023,41 @@
-     }
+     reliable_free(ks->send_reliable);
+@@ -2624,6 +2628,54 @@
+     return true;
  }
 
 +/**
-+ * Enter multi-line base64 mode for receiving a password that exceeds the
-+ * single-line parameter size limit. The management client sends:
-+ *
-+ *  password TYPE
-+ *  <base64-encoded password line 1>
-+ *  <base64-encoded password line 2>
-+ *  ...
-+ *  END
-+ *
-+ * @param man           The management interface struct
-+ * @param type          The type of password being entered (e.g. "Auth", "=
-Private Key", etc)
++ * Read all currently available plaintext from the TLS object into buf,
++ * doing multiple reads if necessary. This is used for key method 2
++ * exchange data which may exceed a single TLS_CHANNEL_BUF_SIZE read
++ * when long passwords/tokens are used.
 + */
-+static void
-+man_query_password_base64(struct management *man, const char *type)
++static bool
++read_incoming_tls_plaintext_multi(struct key_state *ks, struct buffer *buf,
++                                  interval_t *wakeup, bool *continue_tls_p=
+rocess)
 +{
-+    const bool needed =3D ((man->connection.up_query_mode =3D=3D UP_QUERY_=
-PASS
-+                          || man->connection.up_query_mode =3D=3D UP_QUERY=
-_USER_PASS)
-+                         && man->connection.up_query_type);
-+    if (!needed)
-+    {
-+        msg(M_CLIENT, "ERROR: no password is currently needed at this time=
-");
-+        return;
-+    }
-+    if (!man->connection.up_query_type || !streq(man->connection.up_query_=
-type, type))
-+    {
-+        msg(M_CLIENT, "ERROR: password of type '%s' entered, but we need o=
-ne of type '%s'",
-+            type, man->connection.up_query_type);
-+        return;
-+    }
-+    struct man_connection *mc =3D &man->connection;
-+    mc->in_extra_cmd =3D IEC_PASSWORD;
-+    in_extra_reset(mc, IER_NEW);
-+}
++    struct buffer tmp =3D alloc_buf(TLS_CHANNEL_BUF_SIZE);
 +
- static void
- in_extra_dispatch(struct management *man)
- {
-@@ -1052,6 +1091,41 @@
-             man->connection.ext_cert_input =3D man->connection.in_extra;
-             man->connection.in_extra =3D NULL;
-             return;
++    while (buf_forward_capacity(buf) > 0)
++    {
++        buf_init(&tmp, 0);
++        int status =3D key_state_read_plaintext(&ks->ks_ssl, &tmp);
 +
-+        case IEC_PASSWORD:
++        update_time();
++        if (status =3D=3D -1)
 +        {
-+            char decoded[USER_PASS_LEN];
-+            CLEAR(decoded);
-+
-+            buffer_list_aggregate(man->connection.in_extra,
-+                                  OPENVPN_BASE64_LENGTH(USER_PASS_LEN) + 1=
-024);
-+            struct buffer *buf =3D buffer_list_peek(man->connection.in_ext=
-ra);
-+
-+            if (buf && BLEN(buf) > 0)
++            msg(D_TLS_ERRORS,
++                "TLS Error: TLS object -> incoming plaintext read error");
++            free_buf(&tmp);
++            return false;
++        }
++        if (status =3D=3D 1)
++        {
++            if (!buf_write(buf, BPTR(&tmp), BLEN(&tmp)))
 +            {
-+                if (OPENVPN_BASE64_DECODED_LENGTH(BLEN(buf)) >=3D USER_PAS=
-S_LEN)
-+                {
-+                    msg(M_CLIENT, "ERROR: password too long");
-+                    buf_clear(buf);
-+                    break;
-+                }
-+                int len =3D openvpn_base64_decode(BSTR(buf), decoded,
-+                                                USER_PASS_LEN - 1);
-+                if (len < 0)
-+                {
-+                    msg(M_CLIENT, "ERROR: could not base64-decode password=
-");
-+                    buf_clear(buf);
-+                    break;
-+                }
-+                decoded[len] =3D '\0';
-+                buf_clear(buf);
++                msg(D_TLS_ERRORS,
++                    "TLS Error: key exchange plaintext too large");
++                free_buf(&tmp);
++                return false;
 +            }
-+
-+            man_query_password(man, man->connection.up_query_type,
-+                               decoded);
-+            secure_memzero(decoded, sizeof(decoded));
++            *continue_tls_process =3D true;
++            *wakeup =3D 0;
++            dmsg(D_TLS_DEBUG, "TLS -> Incoming Plaintext (key exchange)");
++        }
++        else
++        {
 +            break;
 +        }
++    }
++
++    free_buf(&tmp);
++    return true;
++}
++
+ static bool
+ write_outgoing_tls_ciphertext(struct tls_session *session, bool *continue_=
+tls_process)
+ {
+@@ -2836,22 +2888,40 @@
      }
-     in_extra_reset(&man->connection, IER_RESET);
- }
-@@ -1598,9 +1672,20 @@
-     }
-     else if (streq(p[0], "password"))
+
+     /* Read incoming plaintext from TLS object */
+-    struct buffer *buf =3D &ks->plaintext_read_buf;
+-    if (!buf->len)
++    bool in_key_exchange_read =3D
++        (ks->state =3D=3D S_SENT_KEY && !session->opt->server)
++        || (ks->state =3D=3D S_START && session->opt->server);
++
++    if (in_key_exchange_read)
      {
--        if (man_need(man, p, 2, 0))
-+        if (man_need(man, p, 1, MN_AT_LEAST))
+-        if (!read_incoming_tls_plaintext(ks, buf, wakeup, &continue_tls_pr=
+ocess))
++        /* For key exchange, read all available plaintext into a buffer
++         * that is large enough for long passwords/tokens. Multiple reads
++         * are done to handle data exceeding TLS_CHANNEL_BUF_SIZE. */
++        if (!read_incoming_tls_plaintext_multi(ks, &ks->key_method_recv_bu=
+f,
++                                               wakeup, &continue_tls_proce=
+ss))
          {
--            man_query_password(man, p[1], p[2]);
-+            if (p[2])
+             goto error;
+         }
+     }
++    else
++    {
++        struct buffer *buf =3D &ks->plaintext_read_buf;
++        if (!buf->len)
++        {
++            if (!read_incoming_tls_plaintext(ks, buf, wakeup, &continue_tl=
+s_process))
 +            {
-+                man_query_password(man, p[1], p[2]);
++                goto error;
 +            }
-+            else if (man->connection.client_version >=3D MCV_MULTILINE_PAS=
-SWORD)
++        }
++    }
+
+-    /* Send Key */
+-    buf =3D &ks->plaintext_write_buf;
+-    if (!buf->len
++    /* Send Key -- use larger key_method_send_buf for assembly to support
++     * long passwords/tokens that exceed TLS_CHANNEL_BUF_SIZE */
++    if (!ks->key_method_send_buf.len
+         && ((ks->state =3D=3D S_START && !session->opt->server)
+             || (ks->state =3D=3D S_GOT_KEY && session->opt->server)))
+     {
+-        if (!key_method_2_write(buf, multi, session))
++        if (!key_method_2_write(&ks->key_method_send_buf, multi, session))
+         {
+             goto error;
+         }
+@@ -2861,13 +2931,12 @@
+         ks->state =3D S_SENT_KEY;
+     }
+
+-    /* Receive Key */
+-    buf =3D &ks->plaintext_read_buf;
+-    if (buf->len
++    /* Receive Key -- use the larger key_method_recv_buf */
++    if (BLEN(&ks->key_method_recv_buf)
+         && ((ks->state =3D=3D S_SENT_KEY && !session->opt->server)
+             || (ks->state =3D=3D S_START && session->opt->server)))
+     {
+-        if (!key_method_2_read(buf, multi, session))
++        if (!key_method_2_read(&ks->key_method_recv_buf, multi, session))
+         {
+             goto error;
+         }
+@@ -2877,20 +2946,38 @@
+         ks->state =3D S_GOT_KEY;
+     }
+
+-    /* Write outgoing plaintext to TLS object */
+-    buf =3D &ks->plaintext_write_buf;
+-    if (buf->len)
++    /* Write key exchange data to TLS object */
++    if (ks->key_method_send_buf.len)
+     {
+-        int status =3D key_state_write_plaintext(&ks->ks_ssl, buf);
++        int status =3D key_state_write_plaintext(&ks->ks_ssl, &ks->key_met=
+hod_send_buf);
+         if (status =3D=3D -1)
+         {
+-            msg(D_TLS_ERRORS, "TLS ERROR: Outgoing Plaintext -> TLS object=
+ write error");
++            msg(D_TLS_ERRORS, "TLS ERROR: Key Method -> TLS object write e=
+rror");
+             goto error;
+         }
+         if (status =3D=3D 1)
+         {
+             continue_tls_process =3D true;
+-            dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
++            dmsg(D_TLS_DEBUG, "Key Method -> TLS");
++        }
++    }
++
++    /* Write outgoing plaintext to TLS object */
++    {
++        struct buffer *buf =3D &ks->plaintext_write_buf;
++        if (buf->len)
++        {
++            int status =3D key_state_write_plaintext(&ks->ks_ssl, buf);
++            if (status =3D=3D -1)
 +            {
-+                man_query_password_base64(man, p[1]);
++                msg(D_TLS_ERRORS, "TLS ERROR: Outgoing Plaintext -> TLS ob=
+ject write error");
++                goto error;
 +            }
-+            else
++            if (status =3D=3D 1)
 +            {
-+                msg(M_CLIENT, "ERROR: the 'password' command requires 2 pa=
-rameters");
++                continue_tls_process =3D true;
++                dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
 +            }
          }
      }
-     else if (streq(p[0], "forget-passwords"))
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index e5ad23f..27d3b60 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -50,7 +50,7 @@
- #include "socket_util.h"
- #include "mroute.h"
+     if (!check_outgoing_ciphertext(ks, session, &continue_tls_process))
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 6f310a5..6f3da11 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -241,6 +241,8 @@
+     struct buffer plaintext_read_buf;
+     struct buffer plaintext_write_buf;
+     struct buffer ack_write_buf;
++    struct buffer key_method_send_buf; /* larger buffer for key method 2 w=
+rite */
++    struct buffer key_method_recv_buf; /* larger buffer for key method 2 r=
+ead */
 
--#define MANAGEMENT_VERSION                  5
-+#define MANAGEMENT_VERSION                  6
- #define MANAGEMENT_N_PASSWORD_RETRIES       3
- #define MANAGEMENT_LOG_HISTORY_INITIAL_SIZE 100
- #define MANAGEMENT_ECHO_BUFFER_SIZE         100
-@@ -297,6 +297,7 @@
- #define IEC_RSA_SIGN    3
- #define IEC_CERTIFICATE 4
- #define IEC_PK_SIGN     5
-+#define IEC_PASSWORD    6
-     int in_extra_cmd;
-     struct buffer_list *in_extra;
-     unsigned long in_extra_cid;
+     struct reliable *send_reliable; /* holds a copy of outgoing packets un=
+til ACK received */
+     struct reliable *rec_reliable;  /* order incoming ciphertext packets b=
+efore we pass to TLS */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1593?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8ebe21ac958f233
-Gerrit-Change-Number: 1593
-Gerrit-PatchSet: 12
+Gerrit-Change-Id: I055c64ca8b23066e70eea7d7deddfb14f5354c5f
+Gerrit-Change-Number: 1622
+Gerrit-PatchSet: 1
 Gerrit-Owner: Bluca <luca.boccassi@...277...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---IOyxoTDU9DY=
+--lZ1bRpWjkHU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: selvanair. </p>
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/1593?usp=3Demail">View Change</a></p><div styl=
-e=3D"white-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">management: add base64 multi=
--line input for passwords<br><br>Allow management clients to send long pass=
-words via the<br>usual multi-line base64 encoded protocol.<br><br>A client =
-declares MCV 5 support and sends a &#39;password &lt;type&gt;&#39;<br>line,=
- followed by as many lines (each up to 1024 bytes) as<br>needed, in base64 =
-encoded format, terminated by &#39;END&#39;.<br><br>This is useful when a p=
-assword is a JIT-generated use-once<br>token.<br><br>Declare management ver=
-sion 6 for this feature.<br><br>Change-Id: Ib99f171fb69d51f2260b44edf8ebe21=
-ac958f233<br>Signed-off-by: Luca Boccassi &lt;luca.boccassi@...277...&gt;<b=
-r>Acked-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Gerrit URL: https://=
-gerrit.openvpn.net/c/openvpn/+/1593<br>Message-Id: &lt;20260330180900.16608=
--1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...465...=
-ists.sourceforge.net/msg36360.html<br>Signed-off-by: Gert Doering &lt;gert@=
-...1296...&gt;<br>---<br>M doc/management-notes.txt<br>M src/openvpn/manage=
-.c<br>M src/openvpn/manage.h<br>3 files changed, 106 insertions(+), 3 delet=
-ions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/management-notes.txt b/doc/management-notes.txt</span><=
-br><span>index 7da4aaf..1126468 100644</span><br><span>--- a/doc/management=
--notes.txt</span><br><span>+++ b/doc/management-notes.txt</span><br><span>@=
-@ -326,6 +326,22 @@</span><br><span>   The escaping rules are the same as f=
-or the config file.</span><br><span>   See the &quot;Command Parsing&quot; =
-section below for more info.</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  If the password is too long to fit in a single=
- command line</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (lon=
-ger than 256 bytes), the management interface client should</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  use the multi-line base64 format =
-instead.  This requires that</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  the management client has announced version &gt;=3D 5 via the</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;version&quot; =
-command:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    password &quot;Auth&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    [BASE64_PASSWORD=
-_LINE]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ...</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    END</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  In this format, the password is base64-encoded and spl=
-it across</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  multiple=
- lines, followed by END.  Each line can be at most 1024</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  bytes.  This is the same format used =
-by pk-sig and certificate</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  commands. Requires OpenVPN management version &gt;=3D 6.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   The PASSWO=
-RD real-time message type can also be used to</span><br><span>   indicate p=
-assword or other types of authentication failure:</span><br><span> </span><=
-br><span>@@ -513,6 +529,7 @@</span><br><span>     &gt;PK_SIGN:[base64]     =
-      -- version 2 or greater</span><br><span>     &gt;PK_SIGN:[base64],[al=
-g]     -- version 3 or greater</span><br><span>     &gt;PASSWORD:Need &#39;=
-Auth&#39; username -- version 4 or greater</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    multiline password from client -- version 5 or g=
-reater</span><br><span> </span><br><span> COMMAND -- auth-retry</span><br><=
-span> ---------------------</span><br><span>diff --git a/src/openvpn/manage=
-.c b/src/openvpn/manage.c</span><br><span>index 6cab7db..c22a2a4 100644</sp=
-an><br><span>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/m=
-anage.c</span><br><span>@@ -31,6 +31,7 @@</span><br><span> #include &quot;e=
-rror.h&quot;</span><br><span> #include &quot;fdmisc.h&quot;</span><br><span=
-> #include &quot;options.h&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#include &quot;base64.h&quot;</span><br><span> #include &quot;=
-sig.h&quot;</span><br><span> #include &quot;event.h&quot;</span><br><span> =
-#include &quot;otime.h&quot;</span><br><span>@@ -68,6 +69,7 @@</span><br><s=
-pan>     MCV_PKSIGN =3D 2,</span><br><span>     MCV_PKSIGN_ALG =3D 3,</span=
-><br><span>     MCV_USERNAME_ONLY =3D 4,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    MCV_MULTILINE_PASSWORD =3D 5,</span><br><span> };<=
-/span><br><span> </span><br><span> struct management *management; /* GLOBAL=
- */</span><br><span>@@ -105,6 +107,8 @@</span><br><span>     msg(M_CLIENT, =
-&quot;                         where action is reply string.&quot;);</span>=
-<br><span>     msg(M_CLIENT, &quot;net                    : (Windows only) =
-Show network info and routing table.&quot;);</span><br><span>     msg(M_CLI=
-ENT, &quot;password type p        : Enter password p for a queried OpenVPN =
-password.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  msg(M_CLIENT, &quot;password type          : (version &gt;=3D5) Enter pas=
-sword base64-encoded on&quot;);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    msg(M_CLIENT, &quot;                         subsequent lin=
-es followed by END.&quot;);</span><br><span>     msg(M_CLIENT, &quot;remote=
- type [host port] : Override remote directive, type=3DACCEPT|MOD|SKIP.&quot=
-;);</span><br><span>     msg(M_CLIENT, &quot;remote-entry-count     : Get n=
-umber of available remote entries.&quot;);</span><br><span>     msg(M_CLIEN=
-T, &quot;remote-entry-get  i|all [j]: Get remote entry at index =3D i to to=
- j-1 or all.&quot;);</span><br><span>@@ -1019,6 +1023,41 @@</span><br><span=
->     }</span><br><span> }</span><br><span> </span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * Enter multi-line base64 mode for receiving a password that exce=
-eds the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * single-li=
-ne parameter size limit. The management client sends:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  password TYPE</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *  &lt;base64-encoded password line 1&gt;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *  &lt;base64-encoded password line =
-2&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  ...</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  END</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param man           The management interface struct=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param type     =
-     The type of password being entered (e.g. &quot;Auth&quot;, &quot;Priva=
-te Key&quot;, etc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+man_query_password_base64=
-(struct management *man, const char *type)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    const bool needed =3D ((man-&gt;connection.up_query_mode =3D=3D UP=
-_QUERY_PASS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-                  || man-&gt;connection.up_query_mode =3D=3D UP_QUERY_USER_=
-PASS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-           &amp;&amp; man-&gt;connection.up_query_type);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    if (!needed)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(M_CLIENT, &quot;ERROR: no password is curre=
-ntly needed at this time&quot;);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (!man-&gt;connection.up_query_type || !streq(man-&gt;connection.up_query_=
-type, type))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_CLIENT,=
- &quot;ERROR: password of type &#39;%s&#39; entered, but we need one of typ=
-e &#39;%s&#39;&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            type, man-&gt;connection.up_query_type);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    struct man_connection *mc =3D &amp;man-&gt;connection;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mc-&gt;in_extra=
-_cmd =3D IEC_PASSWORD;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    in_extra_reset(mc, IER_NEW);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span> static void</span><br><span> in_extra_dispatch(struct manag=
-ement *man)</span><br><span> {</span><br><span>@@ -1052,6 +1091,41 @@</span=
-><br><span>             man-&gt;connection.ext_cert_input =3D man-&gt;conne=
-ction.in_extra;</span><br><span>             man-&gt;connection.in_extra =
-=3D NULL;</span><br><span>             return;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        case IEC_PASSWORD:</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            char decoded[USER_PASS_LEN];</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            CLEAR(decoded);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            buffer_list_aggregate(man-&gt;connection.in_extr=
-a,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-                 OPENVPN_BASE64_LENGTH(USER_PASS_LEN) + 1024);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            struct buffer *buf =
-=3D buffer_list_peek(man-&gt;connection.in_extra);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            if (buf &amp;&amp; BLEN(buf) &gt; 0)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                if (OPENVPN_BASE64_DECOD=
-ED_LENGTH(BLEN(buf)) &gt;=3D USER_PASS_LEN)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    msg(M_CLIENT, &quot;ERROR: passwo=
-rd too long&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                    buf_clear(buf);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                    break;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                int len =3D openvpn_base64_decode(BSTR=
-(buf), decoded,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                                            USER_PASS_LEN - 1);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                if (len &lt; 0)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    m=
-sg(M_CLIENT, &quot;ERROR: could not base64-decode password&quot;);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                    buf_clea=
-r(buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         decoded[len] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                buf_clear(buf);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            man_query_password(man, man-&gt;connection.up_query_ty=
-pe,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-               decoded);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            secure_memzero(decoded, sizeof(decoded));</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>     }</spa=
-n><br><span>     in_extra_reset(&amp;man-&gt;connection, IER_RESET);</span>=
-<br><span> }</span><br><span>@@ -1598,9 +1672,20 @@</span><br><span>     }<=
-/span><br><span>     else if (streq(p[0], &quot;password&quot;))</span><br>=
-<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (man_need(man, p, 2, 0))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        if (man_need(man, p, 1, MN_AT_LEAST))</span><br><span>      =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            man_q=
-uery_password(man, p[1], p[2]);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            if (p[2])</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                man_query_password(man, p[1], p[2]);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            else if (man-&gt;connection.=
-client_version &gt;=3D MCV_MULTILINE_PASSWORD)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                man_query_password_base64(man, p[1]);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                msg(M_CLIENT, &quot=
-;ERROR: the &#39;password&#39; command requires 2 parameters&quot;);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
-pan>         }</span><br><span>     }</span><br><span>     else if (streq(p=
-[0], &quot;forget-passwords&quot;))</span><br><span>diff --git a/src/openvp=
-n/manage.h b/src/openvpn/manage.h</span><br><span>index e5ad23f..27d3b60 10=
-0644</span><br><span>--- a/src/openvpn/manage.h</span><br><span>+++ b/src/o=
-penvpn/manage.h</span><br><span>@@ -50,7 +50,7 @@</span><br><span> #include=
- &quot;socket_util.h&quot;</span><br><span> #include &quot;mroute.h&quot;</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defi=
-ne MANAGEMENT_VERSION                  5</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#define MANAGEMENT_VERSION                  6</span><b=
-r><span> #define MANAGEMENT_N_PASSWORD_RETRIES       3</span><br><span> #de=
-fine MANAGEMENT_LOG_HISTORY_INITIAL_SIZE 100</span><br><span> #define MANAG=
-EMENT_ECHO_BUFFER_SIZE         100</span><br><span>@@ -297,6 +297,7 @@</spa=
-n><br><span> #define IEC_RSA_SIGN    3</span><br><span> #define IEC_CERTIFI=
-CATE 4</span><br><span> #define IEC_PK_SIGN     5</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#define IEC_PASSWORD    6</span><br><span>   =
-  int in_extra_cmd;</span><br><span>     struct buffer_list *in_extra;</spa=
-n><br><span>     unsigned long in_extra_cid;</span><br><span></span><br></p=
-re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?=
-usp=3Demail">change 1593</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">setti=
-ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
- itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
-ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1593?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos. </p>
+<p>Bluca would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Add new helpers to handle key exchange (S_S=
+ENT_KEY/S_START) with large passwords<br><br>The current key exchange uses =
+an intermediate buffer hardcoded<br>at 2048 bytes, that cannot handle anyth=
+ing longer, as it gets<br>silently truncated.<br><br>This breaks using JIT =
+use-once tokens for authentications, that<br>are becoming common in enterpr=
+ise devices to reduce attack<br>surfaces, as the tokens are typically long =
+JWT encoded strings.<br><br>Add new helpers that, instead of doing a single=
+ 2048 bytes<br>read/write from/to the TLS layer, reads/writes all the avail=
+able<br>data when doing the key method 2 exchange.<br>Other stages of the p=
+rotocol are unaffected. Note that this is<br>an intermediary buffer, the TL=
+S layer is already handling<br>fragmented/reassembled frames appropriately,=
+ so there is no<br>on-the-wire difference, aside from letting the client se=
+nd more<br>data.<br><br>Older servers will simply continue to truncate pass=
+words longer<br>than the existing limit, as they are doing currently, so no=
+<br>incompatible changes, behaviour stays the same and current valid<br>pas=
+swords are still valid when the new client uses them.<br>When an old client=
+ talks to a new server, likewise there are no<br>changes, as the previous c=
+lients have the embedded limit, so all<br>existing passwords will continue =
+to work.<br><br>Tested combinations:<br><br>old client &lt;--&gt; new serve=
+r<br>new client &lt;--&gt; old server<br>new client &lt;--&gt; new server<b=
+r><br>With the last combination, a large password can be used successfully.=
+<br>With either an old server or old client, existing limits apply and<br>a=
+ clear error is shown in case one tries a password longer than the<br>exist=
+ing limits.<br><br>Change-Id: I055c64ca8b23066e70eea7d7deddfb14f5354c5f<br>=
+Signed-off-by: Luca Boccassi &lt;luca.boccassi@...277...&gt;<br>---<br>M sr=
+c/openvpn/common.h<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_common.h<br>=
+3 files changed, 116 insertions(+), 17 deletions(-)<br><br></pre><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/22/1622/1<=
+/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+"><span>diff --git a/src/openvpn/common.h b/src/openvpn/common.h</span><br>=
+<span>index aa7b721..b67a6f4 100644</span><br><span>--- a/src/openvpn/commo=
+n.h</span><br><span>+++ b/src/openvpn/common.h</span><br><span>@@ -69,6 +69=
+,16 @@</span><br><span>  */</span><br><span> #define TLS_CHANNEL_BUF_SIZE 2=
+048</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Buffer size =
+for key method 2 exchange data. This needs to be</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * large enough to hold the key source materia=
+l, options string,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* username, password and peer info. When USER_PASS_LEN is larger</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * than the default TLS channe=
+l size (e.g. with ENABLE_PKCS11),</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * we need a larger buffer. The key exchange write and read p=
+aths</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * handle this =
+by doing multiple TLS writes/reads as needed.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#define KEY_METHOD_BUF_SIZE (TLS_CHANNEL_BUF_SIZE + 2 * USER_PASS=
+_LEN)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an> /* TLS control buffer minimum size</span><br><span>  *</span><br><span>=
+  * A control frame might have IPv6 header (40 byte),</span><br><span>diff =
+--git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 576157d=
+..83bc46e 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>++=
++ b/src/openvpn/ssl.c</span><br><span>@@ -860,6 +860,8 @@</span><br><span> =
+    ks-&gt;plaintext_read_buf =3D alloc_buf(TLS_CHANNEL_BUF_SIZE);</span><b=
+r><span>     ks-&gt;plaintext_write_buf =3D alloc_buf(TLS_CHANNEL_BUF_SIZE)=
+;</span><br><span>     ks-&gt;ack_write_buf =3D alloc_buf(BUF_SIZE(&amp;ses=
+sion-&gt;opt-&gt;frame));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ks-&gt;key_method_send_buf =3D alloc_buf(KEY_METHOD_BUF_SIZE);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ks-&gt;key_method_=
+recv_buf =3D alloc_buf(KEY_METHOD_BUF_SIZE);</span><br><span>     reliable_=
+init(ks-&gt;send_reliable, BUF_SIZE(&amp;session-&gt;opt-&gt;frame),</span>=
+<br><span>                   session-&gt;opt-&gt;frame.buf.headroom, TLS_RE=
+LIABLE_N_SEND_BUFFERS,</span><br><span>                   ks-&gt;key_id ? f=
+alse : session-&gt;opt-&gt;xmit_hold);</span><br><span>@@ -915,6 +917,8 @@<=
+/span><br><span>     free_buf(&amp;ks-&gt;plaintext_read_buf);</span><br><s=
+pan>     free_buf(&amp;ks-&gt;plaintext_write_buf);</span><br><span>     fr=
+ee_buf(&amp;ks-&gt;ack_write_buf);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    free_buf(&amp;ks-&gt;key_method_send_buf);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    free_buf(&amp;ks-&gt;key_meth=
+od_recv_buf);</span><br><span>     buffer_list_free(ks-&gt;paybuf);</span><=
+br><span> </span><br><span>     reliable_free(ks-&gt;send_reliable);</span>=
+<br><span>@@ -2624,6 +2628,54 @@</span><br><span>     return true;</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Read=
+ all currently available plaintext from the TLS object into buf,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * doing multiple reads if nec=
+essary. This is used for key method 2</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * exchange data which may exceed a single TLS_CHANNEL_BU=
+F_SIZE read</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * when =
+long passwords/tokens are used.</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stat=
+ic bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+read_incomin=
+g_tls_plaintext_multi(struct key_state *ks, struct buffer *buf,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+   interval_t *wakeup, bool *continue_tls_process)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    struct buffer tmp =3D alloc_buf(TLS_CHANNEL_BUF_SIZE);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    while (buf_forward_capacity(buf) &gt;=
+ 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        buf_init(&amp;tmp, 0);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int status =
+=3D key_state_read_plaintext(&amp;ks-&gt;ks_ssl, &amp;tmp);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        update_time();</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        if (status =3D=3D -1)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            msg(D_TLS_ERRORS,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                &quot;TLS Error: TLS obje=
+ct -&gt; incoming plaintext read error&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            free_buf(&amp;tmp);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if (status =3D=3D 1)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            if (!buf_write(buf, BPTR(&amp=
+;tmp), BLEN(&amp;tmp)))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              msg(D_TLS_ERRORS,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                    &quot;TLS Error: key exchange plaintext too=
+ large&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           free_buf(&amp;tmp);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                return false;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            *continue_tls_process =3D true;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            *wakeup =3D 0;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            dmsg(D_TLS_DEBUG,=
+ &quot;TLS -&gt; Incoming Plaintext (key exchange)&quot;);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            break;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    free_buf(&amp;tmp);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> static bool</span><br><span> wr=
+ite_outgoing_tls_ciphertext(struct tls_session *session, bool *continue_tls=
+_process)</span><br><span> {</span><br><span>@@ -2836,22 +2888,40 @@</span>=
+<br><span>     }</span><br><span> </span><br><span>     /* Read incoming pl=
+aintext from TLS object */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    struct buffer *buf =3D &amp;ks-&gt;plaintext_read_buf;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    if (!buf-&gt;len)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    bool in_key_exchange_read =
+=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        (ks-&gt;=
+state =3D=3D S_SENT_KEY &amp;&amp; !session-&gt;opt-&gt;server)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        || (ks-&gt;state =3D=3D=
+ S_START &amp;&amp; session-&gt;opt-&gt;server);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (in_key_exchange_read)</span><br><span>     {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        if (!read_incoming_tls_pla=
+intext(ks, buf, wakeup, &amp;continue_tls_process))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /* For key exchange, read all ava=
+ilable plaintext into a buffer</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+         * that is large enough for long passwords/tokens. Multi=
+ple reads</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         *=
+ are done to handle data exceeding TLS_CHANNEL_BUF_SIZE. */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        if (!read_incoming_tls_plai=
+ntext_multi(ks, &amp;ks-&gt;key_method_recv_buf,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                                              =
+ wakeup, &amp;continue_tls_process))</span><br><span>         {</span><br><=
+span>             goto error;</span><br><span>         }</span><br><span>  =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        struct buffer *buf =3D &amp;ks-&=
+gt;plaintext_read_buf;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        if (!buf-&gt;len)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (!read_incoming_tls_plaintext(ks, buf, wakeup, &amp;continue_=
+tls_process))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    goto error;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Send Key */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf =3D &amp;ks-&=
+gt;plaintext_write_buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if (!buf-&gt;len</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* Send Key -- use larger key_method_send_buf for assembly to suppor=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * long passwo=
+rds/tokens that exceed TLS_CHANNEL_BUF_SIZE */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (!ks-&gt;key_method_send_buf.len</span><b=
+r><span>         &amp;&amp; ((ks-&gt;state =3D=3D S_START &amp;&amp; !sessi=
+on-&gt;opt-&gt;server)</span><br><span>             || (ks-&gt;state =3D=3D=
+ S_GOT_KEY &amp;&amp; session-&gt;opt-&gt;server)))</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!key_metho=
+d_2_write(buf, multi, session))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        if (!key_method_2_write(&amp;ks-&gt;key_method_send_buf=
+, multi, session))</span><br><span>         {</span><br><span>             =
+goto error;</span><br><span>         }</span><br><span>@@ -2861,13 +2931,12=
+ @@</span><br><span>         ks-&gt;state =3D S_SENT_KEY;</span><br><span> =
+    }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    /* Receive Key */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    buf =3D &amp;ks-&gt;plaintext_read_buf;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (buf-&gt;len</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    /* Receive Key -- use the larger key_method_rec=
+v_buf */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (BLE=
+N(&amp;ks-&gt;key_method_recv_buf)</span><br><span>         &amp;&amp; ((ks=
+-&gt;state =3D=3D S_SENT_KEY &amp;&amp; !session-&gt;opt-&gt;server)</span>=
+<br><span>             || (ks-&gt;state =3D=3D S_START &amp;&amp; session-&=
+gt;opt-&gt;server)))</span><br><span>     {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        if (!key_method_2_read(buf, multi, session))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!key_met=
+hod_2_read(&amp;ks-&gt;key_method_recv_buf, multi, session))</span><br><spa=
+n>         {</span><br><span>             goto error;</span><br><span>     =
+    }</span><br><span>@@ -2877,20 +2946,38 @@</span><br><span>         ks-&=
+gt;state =3D S_GOT_KEY;</span><br><span>     }</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    /* Write outgoing plaintext =
+to TLS object */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    b=
+uf =3D &amp;ks-&gt;plaintext_write_buf;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    if (buf-&gt;len)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    /* Write key exchange data to TLS object */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (ks-&gt;key_method_se=
+nd_buf.len)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        int status =3D key_state_write_plaintext(&amp;ks-&gt;k=
+s_ssl, buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ int status =3D key_state_write_plaintext(&amp;ks-&gt;ks_ssl, &amp;ks-&gt;k=
+ey_method_send_buf);</span><br><span>         if (status =3D=3D -1)</span><=
+br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          msg(D_TLS_ERRORS, &quot;TLS ERROR: Outgoing Plaintext -&gt; TLS o=
+bject write error&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            msg(D_TLS_ERRORS, &quot;TLS ERROR: Key Method -&gt; TLS o=
+bject write error&quot;);</span><br><span>             goto error;</span><b=
+r><span>         }</span><br><span>         if (status =3D=3D 1)</span><br>=
+<span>         {</span><br><span>             continue_tls_process =3D true=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_T=
+LS_DEBUG, &quot;Outgoing Plaintext -&gt; TLS&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            dmsg(D_TLS_DEBUG, &quot;Key M=
+ethod -&gt; TLS&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    /* Write outgoing plaintext to TLS =
+object */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct buffer *b=
+uf =3D &amp;ks-&gt;plaintext_write_buf;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        if (buf-&gt;len)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            int status =3D key_state_write_plaintext(&amp;ks=
+-&gt;ks_ssl, buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (status =3D=3D -1)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                msg(D_TLS_ERRORS, &quot;TLS ERROR: Outgoing Plaintex=
+t -&gt; TLS object write error&quot;);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                goto error;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            if (status =3D=3D 1)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                continue_tls_process =3D true;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                dmsg=
+(D_TLS_DEBUG, &quot;Outgoing Plaintext -&gt; TLS&quot;);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span>        =
+ }</span><br><span>     }</span><br><span>     if (!check_outgoing_cipherte=
+xt(ks, session, &amp;continue_tls_process))</span><br><span>diff --git a/sr=
+c/openvpn/ssl_common.h b/src/openvpn/ssl_common.h</span><br><span>index 6f3=
+10a5..6f3da11 100644</span><br><span>--- a/src/openvpn/ssl_common.h</span><=
+br><span>+++ b/src/openvpn/ssl_common.h</span><br><span>@@ -241,6 +241,8 @@=
+</span><br><span>     struct buffer plaintext_read_buf;</span><br><span>   =
+  struct buffer plaintext_write_buf;</span><br><span>     struct buffer ack=
+_write_buf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
+ct buffer key_method_send_buf; /* larger buffer for key method 2 write */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer key=
+_method_recv_buf; /* larger buffer for key method 2 read */</span><br><span=
+> </span><br><span>     struct reliable *send_reliable; /* holds a copy of =
+outgoing packets until ACK received */</span><br><span>     struct reliable=
+ *rec_reliable;  /* order incoming ciphertext packets before we pass to TLS=
+ */</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/1622?usp=3Demail">change 1622</a>. To unsubscr=
+ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
+pn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1622?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib99f171fb69d51f2260b44edf8e=
-be21ac958f233 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1593 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 12 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I055c64ca8b23066e70eea7d7ded=
+dfb14f5354c5f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1622 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: Bluca &lt;luca.boccassi@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: flichtenheld &lt;frank@...2641...&g=
-t; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---IOyxoTDU9DY=--
+--lZ1bRpWjkHU=--
 
