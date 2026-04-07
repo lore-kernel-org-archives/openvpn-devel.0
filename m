@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 7 Apr 2026 11:54:13 +0000
-In-Reply-To: <gerrit.1775475846000.I055c64ca8b23066e70eea7d7deddfb14f5354c5f@...2715...>
-References: <gerrit.1775475846000.I055c64ca8b23066e70eea7d7deddfb14f5354c5f@...2715...>
-Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
- luca.boccassi@...277..., openvpn-devel@lists.sourceforge.net
-Message-ID: <8acdcd7315dadb2805fa98f03cc2cb91df3ca554-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 7 Apr 2026 20:06:24 +0000
+In-Reply-To: <gerrit.1775421558000.Ia153e0de888c0ee21199b192f3471ce4c08cb5c7@...2715...>
+References: <gerrit.1775421558000.Ia153e0de888c0ee21199b192f3471ce4c08cb5c7@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <e17beeb7db492e5acb4e1a3f233d37bfa12b80ca-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LQ0KX4yjt7E="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add new helpers to
- handle key exchange (S_SENT_KEY/S_START) with larg...
+Content-Type: multipart/alternative; boundary="ZuPiQtncVzE="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Clarify operator
+ precedence in a & b ? c : d
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,162 +19,195 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Bluca <luca.boccassi@...277...>
-Cc: selvanair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---LQ0KX4yjt7E=
+--ZuPiQtncVzE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Bluca, selvanair.
+Attention is currently required from: flichtenheld, plaisthos.
 
-plaisthos has posted comments on this change by Bluca. ( http://gerrit.open=
-vpn.net/c/openvpn/+/1622?usp=3Demail )
+Hello cron2, plaisthos,
 
-Change subject: Add new helpers to handle key exchange (S_SENT_KEY/S_START)=
- with large passwords
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1619?usp=3Demail
+
+to look at the new patch set (#2).
+
+
+Change subject: Clarify operator precedence in a & b ? c : d
 ......................................................................
 
+Clarify operator precedence in a & b ? c : d
 
-Patch Set 1:
+As suggested by cppcheck.
 
-(2 comments)
-
-Patchset:
-
-PS1:
-> Sorry, I don't really follow. [=E2=80=A6]
-The TLS layer uses TLS records for framing and OpenVPN currently relies on =
-TLS records for its own framing. Not many protocols do this and this also c=
-auses problem, ie when you enable record splitting.
-
-And your patch basically decides to break this assumption but only for the =
-key2 related methods, which is in my opinion quite hacky.
-
-And that why I am saying that we need a proper patch/negotiation to overcom=
-e this limit instead.
-
-But I get the feeling that you are not really interested in any solution th=
-at would actually improve on the OpenVPN protocol to implement longer usern=
-ame/password if it is not compatible with the approach that Microsoft has d=
-ecided to take.
+Change-Id: Ia153e0de888c0ee21199b192f3471ce4c08cb5c7
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/error.h
+M src/openvpn/options.c
+M src/openvpnserv/common.c
+3 files changed, 4 insertions(+), 4 deletions(-)
 
 
-PS1:
-> Sure, but that's 2 years old and included in LTS distros, eg. Ubuntu 24. =
-[=E2=80=A6]
-You might not care about compatibility, interoperability and behaviour of m=
-odern clients with older servers and vice versa but we care and we have tak=
-e that into account. And "that's 2 years old" is way shorter than we care a=
-bout. We still maintain compatibility with OpenVPN 2.2 server and clients a=
-nd people are still using a lot of OpenVPN 2.4/OpenVPN 2.5.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/19/1619/2
 
-And that your patch allows triggering very erratic behaviour with these old=
-er version is not a good thing.
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 62389af..03d880f 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -399,7 +399,7 @@
+ static inline msglvl_t
+ nonfatal(const msglvl_t err)
+ {
+-    return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
++    return (err & M_FATAL) ? (err ^ M_FATAL) | M_NONFATAL : err;
+ }
 
+ static inline int
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 186b2d2..e4905c9 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7043,12 +7043,12 @@
+         if (options->routes->flags & RG_REROUTE_GW)
+         {
+             setenv_int(es, "route_redirect_gateway_ipv4",
+-                       options->routes->flags & RG_BLOCK_LOCAL ? 2 : 1);
++                       (options->routes->flags & RG_BLOCK_LOCAL) ? 2 : 1);
+         }
+         if (options->routes_ipv6 && (options->routes_ipv6->flags & RG_RERO=
+UTE_GW))
+         {
+             setenv_int(es, "route_redirect_gateway_ipv6",
+-                       options->routes->flags & RG_BLOCK_LOCAL ? 2 : 1);
++                       (options->routes->flags & RG_BLOCK_LOCAL) ? 2 : 1);
+         }
+ #ifdef _WIN32
+         /* we need this here to handle pushed --redirect-gateway */
+diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+index f60e2f2..7fc8c14 100644
+--- a/src/openvpnserv/common.c
++++ b/src/openvpnserv/common.c
+@@ -276,7 +276,7 @@
 
+         const WCHAR *mesg[] =3D { msg[0], msg[1] };
+         ReportEvent(hEventSource,
+-                    flags & MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTL=
+OG_INFORMATION_TYPE,
++                    (flags & MSG_FLAGS_ERROR) ? EVENTLOG_ERROR_TYPE : EVEN=
+TLOG_INFORMATION_TYPE,
+                     0,
+                     EVT_TEXT_2,
+                     NULL,
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1619?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I055c64ca8b23066e70eea7d7deddfb14f5354c5f
-Gerrit-Change-Number: 1622
-Gerrit-PatchSet: 1
-Gerrit-Owner: Bluca <luca.boccassi@...277...>
+Gerrit-Change-Id: Ia153e0de888c0ee21199b192f3471ce4c08cb5c7
+Gerrit-Change-Number: 1619
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: Bluca <luca.boccassi@...277...>
-Gerrit-Attention: selvanair <selva.nair@...277...>
-Gerrit-Comment-Date: Tue, 07 Apr 2026 11:54:13 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Comment-In-Reply-To: Bluca <luca.boccassi@...277...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 
---LQ0KX4yjt7E=
+--ZuPiQtncVzE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Bluca, selvanair. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail">View =
-Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"=
-><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-sty=
-le: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p sty=
-le=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/1622?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p><blockquote =
-style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Sor=
-ry, I don&#39;t really follow. [=E2=80=A6]</blockquote></p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">The TLS layer u=
-ses TLS records for framing and OpenVPN currently relies on TLS records for=
- its own framing. Not many protocols do this and this also causes problem, =
-ie when you enable record splitting.</p><p class=3D"blocks" style=3D"white-=
-space: pre-wrap; word-wrap: break-word;">And your patch basically decides t=
-o break this assumption but only for the key2 related methods, which is in =
-my opinion quite hacky.</p><p class=3D"blocks" style=3D"white-space: pre-wr=
-ap; word-wrap: break-word;">And that why I am saying that we need a proper =
-patch/negotiation to overcome this limit instead. </p><p class=3D"blocks" s=
-tyle=3D"white-space: pre-wrap; word-wrap: break-word;">But I get the feelin=
-g that you are not really interested in any solution that would actually im=
-prove on the OpenVPN protocol to implement longer username/password if it i=
-s not compatible with the approach that Microsoft has decided to take.</p><=
-/li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom=
-: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1622?tab=3Dcomment=
-s&amp;usp=3Demail">Patch Set #1:</a> </p><p><blockquote style=3D"border-lef=
-t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Sure, but that&#39;s 2=
- years old and included in LTS distros, eg. Ubuntu 24. [=E2=80=A6]</blockqu=
-ote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
-k-word;">You might not care about compatibility, interoperability and behav=
-iour of modern clients with older servers and vice versa but we care and we=
- have take that into account. And &quot;that&#39;s 2 years old&quot; is way=
- shorter than we care about. We still maintain compatibility with OpenVPN 2=
-.2 server and clients and people are still using a lot of OpenVPN 2.4/OpenV=
-PN 2.5.</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">And that your patch allows triggering very erratic behaviour wi=
-th these older version is not a good thing.</p></li></ul></li></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail=
-">change 1622</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1622?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1619?usp=3Demail">View C=
+hange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Clarify operator precedence in a &amp; b ? c : d=
+<br><br>As suggested by cppcheck.<br><br>Change-Id: Ia153e0de888c0ee21199b1=
+92f3471ce4c08cb5c7<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...=
+&gt;<br>---<br>M src/openvpn/error.h<br>M src/openvpn/options.c<br>M src/op=
+envpnserv/common.c<br>3 files changed, 4 insertions(+), 4 deletions(-)<br><=
+br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
+/changes/19/1619/2</pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;"><span>diff --git a/src/openvpn/error.h b/src/openvpn/e=
+rror.h</span><br><span>index 62389af..03d880f 100644</span><br><span>--- a/=
+src/openvpn/error.h</span><br><span>+++ b/src/openvpn/error.h</span><br><sp=
+an>@@ -399,7 +399,7 @@</span><br><span> static inline msglvl_t</span><br><s=
+pan> nonfatal(const msglvl_t err)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    return err &amp; M_FATAL ? (err ^ M_FAT=
+AL) | M_NONFATAL : err;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return (err &amp; M_FATAL) ? (err ^ M_FATAL) | M_NONFATAL : err;</s=
+pan><br><span> }</span><br><span> </span><br><span> static inline int</span=
+><br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span=
+><br><span>index 186b2d2..e4905c9 100644</span><br><span>--- a/src/openvpn/=
+options.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -7=
+043,12 +7043,12 @@</span><br><span>         if (options-&gt;routes-&gt;flag=
+s &amp; RG_REROUTE_GW)</span><br><span>         {</span><br><span>         =
+    setenv_int(es, &quot;route_redirect_gateway_ipv4&quot;,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                       options-&gt;ro=
+utes-&gt;flags &amp; RG_BLOCK_LOCAL ? 2 : 1);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                       (options-&gt;routes-&gt;fl=
+ags &amp; RG_BLOCK_LOCAL) ? 2 : 1);</span><br><span>         }</span><br><s=
+pan>         if (options-&gt;routes_ipv6 &amp;&amp; (options-&gt;routes_ipv=
+6-&gt;flags &amp; RG_REROUTE_GW))</span><br><span>         {</span><br><spa=
+n>             setenv_int(es, &quot;route_redirect_gateway_ipv6&quot;,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                       opt=
+ions-&gt;routes-&gt;flags &amp; RG_BLOCK_LOCAL ? 2 : 1);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                       (options-&gt;ro=
+utes-&gt;flags &amp; RG_BLOCK_LOCAL) ? 2 : 1);</span><br><span>         }</=
+span><br><span> #ifdef _WIN32</span><br><span>         /* we need this here=
+ to handle pushed --redirect-gateway */</span><br><span>diff --git a/src/op=
+envpnserv/common.c b/src/openvpnserv/common.c</span><br><span>index f60e2f2=
+..7fc8c14 100644</span><br><span>--- a/src/openvpnserv/common.c</span><br><=
+span>+++ b/src/openvpnserv/common.c</span><br><span>@@ -276,7 +276,7 @@</sp=
+an><br><span> </span><br><span>         const WCHAR *mesg[] =3D { msg[0], m=
+sg[1] };</span><br><span>         ReportEvent(hEventSource,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                    flags &amp; MSG_F=
+LAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                    (flags &amp; =
+MSG_FLAGS_ERROR) ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,</span><=
+br><span>                     0,</span><br><span>                     EVT_T=
+EXT_2,</span><br><span>                     NULL,</span><br><span></span><b=
+r></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+1619?usp=3Demail">change 1619</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">=
+settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
+><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
+n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/161=
+9?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
+v>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I055c64ca8b23066e70eea7d7ded=
-dfb14f5354c5f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1622 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: Bluca &lt;luca.boccassi@...1663...=
+<div style=3D"display:none"> Gerrit-Change-Id: Ia153e0de888c0ee21199b192f34=
+71ce4c08cb5c7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1619 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Bluca &lt;luca.boccassi@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 07 Apr 2026 11:54:13=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-To: Bluca &lt;luca.boccassi@...220...=
-..277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 
 </body></html>=
 
---LQ0KX4yjt7E=--
+--ZuPiQtncVzE=--
 
