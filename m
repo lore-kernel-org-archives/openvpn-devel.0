@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue,  7 Apr 2026 11:46:37 +0200
-Message-ID: <20260407094643.28090-1-gert@...1296...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 7 Apr 2026 09:46:29 +0000
 In-Reply-To: <gerrit.1772798203000.Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5@...2715...>
 References: <gerrit.1772798203000.Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <eb08a65a7f0bc59762dece23cf120c03d1b00e13-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] dns: Change arguments to
- setenv_dns_option to avoid sign-compare warning
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="OdiBSwAvWqQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: Change
+ arguments to setenv_dns_option to avoid sign-compare warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,129 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--OdiBSwAvWqQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The change is a bit big to fix just one compare warning,
-but that is due to the highly interdependent code.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1558
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1558?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: dns: Change arguments to setenv_dns_option to avoid sign-co=
+mpare warning
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1558
-This mail reflects revision 7 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 7: Code-Review+2
 
-        
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index a42d032..ce23f1f 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -476,20 +476,15 @@
-     send_msg_iservice(o->msg_channel, &nrpt, sizeof(nrpt), &ack, "DNS");
- }
- 
--#else /* ifdef _WIN32 */
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
-+#else  /* ifdef _WIN32 */
- 
- static void
--setenv_dns_option(struct env_set *es, const char *format, int i, int j, const char *value)
-+setenv_dns_option(struct env_set *es, const char *format, size_t i, size_t j, const char *value)
- {
-     char name[64];
-     bool name_ok = false;
- 
--    if (j < 0)
-+    if (j == 0)
-     {
-         name_ok = checked_snprintf(name, sizeof(name), format, i);
-     }
-@@ -512,11 +507,11 @@
-     struct gc_arena gc = gc_new();
-     const struct dns_server *s;
-     const struct dns_domain *d;
--    int i, j;
-+    size_t i, j;
- 
-     for (i = 1, d = o->search_domains; d != NULL; i++, d = d->next)
-     {
--        setenv_dns_option(es, "dns_search_domain_%d", i, -1, d->name);
-+        setenv_dns_option(es, "dns_search_domain_%zu", i, 0, d->name);
-     }
- 
-     for (i = 1, s = o->servers; s != NULL; i++, s = s->next)
-@@ -525,17 +520,17 @@
-         {
-             if (s->addr[j].family == AF_INET)
-             {
--                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
-+                setenv_dns_option(es, "dns_server_%zu_address_%zu", i, j + 1,
-                                   print_in_addr_t(s->addr[j].in.a4.s_addr, IA_NET_ORDER, &gc));
-             }
-             else
-             {
--                setenv_dns_option(es, "dns_server_%d_address_%d", i, j + 1,
-+                setenv_dns_option(es, "dns_server_%zu_address_%zu", i, j + 1,
-                                   print_in6_addr(s->addr[j].in.a6, 0, &gc));
-             }
-             if (s->addr[j].port)
-             {
--                setenv_dns_option(es, "dns_server_%d_port_%d", i, j + 1,
-+                setenv_dns_option(es, "dns_server_%zu_port_%zu", i, j + 1,
-                                   print_in_port_t(s->addr[j].port, &gc));
-             }
-         }
-@@ -544,32 +539,28 @@
-         {
-             for (j = 1, d = s->domains; d != NULL; j++, d = d->next)
-             {
--                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i, j, d->name);
-+                setenv_dns_option(es, "dns_server_%zu_resolve_domain_%zu", i, j, d->name);
-             }
-         }
- 
-         if (s->dnssec)
-         {
--            setenv_dns_option(es, "dns_server_%d_dnssec", i, -1, dnssec_value(s->dnssec));
-+            setenv_dns_option(es, "dns_server_%zu_dnssec", i, 0, dnssec_value(s->dnssec));
-         }
- 
-         if (s->transport)
-         {
--            setenv_dns_option(es, "dns_server_%d_transport", i, -1, transport_value(s->transport));
-+            setenv_dns_option(es, "dns_server_%zu_transport", i, 0, transport_value(s->transport));
-         }
-         if (s->sni)
-         {
--            setenv_dns_option(es, "dns_server_%d_sni", i, -1, s->sni);
-+            setenv_dns_option(es, "dns_server_%zu_sni", i, 0, s->sni);
-         }
-     }
- 
-     gc_free(&gc);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static void
- updown_env_set(bool up, const struct dns_options *o, const struct tuntap *tt, struct env_set *es)
- {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ibfcc350c772227cfc0f2244fa2b1625dcb7e6fb5
+Gerrit-Change-Number: 1558
+Gerrit-PatchSet: 7
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 07 Apr 2026 09:46:29 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--OdiBSwAvWqQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 7:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail=
+">change 1558</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1558?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibfcc350c772227cfc0f2244fa2b=
+1625dcb7e6fb5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1558 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 07 Apr 2026 09:46:29=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--OdiBSwAvWqQ=--
 
