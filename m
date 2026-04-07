@@ -1,11 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue,  7 Apr 2026 22:52:28 +0200
-Message-ID: <20260407205235.31126-1-gert@...1296...>
-In-Reply-To: <gerrit.1775421558000.Ia153e0de888c0ee21199b192f3471ce4c08cb5c7@...2715...>
-References: <gerrit.1775421558000.Ia153e0de888c0ee21199b192f3471ce4c08cb5c7@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Tue, 7 Apr 2026 20:53:26 +0000
+In-Reply-To: <gerrit.1775592384000.I7f983168c263e49da7665fc20bd1ecdd426c21d0@...2715...>
+References: <gerrit.1775592384000.I7f983168c263e49da7665fc20bd1ecdd426c21d0@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <3e10b853c6a13826aab914b75e4c3388d2993e0e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Clarify operator precedence in a & b ? c
- : d
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="sMrYIcglaF8="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: openvpnserv: Remove
+ redundant bit-wise operation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,73 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--sMrYIcglaF8=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-As suggested by cppcheck.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: Ia153e0de888c0ee21199b192f3471ce4c08cb5c7
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1619
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1623?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: openvpnserv: Remove redundant bit-wise operation
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1619
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index 62389af..03d880f 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -399,7 +399,7 @@
- static inline msglvl_t
- nonfatal(const msglvl_t err)
- {
--    return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
-+    return (err & M_FATAL) ? (err ^ M_FATAL) | M_NONFATAL : err;
- }
- 
- static inline int
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 186b2d2..e4905c9 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7043,12 +7043,12 @@
-         if (options->routes->flags & RG_REROUTE_GW)
-         {
-             setenv_int(es, "route_redirect_gateway_ipv4",
--                       options->routes->flags & RG_BLOCK_LOCAL ? 2 : 1);
-+                       (options->routes->flags & RG_BLOCK_LOCAL) ? 2 : 1);
-         }
-         if (options->routes_ipv6 && (options->routes_ipv6->flags & RG_REROUTE_GW))
-         {
-             setenv_int(es, "route_redirect_gateway_ipv6",
--                       options->routes->flags & RG_BLOCK_LOCAL ? 2 : 1);
-+                       (options->routes->flags & RG_BLOCK_LOCAL) ? 2 : 1);
-         }
- #ifdef _WIN32
-         /* we need this here to handle pushed --redirect-gateway */
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index f60e2f2..7fc8c14 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -276,7 +276,7 @@
- 
-         const WCHAR *mesg[] = { msg[0], msg[1] };
-         ReportEvent(hEventSource,
--                    flags & MSG_FLAGS_ERROR ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,
-+                    (flags & MSG_FLAGS_ERROR) ? EVENTLOG_ERROR_TYPE : EVENTLOG_INFORMATION_TYPE,
-                     0,
-                     EVT_TEXT_2,
-                     NULL,
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1623?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7f983168c263e49da7665fc20bd1ecdd426c21d0
+Gerrit-Change-Number: 1623
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Tue, 07 Apr 2026 20:53:26 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--sMrYIcglaF8=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1623?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1623?usp=3Demail=
+">change 1623</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1623?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7f983168c263e49da7665fc20bd=
+1ecdd426c21d0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1623 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 07 Apr 2026 20:53:26=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--sMrYIcglaF8=--
 
