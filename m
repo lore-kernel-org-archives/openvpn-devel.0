@@ -1,11 +1,9 @@
+Date: Sun, 12 Apr 2026 15:46:18 +0200 (CEST)
+Message-Id: <202604121346.63CDkIBJ076411@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sun, 12 Apr 2026 14:53:50 +0200
-Message-ID: <20260412125356.32261-1-gert@...1296...>
-In-Reply-To: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
-References: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] Optimise iterating over all clients by
- remembering highest peer id
+In-Reply-To: <20260313104955.16748-1-frank@...2641...>
+References: <20260313104955.16748-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove multi_context->iter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,145 +14,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+This is the beginning of all the good stuff for 2.8 :-)
 
-This keeps track of the highest peer id that is currently allocated to avoid
-iterating over the empty tail of the m->instances array.
+We have an ACK from Frank.  I have stared-at-code at this for a bit, and
+subjected it to the t_server testbed (which can have at least 3 active clients
+at one time, so lots of iteration!)...
 
-Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f05c3
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1557
----
+Tests still pass fine, the code complexity goes down ("walk an array"
+is an easy concept, "understand what this hash iteration stuff does" 
+not so much.  C is just not the language for this...).
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Performance will be even further improved by the next patch in this
+series, "remembering highest peer id".
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1557
-This mail reflects revision 7 of this Change.
+Your patch has been applied to the master branch.
 
-Acked-by according to Gerrit (reflected above):
+commit 930968086deeeaac6f5717067339537c467c10d0 (master)
+Author: Arne Schwabe
+Date:   Fri Mar 13 11:49:55 2026 +0100
 
-        
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 9d4ea49..c03e821 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -601,6 +601,13 @@
-         if (mi->context.c2.tls_multi->peer_id != MAX_PEER_ID)
-         {
-             m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
-+
-+            /* Adjust the max_peerid as this might have been the highest
-+             * peer id instance */
-+            while (m->max_peerid > 0 && m->instances[m->max_peerid] == NULL)
-+            {
-+                m->max_peerid--;
-+            }
-         }
- 
-         schedule_remove_entry(m->schedule, (struct schedule_entry *)mi);
-@@ -652,7 +659,7 @@
- {
-     if (m->hash)
-     {
--        for (int i = 0; i < m->max_clients; i++)
-+        for (uint32_t i = 0; i <= m->max_peerid; i++)
-         {
-             struct multi_instance *mi = m->instances[i];
-             if (mi)
-@@ -1326,7 +1333,7 @@
-         {
-             int count = 0;
- 
--            for (int i = 0; i < m->max_clients; i++)
-+            for (uint32_t i = 0; i <= m->max_peerid; i++)
-             {
-                 struct multi_instance *mi = m->instances[i];
-                 if (mi && mi != new_mi && !mi->halt)
-@@ -2885,7 +2892,7 @@
- #endif
-         mb = mbuf_alloc_buf(buf);
- 
--        for (int i = 0; i < m->max_clients; i++)
-+        for (uint32_t i = 0; i <= m->max_peerid; i++)
-         {
-             struct multi_instance *mi = m->instances[i];
- 
-@@ -3794,7 +3801,7 @@
- multi_push_restart_schedule_exit(struct multi_context *m, bool next_server)
- {
-     /* tell all clients to restart */
--    for (int i = 0; i < m->max_clients; i++)
-+    for (uint32_t i = 0; i <= m->max_peerid; i++)
-     {
-         struct multi_instance *mi = m->instances[i];
-         if (mi && !mi->halt && proto_is_dgram(mi->context.c2.link_sockets[0]->info.proto))
-@@ -3876,7 +3883,7 @@
-     struct multi_context *m = (struct multi_context *)arg;
-     int count = 0;
- 
--    for (int i = 0; i < m->max_clients; i++)
-+    for (uint32_t i = 0; i <= m->max_peerid; i++)
-     {
-         struct multi_instance *mi = m->instances[i];
-         if (mi && !mi->halt)
-@@ -3907,7 +3914,7 @@
-     maddr.proto = proto;
-     if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
-     {
--        for (int i = 0; i < m->max_clients; i++)
-+        for (uint32_t i = 0; i <= m->max_peerid; i++)
-         {
-             struct multi_instance *mi = m->instances[i];
-             if (mi && !mi->halt && mroute_addr_equal(&maddr, &mi->real))
-@@ -4100,8 +4107,14 @@
-     }
- 
-     /* should not really end up here, since multi_create_instance returns null
--     * if amount of clients exceeds max_clients */
-+     * if amount of clients exceeds max_clients and this method would then
-+     * also not have been called */
-     ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
-+
-+    if (mi->context.c2.tls_multi->peer_id > m->max_peerid)
-+    {
-+        m->max_peerid = mi->context.c2.tls_multi->peer_id;
-+    }
- }
- 
- #if defined(__GNUC__) || defined(__clang__)
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 498409d..4acb364 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -160,9 +160,12 @@
-  */
- struct multi_context
- {
--    struct multi_instance **instances; /**< Array of multi_instances. An instance can be
-+    struct multi_instance **instances; /**< Array of multi_instances with the size of
-+                                        *  max_clients.  An instance can be
-                                         * accessed using peer-id as an index. */
--
-+    uint32_t max_peerid;               /**< highest currently allocated peer-id
-+                                        * and maximum allocated/valid index in
-+                                        * instances */
-     struct hash *hash;                 /**< VPN tunnel instances indexed by real
-                                         *   address of the remote peer. */
-     struct hash *vhash;                /**< VPN tunnel instances indexed by
-diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
-index 6456554..529cc39 100644
---- a/src/openvpn/push_util.c
-+++ b/src/openvpn/push_util.c
-@@ -317,7 +317,7 @@
- 
-     int count = 0;
- 
--    for (int i = 0; i < m->max_clients; i++)
-+    for (uint32_t i = 0; i <= m->max_peerid; i++)
-     {
-         struct multi_instance *curr_mi = m->instances[i];
- 
+     Remove multi_context->iter
+
+     Signed-off-by: Arne Schwabe <arne-openvpn@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1556
+     Message-Id: <20260313104955.16748-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36087.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
