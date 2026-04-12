@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 12 Apr 2026 14:44:08 +0000
+Date: Sun, 12 Apr 2026 14:44:05 +0000
 In-Reply-To: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
 References: <gerrit.1772721382000.If797f3fe178fba3f43fb12898e5484bfb38f05c3@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <fc2b49f2e2496a462fef572e58e1e010c5e2c1d2-HTML@...2715...>
+Message-ID: <fc2b49f2e2496a462fef572e58e1e010c5e2c1d2-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Oct0Fo4n7kQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="lxzPNz4Y4ZA="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Optimise iterating
  over all clients by remembering highest peer id
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Oct0Fo4n7kQ=
+--lxzPNz4Y4ZA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/15=
-57?usp=3Demail )
+cron2 has uploaded a new patch set (#8) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail )
+
 
 Change subject: Optimise iterating over all clients by remembering highest =
 peer id
@@ -52,7 +53,7 @@ M src/openvpn/push_util.c
 3 files changed, 26 insertions(+), 10 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/57/1557/8
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
 index 0b03ff1..c7a91ab 100644
@@ -189,7 +190,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f05c3
@@ -199,142 +200,144 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Oct0Fo4n7kQ=
+--lxzPNz4Y4ZA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1557?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Optimise iterating over all clients by rememberi=
-ng highest peer id<br><br>This keeps track of the highest peer id that is c=
-urrently allocated to avoid<br>iterating over the empty tail of the m-&gt;i=
-nstances array.<br><br>Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f05c3=
-<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Gerrit URL: http=
-s://gerrit.openvpn.net/c/openvpn/+/1557<br>Message-Id: &lt;20260412125356.3=
-2261-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
-el@lists.sourceforge.net/msg36577.html<br>Signed-off-by: Gert Doering &lt;g=
-ert@...1296...&gt;<br>---<br>M src/openvpn/multi.c<br>M src/openvpn/multi.h=
-<br>M src/openvpn/push_util.c<br>3 files changed, 26 insertions(+), 10 dele=
-tions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>i=
-ndex 0b03ff1..c7a91ab 100644</span><br><span>--- a/src/openvpn/multi.c</spa=
-n><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -601,6 +601,13 @@<=
-/span><br><span>         if (mi-&gt;context.c2.tls_multi-&gt;peer_id !=3D M=
-AX_PEER_ID)</span><br><span>         {</span><br><span>             m-&gt;i=
-nstances[mi-&gt;context.c2.tls_multi-&gt;peer_id] =3D NULL;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            /* Adjust the max_peerid as this might hav=
-e been the highest</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-            * peer id instance */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            while (m-&gt;max_peerid &gt; 0 &amp;&amp; m-&gt;i=
-nstances[m-&gt;max_peerid] =3D=3D NULL)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                m-&gt;max_peerid--;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            }</span><br><span>         }</spa=
-n><br><span> </span><br><span>         schedule_remove_entry(m-&gt;schedule=
-, (struct schedule_entry *)mi);</span><br><span>@@ -652,7 +659,7 @@</span><=
-br><span> {</span><br><span>     if (m-&gt;hash)</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        for (int i =3D 0;=
- i &lt; m-&gt;max_clients; i++)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        for (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)=
-</span><br><span>         {</span><br><span>             struct multi_insta=
-nce *mi =3D m-&gt;instances[i];</span><br><span>             if (mi)</span>=
-<br><span>@@ -1326,7 +1333,7 @@</span><br><span>         {</span><br><span>=
-             int count =3D 0;</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            for (int i =3D 0; i &lt; m-&gt;max_cl=
-ients; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    for (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span=
->             {</span><br><span>                 struct multi_instance *mi =
-=3D m-&gt;instances[i];</span><br><span>                 if (mi &amp;&amp; =
-mi !=3D new_mi &amp;&amp; !mi-&gt;halt)</span><br><span>@@ -2885,7 +2892,7 =
-@@</span><br><span> #endif</span><br><span>         mb =3D mbuf_alloc_buf(b=
-uf);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        for (uint32_t i =3D 0; i &lt;=
-=3D m-&gt;max_peerid; i++)</span><br><span>         {</span><br><span>     =
-        struct multi_instance *mi =3D m-&gt;instances[i];</span><br><span> =
-</span><br><span>@@ -3794,7 +3801,7 @@</span><br><span> multi_push_restart_=
-schedule_exit(struct multi_context *m, bool next_server)</span><br><span> {=
-</span><br><span>     /* tell all clients to restart */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; m-&gt;max_cl=
-ients; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for =
-(uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span>     {<=
-/span><br><span>         struct multi_instance *mi =3D m-&gt;instances[i];<=
-/span><br><span>         if (mi &amp;&amp; !mi-&gt;halt &amp;&amp; proto_is=
-_dgram(mi-&gt;context.c2.link_sockets[0]-&gt;info.proto))</span><br><span>@=
-@ -3876,7 +3883,7 @@</span><br><span>     struct multi_context *m =3D (stru=
-ct multi_context *)arg;</span><br><span>     int count =3D 0;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (int i =
-=3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    for (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i+=
-+)</span><br><span>     {</span><br><span>         struct multi_instance *m=
-i =3D m-&gt;instances[i];</span><br><span>         if (mi &amp;&amp; !mi-&g=
-t;halt)</span><br><span>@@ -3907,7 +3914,7 @@</span><br><span>     maddr.pr=
-oto =3D proto;</span><br><span>     if (mroute_extract_openvpn_sockaddr(&am=
-p;maddr, &amp;saddr, true))</span><br><span>     {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        for (int i =3D 0; i &lt; m-&gt;max_cli=
-ents; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        f=
-or (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span>    =
-     {</span><br><span>             struct multi_instance *mi =3D m-&gt;ins=
-tances[i];</span><br><span>             if (mi &amp;&amp; !mi-&gt;halt &amp=
-;&amp; mroute_addr_equal(&amp;maddr, &amp;mi-&gt;real))</span><br><span>@@ =
--4100,8 +4107,14 @@</span><br><span>     }</span><br><span> </span><br><spa=
-n>     /* should not really end up here, since multi_create_instance return=
-s null</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * if amoun=
-t of clients exceeds max_clients */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+     * if amount of clients exceeds max_clients and this me=
-thod would then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
- * also not have been called */</span><br><span>     ASSERT(mi-&gt;context.=
-c2.tls_multi-&gt;peer_id &lt; m-&gt;max_clients);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (mi-&gt;context.c2.tls_multi-&gt;peer_id &gt; m-&gt;max_p=
-eerid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        m-&gt;max_peerid =
-=3D mi-&gt;context.c2.tls_multi-&gt;peer_id;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><br><span> </span><=
-br><span> #if defined(__GNUC__) || defined(__clang__)</span><br><span>diff =
---git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><br><span>index 3f4=
-eefe..935bda1 100644</span><br><span>--- a/src/openvpn/multi.h</span><br><s=
-pan>+++ b/src/openvpn/multi.h</span><br><span>@@ -160,9 +160,12 @@</span><b=
-r><span>  */</span><br><span> struct multi_context</span><br><span> {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instance *=
-*instances; /**&lt; Array of multi_instances. An instance can be</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_instance **in=
-stances; /**&lt; Array of multi_instances with the size of</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                                    =
-    *  max_clients.  An instance can be</span><br><span>                   =
-                      * accessed using peer-id as an index. */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    uint32_t max_peerid;               /**&lt; highes=
-t currently allocated peer-id</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                                        * and maximum allocated/v=
-alid index in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-                                  * instances */</span><br><span>     struc=
-t hash *hash;                 /**&lt; VPN tunnel instances indexed by real<=
-/span><br><span>                                         *   address of the=
- remote peer. */</span><br><span>     struct hash *vhash;                /*=
-*&lt; VPN tunnel instances indexed by</span><br><span>diff --git a/src/open=
-vpn/push_util.c b/src/openvpn/push_util.c</span><br><span>index fe48091..f5=
-7f54d 100644</span><br><span>--- a/src/openvpn/push_util.c</span><br><span>=
-+++ b/src/openvpn/push_util.c</span><br><span>@@ -317,7 +317,7 @@</span><br=
-><span> </span><br><span>     int count =3D 0;</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; m-&=
-gt;max_clients; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    for (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><spa=
-n>     {</span><br><span>         struct multi_instance *curr_mi =3D m-&gt;=
-instances[i];</span><br><span> </span><br><span></span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail">=
-change 1557</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><=
-div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #8</strong> to the change originally created by plaisthos.<=
+/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1557?usp=3Demail">Vi=
+ew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">Optimise iterating over all clients by remem=
+bering highest peer id<br><br>This keeps track of the highest peer id that =
+is currently allocated to avoid<br>iterating over the empty tail of the m-&=
+gt;instances array.<br><br>Change-Id: If797f3fe178fba3f43fb12898e5484bfb38f=
+05c3<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Gerrit URL: =
+https://gerrit.openvpn.net/c/openvpn/+/1557<br>Message-Id: &lt;202604121253=
+56.32261-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn=
+-devel@lists.sourceforge.net/msg36577.html<br>Signed-off-by: Gert Doering &=
+lt;gert@...1296...&gt;<br>---<br>M src/openvpn/multi.c<br>M src/openvpn/mul=
+ti.h<br>M src/openvpn/push_util.c<br>3 files changed, 26 insertions(+), 10 =
+deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
+9418/openvpn refs/changes/57/1557/8</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/multi.=
+c b/src/openvpn/multi.c</span><br><span>index 0b03ff1..c7a91ab 100644</span=
+><br><span>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/mult=
+i.c</span><br><span>@@ -601,6 +601,13 @@</span><br><span>         if (mi-&g=
+t;context.c2.tls_multi-&gt;peer_id !=3D MAX_PEER_ID)</span><br><span>      =
+   {</span><br><span>             m-&gt;instances[mi-&gt;context.c2.tls_mul=
+ti-&gt;peer_id] =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /=
+* Adjust the max_peerid as this might have been the highest</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+             * peer id instance */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            while (m=
+-&gt;max_peerid &gt; 0 &amp;&amp; m-&gt;instances[m-&gt;max_peerid] =3D=3D =
+NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                m-&g=
+t;max_peerid--;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        }</span><br><span>         }</span><br><span> </span><br><span>    =
+     schedule_remove_entry(m-&gt;schedule, (struct schedule_entry *)mi);</s=
+pan><br><span>@@ -652,7 +659,7 @@</span><br><span> {</span><br><span>     i=
+f (m-&gt;hash)</span><br><span>     {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (uint32_t =
+i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span>         {</span>=
+<br><span>             struct multi_instance *mi =3D m-&gt;instances[i];</s=
+pan><br><span>             if (mi)</span><br><span>@@ -1326,7 +1333,7 @@</s=
+pan><br><span>         {</span><br><span>             int count =3D 0;</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            for (uint32_t i =3D 0; i &lt;=
+=3D m-&gt;max_peerid; i++)</span><br><span>             {</span><br><span> =
+                struct multi_instance *mi =3D m-&gt;instances[i];</span><br=
+><span>                 if (mi &amp;&amp; mi !=3D new_mi &amp;&amp; !mi-&gt=
+;halt)</span><br><span>@@ -2885,7 +2892,7 @@</span><br><span> #endif</span>=
+<br><span>         mb =3D mbuf_alloc_buf(buf);</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        for (int i =3D 0; i &lt;=
+ m-&gt;max_clients; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        for (uint32_t i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span>=
+<br><span>         {</span><br><span>             struct multi_instance *mi=
+ =3D m-&gt;instances[i];</span><br><span> </span><br><span>@@ -3794,7 +3801=
+,7 @@</span><br><span> multi_push_restart_schedule_exit(struct multi_contex=
+t *m, bool next_server)</span><br><span> {</span><br><span>     /* tell all=
+ clients to restart */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    for (uint32_t i =3D 0; i &lt;=3D m-&g=
+t;max_peerid; i++)</span><br><span>     {</span><br><span>         struct m=
+ulti_instance *mi =3D m-&gt;instances[i];</span><br><span>         if (mi &=
+amp;&amp; !mi-&gt;halt &amp;&amp; proto_is_dgram(mi-&gt;context.c2.link_soc=
+kets[0]-&gt;info.proto))</span><br><span>@@ -3876,7 +3883,7 @@</span><br><s=
+pan>     struct multi_context *m =3D (struct multi_context *)arg;</span><br=
+><span>     int count =3D 0;</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; m-&gt;max_clients; i+=
++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (uint32_t=
+ i =3D 0; i &lt;=3D m-&gt;max_peerid; i++)</span><br><span>     {</span><br=
+><span>         struct multi_instance *mi =3D m-&gt;instances[i];</span><br=
+><span>         if (mi &amp;&amp; !mi-&gt;halt)</span><br><span>@@ -3907,7 =
++3914,7 @@</span><br><span>     maddr.proto =3D proto;</span><br><span>    =
+ if (mroute_extract_openvpn_sockaddr(&amp;maddr, &amp;saddr, true))</span><=
+br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        for (uint32_t i =3D 0; i &lt;=3D m-&=
+gt;max_peerid; i++)</span><br><span>         {</span><br><span>            =
+ struct multi_instance *mi =3D m-&gt;instances[i];</span><br><span>        =
+     if (mi &amp;&amp; !mi-&gt;halt &amp;&amp; mroute_addr_equal(&amp;maddr=
+, &amp;mi-&gt;real))</span><br><span>@@ -4100,8 +4107,14 @@</span><br><span=
+>     }</span><br><span> </span><br><span>     /* should not really end up =
+here, since multi_create_instance returns null</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-     * if amount of clients exceeds max_clients */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * if amount of=
+ clients exceeds max_clients and this method would then</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * also not have been called */</sp=
+an><br><span>     ASSERT(mi-&gt;context.c2.tls_multi-&gt;peer_id &lt; m-&gt=
+;max_clients);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (mi-&gt;context.c=
+2.tls_multi-&gt;peer_id &gt; m-&gt;max_peerid)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        m-&gt;max_peerid =3D mi-&gt;context.c2.tls_multi-&gt;p=
+eer_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span> }</span><br><span> </span><br><span> #if defined(__GNUC__) || de=
+fined(__clang__)</span><br><span>diff --git a/src/openvpn/multi.h b/src/ope=
+nvpn/multi.h</span><br><span>index 3f4eefe..935bda1 100644</span><br><span>=
+--- a/src/openvpn/multi.h</span><br><span>+++ b/src/openvpn/multi.h</span><=
+br><span>@@ -160,9 +160,12 @@</span><br><span>  */</span><br><span> struct =
+multi_context</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    struct multi_instance **instances; /**&lt; Array of multi_in=
+stances. An instance can be</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct multi_instance **instances; /**&lt; Array of multi_insta=
+nces with the size of</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                                        *  max_clients.  An instance can =
+be</span><br><span>                                         * accessed usin=
+g peer-id as an index. */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t ma=
+x_peerid;               /**&lt; highest currently allocated peer-id</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+             * and maximum allocated/valid index in</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                        *=
+ instances */</span><br><span>     struct hash *hash;                 /**&l=
+t; VPN tunnel instances indexed by real</span><br><span>                   =
+                      *   address of the remote peer. */</span><br><span>  =
+   struct hash *vhash;                /**&lt; VPN tunnel instances indexed =
+by</span><br><span>diff --git a/src/openvpn/push_util.c b/src/openvpn/push_=
+util.c</span><br><span>index fe48091..f57f54d 100644</span><br><span>--- a/=
+src/openvpn/push_util.c</span><br><span>+++ b/src/openvpn/push_util.c</span=
+><br><span>@@ -317,7 +317,7 @@</span><br><span> </span><br><span>     int c=
+ount =3D 0;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    for (int i =3D 0; i &lt; m-&gt;max_clients; i++)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    for (uint32_t i =3D 0; i &lt;=
+=3D m-&gt;max_peerid; i++)</span><br><span>     {</span><br><span>         =
+struct multi_instance *curr_mi =3D m-&gt;instances[i];</span><br><span> </s=
+pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.o=
+penvpn.net/c/openvpn/+/1557?usp=3Demail">change 1557</a>. To unsubscribe, o=
+r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
+/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/1557?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
+iew Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: If797f3fe178fba3f43fb12898e5=
@@ -350,5 +353,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---Oct0Fo4n7kQ=--
+--lxzPNz4Y4ZA=--
 
