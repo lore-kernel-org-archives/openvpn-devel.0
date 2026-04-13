@@ -1,16 +1,16 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Apr 2026 17:23:52 +0000
-In-Reply-To: <gerrit.1775698562000.I6e7947ab81cf229f0d27714dd563a07ace6bd38a@...2715...>
-References: <gerrit.1775698562000.I6e7947ab81cf229f0d27714dd563a07ace6bd38a@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, antonio@...2726...
-Message-ID: <f1b501dce496228718ccd18bf8e331fb0da823ca-EmailReviewComments-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 13 Apr 2026 21:29:58 +0000
+In-Reply-To: <gerrit.1774983232000.I9468811fd434e17645957fc12770aa2b9ed98fb8@...2715...>
+References: <gerrit.1774983232000.I9468811fd434e17645957fc12770aa2b9ed98fb8@...2715...>
+Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <d12b74f0275f2526d3053e450084961b17b00539-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="WJELiLopwYo="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: verify_x509_name:
- Improve the error message on failure
+Content-Type: multipart/alternative; boundary="wqc8IW9BcJQ="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Log when writing
+ username/password to TLS buffer fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,99 +19,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---WJELiLopwYo=
+--wqc8IW9BcJQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: ordex, plaisthos.
+Attention is currently required from: selvanair.
 
-selvanair has posted comments on this change by selvanair. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1624?usp=3Demail )
+plaisthos has posted comments on this change by selvanair. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1600?usp=3Demail )
 
-Change subject: verify_x509_name: Improve the error message on failure
+Change subject: Log when writing username/password to TLS buffer fails
 ......................................................................
 
 
-Patch Set 1:
-
-(1 comment)
-
-File src/openvpn/ssl_verify.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/1624/comment/b73b8520_97809e57?usp=3D=
-email :
-PS1, Line 397:         msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", subject);
-> by applying the same logic, shouldn't we just print the string we have ma=
-tched against, instead of t [=E2=80=A6]
-Here is my thought on this:
-On success, its just a gratuitous message and its not confusing. We are jus=
-t printing what the subject (DN) of the certificate is.
-On error, its a critical message that says what was expected and what was f=
-ound. The current code tries to match something and prints something else.
-
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1624?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1600?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6e7947ab81cf229f0d27714dd563a07ace6bd38a
-Gerrit-Change-Number: 1624
+Gerrit-Change-Id: I9468811fd434e17645957fc12770aa2b9ed98fb8
+Gerrit-Change-Number: 1600
 Gerrit-PatchSet: 1
 Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: ordex <antonio@...2726...>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: ordex <antonio@...2726...>
-Gerrit-Comment-Date: Mon, 13 Apr 2026 17:23:52 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: ordex <antonio@...2726...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Mon, 13 Apr 2026 21:29:58 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---WJELiLopwYo=
+--wqc8IW9BcJQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: ordex, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1624?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_verify.c:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/1624/comment/b73b8520_97809e57?usp=3Demail">Patch Set =
-#1, Line 397:</a> <code style=3D"font-family:monospace,monospace">        m=
-sg(D_HANDSHAKE, &quot;VERIFY X509NAME OK: %s&quot;, subject);</code></p><p>=
-<blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: =
-0 10px;">by applying the same logic, shouldn&#39;t we just print the string=
- we have matched against, instead of t [=E2=80=A6]</blockquote></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Here is=
- my thought on this:<br>On success, its just a gratuitous message and its n=
-ot confusing. We are just printing what the subject (DN) of the certificate=
- is.<br>On error, its a critical message that says what was expected and wh=
-at was found. The current code tries to match something and prints somethin=
-g else.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/1624?usp=3Demail">change 1624</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/1624?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+rently required from: selvanair. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1600?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1600?usp=3Demail=
+">change 1600</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1600?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6e7947ab81cf229f0d27714dd56=
-3a07ace6bd38a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1624 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9468811fd434e17645957fc1277=
+0aa2b9ed98fb8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1600 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
 ..&gt; </div>
@@ -119,20 +88,14 @@ iew Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@...2726...&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Apr 2026 17:23:52=
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Apr 2026 21:29:58=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;antonio@...2787...=
-...&gt; </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---WJELiLopwYo=--
+--wqc8IW9BcJQ=--
 
