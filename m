@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 14 Apr 2026 07:58:24 +0200
-Message-ID: <20260414055830.17032-1-gert@...1296...>
-In-Reply-To: <gerrit.1775698562000.I6e7947ab81cf229f0d27714dd563a07ace6bd38a@...2715...>
-References: <gerrit.1775698562000.I6e7947ab81cf229f0d27714dd563a07ace6bd38a@...2715...>
+Date: Tue, 14 Apr 2026 07:58:54 +0200
+Message-ID: <20260414055900.17132-1-gert@...1296...>
+In-Reply-To: <gerrit.1774983232000.Ieeb2f980330d485739dbf3d722f107c1dbf704fc@...2715...>
+References: <gerrit.1774983232000.Ieeb2f980330d485739dbf3d722f107c1dbf704fc@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] verify_x509_name: Improve the error
- message on failure
+Subject: [Openvpn-devel] [PATCH v1] Inlined credentials: read missing
+ password from management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,73 +20,84 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Print the actual string that was used for the match instead of the
-whole subject.
+When commit 39619b7fab added support for inlining username only,
+fallback for password was from console. This is not ideal when
+graphical UI is in use as there is no console. Instead, query the
+management interface when possible.
 
-Github: closes OpenVPN/openvpn#992
+This patch just extends a similar fix when username is read from
+a file and password is missing. As before, any username read
+from file or inlined is not peserved as we currently have no way
+of locking the username in the management interface prompt.
 
-Change-Id: I6e7947ab81cf229f0d27714dd563a07ace6bd38a
+Change-Id: Ieeb2f980330d485739dbf3d722f107c1dbf704fc
 Signed-off-by: Selva Nair <selva.nair@...277...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1624
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1599
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1624
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1599
 This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index d44f25f..21b516d 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -369,21 +369,32 @@
-     /* verify X509 name or username against --verify-x509-[user]name */
-     if (opt->verify_x509_type != VERIFY_X509_NONE)
-     {
--        if ((opt->verify_x509_type == VERIFY_X509_SUBJECT_DN
--             && strcmp(opt->verify_x509_name, subject) == 0)
--            || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN
--                && strcmp(opt->verify_x509_name, common_name) == 0)
--            || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN_PREFIX
--                && strncmp(opt->verify_x509_name, common_name, strlen(opt->verify_x509_name)) == 0))
-+        const char *err_fmt = "VERIFY X509NAME ERROR: %s, must be %s";
-+        const char *match_str = common_name;
-+        bool verified = false;
-+        switch (opt->verify_x509_type)
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index c00a3ce..979293f 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -305,24 +305,6 @@
+                 {
+                     strncpy(up->password, password_buf, USER_PASS_LEN);
+                 }
+-                /* The auth-file does not have the password: get both username
+-                 * and password from the management interface if possible.
+-                 * Otherwise set to read password from console.
+-                 */
+-#if defined(ENABLE_MANAGEMENT)
+-                else if (management && (flags & GET_USER_PASS_MANAGEMENT)
+-                         && management_query_user_pass_enabled(management))
+-                {
+-                    msg(D_LOW,
+-                        "No password found in %s authfile '%s'. Querying the management interface",
+-                        prefix, auth_file);
+-                    if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
+-                    {
+-                        fclose(fp);
+-                        return false;
+-                    }
+-                }
+-#endif
+                 else
+                 {
+                     password_from_stdin = 1;
+@@ -348,7 +330,23 @@
+         if (username_from_stdin || password_from_stdin || response_from_stdin)
          {
--            msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", subject);
-+            case VERIFY_X509_SUBJECT_DN:
-+                match_str = subject;
-+                verified = !strcmp(opt->verify_x509_name, match_str);
-+                break;
-+            case VERIFY_X509_SUBJECT_RDN:
-+                verified = !strcmp(opt->verify_x509_name, match_str);
-+                break;
-+            case VERIFY_X509_SUBJECT_RDN_PREFIX:
-+                err_fmt = "VERIFY X509NAME ERROR: %s, must start with %s";
-+                verified = !strncmp(opt->verify_x509_name, match_str, strlen(opt->verify_x509_name));
-+                break;
-+            default:
-+                ASSERT(0); /* should not happen */
-+                break;
-         }
--        else
-+        if (!verified)
-         {
--            msg(D_HANDSHAKE, "VERIFY X509NAME ERROR: %s, must be %s", subject,
--                opt->verify_x509_name);
--            return FAILURE; /* Reject connection */
-+            msg(D_HANDSHAKE, err_fmt, match_str, opt->verify_x509_name);
-+            return FAILURE;
-         }
-+        msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", subject);
-     }
- 
-     return SUCCESS;
+ #ifdef ENABLE_MANAGEMENT
+-            if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE) && response_from_stdin)
++            /* If management-query-passwords is true, we could be here because
++             * of no password present in auth-file or inline. In that case
++             * query via the management interface instead of stdin/console.
++             */
++            if (management && (flags & GET_USER_PASS_MANAGEMENT)
++                && management_query_user_pass_enabled(management)
++                && !(flags & GET_USER_PASS_USERNAME_ONLY))
++            {
++                msg(D_LOW,
++                    "No '%s' password found in authfile or inline. Querying the management interface",
++                    prefix);
++                if (!auth_user_pass_mgmt(up, prefix, flags, auth_challenge))
++                {
++                    return false;
++                }
++            }
++            else if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE) && response_from_stdin)
+             {
+                 struct auth_challenge_info *ac = parse_auth_challenge(auth_challenge, &gc);
+                 if (ac)
 
