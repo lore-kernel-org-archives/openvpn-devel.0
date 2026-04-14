@@ -1,10 +1,8 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 14 Apr 2026 14:56:37 +0200
-Message-ID: <20260414125637.42082-1-frank@...2641...>
-In-Reply-To: <gerrit.1775138817000.I3157e1a228ac7058fca6a88f94076052e33d2e01@...2715...>
-References: <gerrit.1775138817000.I3157e1a228ac7058fca6a88f94076052e33d2e01@...2715...>
+From: Dorian Harmans <me@...3020...>
+Date: Tue, 14 Apr 2026 16:22:09 +0200
+Message-ID: <20260414142209.584424-1-me@...3020...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] build: Use info fetched from version.m4
+Subject: [Openvpn-devel] [PATCH] Add ARIA ciphersuite IANA name translations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,60 +14,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Luis Cruz <luis.cruz@...3019...>
 
-From: Luis Cruz <luis.cruz@...3019...>
-
-Change-Id: I3157e1a228ac7058fca6a88f94076052e33d2e01
-Signed-off-by: Luis Cruz <luis.cruz@...3019...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1605
 ---
+ src/openvpn/ssl_util.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
+index c0620a4e..71fbc9e5 100644
+--- a/src/openvpn/ssl_util.c
++++ b/src/openvpn/ssl_util.c
+@@ -126,6 +126,8 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+     { "AES256-GCM-SHA384", "TLS-RSA-WITH-AES-256-GCM-SHA384" },
+     { "AES256-SHA256", "TLS-RSA-WITH-AES-256-CBC-SHA256" },
+     { "AES256-SHA", "TLS-RSA-WITH-AES-256-CBC-SHA" },
++    { "ARIA128-GCM-SHA256", "TLS-RSA-WITH-ARIA-128-GCM-SHA256" },
++    { "ARIA256-GCM-SHA384", "TLS-RSA-WITH-ARIA-256-GCM-SHA384" },
+     { "CAMELLIA128-SHA256", "TLS-RSA-WITH-CAMELLIA-128-CBC-SHA256" },
+     { "CAMELLIA128-SHA", "TLS-RSA-WITH-CAMELLIA-128-CBC-SHA" },
+     { "CAMELLIA256-SHA256", "TLS-RSA-WITH-CAMELLIA-256-CBC-SHA256" },
+@@ -139,6 +141,8 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+     { "DHE-DSS-AES256-GCM-SHA384", "TLS-DHE-DSS-WITH-AES-256-GCM-SHA384" },
+     { "DHE-DSS-AES256-SHA256", "TLS-DHE-DSS-WITH-AES-256-CBC-SHA256" },
+     { "DHE-DSS-AES256-SHA", "TLS-DHE-DSS-WITH-AES-256-CBC-SHA" },
++    { "DHE-DSS-ARIA128-GCM-SHA256", "TLS-DHE-DSS-WITH-ARIA-128-GCM-SHA256" },
++    { "DHE-DSS-ARIA256-GCM-SHA384", "TLS-DHE-DSS-WITH-ARIA-256-GCM-SHA384" },
+     { "DHE-DSS-CAMELLIA128-SHA256", "TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA256" },
+     { "DHE-DSS-CAMELLIA128-SHA", "TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA" },
+     { "DHE-DSS-CAMELLIA256-SHA256", "TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA256" },
+@@ -150,6 +154,8 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+     { "DHE-RSA-AES256-GCM-SHA384", "TLS-DHE-RSA-WITH-AES-256-GCM-SHA384" },
+     { "DHE-RSA-AES256-SHA256", "TLS-DHE-RSA-WITH-AES-256-CBC-SHA256" },
+     { "DHE-RSA-AES256-SHA", "TLS-DHE-RSA-WITH-AES-256-CBC-SHA" },
++    { "DHE-RSA-ARIA128-GCM-SHA256", "TLS-DHE-RSA-WITH-ARIA-128-GCM-SHA256" },
++    { "DHE-RSA-ARIA256-GCM-SHA384", "TLS-DHE-RSA-WITH-ARIA-256-GCM-SHA384" },
+     { "DHE-RSA-CAMELLIA128-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA256" },
+     { "DHE-RSA-CAMELLIA128-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA" },
+     { "DHE-RSA-CAMELLIA256-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA256" },
+@@ -171,6 +177,8 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+     { "ECDH-ECDSA-DES-CBC3-SHA", "TLS-ECDH-ECDSA-WITH-3DES-EDE-CBC-SHA" },
+     { "ECDH-ECDSA-DES-CBC-SHA", "TLS-ECDH-ECDSA-WITH-DES-CBC-SHA" },
+     { "ECDH-ECDSA-RC4-SHA", "TLS-ECDH-ECDSA-WITH-RC4-128-SHA" },
++    { "ECDHE-ARIA128-GCM-SHA256", "TLS-ECDHE-RSA-WITH-ARIA-128-GCM-SHA256" },
++    { "ECDHE-ARIA256-GCM-SHA384", "TLS-ECDHE-RSA-WITH-ARIA-256-GCM-SHA384" },
+     { "ECDHE-ECDSA-AES128-GCM-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256" },
+     { "ECDHE-ECDSA-AES128-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256" },
+     { "ECDHE-ECDSA-AES128-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA384" },
+@@ -179,6 +187,8 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+     { "ECDHE-ECDSA-AES256-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA256" },
+     { "ECDHE-ECDSA-AES256-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA384" },
+     { "ECDHE-ECDSA-AES256-SHA", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA" },
++    { "ECDHE-ECDSA-ARIA128-GCM-SHA256", "TLS-ECDHE-ECDSA-WITH-ARIA-128-GCM-SHA256" },
++    { "ECDHE-ECDSA-ARIA256-GCM-SHA384", "TLS-ECDHE-ECDSA-WITH-ARIA-256-GCM-SHA384" },
+     { "ECDHE-ECDSA-CAMELLIA128-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-CBC-SHA256" },
+     { "ECDHE-ECDSA-CAMELLIA128-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-CBC-SHA" },
+     { "ECDHE-ECDSA-CAMELLIA256-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA256" },
+-- 
+2.51.0
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1605
-This mail reflects revision 1 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
-
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 198c98f..72e349c 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -141,6 +141,10 @@
- set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})
- set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})
- 
-+set(TAP_WIN_COMPONENT_ID "${PRODUCT_TAP_WIN_COMPONENT_ID}")
-+set(TAP_WIN_MIN_MAJOR ${PRODUCT_TAP_WIN_MIN_MAJOR})
-+set(TAP_WIN_MIN_MINOR ${PRODUCT_TAP_WIN_MIN_MINOR})
-+
- set(CMAKE_C_STANDARD 11)
- 
- # Set the various defines for config.h.cmake.in
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index a93fcd5..ae1d264 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -366,13 +366,13 @@
- #undef SYSTEMD_ASK_PASSWORD_PATH
- 
- /* The tap-windows id */
--#define TAP_WIN_COMPONENT_ID "tap0901"
-+#define TAP_WIN_COMPONENT_ID "@TAP_WIN_COMPONENT_ID@"
- 
- /* The tap-windows version number is required for OpenVPN */
--#define TAP_WIN_MIN_MAJOR 9
-+#define TAP_WIN_MIN_MAJOR @TAP_WIN_MIN_MAJOR@
- 
- /* The tap-windows version number is required for OpenVPN */
--#define TAP_WIN_MIN_MINOR 9
-+#define TAP_WIN_MIN_MINOR @TAP_WIN_MIN_MINOR@
- 
- /* Are we running on Mac OS X? */
- #cmakedefine TARGET_DARWIN
 
