@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 14 Apr 2026 07:57:14 +0200
-Message-ID: <20260414055721.16857-1-gert@...1296...>
-In-Reply-To: <gerrit.1774983232000.I9468811fd434e17645957fc12770aa2b9ed98fb8@...2715...>
-References: <gerrit.1774983232000.I9468811fd434e17645957fc12770aa2b9ed98fb8@...2715...>
+Date: Tue, 14 Apr 2026 07:57:59 +0200
+Message-ID: <20260414055805.16974-1-gert@...1296...>
+In-Reply-To: <gerrit.1775000509000.I1c18b3cf4a454444a61941d88a702a140b0ac23d@...2715...>
+References: <gerrit.1775000509000.I1c18b3cf4a454444a61941d88a702a140b0ac23d@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Log when writing username/password to
- TLS buffer fails
+Subject: [Openvpn-devel] [PATCH v2] Add unit tests for 'auth-user-pass
+ username-only'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,40 +20,44 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Currently we get an unhelpful "Key Method #2 failed" error.
-Add a more specific warning message.
+Input from stdin is tested.
 
-Change-Id: I9468811fd434e17645957fc12770aa2b9ed98fb8
+Change-Id: I1c18b3cf4a454444a61941d88a702a140b0ac23d
 Signed-off-by: Selva Nair <selva.nair@...277...>
 Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1600
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1602
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1600
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1602
+This mail reflects revision 2 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Arne Schwabe <arne-openvpn@...1227...>
 
         
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 576157d..5868d53 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2125,10 +2125,12 @@
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
+index 16e0535..c0a0866 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -282,6 +282,17 @@
+     assert_true(up.defined);
+     assert_string_equal(up.username, "user");
+     assert_string_equal(up.password, "");
++
++    reset_user_pass(&up);
++
++    flags = GET_USER_PASS_USERNAME_ONLY;
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT Username:");
++    will_return(query_user_exec_builtin, "cuser");
++    will_return(query_user_exec_builtin, true);
++    assert_true(get_user_pass_cr(&up, "stdin", "UT", flags, NULL));
++    assert_true(up.defined);
++    assert_string_equal(up.username, "cuser");
++    assert_string_equal(up.password, "[[BLANK]]");
+ }
  
-         if (!write_string(buf, up->username, -1))
-         {
-+            msg(M_WARN, "WARNING: Failed to write auth username to TLS buffer");
-             goto error;
-         }
-         else if (!write_string(buf, up->password, -1))
-         {
-+            msg(M_WARN, "WARNING: Failed to write auth password to TLS buffer");
-             goto error;
-         }
-         /* save username for auth-token which may get pushed later */
+ /* NOTE: expect_assert_failure does not seem to work with MSVC */
 
