@@ -1,16 +1,11 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Apr 2026 21:35:25 +0000
-In-Reply-To: <gerrit.1776081318000.I232fba91cfcca6c35d37696bc86890a366f5967f@...2715...>
-References: <gerrit.1776081318000.I232fba91cfcca6c35d37696bc86890a366f5967f@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <6f9d03b33ac5de8838155655e3167b53ef2f44a5-EmailReviewComments-HTML@...2715...>
+From: Gert Doering <gert@...1296...>
+Date: Tue, 14 Apr 2026 07:57:14 +0200
+Message-ID: <20260414055721.16857-1-gert@...1296...>
+In-Reply-To: <gerrit.1774983232000.I9468811fd434e17645957fc12770aa2b9ed98fb8@...2715...>
+References: <gerrit.1774983232000.I9468811fd434e17645957fc12770aa2b9ed98fb8@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lSnQLVIcp18="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: ssl_mbedtls: Fix
- format string in get_ssl_library_version
+Subject: [Openvpn-devel] [PATCH v1] Log when writing username/password to
+ TLS buffer fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,83 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---lSnQLVIcp18=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Attention is currently required from: flichtenheld.
+Currently we get an unhelpful "Key Method #2 failed" error.
+Add a more specific warning message.
 
-plaisthos has posted comments on this change by flichtenheld. ( http://gerr=
-it.openvpn.net/c/openvpn/+/1626?usp=3Demail )
+Change-Id: I9468811fd434e17645957fc12770aa2b9ed98fb8
+Signed-off-by: Selva Nair <selva.nair@...277...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1600
+---
 
-Change subject: ssl_mbedtls: Fix format string in get_ssl_library_version
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1600
+This mail reflects revision 1 of this Change.
 
-Patch Set 1: Code-Review+2
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1626?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I232fba91cfcca6c35d37696bc86890a366f5967f
-Gerrit-Change-Number: 1626
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 13 Apr 2026 21:35:25 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---lSnQLVIcp18=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1626?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1626?usp=3Demail=
-">change 1626</a>. To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1626?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I232fba91cfcca6c35d37696bc86=
-890a366f5967f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1626 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Apr 2026 21:35:25=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>=
-
---lSnQLVIcp18=--
+        
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 576157d..5868d53 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2125,10 +2125,12 @@
+ 
+         if (!write_string(buf, up->username, -1))
+         {
++            msg(M_WARN, "WARNING: Failed to write auth username to TLS buffer");
+             goto error;
+         }
+         else if (!write_string(buf, up->password, -1))
+         {
++            msg(M_WARN, "WARNING: Failed to write auth password to TLS buffer");
+             goto error;
+         }
+         /* save username for auth-token which may get pushed later */
 
