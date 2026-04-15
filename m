@@ -1,15 +1,16 @@
-From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Apr 2026 15:35:02 +0000
-References: <gerrit.1776267299000.I33e55d88d561393ebfbc73a995f700056e19a436@...2715...>
-Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <984ef4842b35f3b6be0d360aae39e10b1276157e-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 15 Apr 2026 15:41:47 +0000
+In-Reply-To: <gerrit.1775741612000.I6319c951327a9b994ffae0ba35270b0887455203@...2715...>
+References: <gerrit.1775741612000.I6319c951327a9b994ffae0ba35270b0887455203@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ gianmarco@...2726..., openvpn-devel@lists.sourceforge.net
+Message-ID: <8653032900102522943fde2795546c285bd8b462-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TusSvCkhrFs="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: sitnl: use
- RTM_SETLINK for updating existing interfaces
+Content-Type: multipart/alternative; boundary="5e9Xb42goAY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Enable per-socket
+ bind_dev via --local
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,171 +19,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: its_Giaan <gianmarco@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---TusSvCkhrFs=
+--5e9Xb42goAY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: its_Giaan, plaisthos.
 
-Hello plaisthos,
+flichtenheld has posted comments on this change by its_Giaan. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1625?usp=3Demail )
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1628?usp=3Demail
-
-to review the following change.
-
-
-Change subject: sitnl: use RTM_SETLINK for updating existing interfaces
+Change subject: Enable per-socket bind_dev via --local
 ......................................................................
 
-sitnl: use RTM_SETLINK for updating existing interfaces
 
-RTM_NEWLINK is primarily intended for link creation and initialization,
-while RTM_SETLINK is the canonical interface for modifying attributes of
-an already existing link.
+Patch Set 3: Code-Review-1
 
-Even though the kernel may accept RTM_NEWLINK for updates, using
-RTM_SETLINK better reflects the intended netlink semantics and follows
-the dedicated update path in the kernel.
+(2 comments)
 
-This makes the behavior more explicit and consistent with how link
-configuration changes are expected to be performed.
+File doc/man-sections/link-options.rst:
 
-Change-Id: I33e55d88d561393ebfbc73a995f700056e19a436
-Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
----
-M src/openvpn/networking_sitnl.c
-1 file changed, 3 insertions(+), 3 deletions(-)
+http://gerrit.openvpn.net/c/openvpn/+/1625/comment/ae0af796_9da7928a?usp=3D=
+email :
+PS3, Line 121:   The optional arguments correspond to existing options: ``p=
+ort`` to
+Maybe better:
+
+The optional arguments override defaults set by the following options:
+* ``port`` overrides ``--lport``
+* ``protocol`` overrides ``--proto``
+* ``bind device`` overrides ``--bind-dev``
+
+(To explicitly say that these options set defaults which we can then overri=
+de)
 
 
+File doc/man-sections/vpn-network-options.rst:
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/1628/1
+http://gerrit.openvpn.net/c/openvpn/+/1625/comment/182e6971_7f4b5f87?usp=3D=
+email :
+PS3, Line 11:   This option can also be used inside a ``--local`` statement
+Maybe better:
 
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b3f8e2b..3aea076 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -671,7 +671,7 @@
+The default defined by this option can be overridden on a per-socket basis =
+by specifying a ``bind device`` argument to ``--local``.
 
-     req.n.nlmsg_len =3D NLMSG_LENGTH(sizeof(req.i));
-     req.n.nlmsg_flags =3D NLM_F_REQUEST;
--    req.n.nlmsg_type =3D RTM_NEWLINK;
-+    req.n.nlmsg_type =3D RTM_SETLINK;
+The current text sounds like you can use ``--bind-dev`` in a different cont=
+ext which is not correct.
 
-     req.i.ifi_family =3D AF_PACKET;
-     req.i.ifi_index =3D ifindex;
-@@ -707,7 +707,7 @@
 
-     req.n.nlmsg_len =3D NLMSG_LENGTH(sizeof(req.i));
-     req.n.nlmsg_flags =3D NLM_F_REQUEST;
--    req.n.nlmsg_type =3D RTM_NEWLINK;
-+    req.n.nlmsg_type =3D RTM_SETLINK;
-
-     req.i.ifi_family =3D AF_PACKET;
-     req.i.ifi_index =3D ifindex;
-@@ -738,7 +738,7 @@
-
-     req.n.nlmsg_len =3D NLMSG_LENGTH(sizeof(req.i));
-     req.n.nlmsg_flags =3D NLM_F_REQUEST;
--    req.n.nlmsg_type =3D RTM_NEWLINK;
-+    req.n.nlmsg_type =3D RTM_SETLINK;
-=20
-     req.i.ifi_family =3D AF_PACKET;
-     req.i.ifi_index =3D ifindex;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1628?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1625?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I33e55d88d561393ebfbc73a995f700056e19a436
-Gerrit-Change-Number: 1628
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: I6319c951327a9b994ffae0ba35270b0887455203
+Gerrit-Change-Number: 1625
+Gerrit-PatchSet: 3
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: its_Giaan <gianmarco@...2726...>
+Gerrit-Comment-Date: Wed, 15 Apr 2026 15:41:47 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---TusSvCkhrFs=
+--5e9Xb42goAY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>its_Giaan would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1628?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">sitnl: use RTM_SETLINK for updating existin=
-g interfaces<br><br>RTM_NEWLINK is primarily intended for link creation and=
- initialization,<br>while RTM_SETLINK is the canonical interface for modify=
-ing attributes of<br>an already existing link.<br><br>Even though the kerne=
-l may accept RTM_NEWLINK for updates, using<br>RTM_SETLINK better reflects =
-the intended netlink semantics and follows<br>the dedicated update path in =
-the kernel.<br><br>This makes the behavior more explicit and consistent wit=
-h how link<br>configuration changes are expected to be performed.<br><br>Ch=
-ange-Id: I33e55d88d561393ebfbc73a995f700056e19a436<br>Signed-off-by: Gianma=
-rco De Gregori &lt;gianmarco@...2726...&gt;<br>---<br>M src/openvpn/network=
-ing_sitnl.c<br>1 file changed, 3 insertions(+), 3 deletions(-)<br><br></pre=
-><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/28/1628/1</pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;"><span>diff --git a/src/openvpn/networking_sitnl.c b/src/openvp=
-n/networking_sitnl.c</span><br><span>index b3f8e2b..3aea076 100644</span><b=
-r><span>--- a/src/openvpn/networking_sitnl.c</span><br><span>+++ b/src/open=
-vpn/networking_sitnl.c</span><br><span>@@ -671,7 +671,7 @@</span><br><span>=
- </span><br><span>     req.n.nlmsg_len =3D NLMSG_LENGTH(sizeof(req.i));</sp=
-an><br><span>     req.n.nlmsg_flags =3D NLM_F_REQUEST;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    req.n.nlmsg_type =3D RTM_NEWLINK;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    req.n.nlmsg_type =3D=
- RTM_SETLINK;</span><br><span> </span><br><span>     req.i.ifi_family =3D A=
-F_PACKET;</span><br><span>     req.i.ifi_index =3D ifindex;</span><br><span=
->@@ -707,7 +707,7 @@</span><br><span> </span><br><span>     req.n.nlmsg_len=
- =3D NLMSG_LENGTH(sizeof(req.i));</span><br><span>     req.n.nlmsg_flags =
-=3D NLM_F_REQUEST;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- req.n.nlmsg_type =3D RTM_NEWLINK;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    req.n.nlmsg_type =3D RTM_SETLINK;</span><br><span> </spa=
-n><br><span>     req.i.ifi_family =3D AF_PACKET;</span><br><span>     req.i=
-.ifi_index =3D ifindex;</span><br><span>@@ -738,7 +738,7 @@</span><br><span=
-> </span><br><span>     req.n.nlmsg_len =3D NLMSG_LENGTH(sizeof(req.i));</s=
-pan><br><span>     req.n.nlmsg_flags =3D NLM_F_REQUEST;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    req.n.nlmsg_type =3D RTM_NEWLINK;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    req.n.nlmsg_type =
-=3D RTM_SETLINK;</span><br><span> </span><br><span>     req.i.ifi_family =
-=3D AF_PACKET;</span><br><span>     req.i.ifi_index =3D ifindex;</span><br>=
-<span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/1628?usp=3Demail">change 1628</a>. To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
-s?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1628?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+rently required from: its_Giaan, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1625?usp=3Demail">V=
+iew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/link-opt=
+ions.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
+n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/1625/comment/ae0af796_9da7928a?usp=3Dema=
+il">Patch Set #3, Line 121:</a> <code style=3D"font-family:monospace,monosp=
+ace">  The optional arguments correspond to existing options: ``port`` to</=
+code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: bre=
+ak-word;">Maybe better:</p><p class=3D"blocks" style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">The optional arguments override defaults set by=
+ the following options:</p><ul class=3D"blocks"><li>``port`` overrides ``--=
+lport``</li><li>``protocol`` overrides ``--proto``</li><li>``bind device`` =
+overrides ``--bind-dev``</li></ul><p class=3D"blocks" style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">(To explicitly say that these options se=
+t defaults which we can then override)</p></li></ul></li><li style=3D"margi=
+n: 0; padding: 0;"><p>File doc/man-sections/vpn-network-options.rst:</p><ul=
+ style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/1625/comment/182e6971_7f4b5f87?usp=3Demail">Patch Set #3=
+, Line 11:</a> <code style=3D"font-family:monospace,monospace">  This optio=
+n can also be used inside a ``--local`` statement</code></p><p class=3D"blo=
+cks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Maybe better:<=
+/p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wor=
+d;">The default defined by this option can be overridden on a per-socket ba=
+sis by specifying a ``bind device`` argument to ``--local``.</p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">The curren=
+t text sounds like you can use ``--bind-dev`` in a different context which =
+is not correct.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://=
+gerrit.openvpn.net/c/openvpn/+/1625?usp=3Demail">change 1625</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"=
+http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1625?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I33e55d88d561393ebfbc73a995f=
-700056e19a436 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1628 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6319c951327a9b994ffae0ba352=
+70b0887455203 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1625 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@...1665...=
+726...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 15 Apr 2026 15:41:47=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---TusSvCkhrFs=--
+--5e9Xb42goAY=--
 
