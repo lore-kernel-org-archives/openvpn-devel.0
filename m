@@ -1,11 +1,9 @@
-Message-ID: <fb1e3080-eeb2-4ee6-9873-299c33052f73@...1227...>
-Date: Wed, 15 Apr 2026 10:49:09 +0200
-MIME-Version: 1.0
-References: <20260414142209.584424-1-me@...3020...>
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
+Date: Wed, 15 Apr 2026 11:43:04 +0200 (CEST)
+Message-Id: <202604150943.63F9h4c9050710@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20260414142209.584424-1-me@...3020...>
-Subject: Re: [Openvpn-devel] [PATCH] Add ARIA ciphersuite IANA name
+References: <20260414142209.584424-1-me@...3020...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add ARIA ciphersuite IANA name
  translations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,17 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Dorian Harmans <me@...3020...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Dorian Harmans via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 14.04.26 um 16:22 schrieb Dorian Harmans via Openvpn-devel:
-> ---
->   src/openvpn/ssl_util.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-> 
+Welcome back, 10 years after commit e7ec6a3a11ecee5 :-)
 
-Not sure anyone uses these but it also does not hurt.
+I've added a "signed-off-by:" line on your behalf, and have test compiled
+this (works)
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Your patch has been applied to the master branch.
+
+commit 0188c62ac436b719e4c6fa994375a6a6f8c75393
+Author: Dorian Harmans via Openvpn-devel
+Date:   Tue Apr 14 16:22:09 2026 +0200
+
+     Add ARIA ciphersuite IANA name translations
+
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20260414142209.584424-1-me@...3020...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36613.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
