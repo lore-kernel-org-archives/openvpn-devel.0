@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Apr 2026 09:52:42 +0000
-In-Reply-To: <gerrit.1775000509000.I1c18b3cf4a454444a61941d88a702a140b0ac23d@...2715...>
-References: <gerrit.1775000509000.I1c18b3cf4a454444a61941d88a702a140b0ac23d@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <9f85736e3379c945a268272fa8c25e5771aa4198-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------EJZ39IXQhpAc94o9RUh0ikfs"
+Message-ID: <37f9db9d-d2f1-4ffe-b114-8a63fba82474@...2722...>
+Date: Wed, 15 Apr 2026 14:46:19 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DQ4R47yUl3A="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add unit tests for
- 'auth-user-pass username-only'
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,144 +14,156 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selvanair <selva.nair@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---DQ4R47yUl3A=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------EJZ39IXQhpAc94o9RUh0ikfs
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
-02?usp=3Demail )
+Meeting summary for 15 April 2026:
 
-Change subject: Add unit tests for 'auth-user-pass username-only'
-......................................................................
+  *
 
-Add unit tests for 'auth-user-pass username-only'
+    *Updated: OpenVPN 2.7.2 and 2.6.20 release*
+    There are currently 2 CVEs being investigated/resolved. There is
+    also a Windows-specific CVE issue being investigated/resolved.
+    The idea is to resolve all 3 and do a 2.7.2 and 2.6.20 release next
+    week.
 
-Input from stdin is tested.
+  *
 
-Change-Id: I1c18b3cf4a454444a61941d88a702a140b0ac23d
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1602
-Message-Id: <20260414055805.16974-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-605.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M tests/unit_tests/openvpn/test_user_pass.c
-1 file changed, 11 insertions(+), 0 deletions(-)
+    *Updated: OpenSSL 4.0 support*
+    OpenSSL 4.0 has been released but a few patches are needed in
+    OpenVPN so it can all compile without warnings.
+    Some of these patches have been reviewed and merged, but there are
+    still a few pending:
+    https://gerrit.openvpn.net/c/openvpn/+/1289
+    https://gerrit.openvpn.net/c/openvpn/+/1595
 
+  *
 
+    *Updated: driver signing*
+    The old driver signing EV key expired today. We have a new one so we
+    can do signing manually.
+    djpig will relay the necessary information to lev so he knows what
+    to do for any future driver signing for Windows.
 
+  *
 
-diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
-penvpn/test_user_pass.c
-index 16e0535..c0a0866 100644
---- a/tests/unit_tests/openvpn/test_user_pass.c
-+++ b/tests/unit_tests/openvpn/test_user_pass.c
-@@ -282,6 +282,17 @@
-     assert_true(up.defined);
-     assert_string_equal(up.username, "user");
-     assert_string_equal(up.password, "");
-+
-+    reset_user_pass(&up);
-+
-+    flags =3D GET_USER_PASS_USERNAME_ONLY;
-+    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
- Username:");
-+    will_return(query_user_exec_builtin, "cuser");
-+    will_return(query_user_exec_builtin, true);
-+    assert_true(get_user_pass_cr(&up, "stdin", "UT", flags, NULL));
-+    assert_true(up.defined);
-+    assert_string_equal(up.username, "cuser");
-+    assert_string_equal(up.password, "[[BLANK]]");
- }
+    *Updated: 2.7 security audit*
+    The security audit was completed for 2.7.0 and results are available
+    internally.
+    We are working to publish this in an official blog post. ordex and
+    novaflash are driving this in OpenVPN Inc. internally.
 
- /* NOTE: expect_assert_failure does not seem to work with MSVC */
+  *
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+    *Updated: t_server and t_client testing framework*
+    We still need to move this to OpenVPN Inc provided AWS Community
+    infrastructure.
+    After 2.6.20/2.7.2 releases we'll focus on handling this.
 
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I1c18b3cf4a454444a61941d88a702a140b0ac23d
-Gerrit-Change-Number: 1602
-Gerrit-PatchSet: 3
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
---DQ4R47yUl3A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Kind regards,
+Johan Draaisma
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1602?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Add unit tests for &#39;auth-user-pass username-=
-only&#39;<br><br>Input from stdin is tested.<br><br>Change-Id: I1c18b3cf4a4=
-54444a61941d88a702a140b0ac23d<br>Signed-off-by: Selva Nair &lt;selva.nair@...220...=
-..277...&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>G=
-errit URL: https://gerrit.openvpn.net/c/openvpn/+/1602<br>Message-Id: &lt;2=
-0260414055805.16974-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.=
-com/openvpn-devel@lists.sourceforge.net/msg36605.html<br>Signed-off-by: Ger=
-t Doering &lt;gert@...1296...&gt;<br>---<br>M tests/unit_tests/openvpn/test=
-_user_pass.c<br>1 file changed, 11 insertions(+), 0 deletions(-)<br><br></p=
-re>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_test=
-s/openvpn/test_user_pass.c</span><br><span>index 16e0535..c0a0866 100644</s=
-pan><br><span>--- a/tests/unit_tests/openvpn/test_user_pass.c</span><br><sp=
-an>+++ b/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>@@ -282,=
-6 +282,17 @@</span><br><span>     assert_true(up.defined);</span><br><span>=
-     assert_string_equal(up.username, &quot;user&quot;);</span><br><span>  =
-   assert_string_equal(up.password, &quot;&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    reset_user_pass(&amp;up);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    flags =3D GET_USER_PASS_USERNAME_ONLY;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    expect_string(query_user_exec_builtin, query_=
-user[i].prompt, &quot;Enter UT Username:&quot;);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    will_return(query_user_exec_builtin, &quot=
-;cuser&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    w=
-ill_return(query_user_exec_builtin, true);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_true(get_user_pass_cr(&amp;up, &quot;stdi=
-n&quot;, &quot;UT&quot;, flags, NULL));</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    assert_true(up.defined);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    assert_string_equal(up.username, &quot;cus=
-er&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_string_equal(up.password, &quot;[[BLANK]]&quot;);</span><br><span> }</spa=
-n><br><span> </span><br><span> /* NOTE: expect_assert_failure does not seem=
- to work with MSVC */</span><br><span></span><br></pre><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail">change 160=
-2</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsc=
-ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/1602?usp=3Demail"/><meta itempr=
-op=3D"name" content=3D"View Change"/></div></div>
+--------------EJZ39IXQhpAc94o9RUh0ikfs
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1c18b3cf4a454444a61941d88a7=
-02a140b0ac23d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1602 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 15 April 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            OpenVPN 2.7.2 and 2.6.20 release</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There are currently 2 CVEs being investigated/resolved. There
+          is also a Windows-specific CVE issue being
+          investigated/resolved.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The idea is to resolve all 3 and do a 2.7.2 and 2.6.20 release
+          next week.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            OpenSSL 4.0 support</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          OpenSSL 4.0 has been released but a few patches are needed in
+          OpenVPN so it can all compile without warnings.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Some of these patches have been reviewed and merged, but there
+          are still a few pending:<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          <a href="https://gerrit.openvpn.net/c/openvpn/+/1289"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://gerrit.openvpn.net/c/openvpn/+/1289</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          <a href="https://gerrit.openvpn.net/c/openvpn/+/1595"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://gerrit.openvpn.net/c/openvpn/+/1595</a></p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            driver signing</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The old driver signing EV key expired today. We have a new one
+          so we can do signing manually.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          djpig will relay the necessary information to lev so he knows
+          what to do for any future driver signing for Windows.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            2.7 security audit</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The security audit was completed for 2.7.0 and results are
+          available internally.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We are working to publish this in an official blog post. ordex
+          and novaflash are driving this in OpenVPN Inc. internally.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            t_server and t_client testing framework</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We still need to move this to OpenVPN Inc provided AWS
+          Community infrastructure.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          After 2.6.20/2.7.2 releases we'll focus on handling this.</p>
+      </li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-</body></html>=
-
---DQ4R47yUl3A=--
+--------------EJZ39IXQhpAc94o9RUh0ikfs--
 
