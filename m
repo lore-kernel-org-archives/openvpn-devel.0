@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 17 Apr 2026 13:09:36 +0200
-Message-ID: <20260417110942.16538-1-gert@...1296...>
-In-Reply-To: <gerrit.1774997396000.Ic9c993cb8dcfedfd6f99f416c286e0968eb45255@...2715...>
-References: <gerrit.1774997396000.Ic9c993cb8dcfedfd6f99f416c286e0968eb45255@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Fri, 17 Apr 2026 16:44:37 +0000
+In-Reply-To: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
+References: <gerrit.1774974242000.I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., matthias.andree@...68...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <6436d7795550aa65ef04dfd2318133d60f8ffbbb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] GHA: Add OpenSSL 4.0 build
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="sciRrb995mA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: OpenSSL 4.0: Use
+ X509_check_certificate_times instead of X509_cmp_time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,118 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: mandree <matthias.andree@...68...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--sciRrb995mA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Ic9c993cb8dcfedfd6f99f416c286e0968eb45255
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1601
----
+Attention is currently required from: plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+cron2 has posted comments on this change by plaisthos. ( http://gerrit.open=
+vpn.net/c/openvpn/+/1595?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1601
-This mail reflects revision 3 of this Change.
+Change subject: OpenSSL 4.0: Use X509_check_certificate_times instead of X5=
+09_cmp_time
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 186662d..365e72a 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -390,6 +390,87 @@
-       - name: make check
-         run: make -j3 check VERBOSE=1
- 
-+  openssl:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        os: [ubuntu-24.04]
-+        ssllib: [openssl]
-+        build: [ normal, asan ]
-+        configureflags: ["--with-openssl-engine=no"]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=address -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-+            ldflags: -fsanitize=address -fno-sanitize-recover=all
-+            cc: clang
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            cc: gcc
-+
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.ssllib}} - 4.0"
-+    runs-on: ${{matrix.os}}
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      CC: ${{matrix.cc}}
-+      UBSAN_OPTIONS: print_stacktrace=1
-+      # versioning=semver-coerced
-+      OPENSSL_REPO: openssl/openssl
-+      OPENSSL_VERSION: openssl-4.0.0-beta1
-+      OPENSSL_INSTALL: /opt/openssl
-+
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-+      - name: Restore OpenSSL 4.0 from cache
-+        uses: actions/cache@...3010...
-+        id: openssl-cache
-+        with:
-+          path: ${{ env.OPENSSL_INSTALL }}
-+          key: ${{ matrix.os }}-openssl-${{matrix.build }}-${{ env.OPENSSL_VERSION }}
-+      - name: "openssl: checkout"
-+        if: steps.openssl-cache.outputs.cache-hit != 'true'
-+        uses: actions/checkout@...2998... # v6.0.2
-+        with:
-+          path: openssl
-+          repository: ${{ env.OPENSSL_REPO }}
-+          ref: ${{ env.OPENSSL_VERSION }}
-+      - name: "openssl: configure"
-+        if: steps.openssl-cache.outputs.cache-hit != 'true'
-+        run: ./Configure  --prefix=${{ env.OPENSSL_INSTALL }} --libdir=${{ env.OPENSSL_INSTALL }}/lib --openssldir=${{ env.OPENSSL_INSTALL }} -g
-+        working-directory: openssl
-+      - name: "openssl: make all"
-+        if: steps.openssl-cache.outputs.cache-hit != 'true'
-+        run: make -j3
-+        working-directory: openssl
-+      - name: "openssl: make install"
-+        if: steps.openssl-cache.outputs.cache-hit != 'true'
-+        run: sudo make install
-+        working-directory: openssl
-+      - name: "ldconfig"
-+        run: sudo ldconfig
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2998... # v6.0.2
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure
-+        run: |
-+          OPENSSL_CFLAGS="-I${{ env.OPENSSL_INSTALL }}/include" \
-+          OPENSSL_LIBS="-L${{ env.OPENSSL_INSTALL }}/lib -lssl -lcrypto" \
-+          LDFLAGS="-Wl,-rpath=${{ env.OPENSSL_INSTALL }}/lib" \
-+          ./configure --with-crypto-library=openssl --enable-werror ${{matrix.configureflags}}
-+      - name: make all
-+        run: make -j3
-+      - name: Ensure the build uses Openssl
-+        run: |
-+          ./src/openvpn/openvpn --version
-+          ./src/openvpn/openvpn --version | grep -q "library versions: OpenSSL 4.0"
-+      - name: configure checks
-+        run: echo 'RUN_SUDO="sudo -E"' >tests/t_server_null.rc
-+      - name: make check
-+        run: make -j3 check VERBOSE=1
-+
-   mbedtls4:
-     strategy:
-       fail-fast: false
+Patch Set 5: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25ded81f0f5ddd5
+Gerrit-Change-Number: 1595
+Gerrit-PatchSet: 5
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: mandree <matthias.andree@...68...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Fri, 17 Apr 2026 16:44:37 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--sciRrb995mA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail=
+">change 1595</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1595?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6c2eda0e5bbb3a70b404f821e25=
+ded81f0f5ddd5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1595 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: mandree &lt;matthias.andree@...2908...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 17 Apr 2026 16:44:37=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--sciRrb995mA=--
 
