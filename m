@@ -1,10 +1,16 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 19 Apr 2026 15:39:41 +0200
-Message-ID: <20260419133947.21215-1-gert@...1296...>
-In-Reply-To: <gerrit.1775421558000.I87c40dc94035345add1162e5029e51288811cb09@...2715...>
-References: <gerrit.1775421558000.I87c40dc94035345add1162e5029e51288811cb09@...2715...>
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sun, 19 Apr 2026 13:41:48 +0000
+In-Reply-To: <gerrit.1775421558000.I125cf63f11257d7245ead2f7feafb86b841580a5@...2715...>
+References: <gerrit.1775421558000.I125cf63f11257d7245ead2f7feafb86b841580a5@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <10fb52c972af4a24d8c7224def4ff74a9220261d-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] tapctl: Remove unused function dont_mute
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Z/Hmr0ji4MQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dev-tools: Add
+ script to run cppcheck against the code-base
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,66 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Frank Lichtenheld <frank@...2641...>
+--Z/Hmr0ji4MQ=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Identified by cppcheck.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Change-Id: I87c40dc94035345add1162e5029e51288811cb09
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1615
----
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1620?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: dev-tools: Add script to run cppcheck against the code-base
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1615
-This mail reflects revision 3 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Patch Set 5: Code-Review+2
 
-        
-diff --git a/src/tapctl/error.h b/src/tapctl/error.h
-index 9632b2f..f9586dc 100644
---- a/src/tapctl/error.h
-+++ b/src/tapctl/error.h
-@@ -109,11 +109,11 @@
-     return (level & M_DEBUG_LEVEL) <= x_debug_level;
- }
- 
--/** Return true if flags represent and enabled, not muted log level */
-+/** Return true if flags represent */
- static inline bool
- msg_test(unsigned int flags)
- {
--    return check_debug_level(flags) && dont_mute(flags);
-+    return check_debug_level(flags);
- }
- 
- #endif /* ifndef ERROR_H */
-diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-index 1d047dd..6a4a240 100644
---- a/src/tapctl/main.c
-+++ b/src/tapctl/main.c
-@@ -686,15 +686,6 @@
- }
- 
- 
--bool
--dont_mute(unsigned int flags)
--{
--    UNREFERENCED_PARAMETER(flags);
--
--    return true;
--}
--
--
- void
- x_msg_va(const unsigned int flags, const char *format, va_list arglist)
- {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I125cf63f11257d7245ead2f7feafb86b841580a5
+Gerrit-Change-Number: 1620
+Gerrit-PatchSet: 5
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 19 Apr 2026 13:41:48 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+
+--Z/Hmr0ji4MQ=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail=
+">change 1620</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I125cf63f11257d7245ead2f7fea=
+fb86b841580a5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1620 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 19 Apr 2026 13:41:48=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--Z/Hmr0ji4MQ=--
 
