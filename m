@@ -1,17 +1,15 @@
 From: "its_Giaan (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Apr 2026 14:43:40 +0000
-In-Reply-To: <gerrit.1762862118000.I509ea79990305f39e3385136fc0d9e5fbfa68e6c@...2715...>
-References: <gerrit.1762862118000.I509ea79990305f39e3385136fc0d9e5fbfa68e6c@...2715...>
+Date: Tue, 21 Apr 2026 14:51:42 +0000
+References: <gerrit.1776783100000.I6b303805a3688b6f6363140c76853a58badecd8f@...2715...>
 Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- gert@...1296...
-Message-ID: <fe58a6c70e0e5c130d2cfebd2cf47b3b3ed9116c-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <8b237e22b9e1b58305c1b46916b62e0dcc83f3b6-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Jldo3/TkUOk="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: mudp: fix handling
- of multiple UDP socket flags
+Content-Type: multipart/alternative; boundary="2Zlrur+TsDE="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Multisocket: use
+ event engine rwflags for UDP I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,75 +18,255 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Jldo3/TkUOk=
+--2Zlrur+TsDE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-its_Giaan has abandoned this change. ( http://gerrit.openvpn.net/c/openvpn/=
-+/1365?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: mudp: fix handling of multiple UDP socket flags
+Hello plaisthos,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1635?usp=3Demail
+
+to review the following change.
+
+
+Change subject: Multisocket: use event engine rwflags for UDP I/O
 ......................................................................
 
+Multisocket: use event engine rwflags for UDP I/O
 
-Abandoned
+udp_flags does not guarantee correct association with the socket being
+processed. Use the rwflags returned by the event engine together with the
+event to ensure proper per-socket I/O handling.
 
-reworking this
+Remove udp_flags entirely.
+
+This change is based on an investigation triggered by a report from
+Joshua Rogers using ZeroPath.
+
+Change-Id: I6b303805a3688b6f6363140c76853a58badecd8f
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+---
+M src/openvpn/forward.c
+M src/openvpn/mudp.c
+M src/openvpn/mudp.h
+M src/openvpn/multi_io.c
+M src/openvpn/multi_io.h
+5 files changed, 4 insertions(+), 8 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1635/1
+
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 27cfd36..3937942 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2153,7 +2153,6 @@
+     unsigned int out_socket;
+
+     multi_io_process_flags(c, multi_io->es, flags, &out_socket, NULL);
+-    multi_io->udp_flags =3D (out_socket << SOCKET_SHIFT);
+ }
+
+ /*
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 432c79a..1acfffc 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -336,9 +336,9 @@
+  * Process a UDP socket event.
+  */
+ void
+-multi_process_io_udp(struct multi_context *m, struct link_socket *sock)
++multi_process_io_udp(struct multi_context *m, struct link_socket *sock, un=
+signed int rwflags)
+ {
+-    const unsigned int status =3D m->multi_io->udp_flags;
++    const unsigned int status =3D rwflags;
+     const unsigned int mpp_flags =3D (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL=
+);
+
+     /* UDP port ready to accept write */
+@@ -355,8 +355,6 @@
+             multi_process_incoming_link(m, NULL, mpp_flags, sock);
+         }
+     }
+-
+-    m->multi_io->udp_flags =3D ES_ERROR;
+ }
+
+ /*
+diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
+index 005ee10..1417651 100644
+--- a/src/openvpn/mudp.h
++++ b/src/openvpn/mudp.h
+@@ -32,7 +32,7 @@
+
+ unsigned int p2mp_iow_flags(const struct multi_context *m);
+
+-void multi_process_io_udp(struct multi_context *m, struct link_socket *soc=
+k);
++void multi_process_io_udp(struct multi_context *m, struct link_socket *soc=
+k, unsigned int rwflags);
+ /*************************************************************************=
+*/
+ /**
+  * Get, and if necessary create, the multi_instance associated with a
+diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
+index e6f4e9c..f9af800 100644
+--- a/src/openvpn/multi_io.c
++++ b/src/openvpn/multi_io.c
+@@ -457,7 +457,7 @@
+                     }
+                     else
+                     {
+-                        multi_process_io_udp(m, ev_arg->u.sock);
++                        multi_process_io_udp(m, ev_arg->u.sock, e->rwflags=
+);
+                         mi =3D m->pending;
+                     }
+                     /* monitor and/or handle events that are
+diff --git a/src/openvpn/multi_io.h b/src/openvpn/multi_io.h
+index 6b2f59a..d6734bd 100644
+--- a/src/openvpn/multi_io.h
++++ b/src/openvpn/multi_io.h
+@@ -55,7 +55,6 @@
+     int n_esr;
+     int maxevents;
+     unsigned int tun_rwflags;
+-    unsigned int udp_flags;
+ #ifdef ENABLE_MANAGEMENT
+     unsigned int management_persist_flags;
+ #endif
+
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1365?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1635?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: abandon
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I509ea79990305f39e3385136fc0d9e5fbfa68e6c
-Gerrit-Change-Number: 1365
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: I6b303805a3688b6f6363140c76853a58badecd8f
+Gerrit-Change-Number: 1635
+Gerrit-PatchSet: 1
 Gerrit-Owner: its_Giaan <gianmarco@...2726...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: cron2 <gert@...1296...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---Jldo3/TkUOk=
+--2Zlrur+TsDE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>its_Giaan <strong=
->abandoned</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1365?usp=3Demail">View Change</a></p><div style=3D"white-space=
-:pre-wrap">Abandoned
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>its_Giaan would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1635?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Multisocket: use event engine rwflags for U=
+DP I/O<br><br>udp_flags does not guarantee correct association with the soc=
+ket being<br>processed. Use the rwflags returned by the event engine togeth=
+er with the<br>event to ensure proper per-socket I/O handling.<br><br>Remov=
+e udp_flags entirely.<br><br>This change is based on an investigation trigg=
+ered by a report from<br>Joshua Rogers using ZeroPath.<br><br>Change-Id: I6=
+b303805a3688b6f6363140c76853a58badecd8f<br>Signed-off-by: Gianmarco De Greg=
+ori &lt;gianmarco@...2726...&gt;<br>---<br>M src/openvpn/forward.c<br>M src=
+/openvpn/mudp.c<br>M src/openvpn/mudp.h<br>M src/openvpn/multi_io.c<br>M sr=
+c/openvpn/multi_io.h<br>5 files changed, 4 insertions(+), 8 deletions(-)<br=
+><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn re=
+fs/changes/35/1635/1</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/src/openvpn/forward.c b/src/openv=
+pn/forward.c</span><br><span>index 27cfd36..3937942 100644</span><br><span>=
+--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</sp=
+an><br><span>@@ -2153,7 +2153,6 @@</span><br><span>     unsigned int out_so=
+cket;</span><br><span> </span><br><span>     multi_io_process_flags(c, mult=
+i_io-&gt;es, flags, &amp;out_socket, NULL);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    multi_io-&gt;udp_flags =3D (out_socket &lt;&lt; S=
+OCKET_SHIFT);</span><br><span> }</span><br><span> </span><br><span> /*</spa=
+n><br><span>diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br>=
+<span>index 432c79a..1acfffc 100644</span><br><span>--- a/src/openvpn/mudp.=
+c</span><br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@ -336,9 +336,9=
+ @@</span><br><span>  * Process a UDP socket event.</span><br><span>  */</s=
+pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mu=
+lti_process_io_udp(struct multi_context *m, struct link_socket *sock)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_process_io_udp(stru=
+ct multi_context *m, struct link_socket *sock, unsigned int rwflags)</span>=
+<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const=
+ unsigned int status =3D m-&gt;multi_io-&gt;udp_flags;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    const unsigned int status =3D rwflag=
+s;</span><br><span>     const unsigned int mpp_flags =3D (MPP_PRE_SELECT | =
+MPP_CLOSE_ON_SIGNAL);</span><br><span> </span><br><span>     /* UDP port re=
+ady to accept write */</span><br><span>@@ -355,8 +355,6 @@</span><br><span>=
+             multi_process_incoming_link(m, NULL, mpp_flags, sock);</span><=
+br><span>         }</span><br><span>     }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    m-&gt;multi_io-&gt;udp_flags =3D ES_ERROR;</span><br><span> }</span><br=
+><span> </span><br><span> /*</span><br><span>diff --git a/src/openvpn/mudp.=
+h b/src/openvpn/mudp.h</span><br><span>index 005ee10..1417651 100644</span>=
+<br><span>--- a/src/openvpn/mudp.h</span><br><span>+++ b/src/openvpn/mudp.h=
+</span><br><span>@@ -32,7 +32,7 @@</span><br><span> </span><br><span> unsig=
+ned int p2mp_iow_flags(const struct multi_context *m);</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-void multi_process_io_ud=
+p(struct multi_context *m, struct link_socket *sock);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void multi_process_io_udp(struct multi_co=
+ntext *m, struct link_socket *sock, unsigned int rwflags);</span><br><span>=
+ /*************************************************************************=
+*/</span><br><span> /**</span><br><span>  * Get, and if necessary create, t=
+he multi_instance associated with a</span><br><span>diff --git a/src/openvp=
+n/multi_io.c b/src/openvpn/multi_io.c</span><br><span>index e6f4e9c..f9af80=
+0 100644</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++ b=
+/src/openvpn/multi_io.c</span><br><span>@@ -457,7 +457,7 @@</span><br><span=
+>                     }</span><br><span>                     else</span><br=
+><span>                     {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                        multi_process_io_udp(m, ev_arg-&gt;u.sock);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+     multi_process_io_udp(m, ev_arg-&gt;u.sock, e-&gt;rwflags);</span><br><=
+span>                         mi =3D m-&gt;pending;</span><br><span>       =
+              }</span><br><span>                     /* monitor and/or hand=
+le events that are</span><br><span>diff --git a/src/openvpn/multi_io.h b/sr=
+c/openvpn/multi_io.h</span><br><span>index 6b2f59a..d6734bd 100644</span><b=
+r><span>--- a/src/openvpn/multi_io.h</span><br><span>+++ b/src/openvpn/mult=
+i_io.h</span><br><span>@@ -55,7 +55,6 @@</span><br><span>     int n_esr;</s=
+pan><br><span>     int maxevents;</span><br><span>     unsigned int tun_rwf=
+lags;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int=
+ udp_flags;</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>     =
+unsigned int management_persist_flags;</span><br><span> #endif</span><br><s=
+pan></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/1635?usp=3Demail">change 1635</a>. To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?=
+usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
+EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
+org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/1635?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
 
-reworking this</div><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/1365?usp=3Demail">change 1365</a>. To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?u=
-sp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
-mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
-rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1365?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
-/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I509ea79990305f39e3385136fc0=
-d9e5fbfa68e6c </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1365 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6b303805a3688b6f6363140c768=
+53a58badecd8f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1635 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
 ..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 
 </body></html>=
 
---Jldo3/TkUOk=--
+--2Zlrur+TsDE=--
 
